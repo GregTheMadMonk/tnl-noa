@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_VIEW_H_
-#define TNL_VIEW_H_
+#pragma once
 
 #include <cstdlib>
 #include <TNL/FileName.h>
@@ -26,23 +25,13 @@
 
 using namespace TNL;
 
-bool getOutputFileName( const String& inputFileName,
-                        const String& outputFormat,
-                        String& outputFileName )
+String getOutputFileName( const String& inputFileName,
+                          const String& outputFormat )
 {
-   outputFileName = removeFileNameExtension( inputFileName );
+   String outputFileName = removeFileNameExtension( inputFileName );
    if( outputFormat == "gnuplot" )
-   {
-      outputFileName += ".gplt";
-      return true;
-   }
-   if( outputFormat == "vtk" )
-   {
-      outputFileName += ".vtk";
-      return true;
-   }
-   std::cerr << "Unknown file format " << outputFormat << ".";
-   return false;
+      return outputFileName + ".gplt";
+   return outputFileName + "." + outputFormat;
 }
 
 
@@ -64,13 +53,9 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
       return false;
    }
 
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -95,13 +80,9 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
       return false;
    }
 
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -238,13 +219,9 @@ bool convertObject( const MeshPointer& meshPointer,
                     const std::vector< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -340,8 +317,8 @@ struct FilesProcessor
 {
    static bool run( const Config::ParameterContainer& parameters )
    {
-      int verbose = parameters. getParameter< int >( "verbose");
-      String meshFile = parameters. getParameter< String >( "mesh" );
+      int verbose = parameters.getParameter< int >( "verbose");
+      String meshFile = parameters.getParameter< String >( "mesh" );
 
       typedef Pointers::SharedPointer<  Mesh > MeshPointer;
       MeshPointer meshPointer;
@@ -353,7 +330,7 @@ struct FilesProcessor
             return false;
       }
 
-      bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
+      bool checkOutputFile = parameters.getParameter< bool >( "check-output-file" );
       std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
       bool error( false );
    //#ifdef HAVE_OPENMP
@@ -364,15 +341,8 @@ struct FilesProcessor
          if( verbose )
            std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
 
-         String outputFormat = parameters. getParameter< String >( "output-format" );
-         String outputFileName;
-         if( ! getOutputFileName( inputFiles[ i ],
-                                  outputFormat,
-                                  outputFileName ) )
-         {
-            error = true;
-            continue;
-         }
+         String outputFormat = parameters.getParameter< String >( "output-format" );
+         String outputFileName = getOutputFileName( inputFiles[ i ], outputFormat );
          if( checkOutputFile && fileExists( outputFileName ) )
          {
             if( verbose )
@@ -416,5 +386,3 @@ struct FilesProcessor
       return ! error;
    }
 };
-
-#endif /* TNL_VIEW_H_ */

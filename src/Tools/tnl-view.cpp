@@ -77,6 +77,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry        < String >( "output-format", "Output file format.", "gnuplot" );
       config.addEntryEnum< String > ( "gnuplot" );
       config.addEntryEnum< String > ( "vtk" );
+      config.addEntryEnum< String > ( "vtu" );
    config.addEntry        < int >   ( "verbose", "Set the verbosity of the program.", 1 );
 }
 

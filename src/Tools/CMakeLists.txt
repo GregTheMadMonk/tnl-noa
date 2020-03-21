@@ -24,6 +24,13 @@ if( DCMTK_FOUND )
    target_link_libraries(tnl-dicom-reader ${DCMTK_LIBRARIES} )
 endif()
 
+find_package( ZLIB )
+if( ZLIB_FOUND )
+   target_compile_definitions(tnl-view PUBLIC "-DHAVE_ZLIB")
+   target_include_directories(tnl-view PUBLIC ${ZLIB_INCLUDE_DIRS})
+   target_link_libraries(tnl-view ${ZLIB_LIBRARIES})
+endif()
+
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch
