@@ -17,6 +17,7 @@
 #include <TNL/Meshes/Readers/TNLReader.h>
 #include <TNL/Meshes/Readers/NetgenReader.h>
 #include <TNL/Meshes/Readers/VTKReader.h>
+#include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
@@ -105,8 +106,23 @@ bool resolveMeshType( const String& fileName_,
          return false;
       }
    }
+   else if( ends_with( fileName, ".vtu" ) ) {
+      // FIXME: The XML VTK files don't store local index and id types.
+      // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
+      // this case we should use the first enabled type.
+      Readers::VTUReader reader;
+      if( ! reader.detectMesh( fileName_ ) )
+         return false;
+      if( reader.getMeshType() == "Meshes::Mesh" )
+         return MeshTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
+            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+      else {
+         std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
+         return false;
+      }
+   }
    else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
+      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
       return false;
    }
 }
@@ -140,8 +156,12 @@ loadMesh( const String& fileName,
       Readers::VTKReader reader;
       status = reader.readMesh( fileName, mesh );
    }
+   else if( ends_with( fileName_, ".vtu" ) ) {
+      Readers::VTUReader reader;
+      status = reader.readMesh( fileName, mesh );
+   }
    else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
+      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
       return false;
    }
 

@@ -29,6 +29,16 @@ if( ZLIB_FOUND )
    target_compile_definitions(tnl-view PUBLIC "-DHAVE_ZLIB")
    target_include_directories(tnl-view PUBLIC ${ZLIB_INCLUDE_DIRS})
    target_link_libraries(tnl-view ${ZLIB_LIBRARIES})
+
+   target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_ZLIB")
+   target_include_directories(tnl-mesh-converter PUBLIC ${ZLIB_INCLUDE_DIRS})
+   target_link_libraries(tnl-mesh-converter ${ZLIB_LIBRARIES})
+endif()
+
+find_package( tinyxml2 QUIET )
+if( tinyxml2_FOUND )
+   target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_TINYXML2")
+   target_link_libraries(tnl-mesh-converter tinyxml2::tinyxml2)
 endif()
 
 IF( BUILD_CUDA )
