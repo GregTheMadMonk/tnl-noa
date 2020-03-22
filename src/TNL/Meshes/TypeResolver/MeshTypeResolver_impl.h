@@ -139,7 +139,7 @@ resolveReal( const Reader& reader,
       return resolveGlobalIndex< CellTopology, WorldDimension, float >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getRealType() == "double" )
       return resolveGlobalIndex< CellTopology, WorldDimension, double >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getRealType() == "long-double" )
+   if( reader.getRealType() == "long double" )
       return resolveGlobalIndex< CellTopology, WorldDimension, long double >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    std::cerr << "Unsupported real type: " << reader.getRealType() << std::endl;
    return false;
@@ -177,11 +177,17 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveGlobalIndex( const Reader& reader,
                     ProblemSetterArgs&&... problemSetterArgs )
 {
-   if( reader.getGlobalIndexType() == "short int" )
+   if( reader.getGlobalIndexType() == "short int" ||
+       reader.getGlobalIndexType() == "std::int16_t" ||
+       reader.getGlobalIndexType() == "std::uint16_t" )
       return resolveLocalIndex< CellTopology, WorldDimension, Real, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getGlobalIndexType() == "int" )
+   if( reader.getGlobalIndexType() == "int" ||
+       reader.getGlobalIndexType() == "std::int32_t" ||
+       reader.getGlobalIndexType() == "std::uint32_t" )
       return resolveLocalIndex< CellTopology, WorldDimension, Real, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getGlobalIndexType() == "long int" )
+   if( reader.getGlobalIndexType() == "long int" ||
+       reader.getGlobalIndexType() == "std::int64_t" ||
+       reader.getGlobalIndexType() == "std::uint64_t" )
       return resolveLocalIndex< CellTopology, WorldDimension, Real, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    std::cerr << "Unsupported global index type: " << reader.getGlobalIndexType() << std::endl;
    return false;
@@ -221,11 +227,17 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveLocalIndex( const Reader& reader,
                    ProblemSetterArgs&&... problemSetterArgs )
 {
-   if( reader.getLocalIndexType() == "short int" )
+   if( reader.getLocalIndexType() == "short int" ||
+       reader.getLocalIndexType() == "std::int16_t" ||
+       reader.getLocalIndexType() == "std::uint16_t" )
       return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getLocalIndexType() == "int" )
+   if( reader.getLocalIndexType() == "int" ||
+       reader.getLocalIndexType() == "std::int32_t" ||
+       reader.getLocalIndexType() == "std::uint32_t" )
       return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getLocalIndexType() == "long int" )
+   if( reader.getLocalIndexType() == "long int" ||
+       reader.getLocalIndexType() == "std::int64_t" ||
+       reader.getLocalIndexType() == "std::uint64_t" )
       return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    std::cerr << "Unsupported local index type: " << reader.getLocalIndexType() << std::endl;
    return false;
@@ -267,11 +279,17 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveId( const Reader& reader,
            ProblemSetterArgs&&... problemSetterArgs )
 {
-   if( reader.getIdType() == "short int" )
+   if( reader.getIdType() == "short int" ||
+       reader.getIdType() == "std::int16_t" ||
+       reader.getIdType() == "std::uint16_t" )
       return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getIdType() == "int" )
+   if( reader.getIdType() == "int" ||
+       reader.getIdType() == "std::int32_t" ||
+       reader.getIdType() == "std::uint32_t" )
       return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getIdType() == "long int" )
+   if( reader.getIdType() == "long int" ||
+       reader.getIdType() == "std::int64_t" ||
+       reader.getIdType() == "std::uint64_t" )
       return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getIdType() == "void" )
       return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, void >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
