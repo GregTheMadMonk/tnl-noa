@@ -74,7 +74,6 @@ TYPED_TEST( MatrixTest, getRowTest )
     test_GetRow< MatrixType >();
 }
 
-
 TYPED_TEST( MatrixTest, setElementTest )
 {
     using MatrixType = typename TestFixture::MatrixType;

@@ -19,15 +19,6 @@ namespace TNL {
    namespace Containers {
       namespace Segments {
 
-template< typename IndexType >
-struct ChunkedEllpackSliceInfo
-{
-   IndexType size;
-   IndexType chunkSize;
-   IndexType firstRow;
-   IndexType pointer;
-};
-
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
@@ -38,16 +29,19 @@ class ChunkedEllpack
 
       using DeviceType = Device;
       using IndexType = Index;
-      //using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
-      static constexpr int getSliceSize() { return SliceSize; }
+      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
-      using ViewType = ChunkedEllpackView< Device, Index, RowMajorOrder, SliceSize >;
+      using ViewType = ChunkedEllpackView< Device, Index, RowMajorOrder >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder, SliceSize >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder, SliceSize >;
+      using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder >;
+      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using ChunkedEllpackSliceInfoType = ChunkedEllpackSliceInfo< IndexType >;
+      //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
+      using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
+      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
 
-      ChunkedEllpack();
+      ChunkedEllpack() = default;
 
       ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
 
@@ -119,11 +113,13 @@ class ChunkedEllpack
       ChunkedEllpack& operator=( const ChunkedEllpack& source ) = default;
 
       template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, SliceSize >& source );
+      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_ >& source );
 
       void save( File& file ) const;
 
       void load( File& file );
+
+      void printStructure( std::ostream& str ); // TODO const;
 
    protected:
 
@@ -135,11 +131,27 @@ class ChunkedEllpack
                      const IndexType sliceIdx,
                      IndexType& elementsToAllocation );
 
-      IndexType chunksInSlice, desiredChunkSize;
+      IndexType size = 0, storageSize = 0;
 
-      Containers::Vector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
+      IndexType chunksInSlice = 256, desiredChunkSize = 16;
 
-      Containers::Array< ChunkedEllpackSliceInfo, Device, Index > slices;
+      /**
+       * For each segment, this keeps index of the slice which contains the
+       * segment.
+       */
+      OffsetsHolder rowToSliceMapping;
+
+      /**
+       * For each row, this keeps index of the first chunk within a slice.
+       */
+      OffsetsHolder rowToChunkMapping;
+
+      /**
+       * Keeps index of the first segment index.
+       */
+      OffsetsHolder rowPointers;
+
+      ChunkedEllpackSliceInfoContainer slices;
 
       IndexType numberOfSlices;
 };

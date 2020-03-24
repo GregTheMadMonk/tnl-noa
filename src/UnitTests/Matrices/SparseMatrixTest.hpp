@@ -60,7 +60,6 @@ void test_Constructors()
    m2.setElement( 3, 3, 1 );
    m2.setElement( 4, 4, 1 );   // 4th row
    m2.getCompressedRowLengths( v1 );
-
    EXPECT_EQ( v1, v2 );
 
    /*

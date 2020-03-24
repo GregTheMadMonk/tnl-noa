@@ -51,7 +51,7 @@ df = pandas.concat(dfs)
 ## Post-processing
 print( "Postprocessing data frame..." )
 # Drop norms of results differences
-df.drop(columns=['CSR Diff.Max','CSR Diff.L2'], axis=1, level=1, inplace=True )
+#df.drop(columns=['CSR Diff.Max','CSR Diff.L2'], axis=1, level=1, inplace=True )
 
 # show matrix formats as columns
 df = df.unstack()

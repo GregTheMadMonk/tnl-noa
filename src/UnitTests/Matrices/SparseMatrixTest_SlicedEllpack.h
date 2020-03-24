@@ -29,7 +29,7 @@ template< typename Device, typename Index, typename IndexAllocator >
 using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, false, 32 >;
 
 // types for which MatrixTest is instantiated
-using SlicedEllpackMatrixTypes = ::testing::Types
+using MatrixTypes = ::testing::Types
 <
     TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
     TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,

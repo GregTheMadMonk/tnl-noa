@@ -1001,5 +1001,33 @@ getPaddingIndex() const
    return -1;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+getSegments() -> SegmentsType&
+{
+   return this->segments;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+getSegments() const -> const SegmentsType&
+{
+   return this->segments;
+}
+
    } //namespace Matrices
 } // namespace  TNL

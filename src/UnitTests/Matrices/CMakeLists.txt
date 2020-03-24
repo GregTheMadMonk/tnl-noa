@@ -75,6 +75,10 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest_SlicedEllpack PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_SlicedEllpack ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( SparseMatrixTest_ChunkedEllpack SparseMatrixTest_ChunkedEllpack.cpp )
+   TARGET_COMPILE_OPTIONS( SparseMatrixTest_ChunkedEllpack PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_ChunkedEllpack ${GTEST_BOTH_LIBRARIES} )
+
    ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
    TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )

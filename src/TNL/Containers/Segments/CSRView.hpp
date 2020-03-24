@@ -32,6 +32,15 @@ template< typename Device,
           typename Index >
 __cuda_callable__
 CSRView< Device, Index >::
+CSRView( const OffsetsView& offsets_view )
+   : offsets( offsets_view )
+{
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+CSRView< Device, Index >::
 CSRView( const OffsetsView&& offsets_view )
    : offsets( offsets_view )
 {

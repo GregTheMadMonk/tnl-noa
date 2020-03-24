@@ -236,6 +236,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       IndexType getPaddingIndex() const;
 
+      SegmentsType& getSegments();
+
+      const SegmentsType& getSegments() const;
+
 // TODO: restore it and also in Matrix
 //   protected:
 
@@ -244,8 +248,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SegmentsType segments;
 
       IndexAllocator indexAllocator;
-
-      //RealAllocator realAllocator;
 
       ViewType view;
 };
