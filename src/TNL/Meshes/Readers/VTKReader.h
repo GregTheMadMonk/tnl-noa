@@ -336,13 +336,6 @@ public:
       return "short int";
    }
 
-   String
-   getIdType() const
-   {
-      // not stored in the VTK file
-      return "int";
-   }
-
 protected:
    // output of parseHeader
    std::string dataType;

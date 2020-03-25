@@ -278,13 +278,6 @@ public:
       return "short int";
    }
  
-   String
-   getIdType() const
-   {
-      // not stored in the Netgen file
-      return "int";
-   }
- 
 protected:
    String fileName;
    int meshDimension, worldDimension;

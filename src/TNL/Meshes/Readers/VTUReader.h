@@ -522,13 +522,6 @@ public:
       return "short int";
    }
 
-   std::string
-   getIdType() const
-   {
-      // not stored in the VTK file
-      return getGlobalIndexType();
-   }
-
 protected:
    std::string fileName;
 

@@ -175,13 +175,6 @@ public:
       return "short int";
    }
 
-   String
-   getIdType() const
-   {
-      // not stored in the VTK file
-      return "int";
-   }
-
 protected:
    int worldDimension = 0;
    int meshDimension = 0;

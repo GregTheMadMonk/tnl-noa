@@ -39,7 +39,7 @@ public:
          // save parts necessary to determine the mesh type
          meshDimension = worldDimension = std::atoi( parsedMeshType[ 1 ].getString() );
          realType = parsedMeshType[ 2 ];
-         globalIndexType = localIndexType = idType = parsedMeshType[ 4 ];
+         globalIndexType = localIndexType = parsedMeshType[ 4 ];
          // populate entity types (not necessary for GridTypeResolver, but while we're at it...)
          if( meshDimension == 1 )
             cellShape = VTK::EntityShape::Line;
@@ -69,7 +69,6 @@ public:
          realType = parsedMeshConfig[ 3 ];
          globalIndexType = parsedMeshConfig[ 4 ];
          localIndexType = parsedMeshConfig[ 5 ];
-         idType = parsedMeshConfig[ 6 ];
 
          if( topology == "MeshEdgeTopology" )
             cellShape = VTK::EntityShape::Line;
@@ -144,12 +143,6 @@ public:
       return localIndexType;
    }
  
-   String
-   getIdType() const
-   {
-      return idType;
-   }
- 
 protected:
    String fileName;
    String meshType;
@@ -159,7 +152,6 @@ protected:
    String realType;
    String globalIndexType;
    String localIndexType;
-   String idType;
 
    void reset()
    {
@@ -167,7 +159,7 @@ protected:
       meshType = "";
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
-      realType = localIndexType = globalIndexType = idType = "";
+      realType = localIndexType = globalIndexType = "";
    }
 };
 
