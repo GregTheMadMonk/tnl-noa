@@ -129,8 +129,8 @@ void testEntities( const Mesh& mesh )
 
    // test that superentity accessors have been correctly bound
    for( IndexType i = 0; i < mesh.template getEntitiesCount< 0 >(); i++ ) {
-      auto v1 = mesh.template getEntity< 0 >( i );
-      auto& v2 = mesh.template getEntity< 0 >( i );
+      const auto v1 = mesh.template getEntity< 0 >( i );
+      const auto v2 = mesh.template getEntity< 0 >( i );
       EXPECT_EQ( v1, v2 );
       EXPECT_EQ( v1.template getSuperentitiesCount< Mesh::getMeshDimension() >(),
                  v2.template getSuperentitiesCount< Mesh::getMeshDimension() >() );
@@ -141,8 +141,8 @@ void testEntities( const Mesh& mesh )
 
    // test that subentity accessors have been correctly bound
    for( IndexType i = 0; i < mesh.template getEntitiesCount< Mesh::getMeshDimension() >(); i++ ) {
-      auto c1 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
-      auto& c2 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
+      const auto c1 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
+      const auto c2 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
       EXPECT_EQ( c1, c2 );
       EXPECT_EQ( c1.template getSubentitiesCount< 0 >(),
                  c2.template getSubentitiesCount< 0 >() );
@@ -234,16 +234,16 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).getPoint(),  point2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).getPoint(),  point3 );
 
-   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 0 ),  1 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 1 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 0 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 1 ),  0 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 0 ),  0 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 1 ),  1 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 0 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 1 ),  3 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 0 ),  3 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 0 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 1 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 1 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 0 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 1 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 0 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 1 ),  1 );
 
    EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 0 ),  0 );
    EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 1 ),  1 );

@@ -121,6 +121,50 @@ private:
    using SuperentitiesWorker = IndexPermutationApplierSuperentitiesWorker< Superdimension >;
 
 public:
+   static void permutePoints( Mesh& mesh,
+                              const GlobalIndexVector& perm,
+                              const GlobalIndexVector& iperm )
+   {
+      using IndexType = typename Mesh::GlobalIndexType;
+      using DeviceType = typename Mesh::DeviceType;
+      using PointArrayType = typename Mesh::MeshTraitsType::PointArrayType;
+
+      const IndexType pointsCount = mesh.template getEntitiesCount< 0 >();
+
+      PointArrayType points;
+      points.setSize( pointsCount );
+
+      // kernel to copy entities to new array, applying the permutation
+      auto kernel1 = [] __cuda_callable__
+         ( IndexType i,
+           const Mesh* mesh,
+           typename PointArrayType::ValueType* pointsArray,
+           const IndexType* perm )
+      {
+         pointsArray[ i ] = mesh->getPoint( perm[ i ] );
+      };
+
+      // kernel to copy permuted entities back to the mesh
+      auto kernel2 = [] __cuda_callable__
+         ( IndexType i,
+           Mesh* mesh,
+           const typename PointArrayType::ValueType* pointsArray )
+      {
+         mesh->getPoint( i ) = pointsArray[ i ];
+      };
+
+      Pointers::DevicePointer< Mesh > meshPointer( mesh );
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, pointsCount,
+                                                   kernel1,
+                                                   &meshPointer.template getData< DeviceType >(),
+                                                   points.getData(),
+                                                   perm.getData() );
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, pointsCount,
+                                                   kernel2,
+                                                   &meshPointer.template modifyData< DeviceType >(),
+                                                   points.getData() );
+   }
+
    static void exec( Mesh& mesh,
                      const GlobalIndexVector& perm,
                      const GlobalIndexVector& iperm )
@@ -129,42 +173,8 @@ public:
       using DeviceType = typename Mesh::DeviceType;
       using StorageArrayType = typename Mesh::template EntityTraits< Dimension >::StorageArrayType;
 
-      const IndexType entitiesCount = mesh.template getEntitiesCount< Dimension >();
-
-      StorageArrayType entities;
-      entities.setSize( entitiesCount );
-
-      // kernel to copy entities to new array, applying the permutation
-      auto kernel1 = [] __cuda_callable__
-         ( IndexType i,
-           const Mesh* mesh,
-           typename StorageArrayType::ValueType* entitiesArray,
-           const IndexType* perm )
-      {
-         entitiesArray[ i ] = mesh->template getEntity< Dimension >( perm[ i ] );
-      };
-
-      // kernel to copy permuted entities back to the mesh
-      auto kernel2 = [] __cuda_callable__
-         ( IndexType i,
-           Mesh* mesh,
-           const typename StorageArrayType::ValueType* entitiesArray )
-      {
-         auto& entity = mesh->template getEntity< Dimension >( i );
-         entity = entitiesArray[ i ];
-         entity.setIndex( i );
-      };
-
-      Pointers::DevicePointer< Mesh > meshPointer( mesh );
-      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                                   kernel1,
-                                                   &meshPointer.template getData< DeviceType >(),
-                                                   entities.getData(),
-                                                   perm.getData() );
-      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                                   kernel2,
-                                                   &meshPointer.template modifyData< DeviceType >(),
-                                                   entities.getData() );
+      if( Dimension == 0 )
+         permutePoints( mesh, perm, iperm );
 
       // permute superentities storage
       Algorithms::TemplateStaticFor< int, 0, Dimension, SubentitiesStorageWorker >::execHost( mesh, perm );

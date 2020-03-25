@@ -94,17 +94,12 @@ template< typename ConfigTag, typename GlobalIndex > struct MeshGlobalIndexTag {
 // Meshes are enabled for all local index types by default.
 template< typename ConfigTag, typename LocalIndex > struct MeshLocalIndexTag { enum { enabled = true }; };
 
-// Meshes are enabled for 'GlobalIndex' and 'void' id types by default.
-template< typename ConfigTag, typename GlobalIndex, typename Id > struct MeshIdTag { enum { enabled = false }; };
-template< typename ConfigTag, typename GlobalIndex > struct MeshIdTag< ConfigTag, GlobalIndex, void > { enum { enabled = true }; };
-template< typename ConfigTag, typename GlobalIndex > struct MeshIdTag< ConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
-
 // Config tag specifying the MeshConfig to use.
 template< typename ConfigTag >
 struct MeshConfigTemplateTag
 {
-   template< typename Cell, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
-   using MeshConfig = DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
+   template< typename Cell, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex >
+   using MeshConfig = DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >;
 };
 
 // The Mesh is enabled for allowed Device, CellTopology, WorldDimension, Real,
@@ -121,9 +116,9 @@ struct MeshConfigTemplateTag
 //
 //          struct MeshTag< ConfigTag,
 //                      Mesh< typename MeshConfigTemplateTag< ConfigTag >::
-//                         template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, Id > > >
+//                         template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex > > >
 //
-template< typename ConfigTag, typename Device, typename CellTopology, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex, typename Id >
+template< typename ConfigTag, typename Device, typename CellTopology, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex >
 struct MeshTag
 {
    enum { enabled =
@@ -132,8 +127,7 @@ struct MeshTag
             MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled &&
             MeshRealTag< ConfigTag, Real >::enabled &&
             MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled &&
-            MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled &&
-            MeshIdTag< ConfigTag, GlobalIndex, Id >::enabled
+            MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled
    };
 };
 

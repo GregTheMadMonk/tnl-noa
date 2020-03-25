@@ -33,15 +33,13 @@ template< typename Cell,
           int WorldDimension = Cell::dimension,
           typename Real = double,
           typename GlobalIndex = int,
-          typename LocalIndex = GlobalIndex,
-          typename Id = void >
+          typename LocalIndex = GlobalIndex >
 struct DefaultConfig
 {
    using CellTopology = Cell;
    using RealType = Real;
    using GlobalIndexType = GlobalIndex;
    using LocalIndexType = LocalIndex;
-   using IdType = Id;
 
    static constexpr int worldDimension = WorldDimension;
    static constexpr int meshDimension = Cell::dimension;

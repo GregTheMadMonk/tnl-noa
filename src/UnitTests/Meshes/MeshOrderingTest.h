@@ -17,7 +17,7 @@ using namespace TNL;
 using namespace TNL::Meshes;
 
 class TestTriangleMeshConfig
-   : public DefaultConfig< Topologies::Triangle, 2, double, int, short int, int >
+   : public DefaultConfig< Topologies::Triangle, 2, double, int, short int >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -124,16 +124,16 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
 
 
    // test subentities
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).getVertexIndex( 0 ),  vertexPermutation[ 1 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).getVertexIndex( 1 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).getVertexIndex( 0 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).getVertexIndex( 1 ),  vertexPermutation[ 0 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).getVertexIndex( 0 ),  vertexPermutation[ 0 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).getVertexIndex( 1 ),  vertexPermutation[ 1 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).getVertexIndex( 0 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).getVertexIndex( 1 ),  vertexPermutation[ 3 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).getVertexIndex( 0 ),  vertexPermutation[ 3 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).getVertexIndex( 1 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 0 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 0 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 3 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 3 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );
 
    EXPECT_EQ( mesh.template getEntity< 2 >( cellPermutation[ 0 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 0 ] );
    EXPECT_EQ( mesh.template getEntity< 2 >( cellPermutation[ 0 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );

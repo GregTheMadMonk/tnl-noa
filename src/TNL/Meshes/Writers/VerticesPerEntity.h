@@ -42,7 +42,7 @@ template< typename Entity,
           bool _is_mesh_entity = details::has_entity_topology< Entity >::value >
 struct VerticesPerEntity
 {
-   static constexpr int count = Entity::getVerticesCount();
+   static constexpr int count = Topologies::Subtopology< typename Entity::EntityTopology, 0 >::count;
 };
 
 template< typename MeshConfig, typename Device >

@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 

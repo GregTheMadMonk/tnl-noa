@@ -50,12 +50,9 @@ struct MeshWorldDimensionTag< TNLViewBuildConfigTag, CellTopology, WorldDimensio
 template< typename Real > struct MeshRealTag< TNLViewBuildConfigTag, Real > { enum { enabled = false }; };
 template< typename GlobalIndex > struct MeshGlobalIndexTag< TNLViewBuildConfigTag, GlobalIndex > { enum { enabled = false }; };
 template< typename LocalIndex > struct MeshLocalIndexTag< TNLViewBuildConfigTag, LocalIndex > { enum { enabled = false }; };
-template< typename GlobalIndex, typename Id > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, Id > { enum { enabled = false }; };
 template<> struct MeshRealTag< TNLViewBuildConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, int > { enum { enabled = true }; };
 template<> struct MeshLocalIndexTag< TNLViewBuildConfigTag, short int > { enum { enabled = true }; };
-template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, void > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes

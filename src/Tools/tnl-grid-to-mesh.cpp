@@ -51,8 +51,7 @@ struct MeshCreator< TNL::Meshes::Grid< 1, Real, Device, Index > >
                                                   CellTopology::dimension,
                                                   typename GridType::RealType,
                                                   typename GridType::GlobalIndexType,
-                                                  LocalIndexType,
-                                                  typename GridType::GlobalIndexType >;
+                                                  LocalIndexType >;
    using MeshType = TNL::Meshes::Mesh< MeshConfig >;
 
    static bool run( const GridType& grid, MeshType& mesh )
@@ -89,8 +88,7 @@ struct MeshCreator< TNL::Meshes::Grid< 2, Real, Device, Index > >
                                                   CellTopology::dimension,
                                                   typename GridType::RealType,
                                                   typename GridType::GlobalIndexType,
-                                                  LocalIndexType,
-                                                  typename GridType::GlobalIndexType >;
+                                                  LocalIndexType >;
    using MeshType = TNL::Meshes::Mesh< MeshConfig >;
 
    static bool run( const GridType& grid, MeshType& mesh )
@@ -129,8 +127,7 @@ struct MeshCreator< TNL::Meshes::Grid< 3, Real, Device, Index > >
                                                   CellTopology::dimension,
                                                   typename GridType::RealType,
                                                   typename GridType::GlobalIndexType,
-                                                  LocalIndexType,
-                                                  typename GridType::GlobalIndexType >;
+                                                  LocalIndexType >;
    using MeshType = TNL::Meshes::Mesh< MeshConfig >;
 
    static bool run( const GridType& grid, MeshType& mesh )

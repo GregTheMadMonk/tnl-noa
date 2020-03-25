@@ -17,7 +17,6 @@
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.h>
@@ -65,6 +64,7 @@ public:
    // orientation and its accessor
    using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
    using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
+   using OrientationsStorageArrayType = Containers::Array< OrientationArrayType, Device, GlobalIndexType >;
 
    template< LocalIndexType subentityIndex,
              LocalIndexType subentityVertexIndex >

@@ -53,8 +53,18 @@ public:
 
 protected:
    template< int Superdimension >
+   __cuda_callable__
    typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork()
+   {
+      static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );
+   }
+
+   template< int Superdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
+   getSuperentityStorageNetwork() const
    {
       static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );
@@ -140,7 +150,14 @@ protected:
    }
 
    using BaseType::getSuperentityStorageNetwork;
+   __cuda_callable__
    StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag )
+   {
+      return this->storageNetwork;
+   }
+
+   __cuda_callable__
+   const StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag ) const
    {
       return this->storageNetwork;
    }

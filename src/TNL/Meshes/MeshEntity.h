@@ -16,71 +16,45 @@
 
 #pragma once
 
-#include <TNL/File.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
-#include <TNL/Meshes/MeshDetails/MeshEntityIndex.h>
-#include <TNL/Meshes/MeshDetails/EntityLayers/SubentityAccess.h>
-#include <TNL/Meshes/MeshDetails/EntityLayers/SuperentityAccess.h>
 
 namespace TNL {
 namespace Meshes {
-
-template< typename MeshConfig, typename Device > class Mesh;
-template< typename MeshConfig > class Initializer;
-template< typename Mesh > class EntityStorageRebinder;
-template< typename Mesh, int Dimension > struct IndexPermutationApplier;
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology_ >
 class MeshEntity
-   : protected SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >,
-     protected SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >,
-     public MeshEntityIndex< typename MeshConfig::IdType >
 {
-   static_assert( std::is_same< EntityTopology_, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology_::dimension >::EntityTopology >::value,
+   static_assert( std::is_same< EntityTopology_, typename Mesh< MeshConfig, Device >::template EntityTraits< EntityTopology_::dimension >::EntityTopology >::value,
                   "Specified entity topology is not compatible with the MeshConfig." );
 
    public:
-      using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
+      using MeshType        = Mesh< MeshConfig, Device >;
       using DeviceType      = Device;
       using EntityTopology  = EntityTopology_;
-      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+      using GlobalIndexType = typename MeshType::GlobalIndexType;
+      using LocalIndexType  = typename MeshType::LocalIndexType;
+      using PointType       = typename MeshType::PointType;
 
       template< int Subdimension >
-      using SubentityTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
+      using SubentityTraits = typename MeshType::MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
 
       template< int Superdimension >
-      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
+      using SuperentityTraits = typename MeshType::MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
 
       // constructors
-      MeshEntity() = default;
+      MeshEntity() = delete;
 
       __cuda_callable__
-      MeshEntity( const MeshEntity& entity );
-
-      template< typename Device_ >
-      MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
+      MeshEntity( const MeshType& mesh, const GlobalIndexType index );
 
       __cuda_callable__
-      MeshEntity& operator=( const MeshEntity& entity );
+      MeshEntity( const MeshEntity& entity ) = default;
 
-      template< typename Device_ >
       __cuda_callable__
-      MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
-
-
-      static String getSerializationType();
-
-      String getSerializationTypeVirtual() const;
-
-      void save( File& file ) const;
-
-      void load( File& file );
-
-      void print( std::ostream& str ) const;
+      MeshEntity& operator=( const MeshEntity& entity ) = default;
 
       __cuda_callable__
       bool operator==( const MeshEntity& entity ) const;
@@ -90,105 +64,11 @@ class MeshEntity
 
       static constexpr int getEntityDimension();
 
-      /****
-       * Subentities
-       */
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentitiesCount;
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentityIndex;
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSubentityOrientation;
-
-      /****
-       * Superentities
-       */
-      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSuperentitiesCount;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::getSuperentityIndex;
-
-      /****
-       * Vertices
-       */
-      static constexpr LocalIndexType getVerticesCount();
-
-      GlobalIndexType getVertexIndex( const LocalIndexType localIndex ) const;
-
-   protected:
-      /****
-       * Methods for the mesh initialization
-       */
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::bindSubentitiesStorageNetwork;
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setSubentityIndex;
-      using SubentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::subentityOrientationsArray;
-
-      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::bindSuperentitiesStorageNetwork;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setNumberOfSuperentities;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, EntityTopology_ >::setSuperentityIndex;
-
-   friend Initializer< MeshConfig >;
-
-   friend EntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
-
-   template< typename Mesh, int Dimension >
-   friend struct IndexPermutationApplier;
-};
-
-/****
- * Vertex entity specialization
- */
-template< typename MeshConfig, typename Device >
-class MeshEntity< MeshConfig, Device, Topologies::Vertex >
-   : protected SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >,
-     public MeshEntityIndex< typename MeshConfig::IdType >
-{
-   public:
-      using MeshTraitsType  = MeshTraits< MeshConfig, Device >;
-      using DeviceType      = Device;
-      using EntityTopology  = Topologies::Vertex;
-      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
-      using PointType       = typename MeshTraitsType::PointType;
-
-      template< int Superdimension >
-      using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >;
-
-      // constructors
-      MeshEntity() = default;
+      __cuda_callable__
+      const MeshType& getMesh() const;
 
       __cuda_callable__
-      MeshEntity( const MeshEntity& entity );
-
-      template< typename Device_ >
-      MeshEntity( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
-
-      __cuda_callable__
-      MeshEntity& operator=( const MeshEntity& entity );
-
-      template< typename Device_ >
-      __cuda_callable__
-      MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
-
-
-      static String getSerializationType();
-
-      String getSerializationTypeVirtual() const;
-
-      void save( File& file ) const;
-
-      void load( File& file );
-
-      void print( std::ostream& str ) const;
-
-      __cuda_callable__
-      bool operator==( const MeshEntity& entity ) const;
-
-      __cuda_callable__
-      bool operator!=( const MeshEntity& entity ) const;
-
-      static constexpr int getEntityDimension();
-
-      /****
-       * Superentities
-       */
-      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::getSuperentitiesCount;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::getSuperentityIndex;
+      GlobalIndexType getIndex() const;
 
       /****
        * Points
@@ -196,22 +76,36 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
       __cuda_callable__
       PointType getPoint() const;
 
+      /****
+       * Subentities
+       */
+      template< int Subdimension >
       __cuda_callable__
-      void setPoint( const PointType& point );
+      LocalIndexType getSubentitiesCount() const;
+
+      template< int Subdimension >
+      __cuda_callable__
+      GlobalIndexType getSubentityIndex( const LocalIndexType localIndex ) const;
+
+      template< int Subdimension >
+      __cuda_callable__
+      const typename SubentityTraits< Subdimension >::OrientationArrayType&
+      getSubentityOrientation( const LocalIndexType localIndex ) const;
+
+      /****
+       * Superentities
+       */
+      template< int Superdimension >
+      __cuda_callable__
+      LocalIndexType getSuperentitiesCount() const;
+
+      template< int Superdimension >
+      __cuda_callable__
+      GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
    protected:
-      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::bindSuperentitiesStorageNetwork;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::setNumberOfSuperentities;
-      using SuperentityAccessLayerFamily< MeshConfig, Device, Topologies::Vertex >::setSuperentityIndex;
-
-      PointType point;
-
-   friend Initializer< MeshConfig >;
-
-   friend EntityStorageRebinder< Mesh< MeshConfig, DeviceType > >;
-
-   template< typename Mesh, int Dimension >
-   friend struct IndexPermutationApplier;
+      const MeshType* meshPointer = nullptr;
+      GlobalIndexType index = 0;
 };
 
 template< typename MeshConfig,

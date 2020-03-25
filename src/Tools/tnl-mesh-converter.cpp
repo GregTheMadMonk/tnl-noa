@@ -52,12 +52,9 @@ struct MeshWorldDimensionTag< MeshConverterConfigTag, CellTopology, WorldDimensi
 template< typename Real > struct MeshRealTag< MeshConverterConfigTag, Real > { enum { enabled = false }; };
 template< typename GlobalIndex > struct MeshGlobalIndexTag< MeshConverterConfigTag, GlobalIndex > { enum { enabled = false }; };
 template< typename LocalIndex > struct MeshLocalIndexTag< MeshConverterConfigTag, LocalIndex > { enum { enabled = false }; };
-template< typename GlobalIndex, typename Id > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, Id > { enum { enabled = false }; };
 template<> struct MeshRealTag< MeshConverterConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { enabled = true }; };
 template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
-template< typename GlobalIndex > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, void > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes

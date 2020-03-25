@@ -70,6 +70,12 @@ class EllpackIndexMultimap
       __cuda_callable__
       ConstValuesAccessorType getValues( const IndexType& inputIndex ) const;
 
+      __cuda_callable__
+      LocalIndexType getValuesCount( const IndexType& inputIndex ) const;
+
+      __cuda_callable__
+      IndexType getValue( const IndexType& inputIndex, const LocalIndexType& portIndex ) const;
+
       bool operator==( const EllpackIndexMultimap& other ) const;
 
       void save( File& file ) const;

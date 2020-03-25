@@ -17,7 +17,6 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/MeshDetails/EntityStorageRebinder.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 #include <TNL/Meshes/MeshDetails/initializer/Initializer.h>
 
@@ -43,8 +42,6 @@ Mesh( const Mesh& mesh )
    : StorageBaseType( mesh ),
      BoundaryTagsLayerFamily( mesh )
 {
-   // update pointers from entities into the subentity and superentity storage networks
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
 }
 
 template< typename MeshConfig, typename Device >
@@ -54,8 +51,6 @@ Mesh( const Mesh< MeshConfig, Device_ >& mesh )
    : StorageBaseType( mesh ),
      BoundaryTagsLayerFamily( mesh )
 {
-   // update pointers from entities into the subentity and superentity storage networks
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
 }
 
 template< typename MeshConfig, typename Device >
@@ -65,8 +60,6 @@ operator=( const Mesh& mesh )
 {
    StorageBaseType::operator=( mesh );
    BoundaryTagsLayerFamily::operator=( mesh );
-   // update pointers from entities into the subentity and superentity storage networks
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
 }
 
@@ -78,8 +71,6 @@ operator=( const Mesh< MeshConfig, Device_ >& mesh )
 {
    StorageBaseType::operator=( mesh );
    BoundaryTagsLayerFamily::operator=( mesh );
-   // update pointers from entities into the subentity and superentity storage networks
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    return *this;
 }
 
@@ -113,7 +104,7 @@ constexpr bool
 Mesh< MeshConfig, Device >::
 entitiesAvailable()
 {
-   return MeshTraitsType::template EntityTraits< Dimension >::storageEnabled;
+   return EntityTraits< Dimension >::storageEnabled;
 }
 
 template< typename MeshConfig, typename Device >
@@ -123,30 +114,20 @@ typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getEntitiesCount() const
 {
-   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get number of entities which are not configured for storage." );
+   static_assert( entitiesAvailable< Dimension >(), "You try to get number of entities which are not configured for storage." );
    return StorageBaseType::getEntitiesCount( DimensionTag< Dimension >() );
 }
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
 __cuda_callable__
-typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
+typename Mesh< MeshConfig, Device >::template EntityType< Dimension >
 Mesh< MeshConfig, Device >::
-getEntity( const GlobalIndexType& entityIndex )
+getEntity( const GlobalIndexType entityIndex ) const
 {
-   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
-   return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
-}
-
-template< typename MeshConfig, typename Device >
-   template< int Dimension >
-__cuda_callable__
-const typename Mesh< MeshConfig, Device >::template EntityType< Dimension >&
-Mesh< MeshConfig, Device >::
-getEntity( const GlobalIndexType& entityIndex ) const
-{
-   static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get entity which is not configured for storage." );
-   return StorageBaseType::getEntity( DimensionTag< Dimension >(), entityIndex );
+   static_assert( entitiesAvailable< Dimension >(), "You try to get entity which is not configured for storage." );
+   TNL_ASSERT_LT( entityIndex, getEntitiesCount< Dimension >(), "invalid entity index" );
+   return EntityType< Dimension >( *this, entityIndex );
 }
 
 
@@ -164,21 +145,75 @@ getEntitiesCount() const
 template< typename MeshConfig, typename Device >
    template< typename Entity >
 __cuda_callable__
-Entity&
+Entity
 Mesh< MeshConfig, Device >::
-getEntity( const GlobalIndexType& entityIndex )
+getEntity( const GlobalIndexType entityIndex ) const
 {
    return getEntity< Entity::getEntityDimension() >( entityIndex );
 }
 
+
 template< typename MeshConfig, typename Device >
-   template< typename Entity >
 __cuda_callable__
-const Entity&
+const typename Mesh< MeshConfig, Device >::PointType&
 Mesh< MeshConfig, Device >::
-getEntity( const GlobalIndexType& entityIndex ) const
+getPoint( const GlobalIndexType vertexIndex ) const
 {
-   return getEntity< Entity::getEntityDimension() >( entityIndex );
+   TNL_ASSERT_GE( vertexIndex, 0, "invalid vertex index" );
+   TNL_ASSERT_LT( vertexIndex, getEntitiesCount< 0 >(), "invalid vertex index" );
+   return this->points[ vertexIndex ];
+}
+
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::PointType&
+Mesh< MeshConfig, Device >::
+getPoint( const GlobalIndexType vertexIndex )
+{
+   TNL_ASSERT_GE( vertexIndex, 0, "invalid vertex index" );
+   TNL_ASSERT_LT( vertexIndex, getEntitiesCount< 0 >(), "invalid vertex index" );
+   return this->points[ vertexIndex ];
+}
+
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SubentityDimension >
+__cuda_callable__
+constexpr typename Mesh< MeshConfig, Device >::LocalIndexType
+Mesh< MeshConfig, Device >::
+getSubentitiesCount( const GlobalIndexType entityIndex ) const
+{
+   return this->template getSubentityStorageNetwork< EntityDimension, SubentityDimension >().getValuesCount( entityIndex );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SubentityDimension >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::GlobalIndexType
+Mesh< MeshConfig, Device >::
+getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const
+{
+   return this->template getSubentityStorageNetwork< EntityDimension, SubentityDimension >().getValue( entityIndex, subentityIndex );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SuperentityDimension >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::LocalIndexType
+Mesh< MeshConfig, Device >::
+getSuperentitiesCount( const GlobalIndexType entityIndex ) const
+{
+   return this->template getSuperentityStorageNetwork< EntityDimension, SuperentityDimension >().getValuesCount( entityIndex );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SuperentityDimension >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::GlobalIndexType
+Mesh< MeshConfig, Device >::
+getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const
+{
+   return this->template getSuperentityStorageNetwork< EntityDimension, SuperentityDimension >().getValue( entityIndex, superentityIndex );
 }
 
 
@@ -211,9 +246,6 @@ reorderEntities( const GlobalIndexVector& perm,
                          << ", array = " << iperm << std::endl; );
 
    IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
-   // update pointers from entities into the subentity and superentity storage networks
-   // TODO: it would be enough to rebind just the permuted entities
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
    // update boundary tags
    static_cast< BoundaryTagsLayerFamily* >( this )->initLayer();
 }
@@ -237,8 +269,6 @@ load( File& file )
    Object::load( file );
    StorageBaseType::load( file );
    BoundaryTagsLayerFamily::load( file );
-   // update pointers from entities into the subentity and superentity storage networks
-   EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
 }
 
 template< typename MeshConfig, typename Device >

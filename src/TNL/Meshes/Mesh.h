@@ -20,7 +20,6 @@
 #include <TNL/Object.h>
 #include <TNL/Logger.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
@@ -33,6 +32,11 @@ namespace TNL {
  * \brief Namespace for numerical meshes and related objects.
  */
 namespace Meshes {
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology_ >
+class MeshEntity;
 
 template< typename MeshConfig > class Initializer;
 template< typename Mesh > class EntityStorageRebinder;
@@ -110,7 +114,9 @@ class Mesh
 
       virtual String getSerializationTypeVirtual() const;
 
-
+      /**
+       * Entities
+       */
       template< int Dimension >
       static constexpr bool entitiesAvailable();
 
@@ -120,12 +126,7 @@ class Mesh
 
       template< int Dimension >
       __cuda_callable__
-      EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex );
-
-      template< int Dimension >
-      __cuda_callable__
-      const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
-
+      EntityType< Dimension > getEntity( const GlobalIndexType entityIndex ) const;
 
       // duplicated for compatibility with grids
       template< typename EntityType >
@@ -134,11 +135,38 @@ class Mesh
 
       template< typename EntityType >
       __cuda_callable__
-      EntityType& getEntity( const GlobalIndexType& entityIndex );
+      EntityType getEntity( const GlobalIndexType entityIndex ) const;
 
-      template< typename EntityType >
+      /**
+       * Points
+       */
       __cuda_callable__
-      const EntityType& getEntity( const GlobalIndexType& entityIndex ) const;
+      const PointType& getPoint( const GlobalIndexType vertexIndex ) const;
+
+      __cuda_callable__
+      PointType& getPoint( const GlobalIndexType vertexIndex );
+
+      /**
+       * Subentities
+       */
+      template< int EntityDimension, int SubentityDimension >
+      __cuda_callable__
+      constexpr LocalIndexType getSubentitiesCount( const GlobalIndexType entityIndex ) const;
+
+      template< int EntityDimension, int SubentityDimension >
+      __cuda_callable__
+      GlobalIndexType getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const;
+
+      /**
+       * Superentities
+       */
+      template< int EntityDimension, int SuperentityDimension >
+      __cuda_callable__
+      LocalIndexType getSuperentitiesCount( const GlobalIndexType entityIndex ) const;
+
+      template< int EntityDimension, int SuperentityDimension >
+      __cuda_callable__
+      GlobalIndexType getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const;
 
 
       /*
@@ -169,8 +197,8 @@ class Mesh
 
       DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* getDistributedMesh(void) const
       {
-            return NULL;
-      };
+         return nullptr;
+      }
 
    protected:
       // Methods for the mesh initializer
@@ -179,8 +207,6 @@ class Mesh
       using StorageBaseType::getSuperentityStorageNetwork;
 
       friend Initializer< MeshConfig >;
-
-      friend EntityStorageRebinder< Mesh >;
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;
@@ -191,5 +217,7 @@ std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& m
 
 } // namespace Meshes
 } // namespace TNL
+
+#include <TNL/Meshes/MeshEntity.h>
 
 #include <TNL/Meshes/MeshDetails/Mesh_impl.h>

@@ -33,8 +33,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
         UserData userData )
    {
       const GlobalIndexType entityIndex = mesh->template getBoundaryEntityIndex< MeshEntity::getEntityDimension() >( i );
-      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
+      const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
    Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
@@ -62,8 +61,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
         UserData userData )
    {
       const GlobalIndexType entityIndex = mesh->template getInteriorEntityIndex< MeshEntity::getEntityDimension() >( i );
-      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
+      const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
    Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
@@ -90,8 +88,7 @@ processAllEntities( const MeshPointer& meshPointer,
         const Mesh* mesh,
         UserData userData )
    {
-      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
+      const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
    Pointers::synchronizeSmartPointersOnDevice< DeviceType >();

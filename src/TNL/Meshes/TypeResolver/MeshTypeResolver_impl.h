@@ -230,15 +230,15 @@ resolveLocalIndex( const Reader& reader,
    if( reader.getLocalIndexType() == "short int" ||
        reader.getLocalIndexType() == "std::int16_t" ||
        reader.getLocalIndexType() == "std::uint16_t" )
-      return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getLocalIndexType() == "int" ||
        reader.getLocalIndexType() == "std::int32_t" ||
        reader.getLocalIndexType() == "std::uint32_t" )
-      return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    if( reader.getLocalIndexType() == "long int" ||
        reader.getLocalIndexType() == "std::int64_t" ||
        reader.getLocalIndexType() == "std::uint64_t" )
-      return resolveId< CellTopology, WorldDimension, Real, GlobalIndex, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
    std::cerr << "Unsupported local index type: " << reader.getLocalIndexType() << std::endl;
    return false;
 }
@@ -256,7 +256,7 @@ template< typename Reader,
              typename, typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveId( const Reader& reader,
+resolveMeshType( const Reader& reader,
            ProblemSetterArgs&&... problemSetterArgs )
 {
    std::cerr << "The mesh local index type " << getType< LocalIndex >() << " is disabled in the build configuration." << std::endl;
@@ -276,66 +276,10 @@ template< typename Reader,
              typename >
 bool
 MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveId( const Reader& reader,
-           ProblemSetterArgs&&... problemSetterArgs )
-{
-   if( reader.getIdType() == "short int" ||
-       reader.getIdType() == "std::int16_t" ||
-       reader.getIdType() == "std::uint16_t" )
-      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, short int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getIdType() == "int" ||
-       reader.getIdType() == "std::int32_t" ||
-       reader.getIdType() == "std::uint32_t" )
-      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getIdType() == "long int" ||
-       reader.getIdType() == "std::int64_t" ||
-       reader.getIdType() == "std::uint64_t" )
-      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, long int >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   if( reader.getIdType() == "void" )
-      return resolveMeshType< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, void >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-   std::cerr << "Unsupported id type: " << reader.getIdType() << std::endl;
-   return false;
-}
-
-template< typename Reader,
-          typename ConfigTag,
-          typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-   template< typename CellTopology,
-             int WorldDimension,
-             typename Real,
-             typename GlobalIndex,
-             typename LocalIndex,
-             typename Id,
-             typename, typename >
-bool
-MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
 resolveMeshType( const Reader& reader,
                  ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The mesh id type " << getType< Id >() << " is disabled in the build configuration." << std::endl;
-   return false;
-}
-
-template< typename Reader,
-          typename ConfigTag,
-          typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-   template< typename CellTopology,
-             int WorldDimension,
-             typename Real,
-             typename GlobalIndex,
-             typename LocalIndex,
-             typename Id,
-             typename >
-bool
-MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-resolveMeshType( const Reader& reader,
-                 ProblemSetterArgs&&... problemSetterArgs )
-{
-   using MeshConfig = typename BuildConfigTags::MeshConfigTemplateTag< ConfigTag >::template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex, Id >;
+   using MeshConfig = typename BuildConfigTags::MeshConfigTemplateTag< ConfigTag >::template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex >;
    return resolveTerminate< MeshConfig >( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
 }
 

@@ -28,18 +28,14 @@ template< typename MeshConfig,
 class SubentitySeedsCreator
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityType            = typename EntityTraitsType::EntityType;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
    using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionTag::value >;
-   using SubentityType         = typename SubentityTraits::SubentityType;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
-   static constexpr LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< SubentityDimensionTag::value >();
-   static constexpr LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityType::template getSubentitiesCount< 0 >();
+   static constexpr LocalIndexType SUBENTITY_VERTICES_COUNT = MeshTraitsType::template SubentityTraits< SubentityTopology, 0 >::count;
 
 public:
    using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
@@ -47,7 +43,7 @@ public:
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
       SubentitySeedArray subentitySeeds;
-      Algorithms::TemplateStaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
+      Algorithms::TemplateStaticFor< LocalIndexType, 0, SubentitySeedArray::getSize(), CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
 
       return subentitySeeds;
    }
@@ -83,15 +79,11 @@ template< typename MeshConfig,
 class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityType            = typename EntityTraitsType::EntityType;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
    using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
-
-   static constexpr LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< 0 >();
 
 public:
    using SubentitySeedArray = typename SubentityTraits::SeedArrayType;

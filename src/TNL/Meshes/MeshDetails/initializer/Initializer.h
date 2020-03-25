@@ -78,7 +78,7 @@ class Initializer
 {
    protected:
       // must be declared before its use in expression with decltype()
-      Mesh< MeshConfig >* mesh;
+      Mesh< MeshConfig >* mesh = nullptr;
 
    public:
       using MeshType          = Mesh< MeshConfig >;
@@ -90,10 +90,6 @@ class Initializer
       using GlobalIndexType   = typename MeshTraitsType::GlobalIndexType;
 
 
-      Initializer()
-      : mesh( 0 )
-      {}
-
       // The points and cellSeeds arrays will be reset when not needed to save memory.
       void createMesh( PointArrayType& points,
                        CellSeedArrayType& cellSeeds,
@@ -101,14 +97,6 @@ class Initializer
       {
          this->mesh = &mesh;
          BaseType::initEntities( *this, points, cellSeeds, mesh );
-         // set pointers from entities into the subentity and superentity storage networks
-         EntityStorageRebinder< Mesh< MeshConfig > >::exec( mesh );
-      }
-
-      template< typename Entity, typename GlobalIndex >
-      void setEntityIndex( Entity& entity, const GlobalIndex& index )
-      {
-         entity.setIndex( index );
       }
 
       template< int Dimension >
@@ -118,32 +106,21 @@ class Initializer
          mesh->template setEntitiesCount< Dimension >( entitiesCount );
       }
 
-      template< int Subdimension, typename EntityType, typename LocalIndex, typename GlobalIndex >
+      template< int Dimension, int Subdimension, typename LocalIndex, typename GlobalIndex >
       void
-      setSubentityIndex( const EntityType& entity, const GlobalIndex& entityIndex, const LocalIndex& localIndex, const GlobalIndex& globalIndex )
+      setSubentityIndex( const GlobalIndex& entityIndex, const LocalIndex& localIndex, const GlobalIndex& globalIndex )
       {
-         // The mesh entities are not yet bound to the storage network at this point,
-         // so we operate directly on the storage.
-         mesh->template getSubentityStorageNetwork< EntityType::EntityTopology::dimension, Subdimension >().getValues( entityIndex )[ localIndex ] = globalIndex;
+         mesh->template getSubentityStorageNetwork< Dimension, Subdimension >().getValues( entityIndex )[ localIndex ] = globalIndex;
       }
 
-      template< int Subdimension, typename EntityType, typename LocalIndex, typename GlobalIndex >
-      GlobalIndex
-      getSubentityIndex( const EntityType& entity, const GlobalIndex& entityIndex, const LocalIndex& localIndex )
-      {
-         // The mesh entities are not yet bound to the storage network at this point,
-         // so we operate directly on the storage.
-         return mesh->template getSubentityStorageNetwork< EntityType::EntityTopology::dimension, Subdimension >().getValues( entityIndex )[ localIndex ];
-      }
-
-      template< typename EntityType, typename GlobalIndex >
+      template< int Dimension, typename GlobalIndex >
       auto
-      getSubvertices( const EntityType& entity, const GlobalIndex& entityIndex )
-         -> decltype( this->mesh->template getSubentityStorageNetwork< EntityType::EntityTopology::dimension, 0 >().getValues( 0 ) )
+      getSubvertices( const GlobalIndex& entityIndex )
+         -> decltype( this->mesh->template getSubentityStorageNetwork< Dimension, 0 >().getValues( 0 ) )
       {
          // The mesh entities are not yet bound to the storage network at this point,
          // so we operate directly on the storage.
-         return mesh->template getSubentityStorageNetwork< EntityType::EntityTopology::dimension, 0 >().getValues( entityIndex );
+         return mesh->template getSubentityStorageNetwork< Dimension, 0 >().getValues( entityIndex );
       }
 
       template< typename EntityTopology, int Superdimension >
@@ -153,18 +130,13 @@ class Initializer
          return mesh->template getSuperentityStorageNetwork< EntityTopology::dimension, Superdimension >();
       }
 
-      static void
-      setVertexPoint( typename MeshType::Vertex& vertex, const typename MeshType::PointType& point )
-      {
-         vertex.setPoint( point );
-      }
 
-
-      template< typename SubDimensionTag, typename MeshEntity >
-      static typename MeshTraitsType::template SubentityTraits< typename MeshEntity::EntityTopology, SubDimensionTag::value >::OrientationArrayType&
-      subentityOrientationsArray( MeshEntity& entity )
+      template< int Dimension, int Subdimension, typename GlobalIndex >
+      auto
+      subentityOrientationsArray( const GlobalIndex entityIndex )
+         -> decltype( this->mesh->template subentityOrientationsArray< Dimension, Subdimension >( entityIndex ) )
       {
-         return entity.template subentityOrientationsArray< SubDimensionTag::value >();
+         return mesh->template subentityOrientationsArray< Dimension, Subdimension >( entityIndex );
       }
 
       template< typename DimensionTag >
@@ -210,7 +182,7 @@ class InitializerLayer< MeshConfig,
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          initializer.template setEntitiesCount< DimensionTag::value >( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
-            EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( i ), i, cellSeeds[ i ], initializer );
+            EntityInitializerType::initEntity( i, cellSeeds[ i ], initializer );
          cellSeeds.reset();
 
          BaseType::initEntities( initializer, points, mesh );
@@ -258,7 +230,7 @@ class InitializerLayer< MeshConfig,
 
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.template getEntity< MeshType::getMeshDimension() >( i ), i ) );
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.template getSubvertices< MeshType::getMeshDimension() >( i ) );
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
                seedSet.insert( subentitySeeds[ j ] );
          }
@@ -281,7 +253,7 @@ class InitializerLayer< MeshConfig,
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.template getEntity< MeshType::getMeshDimension() >( i ), i ) );
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.template getSubvertices< MeshType::getMeshDimension() >( i ) );
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
             {
                auto& seed = subentitySeeds[ j ];
@@ -289,7 +261,7 @@ class InitializerLayer< MeshConfig,
                const GlobalIndexType& entityIndex = pair.first;
                if( pair.second ) {
                   // insertion took place, initialize the entity
-                  EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( entityIndex ), entityIndex, seed, initializer );
+                  EntityInitializerType::initEntity( entityIndex, seed, initializer );
                }
             }
          }
@@ -349,7 +321,7 @@ class InitializerLayer< MeshConfig,
 
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.template getEntity< MeshType::getMeshDimension() >( i ), i ) );
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.template getSubvertices< MeshType::getMeshDimension() >( i ) );
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
                seedSet.insert( subentitySeeds[ j ] );
          }
@@ -373,7 +345,7 @@ class InitializerLayer< MeshConfig,
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
          {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer.getSubvertices( mesh.template getEntity< MeshType::getMeshDimension() >( i ), i ) );
+            auto subentitySeeds = SubentitySeedsCreator::create( initializer.template getSubvertices< MeshType::getMeshDimension() >( i ) );
             for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
             {
                auto& seed = subentitySeeds[ j ];
@@ -381,7 +353,7 @@ class InitializerLayer< MeshConfig,
                const GlobalIndexType& entityIndex = pair.first;
                if( pair.second ) {
                   // insertion took place, initialize the entity
-                  EntityInitializerType::initEntity( mesh.template getEntity< DimensionTag::value >( entityIndex ), entityIndex, seed, initializer );
+                  EntityInitializerType::initEntity( entityIndex, seed, initializer );
                   this->referenceOrientations[ entityIndex ] = ReferenceOrientationType( seed );
                }
             }
@@ -454,8 +426,10 @@ class InitializerLayer< MeshConfig,
       {
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          initializer.template setEntitiesCount< 0 >( points.getSize() );
-         for( GlobalIndexType i = 0; i < points.getSize(); i++ )
-            EntityInitializerType::initEntity( mesh.template getEntity< 0 >( i ), i, points[ i ], initializer );
+         for( GlobalIndexType i = 0; i < points.getSize(); i++ ) {
+            EntityInitializerType::initEntity( i, initializer );
+            mesh.getPoint( i ) = points[ i ];
+         }
          points.reset();
 
          EntityInitializerType::initSuperentities( initializer, mesh );

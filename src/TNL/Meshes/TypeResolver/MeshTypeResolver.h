@@ -110,8 +110,8 @@ protected:
              typename LocalIndex,
              typename = typename std::enable_if< ! BuildConfigTags::MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled >::type,
              typename = void >
-   static bool resolveId( const Reader& reader,
-                          ProblemSetterArgs&&... problemSetterArgs );
+   static bool resolveMeshType( const Reader& reader,
+                                ProblemSetterArgs&&... problemSetterArgs );
 
    // Overload for enabled local index types
    template< typename CellTopology,
@@ -120,29 +120,6 @@ protected:
              typename GlobalIndex,
              typename LocalIndex,
              typename = typename std::enable_if< BuildConfigTags::MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled >::type >
-   static bool resolveId( const Reader& reader,
-                          ProblemSetterArgs&&... problemSetterArgs );
-
-   // Overload for disabled id types
-   template< typename CellTopology,
-             int WorldDimension,
-             typename Real,
-             typename GlobalIndex,
-             typename LocalIndex,
-             typename Id,
-             typename = typename std::enable_if< ! BuildConfigTags::MeshIdTag< ConfigTag, GlobalIndex, Id >::enabled >::type,
-             typename = void >
-   static bool resolveMeshType( const Reader& reader,
-                                ProblemSetterArgs&&... problemSetterArgs );
-
-   // Overload for enabled id types
-   template< typename CellTopology,
-             int WorldDimension,
-             typename Real,
-             typename GlobalIndex,
-             typename LocalIndex,
-             typename Id,
-             typename = typename std::enable_if< BuildConfigTags::MeshIdTag< ConfigTag, GlobalIndex, Id >::enabled >::type >
    static bool resolveMeshType( const Reader& reader,
                                 ProblemSetterArgs&&... problemSetterArgs );
 
@@ -155,8 +132,7 @@ protected:
                                                                              MeshConfig::worldDimension,
                                                                              typename MeshConfig::RealType,
                                                                              typename MeshConfig::GlobalIndexType,
-                                                                             typename MeshConfig::LocalIndexType,
-                                                                             typename MeshConfig::IdType
+                                                                             typename MeshConfig::LocalIndexType
                                                                            >::enabled >::type,
              typename = void >
    static bool resolveTerminate( const Reader& reader,
@@ -171,8 +147,7 @@ protected:
                                                                              MeshConfig::worldDimension,
                                                                              typename MeshConfig::RealType,
                                                                              typename MeshConfig::GlobalIndexType,
-                                                                             typename MeshConfig::LocalIndexType,
-                                                                             typename MeshConfig::IdType
+                                                                             typename MeshConfig::LocalIndexType
                                                                            >::enabled >::type >
    static bool resolveTerminate( const Reader& reader,
                                  ProblemSetterArgs&&... problemSetterArgs );

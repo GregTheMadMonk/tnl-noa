@@ -157,6 +157,42 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int SliceSize >
+__cuda_callable__
+constexpr LocalIndex
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+getValuesCount( const IndexType& inputIndex ) const
+{
+   return ValuesCount;
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex,
+          int SliceSize >
+__cuda_callable__
+Index
+StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
+getValue( const IndexType& inputIndex, const LocalIndexType& portIndex ) const
+{
+   TNL_ASSERT( inputIndex < this->getKeysRange(),
+               std::cerr << "inputIndex = " << inputIndex << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl; );
+   TNL_ASSERT( getAllocationKeysRange( this->getKeysRange() ) * ValuesCount == this->values.getSize(),
+               std::cerr << "The map has not been reallocated after calling setKeysRange()." << std::endl
+                         << "this->getKeysRange() = " << this->getKeysRange() << std::endl
+                         << "this->values.getSize() = " << this->values.getSize() << std::endl; );
+   const IndexType sliceIdx = inputIndex / SliceSize;
+   const IndexType sliceOffset = sliceIdx * SliceSize * ValuesCount;
+   const IndexType offset = sliceOffset + inputIndex - sliceIdx * SliceSize;
+   return this->values[ offset + portIndex * SliceSize ];
+}
+
+template< int ValuesCount,
+          typename Index,
+          typename Device,
+          typename LocalIndex,
+          int SliceSize >
 bool
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 operator==( const StaticEllpackIndexMultimap& other ) const

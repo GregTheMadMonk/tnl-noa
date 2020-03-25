@@ -19,6 +19,7 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/SubentityStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/MeshLayers/SubentityOrientationsLayer.h>
 #include <TNL/Meshes/MeshDetails/MeshLayers/SuperentityStorageLayer.h>
 
 namespace TNL {
@@ -40,20 +41,81 @@ class StorageLayerFamily
    template< int Dimension >
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
-public:
-   // inherit constructors and assignment operators (including templated versions)
-   using BaseType::BaseType;
-   using BaseType::operator=;
+   template< int Dimension, int Subdimension >
+   using SubentityTraits = typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >;
 
 protected:
+   typename MeshTraitsType::PointArrayType points;
+
+public:
+   StorageLayerFamily() = default;
+
+   explicit StorageLayerFamily( const StorageLayerFamily& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   StorageLayerFamily( const StorageLayerFamily< MeshConfig, Device_ >& other )
+   {
+      operator=( other );
+   }
+
+   StorageLayerFamily& operator=( const StorageLayerFamily& layer )
+   {
+      points = layer.getPoints();
+      BaseType::operator=( layer );
+      return *this;
+   }
+
+   template< typename Device_ >
+   StorageLayerFamily& operator=( const StorageLayerFamily< MeshConfig, Device_ >& layer )
+   {
+      points = layer.getPoints();
+      BaseType::operator=( layer );
+      return *this;
+   }
+
+   bool operator==( const StorageLayerFamily& layer ) const
+   {
+      return ( points == layer.points &&
+               BaseType::operator==( layer ) );
+   }
+
+   void save( File& file ) const
+   {
+      file << points;
+      BaseType::save( file );
+   }
+
+   void load( File& file )
+   {
+      file >> points;
+      BaseType::load( file );
+   }
+
+   void print( std::ostream& str ) const
+   {
+      str << "Vertex coordinates are: " << points << std::endl;
+      BaseType::print( str );
+   }
+
+   const typename MeshTraitsType::PointArrayType& getPoints() const
+   {
+      return points;
+   }
+
    template< int Dimension >
    void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
    {
       static_assert( EntityTraits< Dimension >::storageEnabled, "You try to set number of entities which are not configured for storage." );
       BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
+      if( Dimension == 0 )
+         points.setSize( entitiesCount );
    }
 
    template< int Dimension, int Subdimension >
+   __cuda_callable__
    typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
    getSubentityStorageNetwork()
    {
@@ -65,7 +127,21 @@ protected:
       return BaseType::template getSubentityStorageNetwork< Subdimension >();
    }
 
+   template< int Dimension, int Subdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
+   getSubentityStorageNetwork() const
+   {
+      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get subentity storage of entities which are not configured for storage." );
+      static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      using BaseType = SubentityStorageLayerFamily< MeshConfig,
+                                                   Device,
+                                                   typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSubentityStorageNetwork< Subdimension >();
+   }
+
    template< int Dimension, int Superdimension >
+   __cuda_callable__
    typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork()
    {
@@ -75,6 +151,37 @@ protected:
                                                      Device,
                                                      typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSuperentityStorageNetwork< Superdimension >();
+   }
+
+   template< int Dimension, int Superdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
+   getSuperentityStorageNetwork() const
+   {
+      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get superentity storage of entities which are not configured for storage." );
+      static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      using BaseType = SuperentityStorageLayerFamily< MeshConfig,
+                                                     Device,
+                                                     typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSuperentityStorageNetwork< Superdimension >();
+   }
+
+   template< int Dimension, int Subdimension >
+   __cuda_callable__
+   typename SubentityTraits< Dimension, Subdimension >::IdPermutationArrayType
+   getSubentityOrientation( typename MeshTraitsType::GlobalIndexType entityIndex, typename MeshTraitsType::LocalIndexType localIndex ) const
+   {
+      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      return BaseType::getSubentityOrientation( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex, localIndex );
+   }
+
+   template< int Dimension, int Subdimension >
+   __cuda_callable__
+   typename SubentityTraits< Dimension, Subdimension >::OrientationArrayType&
+   subentityOrientationsArray( typename MeshTraitsType::GlobalIndexType entityIndex )
+   {
+      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      return BaseType::subentityOrientationsArray( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex );
    }
 };
 
@@ -89,6 +196,9 @@ class StorageLayer< MeshConfig,
    : public SubentityStorageLayerFamily< MeshConfig,
                                          Device,
                                          typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+     public SubentityOrientationsLayerFamily< MeshConfig,
+                                              Device,
+                                              typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public SuperentityStorageLayerFamily< MeshConfig,
                                            Device,
                                            typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
@@ -103,7 +213,11 @@ public:
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
+   using SubentityOrientationsBaseType = SubentityOrientationsLayerFamily< MeshConfig, Device, EntityTopology >;
    using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
+
+   using BaseType::subentityOrientationsArray;
+   using SubentityOrientationsBaseType::subentityOrientationsArray;
 
    StorageLayer() = default;
 
@@ -120,8 +234,7 @@ public:
 
    StorageLayer& operator=( const StorageLayer& other )
    {
-      entities.setLike( other.entities );
-      entities = other.entities;
+      entitiesCount = other.entitiesCount;
       SubentityStorageBaseType::operator=( other );
       SuperentityStorageBaseType::operator=( other );
       BaseType::operator=( other );
@@ -131,8 +244,7 @@ public:
    template< typename Device_ >
    StorageLayer& operator=( const StorageLayer< MeshConfig, Device_, DimensionTag >& other )
    {
-      entities.setLike( other.entities );
-      entities = other.entities;
+      entitiesCount = other.getEntitiesCount( DimensionTag() );
       SubentityStorageBaseType::operator=( other );
       SuperentityStorageBaseType::operator=( other );
       BaseType::operator=( other );
@@ -143,7 +255,7 @@ public:
    {
       SubentityStorageBaseType::save( file );
       SuperentityStorageBaseType::save( file );
-      file << this->entities;
+      file.save( &entitiesCount, 1 );
       BaseType::save( file );
    }
 
@@ -151,15 +263,13 @@ public:
    {
       SubentityStorageBaseType::load( file );
       SuperentityStorageBaseType::load( file );
-      file >> this->entities;
+      file.load( &entitiesCount, 1 );
       BaseType::load( file );
    }
 
    void print( std::ostream& str ) const
    {
-      str << "The entities with dimension " << DimensionTag::value << " are: " << std::endl;
-      for( GlobalIndexType i = 0; i < entities.getSize(); i++ )
-         str << i << " " << entities[ i ] << std::endl;
+      str << "Number of entities with dimension " << DimensionTag::value << ": " << entitiesCount << std::endl;
       SubentityStorageBaseType::print( str );
       SuperentityStorageBaseType::print( str );
       str << std::endl;
@@ -168,7 +278,7 @@ public:
 
    bool operator==( const StorageLayer& meshLayer ) const
    {
-      return ( entities == meshLayer.entities &&
+      return ( entitiesCount == meshLayer.entitiesCount &&
                SubentityStorageBaseType::operator==( meshLayer ) &&
                SuperentityStorageBaseType::operator==( meshLayer ) &&
                BaseType::operator==( meshLayer ) );
@@ -179,34 +289,20 @@ public:
    __cuda_callable__
    GlobalIndexType getEntitiesCount( DimensionTag ) const
    {
-      return this->entities.getSize();
-   }
-
-   using BaseType::getEntity;
-   __cuda_callable__
-   EntityType& getEntity( DimensionTag,
-                          const GlobalIndexType entityIndex )
-   {
-      return this->entities[ entityIndex ];
-   }
-
-   __cuda_callable__
-   const EntityType& getEntity( DimensionTag,
-                                const GlobalIndexType entityIndex ) const
-   {
-      return this->entities[ entityIndex ];
+      return this->entitiesCount;
    }
 
 protected:
    using BaseType::setEntitiesCount;
    void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
-      this->entities.setSize( entitiesCount );
+      this->entitiesCount = entitiesCount;
       SubentityStorageBaseType::setEntitiesCount( entitiesCount );
+      SubentityOrientationsBaseType::setEntitiesCount( entitiesCount );
       SuperentityStorageBaseType::setEntitiesCount( entitiesCount );
    }
 
-   StorageArrayType entities;
+   GlobalIndexType entitiesCount = 0;
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool Storage_ >
@@ -254,9 +350,9 @@ protected:
    }
 
 
+   void subentityOrientationsArray() {}
    void setEntitiesCount() {}
    void getEntitiesCount() const {}
-   void getEntity() const {}
 
    void save( File& file ) const {}
    void load( File& file ) {}

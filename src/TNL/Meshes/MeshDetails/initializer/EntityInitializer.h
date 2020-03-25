@@ -66,12 +66,11 @@ class EntityInitializer
    using InitializerType  = Initializer< MeshConfig >;
 
 public:
-   static void initEntity( EntityType& entity, const GlobalIndexType& entityIndex, const SeedType& entitySeed, InitializerType& initializer)
+   static void initEntity( const GlobalIndexType& entityIndex, const SeedType& entitySeed, InitializerType& initializer)
    {
-      initializer.setEntityIndex( entity, entityIndex );
       // this is necessary if we want to use existing entities instead of intermediate seeds to create subentity seeds
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
-         initializer.template setSubentityIndex< 0 >( entity, entityIndex, i, entitySeed.getCornerIds()[ i ] );
+         initializer.template setSubentityIndex< EntityTopology::dimension, 0 >( entityIndex, i, entitySeed.getCornerIds()[ i ] );
    }
 };
 
@@ -84,13 +83,10 @@ class EntityInitializer< MeshConfig, Topologies::Vertex >
 public:
    using VertexType      = typename MeshTraits< MeshConfig >::VertexType;
    using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-   using PointType       = typename MeshTraits< MeshConfig >::PointType;
    using InitializerType = Initializer< MeshConfig >;
 
-   static void initEntity( VertexType& entity, const GlobalIndexType& entityIndex, const PointType& point, InitializerType& initializer)
+   static void initEntity( const GlobalIndexType& entityIndex, InitializerType& initializer)
    {
-      initializer.setEntityIndex( entity, entityIndex );
-      initializer.setVertexPoint( entity, point );
    }
 };
 
@@ -138,13 +134,12 @@ public:
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
-         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.getSubvertices( superentity, superentityIndex ) );
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
 
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-            meshInitializer.template setSubentityIndex< SubdimensionTag::value >( superentity, superentityIndex, i, subentityIndex );
+            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
             superentityInitializer.addSuperentity( subentityIndex, superentityIndex );
          }
       }
@@ -198,15 +193,14 @@ public:
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
-         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.getSubvertices( superentity, superentityIndex ) );
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
 
-         auto& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< SubdimensionTag >( superentity );
+         auto& subentityOrientationsArray = meshInitializer.template subentityOrientationsArray< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex );
 
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-            meshInitializer.template setSubentityIndex< SubdimensionTag::value >( superentity, superentityIndex, i, subentityIndex );
+            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
             superentityInitializer.addSuperentity( subentityIndex, superentityIndex );
 
             subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< SubdimensionTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
@@ -259,15 +253,14 @@ public:
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
-         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.getSubvertices( superentity, superentityIndex ) );
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
 
-         auto& subentityOrientationsArray = InitializerType::template subentityOrientationsArray< SubdimensionTag >( superentity );
+         auto& subentityOrientationsArray = meshInitializer.template subentityOrientationsArray< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex );
 
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-            meshInitializer.template setSubentityIndex< SubdimensionTag::value >( superentity, superentityIndex, i, subentityIndex );
+            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
 
             subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< SubdimensionTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
          }
@@ -317,13 +310,12 @@ public:
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
-         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.getSubvertices( superentity, superentityIndex ) );
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
 
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-            meshInitializer.template setSubentityIndex< SubdimensionTag::value >( superentity, superentityIndex, i, subentityIndex );
+            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
          }
       }
 
@@ -374,8 +366,7 @@ public:
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
-         auto& superentity = mesh.template getEntity< SuperdimensionTag::value >( superentityIndex );
-         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.getSubvertices( superentity, superentityIndex ) );
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
 
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
