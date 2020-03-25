@@ -20,7 +20,7 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
           int SliceSize = 32 >
-class SlicedEllpack
+class
 {
    public:
 

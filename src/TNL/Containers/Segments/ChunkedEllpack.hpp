@@ -303,7 +303,6 @@ getSegmentSize( const IndexType segmentIdx ) const
    const IndexType lastChunkOfSegment = rowToChunkMapping[ segmentIdx ];
    const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
    const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
-   std::cerr << chunkSize << "  *  " << segmentChunksCount << std::endl;
    return chunkSize * segmentChunksCount;
 }
 
