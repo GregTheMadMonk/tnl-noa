@@ -14,42 +14,12 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/ChunkedEllpackSegmentView.h>
+#include <TNL/Containers/Segments/details/ChunkedEllpack.h>
 
 namespace TNL {
    namespace Containers {
       namespace Segments {
 
-/***
- * In the ChunkedEllpack, the segments are split into slices. This is done
- * in ChunkedEllpack::resolveSliceSizes. All segments elements in each slice
- * are split into chunks. All chunks in one slice have the same size, but the size
- * of chunks can be different in each slice.
- */
-template< typename Index >
-struct ChunkedEllpackSliceInfo
-{
-   /**
-    * The size of the slice, it means the number of the matrix rows covered by
-    * the slice.
-    */
-   Index size;
-
-   /**
-    * The chunk size, i.e. maximal number of non-zero elements that can be stored
-    * in the chunk.
-    */
-   Index chunkSize;
-
-   /**
-    * Index of the first segment covered be this slice.
-    */
-   Index firstSegment;
-
-   /**
-    * Position of the first element of this slice.
-    */
-   Index pointer;
-};
 
 template< typename Device,
           typename Index,
@@ -67,7 +37,7 @@ class ChunkedEllpackView
       using ViewTemplate = ChunkedEllpackView< Device_, Index_ >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index > >;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType >;
-      using ChunkedEllpackSliceInfoType = ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
@@ -139,9 +109,6 @@ class ChunkedEllpackView
 
       __cuda_callable__
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
-
-      __cuda_callable__
-      void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;

@@ -36,7 +36,7 @@ class ChunkedEllpack
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
-      using ChunkedEllpackSliceInfoType = ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
@@ -66,7 +66,6 @@ class ChunkedEllpack
       __cuda_callable__
       IndexType getSegmentsCount() const;
 
-      __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /**
@@ -75,15 +74,11 @@ class ChunkedEllpack
       __cuda_callable__
       IndexType getSize() const;
 
-
       __cuda_callable__
       IndexType getStorageSize() const;
 
       __cuda_callable__
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
-
-      __cuda_callable__
-      void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;

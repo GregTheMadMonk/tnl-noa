@@ -179,16 +179,28 @@ Index
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
 getSegmentSize( const IndexType segmentIdx ) const
 {
-   const IndexType& sliceIndex = rowToSliceMapping[ segmentIdx ];
-   TNL_ASSERT_LE( sliceIndex, this->getSegmentsCount(), "" );
-   IndexType firstChunkOfSegment( 0 );
-   if( segmentIdx != slices[ sliceIndex ].firstSegment )
-      firstChunkOfSegment = rowToChunkMapping[ segmentIdx - 1 ];
-
-   const IndexType lastChunkOfSegment = rowToChunkMapping[ segmentIdx ];
-   const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
-   const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
-   return chunkSize * segmentChunksCount;
+   if( std::is_same< DeviceType, Devices::Host >::value )
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSizeDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         segmentIdx );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   {
+#ifdef __CUDA_ARCH__
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSizeDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         segmentIdx );
+#else
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         segmentIdx );
+#endif
+   }
 }
 
 template< typename Device,
@@ -221,36 +233,34 @@ Index
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
 {
-   const IndexType& sliceIndex = rowToSliceMapping[ segmentIdx ];
-   TNL_ASSERT_LE( sliceIndex, this->size, "" );
-   IndexType firstChunkOfSegment( 0 );
-   if( segmentIdx != slices[ sliceIndex ].firstSegment )
-      firstChunkOfSegment = rowToChunkMapping[ segmentIdx - 1 ];
-   
-   const IndexType lastChunkOfSegment = rowToChunkMapping[ segmentIdx ];
-   const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
-   const IndexType sliceOffset = slices[ sliceIndex ].pointer;
-   const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
-   TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
-
-   if( RowMajorOrder )
-      return sliceOffset + firstChunkOfSegment * chunkSize + localIdx;
-   else
+   if( std::is_same< DeviceType, Devices::Host >::value )
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndexDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx,
+         localIdx );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      const IndexType inChunkOffset = localIdx % chunkSize;
-      const IndexType chunkIdx = localIdx / chunkSize;
-      return sliceOffset + inChunkOffset * chunksInSlice + firstChunkOfSegment + chunkIdx;
+#ifdef __CUDA_ARCH__
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndexDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx,
+         localIdx );
+#else
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx,
+         localIdx );
+#endif
    }
-}
-
-template< typename Device,
-          typename Index,
-          bool RowMajorOrder >
-__cuda_callable__
-void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
-{
 }
 
 template< typename Device,
@@ -261,32 +271,31 @@ auto
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   const IndexType& sliceIndex = rowToSliceMapping[ segmentIdx ];
-   TNL_ASSERT_LE( sliceIndex, this->size, "" );
-   IndexType firstChunkOfSegment( 0 );
-   if( segmentIdx != slices[ sliceIndex ].firstSegment )
-      firstChunkOfSegment = rowToChunkMapping[ segmentIdx - 1 ];
-
-   const IndexType lastChunkOfSegment = rowToChunkMapping[ segmentIdx ];
-   const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
-   const IndexType sliceOffset = slices[ sliceIndex ].pointer;
-   const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
-   const IndexType segmentSize = segmentChunksCount * chunkSize;
-
-   if( RowMajorOrder )
-      return SegmentViewType( sliceOffset + firstChunkOfSegment * chunkSize,
-                              segmentSize,
-                              chunkSize,
-                              chunksInSlice );
-   else // TODO FIX !!!!!!!!!!!!!!
-      return SegmentViewType( sliceOffset + firstChunkOfSegment,
-                              segmentSize,
-                              chunkSize,
-                              chunksInSlice );
-   
-   
-   
-   
+   if( std::is_same< DeviceType, Devices::Host >::value )
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentViewDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx );
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   {
+#ifdef __CUDA_ARCH__
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentViewDirect(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx );
+#else
+      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentView(
+         rowToSliceMapping,
+         slices,
+         rowToChunkMapping,
+         chunksInSlice,
+         segmentIdx );
+#endif
+   }
 }
 
 template< typename Device,
