@@ -99,14 +99,10 @@ getTriangleArea( const VectorExpression & v1,
 {
     using Real = typename VectorExpression::RealType;
     // formula from http://math.stackexchange.com/a/128999
-    Real S = 0.0;
-    Real aux = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
-    S += aux * aux;
-    aux = v1.z() * v2.x() - v1.x() * v2.z();        // second component of the cross product
-    S += aux * aux;
-    aux = v1.x() * v2.y() - v1.y() * v2.x();        // third component of the cross product
-    S += aux * aux;
-    return 0.5 * ::sqrt( S );
+    const Real c1 = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
+    const Real c2 = v1.z() * v2.x() - v1.x() * v2.z();   // second component of the cross product
+    const Real c3 = v1.x() * v2.y() - v1.y() * v2.x();   // third component of the cross product
+    return 0.5 * TNL::sqrt( c1 * c1 + c2 * c2 + c3 * c3 );
 }
 
 template< typename MeshConfig, typename Device >
