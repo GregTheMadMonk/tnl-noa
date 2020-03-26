@@ -80,21 +80,24 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
 }
 
 // Triangle
-template< typename Real >
+template< typename VectorExpression,
+          std::enable_if_t< VectorExpression::getSize() == 2, bool > = true >
 __cuda_callable__
-Real
-getTriangleArea( const TNL::Containers::StaticVector< 2, Real > & v1,
-                 const TNL::Containers::StaticVector< 2, Real > & v2 )
+typename VectorExpression::RealType
+getTriangleArea( const VectorExpression & v1,
+                 const VectorExpression & v2 )
 {
     return 0.5 * TNL::abs( v1.x() * v2.y() - v1.y() * v2.x() );
 }
 
-template< typename Real >
+template< typename VectorExpression,
+          std::enable_if_t< VectorExpression::getSize() == 3, bool > = true >
 __cuda_callable__
-Real
-getTriangleArea( const TNL::Containers::StaticVector< 3, Real > & v1,
-                 const TNL::Containers::StaticVector< 3, Real > & v2 )
+typename VectorExpression::RealType
+getTriangleArea( const VectorExpression & v1,
+                 const VectorExpression & v2 )
 {
+    using Real = typename VectorExpression::RealType;
     // formula from http://math.stackexchange.com/a/128999
     Real S = 0.0;
     Real aux = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
@@ -115,10 +118,7 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
     const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
-    using Point = std::decay_t< decltype( v0 ) >;
-    const Point p1 = v2 - v0;
-    const Point p2 = v1 - v0;
-    return getTriangleArea( p1, p2 );
+    return getTriangleArea( v2 - v0, v1 - v0 );
 }
 
 // Quadrilateral
@@ -134,10 +134,7 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
     const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
-    using Point = std::decay_t< decltype( v0 ) >;
-    const Point p1 = v2 - v0;
-    const Point p2 = v3 - v1;
-    return getTriangleArea( p1, p2 );
+    return getTriangleArea( v2 - v0, v3 - v1 );
 }
 
 template< typename VectorExpression >
