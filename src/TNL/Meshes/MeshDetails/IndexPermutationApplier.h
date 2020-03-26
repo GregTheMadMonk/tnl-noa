@@ -171,7 +171,6 @@ public:
    {
       using IndexType = typename Mesh::GlobalIndexType;
       using DeviceType = typename Mesh::DeviceType;
-      using StorageArrayType = typename Mesh::template EntityTraits< Dimension >::StorageArrayType;
 
       if( Dimension == 0 )
          permutePoints( mesh, perm, iperm );

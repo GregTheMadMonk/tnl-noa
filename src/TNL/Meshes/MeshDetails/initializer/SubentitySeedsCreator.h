@@ -38,7 +38,7 @@ class SubentitySeedsCreator
    static constexpr LocalIndexType SUBENTITY_VERTICES_COUNT = MeshTraitsType::template SubentityTraits< SubentityTopology, 0 >::count;
 
 public:
-   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
+   using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, EntitySeed< MeshConfig, SubentityTopology > >;
 
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
@@ -84,9 +84,10 @@ class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
    using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
+   using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
 public:
-   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
+   using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, EntitySeed< MeshConfig, SubentityTopology > >;
 
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {

@@ -26,8 +26,6 @@ namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntityOrientation;
-template< typename MeshConfig, typename EntityTopology >
-class EntitySeed;
 
 template< typename MeshConfig,
           typename Device,
@@ -48,7 +46,6 @@ public:
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
-   using Seed              = EntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
 
    /****
@@ -57,9 +54,6 @@ public:
    // TODO: write general operator= for different SliceSize and remove the '32' here
    using StorageNetworkType     = Containers::Multimaps::StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType, 32 >;
    using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
-
-   // static array used in MeshSubentitySeedCreator
-   using SeedArrayType          = Containers::StaticArray< count, Seed >;
 
    // orientation and its accessor
    using OrientationArrayType   = Containers::StaticArray< count, Orientation >;

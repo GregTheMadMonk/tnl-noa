@@ -214,7 +214,6 @@ public:
    using MeshTraitsType   = MeshTraits< MeshConfig, Device >;
    using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
-   using StorageArrayType = typename EntityTraitsType::StorageArrayType;
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
