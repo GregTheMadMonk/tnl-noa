@@ -39,7 +39,6 @@ class SuperentityStorageInitializer
    using LocalIndexType            = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType          = typename MeshTraitsType::template EntityTraits< SubdimensionTag::value >;
    using EntityTopology            = typename EntityTraitsType::EntityTopology;
-   using EntityType                = typename EntityTraitsType::EntityType;
    using SuperentityTraitsType     = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
    using SuperentityStorageNetwork = typename SuperentityTraitsType::StorageNetworkType;
 
@@ -63,7 +62,7 @@ public:
                      "Superentities for some entities are missing. "
                      "This is probably a bug in the mesh initializer." );
 
-      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< EntityTopology, SuperdimensionTag::value >();
+      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< SubdimensionTag::value, SuperdimensionTag::value >();
       TNL_ASSERT_EQ( (size_t) superentityStorageNetwork.getKeysRange(), dynamicStorageNetwork.size(),
                      "Sizes of the static and dynamic storage networks don't match. "
                      "This is probably a bug in the mesh initializer." );

@@ -105,6 +105,11 @@ public:
       return points;
    }
 
+   typename MeshTraitsType::PointArrayType& getPoints()
+   {
+      return points;
+   }
+
    template< int Dimension >
    void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
    {

@@ -202,6 +202,7 @@ class Mesh
 
    protected:
       // Methods for the mesh initializer
+      using StorageBaseType::getPoints;
       using StorageBaseType::setEntitiesCount;
       using StorageBaseType::getSubentityStorageNetwork;
       using StorageBaseType::getSuperentityStorageNetwork;

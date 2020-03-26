@@ -59,8 +59,6 @@ class EntityInitializer
    using MeshTraitsType   = MeshTraits< MeshConfig >;
    using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType   = typename MeshTraitsType::LocalIndexType;
-   using EntityTraitsType = typename MeshTraitsType::template EntityTraits< EntityTopology::dimension >;
-   using EntityType       = typename EntityTraitsType::EntityType;
 
    using SeedType         = EntitySeed< MeshConfig, EntityTopology >;
    using InitializerType  = Initializer< MeshConfig >;
@@ -71,22 +69,6 @@ public:
       // this is necessary if we want to use existing entities instead of intermediate seeds to create subentity seeds
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< EntityTopology::dimension, 0 >( entityIndex, i, entitySeed.getCornerIds()[ i ] );
-   }
-};
-
-template< typename MeshConfig >
-class EntityInitializer< MeshConfig, Topologies::Vertex >
-   : public EntityInitializerLayer< MeshConfig,
-                                    DimensionTag< 0 >,
-                                    DimensionTag< MeshTraits< MeshConfig >::meshDimension > >
-{
-public:
-   using VertexType      = typename MeshTraits< MeshConfig >::VertexType;
-   using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-   using InitializerType = Initializer< MeshConfig >;
-
-   static void initEntity( const GlobalIndexType& entityIndex, InitializerType& initializer)
-   {
    }
 };
 

@@ -45,7 +45,6 @@ public:
     */
    // TODO: write general operator= for different SliceSize and remove the '32' here
    using StorageNetworkType      = Containers::Multimaps::EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType, 32 >;
-   using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
 };
 
 } // namespace Meshes
