@@ -10,7 +10,6 @@
 
 #include "tnl-diff.h"
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
 void setupConfig( Config::ConfigDescription& config )
@@ -41,12 +40,6 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    String meshFile = parameters.getParameter< String >( "mesh" );
-   /*if( meshFile == "" )
-   {
-      if( ! processFiles< DummyMesh< double, Devices::Host, int > >( parameters ) )
-         return EXIT_FAILURE;
-      return EXIT_SUCCESS;
-   }*/
    const String meshType = getObjectType( meshFile );
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );

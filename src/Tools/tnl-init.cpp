@@ -13,7 +13,6 @@
 #include <TNL/File.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Functions/TestFunction.h>
-#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>

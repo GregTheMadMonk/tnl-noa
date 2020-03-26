@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <TNL/File.h>
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
