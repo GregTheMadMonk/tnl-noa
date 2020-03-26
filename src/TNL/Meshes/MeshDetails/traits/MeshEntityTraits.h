@@ -64,7 +64,6 @@ public:
    using SeedSetType                   = std::unordered_set< typename SeedIndexedSetType::key_type, typename SeedIndexedSetType::hasher, typename SeedIndexedSetType::key_equal >;
    using ReferenceOrientationArrayType = std::vector< ReferenceOrientationType >;
 
-   static constexpr bool storageEnabled = MeshConfig::entityStorage( Dimension );
    static constexpr bool orientationNeeded = 0 < Dimension && Dimension < MeshConfig::meshDimension;
 };
 

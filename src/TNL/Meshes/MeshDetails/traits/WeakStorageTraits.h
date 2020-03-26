@@ -24,24 +24,6 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename Device,
-          typename DimensionTag,
-          bool sensible = (DimensionTag::value <= MeshConfig::meshDimension) >
-struct WeakEntityStorageTrait
-{
-   static constexpr bool storageEnabled = MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::storageEnabled;
-};
-
-template< typename MeshConfig,
-          typename Device,
-          typename DimensionTag >
-struct WeakEntityStorageTrait< MeshConfig, Device, DimensionTag, false >
-{
-   static constexpr bool storageEnabled = false;
-};
-
-
-template< typename MeshConfig,
-          typename Device,
           typename EntityTopology,
           typename SubdimensionTag,
           bool sensible = (SubdimensionTag::value < EntityTopology::dimension) >

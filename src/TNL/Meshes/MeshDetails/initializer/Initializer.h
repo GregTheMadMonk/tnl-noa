@@ -62,12 +62,8 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename DimensionTag,
-          bool EntityStorage =
-             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::storageEnabled,
           bool EntityReferenceOrientationStorage =
-             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::orientationNeeded &&
-             // orientationNeeded does not make sense without storageEnabled
-             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::storageEnabled >
+             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::orientationNeeded >
 class InitializerLayer;
 
 
@@ -155,13 +151,11 @@ class Initializer
 
 /****
  * Mesh initializer layer for cells
- *  - entities storage must turned on (cells must always be stored )
  *  - entities orientation does not make sense for cells => it is turned off
  */
 template< typename MeshConfig >
 class InitializerLayer< MeshConfig,
                         typename MeshTraits< MeshConfig >::DimensionTag,
-                        true,
                         false >
    : public InitializerLayer< MeshConfig,
                               typename MeshTraits< MeshConfig >::DimensionTag::Decrement >
@@ -198,14 +192,12 @@ class InitializerLayer< MeshConfig,
 
 /****
  * Mesh initializer layer for other mesh entities than cells
- * - entities storage is turned on
  * - entities orientation storage is turned off
  */
 template< typename MeshConfig,
           typename DimensionTag >
 class InitializerLayer< MeshConfig,
                         DimensionTag,
-                        true,
                         false >
    : public InitializerLayer< MeshConfig,
                               typename DimensionTag::Decrement >
@@ -285,14 +277,12 @@ class InitializerLayer< MeshConfig,
 
 /****
  * Mesh initializer layer for other mesh entities than cells
- * - entities storage is turned on
  * - entities orientation storage is turned on
  */
 template< typename MeshConfig,
           typename DimensionTag >
 class InitializerLayer< MeshConfig,
                         DimensionTag,
-                        true,
                         true >
    : public InitializerLayer< MeshConfig,
                               typename DimensionTag::Decrement >
@@ -380,27 +370,12 @@ class InitializerLayer< MeshConfig,
 };
 
 /****
- * Mesh initializer layer for entities not being stored
- */
-template< typename MeshConfig,
-          typename DimensionTag >
-class InitializerLayer< MeshConfig,
-                        DimensionTag,
-                        false,
-                        false >
-   : public InitializerLayer< MeshConfig,
-                              typename DimensionTag::Decrement >
-{};
-
-/****
  * Mesh initializer layer for vertices
- * - vertices must always be stored
  * - their orientation does not make sense
  */
 template< typename MeshConfig >
 class InitializerLayer< MeshConfig,
                         DimensionTag< 0 >,
-                        true,
                         false >
 {
    using MeshType              = Mesh< MeshConfig >;

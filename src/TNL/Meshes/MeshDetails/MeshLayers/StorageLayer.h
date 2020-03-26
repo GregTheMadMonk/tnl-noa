@@ -28,7 +28,7 @@ namespace Meshes {
 template< typename MeshConfig,
           typename Device,
           typename DimensionTag,
-          bool EntityStorage = WeakEntityStorageTrait< MeshConfig, Device, DimensionTag >::storageEnabled >
+          bool EntityStorage = (DimensionTag::value <= MeshConfig::meshDimension) >
 class StorageLayer;
 
 
@@ -43,6 +43,9 @@ class StorageLayerFamily
 
    template< int Dimension, int Subdimension >
    using SubentityTraits = typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >;
+
+   template< int Dimension, int Superdimension >
+   using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >;
 
 protected:
    typename MeshTraitsType::PointArrayType points;
@@ -113,7 +116,6 @@ public:
    template< int Dimension >
    void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
    {
-      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to set number of entities which are not configured for storage." );
       BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
       if( Dimension == 0 )
          points.setSize( entitiesCount );
@@ -124,8 +126,9 @@ public:
    typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
    getSubentityStorageNetwork()
    {
-      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get subentity storage of entities which are not configured for storage." );
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
+                     "You try to get subentity storage network which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                    Device,
                                                    typename EntityTraits< Dimension >::EntityTopology >;
@@ -137,8 +140,9 @@ public:
    const typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
    getSubentityStorageNetwork() const
    {
-      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get subentity storage of entities which are not configured for storage." );
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
+                     "You try to get subentity storage network which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                    Device,
                                                    typename EntityTraits< Dimension >::EntityTopology >;
@@ -150,8 +154,9 @@ public:
    typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork()
    {
-      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get superentity storage of entities which are not configured for storage." );
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
+                     "You try to get superentity storage network which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
                                                      typename EntityTraits< Dimension >::EntityTopology >;
@@ -163,8 +168,9 @@ public:
    const typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
    getSuperentityStorageNetwork() const
    {
-      static_assert( EntityTraits< Dimension >::storageEnabled, "You try to get superentity storage of entities which are not configured for storage." );
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
+                     "You try to get superentity storage network which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
                                                      typename EntityTraits< Dimension >::EntityTopology >;
@@ -176,7 +182,8 @@ public:
    typename SubentityTraits< Dimension, Subdimension >::IdPermutationArrayType
    getSubentityOrientation( typename MeshTraitsType::GlobalIndexType entityIndex, typename MeshTraitsType::LocalIndexType localIndex ) const
    {
-      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled,
+                     "You try to get subentity orientation which is not configured for storage." );
       return BaseType::getSubentityOrientation( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex, localIndex );
    }
 
@@ -185,7 +192,8 @@ public:
    typename SubentityTraits< Dimension, Subdimension >::OrientationArrayType&
    subentityOrientationsArray( typename MeshTraitsType::GlobalIndexType entityIndex )
    {
-      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled, "You try to get subentity orientation which is not configured for storage." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled,
+                     "You try to get subentity orientation which is not configured for storage." );
       return BaseType::subentityOrientationsArray( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex );
    }
 };
@@ -313,20 +321,6 @@ protected:
    friend class StorageLayer;
 };
 
-template< typename MeshConfig,
-          typename Device,
-          typename DimensionTag >
-class StorageLayer< MeshConfig, Device, DimensionTag, false >
-   : public StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >
-{
-   using BaseType = StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >;
-public:
-   // inherit constructors and assignment operators (including templated versions)
-   using BaseType::BaseType;
-   using BaseType::operator=;
-};
-
-// termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakEntityStorageTrait)
 template< typename MeshConfig,
           typename Device >
 class StorageLayer< MeshConfig, Device, DimensionTag< MeshConfig::meshDimension + 1 >, false >

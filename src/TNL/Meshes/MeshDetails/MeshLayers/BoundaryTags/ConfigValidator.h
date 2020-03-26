@@ -24,8 +24,6 @@ class ConfigValidatorBoundaryTagsLayer
 {
    using FaceTopology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
 
-   static_assert( MeshConfig::entityStorage( MeshConfig::meshDimension - 1 ),
-                  "Faces must be stored when any entity has boundary tags." );
    static_assert( MeshConfig::superentityStorage( FaceTopology(), MeshConfig::meshDimension ),
                   "Faces must store the cell superentity indices when any entity has boundary tags." );
    static_assert( EntityTopology::dimension >= MeshConfig::meshDimension - 1 || MeshConfig::subentityStorage( FaceTopology(), EntityTopology::dimension ),

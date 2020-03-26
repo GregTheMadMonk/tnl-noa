@@ -118,9 +118,6 @@ class Mesh
        * Entities
        */
       template< int Dimension >
-      static constexpr bool entitiesAvailable();
-
-      template< int Dimension >
       __cuda_callable__
       GlobalIndexType getEntitiesCount() const;
 

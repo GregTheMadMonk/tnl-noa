@@ -100,21 +100,11 @@ getSerializationTypeVirtual() const
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
-constexpr bool
-Mesh< MeshConfig, Device >::
-entitiesAvailable()
-{
-   return EntityTraits< Dimension >::storageEnabled;
-}
-
-template< typename MeshConfig, typename Device >
-   template< int Dimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getEntitiesCount() const
 {
-   static_assert( entitiesAvailable< Dimension >(), "You try to get number of entities which are not configured for storage." );
    return StorageBaseType::getEntitiesCount( DimensionTag< Dimension >() );
 }
 
@@ -125,7 +115,6 @@ typename Mesh< MeshConfig, Device >::template EntityType< Dimension >
 Mesh< MeshConfig, Device >::
 getEntity( const GlobalIndexType entityIndex ) const
 {
-   static_assert( entitiesAvailable< Dimension >(), "You try to get entity which is not configured for storage." );
    TNL_ASSERT_LT( entityIndex, getEntitiesCount< Dimension >(), "invalid entity index" );
    return EntityType< Dimension >( *this, entityIndex );
 }
@@ -224,8 +213,6 @@ Mesh< MeshConfig, Device >::
 reorderEntities( const GlobalIndexVector& perm,
                  const GlobalIndexVector& iperm )
 {
-   static_assert( entitiesAvailable< Dimension >(), "Entities which are not stored cannot be reordered." );
-
    const GlobalIndexType entitiesCount = getEntitiesCount< Dimension >();
 
    // basic sanity check
