@@ -74,9 +74,9 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Edge > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    return getVectorLength( v1.getPoint() - v0.getPoint() );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    return getVectorLength( v1 - v0 );
 }
 
 // Triangle
@@ -112,12 +112,12 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Triangle > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    using Point = decltype( v0.getPoint() );
-    const Point p1 = v2.getPoint() - v0.getPoint();
-    const Point p2 = v1.getPoint() - v0.getPoint();
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    using Point = std::decay_t< decltype( v0 ) >;
+    const Point p1 = v2 - v0;
+    const Point p2 = v1 - v0;
     return getTriangleArea( p1, p2 );
 }
 
@@ -130,13 +130,13 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
 {
     // measure = 0.5 * |AC x BD|, where AC and BD are the diagonals
     // Hence, we can use the same formula as for the triangle area.
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    using Point = decltype( v0.getPoint() );
-    const Point p1 = v2.getPoint() - v0.getPoint();
-    const Point p2 = v3.getPoint() - v1.getPoint();
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
+    using Point = std::decay_t< decltype( v0 ) >;
+    const Point p1 = v2 - v0;
+    const Point p2 = v3 - v1;
     return getTriangleArea( p1, p2 );
 }
 
@@ -164,11 +164,11 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Tetrahedron > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    return getTetrahedronVolume( v3.getPoint() - v0.getPoint(), v2.getPoint() - v0.getPoint(), v1.getPoint() - v0.getPoint() );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
+    return getTetrahedronVolume( v3 - v0, v2 - v0, v1 - v0 );
 }
 
 } // namespace Meshes

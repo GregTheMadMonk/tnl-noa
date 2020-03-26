@@ -56,8 +56,7 @@ getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
         i < subvertices;
         i++ )
    {
-      const auto& v = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( i ) );
-      c += v.getPoint();
+      c += mesh.getPoint( entity.template getSubentityIndex< 0 >( i ) );
    }
    return ( 1.0 / subvertices ) * c;
 }
