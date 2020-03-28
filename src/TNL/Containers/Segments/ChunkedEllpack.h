@@ -141,6 +141,8 @@ class ChunkedEllpack
        */
       OffsetsHolder rowToChunkMapping;
 
+      OffsetsHolder chunksToSegmentsMapping;
+
       /**
        * Keeps index of the first segment index.
        */

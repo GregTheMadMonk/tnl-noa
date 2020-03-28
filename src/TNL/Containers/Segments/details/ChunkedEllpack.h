@@ -29,7 +29,7 @@ template< typename Index >
 struct ChunkedEllpackSliceInfo
 {
    /**
-    * The size of the slice, it means the number of the matrix rows covered by
+    * The size of the slice, it means the number of the segments covered by
     * the slice.
     */
    Index size;
@@ -223,7 +223,6 @@ class ChunkedEllpack
                                     chunksInSlice );
       }
 };
-
          } //namespace details
       } //namespace Segments
    } //namespace Containers

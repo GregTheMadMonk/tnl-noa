@@ -42,6 +42,7 @@ ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
      desiredChunkSize( chunkedEllpack.desiredChunkSize ),
      rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
      rowToSliceMapping( chunkedEllpack.rowTopSliceMapping ),
+     chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
      rowPointers( chunkedEllpack.rowPointers ),
      slices( chunkedEllpack.slices ),
      numberOfSlices( chunkedEllpack.numberOfSlices )
@@ -60,6 +61,7 @@ ChunkedEllpack( const ChunkedEllpack&& chunkedEllpack )
      desiredChunkSize( chunkedEllpack.desiredChunkSize ),
      rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
      rowToSliceMapping( chunkedEllpack.rowTopSliceMapping ),
+     chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
      rowPointers( chunkedEllpack.rowPointers ),
      slices( chunkedEllpack.slices ),
      numberOfSlices( chunkedEllpack.numberOfSlices )
@@ -99,6 +101,7 @@ getView()
    return ViewType( size, storageSize, chunksInSlice, desiredChunkSize,
                     rowToChunkMapping.getView(),
                     rowToSliceMapping.getView(),
+                    chunksToSegmentsMapping.getView(),
                     rowPointers.getView(),
                     slices.getView(),
                     numberOfSlices );
@@ -115,6 +118,7 @@ getConstView() const
    return ConstViewType( size, storageSize, chunksInSlice, desiredChunkSize,
                          rowToChunkMapping.getConstView(),
                          rowToSliceMapping.getConstView(),
+                         chunksToSegmentsMapping.getConstView(),
                          rowPointers.getConstView(),
                          slices.getConstView(),
                          numberOfSlices );
@@ -259,18 +263,43 @@ void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 setSegmentsSizes( const SizesHolder& segmentsSizes )
 {
-   this->size = segmentsSizes.getSize();
-   this->slices.setSize( this->size );
-   this->rowToChunkMapping.setSize( this->size );
-   this->rowToSliceMapping.setSize( this->size );
-   this->rowPointers.setSize( this->size + 1 );
+   if( std::is_same< DeviceType, Devices::Host >::value )
+   {
+      this->size = segmentsSizes.getSize();
+      this->slices.setSize( this->size );
+      this->rowToChunkMapping.setSize( this->size );
+      this->rowToSliceMapping.setSize( this->size );
+      this->rowPointers.setSize( this->size + 1 );
 
-   this->resolveSliceSizes( segmentsSizes );
-   this->rowPointers.setElement( 0, 0 );
-   this->storageSize = 0;
-   for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
-      this->setSlice( segmentsSizes, sliceIndex, storageSize );
-   this->rowPointers.scan();
+      this->resolveSliceSizes( segmentsSizes );
+      this->rowPointers.setElement( 0, 0 );
+      this->storageSize = 0;
+      for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
+         this->setSlice( segmentsSizes, sliceIndex, storageSize );
+      this->rowPointers.scan();
+      IndexType chunksCount = this->numberOfSlices * this->chunksInSlice;
+      this->chunksToSegmentsMapping.setSize( chunksCount );
+      IndexType chunkIdx( 0 );
+      for( IndexType segmentIdx = 0; segmentIdx < this->size; segmentIdx++ )
+      {
+         const IndexType& sliceIdx = rowToSliceMapping[ segmentIdx ];
+         IndexType firstChunkOfSegment( 0 );
+         if( segmentIdx != slices[ sliceIdx ].firstSegment )
+               firstChunkOfSegment = rowToChunkMapping[ segmentIdx - 1 ];
+
+         const IndexType lastChunkOfSegment = rowToChunkMapping[ segmentIdx ];
+         const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
+         for( IndexType i = 0; i < segmentChunksCount; i++ )
+            this->chunksToSegmentsMapping[ chunkIdx++ ] = segmentIdx;
+      }
+   }
+   else
+   {
+      ChunkedEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< Index >, RowMajorOrder > hostSegments;
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes( segmentsSizes );
+      hostSegments.setSegmentsSizes( hostSegmentsSizes );
+      *this = hostSegments;
+   }
 }
 
 template< typename Device,
@@ -362,7 +391,7 @@ void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   this->getView().forSegments( first, last, f, args... );
+   this->getConstView().forSegments( first, last, f, args... );
 }
 
 template< typename Device,
@@ -386,7 +415,7 @@ void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->getView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -417,6 +446,7 @@ operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder
    this->rowToChunkMapping = source.rowToChunkMapping;
    this->rowToSliceMapping = source.rowToSliceMapping;
    this->rowPointers = source.rowPointers;
+   this->chunksToSegmentMapping = source.chunksToSegmentsMapping;
    this->slices = source.slices;
    this->numberOfSlices = source.numberOfSlices;
    return *this;
@@ -437,6 +467,7 @@ save( File& file ) const
    file << this->rowToChunkMapping
         << this->rowToSliceMapping
         << this->rowPointers
+        << this->chunksToSegmentsMapping
         << this->slices;
    file.save( this->numberOfSlices );
 }
@@ -455,6 +486,7 @@ load( File& file )
    file.load( &this->desiredChunkSize );
    file >> this->rowToChunkMapping
         >> this->rowToSliceMapping
+        >> this->chunksToSegmentsMapping
         >> this->rowPointers
         >> this->slices;
    file.load( &this->numberOfSlices );

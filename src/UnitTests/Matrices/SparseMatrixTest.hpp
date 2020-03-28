@@ -60,6 +60,7 @@ void test_Constructors()
    m2.setElement( 3, 3, 1 );
    m2.setElement( 4, 4, 1 );   // 4th row
    m2.getCompressedRowLengths( v1 );
+   std::cerr << v1 << " " << v2 << std::endl;
    EXPECT_EQ( v1, v2 );
 
    /*

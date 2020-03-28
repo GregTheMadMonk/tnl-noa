@@ -39,7 +39,7 @@ TYPED_TEST( MatrixTest, Constructors )
     test_Constructors< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, setDimensionsTest )
+/*TYPED_TEST( MatrixTest, setDimensionsTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
@@ -114,6 +114,6 @@ TYPED_TEST( MatrixTest, printTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_Print< MatrixType >();
-}
+}*/
 
 #endif

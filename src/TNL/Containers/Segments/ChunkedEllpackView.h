@@ -52,6 +52,7 @@ class ChunkedEllpackView
                           const IndexType desiredChunkSize,
                           const OffsetsView& rowToChunkMapping,
                           const OffsetsView& rowToSliceMapping,
+                          const OffsetsView& chunksToSegmentsMapping,
                           const OffsetsView& rowPointers,
                           const ChunkedEllpackSliceInfoContainerView& slices,
                           const IndexType numberOfSlices );
@@ -63,6 +64,7 @@ class ChunkedEllpackView
                           const IndexType desiredChunkSize,
                           const OffsetsView&& rowToChunkMapping,
                           const OffsetsView&& rowToSliceMapping,
+                          const OffsetsView&& chunksToSegmentsMapping,
                           const OffsetsView&& rowPointers,
                           const ChunkedEllpackSliceInfoContainerView&& slices,
                           const IndexType numberOfSlices );
@@ -145,15 +147,20 @@ class ChunkedEllpackView
 
    protected:
 
-      /*IndexType size;
-
-      IndexType chunksInSlice, desiredChunkSize;
-
-      Containers::VectorView< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
-
-      Containers::ArrayView< ChunkedEllpackSliceInfoType, Device, Index > slices;
-
-      IndexType numberOfSlices;*/
+      template< typename Fetch,
+                typename Reduction,
+                typename ResultKeeper,
+                typename Real,
+                typename... Args >
+      //__device__
+      void segmentsReductionKernel( IndexType gridIdx,
+                                    IndexType first,
+                                    IndexType last,
+                                    Fetch fetch,
+                                    Reduction reduction,
+                                    ResultKeeper keeper,
+                                    Real zero,
+                                    Args... args ) const;
 
       IndexType size = 0, storageSize = 0;
 
@@ -169,6 +176,8 @@ class ChunkedEllpackView
        * For each row, this keeps index of the first chunk within a slice.
        */
       OffsetsView rowToChunkMapping;
+
+      OffsetsView chunksToSegmentsMapping;
 
       /**
        * Keeps index of the first segment index.
