@@ -337,12 +337,6 @@ void
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   IndexType firstSliceIdx( 0 ), lastSliceIdx( numberOfSlices );
-   if( first != 0 || last != this->size )
-   {
-      firstSliceIdx = rowToSliceMapping.getElement( first );
-      lastSliceIdx = rowToSliceMapping.getElement( last - 1 ) + 1;
-   }
    const IndexType chunksInSlice = this->chunksInSlice;
    auto rowToChunkMapping = this->rowToChunkMapping;
    auto rowToSliceMapping = this->rowToSliceMapping;
