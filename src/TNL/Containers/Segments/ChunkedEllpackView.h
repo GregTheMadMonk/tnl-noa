@@ -147,12 +147,13 @@ class ChunkedEllpackView
 
    protected:
 
+#ifdef HAVE_CUDA
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
                 typename Real,
                 typename... Args >
-      //__device__
+      __device__
       void segmentsReductionKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
@@ -161,6 +162,7 @@ class ChunkedEllpackView
                                     ResultKeeper keeper,
                                     Real zero,
                                     Args... args ) const;
+#endif
 
       IndexType size = 0, storageSize = 0;
 
@@ -187,6 +189,26 @@ class ChunkedEllpackView
       ChunkedEllpackSliceInfoContainerView slices;
 
       IndexType numberOfSlices;
+
+#ifdef HAVE_CUDA
+      template< typename View_,
+                typename Index_,
+                typename Fetch_,
+                typename Reduction_,
+                typename ResultKeeper_,
+                typename Real_,
+                typename... Args_ >
+      friend __global__
+      void ChunkedEllpackSegmentsReductionKernel( View_ chunkedEllpack,
+                                                  Index_ gridIdx,
+                                                  Index_ first,
+                                                  Index_ last,
+                                                  Fetch_ fetch,
+                                                  Reduction_ reduction,
+                                                  ResultKeeper_ keeper,
+                                                  Real_ zero,
+                                                  Args_... args );
+#endif
 };
       } // namespace Segements
    }  // namespace Conatiners

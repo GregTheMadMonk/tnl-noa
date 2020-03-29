@@ -97,7 +97,7 @@ class ChunkedEllpack
          const IndexType& sliceIndex = segmentsToSlicesMapping.getElement( segmentIdx );
          IndexType firstChunkOfSegment( 0 );
          if( segmentIdx != slices.getElement( sliceIndex ).firstSegment )
-            firstChunkOfSegment = segmentsToChunksMapping[ segmentIdx - 1 ];
+            firstChunkOfSegment = segmentsToChunksMapping.getElement( segmentIdx - 1 );
 
          const IndexType lastChunkOfSegment = segmentsToChunksMapping.getElement( segmentIdx );
          const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;

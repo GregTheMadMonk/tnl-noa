@@ -866,7 +866,7 @@ operator=( const RHSMatrix& matrix )
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
                matrixValuesBuffer_view[ bufferIdx ] = value;
-               //std::cerr << " <<<<< rowIdx = " << rowIdx << " localIdx = " << localIdx << " value = " << value << " bufferIdx = " << bufferIdx << std::endl;
+               //printf( "TO BUFFER: rowIdx = %d localIdx = %d bufferIdx = %d column = %d value = %d \n", rowIdx, localIdx, bufferIdx, columnIndex, value );
             }
          };
          matrix.forRows( baseRow, lastRow, f1 );

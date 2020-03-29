@@ -59,8 +59,17 @@ void test_Constructors()
    m2.setElement( 3, 2, 1 );   // 3rd row
    m2.setElement( 3, 3, 1 );
    m2.setElement( 4, 4, 1 );   // 4th row
+
+   EXPECT_EQ( m2.getElement( 0, 0 ), 1 );   // 0th row
+   EXPECT_EQ( m2.getElement( 1, 0 ), 1 );   // 1st row
+   EXPECT_EQ( m2.getElement( 1, 1 ), 1 );
+   EXPECT_EQ( m2.getElement( 2, 1 ), 1 );   // 2nd row
+   EXPECT_EQ( m2.getElement( 2, 2 ), 1 );
+   EXPECT_EQ( m2.getElement( 3, 2 ), 1 );   // 3rd row
+   EXPECT_EQ( m2.getElement( 3, 3 ), 1 );
+   EXPECT_EQ( m2.getElement( 4, 4 ), 1 );   // 4th row
+
    m2.getCompressedRowLengths( v1 );
-   std::cerr << v1 << " " << v2 << std::endl;
    EXPECT_EQ( v1, v2 );
 
    /*

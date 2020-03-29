@@ -446,7 +446,7 @@ operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder
    this->rowToChunkMapping = source.rowToChunkMapping;
    this->rowToSliceMapping = source.rowToSliceMapping;
    this->rowPointers = source.rowPointers;
-   this->chunksToSegmentMapping = source.chunksToSegmentsMapping;
+   this->chunksToSegmentsMapping = source.chunksToSegmentsMapping;
    this->slices = source.slices;
    this->numberOfSlices = source.numberOfSlices;
    return *this;

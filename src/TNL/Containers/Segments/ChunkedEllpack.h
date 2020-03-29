@@ -151,6 +151,9 @@ class ChunkedEllpack
       ChunkedEllpackSliceInfoContainer slices;
 
       IndexType numberOfSlices;
+
+      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
+      friend class ChunkedEllpack;
 };
 
       } // namespace Segements
