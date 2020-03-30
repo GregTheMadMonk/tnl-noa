@@ -149,6 +149,11 @@ TYPED_TEST( ArrayTest, constructors )
    v.reset();
    EXPECT_EQ( w.getSize(), 10 );
 
+   Containers::Array< int > int_array( 10, 1 );
+   ArrayType int_array_copy( int_array );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( int_array_copy.getElement( i ), 1 );
+
    ArrayType a1 { 1, 2, 3 };
    EXPECT_EQ( a1.getElement( 0 ), 1 );
    EXPECT_EQ( a1.getElement( 1 ), 2 );

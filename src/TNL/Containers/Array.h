@@ -193,6 +193,22 @@ class Array
        */
       Array( Array&& array );
 
+
+      /**
+       * \brief Copy constructor from array with different template parameters.
+       * 
+       * \tparam Value_ Value type of the input array.
+       * \tparam Device_ Device type of the input array.
+       * \tparam Index_ Index type of the input array.
+       * \tparam Allocator_ Allocator type of the input array.
+       * \param a the input array.
+       */
+      template< typename Value_,
+                typename Device_,
+                typename Index_,
+                typename Allocator_ >
+      explicit Array( const Array< Value_, Device_, Index_, Allocator_ >& a );
+
       /**
        * \brief Constructor which initializes the array by copying elements from
        * \ref std::initializer_list, e.g. `{...}`.

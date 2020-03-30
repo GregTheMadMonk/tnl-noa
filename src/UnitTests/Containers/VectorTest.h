@@ -72,6 +72,12 @@ TYPED_TEST( VectorTest, constructors )
    EXPECT_EQ( a3.getElement( 0 ), 7 );
    EXPECT_EQ( a3.getElement( 1 ), 8 );
    EXPECT_EQ( a3.getElement( 2 ), 9 );
+
+   VectorType a4( 2 * a2 + 3 * a3 );
+   EXPECT_EQ( a4.getElement( 0 ), 2.0 * a2.getElement( 0 ) + 3 * a3.getElement( 0 ) );
+   EXPECT_EQ( a4.getElement( 1 ), 2.0 * a2.getElement( 1 ) + 3 * a3.getElement( 1 ) );
+   EXPECT_EQ( a4.getElement( 2 ), 2.0 * a2.getElement( 2 ) + 3 * a3.getElement( 2 ) );
+
 }
 
 TEST( VectorSpecialCasesTest, defaultConstructors )

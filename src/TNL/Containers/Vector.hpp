@@ -31,6 +31,20 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
+   template< typename VectorExpression,
+             typename...,
+             typename >
+Vector< Real, Device, Index, Allocator >::
+Vector( const VectorExpression& expression )
+{
+   detail::VectorAssignment< Vector, VectorExpression >::resize( *this, expression );
+   detail::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ViewType
 Vector< Real, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end )

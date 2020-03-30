@@ -35,10 +35,11 @@ __cuda_callable__
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 DenseMatrixView( const IndexType rows,
                  const IndexType columns,
-                 const ValuesViewType& values,
-                 const SegmentsViewType& segments )
- : MatrixView< Real, Device, Index >( rows, columns, values ), segments( segments )
+                 const ValuesViewType& values )
+ : MatrixView< Real, Device, Index >( rows, columns, values )
 {
+   SegmentsType a( rows, columns );
+   segments = a.getView();
 }
 
 template< typename Real,
@@ -53,8 +54,7 @@ getView() -> ViewType
    return ViewType( this->getRows(),
                     this->getColumns(),
                     this->getValues().getView(),
-                    this->columnIndexes.getView(),
-                    this->segments.getView() );
+                    this->columnIndexes.getView() );
 }
 
 template< typename Real,
@@ -69,8 +69,7 @@ getConstView() const -> ConstViewType
    return ConstViewType( this->getRows(),
                          this->getColumns(),
                          this->getValues().getConstView(),
-                         this->getColumnsIndexes().getConstView(),
-                         this->segments.getConstView() );
+                         this->getColumnsIndexes().getConstView() );
 }
 
 template< typename Real,

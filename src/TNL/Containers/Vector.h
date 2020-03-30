@@ -113,6 +113,16 @@ public:
    Vector( Vector&& ) = default;
 
    /**
+    * \brief Constructor from expression template
+    * 
+    * @param expression input expression template
+    */
+   template< typename VectorExpression,
+             typename...,
+             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value && ! IsArrayType< VectorExpression >::value > >
+   explicit Vector( const VectorExpression& expression );
+
+   /**
     * \brief Copy-assignment operator for copying data from another vector.
     */
    Vector& operator=( const Vector& ) = default;

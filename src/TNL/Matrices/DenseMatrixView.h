@@ -64,8 +64,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       DenseMatrixView( const IndexType rows,
                        const IndexType columns,
-                       const ValuesViewType& values,
-                       const SegmentsViewType& segments );
+                       const ValuesViewType& values );
 
       __cuda_callable__
       DenseMatrixView( const DenseMatrixView& m ) = default;

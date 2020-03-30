@@ -136,6 +136,20 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
+      template< typename Value_,
+                typename Device_,
+                typename Index_,
+                typename Allocator_ >
+Array< Value, Device, Index, Allocator >::
+Array( const Array< Value_, Device_, Index_, Allocator_ >& a )
+{
+   *this = a;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
    template< typename InValue >
 Array< Value, Device, Index, Allocator >::
 Array( const std::initializer_list< InValue >& list,
