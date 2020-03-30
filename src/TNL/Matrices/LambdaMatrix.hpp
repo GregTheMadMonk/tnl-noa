@@ -101,9 +101,6 @@ getCompressedRowLengths( Vector& rowLengths ) const
    const IndexType columns = this->getColumns();
    auto rowLengthsView = rowLengths.getView();
    auto compressedRowLengths = this->compressedRowLengthsLambda;
-   auto compressedRowLengthsLambda = [=] __cuda_callable__ ( const IndexType row ) mutable {
-         rowLengthsView[ row ] = compressedRowLengths( rows, columns, row );
-   };
 
    if( std::is_same< typename Vector::DeviceType, Device_ >::value )
       Algorithms::ParallelFor< Device_ >::exec(
