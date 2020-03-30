@@ -60,14 +60,14 @@ ChunkedEllpackView( const IndexType size,
                     const IndexType numberOfSlices )
 : size( size ),
   storageSize( storageSize ),
+  numberOfSlices( numberOfSlices ),
   chunksInSlice( chunksInSlice ),
   desiredChunkSize( desiredChunkSize ),
-  rowToChunkMapping( rowToChunkMapping ),
   rowToSliceMapping( rowToSliceMapping ),
+  rowToChunkMapping( rowToChunkMapping ),
   chunksToSegmentsMapping( chunksToSegmentsMapping ),
   rowPointers( rowPointers ),
-  slices( slices ),
-  numberOfSlices( numberOfSlices )
+  slices( slices )
 {
 }
 
@@ -88,14 +88,14 @@ ChunkedEllpackView( const IndexType size,
                     const IndexType numberOfSlices )
 : size( size ),
   storageSize( storageSize ),
+  numberOfSlices( numberOfSlices ),
   chunksInSlice( chunksInSlice ),
   desiredChunkSize( desiredChunkSize ),
-  rowToChunkMapping( rowToChunkMapping ),
-  rowToSliceMapping( rowToSliceMapping ),
-  chunksToSegmentsMapping( chunksToSegmentsMapping ),
-  rowPointers( rowPointers ),
-  slices( slices ),
-  numberOfSlices( numberOfSlices )
+  rowToSliceMapping( std::move( rowToSliceMapping ) ),
+  rowToChunkMapping( std::move( rowToChunkMapping ) ),
+  chunksToSegmentsMapping( std::move( chunksToSegmentsMapping ) ),
+  rowPointers( std::move( rowPointers ) ),
+  slices( std::move( slices ) )
 {
 }
 
@@ -107,14 +107,14 @@ ChunkedEllpackView< Device, Index, RowMajorOrder >::
 ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view )
 : size( chunked_ellpack_view.size ),
   storageSize( chunked_ellpack_view.storageSize ),
+  numberOfSlices( chunked_ellpack_view.numberOfSlices ),
   chunksInSlice( chunked_ellpack_view.chunksInSlice ),
   desiredChunkSize( chunked_ellpack_view.desiredChunkSize ),
-  rowToChunkMapping( chunked_ellpack_view.rowToChunkMapping ),
   rowToSliceMapping( chunked_ellpack_view.rowToSliceMapping ),
+  rowToChunkMapping( chunked_ellpack_view.rowToChunkMapping ),
   chunksToSegmentsMapping( chunked_ellpack_view.chunksToSegmentsMapping ),
   rowPointers( chunked_ellpack_view.rowPointers ),
-  slices( chunked_ellpack_view.slices ),
-  numberOfSlices( chunked_ellpack_view.numberOfSlices )
+  slices( chunked_ellpack_view.slices )
 {
 }
 
@@ -126,14 +126,14 @@ ChunkedEllpackView< Device, Index, RowMajorOrder >::
 ChunkedEllpackView( const ChunkedEllpackView&& chunked_ellpack_view )
 : size( chunked_ellpack_view.size ),
   storageSize( chunked_ellpack_view.storageSize ),
+  numberOfSlices( chunked_ellpack_view.numberOfSlices ),
   chunksInSlice( chunked_ellpack_view.chunksInSlice ),
   desiredChunkSize( chunked_ellpack_view.desiredChunkSize ),
-  rowToChunkMapping( std::move( chunked_ellpack_view.rowToChunkMapping ) ),
   rowToSliceMapping( std::move( chunked_ellpack_view.rowToSliceMapping ) ),
+  rowToChunkMapping( std::move( chunked_ellpack_view.rowToChunkMapping ) ),
   chunksToSegmentsMapping( std::move( chunked_ellpack_view.chunksToSegmentsMapping ) ),
   rowPointers( std::move( chunked_ellpack_view.rowPointers ) ),
-  slices( std::move( chunked_ellpack_view.slices ) ),
-  numberOfSlices( chunked_ellpack_view.numberOfSlices )
+  slices( std::move( chunked_ellpack_view.slices ) )
 {
 }
 

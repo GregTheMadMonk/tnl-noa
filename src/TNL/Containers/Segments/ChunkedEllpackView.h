@@ -164,7 +164,7 @@ class ChunkedEllpackView
                                     Args... args ) const;
 #endif
 
-      IndexType size = 0, storageSize = 0;
+      IndexType size = 0, storageSize = 0, numberOfSlices = 0;
 
       IndexType chunksInSlice = 256, desiredChunkSize = 16;
 
@@ -187,8 +187,6 @@ class ChunkedEllpackView
       OffsetsView rowPointers;
 
       ChunkedEllpackSliceInfoContainerView slices;
-
-      IndexType numberOfSlices;
 
 #ifdef HAVE_CUDA
       template< typename View_,
