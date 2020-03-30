@@ -230,7 +230,7 @@ public:
    __device__
    void vectorProductCuda( const InVector& inVector,
                            OutVector& outVector,
-                           int gridIdx, unsigned *blocks, size_t size ) const;
+                           int gridIdx, int *blocks, size_t size ) const;
    
    template< typename InVector,
              typename OutVector,
@@ -247,7 +247,7 @@ public:
    void spmvCSRAdaptive( const InVector& inVector,
                            OutVector& outVector,
                            int gridIdx,
-                           unsigned *blocks,
+                           int *blocks,
                            size_t blocks_size) const;
 #endif
 

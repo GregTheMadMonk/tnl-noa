@@ -1259,9 +1259,11 @@ void test_VectorProductLarger()
   Matrix m;
   m.reset();
   m.setDimensions( m_rows, m_cols );
-  typename Matrix::CompressedRowLengthsVector rowLengths;
-  rowLengths.setSize( m_rows );
-  rowLengths.setValue( 20 );
+  typename Matrix::CompressedRowLengthsVector rowLengths(
+     {11, 2, 4, 0, 6, 4, 1, 2, 20, 18, 6, 20, 10, 0, 20, 10, 2, 20, 10, 12}
+  );
+//   rowLengths.setSize( m_rows );
+//   rowLengths.setValue( 20 );
   m.setCompressedRowLengths( rowLengths );
   
   /* 0 */
@@ -1389,93 +1391,83 @@ void test_VectorProductGiant()
   using RealType = typename Matrix::RealType;
   using DeviceType = typename Matrix::DeviceType;
   using IndexType = typename Matrix::IndexType;
-  const IndexType N = 200; // Should be a multiple of 10
-/*
- * Sets up the following NxN sparse matrix:
- *
- *    /  1   0   1   0 ... 1  0 \
- *    |  0   0   0   0 ... 0  0 |
- *    |  0   2   0   2 ... 0  2 |
- *    |  0   0   0   0 ... 0  0 |
- *    |  3  -3   3  -3 ... 3 -3 |
- *    |  0   0   0   0 ... 0  0 |
- *    |  5   5   5   5 ... 5  5 |
- *    |  0   0   0   0 ... 0  0 |
- *    |  0   0   0   0 ... 0  0 |
- *    |  2   0   0   0 ... 0  0 | <- the only 2 in the row
- *    
- *       ..................
- */
     
-  const IndexType m_rows = N;
-  const IndexType m_cols = N;
+  IndexType m_rows = 100;
+  IndexType m_cols = 100;
   
   Matrix m;
   m.reset();
   m.setDimensions( m_rows, m_cols );
-  typename Matrix::CompressedRowLengthsVector rowLengths;
-  rowLengths.setSize( m_rows );
-  rowLengths.setValue( m_cols );
+  typename Matrix::CompressedRowLengthsVector rowLengths(
+     {
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+        100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+     }
+  );
+
   m.setCompressedRowLengths( rowLengths );
   
-  for ( IndexType row = 0; row < m_rows; ++row ) {
-      if (row % 10 == 0) {
-          for ( IndexType col = 0; col < m_cols; ++col ) {
-              if (col % 2)
-                  m.setElement( row, col, 1 );
-          }
-      }
-      else if (row % 10 == 2) {
-          for ( IndexType col = 0; col < m_cols; ++col ) {
-              if (col % 2 == 1)
-                  m.setElement( row, col, 2 );
-          }
-      }
-      else if (row % 10 == 4) {
-          for ( IndexType col = 0; col < m_cols; ++col ) {
-              if (col % 2)
-                  m.setElement( row, col, 3 );
-              else
-                  m.setElement( row, col, -3 );
-          }
-      }
-      else if (row % 10 == 6) {
-          for ( IndexType col = 0; col < m_cols; ++col ) {
-              m.setElement( row, col, 5 );
-          }
-      }
-      else if (row % 10 == 9) {
-          m.setElement( row, 0, 2 );
-      }
-  }
+  for (int i = 0; i < m_rows; ++i)
+     for (int j = 0; j < m_cols; ++j) 
+         m.setElement( i, j, i + 1 );
 
   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
   
   VectorType inVector;
-  inVector.setSize( N );
-  for( IndexType i = 0; i < inVector.getSize(); i++ )        
-      inVector.setElement( i, 2 );
+  inVector.setSize( m_rows );
+  for( IndexType i = 0; i < inVector.getSize(); ++i )        
+      inVector.setElement( i, 1 );
 
   VectorType outVector;  
-  outVector.setSize( N );
-  for( IndexType j = 0; j < outVector.getSize(); j++ )
-      outVector.setElement( j, 0 );
+  outVector.setSize( m_rows );
+  for( IndexType i = 0; i < outVector.getSize(); ++i )
+      outVector.setElement( i, 0 );
 
-  
   m.vectorProduct( inVector, outVector);
+
+  for (int i = 0; i < m_rows; ++i)
+   EXPECT_EQ( outVector.getElement( i ), (i + 1) * 100 );
+
+   //-----------------------------------------------------
+
+  m_rows = 2;
+  m_cols = 1000;
   
-  for ( IndexType i = 0; i < outVector.getSize(); ++i ) {
-      if ( i % 10 == 0 )
-          EXPECT_EQ( outVector.getElement( i ), 200 /* (N) */ );
-      else if ( i % 10 == 2 )
-          EXPECT_EQ( outVector.getElement( i ), 400 /* (2 * N) */ );
-      else if ( i % 10 == 6 )
-          EXPECT_EQ( outVector.getElement( i ), 2000 /* (10 * N) */ );
-      else if ( i % 10 == 9 )
-          EXPECT_EQ( outVector.getElement( i ), 4 );
-      else 
-          EXPECT_EQ( outVector.getElement( i ), 0 );
-  }
+  m.reset();
+  m.setDimensions( m_rows, m_cols );
+  typename Matrix::CompressedRowLengthsVector rowLengths2(
+     {
+        1000, 1000
+     }
+  );
+
+  m.setCompressedRowLengths( rowLengths2 );
+  
+  for (int i = 0; i < m_rows; ++i)
+     for (int j = 0; j < m_cols; ++j) 
+         m.setElement( i, j, i + 1 );
+
+  VectorType inVector2;
+  inVector2.setSize( m_cols );
+  for( IndexType i = 0; i < inVector2.getSize(); i++ )
+      inVector2.setElement( i, 1 );
+
+  VectorType outVector2;  
+  outVector2.setSize( m_rows );
+  for( IndexType i = 0; i < outVector2.getSize(); ++i )
+      outVector2.setElement( i, 0 );
+  m.vectorProduct( inVector2, outVector2);
+
+  for (int i = 0; i < m_rows; ++i)
+   EXPECT_EQ( outVector2.getElement( i ), (i + 1) * 1000 );
 }
 
 template< typename Matrix >
