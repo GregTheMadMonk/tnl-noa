@@ -69,7 +69,7 @@ class ChunkedEllpack
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType >;
+      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
 
       __cuda_callable__ static
       IndexType getSegmentSizeDirect( const OffsetsHolderView& segmentsToSlicesMapping,

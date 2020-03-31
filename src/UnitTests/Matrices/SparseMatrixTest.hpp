@@ -69,6 +69,18 @@ void test_Constructors()
    EXPECT_EQ( m2.getElement( 3, 3 ), 1 );
    EXPECT_EQ( m2.getElement( 4, 4 ), 1 );   // 4th row
 
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+   {
+      EXPECT_EQ( m2.getRow( 0 ).getValue( 0 ), 1 );   // 0th row
+      EXPECT_EQ( m2.getRow( 1 ).getValue( 0 ), 1 );   // 1st row
+      EXPECT_EQ( m2.getRow( 1 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 2 ).getValue( 0 ), 1 );   // 2nd row
+      EXPECT_EQ( m2.getRow( 2 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 3 ).getValue( 0 ), 1 );   // 3rd row
+      EXPECT_EQ( m2.getRow( 3 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 4 ).getValue( 0 ), 1 );   // 4th row
+   }
+
    m2.getCompressedRowLengths( v1 );
    EXPECT_EQ( v1, v2 );
 

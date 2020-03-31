@@ -33,7 +33,7 @@ class CSRView
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = SegmentView< IndexType >;
+      using SegmentViewType = SegmentView< IndexType, true >;
 
       __cuda_callable__
       CSRView();
