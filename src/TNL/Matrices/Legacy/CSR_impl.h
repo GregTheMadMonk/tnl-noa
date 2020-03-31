@@ -34,7 +34,7 @@ template< typename Real,
           typename Device,
           typename Index >
 CSR< Real, Device, Index >::CSR()
-: spmvCudaKernel( hybrid ),
+: //spmvCudaKernel( hybrid ),
   cudaWarpSize( 32 ), //Cuda::getWarpSize() )
   hybridModeSplit( 4 )
 {
@@ -621,7 +621,7 @@ void CSR< Real, Device, Index >::print( std::ostream& str ) const
    }
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 void CSR< Real, Device, Index >::setCudaKernelType( const SPMVCudaKernel kernel )
@@ -636,7 +636,7 @@ __cuda_callable__
 typename CSR< Real, Device, Index >::SPMVCudaKernel CSR< Real, Device, Index >::getCudaKernelType() const
 {
    return this->spmvCudaKernel;
-}
+}*/
 
 template< typename Real,
           typename Device,

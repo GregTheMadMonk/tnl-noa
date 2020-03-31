@@ -31,7 +31,9 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-template< typename Real, typename Device = Devices::Host, typename Index = int >
+enum CSRKernel { CSRScalar, CVSVector, CSRAdaptive, CSRStream };
+
+template< typename Real, typename Device = Devices::Host, typename Index = int >//, CSRKernel KernelType = CSRAdaptive >
 class CSR : public Sparse< Real, Device, Index >
 {
 private:
@@ -60,7 +62,7 @@ public:
              typename _Index = Index >
    using Self = CSR< _Real, _Device, _Index >;
 
-   enum SPMVCudaKernel { scalar, vector, hybrid };
+   //enum SPMVCudaKernel { scalar, vector, hybrid };
 
    CSR();
 
@@ -198,10 +200,10 @@ public:
 
    void print( std::ostream& str ) const;
 
-   void setCudaKernelType( const SPMVCudaKernel kernel );
+   //void setCudaKernelType( const SPMVCudaKernel kernel );
 
-   __cuda_callable__
-   SPMVCudaKernel getCudaKernelType() const;
+   //__cuda_callable__
+   //SPMVCudaKernel getCudaKernelType() const;
 
    void setCudaWarpSize( const int warpSize );
 
@@ -281,7 +283,7 @@ protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
 
-   SPMVCudaKernel spmvCudaKernel;
+   //SPMVCudaKernel spmvCudaKernel;
 
    int cudaWarpSize, hybridModeSplit;
 
