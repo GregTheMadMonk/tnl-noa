@@ -31,9 +31,9 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRLight, CSRAdaptive, CSRStream };
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRAdaptive, CSRStream };
 
-template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRAdaptive >
+template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >
 class CSR : public Sparse< Real, Device, Index >
 {
 private:
@@ -225,9 +225,7 @@ public:
    __device__
    void spmvCudaVectorized( const InVector& inVector,
                             OutVector& outVector,
-                            const IndexType warpStart,
-                            const IndexType warpEnd,
-                            const IndexType inWarpIdx ) const;
+                            const IndexType gridIdx ) const;
 
    template< typename InVector,
              typename OutVector,

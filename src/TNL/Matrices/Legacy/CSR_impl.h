@@ -905,10 +905,13 @@ template< typename Real,
 __device__
 void CSR< Real, Device, Index, KernelType >::spmvCudaVectorized( const InVector& inVector,
                                                               OutVector& outVector,
-                                                              const IndexType warpStart,
-                                                              const IndexType warpEnd,
-                                                              const IndexType inWarpIdx ) const
+                                                              const IndexType gridIdx ) const
 {
+   IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType warpStart = warpSize * ( globalIdx / warpSize );
+   const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
+   const IndexType inWarpIdx = globalIdx % warpSize;
+
    volatile Real* aux = Cuda::getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
@@ -957,10 +960,10 @@ void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& 
          // TODO:
          break;
       case CSRVector:
-         spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
+         spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
          break;
       case CSRLight:
-         spmvCSRLight< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
+         spmvCudaLightSpmv< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
          break;
       case CSRAdaptive:
          spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
@@ -970,9 +973,8 @@ void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& 
          break;
    }
 
-   return;
 
-   IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   /*IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType warpStart = warpSize * ( globalIdx / warpSize );
    const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
    const IndexType inWarpIdx = globalIdx % warpSize;
@@ -980,9 +982,9 @@ void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& 
    if( this->getCudaKernelType() == vector )
       
 
-   /****
-    * Hybrid mode
-    */
+   /////
+   // Hybrid mode
+   //
    const Index firstRow = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
    const IndexType lastRow = min( this->getRows(), firstRow + blockDim. x );
    const IndexType nonzerosPerRow = ( this->rowPointers[ lastRow ] - this->rowPointers[ firstRow ] ) /
@@ -990,19 +992,19 @@ void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& 
 
    if( nonzerosPerRow < this->getHybridModeSplit() )
    {
-      /****
-       * Use the scalar mode
-       */
+      /////
+      // Use the scalar mode
+      //
       if( globalIdx < this->getRows() )
           outVector[ globalIdx ] = this->rowVectorProduct( globalIdx, inVector );
    }
    else
    {
-      /****
-       * Use the vector mode
-       */
+      ////
+      // Use the vector mode
+      //
       spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
-   }
+   }*/
 }
 #endif
 
@@ -1038,10 +1040,11 @@ class CSRDeviceDependentCode< Devices::Host >
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
+          CSRKernel KernelType,
           typename InVector,
           typename OutVector,
           int warpSize >
-__global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Index >* matrix,
+__global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Index, KernelType >* matrix,
                                                      const InVector* inVector,
                                                      OutVector* outVector,
                                                      int gridIdx,
@@ -1050,13 +1053,12 @@ __global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Inde
    typedef CSR< Real, Devices::Cuda, Index > Matrix;
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
    const typename Matrix::IndexType rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( matrix->getCudaKernelType() == Matrix::scalar )
+   if( KernelType == CSRScalar )
    {
       if( rowIdx < matrix->getRows() )
          ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
    }
-   if( matrix->getCudaKernelType() == Matrix::vector ||
-       matrix->getCudaKernelType() == Matrix::hybrid )
+   else
    {
       matrix->template vectorProductCuda< InVector, OutVector, warpSize >
                                         ( *inVector, *outVector, gridIdx, blocks, size );
@@ -1066,16 +1068,17 @@ __global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Inde
 
 template< typename Real,
           typename Index,
+          CSRKernel KernelType,
           typename InVector,
           typename OutVector >
-void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
+void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& matrix,
                                     const InVector& inVector,
                                     OutVector& outVector,
                                     int *blocks,
                                     size_t size )
 {
 #ifdef HAVE_CUDA
-   typedef CSR< Real, Devices::Cuda, Index > Matrix;
+   typedef CSR< Real, Devices::Cuda, Index, KernelType > Matrix;
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = Cuda::passToDevice( matrix );
    InVector* kernel_inVector = Cuda::passToDevice( inVector );
@@ -1096,7 +1099,7 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
       // const int threads = cudaBlockSize.x;
       if( matrix.getCudaWarpSize() == 32 ) {
          // printf("BL %d BLSIZE %d\n", (int)cudaBlocks, (int)threads);
-         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 32 >
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 32 >
                                             <<< 2, 1024 >>>
                                             ( kernel_this,
                                               kernel_inVector,
