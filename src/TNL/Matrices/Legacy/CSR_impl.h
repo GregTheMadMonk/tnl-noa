@@ -32,8 +32,9 @@ class tnlCusparseCSRWrapper {};
 
 template< typename Real,
           typename Device,
-          typename Index >
-CSR< Real, Device, Index >::CSR()
+          typename Index,
+          CSRKernel KernelType >
+CSR< Real, Device, Index, KernelType >::CSR()
 : //spmvCudaKernel( hybrid ),
   cudaWarpSize( 32 ), //Cuda::getWarpSize() )
   hybridModeSplit( 4 )
@@ -42,8 +43,9 @@ CSR< Real, Device, Index >::CSR()
 
 template< typename Real,
           typename Device,
-          typename Index >
-String CSR< Real, Device, Index >::getSerializationType()
+          typename Index,
+          CSRKernel KernelType >
+String CSR< Real, Device, Index, KernelType >::getSerializationType()
 {
    return String( "Matrices::CSR< ") +
           TNL::getType< Real>() +
@@ -54,16 +56,18 @@ String CSR< Real, Device, Index >::getSerializationType()
 
 template< typename Real,
           typename Device,
-          typename Index >
-String CSR< Real, Device, Index >::getSerializationTypeVirtual() const
+          typename Index,
+          CSRKernel KernelType >
+String CSR< Real, Device, Index, KernelType >::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::setDimensions( const IndexType rows,
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setDimensions( const IndexType rows,
                                                 const IndexType columns )
 {
    Sparse< Real, Device, Index >::setDimensions( rows, columns );
@@ -73,8 +77,9 @@ void CSR< Real, Device, Index >::setDimensions( const IndexType rows,
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
    TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
@@ -103,8 +108,9 @@ void CSR< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLeng
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -113,25 +119,28 @@ void CSR< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVe
 
 template< typename Real,
           typename Device,
-          typename Index >
-Index CSR< Real, Device, Index >::getRowLength( const IndexType row ) const
+          typename Index,
+          CSRKernel KernelType >
+Index CSR< Real, Device, Index, KernelType >::getRowLength( const IndexType row ) const
 {
    return this->rowPointers.getElement( row + 1 ) - this->rowPointers.getElement( row );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
+Index CSR< Real, Device, Index, KernelType >::getRowLengthFast( const IndexType row ) const
 {
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
+          typename Index,
+          CSRKernel KernelType >
+Index CSR< Real, Device, Index, KernelType >::getNonZeroRowLength( const IndexType row ) const
 {
     // TODO: Fix/Implement
     TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
@@ -140,9 +149,10 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row ) const
+Index CSR< Real, Device, Index, KernelType >::getNonZeroRowLengthFast( const IndexType row ) const
 {
    ConstMatrixRow matrixRow = this->getRow( row );
    return matrixRow.getNonZeroElementsCount();
@@ -150,11 +160,13 @@ Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename Real2,
              typename Device2,
-             typename Index2 >
-void CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
+             typename Index2,
+             CSRKernel KernelType2 >
+void CSR< Real, Device, Index, KernelType >::setLike( const CSR< Real2, Device2, Index2, KernelType2 >& matrix )
 {
    Sparse< Real, Device, Index >::setLike( matrix );
    this->rowPointers.setLike( matrix.rowPointers );
@@ -162,8 +174,9 @@ void CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& m
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::reset()
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::reset()
 {
    Sparse< Real, Device, Index >::reset();
    this->rowPointers.reset();
@@ -171,9 +184,10 @@ void CSR< Real, Device, Index >::reset()
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-bool CSR< Real, Device, Index >::setElementFast( const IndexType row,
+bool CSR< Real, Device, Index, KernelType >::setElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const Real& value )
 {
@@ -182,8 +196,9 @@ bool CSR< Real, Device, Index >::setElementFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
-bool CSR< Real, Device, Index >::setElement( const IndexType row,
+          typename Index,
+          CSRKernel KernelType >
+bool CSR< Real, Device, Index, KernelType >::setElement( const IndexType row,
                                                       const IndexType column,
                                                       const Real& value )
 {
@@ -193,9 +208,10 @@ bool CSR< Real, Device, Index >::setElement( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
+bool CSR< Real, Device, Index, KernelType >::addElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
@@ -237,8 +253,9 @@ bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
-bool CSR< Real, Device, Index >::addElement( const IndexType row,
+          typename Index,
+          CSRKernel KernelType >
+bool CSR< Real, Device, Index, KernelType >::addElement( const IndexType row,
                                                       const IndexType column,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
@@ -287,9 +304,10 @@ bool CSR< Real, Device, Index >::addElement( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-bool CSR< Real, Device, Index > :: setRowFast( const IndexType row,
+bool CSR< Real, Device, Index, KernelType > :: setRowFast( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
                                                         const IndexType elements )
@@ -313,8 +331,9 @@ bool CSR< Real, Device, Index > :: setRowFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
-bool CSR< Real, Device, Index > :: setRow( const IndexType row,
+          typename Index,
+          CSRKernel KernelType >
+bool CSR< Real, Device, Index, KernelType > :: setRow( const IndexType row,
                                                     const IndexType* columnIndexes,
                                                     const RealType* values,
                                                     const IndexType elements )
@@ -337,9 +356,10 @@ bool CSR< Real, Device, Index > :: setRow( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-bool CSR< Real, Device, Index > :: addRowFast( const IndexType row,
+bool CSR< Real, Device, Index, KernelType > :: addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType numberOfElements,
@@ -351,8 +371,9 @@ bool CSR< Real, Device, Index > :: addRowFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
-bool CSR< Real, Device, Index > :: addRow( const IndexType row,
+          typename Index,
+          CSRKernel KernelType >
+bool CSR< Real, Device, Index, KernelType > :: addRow( const IndexType row,
                                                     const IndexType* columns,
                                                     const RealType* values,
                                                     const IndexType numberOfElements,
@@ -363,9 +384,10 @@ bool CSR< Real, Device, Index > :: addRow( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-Real CSR< Real, Device, Index >::getElementFast( const IndexType row,
+Real CSR< Real, Device, Index, KernelType >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
    IndexType elementPtr = this->rowPointers[ row ];
@@ -382,8 +404,9 @@ Real CSR< Real, Device, Index >::getElementFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
-Real CSR< Real, Device, Index >::getElement( const IndexType row,
+          typename Index,
+          CSRKernel KernelType >
+Real CSR< Real, Device, Index, KernelType >::getElement( const IndexType row,
                                                       const IndexType column ) const
 {
    IndexType elementPtr = this->rowPointers.getElement( row );
@@ -400,9 +423,10 @@ Real CSR< Real, Device, Index >::getElement( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-void CSR< Real, Device, Index >::getRowFast( const IndexType row,
+void CSR< Real, Device, Index, KernelType >::getRowFast( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
 {
@@ -418,10 +442,11 @@ void CSR< Real, Device, Index >::getRowFast( const IndexType row,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-typename CSR< Real, Device, Index >::MatrixRow
-CSR< Real, Device, Index >::
+typename CSR< Real, Device, Index, KernelType >::MatrixRow
+CSR< Real, Device, Index, KernelType >::
 getRow( const IndexType rowIndex )
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
@@ -434,10 +459,11 @@ getRow( const IndexType rowIndex )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-typename CSR< Real, Device, Index >::ConstMatrixRow
-CSR< Real, Device, Index >::
+typename CSR< Real, Device, Index, KernelType >::ConstMatrixRow
+CSR< Real, Device, Index, KernelType >::
 getRow( const IndexType rowIndex ) const
 {
     const IndexType rowOffset = this->rowPointers[ rowIndex ];
@@ -450,10 +476,11 @@ getRow( const IndexType rowIndex ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType CSR< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType CSR< Real, Device, Index, KernelType >::rowVectorProduct( const IndexType row,
                                                                                  const Vector& vector ) const
 {
    Real result = 0.0;
@@ -468,9 +495,10 @@ typename Vector::RealType CSR< Real, Device, Index >::rowVectorProduct( const In
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename InVector, typename OutVector >
-void CSR< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void CSR< Real, Device, Index, KernelType >::vectorProduct( const InVector& inVector,
                                                 OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -478,10 +506,12 @@ void CSR< Real, Device, Index >::vectorProduct( const InVector& inVector,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename Real2,
-             typename Index2 >
-void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& matrix,
+             typename Index2,
+             CSRKernel KernelType2 >
+void CSR< Real, Device, Index, KernelType >::addMatrix( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                                             const RealType& matrixMultiplicator,
                                             const RealType& thisMatrixMultiplicator )
 {
@@ -491,10 +521,12 @@ void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& 
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename Real2,
-             typename Index2 >
-void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Index2 >& matrix,
+             typename Index2,
+             CSRKernel KernelType2 >
+void CSR< Real, Device, Index, KernelType >::getTransposition( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    throw Exceptions::NotImplementedError( "CSR::getTransposition is not implemented." );
@@ -503,9 +535,10 @@ void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename Vector1, typename Vector2 >
-bool CSR< Real, Device, Index >::performSORIteration( const Vector1& b,
+bool CSR< Real, Device, Index, KernelType >::performSORIteration( const Vector1& b,
                                                       const IndexType row,
                                                       Vector2& x,
                                                       const RealType& omega ) const
@@ -541,9 +574,10 @@ bool CSR< Real, Device, Index >::performSORIteration( const Vector1& b,
 // copy assignment
 template< typename Real,
           typename Device,
-          typename Index >
-CSR< Real, Device, Index >&
-CSR< Real, Device, Index >::operator=( const CSR& matrix )
+          typename Index,
+          CSRKernel KernelType >
+CSR< Real, Device, Index, KernelType >&
+CSR< Real, Device, Index, KernelType >::operator=( const CSR& matrix )
 {
    this->setLike( matrix );
    this->values = matrix.values;
@@ -555,10 +589,11 @@ CSR< Real, Device, Index >::operator=( const CSR& matrix )
 // cross-device copy assignment
 template< typename Real,
           typename Device,
-          typename Index >
-   template< typename Real2, typename Device2, typename Index2, typename >
-CSR< Real, Device, Index >&
-CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matrix )
+          typename Index,
+          CSRKernel KernelType >
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2, typename >
+CSR< Real, Device, Index, KernelType >&
+CSR< Real, Device, Index, KernelType >::operator=( const CSR< Real2, Device2, Index2, KernelType2 >& matrix )
 {
    this->setLike( matrix );
    this->values = matrix.values;
@@ -570,8 +605,9 @@ CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matr
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::save( File& file ) const
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
    file << this->rowPointers;
@@ -579,8 +615,9 @@ void CSR< Real, Device, Index >::save( File& file ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::load( File& file )
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
    file >> this->rowPointers;
@@ -588,24 +625,27 @@ void CSR< Real, Device, Index >::load( File& file )
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::save( const String& fileName ) const
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::load( const String& fileName )
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::load( const String& fileName )
 {
    Object::load( fileName );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::print( std::ostream& str ) const
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -624,7 +664,7 @@ void CSR< Real, Device, Index >::print( std::ostream& str ) const
 /*template< typename Real,
           typename Device,
           typename Index >
-void CSR< Real, Device, Index >::setCudaKernelType( const SPMVCudaKernel kernel )
+void CSR< Real, Device, Index, KernelType >::setCudaKernelType( const SPMVCudaKernel kernel )
 {
    this->spmvCudaKernel = kernel;
 }
@@ -633,40 +673,44 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename CSR< Real, Device, Index >::SPMVCudaKernel CSR< Real, Device, Index >::getCudaKernelType() const
+typename CSR< Real, Device, Index, KernelType >::SPMVCudaKernel CSR< Real, Device, Index, KernelType >::getCudaKernelType() const
 {
    return this->spmvCudaKernel;
 }*/
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::setCudaWarpSize( const int warpSize )
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setCudaWarpSize( const int warpSize )
 {
    this->cudaWarpSize = warpSize;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-int CSR< Real, Device, Index >::getCudaWarpSize() const
+          typename Index,
+          CSRKernel KernelType >
+int CSR< Real, Device, Index, KernelType >::getCudaWarpSize() const
 {
    return this->cudaWarpSize;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void CSR< Real, Device, Index >::setHybridModeSplit( const IndexType hybridModeSplit )
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setHybridModeSplit( const IndexType hybridModeSplit )
 {
    this->hybridModeSplit = hybridModeSplit;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
 __cuda_callable__
-Index CSR< Real, Device, Index >::getHybridModeSplit() const
+Index CSR< Real, Device, Index, KernelType >::getHybridModeSplit() const
 {
    return this->hybridModeSplit;
 }
@@ -675,12 +719,13 @@ Index CSR< Real, Device, Index >::getHybridModeSplit() const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename InVector,
              typename OutVector,
              int warpSize >
 __device__
-void CSR< Real, Device, Index >::spmvCudaLightSpmv( const InVector& inVector,
+void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& inVector,
                                                       OutVector& outVector,
                                                       int gridIdx) const
 {
@@ -764,12 +809,13 @@ void spmvCSRVectorHelper( const InVector& inVector,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename InVector,
              typename OutVector,
              int warpSize >
 __device__
-void CSR< Real, Device, Index >::spmvCSRAdaptive( const InVector& inVector,
+void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& inVector,
                                                       OutVector& outVector,
                                                       int gridIdx,
                                                       int *blocks,
@@ -851,12 +897,13 @@ void CSR< Real, Device, Index >::spmvCSRAdaptive( const InVector& inVector,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename InVector,
              typename OutVector,
              int warpSize >
 __device__
-void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
+void CSR< Real, Device, Index, KernelType >::spmvCudaVectorized( const InVector& inVector,
                                                               OutVector& outVector,
                                                               const IndexType warpStart,
                                                               const IndexType warpEnd,
@@ -893,17 +940,36 @@ void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          CSRKernel KernelType >
    template< typename InVector,
              typename OutVector,
              int warpSize >
 __device__
-void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
+void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              int gridIdx,
                                                              int *blocks, size_t size ) const
 {
-   spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
+   switch( KernelType )
+   {
+      case CSRScalar:
+         // TODO:
+         break;
+      case CSRVector:
+         spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
+         break;
+      case CSRLight:
+         spmvCSRLight< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
+         break;
+      case CSRAdaptive:
+         spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
+         break;
+      case CSRStream:
+         // TODO:
+         break;
+   }
+
    return;
 
    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -912,7 +978,7 @@ void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
    const IndexType inWarpIdx = globalIdx % warpSize;
 
    if( this->getCudaKernelType() == vector )
-      spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
+      
 
    /****
     * Hybrid mode
@@ -949,14 +1015,15 @@ class CSRDeviceDependentCode< Devices::Host >
 
       template< typename Real,
                 typename Index,
+                CSRKernel KernelType,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const CSR< Real, Device, Index >& matrix,
+      static void vectorProduct( const CSR< Real, Device, Index, KernelType >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
          const Index rows = matrix.getRows();
-         const CSR< Real, Device, Index >* matrixPtr = &matrix;
+         const CSR< Real, Device, Index, KernelType >* matrixPtr = &matrix;
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
@@ -1174,9 +1241,10 @@ class CSRDeviceDependentCode< Devices::Cuda >
 
       template< typename Real,
                 typename Index,
+                CSRKernel KernelType,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const CSR< Real, Device, Index >& matrix,
+      static void vectorProduct( const CSR< Real, Device, Index, KernelType >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

@@ -31,9 +31,9 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CVSVector, CSRAdaptive, CSRStream };
+enum CSRKernel { CSRScalar, CSRVector, CSRLight, CSRAdaptive, CSRStream };
 
-template< typename Real, typename Device = Devices::Host, typename Index = int >//, CSRKernel KernelType = CSRAdaptive >
+template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRAdaptive >
 class CSR : public Sparse< Real, Device, Index >
 {
 private:
@@ -42,7 +42,7 @@ private:
    using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
    // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2 >
    friend class CSR;
 
 public:
@@ -62,7 +62,10 @@ public:
              typename _Index = Index >
    using Self = CSR< _Real, _Device, _Index >;
 
+   constexpr CSRKernel getSpMVKernelType() { return KernelType; };
    //enum SPMVCudaKernel { scalar, vector, hybrid };
+
+   using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
    CSR();
 
@@ -87,8 +90,8 @@ public:
    __cuda_callable__
    IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const CSR< Real2, Device2, Index2 >& matrix );
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2 >
+   void setLike( const CSR< Real2, Device2, Index2, KernelType2 >& matrix );
 
    void reset();
 
@@ -167,13 +170,13 @@ public:
                        OutVector& outVector ) const;
    // TODO: add const RealType& multiplicator = 1.0 )
 
-   template< typename Real2, typename Index2 >
-   void addMatrix( const CSR< Real2, Device, Index2 >& matrix,
+   template< typename Real2, typename Index2, CSRKernel KernelType2 >
+   void addMatrix( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-   template< typename Real2, typename Index2 >
-   void getTransposition( const CSR< Real2, Device, Index2 >& matrix,
+   template< typename Real2, typename Index2, CSRKernel KernelType2 >
+   void getTransposition( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
@@ -186,9 +189,9 @@ public:
    CSR& operator=( const CSR& matrix );
 
    // cross-device copy assignment
-   template< typename Real2, typename Device2, typename Index2,
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2,
              typename = typename Enabler< Device2 >::type >
-   CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
+   CSR& operator=( const CSR< Real2, Device2, Index2, KernelType2 >& matrix );
 
    void save( File& file ) const;
 
