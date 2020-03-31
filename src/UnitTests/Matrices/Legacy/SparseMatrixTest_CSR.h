@@ -112,19 +112,19 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProduct< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, vectorProductLargerTest )
+/*TYPED_TEST( CSRMatrixTest, vectorProductLargerTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_VectorProductLarger< CSRMatrixType >();
-}
+}*/
 
-TYPED_TEST( CSRMatrixTest, vectorProductGiantTest )
+/*TYPED_TEST( CSRMatrixTest, vectorProductGiantTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_VectorProductGiant< CSRMatrixType >();
-}
+}*/
 
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
