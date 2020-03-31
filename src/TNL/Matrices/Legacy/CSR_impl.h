@@ -1266,7 +1266,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
          std::vector<int> inBlock;
          inBlock.push_back(0);
          size_t sum = 0;
-         size_t i;
+         Index i;
          int prev_i = 0;
          for (i = 1; i < matrix.getRowPointers().getSize() - 1; ++i) {
             size_t elements = matrix.getRowPointers().getElement(i) -
