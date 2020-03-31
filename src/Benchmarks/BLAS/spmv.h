@@ -27,6 +27,11 @@ namespace Benchmarks {
 template< typename Real, typename Device, typename Index >
 using SlicedEllpack = Matrices::Legacy::SlicedEllpack< Real, Device, Index >;
 
+// Legacy formats
+template< typename Real, typename Device, typename Index >
+using SparseMatrixLegacy_CSR_Scalar = Matrices::Legacy::CSR< Real, Device, Index, Matrices::Legacy::CSRScalar >;
+
+
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
                        const int elementsPerRow )
@@ -173,7 +178,7 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & elementsPerRow )
 {
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   benchmarkSpMV< Real, Matrices::Legacy::CSR >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, SparseMatrixLegacy_CSR_Scalar >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, Matrices::Legacy::Ellpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, Matrices::Legacy::ChunkedEllpack >( benchmark, size, elementsPerRow );

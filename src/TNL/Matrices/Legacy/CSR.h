@@ -31,7 +31,9 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-template< typename Real, typename Device = Devices::Host, typename Index = int >
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRAdaptive, CSRStream };
+
+template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >
 class CSR : public Sparse< Real, Device, Index >
 {
 private:
@@ -40,7 +42,7 @@ private:
    using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
    // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2 >
    friend class CSR;
 
 public:
@@ -60,7 +62,10 @@ public:
              typename _Index = Index >
    using Self = CSR< _Real, _Device, _Index >;
 
-   enum SPMVCudaKernel { scalar, vector, hybrid };
+   constexpr CSRKernel getSpMVKernelType() { return KernelType; };
+   //enum SPMVCudaKernel { scalar, vector, hybrid };
+
+   using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
    CSR();
 
@@ -85,8 +90,8 @@ public:
    __cuda_callable__
    IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const CSR< Real2, Device2, Index2 >& matrix );
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2 >
+   void setLike( const CSR< Real2, Device2, Index2, KernelType2 >& matrix );
 
    void reset();
 
@@ -165,13 +170,13 @@ public:
                        OutVector& outVector ) const;
    // TODO: add const RealType& multiplicator = 1.0 )
 
-   template< typename Real2, typename Index2 >
-   void addMatrix( const CSR< Real2, Device, Index2 >& matrix,
+   template< typename Real2, typename Index2, CSRKernel KernelType2 >
+   void addMatrix( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
-   template< typename Real2, typename Index2 >
-   void getTransposition( const CSR< Real2, Device, Index2 >& matrix,
+   template< typename Real2, typename Index2, CSRKernel KernelType2 >
+   void getTransposition( const CSR< Real2, Device, Index2, KernelType2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
@@ -184,9 +189,9 @@ public:
    CSR& operator=( const CSR& matrix );
 
    // cross-device copy assignment
-   template< typename Real2, typename Device2, typename Index2,
+   template< typename Real2, typename Device2, typename Index2, CSRKernel KernelType2,
              typename = typename Enabler< Device2 >::type >
-   CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
+   CSR& operator=( const CSR< Real2, Device2, Index2, KernelType2 >& matrix );
 
    void save( File& file ) const;
 
@@ -198,10 +203,10 @@ public:
 
    void print( std::ostream& str ) const;
 
-   void setCudaKernelType( const SPMVCudaKernel kernel );
+   //void setCudaKernelType( const SPMVCudaKernel kernel );
 
-   __cuda_callable__
-   SPMVCudaKernel getCudaKernelType() const;
+   //__cuda_callable__
+   //SPMVCudaKernel getCudaKernelType() const;
 
    void setCudaWarpSize( const int warpSize );
 
@@ -216,13 +221,11 @@ public:
 
    template< typename InVector,
              typename OutVector,
-             int warpSize >
+             int warpSize > 
    __device__
    void spmvCudaVectorized( const InVector& inVector,
                             OutVector& outVector,
-                            const IndexType warpStart,
-                            const IndexType warpEnd,
-                            const IndexType inWarpIdx ) const;
+                            const IndexType gridIdx ) const;
 
    template< typename InVector,
              typename OutVector,
@@ -230,7 +233,25 @@ public:
    __device__
    void vectorProductCuda( const InVector& inVector,
                            OutVector& outVector,
-                           int gridIdx ) const;
+                           int gridIdx, int *blocks, size_t size ) const;
+   
+   template< typename InVector,
+             typename OutVector,
+             int warpSize > 
+   __device__
+   void spmvCudaLightSpmv( const InVector& inVector,
+                            OutVector& outVector,
+                            int gridIdx) const;
+
+   template< typename InVector,
+             typename OutVector,
+             int warpSize > 
+   __device__
+   void spmvCSRAdaptive( const InVector& inVector,
+                           OutVector& outVector,
+                           int gridIdx,
+                           int *blocks,
+                           size_t blocks_size) const;
 #endif
 
    // The following getters allow us to interface TNL with external C-like
@@ -263,7 +284,7 @@ protected:
 
    Containers::Vector< Index, Device, Index > rowPointers;
 
-   SPMVCudaKernel spmvCudaKernel;
+   //SPMVCudaKernel spmvCudaKernel;
 
    int cudaWarpSize, hybridModeSplit;
 
