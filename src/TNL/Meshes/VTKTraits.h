@@ -157,6 +157,44 @@ inline std::string getTypeName( std::uint64_t ) { return "UInt64"; }
 inline std::string getTypeName( float ) { return "Float32"; }
 inline std::string getTypeName( double ) { return "Float64"; }
 
+/**
+ * Ghost points and ghost cells
+ *
+ * The following bit fields are consistent with the corresponding VTK enums [1], which in turn
+ * are consistent with VisIt ghost zones specification [2].
+ *
+ * - [1] https://github.com/Kitware/VTK/blob/060f626b8df0b8144ec8f10c41f936b712c0330b/Common/DataModel/vtkDataSetAttributes.h#L118-L138
+ * - [2] http://www.visitusers.org/index.php?title=Representing_ghost_data
+ */
+enum class CellGhostTypes
+: std::uint8_t
+{
+   DUPLICATECELL = 1,        // the cell is present on multiple processors
+   HIGHCONNECTIVITYCELL = 2, // the cell has more neighbors than in a regular mesh
+   LOWCONNECTIVITYCELL = 4,  // the cell has less neighbors than in a regular mesh
+   REFINEDCELL = 8,          // other cells are present that refines it.
+   EXTERIORCELL = 16,        // the cell is on the exterior of the data set
+   HIDDENCELL = 32           // the cell is needed to maintain connectivity, but the data values should be ignored.
+};
+
+enum class PointGhostTypes
+: std::uint8_t
+{
+   DUPLICATEPOINT = 1,  // the cell is present on multiple processors
+   HIDDENPOINT = 2      // the point is needed to maintain connectivity, but the data values should be ignored.
+};
+
+/**
+ * A DataArray with this name is used in the parallel VTK files to indicate ghost regions.
+ * Each value must be assigned according to the bit fields PointGhostTypes or CellGhostType.
+ *
+ * For details, see https://blog.kitware.com/ghost-and-blanking-visibility-changes/
+ */
+inline const char* ghostArrayName()
+{
+   return "vtkGhostType";
+}
+
 } // namespace VTK
 } // namespace Meshes
 } // namespace TNL
