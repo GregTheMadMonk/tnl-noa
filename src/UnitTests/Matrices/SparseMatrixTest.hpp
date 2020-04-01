@@ -79,6 +79,16 @@ void test_Constructors()
       EXPECT_EQ( m2.getRow( 3 ).getValue( 0 ), 1 );   // 3rd row
       EXPECT_EQ( m2.getRow( 3 ).getValue( 1 ), 1 );
       EXPECT_EQ( m2.getRow( 4 ).getValue( 0 ), 1 );   // 4th row
+
+      const Matrix& mm = m2;
+      EXPECT_EQ( mm.getRow( 0 ).getValue( 0 ), 1 );   // 0th row
+      EXPECT_EQ( mm.getRow( 1 ).getValue( 0 ), 1 );   // 1st row
+      EXPECT_EQ( mm.getRow( 1 ).getValue( 1 ), 1 );
+      EXPECT_EQ( mm.getRow( 2 ).getValue( 0 ), 1 );   // 2nd row
+      EXPECT_EQ( mm.getRow( 2 ).getValue( 1 ), 1 );
+      EXPECT_EQ( mm.getRow( 3 ).getValue( 0 ), 1 );   // 3rd row
+      EXPECT_EQ( mm.getRow( 3 ).getValue( 1 ), 1 );
+      EXPECT_EQ( mm.getRow( 4 ).getValue( 0 ), 1 );   // 4th row
    }
 
    m2.getCompressedRowLengths( v1 );
