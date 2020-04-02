@@ -46,7 +46,9 @@ template< typename MeshConfig,
 class EntityInitializerLayer;
 
 template< typename MeshConfig,
-          typename EntityTopology >
+          typename EntityTopology,
+          bool SubvertexStorage =
+               MeshConfig::subentityStorage( typename MeshTraits< MeshConfig >::template EntityTraits< EntityTopology::dimension >::EntityTopology(), 0 ) >
 class EntityInitializer
    : public EntityInitializerLayer< MeshConfig,
                                     DimensionTag< EntityTopology::dimension >,
@@ -70,6 +72,22 @@ public:
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< EntityTopology::dimension, 0 >( entityIndex, i, entitySeed.getCornerIds()[ i ] );
    }
+};
+
+template< typename MeshConfig,
+          typename EntityTopology >
+class EntityInitializer< MeshConfig, EntityTopology, false >
+   : public EntityInitializerLayer< MeshConfig,
+                                    DimensionTag< EntityTopology::dimension >,
+                                    DimensionTag< MeshTraits< MeshConfig >::meshDimension > >
+{
+   using MeshTraitsType   = MeshTraits< MeshConfig >;
+   using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
+
+   using SeedType         = EntitySeed< MeshConfig, EntityTopology >;
+   using InitializerType  = Initializer< MeshConfig >;
+public:
+   static void initEntity( const GlobalIndexType& entityIndex, const SeedType& entitySeed, InitializerType& initializer) {}
 };
 
 

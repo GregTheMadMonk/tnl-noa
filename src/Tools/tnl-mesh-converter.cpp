@@ -55,6 +55,51 @@ template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { ena
 template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { enum { enabled = false }; };
 template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
 
+// Config tag specifying the MeshConfig template to use.
+template<>
+struct MeshConfigTemplateTag< MeshConverterConfigTag >
+{
+   template< typename Cell,
+             int WorldDimension = Cell::dimension,
+             typename Real = double,
+             typename GlobalIndex = int,
+             typename LocalIndex = GlobalIndex >
+   struct MeshConfig
+   {
+      using CellTopology = Cell;
+      using RealType = Real;
+      using GlobalIndexType = GlobalIndex;
+      using LocalIndexType = LocalIndex;
+
+      static constexpr int worldDimension = WorldDimension;
+      static constexpr int meshDimension = Cell::dimension;
+
+      template< typename EntityTopology >
+      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      {
+         return SubentityDimension == 0 && EntityTopology::dimension == meshDimension;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
+      {
+         return false;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      {
+         return false;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool boundaryTagsStorage( EntityTopology )
+      {
+         return false;
+      }
+   };
+};
+
 } // namespace BuildConfigTags
 } // namespace Meshes
 } // namespace TNL
