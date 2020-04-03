@@ -105,7 +105,7 @@ void test_Constructors()
     *    \  0  0  0 12  0 /
     */
 
-   Matrix m3( 6, 5, {
+   const Matrix m3( 6, 5, {
       { 0, 0,  1.0 }, { 0, 1, 2.0 }, { 0, 2, 3.0 },
       { 1, 1,  4.0 }, { 1, 2, 5.0 }, { 1, 3, 6.0 },
       { 2, 2,  7.0 }, { 2, 3, 8.0 }, { 2, 4, 9.0 },
@@ -149,6 +149,27 @@ void test_Constructors()
    EXPECT_EQ( m3.getElement( 5, 2 ),  0 );
    EXPECT_EQ( m3.getElement( 5, 3 ), 12 );
    EXPECT_EQ( m3.getElement( 5, 4 ),  0 );
+
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+   {
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 0 ),  1 );
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 1 ),  2 );
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 2 ),  3 );
+
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 0 ),  4 );
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 1 ),  5 );
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 2 ),  6 );
+
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 0 ),  7 );
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 1 ),  8 );
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 2 ),  9 );
+
+      EXPECT_EQ( m3.getRow( 3 ).getValue( 0 ), 10 );
+
+      EXPECT_EQ( m3.getRow( 4 ).getValue( 0 ), 11 );
+
+      EXPECT_EQ( m3.getRow( 5 ).getValue( 0 ), 12 );
+   }
 
    std::map< std::pair< int, int >, float > map;
    map[ { 0, 0 } ] = 1.0;
@@ -383,6 +404,118 @@ void test_GetRow()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
+
+   Matrix m2( {1, 2, 2, 2, 1 }, 5 );
+   typename Matrix::RowsCapacitiesType v1, v2{ 1, 2, 2, 2, 1 };
+   m2.setElement( 0, 0, 1 );   // 0th row
+   m2.setElement( 1, 0, 1 );   // 1st row
+   m2.setElement( 1, 1, 1 );
+   m2.setElement( 2, 1, 1 );   // 2nd row
+   m2.setElement( 2, 2, 1 );
+   m2.setElement( 3, 2, 1 );   // 3rd row
+   m2.setElement( 3, 3, 1 );
+   m2.setElement( 4, 4, 1 );   // 4th row
+
+   EXPECT_EQ( m2.getElement( 0, 0 ), 1 );   // 0th row
+   EXPECT_EQ( m2.getElement( 1, 0 ), 1 );   // 1st row
+   EXPECT_EQ( m2.getElement( 1, 1 ), 1 );
+   EXPECT_EQ( m2.getElement( 2, 1 ), 1 );   // 2nd row
+   EXPECT_EQ( m2.getElement( 2, 2 ), 1 );
+   EXPECT_EQ( m2.getElement( 3, 2 ), 1 );   // 3rd row
+   EXPECT_EQ( m2.getElement( 3, 3 ), 1 );
+   EXPECT_EQ( m2.getElement( 4, 4 ), 1 );   // 4th row
+
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+   {
+      EXPECT_EQ( m2.getRow( 0 ).getValue( 0 ), 1 );   // 0th row
+      EXPECT_EQ( m2.getRow( 1 ).getValue( 0 ), 1 );   // 1st row
+      EXPECT_EQ( m2.getRow( 1 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 2 ).getValue( 0 ), 1 );   // 2nd row
+      EXPECT_EQ( m2.getRow( 2 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 3 ).getValue( 0 ), 1 );   // 3rd row
+      EXPECT_EQ( m2.getRow( 3 ).getValue( 1 ), 1 );
+      EXPECT_EQ( m2.getRow( 4 ).getValue( 0 ), 1 );   // 4th row
+   }
+
+   m2.getCompressedRowLengths( v1 );
+   EXPECT_EQ( v1, v2 );
+
+   /*
+    * Sets up the following 6x5 sparse matrix:
+    *
+    *    /  1  2  3  0  0 \
+    *    |  0  4  5  6  0 |
+    *    |  0  0  7  8  9 |
+    *    | 10  0  0  0  0 |
+    *    |  0 11  0  0  0 |
+    *    \  0  0  0 12  0 /
+    */
+
+   const Matrix m3( 6, 5, {
+      { 0, 0,  1.0 }, { 0, 1, 2.0 }, { 0, 2, 3.0 },
+      { 1, 1,  4.0 }, { 1, 2, 5.0 }, { 1, 3, 6.0 },
+      { 2, 2,  7.0 }, { 2, 3, 8.0 }, { 2, 4, 9.0 },
+      { 3, 0, 10.0 },
+      { 4, 1, 11.0 },
+      { 5, 3, 12.0 } } );
+
+   // Check the set elements
+   EXPECT_EQ( m3.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m3.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m3.getElement( 0, 2 ),  3 );
+   EXPECT_EQ( m3.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m3.getElement( 0, 4 ),  0 );
+
+   EXPECT_EQ( m3.getElement( 1, 0 ),  0 );
+   EXPECT_EQ( m3.getElement( 1, 1 ),  4 );
+   EXPECT_EQ( m3.getElement( 1, 2 ),  5 );
+   EXPECT_EQ( m3.getElement( 1, 3 ),  6 );
+   EXPECT_EQ( m3.getElement( 1, 4 ),  0 );
+
+   EXPECT_EQ( m3.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m3.getElement( 2, 1 ),  0 );
+   EXPECT_EQ( m3.getElement( 2, 2 ),  7 );
+   EXPECT_EQ( m3.getElement( 2, 3 ),  8 );
+   EXPECT_EQ( m3.getElement( 2, 4 ),  9 );
+
+   EXPECT_EQ( m3.getElement( 3, 0 ), 10 );
+   EXPECT_EQ( m3.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m3.getElement( 3, 2 ),  0 );
+   EXPECT_EQ( m3.getElement( 3, 3 ),  0 );
+   EXPECT_EQ( m3.getElement( 3, 4 ),  0 );
+
+   EXPECT_EQ( m3.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m3.getElement( 4, 1 ), 11 );
+   EXPECT_EQ( m3.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m3.getElement( 4, 3 ),  0 );
+   EXPECT_EQ( m3.getElement( 4, 4 ),  0 );
+
+   EXPECT_EQ( m3.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m3.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m3.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m3.getElement( 5, 3 ), 12 );
+   EXPECT_EQ( m3.getElement( 5, 4 ),  0 );
+
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+   {
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 0 ),  1 );
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 1 ),  2 );
+      EXPECT_EQ( m3.getRow( 0 ).getValue( 2 ),  3 );
+
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 0 ),  4 );
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 1 ),  5 );
+      EXPECT_EQ( m3.getRow( 1 ).getValue( 2 ),  6 );
+
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 0 ),  7 );
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 1 ),  8 );
+      EXPECT_EQ( m3.getRow( 2 ).getValue( 2 ),  9 );
+
+      EXPECT_EQ( m3.getRow( 3 ).getValue( 0 ), 10 );
+
+      EXPECT_EQ( m3.getRow( 4 ).getValue( 0 ), 11 );
+
+      EXPECT_EQ( m3.getRow( 5 ).getValue( 0 ), 12 );
+   }
 
    /*
     * Sets up the following 10x10 sparse matrix:
