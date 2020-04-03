@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshEntity_impl.h  -  description
+                          MeshEntity.hpp  -  description
                              -------------------
     begin                : Sep 8, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.

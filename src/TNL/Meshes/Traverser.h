@@ -22,32 +22,32 @@ template< typename Mesh,
           int EntitiesDimension = MeshEntity::getEntityDimension() >
 class Traverser
 {
-   public:
-      using MeshType = Mesh;
-      using MeshPointer = Pointers::SharedPointer< MeshType >;
-      using DeviceType = typename MeshType::DeviceType;
-      using GlobalIndexType = typename MeshType::GlobalIndexType;
+public:
+   using MeshType = Mesh;
+   using MeshPointer = Pointers::SharedPointer< MeshType >;
+   using DeviceType = typename MeshType::DeviceType;
+   using GlobalIndexType = typename MeshType::GlobalIndexType;
 
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processBoundaryEntities( const MeshPointer& meshPointer,
-                                    UserData userData ) const;
+   template< typename EntitiesProcessor,
+             typename UserData >
+   void processBoundaryEntities( const MeshPointer& meshPointer,
+                                 UserData userData ) const;
 
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processInteriorEntities( const MeshPointer& meshPointer,
-                                    UserData userData ) const;
+   template< typename EntitiesProcessor,
+             typename UserData >
+   void processInteriorEntities( const MeshPointer& meshPointer,
+                                 UserData userData ) const;
 
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processAllEntities( const MeshPointer& meshPointer,
-                               UserData userData ) const;
+   template< typename EntitiesProcessor,
+             typename UserData >
+   void processAllEntities( const MeshPointer& meshPointer,
+                            UserData userData ) const;
 };
 
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/MeshDetails/Traverser_impl.h>
+#include <TNL/Meshes/Traverser.hpp>
 #include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>
 #include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
 #include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>

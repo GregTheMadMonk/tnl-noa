@@ -218,4 +218,4 @@ std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& m
 
 #include <TNL/Meshes/MeshEntity.h>
 
-#include <TNL/Meshes/MeshDetails/Mesh_impl.h>
+#include <TNL/Meshes/Mesh.hpp>

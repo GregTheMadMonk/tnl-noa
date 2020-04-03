@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Traverser_impl.h  -  description
+                          Traverser.hpp  -  description
                              -------------------
     begin                : Dec 25, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

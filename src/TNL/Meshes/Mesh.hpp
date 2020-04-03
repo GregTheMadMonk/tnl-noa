@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Mesh_impl.h  -  description
+                          Mesh.hpp  -  description
                              -------------------
     begin                : Sep 5, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.

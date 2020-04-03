@@ -116,4 +116,4 @@ std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Devic
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/MeshDetails/MeshEntity_impl.h>
+#include <TNL/Meshes/MeshEntity.hpp>
