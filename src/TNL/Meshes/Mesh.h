@@ -22,8 +22,8 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
-#include <TNL/Meshes/MeshDetails/MeshLayers/BoundaryTags/LayerFamily.h>
+#include <TNL/Meshes/MeshDetails/layers/StorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/BoundaryTags/LayerFamily.h>
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
