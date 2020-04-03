@@ -93,7 +93,7 @@ class Initializer
       {
          // copy points
          mesh.template setEntitiesCount< 0 >( points.getSize() );
-         mesh.getPoints() = points;
+         mesh.getPoints().swap( points );
          points.reset();
 
          this->mesh = &mesh;
@@ -354,6 +354,7 @@ class InitializerLayer< MeshConfig,
          EntityInitializerType::initSuperentities( initializer, mesh );
          this->seedsIndexedSet.clear();
          this->referenceOrientations.clear();
+         this->referenceOrientations.shrink_to_fit();
 
          BaseType::initEntities( initializer, mesh );
       }
