@@ -397,7 +397,7 @@ vectorProduct( const InVector& inVector,
          return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
-   auto fetch = [=] __cuda_callable__ ( IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType globalIdx, bool& compute ) mutable -> RealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )

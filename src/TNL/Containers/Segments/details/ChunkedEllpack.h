@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/ChunkedEllpackSegmentView.h>
+#include <TNL/Containers/Segments/details/CheckLambdas.h>
 
 namespace TNL {
    namespace Containers {
@@ -223,6 +224,81 @@ class ChunkedEllpack
                                     chunksInSlice );
       }
 };
+
+#ifdef HAVE_CUDA
+template< typename Index,
+          typename Fetch,
+          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+struct ChunkedEllpackSegmentsReductionDispatcher{};
+
+template< typename Index, typename Fetch >
+struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, true >
+{
+   template< typename View,
+             typename Reduction,
+             typename ResultKeeper,
+             typename Real,
+             typename... Args >
+   __device__
+   static void exec( View chunkedEllpack,
+                     Index gridIdx,
+                     Index first,
+                     Index last,
+                     Fetch fetch,
+                     Reduction reduction,
+                     ResultKeeper keeper,
+                     Real zero,
+                     Args... args )
+   {
+      chunkedEllpack.segmentsReductionKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   }
+};
+
+template< typename Index, typename Fetch >
+struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, false >
+{
+   template< typename View,
+             typename Reduction,
+             typename ResultKeeper,
+             typename Real,
+             typename... Args >
+   __device__
+   static void exec( View chunkedEllpack,
+                     Index gridIdx,
+                     Index first,
+                     Index last,
+                     Fetch fetch,
+                     Reduction reduction,
+                     ResultKeeper keeper,
+                     Real zero,
+                     Args... args )
+   {
+      chunkedEllpack.segmentsReductionKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   }
+};
+
+template< typename View,
+          typename Index,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          typename Real,
+          typename... Args >
+__global__
+void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
+                                            Index gridIdx,
+                                            Index first,
+                                            Index last,
+                                            Fetch fetch,
+                                            Reduction reduction,
+                                            ResultKeeper keeper,
+                                            Real zero,
+                                            Args... args )
+{
+   ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch >::exec( chunkedEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+}
+#endif
+
          } //namespace details
       } //namespace Segments
    } //namespace Containers

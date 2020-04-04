@@ -18,61 +18,20 @@ namespace TNL {
 
 template< typename Index,
           typename Lambda >
-class CheckFetchLambdaAcceptsSegmentIdxAndCompute
-{
-   private:
-       typedef char YesType[1];
-       typedef char NoType[2];
-
-       template< typename C > static YesType& test( decltype(std::declval< C >()( Index(), Index(), Index(), std::declval< bool& >() ) ) );
-       template< typename C > static NoType& test(...);
-
-   public:
-       static constexpr bool value = ( sizeof( test< Lambda >(0) ) == sizeof( YesType ) );
-};
-
-template< typename Index,
-          typename Lambda >
-class CheckFetchLambdaAcceptsSegmentIdx
-{
-   private:
-       typedef char YesType[1];
-       typedef char NoType[2];
-
-       template< typename C > static YesType& test( decltype(std::declval< C >()( Index(), Index(), Index() ) ) );
-       template< typename C > static NoType& test(...);
-
-   public:
-       static constexpr bool value = ( sizeof( test< Lambda >(0) ) == sizeof( YesType ) );
-};
-
-template< typename Index,
-          typename Lambda >
-class CheckFetchLambdaAcceptsCompute
-{
-   private:
-       typedef char YesType[1];
-       typedef char NoType[2];
-
-       template< typename C > static YesType& test( decltype(std::declval< C >()( Index(), Index(), std::declval< bool& >() ) ) );
-       template< typename C > static NoType& test(...);
-
-   public:
-       static constexpr bool value = ( sizeof( test< Lambda >(0) ) == sizeof( YesType ) );
-};
-
-
-template< typename Index,
-          typename Lambda >
 class CheckFetchLambda
 {
-   static constexpr bool AcceptsSegmentIdxAndCompute = CheckFetchLambdaAcceptsSegmentIdxAndCompute< Index, Lambda >::value;
-   static constexpr bool AcceptsSegmentIdx = CheckFetchLambdaAcceptsSegmentIdx< Index, Lambda >::value;
-   static constexpr bool AcceptsCompute = CheckFetchLambdaAcceptsCompute< Index, Lambda >::value;
+   private:
+      typedef char YesType[1];
+      typedef char NoType[2];
+
+      template< typename C > static YesType& test( decltype(std::declval< C >()( Index(), Index(), Index(), std::declval< bool& >() ) ) );
+      template< typename C > static NoType& test(...);
+
+      static constexpr bool value = ( sizeof( test< Lambda >(0) ) == sizeof( YesType ) );
 
    public:
-      static constexpr bool acceptsSegmentIdx() { return AcceptsSegmentIdxAndCompute || AcceptsSegmentIdx; };
-      static constexpr bool acceptsCompute() { return AcceptsSegmentIdxAndCompute || AcceptsCompute; };
+
+      static constexpr bool hasAllParameters() { return value; };
 };
 
          } // namespace details

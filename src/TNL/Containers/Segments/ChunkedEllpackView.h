@@ -154,6 +154,21 @@ class ChunkedEllpackView
                 typename Real,
                 typename... Args >
       __device__
+      void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+                                                     IndexType first,
+                                                     IndexType last,
+                                                     Fetch fetch,
+                                                     Reduction reduction,
+                                                     ResultKeeper keeper,
+                                                     Real zero,
+                                                     Args... args ) const;
+
+      template< typename Fetch,
+                typename Reduction,
+                typename ResultKeeper,
+                typename Real,
+                typename... Args >
+      __device__
       void segmentsReductionKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
@@ -206,6 +221,9 @@ class ChunkedEllpackView
                                                   ResultKeeper_ keeper,
                                                   Real_ zero,
                                                   Args_... args );
+
+      template< typename Index_, typename Fetch_, bool B_ >
+      friend struct details::ChunkedEllpackSegmentsReductionDispatcher;
 #endif
 };
       } // namespace Segements

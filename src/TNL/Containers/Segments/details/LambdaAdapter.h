@@ -21,7 +21,7 @@ namespace TNL {
 
 template< typename Index,
           typename Lambda,
-          bool AcceptsSegmentIdx = CheckFetchLambda< Index, Lambda >::acceptsSegmentIdx() >
+          bool AllParameters = CheckFetchLambda< Index, Lambda >::hasAllParameters() >
 struct FetchLambdaAdapter
 {
 };
@@ -42,10 +42,10 @@ template< typename Index,
           typename Lambda >
 struct FetchLambdaAdapter< Index, Lambda, false >
 {
-   using ReturnType = decltype( std::declval< Lambda >()( Index(), Index(), std::declval< bool& >() ) );
+   using ReturnType = decltype( std::declval< Lambda >()( Index(), std::declval< bool& >() ) );
    static ReturnType call( Lambda& f, Index segmentIdx, Index localIdx, Index globalIdx, bool& compute )
    {
-      return f( localIdx, globalIdx, compute );
+      return f( globalIdx, compute );
    }
 };
 
