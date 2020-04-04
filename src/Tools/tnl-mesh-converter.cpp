@@ -97,6 +97,11 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
       {
          return false;
       }
+
+      static constexpr bool dualGraphStorage()
+      {
+         return false;
+      }
    };
 };
 

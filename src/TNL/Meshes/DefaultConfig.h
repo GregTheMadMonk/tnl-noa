@@ -87,6 +87,22 @@ struct DefaultConfig
              ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
       //return false;
    }
+
+   /****
+    * Storage of the dual graph.
+    *
+    * If enabled, links from vertices to cells must be stored.
+    */
+   static constexpr bool dualGraphStorage()
+   {
+      return true;
+   }
+
+   /****
+    * Cells must have at least this number of common vertices to be considered
+    * as neighbors in the dual graph.
+    */
+   static constexpr int dualGraphMinCommonVertices = meshDimension;
 };
 
 } // namespace Meshes

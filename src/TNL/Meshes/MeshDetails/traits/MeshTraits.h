@@ -18,6 +18,7 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 
@@ -61,6 +62,9 @@ public:
    using SuperentityTraits = MeshSuperentityTraits< MeshConfig, DeviceType, EntityTopology, Superdimension >;
 
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
+
+   // TODO: write general operator= for different SliceSize and remove the '32' here
+   using DualGraph = Containers::Multimaps::EllpackIndexMultimap< GlobalIndexType, DeviceType, GlobalIndexType, 32 >;
 };
 
 } // namespace Meshes

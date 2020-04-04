@@ -217,6 +217,12 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
       // boundary indices are always sorted so we can't test this
 //      EXPECT_EQ( mesh.template getInteriorEntityIndex< 1 >( i ), edgePermutation[ interiorFaces[ i ] ] );
    }
+
+   // tests for the dual graph layer
+   ASSERT_EQ( mesh.getCellNeighborsCount( cellPermutation[ 0 ] ), 1 );
+   ASSERT_EQ( mesh.getCellNeighborsCount( cellPermutation[ 1 ] ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( cellPermutation[ 0 ], 0 ), cellPermutation[ 1 ] );
+   EXPECT_EQ( mesh.getCellNeighborIndex( cellPermutation[ 1 ], 0 ), cellPermutation[ 0 ] );
 }
 
 // hack due to TNL::Containers::Vector not supporting initilizer lists

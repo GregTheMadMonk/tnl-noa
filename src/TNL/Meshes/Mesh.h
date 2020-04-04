@@ -165,6 +165,15 @@ class Mesh
       __cuda_callable__
       GlobalIndexType getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const;
 
+      /**
+       * Cell neighbors - access the dual graph
+       */
+      __cuda_callable__
+      LocalIndexType getCellNeighborsCount( const GlobalIndexType cellIndex ) const;
+
+      __cuda_callable__
+      GlobalIndexType getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const;
+
 
       /*
        * The permutations follow the definition used in the Metis library: Let M

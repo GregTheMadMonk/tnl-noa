@@ -103,6 +103,11 @@ struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
       {
          return EntityTopology::dimension >= meshDimension - 1;
       }
+
+      static constexpr bool dualGraphStorage()
+      {
+         return false;
+      }
    };
 };
 

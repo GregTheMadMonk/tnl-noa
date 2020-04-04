@@ -21,6 +21,7 @@
 #include <TNL/Meshes/MeshDetails/layers/SubentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/SubentityOrientationsLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/SuperentityStorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/DualGraphLayer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -34,7 +35,8 @@ class StorageLayer;
 
 template< typename MeshConfig, typename Device >
 class StorageLayerFamily
-   : public StorageLayer< MeshConfig, Device, DimensionTag< 0 > >
+   : public StorageLayer< MeshConfig, Device, DimensionTag< 0 > >,
+     public DualGraphLayer< MeshConfig, Device >
 {
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using BaseType       = StorageLayer< MeshConfig, Device, DimensionTag< 0 > >;
@@ -68,6 +70,7 @@ public:
    {
       points = layer.getPoints();
       BaseType::operator=( layer );
+      DualGraphLayer< MeshConfig, Device >::operator=( layer );
       return *this;
    }
 
@@ -76,13 +79,15 @@ public:
    {
       points = layer.getPoints();
       BaseType::operator=( layer );
+      DualGraphLayer< MeshConfig, Device >::operator=( layer );
       return *this;
    }
 
    bool operator==( const StorageLayerFamily& layer ) const
    {
       return ( points == layer.points &&
-               BaseType::operator==( layer ) );
+               BaseType::operator==( layer ) &&
+               DualGraphLayer< MeshConfig, Device >::operator==( layer ) );
    }
 
    void save( File& file ) const

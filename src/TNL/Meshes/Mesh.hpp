@@ -29,10 +29,13 @@ MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
       typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
+   MeshType* mesh = static_cast< MeshType* >( this );
    Initializer< typename MeshType::Config > initializer;
-   initializer.createMesh( points, cellSeeds, *static_cast<MeshType*>(this) );
+   initializer.createMesh( points, cellSeeds, *mesh );
    // init boundary tags
-   static_cast< BoundaryTags::LayerFamily< MeshConfig, Device, MeshType >* >( static_cast< MeshType* >( this ) )->initLayer();
+   static_cast< BoundaryTags::LayerFamily< MeshConfig, Device, MeshType >* >( mesh )->initLayer();
+   // init dual graph
+   mesh->initializeDualGraph( *mesh );
 }
 
 
@@ -205,6 +208,30 @@ getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType sup
    return this->template getSuperentityStorageNetwork< EntityDimension, SuperentityDimension >().getValue( entityIndex, superentityIndex );
 }
 
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::LocalIndexType
+Mesh< MeshConfig, Device >::
+getCellNeighborsCount( const GlobalIndexType cellIndex ) const
+{
+   static_assert( MeshConfig::dualGraphStorage(),
+                  "You try to access the dual graph which is disabled in the mesh configuration." );
+   return this->getNeighborCounts()[ cellIndex ];
+}
+
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename Mesh< MeshConfig, Device >::GlobalIndexType
+Mesh< MeshConfig, Device >::
+getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const
+{
+   static_assert( MeshConfig::dualGraphStorage(),
+                  "You try to access the dual graph which is disabled in the mesh configuration." );
+   TNL_ASSERT_GE( neighborIndex, 0, "Invalid cell neighbor index." );
+   TNL_ASSERT_LT( neighborIndex, getCellNeighborsCount( cellIndex ), "Invalid cell neighbor index." );
+   return this->getDualGraph().getValues( cellIndex )[ neighborIndex ];
+}
+
 
 template< typename MeshConfig, typename Device >
    template< int Dimension >
@@ -253,9 +280,18 @@ void
 Mesh< MeshConfig, Device >::
 load( File& file )
 {
-   Object::load( file );
-   StorageBaseType::load( file );
-   BoundaryTagsLayerFamily::load( file );
+   // loading via host is necessary for the initialization of the dual graph
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      Mesh< MeshConfig, Devices::Host > hostMesh;
+      hostMesh.load( file );
+      *this = hostMesh;
+   }
+   else {
+      Object::load( file );
+      StorageBaseType::load( file );
+      BoundaryTagsLayerFamily::load( file );
+      this->initializeDualGraph( *this );
+   }
 }
 
 template< typename MeshConfig, typename Device >
