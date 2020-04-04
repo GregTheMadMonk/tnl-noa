@@ -13,6 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/EllpackView.h>
+#include <TNL/Containers/Segments/details/LambdaAdapter.h>
 
 namespace TNL {
    namespace Containers {
@@ -258,19 +259,20 @@ void
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-         const IndexType begin = i * segmentSize;
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+         const IndexType begin = segmentIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          RealType aux( zero );
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j++  )
-            reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
-         keeper( i, aux );
+            reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+         keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }
@@ -278,15 +280,15 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
    {
       const IndexType storageSize = this->getStorageSize();
       const IndexType alignedSize = this->alignedSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-         const IndexType begin = i;
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+         const IndexType begin = segmentIdx;
          const IndexType end = storageSize;
          RealType aux( zero );
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j += alignedSize  )
-            reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
-         keeper( i, aux );
+            reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+         keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }

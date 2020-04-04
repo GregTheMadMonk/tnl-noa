@@ -381,7 +381,7 @@ vectorProduct( const InVector& inVector,
    const IndexType paddingIndex = this->getPaddingIndex();
    if( isSymmetric() )
       outVector *= outVectorMultiplicator;
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
+   auto symmetricFetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
@@ -397,6 +397,16 @@ vectorProduct( const InVector& inVector,
          return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
+   auto fetch = [=] __cuda_callable__ ( IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
+      const IndexType column = columnIndexesView[ globalIdx ];
+      compute = ( column != paddingIndex );
+      if( ! compute )
+         return 0.0;
+      if( isBinary() )
+         return inVectorView[ column ];
+      return valuesView[ globalIdx ] * inVectorView[ column ];
+   };
+
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
       sum += value;
    };
@@ -411,7 +421,10 @@ vectorProduct( const InVector& inVector,
             outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
       }
    };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+   if( isSymmetric() )
+      this->segments.segmentsReduction( 0, this->getRows(), symmetricFetch, reduction, keeper, ( RealType ) 0.0 );
+   else
+      this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 
    /*const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();

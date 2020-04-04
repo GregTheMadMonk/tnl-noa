@@ -14,6 +14,7 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/CSRView.h>
 #include <TNL/Containers/Segments/details/CSR.h>
+#include <TNL/Containers/Segments/details/LambdaAdapter.h>
 
 namespace TNL {
    namespace Containers {
@@ -215,17 +216,17 @@ void
 CSRView< Device, Index >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-      const IndexType begin = offsetsView[ i ];
-      const IndexType end = offsetsView[ i + 1 ];
+   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      const IndexType begin = offsetsView[ segmentIdx ];
+      const IndexType end = offsetsView[ segmentIdx + 1 ];
       RealType aux( zero );
       IndexType localIdx( 0 );
       bool compute( true );
-      for( IndexType j = begin; j < end && compute; j++  )
-         reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
-      keeper( i, aux );
+      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+         reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+      keeper( segmentIdx, aux );
    };
    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
 }

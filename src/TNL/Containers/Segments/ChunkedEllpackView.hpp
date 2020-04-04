@@ -13,6 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/ChunkedEllpackView.h>
+#include <TNL/Containers/Segments/details/LambdaAdapter.h>
 //#include <TNL/Containers/Segments/details/ChunkedEllpack.h>
 
 namespace TNL {
@@ -401,7 +402,7 @@ void
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       //segmentsReductionKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
@@ -428,8 +429,8 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
             IndexType begin = sliceOffset + firstChunkOfSegment * chunkSize;
             IndexType end = begin + segmentSize;
             IndexType localIdx( 0 );
-            for( IndexType j = begin; j < end && compute; j++ )
-               reduction( aux, fetch( segmentIdx, localIdx++, j, compute, args...) );
+            for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++ )
+               reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          }
          else
          {
@@ -438,8 +439,8 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
                IndexType begin = sliceOffset + firstChunkOfSegment + chunkIdx;
                IndexType end = begin + chunksInSlice * chunkSize;
                IndexType localIdx( 0 );
-               for( IndexType j = begin; j < end && compute; j += chunksInSlice )
-                  reduction( aux, fetch( segmentIdx, localIdx++, j, compute, args...) );
+               for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += chunksInSlice )
+                  reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
             }
          }
          keeper( segmentIdx, aux );
@@ -459,9 +460,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
-            <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
-            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+         //ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
+         //   <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
+         //   ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
       }
 #endif
    }
