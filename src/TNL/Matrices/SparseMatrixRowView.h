@@ -26,6 +26,9 @@ class SparseMatrixRowView
       using IndexType = typename SegmentViewType::IndexType;
       using ValuesViewType = ValuesView;
       using ColumnsIndexesViewType = ColumnsIndexesView;
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
+      using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
+      using ConstViewType = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
 
       static constexpr bool isBinary() { return isBinary_; };
 

@@ -41,10 +41,13 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesViewType = typename BaseType::ValuesView;
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
       using ColumnsIndexesViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using ConstRowView = typename RowView::ConstViewType;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -88,7 +91,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void reset();
 
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
