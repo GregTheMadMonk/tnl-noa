@@ -96,59 +96,49 @@ getView()
 template< typename Device,
           typename Index >
 __cuda_callable__
-typename CSRView< Device, Index >::ConstViewType
+auto
 CSRView< Device, Index >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( this->offsets.getConstView() );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSegmentsCount() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSegmentsCount() const -> IndexType
 {
    return this->offsets.getSize() - 1;
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSize() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSize() const -> IndexType
 {
    return this->getStorageSize();
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getStorageSize() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getStorageSize() const -> IndexType
 {
    return details::CSR< Device, Index >::getStorageSize( this->offsets );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto CSRView< Device, Index >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
    {

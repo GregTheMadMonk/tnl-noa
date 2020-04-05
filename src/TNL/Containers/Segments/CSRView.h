@@ -26,9 +26,9 @@ class CSRView
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, typename std::remove_const< IndexType >::type >;
-      using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type >::ConstViewType;
+      using IndexType = std::remove_const_t< Index >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
+      using ConstOffsetsView = typename Containers::Vector< Index, DeviceType,IndexType >::ConstViewType;
       using ViewType = CSRView;
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_ >;
@@ -58,7 +58,7 @@ class CSRView
       ViewType getView();
 
       __cuda_callable__
-      ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Number segments.

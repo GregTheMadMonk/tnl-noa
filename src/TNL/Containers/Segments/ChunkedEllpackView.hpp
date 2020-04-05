@@ -154,10 +154,8 @@ getView()
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-typename ChunkedEllpackView< Device, Index, RowMajorOrder >::ConstViewType
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getConstView() const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, chunksInSlice, desiredChunkSize,
                          rowToChunkMapping.getConstView(),
@@ -171,10 +169,8 @@ getConstView() const
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getSegmentsCount() const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getSegmentsCount() const -> IndexType
 {
    return this->size;
 }
@@ -182,10 +178,8 @@ getSegmentsCount() const
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
       return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSizeDirect(
@@ -214,10 +208,8 @@ getSegmentSize( const IndexType segmentIdx ) const
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getSize() const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -225,10 +217,8 @@ getSize() const
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getStorageSize() const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getStorageSize() const -> IndexType
 {
    return this->storageSize;
 }
@@ -236,10 +226,8 @@ getStorageSize() const
 template< typename Device,
           typename Index,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
       return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndexDirect(

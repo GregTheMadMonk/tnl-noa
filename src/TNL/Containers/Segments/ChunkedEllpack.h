@@ -28,13 +28,13 @@ class ChunkedEllpack
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
+      using IndexType = std::remove_const_t< Index >;
+      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       using ViewType = ChunkedEllpackView< Device, Index, RowMajorOrder >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder >;
+      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, RowMajorOrder >;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
       using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
@@ -55,7 +55,7 @@ class ChunkedEllpack
 
       ViewType getView();
 
-      ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Set sizes of particular segments.

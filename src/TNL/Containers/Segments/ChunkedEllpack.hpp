@@ -111,9 +111,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-typename ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::ConstViewType
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getConstView() const
+auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, storageSize, chunksInSlice, desiredChunkSize,
                          rowToChunkMapping.getConstView(),
@@ -306,10 +305,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSegmentsCount() const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSegmentsCount() const -> IndexType
 {
    return this->segmentsCount;
 }
@@ -318,9 +315,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSegmentSize( const IndexType segmentIdx ) const
+auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
       rowToSliceMapping.getView(),
@@ -333,10 +329,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSize() const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -345,10 +339,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getStorageSize() const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getStorageSize() const -> IndexType
 {
    return this->storageSize;
 }
@@ -357,10 +349,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
       return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
          rowToSliceMapping,
@@ -375,9 +365,7 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-auto
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
 }

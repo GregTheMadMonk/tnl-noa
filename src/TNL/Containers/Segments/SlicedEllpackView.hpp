@@ -114,9 +114,9 @@ template< typename Device,
           bool RowMajorOrder,
           int SliceSize >
 __cuda_callable__
-typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ConstViewType
+auto
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, alignedSize, segmentsCount, sliceOffsets.getConstView(), sliceSegmentSizes.getConstView() );
 }
@@ -125,10 +125,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSegmentsCount() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSegmentsCount() const -> IndexType
 {
    return this->segmentsCount;
 }
@@ -137,10 +135,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    const Index sliceIdx = segmentIdx / SliceSize;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -159,10 +155,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSize() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -171,10 +165,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getStorageSize() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getStorageSize() const -> IndexType
 {
    return this->alignedSize;
 }
@@ -183,10 +175,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
    const IndexType segmentInSliceIdx = segmentIdx % SliceSize;

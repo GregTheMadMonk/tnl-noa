@@ -29,9 +29,9 @@ class ChunkedEllpackView
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, typename std::remove_const< IndexType >::type >;
-      using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type >::ConstViewType;
+      using IndexType = std::remove_const_t< Index >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
+      using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = ChunkedEllpackView;
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_ >;
@@ -83,7 +83,7 @@ class ChunkedEllpackView
       ViewType getView();
 
       __cuda_callable__
-      ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Number segments.

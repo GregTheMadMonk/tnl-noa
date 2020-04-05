@@ -29,8 +29,8 @@ class SlicedEllpack
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
+      using IndexType = std::remove_const_t< Index >;
+      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       using ViewType = SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >;
@@ -53,7 +53,7 @@ class SlicedEllpack
 
       ViewType getView();
 
-      ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Set sizes of particular segments.

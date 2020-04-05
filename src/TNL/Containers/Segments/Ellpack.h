@@ -28,7 +28,7 @@ class Ellpack
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
+      using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
@@ -36,7 +36,7 @@ class Ellpack
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_, RowMajorOrder, Alignment >;
       using ViewType = EllpackView< Device, Index, RowMajorOrder, Alignment >;
-      //using ConstViewType = EllpackView< Device, std::add_const_t< Index >, RowMajorOrder, Alignment >;
+      using ConstViewType = typename ViewType::ConstViewType;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       Ellpack();
@@ -55,7 +55,7 @@ class Ellpack
 
       ViewType getView();
 
-      //ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Set sizes of particular segments.
