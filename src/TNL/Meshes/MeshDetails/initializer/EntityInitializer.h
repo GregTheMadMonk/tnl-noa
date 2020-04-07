@@ -18,7 +18,6 @@
 
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 #include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
-#include <TNL/Meshes/MeshDetails/initializer/SuperentityStorageInitializer.h>
 
 namespace TNL {
 namespace Meshes {
@@ -119,32 +118,55 @@ class EntityInitializerLayer< MeshConfig,
 
    using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
    using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
+   using SubentityTraitsType        = typename MeshTraits< MeshConfig >::template EntityTraits< SubdimensionTag::value >;
+   using SubentityTopology          = typename SubentityTraitsType::EntityTopology;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
-   using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
+   using SuperentityStorageNetwork  = typename MeshTraits< MeshConfig >::template SuperentityTraits< SubentityTopology, SuperdimensionTag::value >::StorageNetworkType;
+   using ValuesAllocationVectorType = typename SuperentityStorageNetwork::ValuesAllocationVectorType;
 
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
       //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
-      SuperentityInitializerType superentityInitializer;
+
+      // counter for superentities of each subentity
+      const GlobalIndexType subentitiesCount = mesh.template getEntitiesCount< SubdimensionTag::value >();
+      ValuesAllocationVectorType superentitiesCounts( subentitiesCount );
+      superentitiesCounts.setValue( 0 );
 
       for( GlobalIndexType superentityIndex = 0;
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
-
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
             meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
-            superentityInitializer.addSuperentity( subentityIndex, superentityIndex );
+            superentitiesCounts[ subentityIndex ]++;
          }
       }
 
-      superentityInitializer.initSuperentities( meshInitializer );
+      // allocate superentities storage
+      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< SubdimensionTag::value, SuperdimensionTag::value >();
+      superentityStorageNetwork.allocate( superentitiesCounts );
+      superentitiesCounts.setValue( 0 );
+
+      // initialize superentities storage
+      for( GlobalIndexType superentityIndex = 0;
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
+           superentityIndex++ )
+      {
+         for( LocalIndexType i = 0;
+              i < mesh.template getSubentitiesCount< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex );
+              i++ )
+         {
+            const GlobalIndexType subentityIndex = mesh.template getSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i );
+            superentityStorageNetwork.getValues( subentityIndex ).setValue( superentitiesCounts[ subentityIndex ]++, superentityIndex );
+         }
+      }
 
       BaseType::initSuperentities( meshInitializer, mesh );
    }
@@ -178,36 +200,57 @@ class EntityInitializerLayer< MeshConfig,
 
    using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
    using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
+   using SubentityTraitsType        = typename MeshTraits< MeshConfig >::template EntityTraits< SubdimensionTag::value >;
+   using SubentityTopology          = typename SubentityTraitsType::EntityTopology;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
-   using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
+   using SuperentityStorageNetwork  = typename MeshTraits< MeshConfig >::template SuperentityTraits< SubentityTopology, SuperdimensionTag::value >::StorageNetworkType;
+   using ValuesAllocationVectorType = typename SuperentityStorageNetwork::ValuesAllocationVectorType;
 
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
       //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
-      SuperentityInitializerType superentityInitializer;
+
+      // counter for superentities of each subentity
+      const GlobalIndexType subentitiesCount = mesh.template getEntitiesCount< SubdimensionTag::value >();
+      ValuesAllocationVectorType superentitiesCounts( subentitiesCount );
+      superentitiesCounts.setValue( 0 );
 
       for( GlobalIndexType superentityIndex = 0;
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
-
          auto& subentityOrientationsArray = meshInitializer.template subentityOrientationsArray< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex );
-
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
             meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i, subentityIndex );
-            superentityInitializer.addSuperentity( subentityIndex, superentityIndex );
-
+            superentitiesCounts[ subentityIndex ]++;
             subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< SubdimensionTag >( subentityIndex ).createOrientation( subentitySeeds[ i ] );
          }
       }
 
-      superentityInitializer.initSuperentities( meshInitializer );
+      // allocate superentities storage
+      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< SubdimensionTag::value, SuperdimensionTag::value >();
+      superentityStorageNetwork.allocate( superentitiesCounts );
+      superentitiesCounts.setValue( 0 );
+
+      // initialize superentities storage
+      for( GlobalIndexType superentityIndex = 0;
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
+           superentityIndex++ )
+      {
+         for( LocalIndexType i = 0;
+              i < mesh.template getSubentitiesCount< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex );
+              i++ )
+         {
+            const GlobalIndexType subentityIndex = mesh.template getSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i );
+            superentityStorageNetwork.getValues( subentityIndex ).setValue( superentitiesCounts[ subentityIndex ]++, superentityIndex );
+         }
+      }
 
       BaseType::initSuperentities( meshInitializer, mesh );
    }
@@ -351,31 +394,53 @@ class EntityInitializerLayer< MeshConfig,
 
    using GlobalIndexType            = typename MeshTraits< MeshConfig >::GlobalIndexType;
    using LocalIndexType             = typename MeshTraits< MeshConfig >::LocalIndexType;
+   using SubentityTraitsType        = typename MeshTraits< MeshConfig >::template EntityTraits< SubdimensionTag::value >;
+   using SubentityTopology          = typename SubentityTraitsType::EntityTopology;
    using SuperentityTraitsType      = typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >;
    using SuperentityTopology        = typename SuperentityTraitsType::EntityTopology;
    using SubentitySeedsCreatorType  = SubentitySeedsCreator< MeshConfig, SuperdimensionTag, SubdimensionTag >;
-   using SuperentityInitializerType = SuperentityStorageInitializer< MeshConfig, SubdimensionTag, SuperdimensionTag >;
+   using SuperentityStorageNetwork  = typename MeshTraits< MeshConfig >::template SuperentityTraits< SubentityTopology, SuperdimensionTag::value >::StorageNetworkType;
+   using ValuesAllocationVectorType = typename SuperentityStorageNetwork::ValuesAllocationVectorType;
 
 public:
    static void initSuperentities( InitializerType& meshInitializer, MeshType& mesh )
    {
       //std::cout << "   Initiating superentities with dimension " << SuperdimensionTag::value << " for subentities with dimension " << SubdimensionTag::value << " ... " << std::endl;
-      SuperentityInitializerType superentityInitializer;
+
+      // counter for superentities of each subentity
+      const GlobalIndexType subentitiesCount = mesh.template getEntitiesCount< SubdimensionTag::value >();
+      ValuesAllocationVectorType superentitiesCounts( subentitiesCount );
+      superentitiesCounts.setValue( 0 );
 
       for( GlobalIndexType superentityIndex = 0;
            superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
            superentityIndex++ )
       {
          auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
-
          for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
          {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
-            superentityInitializer.addSuperentity( subentityIndex, superentityIndex );
+            superentitiesCounts[ subentityIndex ]++;
          }
       }
 
-      superentityInitializer.initSuperentities( meshInitializer );
+      // allocate superentities storage
+      SuperentityStorageNetwork& superentityStorageNetwork = meshInitializer.template meshSuperentityStorageNetwork< SubdimensionTag::value, SuperdimensionTag::value >();
+      superentityStorageNetwork.allocate( superentitiesCounts );
+      superentitiesCounts.setValue( 0 );
+
+      // initialize superentities storage
+      for( GlobalIndexType superentityIndex = 0;
+           superentityIndex < mesh.template getEntitiesCount< SuperdimensionTag::value >();
+           superentityIndex++ )
+      {
+         auto subentitySeeds = SubentitySeedsCreatorType::create( meshInitializer.template getSubvertices< SuperdimensionTag::value >( superentityIndex ) );
+         for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
+         {
+            const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
+            superentityStorageNetwork.getValues( subentityIndex ).setValue( superentitiesCounts[ subentityIndex ]++, superentityIndex );
+         }
+      }
 
       BaseType::initSuperentities( meshInitializer, mesh );
    }
