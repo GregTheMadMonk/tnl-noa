@@ -1038,6 +1038,27 @@ class CSRDeviceDependentCode< Devices::Host >
 };
 
 #ifdef HAVE_CUDA
+
+template< typename Real,
+          typename Index,
+          CSRKernel KernelType,
+          typename InVector,
+          typename OutVector,
+          int warpSize >
+__global__ void CSRScalarGlobal( const CSR< Real, Devices::Cuda, Index, KernelType >* matrix,
+                                 const InVector* inVector,
+                                 OutVector* outVector,
+                                 int gridIdx,
+                                 int *blocks, size_t size)
+{
+   const auto  columns       = matrix->getColumns(); // funguje
+   
+   // nefunguje
+   const auto &rowPointers   = matrix->getRowPointers();
+   const auto &columnIndexes = matrix->getColumnIndexes();
+   const auto &values        = matrix->getValues();
+}
+
 template< typename Real,
           typename Index,
           CSRKernel KernelType,
@@ -1099,8 +1120,13 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& 
       //const int sharedMemory = cudaBlockSize.x * sizeof( Real );
       //const int threads = cudaBlockSize.x;
       if( matrix.getCudaWarpSize() == 32 ) {
-         // printf("BL %d BLSIZE %d\n", (int)cudaBlocks, (int)threads);
-         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 32 >
+         // CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 32 >
+         //                                    <<< 2, 1024 >>>
+         //                                    ( kernel_this,
+         //                                      kernel_inVector,
+         //                                      kernel_outVector,
+         //                                      gridIdx, kernelBlocks, size );
+         CSRScalarGlobal< Real, Index, KernelType, InVector, OutVector, 32 >
                                             <<< 2, 1024 >>>
                                             ( kernel_this,
                                               kernel_inVector,
