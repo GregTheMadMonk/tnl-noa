@@ -25,7 +25,6 @@ template< typename Device,
           bool RowMajorOrder >
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
-   : size( 0 ), storageSize( 0 ), chunksInSlice( 0 ), desiredChunkSize( 0 )
 {
    this->setSegmentsSizes( sizes );
 }
@@ -41,7 +40,7 @@ ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
      chunksInSlice( chunkedEllpack.chunksInSlice ), 
      desiredChunkSize( chunkedEllpack.desiredChunkSize ),
      rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
-     rowToSliceMapping( chunkedEllpack.rowTopSliceMapping ),
+     rowToSliceMapping( chunkedEllpack.rowToSliceMapping ),
      chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
      rowPointers( chunkedEllpack.rowPointers ),
      slices( chunkedEllpack.slices ),

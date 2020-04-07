@@ -487,25 +487,6 @@ template< typename Device,
           bool RowMajorOrder >
 void
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
-load( File& file )
-{
-   file.load( &this->size );
-   file.load( &this->storageSize );
-   file.load( &this->chunksInSlice );
-   file.load( &this->desiredChunkSize );
-   file >> this->rowToChunkMapping
-        >> this->chunksToSegmentsMapping
-        >> this->rowToSliceMapping
-        >> this->rowPointers
-        >> this->slices;
-   file.load( &this->numberOfSlices );
-}
-
-template< typename Device,
-          typename Index,
-          bool RowMajorOrder >
-void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
 printStructure( std::ostream& str ) const
 {
    //const IndexType numberOfSlices = this->getNumberOfSlices();

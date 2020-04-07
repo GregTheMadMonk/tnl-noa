@@ -1,7 +1,7 @@
 /***************************************************************************
-                          ChunkedEllpack.h -  description
+                          BiEllpack.h -  description
                              -------------------
-    begin                : Mar 21, 2020
+    begin                : Apr 5, 2020
     copyright            : (C) 2020 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -12,7 +12,7 @@
 
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/ChunkedEllpackView.h>
+#include <TNL/Containers/Segments/BiEllpackView.h>
 #include <TNL/Containers/Segments/SegmentView.h>
 
 namespace TNL {
@@ -22,8 +22,9 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
-class ChunkedEllpack
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          int WarpSize = 32 >
+class BiEllpack
 {
    public:
 
@@ -31,23 +32,19 @@ class ChunkedEllpack
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
-      using ViewType = ChunkedEllpackView< Device, Index, RowMajorOrder >;
+      using ViewType = BiEllpackView< Device, Index, RowMajorOrder >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, RowMajorOrder >;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
-      //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
+      using ViewTemplate = BiEllpackView< Device_, Index_, RowMajorOrder >;
+      using ConstViewType = BiEllpackView< Device, std::add_const_t< IndexType >, RowMajorOrder >;
+      using SegmentViewType = BiEllpackSegmentView< IndexType, RowMajorOrder >;
 
-      ChunkedEllpack() = default;
+      BiEllpack() = default;
 
-      ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      BiEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
 
-      ChunkedEllpack( const ChunkedEllpack& segments );
+      BiEllpack( const BiEllpack& segments );
 
-      ChunkedEllpack( const ChunkedEllpack&& segments );
+      BiEllpack( const BiEllpack&& segments );
 
       static String getSerializationType();
 
@@ -105,10 +102,10 @@ class ChunkedEllpack
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
-      ChunkedEllpack& operator=( const ChunkedEllpack& source ) = default;
+      BiEllpack& operator=( const BiEllpack& source ) = default;
 
       template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_ >& source );
+      BiEllpack& operator=( const BiEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, WarpSize >& source );
 
       void save( File& file ) const;
 
@@ -118,46 +115,24 @@ class ChunkedEllpack
 
    protected:
 
-      template< typename SegmentsSizes >
-      void resolveSliceSizes( SegmentsSizes& rowLengths );
+      static constexpr int getWarpSize() { return WarpSize; };
 
-      template< typename SegmentsSizes >
-      bool setSlice( SegmentsSizes& rowLengths,
-                     const IndexType sliceIdx,
-                     IndexType& elementsToAllocation );
+      static constexpr int getLogWarpSize() { return std::log( WarpSize ); };
 
       IndexType size = 0, storageSize = 0;
 
-      IndexType chunksInSlice = 256, desiredChunkSize = 16;
+      IndexType virtualRows = 0;
 
-      /**
-       * For each segment, this keeps index of the slice which contains the
-       * segment.
-       */
-      OffsetsHolder rowToSliceMapping;
+      OffsetsHolder rowPermArray;
 
-      /**
-       * For each row, this keeps index of the first chunk within a slice.
-       */
-      OffsetsHolder rowToChunkMapping;
+      OffsetsHolder groupPointers;
 
-      OffsetsHolder chunksToSegmentsMapping;
-
-      /**
-       * Keeps index of the first segment index.
-       */
-      OffsetsHolder rowPointers;
-
-      ChunkedEllpackSliceInfoContainer slices;
-
-      IndexType numberOfSlices = 0;
-
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      friend class ChunkedEllpack;
+      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int WarpSize_ >
+      friend class BiEllpack;
 };
 
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/ChunkedEllpack.hpp>
+#include <TNL/Containers/Segments/BiEllpack.hpp>

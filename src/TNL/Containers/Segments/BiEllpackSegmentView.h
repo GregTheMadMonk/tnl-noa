@@ -1,7 +1,7 @@
 /***************************************************************************
-                          ChunkedEllpackSegmentView.h -  description
+                          BiEllpackSegmentView.h -  description
                              -------------------
-    begin                : Mar 24, 2020
+    begin                : Apr 7, 2020
     copyright            : (C) 2020 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -16,24 +16,24 @@ namespace TNL {
 
 template< typename Index,
           bool RowMajorOrder = false >
-class ChunkedEllpackSegmentView;
+class BiEllpackSegmentView;
 
 template< typename Index >
-class ChunkedEllpackSegmentView< Index, false >
+class BiEllpackSegmentView< Index, false >
 {
    public:
 
       using IndexType = Index;
 
       __cuda_callable__
-      ChunkedEllpackSegmentView( const IndexType offset,
+      BiEllpackSegmentView( const IndexType offset,
                                  const IndexType size,
                                  const IndexType chunkSize,      // this is only for compatibility with the following specialization
                                  const IndexType chunksInSlice ) // this one as well - both can be replaced when we could use constexprif in C++17
       : segmentOffset( offset ), segmentSize( size ){};
 
       __cuda_callable__
-      ChunkedEllpackSegmentView( const ChunkedEllpackSegmentView& view )
+      BiEllpackSegmentView( const BiEllpackSegmentView& view )
       : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ){};
 
       __cuda_callable__
@@ -55,14 +55,14 @@ class ChunkedEllpackSegmentView< Index, false >
 };
 
 template< typename Index >
-class ChunkedEllpackSegmentView< Index, true >
+class BiEllpackSegmentView< Index, true >
 {
    public:
 
       using IndexType = Index;
 
       __cuda_callable__
-      ChunkedEllpackSegmentView( const IndexType offset,
+      BiEllpackSegmentView( const IndexType offset,
                                  const IndexType size,
                                  const IndexType chunkSize,
                                  const IndexType chunksInSlice )
