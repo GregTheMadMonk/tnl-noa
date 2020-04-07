@@ -71,7 +71,7 @@ struct DefaultConfig
    }
 
    /****
-    * Storage of boundary tags of mesh entities. Necessary for the mesh traverser.
+    * Storage of mesh entity tags. Boundary tags are necessary for the mesh traverser.
     *
     * The configuration must satisfy the following necessary conditions in
     * order to provide boundary tags:
@@ -80,7 +80,7 @@ struct DefaultConfig
     *      must be stored as subentities of faces
     */
    template< typename EntityTopology >
-   static constexpr bool boundaryTagsStorage( EntityTopology )
+   static constexpr bool entityTagsStorage( EntityTopology )
    {
       using FaceTopology = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
       return superentityStorage( FaceTopology(), meshDimension ) &&

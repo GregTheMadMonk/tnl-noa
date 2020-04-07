@@ -16,9 +16,11 @@
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 
+#include "Traits.h"
+
 namespace TNL {
 namespace Meshes {
-namespace BoundaryTags {
+namespace EntityTags {
 
 template< typename MeshConfig, typename Device, typename Mesh >
 class Initializer
@@ -31,18 +33,18 @@ protected:
    // _T is necessary to force *partial* specialization, since explicit specializations
    // at class scope are forbidden
    template< typename CurrentDimension = DimensionTag< MeshConfig::meshDimension >, typename _T = void >
-   struct BoundaryTagsNeedInitialization
+   struct EntityTagsNeedInitialization
    {
       using EntityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, CurrentDimension::value >::EntityTopology;
-      static constexpr bool value = MeshConfig::boundaryTagsStorage( EntityTopology() ) ||
-                                    BoundaryTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
+      static constexpr bool value = MeshConfig::entityTagsStorage( EntityTopology() ) ||
+                                    EntityTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
    };
 
    template< typename _T >
-   struct BoundaryTagsNeedInitialization< DimensionTag< 0 >, _T >
+   struct EntityTagsNeedInitialization< DimensionTag< 0 >, _T >
    {
       using EntityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, 0 >::EntityTopology;
-      static constexpr bool value = MeshConfig::boundaryTagsStorage( EntityTopology() );
+      static constexpr bool value = MeshConfig::entityTagsStorage( EntityTopology() );
    };
 
    template< int Dimension >
@@ -50,16 +52,16 @@ protected:
    {
       static void exec( Mesh& mesh )
       {
-         mesh.template boundaryTagsSetEntitiesCount< Dimension >( mesh.template getEntitiesCount< Dimension >() );
+         mesh.template entityTagsSetEntitiesCount< Dimension >( mesh.template getEntitiesCount< Dimension >() );
       }
    };
 
    template< int Dimension >
-   struct ResetBoundaryTags
+   struct ResetEntityTags
    {
       static void exec( Mesh& mesh )
       {
-         mesh.template resetBoundaryTags< Dimension >();
+         mesh.template resetEntityTags< Dimension >();
       }
    };
 
@@ -67,7 +69,7 @@ protected:
    class InitializeSubentities
    {
       using SubentityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, Subdimension >::EntityTopology;
-      static constexpr bool enabled = MeshConfig::boundaryTagsStorage( SubentityTopology() );
+      static constexpr bool enabled = MeshConfig::entityTagsStorage( SubentityTopology() );
 
       // _T is necessary to force *partial* specialization, since explicit specializations
       // at class scope are forbidden
@@ -80,7 +82,7 @@ protected:
             const LocalIndexType subentitiesCount = face.template getSubentitiesCount< Subdimension >();
             for( LocalIndexType i = 0; i < subentitiesCount; i++ ) {
                const GlobalIndexType subentityIndex = face.template getSubentityIndex< Subdimension >( i );
-               mesh.template setIsBoundaryEntity< Subdimension >( subentityIndex, true );
+               mesh.template addEntityTag< Subdimension >( subentityIndex, EntityTags::BoundaryEntity );
             }
          }
       };
@@ -115,14 +117,14 @@ public:
 #endif
    // _T is necessary to force *partial* specialization, since explicit specializations
    // at class scope are forbidden
-   template< bool AnyBoundaryTags = BoundaryTagsNeedInitialization<>::value, typename _T = void >
+   template< bool AnyEntityTags = EntityTagsNeedInitialization<>::value, typename _T = void >
    class Worker
    {
    public:
       static void exec( Mesh& mesh )
       {
          Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
-         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetEntityTags >::execHost( mesh );
 
          auto kernel = [] __cuda_callable__
             ( GlobalIndexType faceIndex,
@@ -131,10 +133,10 @@ public:
             const auto& face = mesh->template getEntity< Mesh::getMeshDimension() - 1 >( faceIndex );
             if( face.template getSuperentitiesCount< Mesh::getMeshDimension() >() == 1 ) {
                // initialize the face
-               mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() - 1 >( faceIndex, true );
+               mesh->template addEntityTag< Mesh::getMeshDimension() - 1 >( faceIndex, EntityTags::BoundaryEntity );
                // initialize the cell superentity
                const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
-               mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() >( cellIndex, true );
+               mesh->template addEntityTag< Mesh::getMeshDimension() >( cellIndex, EntityTags::BoundaryEntity );
                // initialize all subentities
                Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
             }
@@ -163,6 +165,6 @@ public:
    }
 };
 
-} // namespace BoundaryTags
+} // namespace EntityTags
 } // namespace Meshes
 } // namespace TNL

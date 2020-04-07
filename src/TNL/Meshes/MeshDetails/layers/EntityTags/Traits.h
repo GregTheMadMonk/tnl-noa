@@ -14,7 +14,7 @@
 
 namespace TNL {
 namespace Meshes {
-namespace BoundaryTags {
+namespace EntityTags {
 
 template< typename MeshConfig,
           typename Device,
@@ -23,7 +23,7 @@ template< typename MeshConfig,
 struct WeakStorageTrait
 {
    using EntityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology;
-   static constexpr bool boundaryTagsEnabled = MeshConfig::boundaryTagsStorage( EntityTopology() );
+   static constexpr bool entityTagsEnabled = MeshConfig::entityTagsStorage( EntityTopology() );
 };
 
 template< typename MeshConfig,
@@ -31,9 +31,17 @@ template< typename MeshConfig,
           typename DimensionTag >
 struct WeakStorageTrait< MeshConfig, Device, DimensionTag, false >
 {
-   static constexpr bool boundaryTagsEnabled = false;
+   static constexpr bool entityTagsEnabled = false;
 };
 
-} // namespace BoundaryTags
+// Entity tags are used in a bitset fashion. Unused bits are available for
+// user needs, but these bits should not be changed by users.
+enum EntityTags : std::uint8_t
+{
+   BoundaryEntity = 1,
+   GhostEntity = 2,
+};
+
+} // namespace EntityTags
 } // namespace Meshes
 } // namespace TNL

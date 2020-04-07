@@ -33,7 +33,7 @@ init( typename MeshTraitsType::PointArrayType& points,
    Initializer< typename MeshType::Config > initializer;
    initializer.createMesh( points, cellSeeds, *mesh );
    // init boundary tags
-   static_cast< BoundaryTags::LayerFamily< MeshConfig, Device, MeshType >* >( mesh )->initLayer();
+   static_cast< EntityTags::LayerFamily< MeshConfig, Device, MeshType >* >( mesh )->initLayer();
    // init dual graph
    mesh->initializeDualGraph( *mesh );
 }
@@ -43,7 +43,7 @@ template< typename MeshConfig, typename Device >
 Mesh< MeshConfig, Device >::
 Mesh( const Mesh& mesh )
    : StorageBaseType( mesh ),
-     BoundaryTagsLayerFamily( mesh )
+     EntityTagsLayerFamily( mesh )
 {
 }
 
@@ -52,7 +52,7 @@ template< typename MeshConfig, typename Device >
 Mesh< MeshConfig, Device >::
 Mesh( const Mesh< MeshConfig, Device_ >& mesh )
    : StorageBaseType( mesh ),
-     BoundaryTagsLayerFamily( mesh )
+     EntityTagsLayerFamily( mesh )
 {
 }
 
@@ -62,7 +62,7 @@ Mesh< MeshConfig, Device >::
 operator=( const Mesh& mesh )
 {
    StorageBaseType::operator=( mesh );
-   BoundaryTagsLayerFamily::operator=( mesh );
+   EntityTagsLayerFamily::operator=( mesh );
    return *this;
 }
 
@@ -73,7 +73,7 @@ Mesh< MeshConfig, Device >::
 operator=( const Mesh< MeshConfig, Device_ >& mesh )
 {
    StorageBaseType::operator=( mesh );
-   BoundaryTagsLayerFamily::operator=( mesh );
+   EntityTagsLayerFamily::operator=( mesh );
    return *this;
 }
 
@@ -261,7 +261,7 @@ reorderEntities( const GlobalIndexVector& perm,
 
    IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
    // update boundary tags
-   static_cast< BoundaryTagsLayerFamily* >( this )->initLayer();
+   static_cast< EntityTagsLayerFamily* >( this )->initLayer();
 }
 
 
@@ -272,7 +272,7 @@ save( File& file ) const
 {
    Object::save( file );
    StorageBaseType::save( file );
-   BoundaryTagsLayerFamily::save( file );
+   EntityTagsLayerFamily::save( file );
 }
 
 template< typename MeshConfig, typename Device >
@@ -289,7 +289,7 @@ load( File& file )
    else {
       Object::load( file );
       StorageBaseType::load( file );
-      BoundaryTagsLayerFamily::load( file );
+      EntityTagsLayerFamily::load( file );
       this->initializeDualGraph( *this );
    }
 }
@@ -305,7 +305,7 @@ print( std::ostream& str ) const
    }
    else {
       StorageBaseType::print( str );
-      BoundaryTagsLayerFamily::print( str );
+      EntityTagsLayerFamily::print( str );
    }
 }
 
@@ -315,7 +315,7 @@ Mesh< MeshConfig, Device >::
 operator==( const Mesh& mesh ) const
 {
    return StorageBaseType::operator==( mesh ) &&
-          BoundaryTagsLayerFamily::operator==( mesh );
+          EntityTagsLayerFamily::operator==( mesh );
 }
 
 template< typename MeshConfig, typename Device >

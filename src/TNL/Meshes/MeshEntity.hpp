@@ -166,6 +166,18 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
+__cuda_callable__
+typename MeshEntity< MeshConfig, Device, EntityTopology >::TagType
+MeshEntity< MeshConfig, Device, EntityTopology >::
+getTag() const
+{
+   TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
+   return meshPointer->template getEntityTag< getEntityDimension() >( this->getIndex() );
+}
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology >
 std::ostream& operator<<( std::ostream& str, const MeshEntity< MeshConfig, Device, EntityTopology >& entity )
 {
    return str << getType< decltype(entity) >() << "( <meshPointer>, " << entity.getIndex() << " )";

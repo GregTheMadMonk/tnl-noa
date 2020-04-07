@@ -37,6 +37,7 @@ class MeshEntity
       using GlobalIndexType = typename MeshType::GlobalIndexType;
       using LocalIndexType  = typename MeshType::LocalIndexType;
       using PointType       = typename MeshType::PointType;
+      using TagType         = typename MeshType::MeshTraitsType::EntityTagType;
 
       template< int Subdimension >
       using SubentityTraits = typename MeshType::MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
@@ -102,6 +103,12 @@ class MeshEntity
       template< int Superdimension >
       __cuda_callable__
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
+
+      /****
+       * Tags
+       */
+      __cuda_callable__
+      TagType getTag() const;
 
    protected:
       const MeshType* meshPointer = nullptr;

@@ -93,7 +93,7 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
       }
 
       template< typename EntityTopology >
-      static constexpr bool boundaryTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( EntityTopology )
       {
          return false;
       }

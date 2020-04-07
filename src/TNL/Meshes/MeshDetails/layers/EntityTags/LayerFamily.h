@@ -17,7 +17,7 @@
 
 namespace TNL {
 namespace Meshes {
-namespace BoundaryTags {
+namespace EntityTags {
 
 template< typename MeshConfig, typename Device, typename Dimension = DimensionTag< 0 > >
 class LayerInheritor
@@ -28,9 +28,12 @@ class LayerInheritor
    using BaseType = LayerInheritor< MeshConfig, Device, typename Dimension::Increment >;
 protected:
    using LayerType::setEntitiesCount;
-   using LayerType::resetBoundaryTags;
-   using LayerType::setIsBoundaryEntity;
+   using LayerType::resetEntityTags;
+   using LayerType::getEntityTag;
+   using LayerType::addEntityTag;
+   using LayerType::removeEntityTag;
    using LayerType::isBoundaryEntity;
+   using LayerType::isGhostEntity;
    using LayerType::updateBoundaryIndices;
    using LayerType::getBoundaryEntitiesCount;
    using LayerType::getBoundaryEntityIndex;
@@ -38,9 +41,12 @@ protected:
    using LayerType::getInteriorEntityIndex;
 
    using BaseType::setEntitiesCount;
-   using BaseType::resetBoundaryTags;
-   using BaseType::setIsBoundaryEntity;
+   using BaseType::resetEntityTags;
+   using BaseType::getEntityTag;
+   using BaseType::addEntityTag;
+   using BaseType::removeEntityTag;
    using BaseType::isBoundaryEntity;
+   using BaseType::isGhostEntity;
    using BaseType::updateBoundaryIndices;
    using BaseType::getBoundaryEntitiesCount;
    using BaseType::getBoundaryEntityIndex;
@@ -107,9 +113,12 @@ class LayerInheritor< MeshConfig, Device, DimensionTag< MeshConfig::meshDimensio
 {
 protected:
    void setEntitiesCount();
-   void resetBoundaryTags();
-   void setIsBoundaryEntity();
+   void resetEntityTags();
+   void getEntityTag();
+   void addEntityTag();
+   void removeEntityTag();
    void isBoundaryEntity();
+   void isGhostEntity();
    void updateBoundaryIndices();
    void getBoundaryEntitiesCount();
    void getBoundaryEntityIndex();
@@ -145,6 +154,7 @@ class LayerFamily
 {
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+   using TagType = typename MeshTraitsType::EntityTagType;
    using BaseType = LayerInheritor< MeshConfig, Device, DimensionTag< 0 > >;
    template< int Dimension >
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
@@ -158,20 +168,51 @@ public:
    using BaseType::BaseType;
    using BaseType::operator=;
 
-   // getters for boundary tags
+   template< int Dimension >
+   __cuda_callable__
+   TagType getEntityTag( const GlobalIndexType& entityIndex ) const
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::getEntityTag( DimensionTag< Dimension >(), entityIndex );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   void addEntityTag( const GlobalIndexType& entityIndex, TagType tag )
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      BaseType::addEntityTag( DimensionTag< Dimension >(), entityIndex, tag );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   void removeEntityTag( const GlobalIndexType& entityIndex, TagType tag )
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      BaseType::removeEntityTag( DimensionTag< Dimension >(), entityIndex, tag );
+   }
+
    template< int Dimension >
    __cuda_callable__
    bool isBoundaryEntity( const GlobalIndexType& entityIndex ) const
    {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
       return BaseType::isBoundaryEntity( DimensionTag< Dimension >(), entityIndex );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   bool isGhostEntity( const GlobalIndexType& entityIndex ) const
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::isGhostEntity( DimensionTag< Dimension >(), entityIndex );
    }
 
    template< int Dimension >
    __cuda_callable__
    GlobalIndexType getBoundaryEntitiesCount() const
    {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
       return BaseType::getBoundaryEntitiesCount( DimensionTag< Dimension >() );
    }
 
@@ -179,7 +220,7 @@ public:
    __cuda_callable__
    GlobalIndexType getBoundaryEntityIndex( const GlobalIndexType& i ) const
    {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
       return BaseType::getBoundaryEntityIndex( DimensionTag< Dimension >(), i );
    }
 
@@ -187,7 +228,7 @@ public:
    __cuda_callable__
    GlobalIndexType getInteriorEntitiesCount() const
    {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
       return BaseType::getInteriorEntitiesCount( DimensionTag< Dimension >() );
    }
 
@@ -195,22 +236,21 @@ public:
    __cuda_callable__
    GlobalIndexType getInteriorEntityIndex( const GlobalIndexType& i ) const
    {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
       return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
    }
 
 protected:
-   // setters for boundary tags
    template< int Dimension >
-   void boundaryTagsSetEntitiesCount( const GlobalIndexType& entitiesCount )
+   void entityTagsSetEntitiesCount( const GlobalIndexType& entitiesCount )
    {
       BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
    }
-      
+
    template< int Dimension >
-   void resetBoundaryTags()
+   void resetEntityTags()
    {
-      BaseType::resetBoundaryTags( DimensionTag< Dimension >() );
+      BaseType::resetEntityTags( DimensionTag< Dimension >() );
    }
 
    template< int Dimension >
@@ -218,16 +258,8 @@ protected:
    {
       BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
    }
-
-   template< int Dimension >
-   __cuda_callable__
-   void setIsBoundaryEntity( const GlobalIndexType& entityIndex, bool isBoundary )
-   {
-      static_assert( WeakTrait< Dimension >::boundaryTagsEnabled, "You try to access boundary tags which are not configured for storage." );
-      BaseType::setIsBoundaryEntity( DimensionTag< Dimension >(), entityIndex, isBoundary );
-   }
 };
 
-} // namespace BoundaryTags
+} // namespace EntityTags
 } // namespace Meshes
 } // namespace TNL

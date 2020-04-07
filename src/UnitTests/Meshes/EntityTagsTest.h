@@ -11,7 +11,7 @@
 #include <TNL/Meshes/Topologies/Quadrilateral.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
-namespace BoundaryTagsTest {
+namespace EntityTagsTest {
 
 using namespace TNL;
 using namespace TNL::Meshes;
@@ -57,26 +57,26 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
     * Setup vertices
     */
    for( IndexType j = 0; j <= ySize; j++ )
-      for( IndexType i = 0; i <= xSize; i++ )
-         meshBuilder.setPoint( j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
+   for( IndexType i = 0; i <= xSize; i++ )
+      meshBuilder.setPoint( j * ( xSize + 1 ) + i, PointType( i * hx, j * hy ) );
 
    /****
     * Setup cells
     */
    IndexType cellIdx( 0 );
    for( IndexType j = 0; j < ySize; j++ )
-      for( IndexType i = 0; i < xSize; i++ )
-      {
-         const IndexType vertex0 = j * ( xSize + 1 ) + i;
-         const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
-         const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
-         const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
+   for( IndexType i = 0; i < xSize; i++ )
+   {
+      const IndexType vertex0 = j * ( xSize + 1 ) + i;
+      const IndexType vertex1 = j * ( xSize + 1 ) + i + 1;
+      const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
+      const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
 
-         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
-         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
-         meshBuilder.getCellSeed( cellIdx   ).setCornerId( 2, vertex2 );
-         meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 3, vertex3 );
-      }
+      meshBuilder.getCellSeed( cellIdx   ).setCornerId( 0, vertex0 );
+      meshBuilder.getCellSeed( cellIdx   ).setCornerId( 1, vertex1 );
+      meshBuilder.getCellSeed( cellIdx   ).setCornerId( 2, vertex2 );
+      meshBuilder.getCellSeed( cellIdx++ ).setCornerId( 3, vertex3 );
+   }
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
@@ -96,6 +96,22 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
       EXPECT_EQ( mesh.template getInteriorEntityIndex< 2 >( i ), interiorCells[ i ] );
    }
 
+   // Test setting other tags
+   for( size_t i = 0; i < boundaryCells.size(); i++ ) {
+      mesh.template addEntityTag< 2 >( boundaryCells[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 2 >( boundaryCells[ i ] ), Meshes::EntityTags::BoundaryEntity | Meshes::EntityTags::GhostEntity );
+      EXPECT_TRUE( mesh.template isBoundaryEntity< 2 >( boundaryCells[ i ] ) );
+      mesh.template removeEntityTag< 2 >( boundaryCells[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 2 >( boundaryCells[ i ] ), Meshes::EntityTags::BoundaryEntity );
+   }
+   for( size_t i = 0; i < interiorCells.size(); i++ ) {
+      mesh.template addEntityTag< 2 >( interiorCells[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 2 >( interiorCells[ i ] ), Meshes::EntityTags::GhostEntity );
+      EXPECT_FALSE( mesh.template isBoundaryEntity< 2 >( interiorCells[ i ] ) );
+      mesh.template removeEntityTag< 2 >( interiorCells[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 2 >( interiorCells[ i ] ), 0 );
+   }
+
    std::vector< IndexType > boundaryFaces = {0, 3, 4, 7, 8, 12, 15, 19, 22, 25, 26, 28, 29, 30};
    std::vector< IndexType > interiorFaces = {1, 2, 5, 6, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 23, 24, 27};
 
@@ -111,8 +127,24 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
       EXPECT_FALSE( mesh.template isBoundaryEntity< 1 >( interiorFaces[ i ] ) );
       EXPECT_EQ( mesh.template getInteriorEntityIndex< 1 >( i ), interiorFaces[ i ] );
    }
+
+   // Test setting other tags
+   for( size_t i = 0; i < boundaryFaces.size(); i++ ) {
+      mesh.template addEntityTag< 1 >( boundaryFaces[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 1 >( boundaryFaces[ i ] ), Meshes::EntityTags::BoundaryEntity | Meshes::EntityTags::GhostEntity );
+      EXPECT_TRUE( mesh.template isBoundaryEntity< 1 >( boundaryFaces[ i ] ) );
+      mesh.template removeEntityTag< 1 >( boundaryFaces[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 1 >( boundaryFaces[ i ] ), Meshes::EntityTags::BoundaryEntity );
+   }
+   for( size_t i = 0; i < interiorFaces.size(); i++ ) {
+      mesh.template addEntityTag< 1 >( interiorFaces[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 1 >( interiorFaces[ i ] ), Meshes::EntityTags::GhostEntity );
+      EXPECT_FALSE( mesh.template isBoundaryEntity< 1 >( interiorFaces[ i ] ) );
+      mesh.template removeEntityTag< 1 >( interiorFaces[ i ], Meshes::EntityTags::GhostEntity );
+      EXPECT_EQ( mesh.template getEntityTag< 1 >( interiorFaces[ i ] ), 0 );
+   }
 }
 
-} // namespace BoundaryTagsTest
+} // namespace EntityTagsTest
 
 #endif

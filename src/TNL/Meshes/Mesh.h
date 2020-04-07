@@ -23,7 +23,7 @@
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/StorageLayer.h>
-#include <TNL/Meshes/MeshDetails/layers/BoundaryTags/LayerFamily.h>
+#include <TNL/Meshes/MeshDetails/layers/EntityTags/LayerFamily.h>
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
@@ -68,10 +68,10 @@ class Mesh
      public ConfigValidator< MeshConfig >,
      public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >,
      public StorageLayerFamily< MeshConfig, Device >,
-     public BoundaryTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
+     public EntityTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
       using StorageBaseType = StorageLayerFamily< MeshConfig, Device >;
-      using BoundaryTagsLayerFamily = BoundaryTags::LayerFamily< MeshConfig, Device, Mesh >;
+      using EntityTagsLayerFamily = EntityTags::LayerFamily< MeshConfig, Device, Mesh >;
 
    public:
       using Config          = MeshConfig;

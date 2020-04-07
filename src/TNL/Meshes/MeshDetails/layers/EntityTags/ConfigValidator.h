@@ -15,12 +15,12 @@
 
 namespace TNL {
 namespace Meshes {
-namespace BoundaryTags {
+namespace EntityTags {
 
 template< typename MeshConfig,
           typename EntityTopology,
-          bool BoundaryTagsStorage = MeshConfig::boundaryTagsStorage( EntityTopology() ) >
-class ConfigValidatorBoundaryTagsLayer
+          bool entityTagsStorage = MeshConfig::entityTagsStorage( EntityTopology() ) >
+class ConfigValidatorEntityTagsLayer
 {
    using FaceTopology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
 
@@ -32,7 +32,7 @@ class ConfigValidatorBoundaryTagsLayer
 
 template< typename MeshConfig,
           typename EntityTopology >
-class ConfigValidatorBoundaryTagsLayer< MeshConfig, EntityTopology, false >
+class ConfigValidatorEntityTagsLayer< MeshConfig, EntityTopology, false >
 {
 };
 
@@ -40,7 +40,7 @@ class ConfigValidatorBoundaryTagsLayer< MeshConfig, EntityTopology, false >
 template< typename MeshConfig, int dimension = MeshConfig::meshDimension >
 class ConfigValidatorLayer
    : public ConfigValidatorLayer< MeshConfig, dimension - 1 >,
-     public ConfigValidatorBoundaryTagsLayer< MeshConfig,
+     public ConfigValidatorEntityTagsLayer< MeshConfig,
                                               typename MeshTraits< MeshConfig >::template EntityTraits< dimension >::EntityTopology >
 {
 };
@@ -56,6 +56,6 @@ class ConfigValidator
 {
 };
 
-} // namespace BoundaryTags
+} // namespace EntityTags
 } // namespace Meshes
 } // namespace TNL
