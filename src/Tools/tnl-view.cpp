@@ -47,11 +47,10 @@ struct MeshWorldDimensionTag< TNLViewBuildConfigTag, CellTopology, WorldDimensio
 { enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
-template< typename Real > struct MeshRealTag< TNLViewBuildConfigTag, Real > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshGlobalIndexTag< TNLViewBuildConfigTag, GlobalIndex > { enum { enabled = false }; };
-template< typename LocalIndex > struct MeshLocalIndexTag< TNLViewBuildConfigTag, LocalIndex > { enum { enabled = false }; };
+template<> struct MeshRealTag< TNLViewBuildConfigTag, float > { enum { enabled = false }; };
 template<> struct MeshRealTag< TNLViewBuildConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, int > { enum { enabled = true }; };
+template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, long int > { enum { enabled = false }; };
 template<> struct MeshLocalIndexTag< TNLViewBuildConfigTag, short int > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags

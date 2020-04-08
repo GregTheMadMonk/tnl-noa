@@ -49,11 +49,10 @@ struct MeshWorldDimensionTag< MeshConverterConfigTag, CellTopology, WorldDimensi
 { enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
-template< typename Real > struct MeshRealTag< MeshConverterConfigTag, Real > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshGlobalIndexTag< MeshConverterConfigTag, GlobalIndex > { enum { enabled = false }; };
-template< typename LocalIndex > struct MeshLocalIndexTag< MeshConverterConfigTag, LocalIndex > { enum { enabled = false }; };
+template<> struct MeshRealTag< MeshConverterConfigTag, float > { enum { enabled = false }; };
 template<> struct MeshRealTag< MeshConverterConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { enabled = true }; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { enum { enabled = false }; };
 template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags

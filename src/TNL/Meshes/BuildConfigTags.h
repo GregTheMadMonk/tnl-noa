@@ -31,8 +31,10 @@ namespace BuildConfigTags {
 // 1, 2, and 3 dimensions are enabled by default
 template< typename ConfigTag, int Dimension > struct GridDimensionTag { enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
 
-// Grids are enabled for all real types by default.
-template< typename ConfigTag, typename Real > struct GridRealTag { enum { enabled = true }; };
+// Grids are enabled only for the `float` and `double` real types by default.
+template< typename ConfigTag, typename Real > struct GridRealTag { enum { enabled = false }; };
+template< typename ConfigTag > struct GridRealTag< ConfigTag, float > { enum { enabled = true }; };
+template< typename ConfigTag > struct GridRealTag< ConfigTag, double > { enum { enabled = true }; };
 
 // Grids are enabled on all available devices by default.
 template< typename ConfigTag, typename Device > struct GridDeviceTag { enum { enabled = true }; };
@@ -40,8 +42,10 @@ template< typename ConfigTag, typename Device > struct GridDeviceTag { enum { en
 template< typename ConfigTag > struct GridDeviceTag< ConfigTag, Devices::Cuda > { enum { enabled = false }; };
 #endif
 
-// Grids are enabled for all index types by default.
-template< typename ConfigTag, typename Index > struct GridIndexTag { enum { enabled = true }; };
+// Grids are enabled only for the `int` and `long int` index types by default.
+template< typename ConfigTag, typename Index > struct GridIndexTag { enum { enabled = false }; };
+template< typename ConfigTag > struct GridIndexTag< ConfigTag, int > { enum { enabled = true }; };
+template< typename ConfigTag > struct GridIndexTag< ConfigTag, long int > { enum { enabled = true }; };
 
 // The Grid is enabled for allowed dimensions and Real, Device and Index types.
 // 
@@ -85,14 +89,19 @@ template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag
 // All sensible world dimensions are enabled by default.
 template< typename ConfigTag, typename CellTopology, int WorldDimension > struct MeshWorldDimensionTag { enum { enabled = ( WorldDimension >= CellTopology::dimension && WorldDimension <= 3 ) }; };
 
-// Meshes are enabled for all real types by default.
-template< typename ConfigTag, typename Real > struct MeshRealTag { enum { enabled = true }; };
+// Meshes are enabled only for the `float` and `double` real types by default.
+template< typename ConfigTag, typename Real > struct MeshRealTag { enum { enabled = false }; };
+template< typename ConfigTag > struct MeshRealTag< ConfigTag, float > { enum { enabled = true }; };
+template< typename ConfigTag > struct MeshRealTag< ConfigTag, double > { enum { enabled = true }; };
 
-// Meshes are enabled for all global index types by default.
-template< typename ConfigTag, typename GlobalIndex > struct MeshGlobalIndexTag { enum { enabled = true }; };
+// Meshes are enabled only for the `int` and `long int` global index types by default.
+template< typename ConfigTag, typename GlobalIndex > struct MeshGlobalIndexTag { enum { enabled = false }; };
+template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, int > { enum { enabled = true }; };
+template< typename ConfigTag > struct MeshGlobalIndexTag< ConfigTag, long int > { enum { enabled = true }; };
 
-// Meshes are enabled for all local index types by default.
-template< typename ConfigTag, typename LocalIndex > struct MeshLocalIndexTag { enum { enabled = true }; };
+// Meshes are enabled only for the `short int` local index type by default.
+template< typename ConfigTag, typename LocalIndex > struct MeshLocalIndexTag { enum { enabled = false }; };
+template< typename ConfigTag > struct MeshLocalIndexTag< ConfigTag, short int > { enum { enabled = true }; };
 
 // Config tag specifying the MeshConfig to use.
 template< typename ConfigTag >
