@@ -13,9 +13,6 @@
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/NetgenWriter.h>
 
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-
 using namespace TNL;
 
 struct MeshConverterConfigTag {};
@@ -72,8 +69,7 @@ struct MeshConverter
    static bool run( const String& inputFileName, const String& outputFileName, const String& outputFormat )
    {
       Mesh mesh;
-      Meshes::DistributedMeshes::DistributedMesh<Mesh> distributedMesh;
-      if( ! Meshes::loadMesh<Communicators::NoDistrCommunicator>( inputFileName, mesh, distributedMesh ) ) {
+      if( ! Meshes::loadMesh( inputFileName, mesh ) ) {
          std::cerr << "Failed to load mesh from file '" << inputFileName << "'." << std::endl;
          return false;
       }
@@ -122,7 +118,7 @@ int main( int argc, char* argv[] )
 {
    Config::ParameterContainer parameters;
    Config::ConfigDescription conf_desc;
- 
+
    configSetup( conf_desc );
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
