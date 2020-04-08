@@ -361,11 +361,16 @@ class VTUReader
 #endif
 
 public:
-   bool detectMesh( const std::string& fileName )
+   VTUReader() = delete;
+
+   VTUReader( const std::string& fileName )
+   : fileName( fileName )
+   {}
+
+   bool detectMesh()
    {
 #ifdef HAVE_TINYXML2
       this->reset();
-      this->fileName = fileName;
 
       using namespace tinyxml2;
 
@@ -420,11 +425,9 @@ public:
    }
 
    template< typename MeshType >
-   bool readMesh( const std::string& fileName, MeshType& mesh )
+   bool readMesh( MeshType& mesh )
    {
-      // reading is actually done in detectMesh, but the mesh type resolver discards the first reader instance
-      if( ! detectMesh( fileName ) )
-         return false;
+      // TODO: check that detectMesh has been called
 
       // check that the cell shape mathes
       const VTK::EntityShape meshCellShape = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
@@ -540,7 +543,7 @@ protected:
 
    void reset()
    {
-      fileName = fileType = "";
+      fileType = "";
       NumberOfPoints = NumberOfCells = 0;
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;

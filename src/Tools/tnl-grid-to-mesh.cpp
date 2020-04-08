@@ -162,40 +162,36 @@ struct MeshCreator< TNL::Meshes::Grid< 3, Real, Device, Index > >
 };
 
 template< typename Grid >
-struct GridConverter
+bool convertGrid( Grid& grid, const TNL::String& fileName, const TNL::String& outputFileName )
 {
-   static bool run( const TNL::String& fileName, const TNL::String& outputFileName )
-   {
-      using MeshCreator = MeshCreator< Grid >;
-      using Mesh = typename MeshCreator::MeshType;
+   using MeshCreator = MeshCreator< Grid >;
+   using Mesh = typename MeshCreator::MeshType;
 
-      Grid grid;
-      Mesh mesh;
+   Mesh mesh;
 
-      TNL::Meshes::Readers::TNLReader reader;
-      if( ! reader.readMesh( fileName, grid ) ) {
-         std::cerr << "Failed to load grid from file '" << fileName << "'." << std::endl;
-         return false;
-      }
-
-      if( ! MeshCreator::run( grid, mesh ) ) {
-         std::cerr << "Unable to build mesh from grid." << std::endl;
-         return false;
-      }
-
-      try
-      {
-         mesh.save( outputFileName );
-      }
-      catch(...)
-      {
-         std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
-         return false;
-      }
-
-      return true;
+   TNL::Meshes::Readers::TNLReader reader( fileName );
+   if( ! reader.readMesh( grid ) ) {
+      std::cerr << "Failed to load grid from file '" << fileName << "'." << std::endl;
+      return false;
    }
-};
+
+   if( ! MeshCreator::run( grid, mesh ) ) {
+      std::cerr << "Unable to build mesh from grid." << std::endl;
+      return false;
+   }
+
+   try
+   {
+      mesh.save( outputFileName );
+   }
+   catch(...)
+   {
+      std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
+      return false;
+   }
+
+   return true;
+}
 
 int
 main( int argc, char* argv[] )
@@ -210,9 +206,9 @@ main( int argc, char* argv[] )
    String fileName( argv[ 1 ] );
    String outputFileName( argv[ 2 ] );
 
-   return ! Meshes::resolveMeshType< GridToMeshConfigTag, Devices::Host, GridConverter >
-               ( fileName,
-                 fileName,  // passed to GridConverter::run
-                 outputFileName
-               );
+   auto wrapper = [&] ( const auto& reader, auto&& grid )
+   {
+      return convertGrid( grid, fileName, outputFileName );
+   };
+   return ! Meshes::resolveMeshType< GridToMeshConfigTag, Devices::Host >( fileName, wrapper );
 }

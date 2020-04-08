@@ -111,50 +111,41 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
 
 
 template< typename Mesh >
-struct MeshConverter
+bool convertMesh( const Mesh& mesh, const String& inputFileName, const String& outputFileName, const String& outputFormat )
 {
-   static bool run( const String& inputFileName, const String& outputFileName, const String& outputFormat )
+   if( outputFormat == "tnl" )
    {
-      Mesh mesh;
-      if( ! Meshes::loadMesh( inputFileName, mesh ) ) {
-         std::cerr << "Failed to load mesh from file '" << inputFileName << "'." << std::endl;
+      try
+      {
+         mesh.save( outputFileName );
+      }
+      catch(...)
+      {
+         std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
          return false;
       }
-
-      if( outputFormat == "tnl" )
-      {
-         try
-         {
-            mesh.save( outputFileName );
-         }
-         catch(...)
-         {
-            std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
-            return false;
-         }
-      }
-      else if( outputFormat == "vtk" ) {
-         using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
-         std::ofstream file( outputFileName.getString() );
-         VTKWriter writer( file );
-         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
-      }
-      else if( outputFormat == "vtu" ) {
-         using VTKWriter = Meshes::Writers::VTUWriter< Mesh >;
-         std::ofstream file( outputFileName.getString() );
-         VTKWriter writer( file );
-         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
-      }
-      // FIXME: NetgenWriter is not specialized for grids
-//      else if( outputFormat == "netgen" ) {
-//         using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
-//         std::fstream file( outputFileName.getString() );
-//         NetgenWriter::writeMesh( mesh, file );
-//      }
-
-      return true;
    }
-};
+   else if( outputFormat == "vtk" ) {
+      using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
+      std::ofstream file( outputFileName.getString() );
+      VTKWriter writer( file );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   }
+   else if( outputFormat == "vtu" ) {
+      using VTKWriter = Meshes::Writers::VTUWriter< Mesh >;
+      std::ofstream file( outputFileName.getString() );
+      VTKWriter writer( file );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   }
+   // FIXME: NetgenWriter is not specialized for grids
+//   else if( outputFormat == "netgen" ) {
+//      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
+//      std::fstream file( outputFileName.getString() );
+//      NetgenWriter::writeMesh( mesh, file );
+//   }
+
+   return true;
+}
 
 void configSetup( Config::ConfigDescription& config )
 {
@@ -182,10 +173,9 @@ int main( int argc, char* argv[] )
    const String outputFileName = parameters.getParameter< String >( "output-file" );
    const String outputFormat = parameters.getParameter< String >( "output-format" );
 
-   return ! Meshes::resolveMeshType< MeshConverterConfigTag, Devices::Host, MeshConverter >
-               ( inputFileName,
-                 inputFileName,  // passed to MeshConverter::run
-                 outputFileName,
-                 outputFormat
-               );
+   auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
+   {
+      return convertMesh( mesh, inputFileName, outputFileName, outputFormat );
+   };
+   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( inputFileName, wrapper );
 }

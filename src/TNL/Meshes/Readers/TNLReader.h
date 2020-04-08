@@ -21,11 +21,16 @@ namespace Readers {
 class TNLReader
 {
 public:
+   TNLReader() = delete;
+
+   TNLReader( const String& fileName )
+   : fileName( fileName )
+   {}
+
    bool
-   detectMesh( const String& fileName )
+   detectMesh()
    {
       this->reset();
-      this->fileName = fileName;
 
       const String objectType = getObjectType( fileName );
       const std::vector< String > parsedMeshType = parseObjectType( objectType );
@@ -94,8 +99,8 @@ public:
    }
 
    template< typename MeshType >
-   static bool
-   readMesh( const String& fileName, MeshType& mesh )
+   bool
+   readMesh( MeshType& mesh )
    {
       mesh.load( fileName );
       return true;
@@ -155,7 +160,6 @@ protected:
 
    void reset()
    {
-      fileName = "";
       meshType = "";
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;

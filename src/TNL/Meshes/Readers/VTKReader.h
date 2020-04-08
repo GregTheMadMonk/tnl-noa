@@ -26,10 +26,15 @@ namespace Readers {
 class VTKReader
 {
 public:
-   bool detectMesh( const String& fileName )
+   VTKReader() = delete;
+
+   VTKReader( const String& fileName )
+   : fileName( fileName )
+   {}
+
+   bool detectMesh()
    {
       this->reset();
-      this->fileName = fileName;
 
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile ) {
@@ -149,7 +154,7 @@ public:
    }
 
    template< typename MeshType >
-   bool readMesh( const String& fileName, MeshType& mesh )
+   bool readMesh( MeshType& mesh )
    {
       using MeshBuilder = MeshBuilder< MeshType >;
       using IndexType = typename MeshType::GlobalIndexType;
@@ -159,6 +164,8 @@ public:
       const VTK::EntityShape cellType = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
       MeshBuilder meshBuilder;
 
+      // TODO: check that detectMesh has been called
+      // TODO: reuse inputFile from the detectMesh method
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile ) {
          std::cerr << "Failed to open the file " << fileName << "." << std::endl;
@@ -348,7 +355,6 @@ protected:
 
    void reset()
    {
-      fileName = "";
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
       realType = "";

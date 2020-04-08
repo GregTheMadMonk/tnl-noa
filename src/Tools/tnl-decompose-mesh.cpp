@@ -285,15 +285,8 @@ struct DecomposeMesh
    using IndexArray = Containers::Array< Index, Devices::Sequential, Index >;
    using MetisIndexArray = Containers::Array< idx_t, Devices::Sequential, idx_t >;
 
-   static bool run( const Config::ParameterContainer& parameters )
+   static bool run( const Mesh& mesh, const Config::ParameterContainer& parameters )
    {
-      const String inputFileName = parameters.template getParameter< String >( "input-file" );
-      Mesh mesh;
-      if( ! Meshes::loadMesh( inputFileName, mesh ) ) {
-         std::cerr << "Failed to load mesh from the file '" << inputFileName << "'." << std::endl;
-         return false;
-      }
-
       // warn if input mesh has 64-bit indices, but METIS uses only 32-bit indices
       if( IDXTYPEWIDTH == 32 && sizeof(Index) > 32 )
          std::cerr << "Warning: the input mesh uses 64-bit indices, but METIS was compiled only with 32-bit indices. "
@@ -757,5 +750,10 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
 
-   return ! Meshes::resolveMeshType< DecomposeMeshConfigTag, Devices::Host, DecomposeMesh >( inputFileName, parameters );
+   auto wrapper = [&] ( const auto& reader, auto&& mesh )
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      return DecomposeMesh< MeshType >::run( std::forward<MeshType>(mesh), parameters );
+   };
+   return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( inputFileName, wrapper );
 }

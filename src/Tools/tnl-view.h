@@ -20,7 +20,6 @@
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
 using namespace TNL;
@@ -313,76 +312,68 @@ bool setValueType( const MeshPointer& meshPointer,
 }
 
 template< typename Mesh >
-struct FilesProcessor
+bool processFiles( const Config::ParameterContainer& parameters )
 {
-   static bool run( const Config::ParameterContainer& parameters )
+   int verbose = parameters.getParameter< int >( "verbose");
+   String meshFile = parameters.getParameter< String >( "mesh" );
+
+   typedef Pointers::SharedPointer< Mesh > MeshPointer;
+   MeshPointer meshPointer;
+   if( ! Meshes::loadMesh( meshFile, *meshPointer ) )
+      return false;
+
+   bool checkOutputFile = parameters.getParameter< bool >( "check-output-file" );
+   std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
+   bool error( false );
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
+   for( int i = 0; i < (int) inputFiles.size(); i++ )
    {
-      int verbose = parameters.getParameter< int >( "verbose");
-      String meshFile = parameters.getParameter< String >( "mesh" );
-
-      typedef Pointers::SharedPointer<  Mesh > MeshPointer;
-      MeshPointer meshPointer;
-      
-      if( meshFile != "" )
-      {
-         Meshes::DistributedMeshes::DistributedMesh<Mesh> distributedMesh;
-         if( ! Meshes::loadMesh<Communicators::NoDistrCommunicator>( meshFile, *meshPointer, distributedMesh ) )
-            return false;
-      }
-
-      bool checkOutputFile = parameters.getParameter< bool >( "check-output-file" );
-      std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
-      bool error( false );
-   //#ifdef HAVE_OPENMP
-   //#pragma omp parallel for
-   //#endif
-      for( int i = 0; i < (int) inputFiles.size(); i++ )
-      {
-         if( verbose )
-           std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
-
-         String outputFormat = parameters.getParameter< String >( "output-format" );
-         String outputFileName = getOutputFileName( inputFiles[ i ], outputFormat );
-         if( checkOutputFile && fileExists( outputFileName ) )
-         {
-            if( verbose )
-              std::cout << " file already exists. Skipping.            \r" << std::flush;
-            continue;
-         }
-
-         String objectType;
-         try
-         {
-            objectType = getObjectType( inputFiles[ i ] );
-         }
-         catch(...)
-         {
-            std::cerr << "unknown object ... SKIPPING!" << std::endl;
-            continue;
-         }
-         
-         if( verbose )
-           std::cout << objectType << " detected ... ";
-
-         const std::vector< String > parsedObjectType = parseObjectType( objectType );
-         if( ! parsedObjectType.size() )
-         {
-            std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
-            error = true;
-            continue;
-         }
-         if( parsedObjectType[ 0 ] == "Containers::Array" ||
-             parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
-            setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
-            setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "Functions::VectorField" )
-            setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( verbose )
-            std::cout << "[ OK ].  " << std::endl;
-      }
       if( verbose )
-        std::cout << std::endl;
-      return ! error;
+        std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
+
+      String outputFormat = parameters.getParameter< String >( "output-format" );
+      String outputFileName = getOutputFileName( inputFiles[ i ], outputFormat );
+      if( checkOutputFile && fileExists( outputFileName ) )
+      {
+         if( verbose )
+           std::cout << " file already exists. Skipping.            \r" << std::flush;
+         continue;
+      }
+
+      String objectType;
+      try
+      {
+         objectType = getObjectType( inputFiles[ i ] );
+      }
+      catch(...)
+      {
+         std::cerr << "unknown object ... SKIPPING!" << std::endl;
+         continue;
+      }
+      
+      if( verbose )
+        std::cout << objectType << " detected ... ";
+
+      const std::vector< String > parsedObjectType = parseObjectType( objectType );
+      if( ! parsedObjectType.size() )
+      {
+         std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
+         error = true;
+         continue;
+      }
+      if( parsedObjectType[ 0 ] == "Containers::Array" ||
+          parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
+         setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
+         setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( parsedObjectType[ 0 ] == "Functions::VectorField" )
+         setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( verbose )
+         std::cout << "[ OK ].  " << std::endl;
    }
-};
+   if( verbose )
+     std::cout << std::endl;
+   return ! error;
+}

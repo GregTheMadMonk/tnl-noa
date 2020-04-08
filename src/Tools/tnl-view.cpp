@@ -85,8 +85,10 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    const String meshFile = parameters.getParameter< String >( "mesh" );
-   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag,
-                                          Devices::Host,
-                                          FilesProcessor >
-                                        ( meshFile, parameters );
+   auto wrapper = [&] ( const auto& reader, auto&& mesh )
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      return processFiles< MeshType >( parameters );
+   };
+   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag, Devices::Host >( meshFile, wrapper );
 }

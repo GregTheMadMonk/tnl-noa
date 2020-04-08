@@ -30,10 +30,15 @@ namespace Readers {
 class NetgenReader
 {
 public:
-   bool detectMesh( const String& fileName )
+   NetgenReader() = delete;
+
+   NetgenReader( const String& fileName )
+   : fileName( fileName )
+   {}
+
+   bool detectMesh()
    {
       this->reset();
-      this->fileName = fileName;
 
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -146,13 +151,15 @@ public:
    }
 
    template< typename MeshType >
-   static bool readMesh( const String& fileName, MeshType& mesh )
+   bool readMesh( MeshType& mesh )
    {
       typedef typename MeshType::PointType PointType;
       typedef MeshBuilder< MeshType > MeshBuilder;
 
       const int dimension = PointType::getSize();
 
+      // TODO: check that detectMesh has been called
+      // TODO: reuse inputFile from the detectMesh method
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
       {
@@ -285,7 +292,6 @@ protected:
 
    void reset()
    {
-      fileName = "";
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
    }
