@@ -134,7 +134,7 @@ class BiEllpackView
 
       static constexpr int getWarpSize() { return WarpSize; };
 
-      static constexpr int getLogWarpSize() { return std::log( WarpSize ); };
+      static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
 
       IndexType size = 0, storageSize = 0;
 

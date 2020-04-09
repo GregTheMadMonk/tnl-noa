@@ -75,7 +75,7 @@ class BiEllpack
       IndexType getStorageSize() const;
 
       __cuda_callable__
-      IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+      IndexType getGlobalIndex( const IndexType segmentIdx, const IndexType localIdx ) const;
 
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
@@ -117,7 +117,23 @@ class BiEllpack
 
       static constexpr int getWarpSize() { return WarpSize; };
 
-      static constexpr int getLogWarpSize() { return std::log( WarpSize ); };
+      static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
+
+      template< typename SizesHolder = OffsetsHolder >
+      void performRowBubbleSort( const SizesHolder& segmentsSize );
+
+      template< typename SizesHolder = OffsetsHolder >
+      void computeColumnSizes( const SizesHolder& segmentsSizes );
+
+      template< typename SizesHolder = OffsetsHolder >
+      void verifyRowPerm( const SizesHolder& segmentsSizes );
+
+      template< typename SizesHolder = OffsetsHolder >
+      void verifyRowLengths( const SizesHolder& segmentsSizes );
+
+      IndexType getStripLength( const IndexType stripIdx ) const;
+
+      IndexType getGroupLength( const IndexType strip, const IndexType group ) const;
 
       IndexType size = 0, storageSize = 0;
 
@@ -126,6 +142,21 @@ class BiEllpack
       OffsetsHolder rowPermArray;
 
       OffsetsHolder groupPointers;
+
+
+
+      // TODO: Replace later
+      __cuda_callable__ Index power( const IndexType number, const IndexType exponent ) const
+      {
+          if( exponent >= 0 )
+          {
+              IndexType result = 1;
+              for( IndexType i = 0; i < exponent; i++ )
+                  result *= number;
+              return result;
+          }
+          return 0;
+      };
 
       template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int WarpSize_ >
       friend class BiEllpack;

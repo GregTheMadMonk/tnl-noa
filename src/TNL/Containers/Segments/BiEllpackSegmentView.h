@@ -10,31 +10,42 @@
 
 #pragma once
 
+#include <TNL/Containers/StaticVector.h>
+
 namespace TNL {
    namespace Containers {
       namespace Segments {
 
 template< typename Index,
-          bool RowMajorOrder = false >
-class BiEllpackSegmentView;
-
-template< typename Index >
-class BiEllpackSegmentView< Index, false >
+          bool RowMajorOrder = false,
+          int WarpSize = 32 >
+class BiEllpackSegmentView
 {
    public:
+      
+      static constexpr int getWarpSize() { return WarpSize; };
+
+      static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
+
+      static constexpr int getGroupsCount() { return getLogWarpSize() + 1; };
 
       using IndexType = Index;
+      using GroupsWidthType = Containers::StaticVector< getGroupsCount(), IndexType >;
 
+
+      /**
+       * \brief Constructor.
+       * 
+       * \param offset is offset of the first group of the strip the segment belongs to.
+       * \param size is the segment size
+       * \param inStripIdx is index of the segment within its strip.
+       * \param groupsWidth is a static vector containing widths of the strip groups
+       */
       __cuda_callable__
       BiEllpackSegmentView( const IndexType offset,
-                                 const IndexType size,
-                                 const IndexType chunkSize,      // this is only for compatibility with the following specialization
-                                 const IndexType chunksInSlice ) // this one as well - both can be replaced when we could use constexprif in C++17
-      : segmentOffset( offset ), segmentSize( size ){};
-
-      __cuda_callable__
-      BiEllpackSegmentView( const BiEllpackSegmentView& view )
-      : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ){};
+                            const IndexType inStripIdx,
+                            const GroupsWidthType& groupsWidth )
+      : groupOffset( offset ), segmentSize( TNL::sum( groupsWidth ) ), inStripIdx( inStripIdx ), groupsWidth( groupsWidth ){};
 
       __cuda_callable__
       IndexType getSize() const
@@ -43,50 +54,27 @@ class BiEllpackSegmentView< Index, false >
       };
 
       __cuda_callable__
-      IndexType getGlobalIndex( const IndexType localIndex ) const
+      IndexType getGlobalIndex( IndexType localIdx ) const
       {
-         TNL_ASSERT_LT( localIndex, segmentSize, "Local index exceeds segment bounds." );
-         return segmentOffset + localIndex;
+         IndexType i( 0 ), offset( groupOffset ), groupHeight( getWarpSize() );
+         while( localIdx > groupsWidth[ i ] )
+         {
+            localIdx -= groupsWidth[ i ];
+            offset += groupsWidth[ i++ ] * groupHeight;
+            groupHeight /= 2;
+         }
+         TNL_ASSERT_LE( i, TNL::log2( getWarpSize() - inStripIdx + 1 ), "Local index exceeds segment bounds." );
+         if( RowMajorOrder )
+            return offset + inStripIdx * groupsWidth[ i ] + localIdx;
+         else
+            return offset + inStripIdx + localIdx * groupHeight;
       };
 
       protected:
-         
-         IndexType segmentOffset, segmentSize;
-};
 
-template< typename Index >
-class BiEllpackSegmentView< Index, true >
-{
-   public:
+         IndexType groupOffset, inStripIdx, segmentSize;
 
-      using IndexType = Index;
-
-      __cuda_callable__
-      BiEllpackSegmentView( const IndexType offset,
-                                 const IndexType size,
-                                 const IndexType chunkSize,
-                                 const IndexType chunksInSlice )
-      : segmentOffset( offset ), segmentSize( size ),
-        chunkSize( chunkSize ), chunksInSlice( chunksInSlice ){};
-
-      __cuda_callable__
-      IndexType getSize() const
-      {
-         return this->segmentSize;
-      };
-
-      __cuda_callable__
-      IndexType getGlobalIndex( const IndexType localIdx ) const
-      {
-         TNL_ASSERT_LT( localIdx, segmentSize, "Local index exceeds segment bounds." );
-         const IndexType chunkIdx = localIdx / chunkSize;
-         const IndexType inChunkOffset = localIdx % chunkSize;
-         return segmentOffset + inChunkOffset * chunksInSlice + chunkIdx;
-      };
-
-      protected:
-         
-         IndexType segmentOffset, segmentSize, chunkSize, chunksInSlice;
+         GroupsWidthType groupsWidth;
 };
 
       } //namespace Segments

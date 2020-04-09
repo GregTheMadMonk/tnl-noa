@@ -285,6 +285,7 @@ BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   
 }
 
 template< typename Device,
@@ -310,8 +311,8 @@ operator=( const BiEllpackView& source )
    this->size = source.size;
    this->storageSize = source.storageSize;
    this->virtualRows = source.virtualRows;
-   this->rowPermArray = source.rowPermArray;
-   this->groupPointers = source.groupPointers;
+   this->rowPermArray.bind( source.rowPermArray );
+   this->groupPointers.bind( source.groupPointers );
    return *this;
 }
 
