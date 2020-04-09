@@ -129,7 +129,7 @@ public:
    {
       return cellShape;
    }
- 
+
    String
    getRealType() const
    {
@@ -141,13 +141,13 @@ public:
    {
       return globalIndexType;
    }
- 
+
    String
    getLocalIndexType() const
    {
       return localIndexType;
    }
- 
+
 protected:
    String fileName;
    String meshType;

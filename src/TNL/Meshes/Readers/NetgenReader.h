@@ -147,18 +147,22 @@ public:
          return false;
       }
 
+      meshDetected = true;
       return true;
    }
 
    template< typename MeshType >
    bool readMesh( MeshType& mesh )
    {
+      // check that detectMesh has been called
+      if( ! meshDetected )
+         detectMesh();
+
       typedef typename MeshType::PointType PointType;
       typedef MeshBuilder< MeshType > MeshBuilder;
 
       const int dimension = PointType::getSize();
 
-      // TODO: check that detectMesh has been called
       // TODO: reuse inputFile from the detectMesh method
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -287,11 +291,13 @@ public:
  
 protected:
    String fileName;
+   bool meshDetected = false;
    int meshDimension, worldDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
 
    void reset()
    {
+      meshDetected = false;
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
    }

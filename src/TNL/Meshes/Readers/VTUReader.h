@@ -417,6 +417,7 @@ public:
          // TODO: generalize the reader for other XML VTK formats
          throw XMLVTKError( "parsing the " + fileType + " files is not implemented (yet)" );
 
+      meshDetected = true;
       return true;
 #else
       throw std::runtime_error("The program was compiled without XML parsing. Make sure that TinyXML-2 is "
@@ -427,7 +428,9 @@ public:
    template< typename MeshType >
    bool readMesh( MeshType& mesh )
    {
-      // TODO: check that detectMesh has been called
+      // check that detectMesh has been called
+      if( ! meshDetected )
+         detectMesh();
 
       // check that the cell shape mathes
       const VTK::EntityShape meshCellShape = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
@@ -527,6 +530,7 @@ public:
 
 protected:
    std::string fileName;
+   bool meshDetected = false;
 
    // VTK file type
    std::string fileType;
@@ -543,6 +547,7 @@ protected:
 
    void reset()
    {
+      meshDetected = false;
       fileType = "";
       NumberOfPoints = NumberOfCells = 0;
       meshDimension = worldDimension = 0;

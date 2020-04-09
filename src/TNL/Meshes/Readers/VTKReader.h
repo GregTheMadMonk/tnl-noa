@@ -12,7 +12,6 @@
 
 #include <fstream>
 #include <sstream>
-#include <map>
 #include <vector>
 
 #include <TNL/Meshes/MeshBuilder.h>
@@ -44,6 +43,7 @@ public:
 
       if( ! parseHeader( inputFile ) )
          return false;
+      const auto positionAfterHeading = inputFile.tellg();
 
       if( dataset != "UNSTRUCTURED_GRID" ) {
          std::cerr << "VTKReader: the dataset '" << dataset << "' is not supported." << std::endl;
@@ -67,14 +67,12 @@ public:
       iss.clear();
       iss.str( line );
       iss >> aux;
-      long int numberOfVertices;
-      iss >> numberOfVertices;
+      iss >> NumberOfPoints;
       iss >> realType;
 
       // read points
-      long int verticesRead = 0;
       worldDimension = 0;
-      while( verticesRead < numberOfVertices ) {
+      for( std::size_t pointIndex = 0; pointIndex < NumberOfPoints; pointIndex++ ) {
          if( ! inputFile ) {
             std::cerr << "VTKReader: unable to read enough vertices, the file may be invalid or corrupted." << std::endl;
             return false;
@@ -88,14 +86,13 @@ public:
             double aux;
             iss >> aux;
             if( ! iss ) {
-               std::cerr << "VTKReader: unable to read " << i << "th component of the vertex number " << verticesRead << "." << std::endl;
+               std::cerr << "VTKReader: unable to read " << i << "th component of the vertex number " << pointIndex << "." << std::endl;
                return false;
             }
             if( aux != 0.0 )
                worldDimension = std::max( worldDimension, i + 1 );
+            pointsArray.push_back( aux );
          }
-
-         verticesRead++;
       }
 
       // skip to the CELL_TYPES section
@@ -107,15 +104,14 @@ public:
       iss.clear();
       iss.str( line );
       iss >> aux;
-      long int numberOfEntities;
-      iss >> numberOfEntities;
+      std::size_t NumberOfEntities;
+      iss >> NumberOfEntities;
 
       // read entity types
-      long int entitiesRead = 0;
-      std::map< int, VTK::EntityShape > entityTypes;
-      while( entitiesRead < numberOfEntities ) {
+      for( std::size_t entityIndex = 0; entityIndex < NumberOfEntities; entityIndex++ ) {
          if( ! inputFile ) {
-            std::cerr << "VTKReader: unable to read enough entity types, the file may be invalid or corrupted." << std::endl;
+            std::cerr << "VTKReader: unable to read enough cell types, the file may be invalid or corrupted." << std::endl;
+            this->reset();
             return false;
          }
          getline( inputFile, line );
@@ -125,177 +121,148 @@ public:
          iss.clear();
          iss.str( line );
          iss >> typeId;
-         const VTK::EntityShape type = (VTK::EntityShape) typeId;
-         const int dimension = getEntityDimension( type );
+         typesArray.push_back( typeId );
+      }
 
-         // check entity type
-         if( entityTypes.find( dimension ) == entityTypes.cend() )
-            entityTypes.emplace( std::make_pair( dimension, type ) );
-         else if( entityTypes[ dimension ] != type ) {
-            std::cerr << "Mixed unstructured meshes are not supported. There are elements of dimension " << dimension
-                      << " with type " << VTK::getShapeName( entityTypes[ dimension ] ) << " and " << VTK::getShapeName( type ) << ". "
-                      << "The type of all entities with the same dimension must be the same." << std::endl;
+      // count entities for each dimension
+      std::size_t entitiesCounts[4] = {0, 0, 0, 0};
+      for( auto c : typesArray ) {
+         const int dimension = getEntityDimension( (VTK::EntityShape) c );
+         ++entitiesCounts[dimension];
+      }
+
+      // set meshDimension
+      meshDimension = 3;
+      if( entitiesCounts[3] == 0 ) {
+         meshDimension--;
+         if( entitiesCounts[2] == 0 ) {
+            meshDimension--;
+            if( entitiesCounts[1] == 0 )
+               meshDimension--;
+         }
+      }
+
+      if( meshDimension == 0 ) {
+         std::cerr << "Mesh dimension cannot be 0. Are there any entities at all?" << std::endl;
+         this->reset();
+         return false;
+      }
+
+      // filter out cell shapes
+      std::vector< std::uint8_t > cellTypes;
+      for( auto c : typesArray ) {
+         const int dimension = getEntityDimension( (VTK::EntityShape) c );
+         if( dimension == meshDimension )
+            cellTypes.push_back( c );
+      }
+
+      // set number of cells
+      NumberOfCells = cellTypes.size();
+      if( NumberOfCells == 0 || NumberOfCells != entitiesCounts[meshDimension] ) {
+         std::cerr << "VTKReader: invalid number of cells (" << NumberOfCells << "). Counts of entities for each dimension (0,1,2,3) are: ";
+         std::cerr << entitiesCounts[0] << ", " << entitiesCounts[1] << ", " << entitiesCounts[2] << ", " << entitiesCounts[3] << std::endl;
+         this->reset();
+         return false;
+      }
+
+      // validate cell types
+      cellShape = (VTK::EntityShape) cellTypes[0];
+      for( auto c : cellTypes )
+         if( (VTK::EntityShape) c != cellShape ) {
+            std::cerr << "Mixed unstructured meshes are not supported. There are cells with type "
+                      << VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c) << "." << std::endl;
             this->reset();
             return false;
          }
 
-         entitiesRead++;
+      // find to the CELLS section
+      if( ! findSection( inputFile, "CELLS", positionAfterHeading ) ) {
+         std::cerr << "VTKReader: unable to find the CELLS section, the file may be invalid or corrupted." << std::endl;
+         this->reset();
+         return false;
+      }
+      getline( inputFile, line );
+
+      // read entities
+      for( std::size_t entityIndex = 0; entityIndex < NumberOfEntities; entityIndex++ ) {
+         if( ! inputFile ) {
+            std::cerr << "VTKReader: unable to read enough cells, the file may be invalid or corrupted.";
+            std::cerr << " (entityIndex = " << entityIndex << ")" << std::endl;
+            this->reset();
+            return false;
+         }
+         getline( inputFile, line );
+
+         if( (VTK::EntityShape) typesArray[ entityIndex ] == cellShape ) {
+            iss.clear();
+            iss.str( line );
+            // read number of subvertices
+            int subvertices = 0;
+            iss >> subvertices;
+            for( int v = 0; v < subvertices; v++ ) {
+               std::size_t vid;
+               iss >> vid;
+               if( ! iss ) {
+                  std::cerr << "VTKReader: unable to read enough cells, the file may be invalid or corrupted.";
+                  std::cerr << " (entityIndex = " << entityIndex << ", subvertex = " << v << ")" << std::endl;
+                  std::cerr << line << std::endl;
+                  this->reset();
+                  return false;
+               }
+               connectivityArray.push_back( vid );
+            }
+            offsetsArray.push_back( connectivityArray.size() );
+         }
       }
 
-      // set meshDimension and cellShape
-      meshDimension = 0;
-      for( auto it : entityTypes )
-         if( it.first > meshDimension ) {
-            meshDimension = it.first;
-            cellShape = it.second;
-         }
+      // set cell types
+      std::swap( cellTypes, typesArray );
 
+      meshDetected = true;
       return true;
    }
 
    template< typename MeshType >
    bool readMesh( MeshType& mesh )
    {
+      // check that detectMesh has been called
+      if( ! meshDetected )
+         detectMesh();
+
       using MeshBuilder = MeshBuilder< MeshType >;
-      using IndexType = typename MeshType::GlobalIndexType;
       using PointType = typename MeshType::PointType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
-      const VTK::EntityShape cellType = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
       MeshBuilder meshBuilder;
+      meshBuilder.setPointsCount( NumberOfPoints );
+      meshBuilder.setCellsCount( NumberOfCells );
 
-      // TODO: check that detectMesh has been called
-      // TODO: reuse inputFile from the detectMesh method
-      std::ifstream inputFile( fileName.getString() );
-      if( ! inputFile ) {
-         std::cerr << "Failed to open the file " << fileName << "." << std::endl;
-         return false;
+      // assign points
+      PointType p;
+      std::size_t i = 0;
+      for( auto c : pointsArray ) {
+         int dim = i++ % 3;
+         if( dim >= PointType::getSize() )
+            continue;
+         p[dim] = c;
+         if( dim == PointType::getSize() - 1 )
+            meshBuilder.setPoint( (i - 1) / 3, p );
       }
 
-      if( ! parseHeader( inputFile ) )
-         return false;
-      const auto positionAfterHeading = inputFile.tellg();
-
-      if( dataset != "UNSTRUCTURED_GRID" ) {
-         std::cerr << "VTKReader: the dataset '" << dataset << "' is not supported." << std::endl;
-         return false;
+      // assign cells
+      std::size_t offsetStart = 0;
+      for( std::size_t i = 0; i < NumberOfCells; i++ ) {
+         CellSeedType& seed = meshBuilder.getCellSeed( i );
+         const std::size_t offsetEnd = offsetsArray[ i ];
+         for( std::size_t o = offsetStart; o < offsetEnd; o++ )
+            seed.setCornerId( o - offsetStart, connectivityArray[ o ] );
+         offsetStart = offsetEnd;
       }
 
-      // TODO: implement binary parsing
-      if( dataType == "BINARY" ) {
-         throw Exceptions::NotImplementedError("VTKReader: parsing of BINARY data is not implemented yet.");
-      }
-
-      std::string line, aux;
-      std::istringstream iss;
-
-      // parse the points section
-      if( ! findSection( inputFile, "POINTS" ) ) {
-         std::cerr << "VTKReader: unable to find the POINTS section, the file may be invalid or corrupted." << std::endl;
-         return false;
-      }
-      getline( inputFile, line );
-      iss.clear();
-      iss.str( line );
-      iss >> aux;
-      IndexType numberOfVertices;
-      iss >> numberOfVertices;
-
-      // allocate vertices
-      meshBuilder.setPointsCount( numberOfVertices );
-
-      // read points
-      for( IndexType vertexIndex = 0; vertexIndex < numberOfVertices; vertexIndex++ ) {
-         if( ! inputFile ) {
-            std::cerr << "VTKReader: unable to read enough vertices, the file may be invalid or corrupted." << std::endl;
-            return false;
-         }
-         getline( inputFile, line );
-
-         // read the coordinates
-         iss.clear();
-         iss.str( line );
-         PointType p;
-         for( int i = 0; i < p.getSize(); i++ ) {
-            iss >> p[ i ];
-            if( ! iss ) {
-               std::cerr << "VTKReader: unable to read " << i << "th component of the vertex number " << vertexIndex << "." << std::endl;
-               return false;
-            }
-         }
-         meshBuilder.setPoint( vertexIndex, p );
-      }
-
-      // find to the CELL_TYPES section
-      if( ! findSection( inputFile, "CELL_TYPES", positionAfterHeading ) ) {
-         std::cerr << "VTKReader: unable to find the CELL_TYPES section, the file may be invalid or corrupted." << std::endl;
-         return false;
-      }
-      getline( inputFile, line );
-      iss.clear();
-      iss.str( line );
-      iss >> aux;
-      IndexType numberOfEntities;
-      iss >> numberOfEntities;
-
-      // read entity types, count cells
-      std::vector< VTK::EntityShape > entityTypes;
-      entityTypes.resize( numberOfEntities );
-      IndexType numberOfCells = 0;
-      for( IndexType entityIndex = 0; entityIndex < numberOfEntities; entityIndex++ ) {
-         if( ! inputFile ) {
-            std::cerr << "VTKReader: unable to read enough entity types, the file may be invalid or corrupted." << std::endl;
-            return false;
-         }
-         getline( inputFile, line );
-
-         // get entity type
-         int typeId;
-         iss.clear();
-         iss.str( line );
-         iss >> typeId;
-         entityTypes[ entityIndex ] = (VTK::EntityShape) typeId;
-         const int dimension = getEntityDimension( entityTypes[ entityIndex ] );
-         if( dimension == MeshType::getMeshDimension() )
-            numberOfCells++;
-      }
-
-      meshBuilder.setCellsCount( numberOfCells );
-
-      // find to the CELLS section
-      if( ! findSection( inputFile, "CELLS", positionAfterHeading ) ) {
-         std::cerr << "VTKReader: unable to find the CELLS section, the file may be invalid or corrupted." << std::endl;
-         return false;
-      }
-      getline( inputFile, line );
-
-      // read cells
-      IndexType cellIndex = 0;
-      for( IndexType entityIndex = 0; entityIndex < numberOfEntities; entityIndex++ ) {
-         if( ! inputFile ) {
-            std::cerr << "VTKReader: unable to read enough entities, the file may be invalid or corrupted." << std::endl;
-            return false;
-         }
-         getline( inputFile, line );
-
-         if( entityTypes[ entityIndex ] == cellType ) {
-            iss.clear();
-            iss.str( line );
-            int vid;
-            iss >> vid;  // ignore number of subvertices
-            CellSeedType& seed = meshBuilder.getCellSeed( cellIndex++ );
-            for( int v = 0; v < CellSeedType::getCornersCount(); v++ ) {
-               iss >> vid;
-               if( ! iss )
-                  return false;
-               seed.setCornerId( v, vid );
-            }
-         }
-      }
-
-      // no cells found
-      if( cellIndex == 0 )
-         return false;
+      // reset arrays since they are not needed anymore
+      pointsArray = {};
+      connectivityArray = offsetsArray = {};
+      typesArray = {};
 
       return meshBuilder.build( mesh );
    }
@@ -349,15 +316,29 @@ protected:
    std::string dataset;
 
    String fileName;
+   bool meshDetected = false;
+
+   std::size_t NumberOfPoints, NumberOfCells;
    int meshDimension, worldDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
    std::string realType;
 
+   // arrays holding the data from the VTK file
+   std::vector< double > pointsArray;
+   std::vector< std::int64_t > connectivityArray, offsetsArray;
+   std::vector< std::uint8_t > typesArray;
+
    void reset()
    {
+      meshDetected = false;
+      NumberOfPoints = NumberOfCells = 0;
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
       realType = "";
+      // reset arrays
+      pointsArray = {};
+      connectivityArray = offsetsArray = {};
+      typesArray = {};
    }
 
    bool parseHeader( std::istream& str )

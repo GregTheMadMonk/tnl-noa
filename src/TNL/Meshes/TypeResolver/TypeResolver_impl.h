@@ -120,21 +120,15 @@ loadMesh( const String& fileName,
       mesh.load( fileName );
    else if( fileName.endsWith( ".ng" ) ) {
       Readers::NetgenReader reader( fileName );
-      status = reader.detectMesh();
-      if( status )
-         status = reader.readMesh( mesh );
+      status = reader.readMesh( mesh );
    }
    else if( fileName.endsWith( ".vtk" ) ) {
       Readers::VTKReader reader( fileName );
-      status = reader.detectMesh();
-      if( status )
-         status = reader.readMesh( mesh );
+      status = reader.readMesh( mesh );
    }
    else if( fileName.endsWith( ".vtu" ) ) {
       Readers::VTUReader reader( fileName );
-      status = reader.detectMesh();
-      if( status )
-         status = reader.readMesh( mesh );
+      status = reader.readMesh( mesh );
    }
    else {
       std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
