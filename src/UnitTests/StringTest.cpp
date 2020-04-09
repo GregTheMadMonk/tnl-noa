@@ -19,7 +19,7 @@
 
 using namespace TNL;
 
-static const char* TEST_FILE_NAME = "test_ObjectTest.tnl";
+static const char* TEST_FILE_NAME = "test_StringTest.tnl";
 
 #ifdef HAVE_GTEST
 TEST( StringTest, BasicConstructor )
