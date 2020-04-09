@@ -24,6 +24,7 @@ stages:
     WITH_MPI: "no"
     # configurations
     WITH_TESTS: "no"
+    WITH_MATRIX_TESTS: "no"
     WITH_COVERAGE: "no"
     WITH_DOC: "no"
     WITH_BENCHMARKS: "no"
@@ -56,6 +57,7 @@ stages:
                 -DWITH_CUDA=${WITH_CUDA}
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
                 -DWITH_TESTS=${WITH_TESTS}
+                -DWITH_MATRIX_TESTS=${WITH_MATRIX_TESTS}
                 -DWITH_DOC=${WITH_DOC}
                 -DWITH_COVERAGE=${WITH_COVERAGE}
                 -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
@@ -65,7 +67,7 @@ stages:
                 -DWITH_CI_FLAGS=yes
         # "install" implies the "all" target
         - ninja ${NINJAFLAGS} install
-        - if [[ ${WITH_TESTS} == "yes" ]]; then
+        - if [[ ${WITH_TESTS} == "yes" ]] || [[ ${WITH_MATRIX_TESTS} == "yes" ]]; then
                 ninja test;
           fi
         - popd
@@ -123,6 +125,31 @@ cuda_tests_Release:
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
         WITH_TESTS: "yes"
+
+
+cuda_matrix_tests_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Debug
+        WITH_MATRIX_TESTS: "yes"
+
+cuda_matrix_tests_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Release
+        WITH_MATRIX_TESTS: "yes"
 
 
 cuda_examples_Debug:
@@ -214,6 +241,35 @@ cuda_mpi_tests_Release:
         WITH_TESTS: "yes"
 
 
+cuda_mpi_matrix_tests_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+        WITH_MATRIX_TESTS: "yes"
+
+cuda_mpi_matrix_tests_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Release
+        WITH_MATRIX_TESTS: "yes"
+
+
 cuda_mpi_examples_Debug:
     <<: *build_template
     tags:
@@ -293,6 +349,20 @@ default_tests_Release:
         BUILD_TYPE: Release
         WITH_TESTS: "yes"
 
+default_matrix_tests_Debug:
+    <<: *build_template
+    variables:
+        <<: *default_cmake_flags
+        BUILD_TYPE: Debug
+        WITH_MATRIX_TESTS: "yes"
+
+default_matrix_tests_Release:
+    <<: *build_template
+    variables:
+        <<: *default_cmake_flags
+        BUILD_TYPE: Release
+        WITH_MATRIX_TESTS: "yes"
+
 default_examples_Debug:
     <<: *build_template
     variables:
@@ -349,6 +419,30 @@ mpi_tests_Release:
         WITH_MPI: "yes"
         BUILD_TYPE: Release
         WITH_TESTS: "yes"
+
+mpi_matrix_tests_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+        WITH_MATRIX_TESTS: "yes"
+
+mpi_matrix_tests_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Release
+        WITH_MATRIX_TESTS: "yes"
 
 mpi_examples_Debug:
     <<: *build_template

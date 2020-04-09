@@ -22,6 +22,7 @@ WITH_CUDA_ARCH="auto"
 WITH_OPENMP="yes"
 WITH_GMP="no"
 WITH_TESTS="yes"
+WITH_MATRIX_TESTS="yes"
 RUN_TESTS="yes"   # whether to run tests if they were compiled (coverage script sets it to no)
 TESTS_JOBS="4"
 WITH_PROFILING="no"
@@ -54,6 +55,7 @@ do
         --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
         --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
+        --with-matrix-tests=*            ) WITH_MATRIX_TESTS="${option#*=}" ;;
         --run-tests=*                    ) RUN_TESTS="${option#*=}" ;;
         --tests-jobs=*                   ) TESTS_JOBS="${option#*=}" ;;
         --with-profiling=*               ) WITH_PROFILING="${option#*=}" ;;
@@ -137,6 +139,7 @@ cmake_command=(
          -DWITH_MPI=${WITH_MPI}
          -DWITH_GMP=${WITH_GMP}
          -DWITH_TESTS=${WITH_TESTS}
+         -DWITH_MATRIX_TESTS=${WITH_MATRIX_TESTS}
          -DWITH_PROFILING=${WITH_PROFILING}
          -DWITH_COVERAGE=${WITH_COVERAGE}
          -DWITH_DOC=${WITH_DOC}
@@ -213,6 +216,8 @@ if [[ ${WITH_DOC} == "yes" ]]; then
    "$ROOT_DIR/Documentation/build" --prefix="$PREFIX"
 fi
 
-if [[ ${WITH_TESTS} == "yes" ]] && [[ ${RUN_TESTS} == "yes" ]]; then
-   CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
+if [[ ${WITH_TESTS} == "yes" ]] || [[ ${WITH_MATRIX_TESTS} == "yes" ]]; then
+   if [[ ${RUN_TESTS} == "yes" ]]; then
+      CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
+   fi
 fi
