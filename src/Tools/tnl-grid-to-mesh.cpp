@@ -167,14 +167,9 @@ bool convertGrid( Grid& grid, const TNL::String& fileName, const TNL::String& ou
    using MeshCreator = MeshCreator< Grid >;
    using Mesh = typename MeshCreator::MeshType;
 
+   grid.load( fileName );
+
    Mesh mesh;
-
-   TNL::Meshes::Readers::TNLReader reader( fileName );
-   if( ! reader.readMesh( grid ) ) {
-      std::cerr << "Failed to load grid from file '" << fileName << "'." << std::endl;
-      return false;
-   }
-
    if( ! MeshCreator::run( grid, mesh ) ) {
       std::cerr << "Unable to build mesh from grid." << std::endl;
       return false;

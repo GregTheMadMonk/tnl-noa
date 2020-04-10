@@ -27,6 +27,7 @@ template< typename ConfigTag,
 bool resolveMeshType( const String& fileName, Functor&& functor )
 {
    std::cout << "Detecting mesh from file " << fileName << " ..." << std::endl;
+   // TODO: when TNLReader is gone, use the MeshReader type instead of a template parameter in the mesh type resolver (and remove static_casts in this function)
    if( fileName.endsWith( ".tnl" ) ) {
       Readers::TNLReader reader( fileName );
       if( ! reader.detectMesh() )
@@ -45,10 +46,9 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
       Readers::NetgenReader reader( fileName );
-      if( ! reader.detectMesh() )
-         return false;
+      reader.detectMesh();
       if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< ConfigTag, Device >::run( reader, functor );
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the Netgen reader." << std::endl;
          return false;
@@ -59,10 +59,9 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
       Readers::VTKReader reader( fileName );
-      if( ! reader.detectMesh() )
-         return false;
+      reader.detectMesh();
       if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< ConfigTag, Device >::run( reader, functor );
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
          return false;
@@ -73,10 +72,9 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
       Readers::VTUReader reader( fileName );
-      if( ! reader.detectMesh() )
-         return false;
+      reader.detectMesh();
       if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< ConfigTag, Device >::run( reader, functor );
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
          return false;
@@ -97,9 +95,11 @@ bool resolveAndLoadMesh( const String& fileName, Functor&& functor )
    {
       using MeshType = std::decay_t< decltype(mesh) >;
       std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
-      if( ! reader.readMesh( mesh ) ) {
-         std::cerr << "Failed to load the mesh from the file " << fileName << ". The mesh type is "
-                   << getType< MeshType >() << std::endl;
+      try {
+         reader.loadMesh( mesh );
+      }
+      catch( const Meshes::Readers::MeshReaderError& e ) {
+         std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
          return false;
       }
       return functor( reader, std::forward<MeshType>(mesh) );
@@ -114,33 +114,32 @@ loadMesh( const String& fileName,
           Mesh< MeshConfig, Device >& mesh )
 {
    std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
-   bool status = true;
 
-   if( fileName.endsWith( ".tnl" ) )
-      mesh.load( fileName );
-   else if( fileName.endsWith( ".ng" ) ) {
-      Readers::NetgenReader reader( fileName );
-      status = reader.readMesh( mesh );
+   try {
+      if( fileName.endsWith( ".tnl" ) )
+         mesh.load( fileName );
+      else if( fileName.endsWith( ".ng" ) ) {
+         Readers::NetgenReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else if( fileName.endsWith( ".vtk" ) ) {
+         Readers::VTKReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else if( fileName.endsWith( ".vtu" ) ) {
+         Readers::VTUReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else {
+         std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
+         return false;
+      }
    }
-   else if( fileName.endsWith( ".vtk" ) ) {
-      Readers::VTKReader reader( fileName );
-      status = reader.readMesh( mesh );
-   }
-   else if( fileName.endsWith( ".vtu" ) ) {
-      Readers::VTUReader reader( fileName );
-      status = reader.readMesh( mesh );
-   }
-   else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
+   catch( const Meshes::Readers::MeshReaderError& e ) {
+      std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
       return false;
    }
 
-   if( ! status )
-   {
-      std::cerr << "Failed to load the mesh from the file " << fileName << ". The mesh type is "
-                << getType< decltype(mesh) >() << std::endl;
-      return false;
-   }
    return true;
 }
 

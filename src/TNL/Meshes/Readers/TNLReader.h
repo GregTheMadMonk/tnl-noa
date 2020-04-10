@@ -59,8 +59,8 @@ public:
             std::cerr << "Unable to parse the mesh config type " << parsedMeshType[ 1 ] << "." << std::endl;
             return false;
          }
-         if( parsedMeshConfig.size() != 7 ) {
-            std::cerr << "The parsed mesh config type has wrong size (expected 7 elements):" << std::endl;
+         if( parsedMeshConfig.size() != 6 ) {
+            std::cerr << "The parsed mesh config type has wrong size (expected 6 elements):" << std::endl;
             std::cerr << "[ ";
             for( std::size_t i = 0; i < parsedMeshConfig.size() - 1; i++ )
                std::cerr << parsedMeshConfig[ i ] << ", ";
@@ -75,15 +75,15 @@ public:
          globalIndexType = parsedMeshConfig[ 4 ];
          localIndexType = parsedMeshConfig[ 5 ];
 
-         if( topology == "MeshEdgeTopology" )
+         if( topology == "TNL::Meshes::Topologies::Edge" )
             cellShape = VTK::EntityShape::Line;
-         else if( topology == "MeshTriangleTopology" )
+         else if( topology == "TNL::Meshes::Topologies::Triangle" )
             cellShape = VTK::EntityShape::Triangle;
-         else if( topology == "MeshQuadrilateralTopology" )
+         else if( topology == "TNL::Meshes::Topologies::Quadrilateral" )
             cellShape = VTK::EntityShape::Quad;
-         else if( topology == "MeshTetrahedronTopology" )
+         else if( topology == "TNL::Meshes::Topologies::Tetrahedron" )
             cellShape = VTK::EntityShape::Tetra;
-         else if( topology == "MeshHexahedronTopology" )
+         else if( topology == "TNL::Meshes::Topologies::Hexahedron" )
             cellShape = VTK::EntityShape::Hexahedron;
          else {
             std::cerr << "Detected topology '" << topology << "' is not supported." << std::endl;
@@ -99,11 +99,10 @@ public:
    }
 
    template< typename MeshType >
-   bool
-   readMesh( MeshType& mesh )
+   void
+   loadMesh( MeshType& mesh )
    {
       mesh.load( fileName );
-      return true;
    }
 
    String

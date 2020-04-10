@@ -10,296 +10,150 @@
 
 /***
  * Authors:
- * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
- * Zabka Vitezslav, zabkav@gmail.com
+ * Tomas Oberhuber
+ * Vitezslav Zabka
+ * Jakub Klinkovsky
  */
 
 #pragma once
 
 #include <fstream>
-#include <istream>
 #include <sstream>
 
-#include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/VTKTraits.h>
+#include <TNL/Meshes/Readers/MeshReader.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Readers {
 
 class NetgenReader
+: public MeshReader
 {
 public:
    NetgenReader() = delete;
 
-   NetgenReader( const String& fileName )
-   : fileName( fileName )
+   NetgenReader( const std::string& fileName )
+   : MeshReader( fileName )
    {}
 
-   bool detectMesh()
+   virtual void detectMesh() override
    {
-      this->reset();
+      reset();
 
-      std::ifstream inputFile( fileName.getString() );
+      std::ifstream inputFile( fileName );
       if( ! inputFile )
-      {
-         std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-         return false;
-      }
+         throw MeshReaderError( "NetgenReader", "failed to open the file '" + fileName + "'." );
 
       std::string line;
       std::istringstream iss;
 
-      /****
-       * Skip whitespaces
-       */
+      // skip whitespace
       inputFile >> std::ws;
- 
-      /****
-       * Skip number of vertices
-       */
       if( ! inputFile )
-         return false;
-      getline( inputFile, line );
-      iss.str( line );
-      long int numberOfVertices;
-      iss >> numberOfVertices;
- 
-      //cout << "There are " << numberOfVertices << " vertices." << std::endl;
+         throw MeshReaderError( "NetgenReader", "unexpected error when reading the file '" + fileName + "'." );
 
-      /****
-       * Read the first vertex and compute number of components
-       */
-      if( ! inputFile )
-         return false;
+      // read number of points
       getline( inputFile, line );
-      iss.clear();
       iss.str( line );
-      meshDimension = worldDimension = -1;
-      while( iss )
-      {
-         double aux;
-         iss >> aux;
-         meshDimension = ++worldDimension;
-      }
- 
-      /****
-       * Skip vertices
-       */
-      long int verticesRead( 1 );
-      while( verticesRead < numberOfVertices )
-      {
-         getline( inputFile, line );
-         if( ! inputFile )
-         {
-            std::cerr << "The mesh file " << fileName << " is probably corrupted, some vertices are missing." << std::endl;
-            return false;
+      iss >> NumberOfPoints;
+
+      // real type is not stored in Netgen files
+      pointsType = "double";
+      // global index type is not stored in Netgen files
+      connectivityType = offsetsType = "std::int32_t";
+      // only std::uint8_t makes sense for entity types
+      typesType = "std::uint8_t";
+
+      // arrays holding the data from the file
+      std::vector< double > pointsArray;
+      std::vector< std::int32_t > connectivityArray, offsetsArray;
+      std::vector< std::uint8_t > typesArray;
+
+      // read points
+      worldDimension = 0;
+      for( std::size_t pointIndex = 0; pointIndex < NumberOfPoints; pointIndex++ ) {
+         if( ! inputFile ) {
+            reset();
+            throw MeshReaderError( "NetgenReader", "unable to read enough vertices, the file may be invalid or corrupted." );
          }
-         verticesRead++;
-      }
- 
-      /****
-       * Skip whitespaces
-       */
-      inputFile >> std::ws;
- 
-      /****
-       * Get number of cells
-       */
-      long int numberOfCells;
-      getline( inputFile, line );
-      iss.clear();
-      iss.str( line );
-      iss >> numberOfCells;
-      //cout << "There are " << numberOfCells << " cells." << std::endl;
- 
-      /****
-       * Get number of vertices in a cell
-       */
-      getline( inputFile, line );
-      iss.clear();
-      iss.str( line );
-      int verticesInCell = -2;
-      while( iss )
-      {
-         int aux;
-         iss >> aux;
-         verticesInCell++;
-      }
-      //cout << "There are " << verticesInCell << " vertices in cell ..." << std::endl;
+         getline( inputFile, line );
 
-      if( meshDimension == 1 && verticesInCell == 2 )
+         // read the coordinates and compute the world dimension
+         iss.clear();
+         iss.str( line );
+         for( int i = 0; i < 3; i++ ) {
+            double aux;
+            iss >> aux;
+            if( ! iss ) {
+               // the intermediate mesh representation uses the VTK convention - all points must have 3 coordinates
+               aux = 0;
+            }
+            if( aux != 0.0 )
+               worldDimension = std::max( worldDimension, i + 1 );
+            pointsArray.push_back( aux );
+         }
+      }
+
+      // netgen supports only triangular and tetrahedral meshes
+      meshDimension = worldDimension;
+      if( meshDimension == 1 )
          cellShape = VTK::EntityShape::Line;
-      else if( meshDimension == 2 ) {
-         if( verticesInCell == 3 )
-            cellShape = VTK::EntityShape::Triangle;
-         else if( verticesInCell == 4 )
-            cellShape = VTK::EntityShape::Quad;
+      else if( meshDimension == 2 )
+         cellShape = VTK::EntityShape::Triangle;
+      else if( meshDimension == 3 )
+         cellShape = VTK::EntityShape::Tetra;
+      else
+         throw MeshReaderError( "NetgenReader", "unsupported mesh dimension: " + std::to_string(meshDimension) );
+
+      // skip whitespace
+      inputFile >> std::ws;
+      if( ! inputFile )
+         throw MeshReaderError( "NetgenReader", "unexpected error when reading the file '" + fileName + "'." );
+
+      // read number of cells
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      iss >> NumberOfCells;
+
+      // read cells
+      for( std::size_t cellIndex = 0; cellIndex < NumberOfCells; cellIndex++ ) {
+         if( ! inputFile ) {
+            reset();
+            throw MeshReaderError( "NetgenReader", "unable to read enough cells, the file may be invalid or corrupted."
+                                                   " (cellIndex = " + std::to_string(cellIndex) + ")" );
+         }
+         getline( inputFile, line );
+
+         iss.clear();
+         iss.str( line );
+         // skip subdomain number
+         int subdomain;
+         iss >> subdomain;
+         for( int v = 0; v <= meshDimension; v++ ) {
+            std::size_t vid;
+            iss >> vid;
+            if( ! iss ) {
+               reset();
+               throw MeshReaderError( "NetgenReader", "unable to read enough cells, the file may be invalid or corrupted."
+                                                      " (cellIndex = " + std::to_string(cellIndex) + ", subvertex = " + std::to_string(v) + ")" );
+            }
+            // convert point index from 1-based to 0-based
+            connectivityArray.push_back( vid - 1 );
+         }
+         offsetsArray.push_back( connectivityArray.size() );
       }
-      else if( meshDimension == 3 ) {
-         if( verticesInCell == 4 )
-            cellShape = VTK::EntityShape::Tetra;
-         else if( verticesInCell == 8 )
-            cellShape = VTK::EntityShape::Hexahedron;
-      }
-      if( cellShape == VTK::EntityShape::Vertex ) {
-         std::cerr << "Unknown cell topology: mesh dimension is " << meshDimension << ", number of vertices in cells is " << verticesInCell << "." << std::endl;
-         return false;
-      }
+
+      // set cell types
+      typesArray.resize( NumberOfCells, (std::uint8_t) cellShape );
+
+      // set the arrays to the base class
+      this->pointsArray = std::move(pointsArray);
+      this->connectivityArray = std::move(connectivityArray);
+      this->offsetsArray = std::move(offsetsArray);
+      this->typesArray = std::move(typesArray);
 
       meshDetected = true;
-      return true;
-   }
-
-   template< typename MeshType >
-   bool readMesh( MeshType& mesh )
-   {
-      // check that detectMesh has been called
-      if( ! meshDetected )
-         detectMesh();
-
-      typedef typename MeshType::PointType PointType;
-      typedef MeshBuilder< MeshType > MeshBuilder;
-
-      const int dimension = PointType::getSize();
-
-      // TODO: reuse inputFile from the detectMesh method
-      std::ifstream inputFile( fileName.getString() );
-      if( ! inputFile )
-      {
-         std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
-         return false;
-      }
-
-      MeshBuilder meshBuilder;
-      std::string line;
-      std::istringstream iss;
-
-      /****
-       * Skip white spaces
-       */
-      inputFile >> std::ws;
-
-      /****
-       * Read the number of vertices
-       */
-      if( ! inputFile )
-         return false;
-      getline( inputFile, line );
-      iss.str( line );
-      typedef typename MeshType::Config::GlobalIndexType VertexIndexType;
-      VertexIndexType pointsCount;
-      iss >> pointsCount;
-      meshBuilder.setPointsCount( pointsCount );
-
-      for( VertexIndexType i = 0; i < pointsCount; i++ )
-      {
-         getline( inputFile, line );
-         iss.clear();
-         iss.str( line );
-         PointType p;
-         for( int d = 0; d < dimension; d++ )
-            iss >> p[ d ];
-         //cout << "Setting point number " << i << " of " << pointsCount << std::endl;
-         meshBuilder.setPoint( i, p );
-         //const PointType& point = mesh.getVertex( i ).getPoint();
-      }
-
-      /****
-        * Skip white spaces
-        */
-      inputFile >> std::ws;
-
-      /****
-       * Read number of cells
-       */
-      typedef typename MeshType::Config::GlobalIndexType CellIndexType;
-      if( ! inputFile )
-      {
-         std::cerr << "I cannot read the mesh cells." << std::endl;
-         return false;
-      }
-      getline( inputFile, line );
-      iss.clear();
-      iss.str( line );
-      CellIndexType numberOfCells = atoi( line.data() );
-      //iss >> numberOfCells; // TODO: I do not know why this does not work
-      meshBuilder.setCellsCount( numberOfCells );
-      for( CellIndexType i = 0; i < numberOfCells; i++ )
-      {
-         getline( inputFile, line );
-         iss.clear();
-         iss.str( line );
-         int subdomainIndex;
-         iss >> subdomainIndex;
-         //cout << "Setting cell number " << i << " of " << numberOfCells << std::endl;
-         typedef typename MeshBuilder::CellSeedType CellSeedType;
-         for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
-         {
-            VertexIndexType vertexIdx;
-            iss >> vertexIdx;
-            meshBuilder.getCellSeed( i ).setCornerId( cellVertex, vertexIdx - 1 );
-         }
-      }
-      meshBuilder.build( mesh );
-      return true;
-   }
-
-   String
-   getMeshType() const
-   {
-      return "Meshes::Mesh";
-   }
-
-   int getMeshDimension() const
-   {
-      return this->meshDimension;
-   }
- 
-   int
-   getWorldDimension() const
-   {
-      return worldDimension;
-   }
-
-   VTK::EntityShape
-   getCellShape() const
-   {
-      return cellShape;
-   }
-
-   String
-   getRealType() const
-   {
-      // not stored in the Netgen file
-      return "float";
-   }
-
-   String
-   getGlobalIndexType() const
-   {
-      // not stored in the Netgen file
-      return "int";
-   }
- 
-   String
-   getLocalIndexType() const
-   {
-      // not stored in the Netgen file
-      return "short int";
-   }
- 
-protected:
-   String fileName;
-   bool meshDetected = false;
-   int meshDimension, worldDimension;
-   VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
-
-   void reset()
-   {
-      meshDetected = false;
-      meshDimension = worldDimension = 0;
-      cellShape = VTK::EntityShape::Vertex;
    }
 };
 

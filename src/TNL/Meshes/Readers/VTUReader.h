@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Jakub Klinkovský
+
 #pragma once
 
 #include <map>
 #include <set>
-#include <TNL/variant.hpp>
 
-#include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/VTKTraits.h>
+#include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/base64.h>
 #include <TNL/Endianness.h>
 
@@ -31,14 +31,6 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-struct XMLVTKError
-   : public std::runtime_error
-{
-   XMLVTKError( std::string msg )
-   : std::runtime_error( "XMLVTKReader error: " + msg )
-   {}
-};
-
 static const std::map< std::string, std::string > VTKDataTypes {
    {"Int8", "std::int8_t"},
    {"UInt8", "std::uint8_t"},
@@ -53,25 +45,15 @@ static const std::map< std::string, std::string > VTKDataTypes {
 };
 
 class VTUReader
+: public MeshReader
 {
-   using VariantVector = mpark::variant< std::vector< std::int8_t >,
-                                         std::vector< std::uint8_t >,
-                                         std::vector< std::int16_t >,
-                                         std::vector< std::uint16_t >,
-                                         std::vector< std::int32_t >,
-                                         std::vector< std::uint32_t >,
-                                         std::vector< std::int64_t >,
-                                         std::vector< std::uint64_t >,
-                                         std::vector< float >,
-                                         std::vector< double > >;
-
 #ifdef HAVE_TINYXML2
    static void verifyElement( const tinyxml2::XMLElement* elem, const std::string name )
    {
       if( ! elem )
-         throw XMLVTKError( "tag <" + name + "> not found" );
+         throw MeshReaderError( "VTUReader", "tag <" + name + "> not found" );
       if( elem->Name() != name )
-         throw XMLVTKError( "invalid XML format - expected a <" + name + "> element, got <" + elem->Name() + ">" );
+         throw MeshReaderError( "VTUReader", "invalid XML format - expected a <" + name + "> element, got <" + elem->Name() + ">" );
    }
 
    static const tinyxml2::XMLElement*
@@ -82,9 +64,9 @@ class VTUReader
       if( ! childName.empty() )
          verifyElement( elem, childName );
       else if( ! elem )
-         throw XMLVTKError( "element " + parentName + " does not contain any child" );
+         throw MeshReaderError( "VTUReader", "element " + parentName + " does not contain any child" );
       if( elem->NextSibling() )
-         throw XMLVTKError( "<" + childName + "> is not the only element in <" + parentName + ">" );
+         throw MeshReaderError( "VTUReader", "<" + childName + "> is not the only element in <" + parentName + ">" );
       return elem;
    }
 
@@ -97,7 +79,7 @@ class VTUReader
          return attribute;
       if( ! defaultValue.empty() )
          return defaultValue;
-      throw XMLVTKError( "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "'" );
+      throw MeshReaderError( "VTUReader", "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "'" );
    }
 
    static std::int64_t
@@ -106,7 +88,7 @@ class VTUReader
       std::int64_t value;
       tinyxml2::XMLError status = elem->QueryInt64Attribute( name.c_str(), &value );
       if( status != tinyxml2::XML_SUCCESS )
-         throw XMLVTKError( "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "' or it could not be converted to int64_t" );
+         throw MeshReaderError( "VTUReader", "element <" + std::string(elem->Name()) + "> does not have the attribute '" + name + "' or it could not be converted to int64_t" );
       return value;
    }
 
@@ -127,16 +109,16 @@ class VTUReader
       // verify type
       const std::string type = getAttributeString( elem, "type" );
       if( VTKDataTypes.count( type ) == 0 )
-         throw XMLVTKError( "unsupported DataArray type: " + type );
+         throw MeshReaderError( "VTUReader", "unsupported DataArray type: " + type );
       // verify format
       const std::string format = getAttributeString( elem, "format" );
       if( format != "ascii" && format != "binary" )
-         throw XMLVTKError( "unsupported DataArray format: " + format );
+         throw MeshReaderError( "VTUReader", "unsupported DataArray format: " + format );
       // verify NumberOfComponents (optional)
       const std::string NumberOfComponents = getAttributeString( elem, "NumberOfComponents", "0" );
       static const std::set< std::string > validNumbersOfComponents = {"0", "1", "2", "3"};
       if( validNumbersOfComponents.count( NumberOfComponents ) == 0 )
-         throw XMLVTKError( "unsupported NumberOfComponents in DataArray: " + NumberOfComponents );
+         throw MeshReaderError( "VTUReader", "unsupported NumberOfComponents in DataArray: " + NumberOfComponents );
    }
 
    static const tinyxml2::XMLElement*
@@ -150,29 +132,29 @@ class VTUReader
          try {
             arrayName = getAttributeString( child, "Name" );
          }
-         catch( const XMLVTKError& ) {}
+         catch( const MeshReaderError& ) {}
          if( arrayName == name ) {
             if( found == nullptr )
                found = child;
             else
-               throw XMLVTKError( "the <" + std::string(parent->Name()) + "> tag contains multiple <DataArray> tags with the Name=\"" + name + "\" attribute" );
+               throw MeshReaderError( "VTUReader", "the <" + std::string(parent->Name()) + "> tag contains multiple <DataArray> tags with the Name=\"" + name + "\" attribute" );
          }
          child = child->NextSiblingElement( "DataArray" );
       }
       if( found == nullptr )
-         throw XMLVTKError( "the <" + std::string(parent->Name()) + "> tag does not contain any <DataArray> tag with the Name=\"" + name + "\" attribute" );
+         throw MeshReaderError( "VTUReader", "the <" + std::string(parent->Name()) + "> tag does not contain any <DataArray> tag with the Name=\"" + name + "\" attribute" );
       verifyDataArray( found );
       return found;
    }
 
    template< typename HeaderType >
-   std::size_t
-   readBlockSize( const char* block ) const
+   static std::size_t
+   readBlockSize( const char* block )
    {
       std::pair<std::size_t, std::unique_ptr<char[]>> decoded_data = decode_block( block, get_encoded_length(sizeof(HeaderType)) );
       if( decoded_data.first != sizeof(HeaderType) )
-         throw XMLVTKError( "base64-decoding failed - mismatched data size in the binary header (read "
-                            + std::to_string(decoded_data.first) + " bytes, expected " + std::to_string(sizeof(HeaderType)) + " bytes)" );
+         throw MeshReaderError( "VTUReader", "base64-decoding failed - mismatched data size in the binary header (read "
+                                             + std::to_string(decoded_data.first) + " bytes, expected " + std::to_string(sizeof(HeaderType)) + " bytes)" );
       const HeaderType* blockSize = reinterpret_cast<const HeaderType*>(decoded_data.second.get());
       return *blockSize;
    }
@@ -202,12 +184,12 @@ class VTUReader
             vector[i] = decoded_data.second.get()[i];
          return vector;
 #else
-         throw XMLVTKError( "The ZLIB compression is not available in this build. Make sure that ZLIB is "
-                            "installed and recompile the program with -DHAVE_ZLIB." );
+         throw MeshReaderError( "VTUReader", "The ZLIB compression is not available in this build. Make sure that ZLIB is "
+                                             "installed and recompile the program with -DHAVE_ZLIB." );
 #endif
       }
       else
-         throw XMLVTKError( "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
+         throw MeshReaderError( "VTUReader", "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
    }
 
    template< typename T >
@@ -222,7 +204,7 @@ class VTUReader
       else if( headerType == "std::uint32_t" )   return readBinaryBlock< std::uint32_t, T >( block );
       else if( headerType == "std::int64_t" )    return readBinaryBlock< std::int64_t,  T >( block );
       else if( headerType == "std::uint64_t" )   return readBinaryBlock< std::uint64_t, T >( block );
-      else throw XMLVTKError( "unsupported header type: " + headerType );
+      else throw MeshReaderError( "VTUReader", "unsupported header type: " + headerType );
    }
 
    VariantVector
@@ -231,12 +213,12 @@ class VTUReader
       verifyElement( elem, "DataArray" );
       const char* block = elem->GetText();
       if( ! block )
-         throw XMLVTKError( "the DataArray with Name=\"" + arrayName + "\" does not contain any data" );
+         throw MeshReaderError( "VTUReader", "the DataArray with Name=\"" + arrayName + "\" does not contain any data" );
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {
          // TODO
-         throw XMLVTKError( "reading ASCII arrays is not implemented yet" );
+         throw MeshReaderError( "VTUReader", "reading ASCII arrays is not implemented yet" );
       }
       else if( format == "binary" ) {
          if( type == "Int8" )          return readBinaryBlock< std::int8_t   >( block );
@@ -249,10 +231,10 @@ class VTUReader
          else if( type == "UInt64" )   return readBinaryBlock< std::uint64_t >( block );
          else if( type == "Float32" )  return readBinaryBlock< float  >( block );
          else if( type == "Float64" )  return readBinaryBlock< double >( block );
-         else throw XMLVTKError( "unsupported DataArray type: " + type );
+         else throw MeshReaderError( "VTUReader", "unsupported DataArray type: " + type );
       }
       else
-         throw XMLVTKError( "unsupported DataArray format: " + format );
+         throw MeshReaderError( "VTUReader", "unsupported DataArray format: " + format );
    }
 
    void readUnstructuredGrid( const tinyxml2::XMLElement* elem )
@@ -261,7 +243,7 @@ class VTUReader
       const XMLElement* piece = getChildSafe( elem, "Piece" );
       if( piece->NextSiblingElement( "Piece" ) )
          // ambiguity - throw error, we don't know which piece to parse (or all of them?)
-         throw XMLVTKError( "the serial UnstructuredGrid file contains more than one <Piece> element" );
+         throw MeshReaderError( "VTUReader", "the serial UnstructuredGrid file contains more than one <Piece> element" );
       NumberOfPoints = getAttributeInteger( piece, "NumberOfPoints" );
       NumberOfCells = getAttributeInteger( piece, "NumberOfCells" );
 
@@ -271,7 +253,7 @@ class VTUReader
       verifyDataArray( pointsData );
       const std::string pointsDataName = getAttributeString( pointsData, "Name" );
       if( pointsDataName != "Points" )
-         throw XMLVTKError( "the <Points> tag does not contain a <DataArray> with Name=\"Points\" attribute" );
+         throw MeshReaderError( "VTUReader", "the <Points> tag does not contain a <DataArray> with Name=\"Points\" attribute" );
 
       // verify cells
       const XMLElement* cells = getChildSafe( piece, "Cells" );
@@ -291,19 +273,19 @@ class VTUReader
 
       // connectivity and offsets must have the same type
       if( connectivityType != offsetsType )
-         throw XMLVTKError( "the \"connectivity\" and \"offsets\" array do not have the same type ("
+         throw MeshReaderError( "VTUReader", "the \"connectivity\" and \"offsets\" array do not have the same type ("
                             + connectivityType + " vs " + offsetsType + ")" );
       // cell types can be only uint8_t
       if( typesType != "std::uint8_t" )
-         throw XMLVTKError( "unsupported data type for the Name=\"types\" array" );
+         throw MeshReaderError( "VTUReader", "unsupported data type for the Name=\"types\" array" );
 
       using mpark::visit;
       // validate points
       visit( [this](auto&& array) {
                // check array size
                if( array.size() != 3 * NumberOfPoints )
-                  throw XMLVTKError( "invalid size of the Points data array (" + std::to_string(array.size())
-                                     + " vs " + std::to_string(NumberOfPoints) + ")" );
+                  throw MeshReaderError( "VTUReader", "invalid size of the Points data array (" + std::to_string(array.size())
+                                                      + " vs " + std::to_string(NumberOfPoints) + ")" );
                // set worldDimension
                worldDimension = 1;
                std::size_t i = 0;
@@ -321,14 +303,14 @@ class VTUReader
       visit( [this](auto&& array) {
                // check array size
                if( array.size() != NumberOfCells )
-                  throw XMLVTKError( "size of the types data array does not match the NumberOfCells attribute" );
+                  throw MeshReaderError( "VTUReader", "size of the types data array does not match the NumberOfCells attribute" );
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
                // TODO: check only entities of the same dimension (edges, faces and cells separately)
                for( auto c : array )
                   if( (VTK::EntityShape) c != cellShape )
-                     throw XMLVTKError( "Mixed unstructured meshes are not supported. There are cells with type "
-                                        + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c) + "." );
+                     throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
+                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c) + "." );
             },
             typesArray
          );
@@ -336,10 +318,10 @@ class VTUReader
       std::size_t max_offset = 0;
       visit( [this, &max_offset](auto&& array) mutable {
                if( array.size() != NumberOfCells )
-                  throw XMLVTKError( "size of the offsets data array does not match the NumberOfCells attribute" );
+                  throw MeshReaderError( "VTUReader", "size of the offsets data array does not match the NumberOfCells attribute" );
                for( auto c : array ) {
                   if( c <= (decltype(c)) max_offset )
-                     throw XMLVTKError( "the offsets array is not monotonically increasing" );
+                     throw MeshReaderError( "VTUReader", "the offsets array is not monotonically increasing" );
                   max_offset = c;
                }
             },
@@ -348,10 +330,10 @@ class VTUReader
       // validate connectivity
       visit( [this, max_offset](auto&& array) {
                if( array.size() != max_offset )
-                  throw XMLVTKError( "size of the connectivity data array does not match the offsets array" );
+                  throw MeshReaderError( "VTUReader", "size of the connectivity data array does not match the offsets array" );
                for( auto c : array ) {
                   if( c < 0 || (std::size_t) c >= NumberOfPoints )
-                     throw XMLVTKError( "connectivity index " + std::to_string(c) + " is out of range" );
+                     throw MeshReaderError( "VTUReader", "connectivity index " + std::to_string(c) + " is out of range" );
                }
             },
             connectivityArray
@@ -364,10 +346,10 @@ public:
    VTUReader() = delete;
 
    VTUReader( const std::string& fileName )
-   : fileName( fileName )
+   : MeshReader( fileName )
    {}
 
-   bool detectMesh()
+   virtual void detectMesh() override
    {
 #ifdef HAVE_TINYXML2
       this->reset();
@@ -380,25 +362,25 @@ public:
       // load and verify XML
       status = dom.LoadFile( fileName.c_str() );
       if( status != XML_SUCCESS )
-         throw XMLVTKError( "VTUReader: failed to parse the file as an XML document." );
+         throw MeshReaderError( "VTUReader", "VTUReader: failed to parse the file as an XML document." );
 
       // verify root element
       const XMLElement* elem = dom.FirstChildElement();
       verifyElement( elem, "VTKFile" );
       if( elem->NextSibling() )
-         throw XMLVTKError( "<VTKFile> is not the only element in the file" );
+         throw MeshReaderError( "VTUReader", "<VTKFile> is not the only element in the file" );
 
       // verify byte order
       const std::string systemByteOrder = (isLittleEndian()) ? "LittleEndian" : "BigEndian";
       byteOrder = getAttributeString( elem, "byte_order" );
       if( byteOrder != systemByteOrder )
-         throw XMLVTKError( "incompatible byte_order: " + byteOrder + " (the system is " + systemByteOrder + " and the conversion "
-                            "from BigEndian to LittleEndian or vice versa is not implemented yet)" );
+         throw MeshReaderError( "VTUReader", "incompatible byte_order: " + byteOrder + " (the system is " + systemByteOrder + " and the conversion "
+                                             "from BigEndian to LittleEndian or vice versa is not implemented yet)" );
 
       // verify header type
       headerType = getAttributeString( elem, "header_type", "UInt32" );
       if( VTKDataTypes.count( headerType ) == 0 )
-         throw XMLVTKError( "invalid header_type: " + headerType );
+         throw MeshReaderError( "VTUReader", "invalid header_type: " + headerType );
       headerType = VTKDataTypes.at( headerType );
 
       // verify compressor
@@ -406,7 +388,7 @@ public:
       if( compressor == "<none>" )
          compressor = "";
       if( compressor != "" && compressor != "vtkZLibDataCompressor" )
-         throw XMLVTKError( "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
+         throw MeshReaderError( "VTUReader", "unsupported compressor type: " + compressor + " (only vtkZLibDataCompressor is supported)" );
 
       // verify file type
       fileType = getAttributeString( elem, "type" );
@@ -415,147 +397,27 @@ public:
          readUnstructuredGrid( elem );
       else
          // TODO: generalize the reader for other XML VTK formats
-         throw XMLVTKError( "parsing the " + fileType + " files is not implemented (yet)" );
+         throw MeshReaderError( "VTUReader", "parsing the " + fileType + " files is not implemented (yet)" );
 
       meshDetected = true;
-      return true;
 #else
       throw std::runtime_error("The program was compiled without XML parsing. Make sure that TinyXML-2 is "
                                "installed and recompile the program with -DHAVE_TINYXML2.");
 #endif
    }
 
-   template< typename MeshType >
-   bool readMesh( MeshType& mesh )
+   virtual void reset() override
    {
-      // check that detectMesh has been called
-      if( ! meshDetected )
-         detectMesh();
-
-      // check that the cell shape mathes
-      const VTK::EntityShape meshCellShape = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
-      if( meshCellShape != cellShape )
-         throw XMLVTKError( "the mesh cell shape " + VTK::getShapeName(meshCellShape) + " does not match the shape "
-                            + "of cells used in the file (" + VTK::getShapeName(cellShape) + ")" );
-
-      using MeshBuilder = MeshBuilder< MeshType >;
-      using IndexType = typename MeshType::GlobalIndexType;
-      using PointType = typename MeshType::PointType;
-      using CellSeedType = typename MeshBuilder::CellSeedType;
-
-      MeshBuilder meshBuilder;
-      meshBuilder.setPointsCount( NumberOfPoints );
-      meshBuilder.setCellsCount( NumberOfCells );
-
-      // assign points
-      visit( [this, &meshBuilder](auto&& array) {
-               PointType p;
-               std::size_t i = 0;
-               for( auto c : array ) {
-                  int dim = i++ % 3;
-                  if( dim >= PointType::getSize() )
-                     continue;
-                  p[dim] = c;
-                  if( dim == PointType::getSize() - 1 )
-                     meshBuilder.setPoint( (i - 1) / 3, p );
-               }
-            },
-            pointsArray
-         );
-
-      // assign cells
-      visit( [this, &meshBuilder](auto&& connectivity) {
-               // let's just assume that the connectivity and offsets arrays have the same type...
-               using mpark::get;
-               const auto& offsets = get< std::decay_t<decltype(connectivity)> >( offsetsArray );
-               std::size_t offsetStart = 0;
-               for( std::size_t i = 0; i < NumberOfCells; i++ ) {
-                  CellSeedType& seed = meshBuilder.getCellSeed( i );
-                  const std::size_t offsetEnd = offsets[ i ];
-                  for( std::size_t o = offsetStart; o < offsetEnd; o++ )
-                     seed.setCornerId( o - offsetStart, connectivity[ o ] );
-                  offsetStart = offsetEnd;
-               }
-            },
-            connectivityArray
-         );
-
-      // reset arrays since they are not needed anymore
-      pointsArray = connectivityArray = offsetsArray = typesArray = {};
-
-      return meshBuilder.build( mesh );
-   }
-
-   std::string
-   getMeshType() const
-   {
-      return "Meshes::Mesh";
-   }
-
-   int getMeshDimension() const
-   {
-      return this->meshDimension;
-   }
-
-   int
-   getWorldDimension() const
-   {
-      return worldDimension;
-   }
-
-   VTK::EntityShape
-   getCellShape() const
-   {
-      return cellShape;
-   }
-
-   std::string
-   getRealType() const
-   {
-      return pointsType.c_str();
-   }
-
-   std::string
-   getGlobalIndexType() const
-   {
-      return connectivityType;
-   }
-
-   std::string
-   getLocalIndexType() const
-   {
-      // not stored in the VTK file
-      return "short int";
+      fileType = "";
+      byteOrder = compressor = headerType = "";
    }
 
 protected:
-   std::string fileName;
-   bool meshDetected = false;
-
    // VTK file type
    std::string fileType;
 
-   std::size_t NumberOfPoints, NumberOfCells;
-   int meshDimension, worldDimension;
-   VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
+   // header attributes
    std::string byteOrder, compressor, headerType;
-
-   // arrays holding the <DataArray>s from the VTK file
-   VariantVector pointsArray, connectivityArray, offsetsArray, typesArray;
-   // string representation of each array's value type
-   std::string pointsType, connectivityType, offsetsType, typesType;
-
-   void reset()
-   {
-      meshDetected = false;
-      fileType = "";
-      NumberOfPoints = NumberOfCells = 0;
-      meshDimension = worldDimension = 0;
-      cellShape = VTK::EntityShape::Vertex;
-      byteOrder = compressor = headerType = "";
-      pointsArray = connectivityArray = offsetsArray = typesArray = {};
-      pointsType = connectivityType = offsetsType = typesType = "";
-   }
 };
 
 } // namespace Readers
