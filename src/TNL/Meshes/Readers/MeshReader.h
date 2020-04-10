@@ -45,13 +45,19 @@ public:
                                          std::vector< float >,
                                          std::vector< double > >;
 
-   MeshReader() = delete;
+   MeshReader() = default;
 
    MeshReader( const std::string& fileName )
    : fileName( fileName )
    {}
 
    virtual ~MeshReader() {}
+
+   void setFileName( const std::string& fileName )
+   {
+      reset();
+      this->fileName = fileName;
+   }
 
    /**
     * \brief This method resets the reader to an empty state.
@@ -85,7 +91,7 @@ public:
    void loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
-      if( ! meshDetected )
+      if( meshType == "" )
          detectMesh();
 
       // check that the cell shape mathes
@@ -146,7 +152,7 @@ public:
    std::string
    getMeshType() const
    {
-      return "Meshes::Mesh";
+      return meshType;
    }
 
    int
@@ -190,8 +196,9 @@ protected:
    // input file name
    std::string fileName;
 
-   // indicator that detectMesh has been successfully called
-   bool meshDetected = false;
+   // type of the mesh (either Meshes::Grid or Meshes::Mesh or Meshes::DistributedMesh)
+   // (it is also an indicator that detectMesh has been successfully called)
+   std::string meshType;
 
    // attributes of the mesh
    std::size_t NumberOfPoints, NumberOfCells;
@@ -206,7 +213,7 @@ protected:
 
    void resetBase()
    {
-      meshDetected = false;
+      meshType = "";
       NumberOfPoints = NumberOfCells = 0;
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;

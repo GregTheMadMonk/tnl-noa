@@ -27,7 +27,7 @@ class VTKReader
 : public MeshReader
 {
 public:
-   VTKReader() = delete;
+   VTKReader() = default;
 
    VTKReader( const std::string& fileName )
    : MeshReader( fileName )
@@ -224,7 +224,8 @@ public:
       this->offsetsArray = std::move(offsetsArray);
       this->typesArray = std::move(typesArray);
 
-      meshDetected = true;
+      // indicate success by setting the mesh type
+      meshType = "Meshes::Mesh";
    }
 
    virtual void reset() override

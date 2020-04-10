@@ -30,7 +30,7 @@ class NetgenReader
 : public MeshReader
 {
 public:
-   NetgenReader() = delete;
+   NetgenReader() = default;
 
    NetgenReader( const std::string& fileName )
    : MeshReader( fileName )
@@ -153,7 +153,8 @@ public:
       this->offsetsArray = std::move(offsetsArray);
       this->typesArray = std::move(typesArray);
 
-      meshDetected = true;
+      // indicate success by setting the mesh type
+      meshType = "Meshes::Mesh";
    }
 };
 
