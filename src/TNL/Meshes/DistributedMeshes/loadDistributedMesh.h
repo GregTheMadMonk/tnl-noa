@@ -11,10 +11,69 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <TNL/Meshes/Readers/PVTUReader.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
+
+template< typename ConfigTag,
+          typename Device,
+          typename Functor >
+bool
+resolveDistributedMeshType( const String& fileName,
+                            Functor&& functor )
+{
+   auto wrapper = [&functor] ( Readers::MeshReader& reader, auto&& localMesh )
+   {
+      using LocalMesh = std::decay_t< decltype(localMesh) >;
+      using DistributedMesh = DistributedMeshes::DistributedMesh< LocalMesh >;
+      return std::forward<Functor>(functor)( reader, DistributedMesh{ std::move(localMesh) } );
+   };
+   std::cout << "Detecting distributed mesh from file " << fileName << " ..." << std::endl;
+   if( fileName.endsWith( ".pvtu" ) ) {
+      // FIXME: The XML VTK files don't store the local index type.
+      // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
+      // this case we should use the first enabled type.
+      Readers::PVTUReader reader( fileName );
+      reader.detectMesh();
+      if( reader.getMeshType() == "Meshes::DistributedMesh" ) {
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), wrapper );
+      }
+      else {
+         std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
+         return false;
+      }
+   }
+   else {
+      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.pvtu'." << std::endl;
+      return false;
+   }
+}
+
+template< typename ConfigTag,
+          typename Device,
+          typename Functor >
+bool
+resolveAndLoadDistributedMesh( const String& fileName,
+                               Functor&& functor )
+{
+   auto wrapper = [&]( Readers::MeshReader& reader, auto&& mesh ) -> bool
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
+      try {
+         dynamic_cast<Readers::PVTUReader&>(reader).loadMesh( mesh );
+      }
+      catch( const Meshes::Readers::MeshReaderError& e ) {
+         std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
+         return false;
+      }
+      return functor( reader, std::forward<MeshType>(mesh) );
+   };
+   return resolveDistributedMeshType< ConfigTag, Device >( fileName, wrapper );
+}
 
 template< typename CommunicatorType,
           typename MeshConfig,
@@ -24,8 +83,18 @@ loadDistributedMesh( const String& fileName,
                      Mesh< MeshConfig, Device >& mesh,
                      DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh )
 {
-   std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-   return false;
+   // TODO: simplify interface, pass only the distributed mesh
+   TNL_ASSERT_EQ( &mesh, &distributedMesh.getLocalMesh(), "mesh is not local mesh of the distributed mesh" );
+
+   if( fileName.endsWith( ".pvtu" ) ) {
+      Readers::PVTUReader reader( fileName );
+      reader.loadMesh( distributedMesh );
+      return true;
+   }
+   else {
+      std::cerr << "The file has an unsupported extension: " << fileName << ". Only .pvtu files can be loaded into the distributed mesh." << std::endl;
+      return false;
+   }
 }
 
 template< typename Problem,
@@ -100,7 +169,6 @@ decomposeMesh( const Config::ParameterContainer& parameters,
 
    return true;
 }
-
 
 } // namespace Meshes
 } // namespace TNL
