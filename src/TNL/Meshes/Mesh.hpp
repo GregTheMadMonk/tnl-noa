@@ -237,8 +237,8 @@ template< typename MeshConfig, typename Device >
    template< int Dimension >
 void
 Mesh< MeshConfig, Device >::
-reorderEntities( const GlobalIndexVector& perm,
-                 const GlobalIndexVector& iperm )
+reorderEntities( const GlobalIndexArray& perm,
+                 const GlobalIndexArray& iperm )
 {
    const GlobalIndexType entitiesCount = getEntitiesCount< Dimension >();
 
@@ -248,16 +248,21 @@ reorderEntities( const GlobalIndexVector& perm,
                               "perm size = " + std::to_string( perm.getSize() ) + ", "
                               "iperm size = " + std::to_string( iperm.getSize() ) );
    }
-   TNL_ASSERT( min( perm ) == 0 && max( perm ) == entitiesCount - 1,
-               std::cerr << "Given array is not a permutation: min = " << min( perm )
-                         << ", max = " << max( perm )
+#ifndef NDEBUG
+   using View = Containers::VectorView< const GlobalIndexType, DeviceType, GlobalIndexType >;
+   const View perm_view = perm.getConstView();
+   const View iperm_view = iperm.getConstView();
+   TNL_ASSERT( min( perm_view ) == 0 && max( perm_view ) == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << min( perm_view )
+                         << ", max = " << max( perm_view )
                          << ", number of entities = " << entitiesCount
                          << ", array = " << perm << std::endl; );
-   TNL_ASSERT( min( iperm ) == 0 && max( iperm ) == entitiesCount - 1,
-               std::cerr << "Given array is not a permutation: min = " << min( iperm )
-                         << ", max = " << max( iperm )
+   TNL_ASSERT( min( iperm_view ) == 0 && max( iperm_view ) == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << min( iperm_view )
+                         << ", max = " << max( iperm_view )
                          << ", number of entities = " << entitiesCount
                          << ", array = " << iperm << std::endl; );
+#endif
 
    IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
    // update boundary tags

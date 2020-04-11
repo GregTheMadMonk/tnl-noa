@@ -21,7 +21,7 @@ template< typename Mesh, int Dimension >
 struct IndexPermutationApplier
 {
 private:
-   using GlobalIndexVector = typename Mesh::GlobalIndexVector;
+   using GlobalIndexArray = typename Mesh::GlobalIndexArray;
 
    template< int Subdimension,
              bool Enabled =
@@ -30,7 +30,7 @@ private:
              >
    struct _SubentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& perm )
+      static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Dimension, Subdimension >();
          Containers::Multimaps::permuteMultimapKeys( subentitiesStorage, perm );
@@ -40,7 +40,7 @@ private:
    template< int Subdimension >
    struct _SubentitiesStorageWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
 
 
@@ -51,7 +51,7 @@ private:
              >
    struct _SuperentitiesStorageWorker
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& perm )
+      static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Dimension, Superdimension >();
          Containers::Multimaps::permuteMultimapKeys( superentitiesStorage, perm );
@@ -61,7 +61,7 @@ private:
    template< int Superdimension >
    struct _SuperentitiesStorageWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
 
 
@@ -72,7 +72,7 @@ private:
              >
    struct IndexPermutationApplierSubentitiesWorker
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Subdimension, Dimension >();
          Containers::Multimaps::permuteMultimapValues( superentitiesStorage, iperm );
@@ -82,7 +82,7 @@ private:
    template< int Subdimension >
    struct IndexPermutationApplierSubentitiesWorker< Subdimension, false >
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
 
 
@@ -93,7 +93,7 @@ private:
              >
    struct IndexPermutationApplierSuperentitiesWorker
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Superdimension, Dimension >();
          Containers::Multimaps::permuteMultimapValues( subentitiesStorage, iperm );
@@ -103,7 +103,7 @@ private:
    template< int Superdimension >
    struct IndexPermutationApplierSuperentitiesWorker< Superdimension, false >
    {
-      static void exec( Mesh& mesh, const GlobalIndexVector& iperm ) {}
+      static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
 
 
@@ -121,7 +121,7 @@ private:
    using SuperentitiesWorker = IndexPermutationApplierSuperentitiesWorker< Superdimension >;
 
    template< typename Mesh_, std::enable_if_t< Mesh_::Config::dualGraphStorage(), bool > = true >
-   static void permuteDualGraph( Mesh_& mesh, const GlobalIndexVector& perm, const GlobalIndexVector& iperm )
+   static void permuteDualGraph( Mesh_& mesh, const GlobalIndexArray& perm, const GlobalIndexArray& iperm )
    {
       permuteArray( mesh.getNeighborCounts(), perm );
       auto& graph = mesh.getDualGraph();
@@ -130,11 +130,11 @@ private:
    }
 
    template< typename Mesh_, std::enable_if_t< ! Mesh_::Config::dualGraphStorage(), bool > = true >
-   static void permuteDualGraph( Mesh_& mesh, const GlobalIndexVector& perm, const GlobalIndexVector& iperm ) {}
+   static void permuteDualGraph( Mesh_& mesh, const GlobalIndexArray& perm, const GlobalIndexArray& iperm ) {}
 
 public:
    template< typename Array >
-   static void permuteArray( Array& array, const GlobalIndexVector& perm )
+   static void permuteArray( Array& array, const GlobalIndexArray& perm )
    {
       using IndexType = typename Array::IndexType;
       using DeviceType = typename Array::DeviceType;
@@ -172,8 +172,8 @@ public:
    }
 
    static void exec( Mesh& mesh,
-                     const GlobalIndexVector& perm,
-                     const GlobalIndexVector& iperm )
+                     const GlobalIndexArray& perm,
+                     const GlobalIndexArray& iperm )
    {
       using IndexType = typename Mesh::GlobalIndexType;
       using DeviceType = typename Mesh::DeviceType;

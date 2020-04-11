@@ -81,7 +81,7 @@ class Mesh
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
       using RealType        = typename PointType::RealType;
-      using GlobalIndexVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
+      using GlobalIndexArray = Containers::Array< GlobalIndexType, DeviceType, GlobalIndexType >;
 
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
@@ -182,8 +182,8 @@ class Mesh
        * M is the entity with index iperm[j] in M'.
        */
       template< int Dimension >
-      void reorderEntities( const GlobalIndexVector& perm,
-                            const GlobalIndexVector& iperm );
+      void reorderEntities( const GlobalIndexArray& perm,
+                            const GlobalIndexArray& iperm );
 
 
       void save( File& file ) const;

@@ -85,11 +85,11 @@ bool buildTriangleMesh( Mesh< TestTriangleMeshConfig, Device >& mesh )
    return meshBuilder.build( mesh );
 }
 
-template< typename PermutationVector >
+template< typename PermutationArray >
 void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
-               const PermutationVector& vertexPermutation,
-               const PermutationVector& edgePermutation,
-               const PermutationVector& cellPermutation )
+               const PermutationArray& vertexPermutation,
+               const PermutationArray& edgePermutation,
+               const PermutationArray& cellPermutation )
 {
    using MeshType = Mesh< TestTriangleMeshConfig, Devices::Host >;
    using PointType = typename MeshType::PointType;
@@ -253,10 +253,10 @@ TEST( MeshOrderingTest, OrderingOnHost )
    MeshHost mesh;
    ASSERT_TRUE( buildTriangleMesh( mesh ) );
 
-   using PermutationVector = typename MeshHost::GlobalIndexVector;
-   PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
-                     vertexPermutation, edgePermutation, cellPermutation,
-                     vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+   using PermutationArray = typename MeshHost::GlobalIndexArray;
+   PermutationArray vertexIdentity, edgeIdentity, cellIdentity,
+                    vertexPermutation, edgePermutation, cellPermutation,
+                    vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
    setPermutation( vertexIdentity, _vertexIdentity );
    setPermutation( edgeIdentity, _edgeIdentity );
    setPermutation( cellIdentity, _cellIdentity );
@@ -288,7 +288,7 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    ASSERT_TRUE( buildTriangleMesh( meshHost ) );
    mesh = meshHost;
 
-   using PermutationCuda = typename MeshCuda::GlobalIndexVector;
+   using PermutationCuda = typename MeshCuda::GlobalIndexArray;
    PermutationCuda vertexIdentity, edgeIdentity, cellIdentity,
                    vertexPermutation, edgePermutation, cellPermutation,
                    vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
@@ -309,10 +309,10 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    // test is on host
    {
       // local scope so we can use the same names
-      using PermutationVector = typename MeshHost::GlobalIndexVector;
-      PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
-                        vertexPermutation, edgePermutation, cellPermutation,
-                        vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+      using PermutationArray = typename MeshHost::GlobalIndexArray;
+      PermutationArray vertexIdentity, edgeIdentity, cellIdentity,
+                       vertexPermutation, edgePermutation, cellPermutation,
+                       vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
       setPermutation( vertexIdentity, _vertexIdentity );
       setPermutation( edgeIdentity, _edgeIdentity );
       setPermutation( cellIdentity, _cellIdentity );

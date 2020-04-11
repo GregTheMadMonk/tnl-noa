@@ -18,10 +18,10 @@ namespace Containers {
 namespace Multimaps {
 
 template< typename Multimap,
-          typename PermutationVector >
-void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
+          typename PermutationArray >
+void permuteMultimapKeys( Multimap& multimap, const PermutationArray& perm )
 {
-   static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
+   static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationArray::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
    using IndexType = typename Multimap::IndexType;
    using DeviceType = typename Multimap::DeviceType;
@@ -38,7 +38,7 @@ void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
       ( IndexType i,
         const Multimap* multimap,
         Multimap* multimapCopy,
-        const typename PermutationVector::RealType* perm )
+        const typename PermutationArray::ValueType* perm )
    {
       const auto srcValues = multimap->getValues( perm[ i ] );
       auto destValues = multimapCopy->getValues( i );
@@ -59,10 +59,10 @@ void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
 }
 
 template< typename Multimap,
-          typename PermutationVector >
-void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
+          typename PermutationArray >
+void permuteMultimapValues( Multimap& multimap, const PermutationArray& iperm )
 {
-   static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationVector::DeviceType >::value,
+   static_assert( std::is_same< typename Multimap::DeviceType, typename PermutationArray::DeviceType >::value,
                   "The multimap and permutation vector must be stored on the same device." );
    using IndexType = typename Multimap::IndexType;
    using DeviceType = typename Multimap::DeviceType;
@@ -71,7 +71,7 @@ void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
    auto kernel = [] __cuda_callable__
       ( IndexType i,
         Multimap* multimap,
-        const typename PermutationVector::RealType* iperm )
+        const typename PermutationArray::ValueType* iperm )
    {
       auto values = multimap->getValues( i );
       for( typename Multimap::LocalIndexType v = 0; v < values.getSize(); v++ )
