@@ -56,16 +56,23 @@ class BiEllpackSegmentView
       __cuda_callable__
       IndexType getGlobalIndex( IndexType localIdx ) const
       {
-         IndexType i( 0 ), offset( groupOffset ), groupHeight( getWarpSize() );
-         while( localIdx > groupsWidth[ i ] )
+         //std::cerr << "SegmentView: localIdx = " << localIdx << " groupWidth = " << groupsWidth << std::endl;
+         IndexType groupIdx( 0 ), offset( groupOffset ), groupHeight( getWarpSize() );
+         while( localIdx >= groupsWidth[ groupIdx ] )
          {
-            localIdx -= groupsWidth[ i ];
-            offset += groupsWidth[ i++ ] * groupHeight;
+            //std::cerr << "ROW: groupIdx = " << groupIdx << " groupWidth = " << groupsWidth[ groupIdx ]
+            //          << " groupSize = " << groupsWidth[ groupIdx ] * groupHeight << std::endl;
+            localIdx -= groupsWidth[ groupIdx ];
+            offset += groupsWidth[ groupIdx++ ] * groupHeight;
             groupHeight /= 2;
          }
-         TNL_ASSERT_LE( i, TNL::log2( getWarpSize() - inStripIdx + 1 ), "Local index exceeds segment bounds." );
+         TNL_ASSERT_LE( groupIdx, TNL::log2( getWarpSize() - inStripIdx + 1 ), "Local index exceeds segment bounds." );
          if( RowMajorOrder )
-            return offset + inStripIdx * groupsWidth[ i ] + localIdx;
+         {
+            //std::cerr << " offset = " << offset << " inStripIdx = " << inStripIdx << " localIdx = " << localIdx 
+            //          << " return = " << offset + inStripIdx * groupsWidth[ groupIdx ] + localIdx << std::endl;
+            return offset + inStripIdx * groupsWidth[ groupIdx ] + localIdx;
+         }
          else
             return offset + inStripIdx + localIdx * groupHeight;
       };

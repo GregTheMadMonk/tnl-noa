@@ -201,7 +201,7 @@ computeColumnSizes( const SizesHolder& segmentsSizes )
          if( strip == numberOfStrips - 1 )
          {
             IndexType segmentsCount = size - firstSegment;
-            while( !( segmentsCount > TNL::pow( getLogWarpSize() - 1 - emptyGroups, 2 ) ) )
+            while( !( segmentsCount > TNL::pow( 2, getLogWarpSize() - 1 - emptyGroups ) ) )
                emptyGroups++;
             for( IndexType group = groupBegin; group < groupBegin + emptyGroups; group++ )
                groupPointersView[ group ] = 0;
@@ -210,12 +210,12 @@ computeColumnSizes( const SizesHolder& segmentsSizes )
          IndexType allocatedColumns = 0;
          for( IndexType groupIdx = emptyGroups; groupIdx < getLogWarpSize(); groupIdx++ )
          {
-            IndexType segmentIdx = TNL::pow( getLogWarpSize() - 1 - groupIdx, 2 );
+            IndexType segmentIdx = TNL::pow( 2, getLogWarpSize() - 1 - groupIdx ) - 1;
             IndexType permSegm = 0;
             while( segmentsPermutationView[ permSegm + firstSegment ] != segmentIdx + firstSegment )
                permSegm++;
             const IndexType groupWidth = segmentsSizesView[ permSegm + firstSegment ] - allocatedColumns;
-            const IndexType groupHeight = TNL::pow( getLogWarpSize() - groupIdx, 2 );
+            const IndexType groupHeight = TNL::pow( 2, getLogWarpSize() - groupIdx );
             const IndexType groupSize = groupWidth * groupHeight;
             allocatedColumns = segmentsSizes[ permSegm + firstSegment ];
             groupPointersView[ groupIdx + groupBegin ] = groupSize;

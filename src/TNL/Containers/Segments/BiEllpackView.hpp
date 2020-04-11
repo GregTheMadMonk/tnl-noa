@@ -285,7 +285,44 @@ BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
-   
+   if( std::is_same< DeviceType, Devices::Host >::value )
+      for( IndexType segmentIdx = 0; segmentIdx < this->getSize(); segmentIdx++ )
+      {
+         const IndexType stripIdx = segmentIdx / getWarpSize();
+         const IndexType groupIdx = stripIdx * ( getLogWarpSize() + 1 );
+         const IndexType inStripIdx = rowPermArray[ segmentIdx ] - stripIdx * getWarpSize();
+         const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, RowMajorOrder, getWarpSize() >::getActiveGroupsCount( rowPermArray, segmentIdx );
+         IndexType globalIdx = groupPointers[ groupIdx ];
+         IndexType groupHeight = getWarpSize();
+         IndexType localIdx( 0 );
+         RealType aux( zero );
+         bool compute( true );
+         for( IndexType group = 0; group < groupsCount && compute; group++ )
+         {
+            const IndexType groupSize = details::BiEllpack< IndexType, DeviceType, RowMajorOrder, getWarpSize() >::getGroupSize( groupPointers, stripIdx, group );
+            IndexType groupWidth = groupSize / groupHeight;
+            const IndexType globalIdxBack = globalIdx;
+            if( RowMajorOrder )
+               globalIdx += inStripIdx * groupWidth;
+            else
+               globalIdx += inStripIdx;
+            for( IndexType j = 0; j < groupWidth && compute; j++ )
+            {
+               //std::cerr << "segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx 
+               //         << " groupWidth = " << groupWidth << " groupHeight = " << groupHeight
+               //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx 
+               //          << " fetch = " << details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
+               reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+               if( RowMajorOrder )
+                  globalIdx ++;
+               else
+                  globalIdx += groupHeight;
+            }
+            globalIdx = globalIdxBack + groupSize;
+            groupHeight /= 2;
+         }
+         keeper( segmentIdx, aux );
+      }
 }
 
 template< typename Device,

@@ -61,9 +61,18 @@ class BiEllpack
          throw std::logic_error( "segmentIdx was not found" );
       }
 
-      static IndexType getGroupLength( const ConstOffsetsHolderView& groupPointers,
-                                       const IndexType strip,
-                                       const IndexType group )
+      static IndexType getGroupSizeDirect( const ConstOffsetsHolderView& groupPointers,
+                                           const IndexType strip,
+                                           const IndexType group )
+      {
+         const IndexType groupOffset = strip * ( getLogWarpSize() + 1 ) + group;
+         return groupPointers[ groupOffset + 1 ] - groupPointers[ groupOffset ];
+      }
+
+      
+      static IndexType getGroupSize( const ConstOffsetsHolderView& groupPointers,
+                                     const IndexType strip,
+                                    const IndexType group )
       {
          const IndexType groupOffset = strip * ( getLogWarpSize() + 1 ) + group;
          return groupPointers.getElement( groupOffset + 1 ) - groupPointers.getElement( groupOffset );
@@ -79,13 +88,15 @@ class BiEllpack
          const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
          IndexType groupHeight = getWarpSize();
          IndexType segmentSize = 0;
-         for( IndexType group = 0; group < groupsCount; group++ )
+         for( IndexType groupIdx = 0; groupIdx < groupsCount; groupIdx++ )
          {
-            const IndexType groupSize = getGroupLength( groupPointers, strip, group );
+            const IndexType groupSize = getGroupSizeDirect( groupPointers, strip, groupIdx );
             IndexType groupWidth =  groupSize / groupHeight;
+            //std::cerr << " groupIdx = " << groupIdx << " groupWidth = " << groupWidth << std::endl;
             segmentSize += groupWidth;
             groupHeight /= 2;
          }
+         //std::cerr << "############### segmentIdx = " << segmentIdx << " segmentSize = " << segmentSize << std::endl;
          return segmentSize;
       }
 
@@ -102,7 +113,7 @@ class BiEllpack
          IndexType segmentSize = 0;
          for( IndexType group = 0; group < groupsCount; group++ )
          {
-            const IndexType groupSize = getGroupLength( groupPointers, strip, group );
+            const IndexType groupSize = getGroupSize( groupPointers, strip, group );
             IndexType groupWidth =  groupSize / groupHeight;
             segmentSize += groupWidth;
             groupHeight /= 2;
@@ -122,24 +133,35 @@ class BiEllpack
          const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
          IndexType globalIdx = groupPointers[ groupIdx ] * getWarpSize();
          IndexType groupHeight = getWarpSize();
+         //std::cerr << "segmentIdx = " << segmentIdx << " localIdx = " << localIdx << " rowstripPerm = " << rowStripPerm << std::endl;
          for( IndexType group = 0; group < groupsCount; group++ )
          {
-            const IndexType groupSize = getGroupLength( groupPointers, strip, group );
-            IndexType groupWidth =  groupSize / groupHeight;
-            if( localIdx > groupWidth )
+            const IndexType groupSize = getGroupSizeDirect( groupPointers, strip, group );
+            //std::cerr << "   groupIdx = " << groupIdx << " groupSize = " << groupSize << std::endl;
+            if(  groupSize )
             {
-               localIdx -= groupWidth;
-               globalIdx += groupSize;
-            }
-            else
-            {
-               if( RowMajorOrder )
-                  return globalIdx + rowStripPerm * groupWidth + localIdx;
+               IndexType groupWidth =  groupSize / groupHeight;
+               //std::cerr << "   groupWidth = " << groupWidth << std::endl;
+               if( localIdx >= groupWidth )
+               {
+                  localIdx -= groupWidth;
+                  globalIdx += groupSize;
+               }
                else
-                  return globalIdx + rowStripPerm + localIdx * groupHeight;
+               {
+                  if( RowMajorOrder )
+                  {
+                     // std::cerr << ">>>> globalIdx = " << globalIdx << " rowStriPerm = " <<  rowStripPerm << " localIdx = " <<  localIdx
+                     //          << " return = " << globalIdx + rowStripPerm * groupWidth + localIdx << std::endl;
+                     return globalIdx + rowStripPerm * groupWidth + localIdx;
+                  }
+                  else
+                     return globalIdx + rowStripPerm + localIdx * groupHeight;
+               }
             }
             groupHeight /= 2;
          }
+         TNL_ASSERT_TRUE( false, "Segment capacity exceeded, wrong localIdx." );
       }
 
       static
@@ -156,9 +178,9 @@ class BiEllpack
          IndexType groupHeight = getWarpSize();
          for( IndexType group = 0; group < groupsCount; group++ )
          {
-            const IndexType groupSize = getGroupLength( groupPointers, strip, group );
+            const IndexType groupSize = getGroupSize( groupPointers, strip, group );
             IndexType groupWidth =  groupSize / groupHeight;
-            if( localIdx > groupWidth )
+            if( localIdx >= groupWidth )
             {
                localIdx -= groupWidth;
                globalIdx += groupSize;
@@ -193,6 +215,7 @@ class BiEllpack
             const IndexType groupSize = groupPointers[ groupIdx + i + 1 ] - groupPointers[ groupIdx + i ];
             groupsWidth[ i ] = groupSize / groupHeight;
             groupHeight /= 2;
+            //std::cerr << " ROW INIT: groupIdx = " << i << " groupSize = " << groupSize << " groupWidth = " << groupsWidth[ i ] << std::endl;
          }
          return SegmentViewType( groupPointers[ groupIdx ],
                                  inStripIdx,
