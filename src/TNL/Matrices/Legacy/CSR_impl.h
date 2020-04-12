@@ -777,36 +777,6 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& 
    }
 }
 
-/* template< typename Real,
-          typename Device,
-          typename Index,
-          typename InVector,
-          int warpSize >
-__global__
-void spmvCSRVectorHelper( const InVector& inVector,
-                          Real *out,
-                          size_t from,
-                          size_t to,
-                          size_t perWarp)
-{
-   const size_t index  = blockIdx.x * blockDim.x + threadIdx.x;
-   const size_t warpID = index / warpSize;
-   const size_t laneID = index % warpSize;
-   const size_t minID  = from + warpID * perWarp;
-   size_t maxID  = from + (warpID + 1) * perWarp;
-   if (minID >= to)  return;
-   if (maxID >= to ) maxID = to;
-   
-   Real result = 0.0;
-   for (IndexType i = minID + laneID; i < maxID; i += warpSize) {
-      const IndexType column = this->columnIndexes[i];
-      if (column >= this->getColumns())
-            continue;
-      result += this->values[i] * inVector[column];
-   }
-   atomicAdd(out, result);
-} */
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -894,6 +864,138 @@ void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& in
    }
 }
 
+// __global__
+// void spmvCSRVectorHelper() {
+
+// }
+
+template< typename Real,
+          typename Index,
+          typename InVector,
+          int warpSize >
+__global__
+void spmvCSRVectorHelper( const InVector& inVector,
+                          const int* columnIndexes,
+                          const float *values,
+                          const int getColumns,
+                          Real *out,
+                          size_t from,
+                          size_t to,
+                          size_t perWarp)
+{
+   const size_t index  = blockIdx.x * blockDim.x + threadIdx.x;
+   const size_t warpID = index / warpSize;
+   const size_t laneID = index % warpSize;
+   const size_t minID  = from + warpID * perWarp;
+   size_t maxID  = from + (warpID + 1) * perWarp;
+   if (minID >= to)  return;
+   if (maxID >= to ) maxID = to;
+   
+   Real result = 0.0;
+   for (size_t i = minID + laneID; i < maxID; i += warpSize) {
+      const size_t column = columnIndexes[i];
+      if (column >= getColumns)
+            continue;
+      result += values[i] * inVector[column];
+   }
+   atomicAdd(out, result);
+}
+
+template< typename Real,
+          typename Index,
+          typename InVector,
+          typename OutVector,
+          int warpSize >
+__global__
+void SpMVCSRAdaptiveGlobal( const InVector& inVector,
+                            OutVector& outVector,
+                            const int* rowPointers,
+                            const int* columnIndexes,
+                            const float* values,
+                            int *blocks,
+                            size_t blocks_size,
+                            Index getColumns
+                            )
+{
+   /* Configuration ---------------------------------------------------*/
+   constexpr size_t SHARED = 49152/sizeof(float);
+   constexpr size_t SHARED_PER_WARP = SHARED / warpSize;
+   constexpr size_t MAX_PER_WARP = 65536;
+   constexpr size_t ELEMENTS_PER_WARP = 1024;
+   constexpr size_t THREADS_PER_BLOCK = 1024;
+   constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
+   //--------------------------------------------------------------------
+   const Index index = blockIdx.x * blockDim.x + threadIdx.x;
+   const Index laneID = index % warpSize;
+   const Index blockIdx = index / warpSize;  
+   __shared__ float shared_res[SHARED];
+   float result = 0.0;
+   if (blockIdx >= blocks_size - 1)
+      return;
+   const Index minRow = blocks[blockIdx];
+   const Index maxRow = blocks[blockIdx + 1];
+   const Index minID = rowPointers[minRow];
+   const Index maxID = rowPointers[maxRow];
+   const Index elements = maxID - minID;
+   /* rows per block more than 1 */
+   if ((maxRow - minRow) > 1) {
+      /////////////////////////////////////* CSR STREAM *//////////////
+      /* Copy and calculate elements from global to shared memory, coalesced */
+      const Index offset = threadIdx.x / warpSize * SHARED_PER_WARP;
+      for (Index i = laneID; i < elements; i += warpSize) {
+         const Index elementIdx = i + minID;
+         const Index column = columnIndexes[elementIdx];
+         if (column >= getColumns)
+            continue;
+         
+         shared_res[i + offset] = values[elementIdx] * inVector[column];
+      }
+
+      const Index row = minRow + laneID;
+      if (row >= maxRow)
+         return;
+      /* Calculate result */
+      const Index to = rowPointers[row + 1] - minID;
+      for (Index i = rowPointers[row] - minID; i < to; ++i) {
+         result += shared_res[i + offset];
+      }
+      outVector[row] = result; // Write result
+   } 
+   else if (elements <= MAX_PER_WARP) {
+      /////////////////////////////////////* CSR VECTOR *//////////////
+      for (Index i = minID + laneID; i < maxID; i += warpSize) {
+         Index column = columnIndexes[i];
+         if (column >= getColumns)
+            break;
+
+         result += values[i] * inVector[column];
+      }
+      /* Reduction */
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 16);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 8);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 4);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 2);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 1);
+      if (laneID == 0) outVector[minRow] = result; // Write result
+   }
+   else {
+      /////////////////////////////////////* CSR VECTOR LONG *//////////////
+      const size_t warps = (elements - ELEMENTS_PER_WARP) / ELEMENTS_PER_WARP + 1;
+      const size_t blocks = warps <= WARPS_PER_BLOCK  ? 1 : warps / WARPS_PER_BLOCK + 1;
+      const size_t threads_per_block = blocks == 1 ? warps * warpSize : WARPS_PER_BLOCK * warpSize;
+      spmvCSRVectorHelper<Real, Index, InVector, warpSize> <<<blocks, threads_per_block>>>(
+                  inVector,
+                  columnIndexes,
+                  values,
+                  getColumns,
+                  &outVector[minRow],
+                  (size_t)(minID + ELEMENTS_PER_WARP),
+                  (size_t)maxID,
+                  (size_t)ELEMENTS_PER_WARP
+      );
+   }
+}
+
 
 template< typename Real,
           typename Device,
@@ -951,8 +1053,7 @@ template< typename Real,
 __device__
 void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& inVector,
                                                              OutVector& outVector,
-                                                             int gridIdx,
-                                                             int *blocks, size_t size ) const
+                                                             int gridIdx ) const
 {
    switch( KernelType )
    {
@@ -966,7 +1067,9 @@ void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& 
          spmvCudaLightSpmv< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
          break;
       case CSRAdaptive:
-         spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
+         // spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
+         /* FIXME */
+         spmvCudaLightSpmv< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
          break;
       case CSRStream:
          // TODO:
@@ -1039,25 +1142,16 @@ class CSRDeviceDependentCode< Devices::Host >
 
 #ifdef HAVE_CUDA
 
-template< typename Real,
-          typename Index,
-          CSRKernel KernelType,
-          typename InVector,
-          typename OutVector,
-          int warpSize >
-__global__ void CSRScalarGlobal( const CSR< Real, Devices::Cuda, Index, KernelType >* matrix,
-                                 const InVector* inVector,
-                                 OutVector* outVector,
-                                 int gridIdx,
-                                 int *blocks, size_t size)
-{
-   const auto  columns       = matrix->getColumns(); // funguje
-   
-   // nefunguje
-   const auto &rowPointers   = matrix->getRowPointers();
-   const auto &columnIndexes = matrix->getColumnIndexes();
-   const auto &values        = matrix->getValues();
-}
+// template< typename Real,
+//           typename Index,
+//           CSRKernel KernelType,
+//           typename InVector,
+//           typename OutVector,
+//           int warpSize >
+// __global__
+// void CSRScalarGlobal(const Containers::Vector< Index, Devices::Cuda, Index, Allocators::Cuda<Index> >* row)
+// {
+// }
 
 template< typename Real,
           typename Index,
@@ -1066,10 +1160,9 @@ template< typename Real,
           typename OutVector,
           int warpSize >
 __global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Index, KernelType >* matrix,
-                                                     const InVector* inVector,
-                                                     OutVector* outVector,
-                                                     int gridIdx,
-                                                     int *blocks, size_t size)
+                                            const InVector* inVector,
+                                            OutVector* outVector, 
+                                            int gridIdx)
 {
    typedef CSR< Real, Devices::Cuda, Index > Matrix;
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
@@ -1082,7 +1175,7 @@ __global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Inde
    else
    {
       matrix->template vectorProductCuda< InVector, OutVector, warpSize >
-                                        ( *inVector, *outVector, gridIdx, blocks, size );
+                                        ( *inVector, *outVector, gridIdx );
    }
 }
 #endif
@@ -1094,9 +1187,7 @@ template< typename Real,
           typename OutVector >
 void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& matrix,
                                     const InVector& inVector,
-                                    OutVector& outVector,
-                                    int *blocks,
-                                    size_t size )
+                                    OutVector& outVector)
 {
 #ifdef HAVE_CUDA
    typedef CSR< Real, Devices::Cuda, Index, KernelType > Matrix;
@@ -1104,10 +1195,6 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& 
    Matrix* kernel_this = Cuda::passToDevice( matrix );
    InVector* kernel_inVector = Cuda::passToDevice( inVector );
    OutVector* kernel_outVector = Cuda::passToDevice( outVector );
-   int *kernelBlocks;
-   cudaMalloc((void **)&kernelBlocks, sizeof(int) * size);
-   cudaMemcpy(kernelBlocks, blocks, size * sizeof(int), cudaMemcpyHostToDevice);
-
    TNL_CHECK_CUDA_DEVICE;
    dim3 cudaBlockSize( 256 );
    //dim3 cudaGridSize( Cuda::getMaxGridSize() );
@@ -1131,44 +1218,42 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& 
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
-                                              gridIdx, kernelBlocks, size );
-      }
-      // if( matrix.getCudaWarpSize() == 16 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 16 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 8 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 8 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 4 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 4 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 2 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 2 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 1 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 1 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-
+                                              gridIdx );
+      if( matrix.getCudaWarpSize() == 16 )
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 16 >
+                                            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+                                            ( kernel_this,
+                                              kernel_inVector,
+                                              kernel_outVector,
+                                              gridIdx);
+      if( matrix.getCudaWarpSize() == 8 )
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 8 >
+                                            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+                                            ( kernel_this,
+                                              kernel_inVector,
+                                              kernel_outVector,
+                                              gridIdx);
+      if( matrix.getCudaWarpSize() == 4 )
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 4 >
+                                            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+                                            ( kernel_this,
+                                              kernel_inVector,
+                                              kernel_outVector,
+                                              gridIdx);
+      if( matrix.getCudaWarpSize() == 2 )
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 2 >
+                                            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+                                            ( kernel_this,
+                                              kernel_inVector,
+                                              kernel_outVector,
+                                              gridIdx);
+      if( matrix.getCudaWarpSize() == 1 )
+         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 1 >
+                                            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+                                            ( kernel_this,
+                                              kernel_inVector,
+                                              kernel_outVector,
+                                              gridIdx);
    }
    TNL_CHECK_CUDA_DEVICE;
    Cuda::freeFromDevice( kernel_this );
@@ -1296,36 +1381,89 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         constexpr int SHARED = 49152/sizeof(float);
-         constexpr int SHARED_PER_WARP = SHARED / 32;
-         std::vector<int> inBlock;
-         inBlock.push_back(0);
-         size_t sum = 0;
-         Index i;
-         int prev_i = 0;
-         for (i = 1; i < matrix.getRowPointers().getSize() - 1; ++i) {
-            size_t elements = matrix.getRowPointers().getElement(i) -
-                                 matrix.getRowPointers().getElement(i - 1);
-            sum += elements;
-            if (sum > SHARED_PER_WARP) {
-               if (i - prev_i == 1) {
-                  inBlock.push_back(i);
-               } else {
-                  inBlock.push_back(i - 1);
-                  --i;
+         // #ifdef HAVE_CUDA
+         // if (KernelType == CSRAdaptive) {
+            if (sizeof(Index) != 4) {
+               printf("Size of Index type is too small!\n");
+               return;
+            }
+            
+            constexpr int SHARED = 49152/sizeof(float);
+            constexpr int SHARED_PER_WARP = SHARED / 32;
+            std::vector<int> inBlock;
+            inBlock.push_back(0);
+            size_t sum = 0;
+            Index i;
+            int prev_i = 0;
+            for (i = 1; i < matrix.getRowPointers().getSize() - 1; ++i) {
+               size_t elements = matrix.getRowPointers().getElement(i) -
+                                    matrix.getRowPointers().getElement(i - 1);
+               sum += elements;
+               if (sum > SHARED_PER_WARP) {
+                  if (i - prev_i == 1) {
+                     inBlock.push_back(i);
+                  } else {
+                     inBlock.push_back(i - 1);
+                     --i;
+                  }
+                  sum = 0;
+                  prev_i = i;
+                  continue;
                }
-               sum = 0;
-               prev_i = i;
-               continue;
+               if (i - prev_i == 32) {
+                  inBlock.push_back(i);
+                  prev_i = i;
+                  sum = 0;
+               }
             }
-            if (i - prev_i == 32) {
-               inBlock.push_back(i);
-               prev_i = i;
-               sum = 0;
-            }
-         }
-         inBlock.push_back(matrix.getRowPointers().getSize() - 1);
-         CSRVectorProductCuda( matrix, inVector, outVector, inBlock.data(), inBlock.size() );
+            inBlock.push_back(matrix.getRowPointers().getSize() - 1);
+            
+            const InVector *kernelInVector = Cuda::passToDevice( inVector );
+            OutVector *kernelOutVector = Cuda::passToDevice( outVector );
+            CSR< Real, Device, Index, KernelType >* kernel_this = Cuda::passToDevice( matrix );
+            
+            /* blocks */
+            int *kernelBlocks;
+            cudaMalloc((void **)&kernelBlocks, sizeof(int) * inBlock.size());
+            cudaMemcpy(kernelBlocks, inBlock.data(), inBlock.size() * sizeof(int), cudaMemcpyHostToDevice);
+            
+            /* values */
+            float *kernel_values;
+            cudaMalloc((void **)&kernel_values, sizeof(float) * matrix.getValues().getSize());
+            cudaMemcpy(kernel_values,
+                       (float *)matrix.getValues().getData(),
+                       matrix.getValues().getSize() * sizeof(float),
+                       cudaMemcpyHostToDevice);
+
+            /* columns */
+            int *kernel_columns;
+            cudaMalloc((void **)&kernel_columns, sizeof(int) * matrix.getColumnIndexes().getSize());
+            cudaMemcpy(kernel_columns,
+                       (int *)matrix.getColumnIndexes().getData(),
+                       matrix.getColumnIndexes().getSize() * sizeof(int),
+                       cudaMemcpyHostToDevice);
+
+            /* row pointers */
+            int *kernel_rowPointers;
+            cudaMalloc((void **)&kernel_rowPointers, sizeof(int) * matrix.getRowPointers().getSize());
+            cudaMemcpy(kernel_rowPointers,
+                       (int *)matrix.getRowPointers().getData(),
+                       matrix.getRowPointers().getSize() * sizeof(int),
+                       cudaMemcpyHostToDevice);
+
+            SpMVCSRAdaptiveGlobal< Real, Index, InVector, OutVector, 32 ><<<2, 1024>>>(
+                    *kernelInVector, 
+                    *kernelOutVector,
+                    kernel_rowPointers,
+                    kernel_columns,
+                    kernel_values,
+                    kernelBlocks,
+                    inBlock.size(),
+                    matrix.getColumns()
+            );
+         // } else
+         // #endif /* HAVE_CUDA */
+            // CSRVectorProductCuda( matrix, inVector, outVector);
 #endif
       }
 
