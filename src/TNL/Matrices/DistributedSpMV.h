@@ -153,11 +153,13 @@ public:
          updateCommunicationPattern( localMatrix, group );
 
       // prepare buffers
-      commRequests.clear();
       globalBuffer.init( Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
                          inVector.getConstLocalView(),
                          localMatrix.getColumns() - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ) - inVector.getConstLocalView().getSize() );
       const auto globalBufferView = globalBuffer.getConstView();
+
+      // buffer for asynchronous communication requests
+      std::vector< typename CommunicatorType::Request > commRequests;
 
       // send our data to all processes that need it
       for( int i = 0; i < commPatternStarts.getRows(); i++ ) {
@@ -231,21 +233,17 @@ public:
       commPatternEnds.reset();
       localOnlySpan.first = localOnlySpan.second = 0;
       globalBuffer.reset();
-      commRequests.clear();
    }
 
 protected:
    // communication pattern
-   Matrices::Dense< IndexType, Devices::Host, int, true, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
+   Matrices::Dense< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;
 
    // global buffer for non-local elements of the vector
    __DistributedSpMV_impl::ThreePartVector< RealType, DeviceType, IndexType > globalBuffer;
-
-   // buffer for asynchronous communication requests
-   std::vector< typename CommunicatorType::Request > commRequests;
 };
 
 } // namespace Matrices
