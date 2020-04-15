@@ -13,10 +13,12 @@
 #include <TNL/Matrices/Legacy/CSR.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
+#include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 #include <vector>
 
 #ifdef HAVE_CUSPARSE
+#include <cuda.h>
 #include <cusparse.h>
 #endif
 
@@ -898,7 +900,7 @@ void spmvCSRVectorHelper( const InVector& inVector,
             continue;
       result += values[i] * inVector[column];
    }
-   atomicAdd(out, result);
+   //Algorithms::AtomicOperations< Devices::Cuda >::add(out, result); TODO: fix
 }
 
 template< typename Real,
@@ -1371,6 +1373,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE
          tnlCusparseCSRWrapper< Real, Index >::vectorProduct( matrix.getRows(),
                                                               matrix.getColumns(),
@@ -1381,7 +1384,6 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         // #ifdef HAVE_CUDA
          // if (KernelType == CSRAdaptive) {
             if (sizeof(Index) != 4) {
                printf("Size of Index type is too small!\n");
@@ -1462,7 +1464,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                     matrix.getColumns()
             );
          // } else
-         // #endif /* HAVE_CUDA */
+#endif /* HAVE_CUDA */
             // CSRVectorProductCuda( matrix, inVector, outVector);
 #endif
       }

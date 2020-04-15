@@ -233,7 +233,7 @@ public:
    __device__
    void vectorProductCuda( const InVector& inVector,
                            OutVector& outVector,
-                           int gridIdx, int *blocks, size_t size ) const;
+                           int gridIdx ) const;
    
    template< typename InVector,
              typename OutVector,

@@ -15,7 +15,7 @@ IF( BUILD_CUDA )
    TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest_ChunkedEllpack ${GTEST_BOTH_LIBRARIES} )
 
    CUDA_ADD_EXECUTABLE( Legacy_SparseMatrixTest_CSR SparseMatrixTest_CSR.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} )
+   TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} ${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcudadevrt.a )
 
    CUDA_ADD_EXECUTABLE( Legacy_SparseMatrixTest_Ellpack SparseMatrixTest_Ellpack.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest_Ellpack ${GTEST_BOTH_LIBRARIES} )

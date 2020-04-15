@@ -1,6 +1,7 @@
 if( BUILD_CUDA )
     cuda_add_executable( tnl-benchmark-blas tnl-benchmark-blas.cu )
     cuda_add_cublas_to_target( tnl-benchmark-blas )
+    target_link_libraries( tnl-benchmark-blas ${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcudadevrt.a )
 else()
     add_executable( tnl-benchmark-blas tnl-benchmark-blas.cpp )
 endif()
