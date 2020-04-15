@@ -121,7 +121,6 @@
 #include <stdio.h>
 
 #include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
 /**
@@ -164,8 +163,6 @@ printDiagnosticsHost( const char* assertion,
        << "Line: " << line << "\n"
        << "Diagnostics:\n" << diagnostics << std::endl;
 
-   PrintStackBacktrace;
-
    throw AssertionError( str.str() );
 }
 
@@ -186,8 +183,6 @@ printDiagnosticsHost( const char* assertion,
              << "Function: " << function << "\n"
              << "Line: " << line << "\n"
              << "Diagnostics:\n" << diagnostics << std::endl;
-
-   PrintStackBacktrace;
 }
 #endif // TNL_THROW_ASSERTION_ERROR
 
