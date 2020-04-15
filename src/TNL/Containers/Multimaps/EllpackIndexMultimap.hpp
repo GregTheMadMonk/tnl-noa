@@ -80,10 +80,12 @@ allocate( const LocalIndexType& maxValuesCount )
    const IndexType ldSize = getAllocationKeysRange( this->getKeysRange() );
    this->values.setSize( ldSize * this->maxValuesCount );
    this->valuesCounts.setSize( this->getKeysRange() );
-   this->valuesCounts.setValue( maxValuesCount );
+   if( this->valuesCounts.getSize() > 0 )
+      this->valuesCounts.setValue( maxValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
-   values.setValue( 0 );
+   if( this->values.getSize() > 0 )
+      values.setValue( 0 );
 }
 
 template< typename Index,
@@ -108,7 +110,8 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
    this->valuesCounts = valuesCounts;
 
    // extra cost at initialization, which allows to have much simpler operator==
-   values.setValue( 0 );
+   if( this->values.getSize() > 0 )
+      values.setValue( 0 );
 }
 
 template< typename Index,
@@ -128,7 +131,8 @@ setLike( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize_ >& o
    maxValuesCount = other.maxValuesCount;
 
    // extra cost at initialization, which allows to have much simpler operator==
-   values.setValue( 0 );
+   if( this->values.getSize() > 0 )
+      values.setValue( 0 );
 }
 
 template< typename Index,
