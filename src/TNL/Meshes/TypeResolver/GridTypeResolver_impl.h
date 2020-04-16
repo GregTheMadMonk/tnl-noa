@@ -76,7 +76,7 @@ resolveReal( Reader& reader, Functor&& functor )
       return resolveIndex< MeshDimension, float >( reader, std::forward<Functor>(functor) );
    if( reader.getRealType() == "double" )
       return resolveIndex< MeshDimension, double >( reader, std::forward<Functor>(functor) );
-   if( reader.getRealType() == "long-double" )
+   if( reader.getRealType() == "long double" )
       return resolveIndex< MeshDimension, long double >( reader, std::forward<Functor>(functor) );
    std::cerr << "Unsupported real type: " << reader.getRealType() << std::endl;
    return false;
@@ -108,11 +108,19 @@ bool
 GridTypeResolver< ConfigTag, Device >::detail< Reader, Functor >::
 resolveIndex( Reader& reader, Functor&& functor )
 {
-   if( reader.getGlobalIndexType() == "short int" )
+   if( reader.getGlobalIndexType() == "short" ||
+       reader.getGlobalIndexType() == "short int" ||
+       reader.getGlobalIndexType() == "std::int16_t" ||
+       reader.getGlobalIndexType() == "std::uint16_t" )
       return resolveGridType< MeshDimension, Real, short int >( reader, std::forward<Functor>(functor) );
-   if( reader.getGlobalIndexType() == "int" )
+   if( reader.getGlobalIndexType() == "int" ||
+       reader.getGlobalIndexType() == "std::int32_t" ||
+       reader.getGlobalIndexType() == "std::uint32_t" )
       return resolveGridType< MeshDimension, Real, int >( reader, std::forward<Functor>(functor) );
-   if( reader.getGlobalIndexType() == "long int" )
+   if( reader.getGlobalIndexType() == "long" ||
+       reader.getGlobalIndexType() == "long int" ||
+       reader.getGlobalIndexType() == "std::int64_t" ||
+       reader.getGlobalIndexType() == "std::uint64_t" )
       return resolveGridType< MeshDimension, Real, long int >( reader, std::forward<Functor>(functor) );
    std::cerr << "Unsupported index type: " << reader.getRealType() << std::endl;
    return false;
