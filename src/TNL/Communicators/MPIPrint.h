@@ -24,8 +24,8 @@ else                                                                            
       std::stringstream __tnl_mpi_print_stream_;                                                                                 \
       __tnl_mpi_print_stream_ << "Node " << TNL::Communicators::MpiCommunicator::GetRank() << " of "                             \
          << TNL::Communicators::MpiCommunicator::GetSize() << " : " << message << std::endl;                                     \
-      TNL::String __tnl_mpi_print_string_( __tnl_mpi_print_stream_.str().c_str() );                                              \
-      mpiSend( __tnl_mpi_print_string_, 0, std::numeric_limits< int >::max() );                                                                                         \
+      TNL::String __tnl_mpi_print_string_( __tnl_mpi_print_stream_.str() );                                                      \
+      mpiSend( __tnl_mpi_print_string_, 0, std::numeric_limits< int >::max() );                                                  \
    }                                                                                                                             \
    else                                                                                                                          \
    {                                                                                                                             \
@@ -35,7 +35,7 @@ else                                                                            
            __tnl_mpi_print_j++ )                                                                                                 \
          {                                                                                                                       \
             TNL::String __tnl_mpi_print_string_;                                                                                 \
-            mpiReceive( __tnl_mpi_print_string_, __tnl_mpi_print_j, std::numeric_limits< int >::max() );                                                                \
+            mpiReceive( __tnl_mpi_print_string_, __tnl_mpi_print_j, std::numeric_limits< int >::max() );                         \
             std::cerr << __tnl_mpi_print_string_;                                                                                \
          }                                                                                                                       \
    }                                                                                                                             \
@@ -77,8 +77,8 @@ else                                                                            
          std::stringstream __tnl_mpi_print_stream_;                                                                              \
          __tnl_mpi_print_stream_ << "Node " << TNL::Communicators::MpiCommunicator::GetRank() << " of "                          \
             << TNL::Communicators::MpiCommunicator::GetSize() << " : " << message << std::endl;                                  \
-         TNL::String __tnl_mpi_print_string_( __tnl_mpi_print_stream_.str().c_str() );                                           \
-         mpiSsend( __tnl_mpi_print_string_, 0, std::numeric_limits< int >::max() );                                                                                      \
+         TNL::String __tnl_mpi_print_string_( __tnl_mpi_print_stream_.str() );                                                   \
+         mpiSend( __tnl_mpi_print_string_, 0, std::numeric_limits< int >::max() );                                               \
       }                                                                                                                          \
    }                                                                                                                             \
    else                                                                                                                          \
@@ -94,7 +94,7 @@ else                                                                            
             if( __tnl_mpi_print_cond )                                                                                           \
             {                                                                                                                    \
                TNL::String __tnl_mpi_print_string_;                                                                              \
-               mpiReceive( __tnl_mpi_print_string_, __tnl_mpi_print_j, std::numeric_limits< int >::max() );                                                             \
+               mpiReceive( __tnl_mpi_print_string_, __tnl_mpi_print_j, std::numeric_limits< int >::max() );                      \
                std::cerr << __tnl_mpi_print_string_;                                                                             \
             }                                                                                                                    \
          }                                                                                                                       \

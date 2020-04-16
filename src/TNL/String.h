@@ -342,6 +342,16 @@ class String
        * \include StringExampleSplit.out   
        */
       std::vector< String > split( const char separator = ' ', SplitSkip skipEmpty = SplitSkip::NoSkip ) const;
+
+      /**
+       * \brief Checks if the string starts with given prefix.
+       */
+      bool startsWith( const String& prefix ) const;
+
+      /**
+       * \brief Checks if the string ends with given suffix.
+       */
+      bool endsWith( const String& suffix ) const;
 };
 
 /**

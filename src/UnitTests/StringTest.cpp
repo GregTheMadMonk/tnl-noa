@@ -317,7 +317,63 @@ TEST( StringTest, SaveLoad )
    EXPECT_EQ( str1, str2 );
 
    EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
-};
+}
+
+TEST( StringTest, startsWith )
+{
+   String str( "abracadabra" );
+   EXPECT_TRUE( str.startsWith( "a" ) );
+   EXPECT_TRUE( str.startsWith( "ab" ) );
+   EXPECT_TRUE( str.startsWith( "abr" ) );
+   EXPECT_TRUE( str.startsWith( "abra" ) );
+   EXPECT_TRUE( str.startsWith( "abrac" ) );
+   EXPECT_TRUE( str.startsWith( "abraca" ) );
+   EXPECT_TRUE( str.startsWith( "abracad" ) );
+   EXPECT_TRUE( str.startsWith( "abracada" ) );
+   EXPECT_TRUE( str.startsWith( "abracadab" ) );
+   EXPECT_TRUE( str.startsWith( "abracadabr" ) );
+   EXPECT_TRUE( str.startsWith( "abracadabra" ) );
+   EXPECT_FALSE( str.startsWith( "b" ) );
+   EXPECT_FALSE( str.startsWith( "aa" ) );
+   EXPECT_FALSE( str.startsWith( "aba" ) );
+   EXPECT_FALSE( str.startsWith( "abrb" ) );
+   EXPECT_FALSE( str.startsWith( "abrad" ) );
+   EXPECT_FALSE( str.startsWith( "abracb" ) );
+   EXPECT_FALSE( str.startsWith( "abracaa" ) );
+   EXPECT_FALSE( str.startsWith( "abracadb" ) );
+   EXPECT_FALSE( str.startsWith( "abracadaa" ) );
+   EXPECT_FALSE( str.startsWith( "abracadaba" ) );
+   EXPECT_FALSE( str.startsWith( "abracadabrb" ) );
+   EXPECT_FALSE( str.startsWith( "abracadabrab" ) );
+}
+
+TEST( StringTest, endsWith )
+{
+   String str( "abracadabra" );
+   EXPECT_TRUE( str.endsWith( "a" ) );
+   EXPECT_TRUE( str.endsWith( "ra" ) );
+   EXPECT_TRUE( str.endsWith( "bra" ) );
+   EXPECT_TRUE( str.endsWith( "abra" ) );
+   EXPECT_TRUE( str.endsWith( "dabra" ) );
+   EXPECT_TRUE( str.endsWith( "adabra" ) );
+   EXPECT_TRUE( str.endsWith( "cadabra" ) );
+   EXPECT_TRUE( str.endsWith( "acadabra" ) );
+   EXPECT_TRUE( str.endsWith( "racadabra" ) );
+   EXPECT_TRUE( str.endsWith( "bracadabra" ) );
+   EXPECT_TRUE( str.endsWith( "abracadabra" ) );
+   EXPECT_FALSE( str.endsWith( "b" ) );
+   EXPECT_FALSE( str.endsWith( "ba" ) );
+   EXPECT_FALSE( str.endsWith( "ara" ) );
+   EXPECT_FALSE( str.endsWith( "bbra" ) );
+   EXPECT_FALSE( str.endsWith( "babra" ) );
+   EXPECT_FALSE( str.endsWith( "bdabra" ) );
+   EXPECT_FALSE( str.endsWith( "badabra" ) );
+   EXPECT_FALSE( str.endsWith( "bcadabra" ) );
+   EXPECT_FALSE( str.endsWith( "aacadabra" ) );
+   EXPECT_FALSE( str.endsWith( "aracadabra" ) );
+   EXPECT_FALSE( str.endsWith( "bbracadabra" ) );
+   EXPECT_FALSE( str.endsWith( "babracadabra" ) );
+}
 #endif
 
 #include "main.h"

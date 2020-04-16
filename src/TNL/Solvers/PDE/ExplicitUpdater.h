@@ -18,11 +18,6 @@
 #include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
 #include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 
-#ifdef USE_MPI
-    #include <TNL/Meshes/DistributedGridSynchronizer.h>
-#endif
-
-
 namespace TNL {
 namespace Solvers {
 namespace PDE {   

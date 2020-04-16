@@ -15,6 +15,7 @@
 #include <TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
 #include <TNL/Communicators/MPIPrint.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
 namespace Functions{

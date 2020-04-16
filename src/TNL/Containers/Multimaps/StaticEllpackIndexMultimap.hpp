@@ -82,7 +82,8 @@ allocate()
    values.setSize( ldSize * ValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
-   values.setValue( 0 );
+   if( ldSize > 0 )
+      values.setValue( 0 );
 }
 
 template< int ValuesCount,
@@ -99,7 +100,8 @@ setLike( const StaticEllpackIndexMultimap< ValuesCount, Index, Device_, LocalInd
    values.setSize( ldSize * ValuesCount );
 
    // extra cost at initialization, which allows to have much simpler operator==
-   values.setValue( 0 );
+   if( ldSize > 0 )
+      values.setValue( 0 );
 
    keysRange = other.keysRange;
 }
