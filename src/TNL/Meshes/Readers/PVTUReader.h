@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <experimental/filesystem>
+
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
@@ -26,17 +28,8 @@ class PVTUReader
    std::string
    getSourcePath( std::string source )
    {
-      // TODO: use proper path library
-      std::vector< String > parts = String( fileName ).split( '/' );
-      parts.pop_back();
-      parts.push_back( source );
-      std::string result;
-      for( auto p : parts )
-         if( result.empty() )
-            result += p;
-         else
-            result += "/" + p;
-      return result;
+      namespace fs = std::experimental::filesystem;
+      return fs::path(fileName).parent_path() / source;
    }
 
 #ifdef HAVE_TINYXML2
