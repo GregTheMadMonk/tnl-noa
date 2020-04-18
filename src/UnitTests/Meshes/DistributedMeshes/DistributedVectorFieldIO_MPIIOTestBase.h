@@ -6,6 +6,7 @@
 #ifdef HAVE_MPI
     #define MPIIO
 #endif
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
@@ -164,8 +165,11 @@ class TestDistributedVectorFieldMPIIO{
 
         DistributedGridIO<VectorFieldType,MpiIO> ::load(FileName, loadVectorField );
 
+        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        synchronizer.setDistributedGrid( &distributedGrid );
+
         for(int i=0;i<vctdim;i++)
-            (loadVectorField[i])->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+            synchronizer.template synchronize<CommunicatorType>(*loadVectorField[i]); //need synchronization for overlaps to be filled corectly in loadDof
 
         Pointers::SharedPointer<MeshType> evalGridPtr;
         VectorFieldType evalVectorField;
@@ -178,7 +182,7 @@ class TestDistributedVectorFieldMPIIO{
         for(int i=0;i<vctdim;i++)
         {
             linearFunctionEvaluator.evaluateAllEntities(evalVectorField[i] , linearFunctionPtr);        
-            (evalVectorField[i])->template synchronize<CommunicatorType>();
+            synchronizer.template synchronize<CommunicatorType>(*evalVectorField[i]);
         }
 
         for(int i=0;i<evalDof.getSize();i++)

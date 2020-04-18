@@ -16,6 +16,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 #include "../../Functions/Functions.h"
 
@@ -428,7 +429,9 @@ TEST_F(DistributedGridTest_2D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_2D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
-    meshFunctionPtr->template synchronize<CommunicatorType>();
+    Synchronizer synchronizer;
+    synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+    synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr );
     
     int count =gridPtr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
@@ -444,7 +447,9 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborTest )
    //Expect 9 processes
    setDof_2D(*dof,-1);
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   meshFunctionPtr->template synchronize<CommunicatorType>();
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr );
     
    // checkNeighbor_2D(rank, *gridPtr, *dof);
    

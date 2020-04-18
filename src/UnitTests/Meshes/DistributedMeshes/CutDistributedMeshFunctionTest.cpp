@@ -6,6 +6,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Functions/CutMeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
@@ -69,7 +70,9 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunction<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
@@ -148,7 +151,9 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunction<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
@@ -227,7 +232,9 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunction<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
@@ -328,7 +335,9 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
        MeshFunction<CutMeshType> cutMeshFunction;
             cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunction<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -411,7 +420,9 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
        MeshFunction<CutMeshType> cutMeshFunction;
             cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunction<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -498,7 +509,9 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
        MeshFunction<CutMeshType> cutMeshFunction;
             cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunction<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);

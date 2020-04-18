@@ -131,7 +131,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *initialData );
     if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
-    initialData->template synchronize<CommunicatorType>();
+    synchronizer.setDistributedGrid( initialData->getMesh().getDistributedMesh() );
+    synchronizer.template synchronize<CommunicatorType>( *initialData );
   }
   else
   {

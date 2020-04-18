@@ -25,6 +25,7 @@
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 namespace TNL {
 namespace Problems {
@@ -102,6 +103,9 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  DofVectorPointer& rightHandSidePointer );
 
    protected:
+
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      DistributedMeshSynchronizerType synchronizer;
 
       MeshFunctionPointer uPointer;
       MeshFunctionPointer fuPointer;

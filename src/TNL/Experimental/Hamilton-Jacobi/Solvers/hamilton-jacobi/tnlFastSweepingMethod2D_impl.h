@@ -80,7 +80,8 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   InterfaceMapType interfaceMap = *interfaceMapPtr;
   MeshFunctionType aux = *auxPtr;
-  aux.template synchronize< Communicator >(); //synchronize initialized overlaps
+  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.template synchronize< Communicator >( aux ); //synchronize initialized overlaps
   
   std::cout << "Calculating the values ..." << std::endl; 
   while( iteration < this->maxIterations )
@@ -364,7 +365,7 @@ solve( const MeshPointer& mesh,
       if( CommunicatorType::isDistributed() ){
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
        
-        aux.template synchronize< Communicator >();
+        synchronizer.template synchronize< Communicator >( aux );
       }
 #endif
       if( !CommunicatorType::isDistributed() ) // If we start the solver without MPI, we need calculated 0!

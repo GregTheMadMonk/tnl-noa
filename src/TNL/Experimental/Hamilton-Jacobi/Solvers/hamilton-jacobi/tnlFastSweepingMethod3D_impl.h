@@ -80,7 +80,8 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   MeshFunctionType aux = *auxPtr;
   InterfaceMapType interfaceMap = * interfaceMapPtr;
-  aux.template synchronize< Communicator >(); //synchronization of intial conditions
+  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.template synchronize< Communicator >( aux ); //synchronization of intial conditions
   
   while( iteration < this->maxIterations )
   {
@@ -355,7 +356,7 @@ solve( const MeshPointer& mesh,
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
 
         // synchronizate the overlaps 
-        aux.template synchronize< Communicator >();
+        synchronizer.template synchronize< Communicator >( aux );
 
       }
 #endif

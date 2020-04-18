@@ -7,6 +7,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 #include "../../Functions/Functions.h"
 
@@ -600,6 +601,7 @@ typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
+using Synchronizer = DistributedMeshSynchronizer< MeshFunctionType >;
      
 class DistributedGirdTest_3D : public ::testing::Test
 {
@@ -702,7 +704,9 @@ TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
-    meshFunctionptr->template synchronize<CommunicatorType>();
+    Synchronizer synchronizer;
+    synchronizer.setDistributedGrid( meshFunctionptr->getMesh().getDistributedMesh() );
+    synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
     
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)

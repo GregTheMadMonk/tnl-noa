@@ -19,6 +19,7 @@
 #include "tnlFastSweepingMethod.h"
 
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 template< typename Mesh,
           typename Communicator,
@@ -79,6 +80,9 @@ class tnlDirectEikonalProblem
 
       protected:
          
+         using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+         DistributedMeshSynchronizerType synchronizer;
+
          MeshFunctionPointer u;
          
          MeshFunctionPointer initialData;

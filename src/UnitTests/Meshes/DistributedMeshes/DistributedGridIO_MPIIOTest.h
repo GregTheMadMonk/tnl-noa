@@ -11,6 +11,7 @@
     #define MPIIO
 #endif
 
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -161,7 +162,10 @@ class TestDistributedGridMPIIO{
         loadMeshFunctionptr->bind(loadGridptr,loadDof);
 
         DistributedGridIO<MeshFunctionType,MpiIO> ::load(FileName, *loadMeshFunctionptr );
-        loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+
+        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        synchronizer.setDistributedGrid( &distributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
 
         Pointers::SharedPointer<MeshType> evalGridPtr;
         Pointers::SharedPointer<MeshFunctionType> evalMeshFunctionptr;
@@ -172,7 +176,7 @@ class TestDistributedGridMPIIO{
         evalMeshFunctionptr->bind(evalGridPtr,evalDof);
 
         linearFunctionEvaluator.evaluateAllEntities(evalMeshFunctionptr , linearFunctionPtr);
-        evalMeshFunctionptr->template synchronize<CommunicatorType>();
+        synchronizer.template synchronize<CommunicatorType>( *evalMeshFunctionptr );
 
         for(int i=0;i<evalDof.getSize();i++)
         {

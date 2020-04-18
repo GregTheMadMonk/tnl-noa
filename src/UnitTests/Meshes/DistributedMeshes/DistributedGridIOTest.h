@@ -9,6 +9,7 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
@@ -352,8 +353,9 @@ class TestDistributedGridIO
 
         DistributedGridIO<MeshFunctionType> ::load(fileName, *loadMeshFunctionptr );
 
-        loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
-
+        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        synchronizer.setDistributedGrid( &distributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
         Pointers::SharedPointer<MeshType> gridptr;
@@ -365,7 +367,7 @@ class TestDistributedGridIO
         meshFunctionptr->bind(gridptr,dof);
 
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        meshFunctionptr->template synchronize<CommunicatorType>();
+        synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
         for(int i=0;i<dof.getSize();i++)
         {

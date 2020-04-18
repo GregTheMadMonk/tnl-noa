@@ -11,10 +11,9 @@
 #pragma once
 
 #include <TNL/File.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 
 namespace TNL {
@@ -37,8 +36,6 @@ class MeshFunction :
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using RealType = Real;
       using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-      using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
-      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer<MeshFunction>;
 
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
 
@@ -157,36 +154,13 @@ class MeshFunction :
 
       using Object::load;
 
-      DistributedMeshSynchronizerType& getSynchronizer()
-      {
-         return this->synchronizer;
-      }
-
-      const DistributedMeshSynchronizerType& getSynchronizer() const
-      {
-         return this->synchronizer;
-      }
-
-      template< typename CommunicatorType,
-                typename PeriodicBoundariesMaskType = MeshFunction< Mesh, MeshEntityDimension, bool > >
-      void synchronize( bool withPeriodicBoundaryConditions = false,
-                        const Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >& mask =
-                        Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >( nullptr ) );
-
    protected:
-
-      // TODO: synchronizer should not be part of the mesh function - the way of synchronization
-      // depends rather on algorithm/method/scheme in hand than on data
-      DistributedMeshSynchronizerType synchronizer;
 
       MeshPointer meshPointer;
 
       VectorType data;
 
       template< typename, typename > friend class MeshFunctionEvaluator;
-
-   private:
-      void setupSynchronizer( DistributedMeshType *distributedMesh );
 };
 
 template< typename Mesh,

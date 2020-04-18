@@ -14,6 +14,7 @@
 //#include <TNL/Functions/Analytic/Constant.h>
 //#include <TNL/Pointers/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 
 template< typename Mesh,
@@ -112,6 +113,9 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     
     protected:
       
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      DistributedMeshSynchronizerType synchronizer;
+
       const IndexType maxIterations;
     
       void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
@@ -170,6 +174,9 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     
     protected:
       
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      DistributedMeshSynchronizerType synchronizer;
+
       const IndexType maxIterations;
       
       void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
