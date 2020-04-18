@@ -130,6 +130,8 @@ class BiEllpackView
 
       void load( File& file );
 
+      void printStructure( std::ostream& str ) const;
+
    protected:
 
       static constexpr int getWarpSize() { return WarpSize; };
@@ -149,6 +151,7 @@ class BiEllpackView
                 typename Reduction,
                 typename ResultKeeper,
                 typename Real,
+                int BlockDim,
                 typename... Args >
       __device__
       void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
@@ -163,7 +166,8 @@ class BiEllpackView
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
-                typename Real,
+                typename Real_,
+                int BlockDim,
                 typename... Args >
       __device__
       void segmentsReductionKernel( IndexType gridIdx,
@@ -172,7 +176,7 @@ class BiEllpackView
                                     Fetch fetch,
                                     Reduction reduction,
                                     ResultKeeper keeper,
-                                    Real zero,
+                                    Real_ zero,
                                     Args... args ) const;
 
       template< typename View_,
@@ -181,19 +185,20 @@ class BiEllpackView
                 typename Reduction_,
                 typename ResultKeeper_,
                 typename Real_,
+                int BlockDim,
                 typename... Args_ >
       friend __global__
       void BiEllpackSegmentsReductionKernel( View_ chunkedEllpack,
-                                                  Index_ gridIdx,
-                                                  Index_ first,
-                                                  Index_ last,
-                                                  Fetch_ fetch,
-                                                  Reduction_ reduction,
-                                                  ResultKeeper_ keeper,
-                                                  Real_ zero,
-                                                  Args_... args );
+                                             Index_ gridIdx,
+                                             Index_ first,
+                                             Index_ last,
+                                             Fetch_ fetch,
+                                             Reduction_ reduction,
+                                             ResultKeeper_ keeper,
+                                             Real_ zero,
+                                             Args_... args );
 
-      template< typename Index_, typename Fetch_, bool B_ >
+      template< typename Index_, typename Fetch_, int BlockDim_, int WarpSize_, bool B_ >
       friend struct details::BiEllpackSegmentsReductionDispatcher;
 #endif
 };

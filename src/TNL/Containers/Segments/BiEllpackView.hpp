@@ -260,7 +260,45 @@ void
 BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   //Algorithms::ParallelFor< DeviceType >::exec( first, last , work, args... );
+   const auto segmentsPermutationView = this->rowPermArray.getConstView();
+   const auto groupPointersView = this->groupPointers.getConstView();
+   auto work = [=] __cuda_callable__ ( IndexType segmentIdx, Args... args ) mutable {
+      const IndexType strip = segmentIdx / getWarpSize();
+      const IndexType firstGroupInStrip = strip * ( getLogWarpSize() + 1 );
+      const IndexType rowStripPerm = segmentsPermutationView[ segmentIdx ] - strip * getWarpSize();
+      const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, RowMajorOrder, getWarpSize() >::getActiveGroupsCountDirect( segmentsPermutationView, segmentIdx );
+      IndexType groupHeight = getWarpSize();
+      //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
+      bool compute( true );
+      IndexType localIdx( 0 );
+      for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount && compute; groupIdx++ )
+      {
+         IndexType groupOffset = groupPointersView[ groupIdx ];
+         const IndexType groupSize = groupPointersView[ groupIdx + 1 ] - groupOffset;
+         //printf( "groupSize = %d \n", groupSize );
+         if( groupSize )
+         {
+            const IndexType groupWidth = groupSize / groupHeight;
+            for( IndexType i = 0; i < groupWidth; i++ )
+            {
+               if( RowMajorOrder )
+               {
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute );
+               }
+               else
+               {
+                  /*printf( "segmentIdx = %d localIdx = %d globalIdx = %d groupIdx = %d groupSize = %d groupWidth = %d\n",
+                     segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight,
+                     groupIdx, groupSize, groupWidth );*/
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute );
+               }
+               localIdx++;
+            }
+         }
+         groupHeight /= 2;
+      }
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( first, last , work, args... );
 }
 
 template< typename Device,
@@ -323,6 +361,35 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          }
          keeper( segmentIdx, aux );
       }
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   {
+#ifdef HAVE_CUDA
+      //printStructure( std::cerr );
+      //for( IndexType i = first; i < last; i += getWarpSize() )
+      {
+         //IndexType first = i;
+         //IndexType last = TNL::min( this->getSize(), i + getWarpSize() );
+         constexpr int BlockDim = getWarpSize();
+         dim3 cudaBlockSize = BlockDim;
+         const IndexType stripsCount = roundUpDivision( last - first, getWarpSize() );
+         const IndexType cudaBlocks = roundUpDivision( stripsCount * getWarpSize(), cudaBlockSize.x );
+         const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
+         const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
+
+         for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+         {
+            dim3 cudaGridSize = Cuda::getMaxGridSize();
+            if( gridIdx == cudaGrids - 1 )
+               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
+            details::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
+               <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
+               ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+            cudaThreadSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
+         }
+      }
+#endif
+   }
 }
 
 template< typename Device,
@@ -368,6 +435,31 @@ save( File& file ) const
         << this->groupPointers;
 }
 
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int WarpSize >
+void
+BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
+printStructure( std::ostream& str ) const
+{
+   const IndexType stripsCount = roundUpDivision( this->getSize(), getWarpSize() );
+   for( IndexType stripIdx = 0; stripIdx < stripsCount; stripIdx++ )
+   {
+      str << "Strip: " << stripIdx << std::endl;
+      const IndexType firstGroupIdx = stripIdx * ( getLogWarpSize() + 1 );
+      const IndexType lastGroupIdx = firstGroupIdx + getLogWarpSize() + 1;
+      IndexType groupHeight = getWarpSize();
+      for( IndexType groupIdx = firstGroupIdx; groupIdx < lastGroupIdx; groupIdx ++ )
+      {
+         const IndexType groupSize = groupPointers.getElement( groupIdx + 1 ) - groupPointers.getElement( groupIdx );
+         const IndexType groupWidth = groupSize / groupHeight;
+         str << "\tGroup: " << groupIdx << " size = " << groupSize << " width = " << groupWidth << " height = " << groupHeight << std::endl;
+         groupHeight /= 2;
+      }
+   }
+}
+
 #ifdef HAVE_CUDA
 template< typename Device,
           typename Index,
@@ -377,6 +469,7 @@ template< typename Device,
              typename Reduction,
              typename ResultKeeper,
              typename Real,
+             int BlockDim,
              typename... Args >
 __device__
 void
@@ -391,61 +484,46 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
                                           Args... args ) const
 {
    using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
-
-   const IndexType firstSlice = rowToSliceMapping[ first ];
-   const IndexType lastSlice = rowToSliceMapping[ last - 1 ];
-
-   const IndexType sliceIdx = firstSlice + gridIdx * Cuda::getMaxGridSize() + blockIdx.x;
-   if( sliceIdx > lastSlice )
+   const IndexType segmentIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + first;
+   if( segmentIdx >= last )
       return;
 
-   RealType* chunksResults = Cuda::getSharedMemory< RealType >();
-   __shared__ details::BiEllpackSliceInfo< IndexType > sliceInfo;
-   if( threadIdx.x == 0 )
-      sliceInfo = this->slices[ sliceIdx ];
-   chunksResults[ threadIdx.x ] = zero;
-   __syncthreads();
-
-
-
-   const IndexType sliceOffset = sliceInfo.pointer;
-   const IndexType chunkSize = sliceInfo.chunkSize;
-   const IndexType chunkIdx = sliceIdx * chunksInSlice + threadIdx.x;
-   const IndexType segmentIdx = this->chunksToSegmentsMapping[ chunkIdx ];
-   IndexType firstChunkOfSegment( 0 );
-   if( segmentIdx != sliceInfo.firstSegment )
-      firstChunkOfSegment = rowToChunkMapping[ segmentIdx - 1 ];
-   IndexType localIdx = ( threadIdx.x - firstChunkOfSegment ) * chunkSize;
+   const IndexType strip = segmentIdx / getWarpSize();
+   const IndexType firstGroupInStrip = strip * ( getLogWarpSize() + 1 );
+   const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
+   const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, RowMajorOrder, getWarpSize() >::getActiveGroupsCountDirect( rowPermArray, segmentIdx );
+   IndexType groupHeight = getWarpSize();
+   //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
    bool compute( true );
-
-   if( RowMajorOrder )
+   IndexType localIdx( 0 );
+   RealType result( zero );
+   for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount && compute; groupIdx++ )
    {
-      IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
-      IndexType end = begin + chunkSize;
-      for( IndexType j = begin; j < end && compute; j++ )
-         reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
+      IndexType groupOffset = groupPointers[ groupIdx ];
+      const IndexType groupSize = groupPointers[ groupIdx + 1 ] - groupOffset;
+      //printf( "groupSize = %d \n", groupSize );
+      if( groupSize )
+      {
+         const IndexType groupWidth = groupSize / groupHeight;
+         for( IndexType i = 0; i < groupWidth; i++ )
+         {
+            if( RowMajorOrder )
+            {
+               reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute ) );
+            }
+            else
+            {
+               /*printf( "segmentIdx = %d localIdx = %d globalIdx = %d groupIdx = %d groupSize = %d groupWidth = %d\n",
+                  segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight,
+                  groupIdx, groupSize, groupWidth );*/
+               reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute ) );
+            }
+            localIdx++;
+         }
+      }
+      groupHeight /= 2;
    }
-   else
-   {
-      const IndexType begin = sliceOffset + threadIdx.x; // threadIdx.x = chunkIdx within the slice
-      const IndexType end = begin + chunksInSlice * chunkSize;
-         for( IndexType j = begin; j < end && compute; j += chunksInSlice )
-            reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
-   }
-   __syncthreads();
-   if( threadIdx.x < sliceInfo.size )
-   {
-      const IndexType row = sliceInfo.firstSegment + threadIdx.x;
-      IndexType chunkIndex( 0 );
-      if( threadIdx.x != 0 )
-         chunkIndex = this->rowToChunkMapping[ row - 1 ];
-      const IndexType lastChunk = this->rowToChunkMapping[ row ];
-      RealType result( zero );
-      while( chunkIndex < lastChunk )
-         reduction( result,  chunksResults[ chunkIndex++ ] );
-      if( row >= first && row < last )
-         keeper( row, result );
-   }
+   keeper( segmentIdx, result );
 }
 
 template< typename Device,
@@ -456,6 +534,7 @@ template< typename Device,
              typename Reduction,
              typename ResultKeeper,
              typename Real,
+             int BlockDim,
              typename... Args >
 __device__
 void
@@ -470,56 +549,78 @@ segmentsReductionKernel( IndexType gridIdx,
                          Args... args ) const
 {
    using RealType = decltype( fetch( IndexType(), std::declval< bool& >(), args... ) );
+   Index segmentIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + first;
 
-   const IndexType firstSlice = rowToSliceMapping[ first ];
-   const IndexType lastSlice = rowToSliceMapping[ last - 1 ];
+   const IndexType strip = segmentIdx >> getLogWarpSize();
+   const IndexType warpStart = strip << getLogWarpSize();
+   const IndexType inWarpIdx = segmentIdx & ( getWarpSize() - 1 );
 
-   const IndexType sliceIdx = firstSlice + gridIdx * Cuda::getMaxGridSize() + blockIdx.x;
-   if( sliceIdx > lastSlice )
+   if( warpStart >= last )
       return;
 
-   RealType* chunksResults = Cuda::getSharedMemory< RealType >();
-   __shared__ details::BiEllpackSliceInfo< IndexType > sliceInfo;
+   IndexType groupHeight = getWarpSize();
+   IndexType firstGroupIdx = strip * ( getLogWarpSize() + 1 );
 
-   if( threadIdx.x == 0 )
-      sliceInfo = this->slices[ sliceIdx ];
-   chunksResults[ threadIdx.x ] = zero;
+   RealType* temp( nullptr );
+   if( ! RowMajorOrder )
+      temp = Cuda::getSharedMemory< RealType >();
+   __shared__ RealType results[ BlockDim ];
+   results[ threadIdx.x ] = zero;
+   __shared__ IndexType sharedGroupPointers[ 7 ]; // TODO: getLogWarpSize() + 1 ];
+
+   if( threadIdx.x <= getLogWarpSize() + 1 )
+      sharedGroupPointers[ threadIdx.x ] = this->groupPointers[ firstGroupIdx + threadIdx.x ];
    __syncthreads();
-
-   const IndexType sliceOffset = sliceInfo.pointer;
-   const IndexType chunkSize = sliceInfo.chunkSize;
-   const IndexType chunkIdx = sliceIdx * chunksInSlice + threadIdx.x;
+         
    bool compute( true );
-
-   if( RowMajorOrder )
+   for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
    {
-      IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
-      IndexType end = begin + chunkSize;
-      for( IndexType j = begin; j < end && compute; j++ )
-         reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
-   }
-   else
-   {
-      const IndexType begin = sliceOffset + threadIdx.x; // threadIdx.x = chunkIdx within the slice
-      const IndexType end = begin + chunksInSlice * chunkSize;
-         for( IndexType j = begin; j < end && compute; j += chunksInSlice )
-            reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
+      IndexType groupBegin = sharedGroupPointers[ group ];
+      IndexType groupEnd = sharedGroupPointers[ group + 1 ];
+      if( groupEnd - groupBegin > 0 )
+      {
+         if( RowMajorOrder )
+         {
+            if( inWarpIdx < groupHeight )
+            {
+               const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
+               IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
+               for( IndexType i = 0; i < groupWidth && compute; i++ )
+                  reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+            }
+         }
+         else
+         {
+            temp[ threadIdx.x ] = zero;
+            IndexType globalIdx = groupBegin + inWarpIdx;
+            while( globalIdx < groupEnd )
+            {
+               reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
+               /*printf( "FETCH: globalIdx = %d fetch = %d result = %d groupEnd = %d \n", 
+                  globalIdx,
+                  ( int ) fetch( globalIdx, compute ),
+                  ( int ) temp[ threadIdx.x ], groupEnd );*/
+               globalIdx += getWarpSize();
+            }
+            // TODO: reduction via templates
+            IndexType bisection2 = getWarpSize();
+            for( IndexType i = 0; i < group; i++ )
+            {
+               bisection2 >>= 1;
+               if( inWarpIdx < bisection2 )
+                  reduction( temp[ threadIdx.x ], temp[ threadIdx.x + bisection2 ] );
+            }
+            if( inWarpIdx < groupHeight )
+               reduction( results[ threadIdx.x ], temp[ threadIdx.x ] );
+         }
+      }
+      groupHeight >>= 1;
    }
    __syncthreads();
+   if( warpStart + inWarpIdx >= last )
+      return;
 
-   if( threadIdx.x < sliceInfo.size )
-   {
-      const IndexType row = sliceInfo.firstSegment + threadIdx.x;
-      IndexType chunkIndex( 0 );
-      if( threadIdx.x != 0 )
-         chunkIndex = this->rowToChunkMapping[ row - 1 ];
-      const IndexType lastChunk = this->rowToChunkMapping[ row ];
-      RealType result( zero );
-      while( chunkIndex < lastChunk )
-         reduction( result,  chunksResults[ chunkIndex++ ] );
-      if( row >= first && row < last )
-         keeper( row, result );
-   }
+   keeper( warpStart + inWarpIdx, results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( blockDim.x - 1 ) ] );
 }
 #endif
 

@@ -111,19 +111,21 @@ class BiEllpack
 
       void load( File& file );
 
-      void printStructure( std::ostream& str ); // TODO const;
+      void printStructure( std::ostream& str ) const;
+
+      // TODO: nvcc needs this public because of lambda function used inside
+      template< typename SizesHolder = OffsetsHolder >
+      void performRowBubbleSort( const SizesHolder& segmentsSize );
+
+      // TODO: the same as  above
+      template< typename SizesHolder = OffsetsHolder >
+      void computeColumnSizes( const SizesHolder& segmentsSizes );
 
    protected:
 
       static constexpr int getWarpSize() { return WarpSize; };
 
       static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
-
-      template< typename SizesHolder = OffsetsHolder >
-      void performRowBubbleSort( const SizesHolder& segmentsSize );
-
-      template< typename SizesHolder = OffsetsHolder >
-      void computeColumnSizes( const SizesHolder& segmentsSizes );
 
       template< typename SizesHolder = OffsetsHolder >
       void verifyRowPerm( const SizesHolder& segmentsSizes );

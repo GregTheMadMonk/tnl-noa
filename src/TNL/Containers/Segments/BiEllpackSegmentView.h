@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <math.h>
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
@@ -25,7 +26,7 @@ class BiEllpackSegmentView
       
       static constexpr int getWarpSize() { return WarpSize; };
 
-      static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
+      static constexpr int getLogWarpSize() { static_assert( WarpSize == 32, "nvcc does not allow constexpr log2" ); return 5; }// TODO: return std::log2( WarpSize ); };
 
       static constexpr int getGroupsCount() { return getLogWarpSize() + 1; };
 

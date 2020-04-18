@@ -119,7 +119,7 @@ performRowBubbleSort( const SizesHolder& segmentsSizes )
 {
    this->rowPermArray.evaluate( [] __cuda_callable__ ( const IndexType i ) -> IndexType { return i; } );
 
-   if( std::is_same< DeviceType, Devices::Host >::value )
+   //if( std::is_same< DeviceType, Devices::Host >::value )
    {
       IndexType strips = this->virtualRows / getWarpSize();
       for( IndexType i = 0; i < strips; i++ )
@@ -187,40 +187,37 @@ computeColumnSizes( const SizesHolder& segmentsSizes )
    auto segmentsPermutationView = this->rowPermArray.getView();
    auto segmentsSizesView = segmentsSizes.getConstView();
    const IndexType size = this->getSize();
-   Algorithms::ParallelFor< DeviceType >::exec(
-      ( IndexType ) 0,
-      this->virtualRows / getWarpSize(),
-      [=] __cuda_callable__ ( const IndexType strip ) mutable {
+   auto createGroups = [=] __cuda_callable__ ( const IndexType strip ) mutable {
+      IndexType firstSegment = strip * getWarpSize();
+      IndexType groupBegin = strip * ( getLogWarpSize() + 1 );
+      IndexType emptyGroups = 0;
 
-         IndexType firstSegment = strip * getWarpSize();
-         IndexType groupBegin = strip * ( getLogWarpSize() + 1 );
-         IndexType emptyGroups = 0;
+      ////
+      // The last strip can be shorter
+      if( strip == numberOfStrips - 1 )
+      {
+         IndexType segmentsCount = size - firstSegment;
+         while( !( segmentsCount > TNL::pow( 2, getLogWarpSize() - 1 - emptyGroups ) ) )
+            emptyGroups++;
+         for( IndexType group = groupBegin; group < groupBegin + emptyGroups; group++ )
+            groupPointersView[ group ] = 0;
+      }
 
-         ////
-         // The last strip can be shorter
-         if( strip == numberOfStrips - 1 )
-         {
-            IndexType segmentsCount = size - firstSegment;
-            while( !( segmentsCount > TNL::pow( 2, getLogWarpSize() - 1 - emptyGroups ) ) )
-               emptyGroups++;
-            for( IndexType group = groupBegin; group < groupBegin + emptyGroups; group++ )
-               groupPointersView[ group ] = 0;
-         }
-
-         IndexType allocatedColumns = 0;
-         for( IndexType groupIdx = emptyGroups; groupIdx < getLogWarpSize(); groupIdx++ )
-         {
-            IndexType segmentIdx = TNL::pow( 2, getLogWarpSize() - 1 - groupIdx ) - 1;
-            IndexType permSegm = 0;
-            while( segmentsPermutationView[ permSegm + firstSegment ] != segmentIdx + firstSegment )
-               permSegm++;
-            const IndexType groupWidth = segmentsSizesView[ permSegm + firstSegment ] - allocatedColumns;
-            const IndexType groupHeight = TNL::pow( 2, getLogWarpSize() - groupIdx );
-            const IndexType groupSize = groupWidth * groupHeight;
-            allocatedColumns = segmentsSizes[ permSegm + firstSegment ];
-            groupPointersView[ groupIdx + groupBegin ] = groupSize;
-         }
-      } );
+      IndexType allocatedColumns = 0;
+      for( IndexType groupIdx = emptyGroups; groupIdx < getLogWarpSize(); groupIdx++ )
+      {
+         IndexType segmentIdx = TNL::pow( 2, getLogWarpSize() - 1 - groupIdx ) - 1;
+         IndexType permSegm = 0;
+         while( segmentsPermutationView[ permSegm + firstSegment ] != segmentIdx + firstSegment )
+            permSegm++;
+         const IndexType groupWidth = segmentsSizesView[ permSegm + firstSegment ] - allocatedColumns;
+         const IndexType groupHeight = TNL::pow( 2, getLogWarpSize() - groupIdx );
+         const IndexType groupSize = groupWidth * groupHeight;
+         allocatedColumns = segmentsSizesView[ permSegm + firstSegment ];
+         groupPointersView[ groupIdx + groupBegin ] = groupSize;
+      }
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, this->virtualRows / getWarpSize(), createGroups );
 }
 
 template< typename Device,
@@ -267,7 +264,7 @@ verifyRowPerm( const SizesHolder& segmentsSizes )
       }
    }
    if( !ok )
-      throw( std::logic_error( "Segments permutaion verification failed." ) );
+      throw( std::logic_error( "Segments permutation verification failed." ) );
 }
 
 template< typename Device,
@@ -320,8 +317,8 @@ void
 BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
 setSegmentsSizes( const SizesHolder& segmentsSizes )
 {
-   //if( std::is_same< DeviceType, Devices::Host >::value )
-   // {
+   if( std::is_same< DeviceType, Devices::Host >::value )
+   {
       this->size = segmentsSizes.getSize();
       if( this->size % WarpSize != 0 )
          this->virtualRows = this->size + getWarpSize() - ( this->size % getWarpSize() );
@@ -340,14 +337,14 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
       this->verifyRowPerm( segmentsSizes );
       this->verifyRowLengths( segmentsSizes );
       this->storageSize =  getWarpSize() * this->groupPointers.getElement( strips * ( getLogWarpSize() + 1 ) );
-   /*}
+   }
    else
    {
       BiEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< IndexType >, RowMajorOrder > hostSegments;
       Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes( segmentsSizes );
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
       *this = hostSegments;
-   }*/
+   }
 }
 
 template< typename Device,
@@ -522,6 +519,18 @@ load( File& file )
    file.load( &this->virtualRows );
    file >> this->rowPermArray
         >> this->groupPointers;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int WarpSize >
+void
+BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+printStructure( std::ostream& str ) const
+{
+   this->view.printStructure( str );
 }
 
 template< typename Device,

@@ -43,6 +43,24 @@ class BiEllpack
 
       static constexpr int getGroupsCount() { return getLogWarpSize() + 1; };
 
+      __cuda_callable__
+      static IndexType getActiveGroupsCountDirect( const ConstOffsetsHolderView& rowPermArray, const IndexType segmentIdx )
+      {
+         TNL_ASSERT_GE( segmentIdx, 0, "" );
+         //TNL_ASSERT_LT( segmentIdx, this->getSize(), "" );
+
+         IndexType strip = segmentIdx / getWarpSize();
+         IndexType rowStripPermutation = rowPermArray[ segmentIdx ] - getWarpSize() * strip;
+         IndexType numberOfGroups = getLogWarpSize() + 1;
+         IndexType bisection = 1;
+         for( IndexType i = 0; i < getLogWarpSize() + 1; i++ )
+         {
+            if( rowStripPermutation < bisection )
+               return numberOfGroups - i;
+            bisection *= 2;
+         }
+      }
+
       static IndexType getActiveGroupsCount( const ConstOffsetsHolderView& rowPermArray, const IndexType segmentIdx )
       {
          TNL_ASSERT_GE( segmentIdx, 0, "" );
@@ -55,12 +73,13 @@ class BiEllpack
          for( IndexType i = 0; i < getLogWarpSize() + 1; i++ )
          {
             if( rowStripPermutation < bisection )
-               return ( numberOfGroups - i );
+               return numberOfGroups - i;
             bisection *= 2;
          }
          throw std::logic_error( "segmentIdx was not found" );
       }
 
+      __cuda_callable__
       static IndexType getGroupSizeDirect( const ConstOffsetsHolderView& groupPointers,
                                            const IndexType strip,
                                            const IndexType group )
@@ -72,7 +91,7 @@ class BiEllpack
       
       static IndexType getGroupSize( const ConstOffsetsHolderView& groupPointers,
                                      const IndexType strip,
-                                    const IndexType group )
+                                     const IndexType group )
       {
          const IndexType groupOffset = strip * ( getLogWarpSize() + 1 ) + group;
          return groupPointers.getElement( groupOffset + 1 ) - groupPointers.getElement( groupOffset );
@@ -85,18 +104,16 @@ class BiEllpack
          const IndexType strip = segmentIdx / getWarpSize();
          const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
          const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
-         const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
+         const IndexType groupsCount = getActiveGroupsCountDirect( rowPermArray, segmentIdx );
          IndexType groupHeight = getWarpSize();
          IndexType segmentSize = 0;
          for( IndexType groupIdx = 0; groupIdx < groupsCount; groupIdx++ )
          {
             const IndexType groupSize = getGroupSizeDirect( groupPointers, strip, groupIdx );
             IndexType groupWidth =  groupSize / groupHeight;
-            //std::cerr << " groupIdx = " << groupIdx << " groupWidth = " << groupWidth << std::endl;
             segmentSize += groupWidth;
             groupHeight /= 2;
          }
-         //std::cerr << "############### segmentIdx = " << segmentIdx << " segmentSize = " << segmentSize << std::endl;
          return segmentSize;
       }
 
@@ -130,18 +147,15 @@ class BiEllpack
          const IndexType strip = segmentIdx / getWarpSize();
          const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
          const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
-         const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
-         IndexType globalIdx = groupPointers[ groupIdx ] * getWarpSize();
+         const IndexType groupsCount = getActiveGroupsCountDirect( rowPermArray, segmentIdx );
+         IndexType globalIdx = groupPointers[ groupIdx ];
          IndexType groupHeight = getWarpSize();
-         //std::cerr << "segmentIdx = " << segmentIdx << " localIdx = " << localIdx << " rowstripPerm = " << rowStripPerm << std::endl;
          for( IndexType group = 0; group < groupsCount; group++ )
          {
             const IndexType groupSize = getGroupSizeDirect( groupPointers, strip, group );
-            //std::cerr << "   groupIdx = " << groupIdx << " groupSize = " << groupSize << std::endl;
             if(  groupSize )
             {
                IndexType groupWidth =  groupSize / groupHeight;
-               //std::cerr << "   groupWidth = " << groupWidth << std::endl;
                if( localIdx >= groupWidth )
                {
                   localIdx -= groupWidth;
@@ -150,11 +164,7 @@ class BiEllpack
                else
                {
                   if( RowMajorOrder )
-                  {
-                     // std::cerr << ">>>> globalIdx = " << globalIdx << " rowStriPerm = " <<  rowStripPerm << " localIdx = " <<  localIdx
-                     //          << " return = " << globalIdx + rowStripPerm * groupWidth + localIdx << std::endl;
                      return globalIdx + rowStripPerm * groupWidth + localIdx;
-                  }
                   else
                      return globalIdx + rowStripPerm + localIdx * groupHeight;
                }
@@ -162,6 +172,7 @@ class BiEllpack
             groupHeight /= 2;
          }
          TNL_ASSERT_TRUE( false, "Segment capacity exceeded, wrong localIdx." );
+         return -1; // to avoid compiler warning
       }
 
       static
@@ -174,26 +185,32 @@ class BiEllpack
          const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
          const IndexType rowStripPerm = rowPermArray.getElement( segmentIdx ) - strip * getWarpSize();
          const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
-         IndexType globalIdx = groupPointers.getElement( groupIdx ); // * getWarpSize();
+         IndexType globalIdx = groupPointers.getElement( groupIdx );
          IndexType groupHeight = getWarpSize();
          for( IndexType group = 0; group < groupsCount; group++ )
          {
             const IndexType groupSize = getGroupSize( groupPointers, strip, group );
-            IndexType groupWidth =  groupSize / groupHeight;
-            if( localIdx >= groupWidth )
+            if(  groupSize )
             {
-               localIdx -= groupWidth;
-               globalIdx += groupSize;
-            }
-            else
-            {
-               if( RowMajorOrder )
-                  return globalIdx + rowStripPerm * groupWidth + localIdx;
+               IndexType groupWidth =  groupSize / groupHeight;
+               if( localIdx >= groupWidth )
+               {
+                  localIdx -= groupWidth;
+                  globalIdx += groupSize;
+               }
                else
-                  return globalIdx + rowStripPerm + localIdx * groupHeight;
+               {
+                  if( RowMajorOrder )
+                  {
+                     return globalIdx + rowStripPerm * groupWidth + localIdx;
+                  }
+                  else
+                     return globalIdx + rowStripPerm + localIdx * groupHeight;
+               }
             }
             groupHeight /= 2;
          }
+         TNL_ASSERT_TRUE( false, "Segment capacity exceeded, wrong localIdx." );
       }
 
       static __cuda_callable__
@@ -206,7 +223,7 @@ class BiEllpack
          const IndexType strip = segmentIdx / getWarpSize();
          const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
          const IndexType inStripIdx = rowPermArray[ segmentIdx ] - strip * getWarpSize();
-         const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
+         const IndexType groupsCount = getActiveGroupsCountDirect( rowPermArray, segmentIdx );
          IndexType groupHeight = getWarpSize();
          GroupsWidthType groupsWidth( 0 );
          TNL_ASSERT_LE( groupsCount, getGroupsCount(), "" );
@@ -269,12 +286,13 @@ class BiEllpack
 #ifdef HAVE_CUDA
 template< typename Index,
           typename Fetch,
-          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters(),
-          int WarpSize = 32 >
+          int BlockDim = 256,
+          int WarpSize = 32,
+          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct BiEllpackSegmentsReductionDispatcher{};
 
-template< typename Index, typename Fetch >
-struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, true >
+template< typename Index, typename Fetch, int BlockDim, int WarpSize >
+struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, true >
 {
    template< typename View,
              typename Reduction,
@@ -292,12 +310,12 @@ struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, true >
                      Real zero,
                      Args... args )
    {
-      biEllpack.segmentsReductionKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      biEllpack.template segmentsReductionKernelWithAllParameters< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
-template< typename Index, typename Fetch >
-struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, false >
+template< typename Index, typename Fetch, int BlockDim, int WarpSize >
+struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, false >
 {
    template< typename View,
              typename Reduction,
@@ -315,7 +333,7 @@ struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, false >
                      Real zero,
                      Args... args )
    {
-      biEllpack.segmentsReductionKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      biEllpack.template segmentsReductionKernel< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
@@ -325,19 +343,20 @@ template< typename View,
           typename Reduction,
           typename ResultKeeper,
           typename Real,
+          int BlockDim,
           typename... Args >
 __global__
 void BiEllpackSegmentsReductionKernel( View biEllpack,
-                                            Index gridIdx,
-                                            Index first,
-                                            Index last,
-                                            Fetch fetch,
-                                            Reduction reduction,
-                                            ResultKeeper keeper,
-                                            Real zero,
-                                            Args... args )
+                                       Index gridIdx,
+                                       Index first,
+                                       Index last,
+                                       Fetch fetch,
+                                       Reduction reduction,
+                                       ResultKeeper keeper,
+                                       Real zero,
+                                       Args... args )
 {
-   BiEllpackSegmentsReductionDispatcher< Index, Fetch >::exec( biEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim >::exec( biEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
 }
 #endif
 
