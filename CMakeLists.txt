@@ -160,6 +160,10 @@ if( DEFINED ENV{CI_JOB_NAME} OR ${CMAKE_GENERATOR} STREQUAL "Ninja" )
    endif()
 endif()
 
+# add the filesystem library to all targets
+# https://en.cppreference.com/w/cpp/filesystem
+link_libraries( stdc++fs )
+
 # gtest has to be built before we add the MPI flags
 if( ${WITH_TESTS} OR ${WITH_MATRIX_TESTS} )
    enable_testing()

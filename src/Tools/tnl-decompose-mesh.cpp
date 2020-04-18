@@ -10,10 +10,10 @@
 
 // Implemented by: Jakub Klinkovský
 
-#include <TNL/FileName.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
+#include <TNL/Meshes/Writers/PVTUWriter.h>
 
 #include <metis.h>
 
@@ -549,15 +549,24 @@ struct DecomposeMesh
       for( unsigned p = 1; p < nparts; p++ )
          points_offsets[p] = points_offsets[p-1] + points_counts[p-1];
 
-      // prepare output file name
-      const String outputFile = parameters.template getParameter< String >( "output-file" );
-      FileName outputFileName( removeFileNameExtension( outputFile ) + ".subdomain", "vtu" );
-      outputFileName.setDigitsCount( std::floor(std::log10( nparts - 1 )) + 1 );
+      // write a .pvtu file
+      using PVTU = Meshes::Writers::PVTUWriter< Mesh >;
+      const std::string pvtuFileName = parameters.template getParameter< String >( "output-file" );
+      std::ofstream file( pvtuFileName );
+      PVTU pvtu( file );
+      pvtu.template writeEntities< Mesh::getMeshDimension() >( Mesh{}, ghost_levels, ncommon );
+      if( ghost_levels > 0 ) {
+         // the PointData and CellData from the individual files should be added here
+         pvtu.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+         pvtu.template writePPointData< Index >( "GlobalIndex" );
+         pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+         pvtu.template writePCellData< Index >( "GlobalIndex" );
+      }
 
       std::cout << "Writing subdomains..." << std::endl;
       for( unsigned p = 0; p < nparts; p++ ) {
-         outputFileName.setIndex( p );
-         std::cout << outputFileName.getFileName() << std::endl;
+         const std::string outputFileName = pvtu.addPiece( pvtuFileName, p );
+         std::cout << outputFileName << std::endl;
 
          // Due to ghost levels, we don't know the number of cells, let alone points, in each
          // subdomain ahead of time. Hence, we use dynamic data structures instead of MeshBuilder.
@@ -673,7 +682,7 @@ struct DecomposeMesh
 
          // write the subdomain
          using Writer = Meshes::Writers::VTUWriter< Mesh >;
-         std::ofstream file( outputFileName.getFileName() );
+         std::ofstream file( outputFileName );
          Writer writer( file );
          writer.template writeEntities< Mesh::getMeshDimension() >( subdomain );
          if( ghost_levels > 0 ) {
@@ -683,51 +692,6 @@ struct DecomposeMesh
             writer.writeCellData( cellsGlobalIndices, "GlobalIndex" );
          }
       }
-
-      // write a .pvtu file
-      std::ofstream file( outputFile.getString() );
-      // TODO: refactor into a PVTU writer
-      using HeaderType = std::uint64_t;
-      using namespace Meshes;
-      file << "<?xml version=\"1.0\"?>\n";
-      file << "<VTKFile type=\"PUnstructuredGrid\" version=\"1.0\"";
-      if( isLittleEndian() )
-         file << " byte_order=\"LittleEndian\"";
-      else
-         file << " byte_order=\"BigEndian\"";
-      file << " header_type=\"" << VTK::getTypeName( HeaderType{} ) << "\"";
-#ifdef HAVE_ZLIB
-//      if( format == VTK::FileFormat::zlib_compressed )
-         file << " compressor=\"vtkZLibDataCompressor\"";
-#endif
-      file << ">\n";
-      file << "<PUnstructuredGrid GhostLevel=\"" << ghost_levels << "\" MinCommonVertices=\"" << ncommon << "\">\n";
-      file << "<PPoints>\n";
-      file << "<PDataArray type=\"" << VTK::getTypeName( typename Mesh::RealType{} ) << "\" Name=\"Points\" NumberOfComponents=\"3\"/>\n";
-      file << "</PPoints>\n";
-      if( ghost_levels > 0 ) {
-         // the PointData and CellData from the individual files should be added here
-         file << "<PPointData>\n";
-         file << "<PDataArray type=\"" << VTK::getTypeName( std::uint8_t{} ) << "\" Name=\"" << Meshes::VTK::ghostArrayName() << "\" NumberOfComponents=\"1\"/>\n";
-         file << "<PDataArray type=\"" << VTK::getTypeName( Index{} ) << "\" Name=\"GlobalIndex\" NumberOfComponents=\"1\"/>\n";
-         file << "</PPointData>\n";
-         file << "<PCellData>\n";
-         file << "<PDataArray type=\"" << VTK::getTypeName( std::uint8_t{} ) << "\" Name=\"" << Meshes::VTK::ghostArrayName() << "\" NumberOfComponents=\"1\"/>\n";
-         file << "<PDataArray type=\"" << VTK::getTypeName( Index{} ) << "\" Name=\"GlobalIndex\" NumberOfComponents=\"1\"/>\n";
-         file << "</PCellData>\n";
-      }
-
-      for( unsigned p = 0; p < nparts; p++ ) {
-         outputFileName.setIndex( p );
-         // make sure the source path is relative to the main .pvtu file
-         // TODO: use proper path library
-         const auto parts = outputFileName.getFileName().split('/');
-         const std::string basename = parts.back();
-         file << "<Piece Source=\"" << basename << "\"/>\n";
-      }
-
-      file << "</PUnstructuredGrid>\n";
-      file << "</VTKFile>\n";
 
       return true;
    }
@@ -745,7 +709,7 @@ int main( int argc, char* argv[] )
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
    const String outputFile = parameters.template getParameter< String >( "output-file" );
-   if( getFileExtension( outputFile ) != "pvtu" ) {
+   if( ! outputFile.endsWith( ".pvtu" ) ) {
       std::cerr << "Error: the output file must have a '.pvtu' extension." << std::endl;
       return EXIT_FAILURE;
    }
