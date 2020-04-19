@@ -364,29 +364,25 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      //printStructure( std::cerr );
-      //for( IndexType i = first; i < last; i += getWarpSize() )
-      {
-         //IndexType first = i;
-         //IndexType last = TNL::min( this->getSize(), i + getWarpSize() );
-         constexpr int BlockDim = getWarpSize();
-         dim3 cudaBlockSize = BlockDim;
-         const IndexType stripsCount = roundUpDivision( last - first, getWarpSize() );
-         const IndexType cudaBlocks = roundUpDivision( stripsCount * getWarpSize(), cudaBlockSize.x );
-         const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
-         const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
+      constexpr int BlockDim = 256;//getWarpSize();
+      dim3 cudaBlockSize = BlockDim;
+      const IndexType stripsCount = roundUpDivision( last - first, getWarpSize() );
+      const IndexType cudaBlocks = roundUpDivision( stripsCount * getWarpSize(), cudaBlockSize.x );
+      const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
+      IndexType sharedMemory = 0;
+      if( ! RowMajorOrder )
+         sharedMemory = cudaBlockSize.x * sizeof( RealType );
 
-         for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-         {
-            dim3 cudaGridSize = Cuda::getMaxGridSize();
-            if( gridIdx == cudaGrids - 1 )
-               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-            details::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
-               <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
-               ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
-            cudaThreadSynchronize();
-            TNL_CHECK_CUDA_DEVICE;
-         }
+      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+      {
+         dim3 cudaGridSize = Cuda::getMaxGridSize();
+         if( gridIdx == cudaGrids - 1 )
+            cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
+         details::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
+            <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
+            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+         cudaThreadSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
       }
 #endif
    }
@@ -493,7 +489,6 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
    const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
    const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, RowMajorOrder, getWarpSize() >::getActiveGroupsCountDirect( rowPermArray, segmentIdx );
    IndexType groupHeight = getWarpSize();
-   //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
    bool compute( true );
    IndexType localIdx( 0 );
    RealType result( zero );
@@ -501,23 +496,15 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
    {
       IndexType groupOffset = groupPointers[ groupIdx ];
       const IndexType groupSize = groupPointers[ groupIdx + 1 ] - groupOffset;
-      //printf( "groupSize = %d \n", groupSize );
       if( groupSize )
       {
          const IndexType groupWidth = groupSize / groupHeight;
          for( IndexType i = 0; i < groupWidth; i++ )
          {
             if( RowMajorOrder )
-            {
                reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute ) );
-            }
             else
-            {
-               /*printf( "segmentIdx = %d localIdx = %d globalIdx = %d groupIdx = %d groupSize = %d groupWidth = %d\n",
-                  segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight,
-                  groupIdx, groupSize, groupWidth );*/
                reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute ) );
-            }
             localIdx++;
          }
       }
@@ -561,9 +548,6 @@ segmentsReductionKernel( IndexType gridIdx,
    IndexType groupHeight = getWarpSize();
    IndexType firstGroupIdx = strip * ( getLogWarpSize() + 1 );
 
-   RealType* temp( nullptr );
-   if( ! RowMajorOrder )
-      temp = Cuda::getSharedMemory< RealType >();
    __shared__ RealType results[ BlockDim ];
    results[ threadIdx.x ] = zero;
    __shared__ IndexType sharedGroupPointers[ 7 ]; // TODO: getLogWarpSize() + 1 ];
@@ -571,35 +555,42 @@ segmentsReductionKernel( IndexType gridIdx,
    if( threadIdx.x <= getLogWarpSize() + 1 )
       sharedGroupPointers[ threadIdx.x ] = this->groupPointers[ firstGroupIdx + threadIdx.x ];
    __syncthreads();
-         
+
    bool compute( true );
-   for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
+   if( RowMajorOrder )
    {
-      IndexType groupBegin = sharedGroupPointers[ group ];
-      IndexType groupEnd = sharedGroupPointers[ group + 1 ];
-      if( groupEnd - groupBegin > 0 )
+      for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
       {
-         if( RowMajorOrder )
+         IndexType groupBegin = sharedGroupPointers[ group ];
+         IndexType groupEnd = sharedGroupPointers[ group + 1 ];
+         if( groupEnd - groupBegin > 0 )
          {
-            if( inWarpIdx < groupHeight )
-            {
-               const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
-               IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
-               for( IndexType i = 0; i < groupWidth && compute; i++ )
-                  reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+
+               if( inWarpIdx < groupHeight )
+               {
+                  const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
+                  IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
+                  for( IndexType i = 0; i < groupWidth && compute; i++ )
+                     reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+               }
             }
-         }
-         else
+         groupHeight >>= 1;
+      }
+   }
+   else
+   {
+      RealType* temp = Cuda::getSharedMemory< RealType >();
+      for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
+      {
+         IndexType groupBegin = sharedGroupPointers[ group ];
+         IndexType groupEnd = sharedGroupPointers[ group + 1 ];
+         if( groupEnd - groupBegin > 0 )
          {
             temp[ threadIdx.x ] = zero;
             IndexType globalIdx = groupBegin + inWarpIdx;
             while( globalIdx < groupEnd )
             {
                reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
-               /*printf( "FETCH: globalIdx = %d fetch = %d result = %d groupEnd = %d \n", 
-                  globalIdx,
-                  ( int ) fetch( globalIdx, compute ),
-                  ( int ) temp[ threadIdx.x ], groupEnd );*/
                globalIdx += getWarpSize();
             }
             // TODO: reduction via templates
@@ -613,8 +604,8 @@ segmentsReductionKernel( IndexType gridIdx,
             if( inWarpIdx < groupHeight )
                reduction( results[ threadIdx.x ], temp[ threadIdx.x ] );
          }
+         groupHeight >>= 1;
       }
-      groupHeight >>= 1;
    }
    __syncthreads();
    if( warpStart + inWarpIdx >= last )
