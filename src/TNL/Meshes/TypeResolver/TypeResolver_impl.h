@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <experimental/filesystem>
+
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
@@ -24,11 +26,24 @@ namespace Meshes {
 template< typename ConfigTag,
           typename Device,
           typename Functor >
-bool resolveMeshType( const String& fileName, Functor&& functor )
+bool
+resolveMeshType( Functor&& functor,
+                 const std::string& fileName,
+                 const std::string& fileFormat )
 {
    std::cout << "Detecting mesh from file " << fileName << " ..." << std::endl;
+
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
    // TODO: when TNLReader is gone, use the MeshReader type instead of a template parameter in the mesh type resolver (and remove static_casts in this function)
-   if( fileName.endsWith( ".tnl" ) ) {
+   if( format == "tnl" ) {
       Readers::TNLReader reader( fileName );
       if( ! reader.detectMesh() )
          return false;
@@ -41,7 +56,7 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
          return false;
       }
    }
-   else if( fileName.endsWith( ".ng" ) ) {
+   else if( format == "ng" ) {
       // FIXME: The Netgen files don't store the real, global index and local index types.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
@@ -54,7 +69,7 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
          return false;
       }
    }
-   else if( fileName.endsWith( ".vtk" ) ) {
+   else if( format == "vtk" ) {
       // FIXME: The VTK files don't store the global and local index types.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
@@ -67,7 +82,7 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
          return false;
       }
    }
-   else if( fileName.endsWith( ".vtu" ) ) {
+   else if( format == "vtu" ) {
       // FIXME: The XML VTK files don't store the local index type.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
@@ -81,7 +96,11 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
       }
    }
    else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
+      if( fileFormat == "auto" )
+         std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
+      else
+         std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
+      std::cerr << " Supported formats are 'tnl', 'vtk', 'vtu' and 'ng'." << std::endl;
       return false;
    }
 }
@@ -89,7 +108,10 @@ bool resolveMeshType( const String& fileName, Functor&& functor )
 template< typename ConfigTag,
           typename Device,
           typename Functor >
-bool resolveAndLoadMesh( const String& fileName, Functor&& functor )
+bool
+resolveAndLoadMesh( Functor&& functor,
+                    const std::string& fileName,
+                    const std::string& fileFormat )
 {
    auto wrapper = [&]( auto& reader, auto&& mesh ) -> bool
    {
@@ -104,34 +126,48 @@ bool resolveAndLoadMesh( const String& fileName, Functor&& functor )
       }
       return functor( reader, std::forward<MeshType>(mesh) );
    };
-   return resolveMeshType< ConfigTag, Device >( fileName, wrapper );
+   return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
 }
 
 template< typename MeshConfig,
           typename Device >
 bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Device >& mesh )
+loadMesh( Mesh< MeshConfig, Device >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
    std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
 
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
    try {
-      if( fileName.endsWith( ".tnl" ) )
+      if( format == "tnl" )
          mesh.load( fileName );
-      else if( fileName.endsWith( ".ng" ) ) {
+      else if( format == "ng" ) {
          Readers::NetgenReader reader( fileName );
          reader.loadMesh( mesh );
       }
-      else if( fileName.endsWith( ".vtk" ) ) {
+      else if( format == "vtk" ) {
          Readers::VTKReader reader( fileName );
          reader.loadMesh( mesh );
       }
-      else if( fileName.endsWith( ".vtu" ) ) {
+      else if( format == "vtu" ) {
          Readers::VTUReader reader( fileName );
          reader.loadMesh( mesh );
       }
       else {
-         std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk', '.vtu' and '.ng'." << std::endl;
+         if( fileFormat == "auto" )
+            std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
+         else
+            std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
+         std::cerr << " Supported formats are 'tnl', 'vtk', 'vtu' and 'ng'." << std::endl;
          return false;
       }
    }
@@ -145,11 +181,12 @@ loadMesh( const String& fileName,
 
 template< typename MeshConfig >
 bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Devices::Cuda >& mesh )
+loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
    Mesh< MeshConfig, Devices::Host > hostMesh;
-   if( ! loadMesh( fileName, hostMesh ) )
+   if( ! loadMesh( hostMesh, fileName, fileFormat ) )
       return false;
    mesh = hostMesh;
    return true;
@@ -161,8 +198,9 @@ template< int Dimension,
           typename Device,
           typename Index >
 bool
-loadMesh( const String& fileName,
-          Grid< Dimension, Real, Device, Index >& grid )
+loadMesh( Grid< Dimension, Real, Device, Index >& grid,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
    std::cout << "Loading a grid from the file " << fileName << "..." << std::endl;
    try {

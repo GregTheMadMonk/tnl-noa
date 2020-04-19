@@ -205,5 +205,5 @@ main( int argc, char* argv[] )
    {
       return convertGrid( grid, fileName, outputFileName );
    };
-   return ! Meshes::resolveMeshType< GridToMeshConfigTag, Devices::Host >( fileName, wrapper );
+   return ! Meshes::resolveMeshType< GridToMeshConfigTag, Devices::Host >( wrapper, fileName );
 }

@@ -60,6 +60,7 @@ void setupConfig( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addEntry        < String >( "mesh", "Mesh file.", "mesh.tnl" );
+   config.addEntry        < String >( "mesh-format", "Mesh file format.", "auto" );
    config.addRequiredList < String >( "input-files", "Input files." );
 //   config.addList         < String >( "output-files", "Output files." );
    config.addEntry        < bool >  ( "check-output-file", "If the output file already exists, do not recreate it.", false );
@@ -85,10 +86,11 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    const String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    auto wrapper = [&] ( const auto& reader, auto&& mesh )
    {
       using MeshType = std::decay_t< decltype(mesh) >;
       return processFiles< MeshType >( parameters );
    };
-   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag, Devices::Host >( meshFile, wrapper );
+   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag, Devices::Host >( wrapper, meshFile, meshFileFormat );
 }

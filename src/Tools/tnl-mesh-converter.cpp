@@ -151,8 +151,9 @@ void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
+   config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
-   config.addEntry< String >( "output-format", "Output mesh file format." );
+   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
    config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
@@ -170,12 +171,13 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
+   const String inputFileFormat = parameters.getParameter< String >( "input-file-format" );
    const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String outputFormat = parameters.getParameter< String >( "output-format" );
+   const String outputFileFormat = parameters.getParameter< String >( "output-file-format" );
 
    auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
    {
-      return convertMesh( mesh, inputFileName, outputFileName, outputFormat );
+      return convertMesh( mesh, inputFileName, outputFileName, outputFileFormat );
    };
-   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( inputFileName, wrapper );
+   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
 }

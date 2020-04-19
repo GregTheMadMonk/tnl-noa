@@ -120,6 +120,7 @@ void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
+   config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
    config.addRequiredEntry< unsigned >( "subdomains", "Number of subdomains to decompose the mesh." );
    config.addEntry< unsigned >( "ghost-levels", "Number of ghost levels by which the subdomains overlap.", 0 );
@@ -708,6 +709,7 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
+   const String inputFileFormat = parameters.getParameter< String >( "input-file-format" );
    const String outputFile = parameters.template getParameter< String >( "output-file" );
    if( ! outputFile.endsWith( ".pvtu" ) ) {
       std::cerr << "Error: the output file must have a '.pvtu' extension." << std::endl;
@@ -719,5 +721,5 @@ int main( int argc, char* argv[] )
       using MeshType = std::decay_t< decltype(mesh) >;
       return DecomposeMesh< MeshType >::run( std::forward<MeshType>(mesh), parameters );
    };
-   return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( inputFileName, wrapper );
+   return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
 }

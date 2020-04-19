@@ -33,7 +33,10 @@ namespace Meshes {
 template< typename ConfigTag,
           typename Device,
           typename Functor >
-bool resolveMeshType( const String& fileName, Functor&& functor );
+bool
+resolveMeshType( Functor&& functor,
+                 const std::string& fileName,
+                 const std::string& fileFormat = "auto" );
 
 /*
  * This function dues the same as `resolveMeshType`, but also reuses the mesh
@@ -51,7 +54,10 @@ bool resolveMeshType( const String& fileName, Functor&& functor );
 template< typename ConfigTag,
           typename Device,
           typename Functor >
-bool resolveAndLoadMesh( const String& fileName, Functor&& functor );
+bool
+resolveAndLoadMesh( Functor&& functor,
+                    const std::string& fileName,
+                    const std::string& fileFormat = "auto" );
 
 /*
  * This function takes a file name and a mesh instance and attempts to load the
@@ -64,21 +70,24 @@ bool resolveAndLoadMesh( const String& fileName, Functor&& functor );
 template< typename MeshConfig,
           typename Device >
 bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Device >& mesh );
+loadMesh( Mesh< MeshConfig, Device >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat = "auto" );
 
 template< typename MeshConfig >
 bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Devices::Cuda >& mesh );
+loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat = "auto" );
 
 template< int Dimension,
           typename Real,
           typename Device,
           typename Index >
 bool
-loadMesh( const String& fileName,
-          Grid< Dimension, Real, Device, Index >& grid );
+loadMesh( Grid< Dimension, Real, Device, Index >& grid,
+          const std::string& fileName,
+          const std::string& fileFormat = "auto" );
 
 } // namespace Meshes
 } // namespace TNL

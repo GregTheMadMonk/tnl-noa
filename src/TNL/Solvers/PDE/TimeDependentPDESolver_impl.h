@@ -60,15 +60,16 @@ setup( const Config::ParameterContainer& parameters,
    // Load the mesh from the mesh file
    //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
+   const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    this->distributedMesh.setup( parameters, prefix );
    if( Problem::CommunicatorType::isDistributed() ) {
-      if( ! Meshes::loadDistributedMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distributedMesh ) )
+      if( ! Meshes::loadDistributedMesh< typename Problem::CommunicatorType >( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
          return false;
       if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
          return false;
    }
    else {
-      if( ! Meshes::loadMesh( meshFile, *this->meshPointer ) )
+      if( ! Meshes::loadMesh( *this->meshPointer, meshFile, meshFileFormat ) )
          return false;
    }
 

@@ -315,11 +315,12 @@ template< typename Mesh >
 bool processFiles( const Config::ParameterContainer& parameters )
 {
    int verbose = parameters.getParameter< int >( "verbose");
-   String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
 
    typedef Pointers::SharedPointer< Mesh > MeshPointer;
    MeshPointer meshPointer;
-   if( ! Meshes::loadMesh( meshFile, *meshPointer ) )
+   if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
       return false;
 
    bool checkOutputFile = parameters.getParameter< bool >( "check-output-file" );
