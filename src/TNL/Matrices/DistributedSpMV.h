@@ -20,7 +20,7 @@
 #include <utility>  // std::pair
 #include <limits>   // std::numeric_limits
 #include <TNL/Allocators/Host.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Matrices/ThreePartVector.h>
@@ -120,7 +120,7 @@ public:
 
       // copy the buffer into all rows of the preCommPattern* matrices
       // (in-place copy does not work with some OpenMPI configurations)
-      Matrices::Dense< IndexType, Devices::Host, int > preCommPatternStarts, preCommPatternEnds;
+      Matrices::DenseMatrix< IndexType, Devices::Host, int > preCommPatternStarts, preCommPatternEnds;
       preCommPatternStarts.setLike( commPatternStarts );
       preCommPatternEnds.setLike( commPatternEnds );
       for( int j = 0; j < nproc; j++ )
@@ -237,7 +237,7 @@ public:
 
 protected:
    // communication pattern
-   Matrices::Dense< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
+   Matrices::DenseMatrix< IndexType, Devices::Host, int, true, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;

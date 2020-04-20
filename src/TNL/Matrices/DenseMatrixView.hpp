@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
@@ -80,7 +80,7 @@ String
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getSerializationType()
 {
-   return String( "Matrices::Dense< " ) +
+   return String( "Matrices::DenseMatrix< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
           ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";

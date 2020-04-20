@@ -17,7 +17,7 @@
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 #include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 
 namespace TNL {
 namespace Matrices {
@@ -215,7 +215,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Assignment of dense matrix
        */
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
-      SparseMatrix& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
+      SparseMatrix& operator=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
 
 
       /**

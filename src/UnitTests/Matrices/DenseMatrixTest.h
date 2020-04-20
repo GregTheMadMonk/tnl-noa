@@ -10,7 +10,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Containers/Array.h>
 
 #include <TNL/Containers/Vector.h>
@@ -18,11 +18,11 @@
 #include <TNL/Math.h>
 #include <iostream>
 
-using Dense_host_float = TNL::Matrices::Dense< float, TNL::Devices::Host, int >;
-using Dense_host_int = TNL::Matrices::Dense< int, TNL::Devices::Host, int >;
+using Dense_host_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int >;
+using Dense_host_int = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int >;
 
-using Dense_cuda_float = TNL::Matrices::Dense< float, TNL::Devices::Cuda, int >;
-using Dense_cuda_int = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int >;
+using Dense_cuda_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int >;
+using Dense_cuda_int = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int >;
 
 static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
@@ -33,14 +33,14 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -1191,8 +1191,8 @@ void test_AssignmentOperator()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
-   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   using DenseHost = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    DenseHost hostMatrix( rows, columns );
@@ -1363,31 +1363,31 @@ protected:
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, long >
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, long >
+    ,TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, long >
 #endif
 >;
 

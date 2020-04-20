@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Dense.h  -  description
+                          DenseMatrix.h  -  description
                              -------------------
     begin                : Nov 29, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -28,7 +28,7 @@ template< typename Real = double,
           typename Index = int,
           bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class Dense : public Matrix< Real, Device, Index >
+class DenseMatrix : public Matrix< Real, Device, Index >
 {
    public:
       using RealType = Real;
@@ -51,13 +51,13 @@ class Dense : public Matrix< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index >
-      using Self = Dense< _Real, _Device, _Index >;
+      using Self = DenseMatrix< _Real, _Device, _Index >;
 
-      Dense();
+      DenseMatrix();
 
-      Dense( const IndexType rows, const IndexType columns );
+      DenseMatrix( const IndexType rows, const IndexType columns );
 
-      Dense( std::initializer_list< std::initializer_list< RealType > > data );
+      DenseMatrix( std::initializer_list< std::initializer_list< RealType > > data );
 
       ViewType getView();
 
@@ -184,7 +184,7 @@ class Dense : public Matrix< Real, Device, Index >
        * @param matrix
        * @return 
        */
-      Dense& operator=( const Dense& matrix );
+      DenseMatrix& operator=( const DenseMatrix& matrix );
 
       /**
        * \brief Assignment operator for other dense matrices.
@@ -194,7 +194,7 @@ class Dense : public Matrix< Real, Device, Index >
        */
       template< typename RHSReal, typename RHSDevice, typename RHSIndex,
                  bool RHSRowMajorOrder, typename RHSRealAllocator >
-      Dense& operator=( const Dense< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
+      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
 
       /**
        * \brief Assignment operator for other (sparse) types of matrices.
@@ -202,13 +202,13 @@ class Dense : public Matrix< Real, Device, Index >
        * @return 
        */
       template< typename RHSMatrix >
-      Dense& operator=( const RHSMatrix& matrix );
+      DenseMatrix& operator=( const RHSMatrix& matrix );
 
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
 
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator!=( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
 
       void save( const String& fileName ) const;
 
@@ -237,4 +237,4 @@ class Dense : public Matrix< Real, Device, Index >
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Dense.hpp>
+#include <TNL/Matrices/DenseMatrix.hpp>

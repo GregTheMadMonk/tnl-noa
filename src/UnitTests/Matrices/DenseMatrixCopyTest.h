@@ -14,7 +14,7 @@
 
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Containers/Segments/CSR.h>
@@ -33,10 +33,10 @@ using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL:
 using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
 using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
-using Dense_host               = TNL::Matrices::Dense< int, TNL::Devices::Host, int, false >;
-using Dense_host_RowMajorOrder = TNL::Matrices::Dense< int, TNL::Devices::Host, int, true >;
-using Dense_cuda               = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int, false >;
-using Dense_cuda_RowMajorOrder = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int, true >;
+using Dense_host               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, false >;
+using Dense_host_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, true >;
+using Dense_cuda               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, false >;
+using Dense_cuda_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, true >;
 
 
 #ifdef HAVE_GTEST
@@ -501,8 +501,8 @@ void denseMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
-   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   using DenseHost = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    DenseHost hostMatrix( rows, columns );
