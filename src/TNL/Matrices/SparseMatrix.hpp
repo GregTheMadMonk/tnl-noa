@@ -204,7 +204,7 @@ template< typename Real,
    template< typename RowsCapacitiesVector >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-setCompressedRowLengths( const RowsCapacitiesVector& rowsCapacities )
+setRowCapacities( const RowsCapacitiesVector& rowsCapacities )
 {
    TNL_ASSERT_EQ( rowsCapacities.getSize(), this->getRows(), "Number of matrix rows does not fit with rowLengths vector size." );
    using RowsCapacitiesVectorDevice = typename RowsCapacitiesVector::DeviceType;

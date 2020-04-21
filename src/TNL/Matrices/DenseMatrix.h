@@ -20,9 +20,6 @@
 namespace TNL {
 namespace Matrices {
 
-//template< typename Device >
-//class DenseDeviceDependentCode;
-
 /**
  * \brief Implementation of dense matrix, i.e. matrix storing explicitly all of its elements including zeros.
  * 
@@ -98,8 +95,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
                 bool RowMajorOrder_ = RowMajorOrder,
                 typename RealAllocator_ = RealAllocator >
       using Self = DenseMatrix< _Real, _Device, _Index, RowMajorOrder_, RealAllocator_ >;
-      // TODO: remove this
 
+      // TODO: remove this
       using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
       using ConstCompressedRowLengthsVectorView = typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView;
 
@@ -119,46 +116,117 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       DenseMatrix( const IndexType rows, const IndexType columns );
 
       /**
-       * \brief Constructor with initializer list.
+       * \brief Constructor with 2D initializer list.
        * 
-       * \param data is a initializer list of initializer lists. The inner
-       * initializer list represents matrix rows.
+       * The number of matrix rows is set to the outer list size and the number
+       * of matrix columns is set to maximum size of inner lists. Missing elements
+       * are filled in with zeros.
+       * 
+       * \param data is a initializer list of initializer lists representing
+       * list of matrix rows.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_Constructor_init_list.cpp
+       * \par Output
+       * \include DenseMatrixExample_Constructor_init_list.out
        */
       DenseMatrix( std::initializer_list< std::initializer_list< RealType > > data );
 
+      /**
+       * \brief Returns a modifiable view of the dense matrix.
+       * 
+       * See \ref DenseMatrixView.
+       * 
+       * \return dense matrix view.
+       */
       ViewType getView();
 
+      /**
+       * \brief Returns a non-modifiable view of the dense matrix.
+       * 
+       * See \ref DenseMatrixView.
+       * 
+       * \return dense matrix view.
+       */
       ConstViewType getConstView() const;
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * The string has a form \e `Matrices::DenseMatrix< RealType,  [any_device], IndexType, [any_allocator], true/false >`.
+       * 
+       * \return \e String with the serialization type.
+       */
       static String getSerializationType();
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * See \ref DenseMatrix::getSerializationType.
+       * 
+       * \return \e String with the serialization type.
+       */
       virtual String getSerializationTypeVirtual() const;
 
+      /**
+       * \brief Set number of rows and columns of this matrix.
+       * 
+       * \param rows is the number of matrix rows.
+       * \param columns is the number of matrix columns.
+       */
       void setDimensions( const IndexType rows,
                           const IndexType columns );
 
+      /**
+       * \brief Set the number of matrix rows and columns by the given matrix.
+       * 
+       * \tparam Matrix is matrix type. This can be any matrix having methods 
+       *  \ref getRows and \ref getColumns.
+       * 
+       * \param matrix in the input matrix dimensions of which are to be adopted.
+       */
       template< typename Matrix >
       void setLike( const Matrix& matrix );
 
       /**
-       * \brief This method creates dense matrix from 2D initializer list.
+       * \brief This method recreates the dense matrix from 2D initializer list.
        * 
-       * The matrix dimensions will be adjusted by the input data.
+       * The number of matrix rows is set to the outer list size and the number
+       * of matrix columns is set to maximum size of inner lists. Missing elements
+       * are filled in with zeros.
        * 
-       * @param data
+       * \param data is a initializer list of initializer lists representing
+       * list of matrix rows.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_setElements.cpp
+       * \par Output
+       * \include DenseMatrixExample_setElements.out
        */
       void setElements( std::initializer_list< std::initializer_list< RealType > > data );
-      
+
       /**
-       * This method is only for the compatibility with the sparse matrices.
+       * \brief This method is only for the compatibility with the sparse matrices.
+       * 
+       * This method does nothing. In debug mode it contains assertions checking
+       * that given rowCapacities are compatible with the current matrix dimensions.
        */
-      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+      template< typename RowCapacitiesVector >
+      void setRowCapacities( const RowCapacitiesVector& rowCapacities );
 
-      template< typename Vector >
-      void getCompressedRowLengths( Vector& rowLengths ) const;
-
-      [[deprecated]]
-      IndexType getRowLength( const IndexType row ) const;
+      /**
+       * \brief Computes number of non-zeros in each row.
+       * 
+       * \param rowLengths is a vector into which the number of non-zeros in each row
+       * will be stored.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getCompressedRowLengths.cpp
+       * \par Output
+       * \include DenseMatrixExample_getCompressedRowLengths.out
+       */
+      template< typename RowLengthsVector >
+      void getCompressedRowLengths( RowLengthsVector& rowLengths ) const;
 
       IndexType getMaxRowLength() const;
 
@@ -293,13 +361,17 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType column ) const;
 
-      //typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
-      //friend class DenseDeviceDependentCode< DeviceType >;
-
       SegmentsType segments;
 
       ViewType view;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix );
 
 } // namespace Matrices
 } // namespace TNL

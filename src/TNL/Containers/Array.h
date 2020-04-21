@@ -396,7 +396,7 @@ class Array
        * \brief Resets the array to the empty state.
        *
        * The current data will be deallocated, thus all pointers and views to
-       * the array alements will become invalid.
+       * the array elements will become invalid.
        */
       void reset();
 

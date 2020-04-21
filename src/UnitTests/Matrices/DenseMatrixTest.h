@@ -163,30 +163,6 @@ void test_GetCompressedRowLengths()
 }
 
 template< typename Matrix >
-void test_GetRowLength()
-{
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-
-    const IndexType rows = 8;
-    const IndexType cols = 7;
-
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
-
-    EXPECT_EQ( m.getRowLength( 0 ), 7 );
-    EXPECT_EQ( m.getRowLength( 1 ), 7 );
-    EXPECT_EQ( m.getRowLength( 2 ), 7 );
-    EXPECT_EQ( m.getRowLength( 3 ), 7 );
-    EXPECT_EQ( m.getRowLength( 4 ), 7 );
-    EXPECT_EQ( m.getRowLength( 5 ), 7 );
-    EXPECT_EQ( m.getRowLength( 6 ), 7 );
-    EXPECT_EQ( m.getRowLength( 7 ), 7 );
-}
-
-template< typename Matrix >
 void test_GetNumberOfMatrixElements()
 {
     using RealType = typename Matrix::RealType;
@@ -1417,13 +1393,6 @@ TYPED_TEST( MatrixTest, setElementsTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SetElements< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, getRowLengthTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_GetRowLength< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, getNumberOfMatrixElementsTest )

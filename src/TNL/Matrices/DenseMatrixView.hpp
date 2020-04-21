@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -682,7 +683,11 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream&
    {
       str <<"Row: " << row << " -> ";
       for( IndexType column = 0; column < this->getColumns(); column++ )
-         str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
+      {
+         std::stringstream str_;
+         str_ << column << ":" << this->getElement( row, column );
+         str << std::setw( 6 ) << str_.str();
+      }
       str << std::endl;
    }
 }

@@ -175,12 +175,13 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+   template< typename RowCapacitiesVector >
 void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
+setRowCapacities( const RowCapacitiesVector& rowCapacities )
 {
-   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "" );
-   TNL_ASSERT_LE( max( rowLengths ), this->getColumns(), "" );
+   TNL_ASSERT_EQ( rowCapacities.getSize(), this->getRows(), "" );
+   TNL_ASSERT_LE( max( rowCapacities ), this->getColumns(), "" );
 }
 
 template< typename Real,
@@ -188,22 +189,12 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-   template< typename Vector >
+   template< typename RowLengthsVector >
 void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-getCompressedRowLengths( Vector& rowLengths ) const
+getCompressedRowLengths( RowLengthsVector& rowLengths ) const
 {
    this->view.getCompressedRowLengths( rowLengths );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-Index DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getRowLength( const IndexType row ) const
-{
-   return this->getColumns();
 }
 
 template< typename Real,
@@ -1202,6 +1193,17 @@ DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix )
+{ 
+   matrix.print( str );
+   return str;
 }
 
 } // namespace Matrices
