@@ -223,6 +223,22 @@ String::split( const char separator, SplitSkip skip ) const
    return parts;
 }
 
+inline bool
+String::startsWith( const String& prefix ) const
+{
+   if( prefix.getSize() > getSize())
+      return false;
+   return std::equal( prefix.begin(), prefix.end(), begin() );
+}
+
+inline bool
+String::endsWith( const String& suffix ) const
+{
+   if( suffix.getSize() > getSize())
+      return false;
+   return std::equal( suffix.rbegin(), suffix.rend(), rbegin() );
+}
+
 inline String operator+( char string1, const String& string2 )
 {
    return convertToString( string1 ) + string2;
