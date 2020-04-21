@@ -20,9 +20,19 @@
 namespace TNL {
 namespace Matrices {
 
-template< typename Device >
-class DenseDeviceDependentCode;
+//template< typename Device >
+//class DenseDeviceDependentCode;
 
+/**
+ * \brief Implementation of dense matrix, i.e. matrix storing explicitly all of its elements including zeros.
+ * 
+ * \tparam Real is a type of matrix elements.
+ * \tparam Device is a device where the matrix is allocated.
+ * \tparam Index is a type for indexing of the matrix elements.
+ * \tparam RowMajorOrder tells the ordering of matrix elements. If it is \e true the matrix elements
+ *         are stored in row major order. If it is \e false, the matrix elements are stored in column major order.
+ * \tparam RealAllocator is allocator for the matrix elements.
+ */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
@@ -30,33 +40,90 @@ template< typename Real = double,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class DenseMatrix : public Matrix< Real, Device, Index >
 {
-   public:
-      using RealType = Real;
-      using DeviceType = Device;
-      using IndexType = Index;
-      using RealAllocatorType = RealAllocator;
+   protected:
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
+      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, RowMajorOrder, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
+
+
+   public:
+
+      /**
+       * \brief The type of matrix elements.
+       */
+      using RealType = Real;
+
+      /**
+       * \brief The device where the matrix is allocated.
+       */
+      using DeviceType = Device;
+
+      /**
+       * \brief The type used for matrix elements indexing.
+       */
+      using IndexType = Index;
+
+      /**
+       * \brief The allocator for matrix elements.
+       */
+      using RealAllocatorType = RealAllocator;
+
+      /**
+       * \brief Type of related matrix view. 
+       * 
+       * See \ref DenseMatrixView.
+       */
       using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+
+      /**
+       * \brief Matrix view type for constant instances.
+       * 
+       * See \ref DenseMatrixView.
+       */
       using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+
+      /**
+       * \brief Type for accessing matrix row.
+       */
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
-      // TODO: remove this
-      using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
-      using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
-
+      /**
+       * \brief Helper type for getting self type or its variations.
+       */
       template< typename _Real = Real,
                 typename _Device = Device,
-                typename _Index = Index >
-      using Self = DenseMatrix< _Real, _Device, _Index >;
+                typename _Index = Index,
+                bool RowMajorOrder_ = RowMajorOrder,
+                typename RealAllocator_ = RealAllocator >
+      using Self = DenseMatrix< _Real, _Device, _Index, RowMajorOrder_, RealAllocator_ >;
+      // TODO: remove this
 
+      using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
+      using ConstCompressedRowLengthsVectorView = typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView;
+
+
+
+      /**
+       * \brief Constrictor without parameters.
+       */
       DenseMatrix();
 
+      /**
+       * \brief Constructor with matrix dimensions.
+       * 
+       * \param rows is number of matrix rows.
+       * \param columns is number of matrix columns.
+       */
       DenseMatrix( const IndexType rows, const IndexType columns );
 
+      /**
+       * \brief Constructor with initializer list.
+       * 
+       * \param data is a initializer list of initializer lists. The inner
+       * initializer list represents matrix rows.
+       */
       DenseMatrix( std::initializer_list< std::initializer_list< RealType > > data );
 
       ViewType getView();
@@ -226,8 +293,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType column ) const;
 
-      typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
-      friend class DenseDeviceDependentCode< DeviceType >;
+      //typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
+      //friend class DenseDeviceDependentCode< DeviceType >;
 
       SegmentsType segments;
 
