@@ -27,23 +27,23 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long >
+   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int >,
+   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, int >,
+   //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, int >,
+   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int >,
+   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long >,
+   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, long >,
+   //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, long >,
+   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, int >,
+   // ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int >,
+   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, int >,
     TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long >
+    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int >
+   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long >
+   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, long >,
+   //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long >
+   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long >
 #endif
 >;
 
@@ -105,12 +105,12 @@ TYPED_TEST( CSRMatrixTest, setRowTest )
     test_SetRow< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, vectorProductTest )
+/* TYPED_TEST( CSRMatrixTest, vectorProductTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_VectorProduct< CSRMatrixType >();
-}
+} */
 
 /*TYPED_TEST( CSRMatrixTest, vectorProductLargerTest )
 {
@@ -119,12 +119,12 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProductLarger< CSRMatrixType >();
 }*/
 
-/*TYPED_TEST( CSRMatrixTest, vectorProductGiantTest )
+TYPED_TEST( CSRMatrixTest, vectorProductCSRApadtiveTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_VectorProductGiant< CSRMatrixType >();
-}*/
+    test_VectorProductCSRAdaptive< CSRMatrixType >();
+}
 
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
