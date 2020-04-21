@@ -252,7 +252,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       ViewType view;
 };
 
-}  // namespace Conatiners
+}  // namespace Containers
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrix.hpp>
