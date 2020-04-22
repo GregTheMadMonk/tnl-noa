@@ -176,7 +176,7 @@ template< typename Type,
           typename Allocator >
 void File::save( const Type* buffer, std::streamsize elements )
 {
-   static_assert( std::is_same< Type, typename Allocator::value_type >::value,
+   static_assert( std::is_same< std::remove_cv_t< Type >, typename Allocator::value_type >::value,
                   "Allocator::value_type must be the same as Type." );
    TNL_ASSERT_GE( elements, 0, "Number of elements to save must be non-negative." );
 

@@ -158,17 +158,6 @@ void MatrixView< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-void MatrixView< Real, Device, Index >::load( File& file )
-{
-   Object::load( file );
-   file.load( &this->rows );
-   file.load( &this->columns );
-   file >> this->values;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void MatrixView< Real, Device, Index >::print( std::ostream& str ) const
 {
 }

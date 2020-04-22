@@ -341,7 +341,8 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
    else
    {
       BiEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< IndexType >, RowMajorOrder > hostSegments;
-      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes( segmentsSizes );
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes;
+      hostSegmentsSizes = segmentsSizes;
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
       *this = hostSegments;
    }

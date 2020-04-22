@@ -87,9 +87,9 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getMaxRowLength() const;
 
-      IndexType getNumberOfMatrixElements() const;
+      IndexType getElementsCount() const;
 
-      IndexType getNumberOfNonzeroMatrixElements() const;
+      IndexType getNonzeroElementsCount() const;
 
       void reset();
 

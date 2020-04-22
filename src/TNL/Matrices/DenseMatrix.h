@@ -87,23 +87,17 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
       /**
-       * \brief Helper type for getting self type or its variations.
+       * \brief Helper type for getting self type or its modifications.
        */
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                bool RowMajorOrder_ = RowMajorOrder,
-                typename RealAllocator_ = RealAllocator >
-      using Self = DenseMatrix< _Real, _Device, _Index, RowMajorOrder_, RealAllocator_ >;
-
-      // TODO: remove this
-      using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
-      using ConstCompressedRowLengthsVectorView = typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView;
-
-
+                bool _RowMajorOrder = RowMajorOrder,
+                typename _RealAllocator = RealAllocator >
+      using Self = DenseMatrix< _Real, _Device, _Index, _RowMajorOrder, _RealAllocator >;
 
       /**
-       * \brief Constrictor without parameters.
+       * \brief Constructor without parameters.
        */
       DenseMatrix();
 
@@ -228,31 +222,119 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       template< typename RowLengthsVector >
       void getCompressedRowLengths( RowLengthsVector& rowLengths ) const;
 
-      IndexType getMaxRowLength() const;
+      /**
+       * \brief Returns number of all matrix elements.
+       * 
+       * This method is here mainly for compatibility with sparse matrices since
+       * the number of all matrix elements is just number of rows times number of
+       * columns.
+       * 
+       * \return number of all matrix elements.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \par Output
+       * \include DenseMatrixExample_getElementsCount.out
+       */
+      IndexType getElementsCount() const;
 
-      IndexType getNumberOfMatrixElements() const;
+      /**
+       * \brief Returns number of non-zero matrix elements.
+       * 
+       * \return number of all non-zero matrix elements.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \par Output
+       * \include DenseMatrixExample_getElementsCount.out
+       */
+      IndexType getNonzeroElementsCount() const;
 
-      IndexType getNumberOfNonzeroMatrixElements() const;
-
+      /**
+       * \brief Resets the matrix to zero dimensions.
+       */
       void reset();
 
+      /**
+       * \brief Constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getConstRow.cpp
+       * \par Output
+       * \include DenseMatrixExample_getConstRow.out
+       */
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
+      /**
+       * \brief Non-constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getRow.cpp
+       * \par Output
+       * \include DenseMatrixExample_getRow.out
+       */
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-
+      /**
+       * \brief Sets all matrix elements to value \e v.
+       * 
+       * \param v is value all matrix elements will be set to.
+       */
       void setValue( const RealType& v );
 
+      /**
+       * \brief Returns non-constant reference to element at row \e row and column column.
+       * 
+       * Since this method returns reference to the element, it cannot be called across
+       * different address spaces. It means that it can be called only form CPU if the matrix
+       * is allocated on CPU or only from GPU kernels if the matrix is allocated on GPU.
+       * 
+       * \param row is a row index of the element.
+       * \param column is a columns index of the element. 
+       * \return reference to given matrix element.
+       */
       __cuda_callable__
       Real& operator()( const IndexType row,
                         const IndexType column );
 
+      /**
+       * \brief Returns constant reference to element at row \e row and column column.
+       * 
+       * Since this method returns reference to the element, it cannot be called across
+       * different address spaces. It means that it can be called only form CPU if the matrix
+       * is allocated on CPU or only from GPU kernels if the matrix is allocated on GPU.
+       * 
+       * \param row is a row index of the element.
+       * \param column is a columns index of the element. 
+       * \return reference to given matrix element.
+       */
       __cuda_callable__
       const Real& operator()( const IndexType row,
                               const IndexType column ) const;
 
+      /**
+       * \brief Sets element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called only from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated in GPU device
+       * this methods transfer values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       */
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );

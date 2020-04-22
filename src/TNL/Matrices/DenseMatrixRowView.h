@@ -32,10 +32,10 @@ class DenseMatrixRowView
       IndexType getSize() const;
 
       __cuda_callable__
-      const RealType& getValue( const IndexType column ) const;
+      const RealType& getElement( const IndexType column ) const;
 
       __cuda_callable__
-      RealType& getValue( const IndexType column );
+      RealType& getElement( const IndexType column );
 
       __cuda_callable__
       void setElement( const IndexType column,

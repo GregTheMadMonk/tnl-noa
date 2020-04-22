@@ -144,7 +144,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNumberOfMatrixElements() const
+Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -153,7 +153,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNumberOfNonzeroMatrixElements() const
+Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -189,7 +189,7 @@ DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getConstView() );
 }
 
 template< typename Real,
@@ -685,8 +685,8 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream&
       for( IndexType column = 0; column < this->getColumns(); column++ )
       {
          std::stringstream str_;
-         str_ << column << ":" << this->getElement( row, column );
-         str << std::setw( 6 ) << str_.str();
+         str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << this->getElement( row, column );
+         str << std::setw( 10 ) << str_.str();
       }
       str << std::endl;
    }

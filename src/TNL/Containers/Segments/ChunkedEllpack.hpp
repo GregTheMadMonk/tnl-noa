@@ -294,7 +294,8 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
    else
    {
       ChunkedEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< Index >, RowMajorOrder > hostSegments;
-      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes( segmentsSizes );
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes;
+      hostSegmentsSizes = segmentsSizes;
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
       *this = hostSegments;
    }

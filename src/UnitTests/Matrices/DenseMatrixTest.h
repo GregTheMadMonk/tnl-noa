@@ -163,7 +163,7 @@ void test_GetCompressedRowLengths()
 }
 
 template< typename Matrix >
-void test_GetNumberOfMatrixElements()
+void test_GetElementsCount()
 {
     using RealType = typename Matrix::RealType;
     using DeviceType = typename Matrix::DeviceType;
@@ -176,11 +176,11 @@ void test_GetNumberOfMatrixElements()
     m.reset();
     m.setDimensions( rows, cols );
 
-    EXPECT_EQ( m.getNumberOfMatrixElements(), 42 );
+    EXPECT_EQ( m.getElementsCount(), 42 );
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
     using RealType = typename Matrix::RealType;
     using DeviceType = typename Matrix::DeviceType;
@@ -212,7 +212,7 @@ void test_GetNumberOfNonzeroMatrixElements()
     m.setElement( 0, 0, 0); // Set the first element of the diagonal to 0.
     m.setElement( 6, 5, 0); // Set the last element of the diagonal to 0.
 
-    EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 40 );
+    EXPECT_EQ( m.getNonzeroElementsCount(), 40 );
 }
 
 template< typename Matrix >
@@ -706,7 +706,7 @@ void test_AddRow()
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
       {
-         RealType& val = row.getValue( i );
+         RealType& val = row.getElement( i );
          val = rowIdx * val + values[ rowIdx ][ i ];
       }
    };
@@ -1281,53 +1281,6 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
 }
 
-template< typename Matrix >
-void test_Print()
-{
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x4 sparse matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
-
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
-
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++)
-        for( IndexType j = 0; j < cols; j++)
-            m.setElement( i, j, value++ );
-
-    #include <sstream>
-    std::stringstream printed;
-    std::stringstream couted;
-
-    //change the underlying buffer and save the old buffer
-    auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-    m.print( std::cout ); //all the std::cout goes to ss
-
-    std::cout.rdbuf(old_buf); //reset
-
-    couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3	 Col:3->4\t\n"
-              "Row: 1 ->  Col:0->5	 Col:1->6	 Col:2->7	 Col:3->8\t\n"
-              "Row: 2 ->  Col:0->9	 Col:1->10	 Col:2->11	 Col:3->12\t\n"
-              "Row: 3 ->  Col:0->13	 Col:1->14	 Col:2->15	 Col:3->16\t\n"
-              "Row: 4 ->  Col:0->17	 Col:1->18	 Col:2->19	 Col:3->20\t\n";
-
-    EXPECT_EQ( printed.str(), couted.str() );
-}
-
 // test fixture for typed tests
 template< typename Matrix >
 class MatrixTest : public ::testing::Test
@@ -1395,18 +1348,18 @@ TYPED_TEST( MatrixTest, setElementsTest )
     test_SetElements< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfMatrixElementsTest )
+TYPED_TEST( MatrixTest, getElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfMatrixElements< MatrixType >();
+    test_GetElementsCount< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
+TYPED_TEST( MatrixTest, getNonzeroElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+    test_GetNonzeroElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, resetTest )
@@ -1477,13 +1430,6 @@ TYPED_TEST( MatrixTest, saveAndLoadTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SaveAndLoad< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, printTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Print< MatrixType >();
 }
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.

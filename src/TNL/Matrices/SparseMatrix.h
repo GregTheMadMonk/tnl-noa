@@ -115,7 +115,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // TODO: Remove this when possible
       void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) {
-         this->setCompressedRowLengths( rowLengths );
+         this->setRowCapacities( rowLengths );
       };
 
       void setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data );
