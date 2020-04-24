@@ -412,8 +412,9 @@ template< typename Real,
           typename RealAllocator >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::rowVectorProduct( const IndexType row,
-                                                                                   const Vector& vector ) const
+typename Vector::RealType 
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
    return this->view.rowVectorProduct( row, vector );
 }
@@ -438,9 +439,11 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator >
    template< typename Matrix >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::addMatrix( const Matrix& matrix,
-                                              const RealType& matrixMultiplicator,
-                                              const RealType& thisMatrixMultiplicator )
+void
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+addMatrix( const Matrix& matrix,
+           const RealType& matrixMultiplicator,
+           const RealType& thisMatrixMultiplicator )
 {
    TNL_ASSERT( this->getColumns() == matrix.getColumns() &&
               this->getRows() == matrix.getRows(),

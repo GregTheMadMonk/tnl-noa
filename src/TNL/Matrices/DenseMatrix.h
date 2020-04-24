@@ -334,25 +334,121 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param row is row index of the element.
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_setElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_setElement.out
        */
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      /**
+       * \brief Add element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called only from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated in GPU device
+       * this methods transfer values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       * \param thisElementMultiplicator is multiplicator the original matrix element
+       *   value is multiplied by before addition of given e value.
+       */
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      /**
+       * \brief Returns value of matrix element at position given by its row and column index.
+       * 
+       * This method can be called only from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated in GPU device
+       * this methods transfer values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is a row index of the matrix element.
+       * \param column i a column index of the matrix element.
+       * 
+       * \return value of given matrix element.
+       */
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 
-      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      /**
+       * \brief Method for performing general reduction on matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param first is an index of the first row the reduction will be performed on.
+       * \param last is an index of the row  after the last row the reduction will be performed on.
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_rowsReduction.cpp
+       * \par Output
+       * \include DenseMatrixExample_rowsReduction.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
 
+      /**
+       * \brief Method for performing general reduction on ALL matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_allRowsReduction.cpp
+       * \par Output
+       * \include DenseMatrixExample_allRowsReduction.out
+       */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
+      /**
+       * \brief Method for iteration over all matrix rows.
+       * 
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool compute )`.
+       * 
+       * \param first is index is the first row to be processed.
+       * \param last is index of the row after the last row to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;
 
