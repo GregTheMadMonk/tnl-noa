@@ -406,7 +406,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \include DenseMatrixExample_rowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -431,7 +431,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \include DenseMatrixExample_allRowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over all matrix rows.

@@ -141,8 +141,8 @@ void test_AllReduction_MaximumInSegments()
    auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) -> IndexType {
       return v_view[ globalIdx ];
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& a, const IndexType b ) {
-      a = TNL::max( a, b );
+   auto reduce = [] __cuda_callable__ ( IndexType& a, const IndexType b ) -> IndexType {
+      return TNL::max( a, b );
    };
    auto keep = [=] __cuda_callable__ ( const IndexType i, const IndexType a ) mutable {
       result_view[ i ] = a;

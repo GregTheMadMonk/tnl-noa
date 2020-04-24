@@ -364,7 +364,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -394,7 +394,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
             IndexType end = begin + segmentSize;
             IndexType localIdx( 0 );
             for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++ )
-               reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          }
          else
          {
@@ -404,7 +404,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
                IndexType end = begin + chunksInSlice * chunkSize;
                IndexType localIdx( 0 );
                for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += chunksInSlice )
-                  reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+                  aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
             }
          }
          keeper( segmentIdx, aux );
@@ -438,7 +438,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpackView< Device, Index, RowMajorOrder >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
@@ -558,14 +558,14 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
       IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
       IndexType end = begin + chunkSize;
       for( IndexType j = begin; j < end && compute; j++ )
-         reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
+         chunksResults[ threadIdx.x ] = reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
    }
    else
    {
       const IndexType begin = sliceOffset + threadIdx.x; // threadIdx.x = chunkIdx within the slice
       const IndexType end = begin + chunksInSlice * chunkSize;
          for( IndexType j = begin; j < end && compute; j += chunksInSlice )
-            reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
+            chunksResults[ threadIdx.x ] = reduction( chunksResults[ threadIdx.x ], fetch( segmentIdx, localIdx++, j, compute ) );
    }
    __syncthreads();
    if( threadIdx.x < sliceInfo.size )
@@ -577,7 +577,7 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
       const IndexType lastChunk = this->rowToChunkMapping[ row ];
       RealType result( zero );
       while( chunkIndex < lastChunk )
-         reduction( result,  chunksResults[ chunkIndex++ ] );
+         result = reduction( result,  chunksResults[ chunkIndex++ ] );
       if( row >= first && row < last )
          keeper( row, result );
    }
@@ -630,14 +630,14 @@ segmentsReductionKernel( IndexType gridIdx,
       IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
       IndexType end = begin + chunkSize;
       for( IndexType j = begin; j < end && compute; j++ )
-         reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
+         chunksResults[ threadIdx.x ] = reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
    }
    else
    {
       const IndexType begin = sliceOffset + threadIdx.x; // threadIdx.x = chunkIdx within the slice
       const IndexType end = begin + chunksInSlice * chunkSize;
          for( IndexType j = begin; j < end && compute; j += chunksInSlice )
-            reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
+            chunksResults[ threadIdx.x ] = reduction( chunksResults[ threadIdx.x ], fetch( j, compute ) );
    }
    __syncthreads();
 
@@ -650,7 +650,7 @@ segmentsReductionKernel( IndexType gridIdx,
       const IndexType lastChunk = this->rowToChunkMapping[ row ];
       RealType result( zero );
       while( chunkIndex < lastChunk )
-         reduction( result,  chunksResults[ chunkIndex++ ] );
+         result = reduction( result,  chunksResults[ chunkIndex++ ] );
       if( row >= first && row < last )
          keeper( row, result );
    }

@@ -144,8 +144,8 @@ setSegmentsSizes( const SizesHolder& sizes )
          return sizes_view[ globalIdx ];
       return 0;
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType i ) {
-      aux = TNL::max( aux, i );
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType i ) -> IndexType {
+      return TNL::max( aux, i );
    };
    auto keep = [=] __cuda_callable__ ( IndexType i, IndexType res ) mutable {
       slices_view[ i ] = res * SliceSize;
@@ -310,7 +310,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
 }
@@ -323,7 +323,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

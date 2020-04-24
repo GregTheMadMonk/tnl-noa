@@ -29,36 +29,6 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
                        OUTPUT DenseMatrixExample_forRows.out )
 ELSE()
-   ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_Constructor_init_list >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_Constructor_init_list.out
-                       OUTPUT DenseMatrixExample_Constructor_init_list.out )
-
-   ADD_EXECUTABLE( DenseMatrixExample_setElements DenseMatrixExample_setElements.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_setElements > 
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_setElements.out
-                       OUTPUT DenseMatrixExample_setElements.out )
-
-   ADD_EXECUTABLE( DenseMatrixExample_getCompressedRowLengths DenseMatrixExample_getCompressedRowLengths.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getCompressedRowLengths >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getCompressedRowLengths.out
-                       OUTPUT DenseMatrixExample_getCompressedRowLengths.out )
-
-   ADD_EXECUTABLE( DenseMatrixExample_getElementsCount DenseMatrixExample_getElementsCount.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getElementsCount >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getElementsCount.out
-                       OUTPUT DenseMatrixExample_getElementsCount.out )
-
-   ADD_EXECUTABLE( DenseMatrixExample_getConstRow DenseMatrixExample_getConstRow.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getConstRow >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getConstRow.out
-                       OUTPUT DenseMatrixExample_getConstRow.out )
-
-   ADD_EXECUTABLE( DenseMatrixExample_getRow DenseMatrixExample_getRow.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getRow >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getRow.out
-                       OUTPUT DenseMatrixExample_getRow.out )
-
    ADD_EXECUTABLE( DenseMatrixExample_setElement DenseMatrixExample_setElement.cpp )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_setElement >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_setElement.out
@@ -89,6 +59,37 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
                        OUTPUT DenseMatrixExample_forRows.out )
 ENDIF()
+
+ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_Constructor_init_list >
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_Constructor_init_list.out
+                    OUTPUT DenseMatrixExample_Constructor_init_list.out )
+
+ADD_EXECUTABLE( DenseMatrixExample_setElements DenseMatrixExample_setElements.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_setElements > 
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_setElements.out
+                    OUTPUT DenseMatrixExample_setElements.out )
+
+ADD_EXECUTABLE( DenseMatrixExample_getCompressedRowLengths DenseMatrixExample_getCompressedRowLengths.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getCompressedRowLengths >
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getCompressedRowLengths.out
+                    OUTPUT DenseMatrixExample_getCompressedRowLengths.out )
+
+ADD_EXECUTABLE( DenseMatrixExample_getElementsCount DenseMatrixExample_getElementsCount.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getElementsCount >
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getElementsCount.out
+                    OUTPUT DenseMatrixExample_getElementsCount.out )
+
+ADD_EXECUTABLE( DenseMatrixExample_getConstRow DenseMatrixExample_getConstRow.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getConstRow >
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getConstRow.out
+                    OUTPUT DenseMatrixExample_getConstRow.out )
+
+ADD_EXECUTABLE( DenseMatrixExample_getRow DenseMatrixExample_getRow.cpp )
+ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_getRow >
+                     ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_getRow.out
+                    OUTPUT DenseMatrixExample_getRow.out )
+
 
 ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    DenseMatrixExample_Constructor_init_list.out

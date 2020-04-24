@@ -122,13 +122,13 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
+   //auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
+   //   aux += a;
+   //};
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, reduce, keep, 0 );
+   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
 }
 
 template< typename Real,
@@ -175,13 +175,13 @@ getNumberOfNonzeroMatrixElements() const
             return 0.0;
          return 1 + ( column != row && column < rows && row < columns ); // the addition is for non-diagonal elements
       };
-      auto reduction = [] __cuda_callable__ ( IndexType& sum, const IndexType& value ) {
-         sum += value;
-      };
+      //auto reduction = [] __cuda_callable__ ( IndexType& sum, const IndexType& value ) {
+      //   sum += value;
+      //};
       auto keeper = [=] __cuda_callable__ ( IndexType row, const IndexType& value ) mutable {
          row_sums_view[ row ] = value;
       };
-      this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( IndexType ) 0 );
+      this->segments.segmentsReduction( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( IndexType ) 0 );
       return sum( row_sums );
    }
 }
@@ -407,9 +407,9 @@ vectorProduct( const InVector& inVector,
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
 
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
-   };
+   //auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+   //   sum += value;
+   //};
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       if( isSymmetric() )
          outVectorView[ row ] += matrixMultiplicator * value;
@@ -422,9 +422,9 @@ vectorProduct( const InVector& inVector,
       }
    };
    if( isSymmetric() )
-      this->segments.segmentsReduction( 0, this->getRows(), symmetricFetch, reduction, keeper, ( RealType ) 0.0 );
+      this->segments.segmentsReduction( 0, this->getRows(), symmetricFetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
    else
-      this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+      this->segments.segmentsReduction( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 
    /*const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
@@ -456,7 +456,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
@@ -483,7 +483,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }

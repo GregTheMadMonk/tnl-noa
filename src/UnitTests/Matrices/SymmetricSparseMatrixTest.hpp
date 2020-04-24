@@ -903,13 +903,10 @@ void test_RowsReduction()
          TNL::Algorithms::AtomicOperations< DeviceType >::add( rowLengths_view[ column ], ( IndexType ) 1 );
       return ( value != 0.0 );
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] += value;
    };
-   m_5.allRowsReduction( fetch, reduce, keep, 0 );
+   m_5.allRowsReduction( fetch, std::plus<>{}, keep, 0 );
 
    EXPECT_EQ( rowLengths_true, rowLengths );
    m_5.getCompressedRowLengths( rowLengths );

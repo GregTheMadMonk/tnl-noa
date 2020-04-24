@@ -320,7 +320,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -350,7 +350,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
                //         << " groupWidth = " << groupWidth << " groupHeight = " << groupHeight
                //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx 
                //          << " fetch = " << details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
-               reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
                if( RowMajorOrder )
                   globalIdx ++;
                else
@@ -395,7 +395,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 BiEllpackView< Device, Index, RowMajorOrder, WarpSize >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
@@ -502,9 +502,9 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
          for( IndexType i = 0; i < groupWidth; i++ )
          {
             if( RowMajorOrder )
-               reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute ) );
+               result = reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute ) );
             else
-               reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute ) );
+               result = reduction( result, fetch( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute ) );
             localIdx++;
          }
       }
@@ -571,7 +571,7 @@ segmentsReductionKernel( IndexType gridIdx,
                   const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
                   IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
                   for( IndexType i = 0; i < groupWidth && compute; i++ )
-                     reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+                     results[ threadIdx.x ] = reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
                }
             }
          groupHeight >>= 1;
@@ -590,7 +590,7 @@ segmentsReductionKernel( IndexType gridIdx,
             IndexType globalIdx = groupBegin + inWarpIdx;
             while( globalIdx < groupEnd )
             {
-               reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
+               temp[ threadIdx.x ] = reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
                globalIdx += getWarpSize();
             }
             // TODO: reduction via templates
@@ -599,10 +599,10 @@ segmentsReductionKernel( IndexType gridIdx,
             {
                bisection2 >>= 1;
                if( inWarpIdx < bisection2 )
-                  reduction( temp[ threadIdx.x ], temp[ threadIdx.x + bisection2 ] );
+                  temp[ threadIdx.x ] = reduction( temp[ threadIdx.x ], temp[ threadIdx.x + bisection2 ] );
             }
             if( inWarpIdx < groupHeight )
-               reduction( results[ threadIdx.x ], temp[ threadIdx.x ] );
+               results[ threadIdx.x ] = reduction( results[ threadIdx.x ], temp[ threadIdx.x ] );
          }
          groupHeight >>= 1;
       }

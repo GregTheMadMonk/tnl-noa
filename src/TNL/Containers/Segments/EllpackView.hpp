@@ -240,7 +240,7 @@ template< typename Device,
           int Alignment >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void EllpackView< Device, Index, RowMajorOrder, Alignment >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
@@ -254,7 +254,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j++  )
-            reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -270,7 +270,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j += alignedSize  )
-            reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -283,7 +283,7 @@ template< typename Device,
           int Alignment >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void EllpackView< Device, Index, RowMajorOrder, Alignment >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
