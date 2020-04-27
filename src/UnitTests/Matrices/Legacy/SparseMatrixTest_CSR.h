@@ -27,23 +27,23 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int >,
-   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, int >,
    //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, int >,
-   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int >,
-   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long >,
-   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, long >,
    //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, long >,
-   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long >
+    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   // ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int >,
-   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, int >,
+   ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int >,
+   //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, int >, // cuda atomicAdd has no support for long, only unsigned long long int
     TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int >
-   //  TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long >
+    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long >,
    //  TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, long >,
-   //  TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long >
-   //  TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long >
+    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long >
 #endif
 >;
 

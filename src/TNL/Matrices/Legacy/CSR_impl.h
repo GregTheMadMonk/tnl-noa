@@ -22,6 +22,19 @@
 #include <cusparse.h>
 #endif
 
+/* CONFIGURATION */
+constexpr size_t WARP_SIZE = 32;
+constexpr size_t THREADS_PER_BLOCK = 1024;
+constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / WARP_SIZE;
+
+/* CSR DYNAMIC VECTOR */
+constexpr size_t MAX_PER_WARP = 2048; // max elements per warp to start CSR Vector Dynamic
+constexpr size_t ELEMENTS_PER_WARP = 1024; // how many elements should process new warp
+
+/* CSR Light SPMV */
+constexpr size_t THREADS_PER_ROW = 4; // how many elements should process new warp
+//-------------------------------------
+
 namespace TNL {
 namespace Matrices {
    namespace Legacy {
@@ -731,11 +744,11 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& 
                                                       OutVector& outVector,
                                                       int gridIdx) const
 {
-   const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
-   const IndexType elemPerGroup   = 4;
-   const IndexType laneID      = index % 32;
-   const IndexType groupID     = laneID / elemPerGroup;
-   const IndexType inGroupID   = laneID % elemPerGroup;
+   const IndexType index = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType THREADS_PER_ROW   = 4;
+   const IndexType laneID      = index % warpSize;
+   const IndexType groupID     = laneID / THREADS_PER_ROW;
+   const IndexType inGroupID   = laneID % THREADS_PER_ROW;
 
    IndexType row, minID, column, maxID, idxMtx;
    __shared__ unsigned rowCnt;
@@ -749,7 +762,7 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& 
       if (inGroupID == 0) row = atomicAdd(&rowCnt, 1);
 
       /* Propagate row number in group */
-      row = __shfl_sync((unsigned)(warpSize - 1), row, groupID * elemPerGroup);
+      row = __shfl_sync((unsigned)(warpSize - 1), row, groupID * THREADS_PER_ROW);
 
       if (row >= this->rowPointers.getSize() - 1)
          return;
@@ -766,11 +779,11 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& 
             break;
 
          result += this->values[idxMtx] * inVector[column];
-         idxMtx += elemPerGroup;
+         idxMtx += THREADS_PER_ROW;
       }
 
       /* Parallel reduction */
-      for (int i = elemPerGroup/2; i > 0; i /= 2)
+      for (int i = THREADS_PER_ROW / 2; i > 0; i /= 2)
          result += __shfl_down_sync((unsigned)(warpSize - 1), result, i);
       /* Write result */
       if (inGroupID == 0) {
@@ -801,7 +814,7 @@ void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& in
    //constexpr size_t THREADS_PER_BLOCK = 1024;
    //constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
    //--------------------------------------------------------------------
-   const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
+   const size_t index = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const size_t laneID = index % warpSize;
    size_t blockIdx = index / warpSize;
    __shared__ Real shared_res[SHARED];
@@ -872,9 +885,9 @@ template< typename Real,
           int warpSize >
 __global__
 void spmvCSRVectorHelper(const InVector& inVector,
-                         const int* columnIndexes,
+                         const Index* columnIndexes,
                          const Real *values,
-                         const int getColumns,
+                         const Index getColumns,
                          Real *out,
                          size_t from,
                          size_t to,
@@ -888,7 +901,7 @@ void spmvCSRVectorHelper(const InVector& inVector,
    if (minID >= to)  return;
    if (maxID >= to ) maxID = to;
    
-   Real result = 0.0;
+   Real result = 0;
    for (size_t i = minID + laneID; i < maxID; i += warpSize) {
       const size_t column = columnIndexes[i];
       if (column >= getColumns)
@@ -907,8 +920,8 @@ template< typename Real,
 __global__
 void SpMVCSRAdaptiveGlobal( const InVector& inVector,
                             OutVector& outVector,
-                            const int* rowPointers,
-                            const int* columnIndexes,
+                            const Index* rowPointers,
+                            const Index* columnIndexes,
                             const Real* values,
                             int *blocks,
                             size_t blocks_size,
@@ -916,17 +929,13 @@ void SpMVCSRAdaptiveGlobal( const InVector& inVector,
 {
    /* Configuration ---------------------------------------------------*/
    constexpr size_t SHARED = 49152/sizeof(Real); // number of elements in shared memory for block
-   constexpr size_t THREADS_PER_BLOCK = 1024;
-   constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
    constexpr size_t SHARED_PER_WARP = SHARED / WARPS_PER_BLOCK;
-   constexpr size_t MAX_PER_WARP = 2048; // max elements per warp to start CSR Vector Dynamic
-   constexpr size_t ELEMENTS_PER_WARP = 1024; // how many elements should process new warp
    //--------------------------------------------------------------------
    const size_t index = blockIdx.x * blockDim.x + threadIdx.x;
    const size_t laneID = index % warpSize;
    const size_t blockIdx = index / warpSize;
    __shared__ Real shared_res[SHARED];
-   Real result = 0.0;
+   Real result = 0;
    if (blockIdx >= blocks_size - 1)
       return;
    const size_t minRow = blocks[blockIdx];
@@ -1394,8 +1403,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
          // if (KernelType == CSRAdaptive) {
             /* Configuration ---------------------------------------------------*/
             constexpr size_t SHARED = 49152/sizeof(Real);
-            constexpr size_t THREADS_PER_BLOCK = 1024;
-            constexpr size_t SHARED_PER_WARP = SHARED / (THREADS_PER_BLOCK / 32);
+            constexpr size_t SHARED_PER_WARP = SHARED / WARPS_PER_BLOCK;
             //--------------------------------------------------------------------
             /* Fill in blocks */
             std::vector<int> inBlock;
@@ -1425,7 +1433,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                }
             }
             inBlock.push_back(matrix.getRowPointers().getSize() - 1);
-            
+            /* Copy memory to GPU */
             const InVector *kernelInVector = Cuda::passToDevice( inVector );
             OutVector *kernelOutVector = Cuda::passToDevice( outVector );
 
@@ -1443,19 +1451,19 @@ class CSRDeviceDependentCode< Devices::Cuda >
                        cudaMemcpyHostToDevice);
 
             /* columns */
-            int *kernelColumns;
-            cudaMalloc((void **)&kernelColumns, sizeof(int) * matrix.getColumnIndexes().getSize());
+            Index *kernelColumns;
+            cudaMalloc((void **)&kernelColumns, sizeof(Index) * matrix.getColumnIndexes().getSize());
             cudaMemcpy(kernelColumns,
-                       (int *)matrix.getColumnIndexes().getData(),
-                       matrix.getColumnIndexes().getSize() * sizeof(int),
+                       (Index *)matrix.getColumnIndexes().getData(),
+                       matrix.getColumnIndexes().getSize() * sizeof(Index),
                        cudaMemcpyHostToDevice);
 
             /* row pointers */
-            int *kernelRowPointers;
-            cudaMalloc((void **)&kernelRowPointers, sizeof(int) * matrix.getRowPointers().getSize());
+            Index *kernelRowPointers;
+            cudaMalloc((void **)&kernelRowPointers, sizeof(Index) * matrix.getRowPointers().getSize());
             cudaMemcpy(kernelRowPointers,
-                       (int *)matrix.getRowPointers().getData(),
-                       matrix.getRowPointers().getSize() * sizeof(int),
+                       (Index *)matrix.getRowPointers().getData(),
+                       matrix.getRowPointers().getSize() * sizeof(Index),
                        cudaMemcpyHostToDevice);
             
             size_t needed_threads = 32 * (inBlock.size() - 1); // number of threads we need
@@ -1473,6 +1481,8 @@ class CSRDeviceDependentCode< Devices::Cuda >
                     matrix.getColumns()
             );
 
+            Cuda::freeFromDevice( kernelInVector );
+            Cuda::freeFromDevice( kernelOutVector );
             cudaFree(kernelBlocks);
             cudaFree(kernelValues);
             cudaFree(kernelColumns);
