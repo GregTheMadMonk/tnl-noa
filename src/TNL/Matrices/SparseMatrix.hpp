@@ -1029,5 +1029,5 @@ getSegments() const -> const SegmentsType&
    return this->segments;
 }
 
-   } //namespace Matrices
-} // namespace  TNL
+} // namespace Matrices
+} // namespace TNL
