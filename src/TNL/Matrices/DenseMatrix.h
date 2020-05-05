@@ -266,6 +266,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \include Matrices/DenseMatrixExample_getConstRow.cpp
        * \par Output
        * \include DenseMatrixExample_getConstRow.out
+       * 
+       * See \ref DenseMatrixRowView.
        */
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
@@ -281,6 +283,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \include Matrices/DenseMatrixExample_getRow.cpp
        * \par Output
        * \include DenseMatrixExample_getRow.out
+       * 
+       * See \ref DenseMatrixRowView.
        */
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -434,11 +438,14 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
-       * \brief Method for iteration over all matrix rows.
+       * \brief Method for iteration over all matrix rows for constant instances.
        * 
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices. 
+       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  be interrupted.
        * 
        * \param first is index is the first row to be processed.
        * \param last is index of the row after the last row to be processed.
@@ -452,20 +459,76 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;
 
+      /**
+       * \brief Method for iteration over all matrix rows for non-constant instances.
+       * 
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices. 
+       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  be interrupted.
+       * 
+       * \param first is index is the first row to be processed.
+       * \param last is index of the row after the last row to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function );
 
+      /**
+       * \brief This method calls \e forRows for all matrix rows.
+       * 
+       * See \ref DenseMatrix::forRows.
+       * 
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
       template< typename Function >
       void forAllRows( Function& function ) const;
 
+      /**
+       * \brief This method calls \e forRows for all matrix rows.
+       * 
+       * See \ref DenseMatrix::forRows.
+       * 
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
       template< typename Function >
       void forAllRows( Function& function );
 
+      /**
+       * \brief This method computes scalar product of given vector and one 
+       *  row of the matrix.
+       * 
+       * \tparam Vector is type of input vector. It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * \param row is index of the row used for the scalar product.
+       * \param vector is the input vector.
+       * \return 
+       */
       template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
                                                   const Vector& vector ) const;
 
+      /**
+       * \brief Computes product of matrix and vector.
+       * 
+       * \tparam InVector is type of input vector.  It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * \tparam OutVector is type of output vector. It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * 
+       * \param inVector is input vector.
+       * \param outVector is output vector.
+       */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const;
@@ -494,16 +557,16 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Assignment operator for exactly the same type of the dense matrix.
        * 
-       * @param matrix
-       * @return 
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
        */
       DenseMatrix& operator=( const DenseMatrix& matrix );
 
       /**
        * \brief Assignment operator for other dense matrices.
        * 
-       * @param matrix
-       * @return 
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
        */
       template< typename RHSReal, typename RHSDevice, typename RHSIndex,
                  bool RHSRowMajorOrder, typename RHSRealAllocator >
@@ -511,26 +574,64 @@ class DenseMatrix : public Matrix< Real, Device, Index >
 
       /**
        * \brief Assignment operator for other (sparse) types of matrices.
-       * @param matrix
-       * @return 
+       * 
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
        */
       template< typename RHSMatrix >
       DenseMatrix& operator=( const RHSMatrix& matrix );
 
+      /**
+       * \brief Comparison operator with another dense matrix.
+       * 
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
       bool operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
 
+      /**
+       * \brief Comparison operator with another dense matrix.
+       * 
+       * \param matrix is the right-hand side matrix.
+       * \return \e false if the RHS matrix is equal, \e true otherwise.
+       */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
       bool operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
 
+      /**
+       * \brief Method for saving the matrix to the file with given filename.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( const String& fileName ) const;
 
+      /**
+       * \brief Method for loading the matrix from the file with given filename.
+       * 
+       * \param fileName is name of the file.
+       */
       void load( const String& fileName );
 
+      /**
+       * \brief Method for saving the matrix to a file.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( File& file ) const;
 
+      /**
+       * \brief Method for loading the matrix from a file.
+       * 
+       * \param fileName is name of the file.
+       */
       void load( File& file );
 
+      /**
+       * \brief Method for printing the matrix to output stream.
+       * 
+       * \param str is the output stream.
+       */
       void print( std::ostream& str ) const;
 
    protected:
@@ -544,6 +645,13 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       ViewType view;
 };
 
+/**
+ * \brief Insertion operator for dense matrix and output stream.
+ * 
+ * \param str is the output stream.
+ * \param matrix is the dense matrix.
+ * \return  reference to the stream.
+ */
 template< typename Real,
           typename Device,
           typename Index,

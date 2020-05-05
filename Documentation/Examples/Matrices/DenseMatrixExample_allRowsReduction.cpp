@@ -33,6 +33,13 @@ void allRowsReduction()
    };
 
    /***
+    * Reduce lambda return maximum of given values.
+    */
+   auto reduce = [=] __cuda_callable__ ( double& a, const double& b ) -> double {
+      return TNL::max( a, b );
+   };
+
+   /***
     * Keep lambda store the largest value in each row to the vector rowMax.
     */
    auto keep = [=] __cuda_callable__ ( int rowIdx, const double& value ) mutable {
@@ -42,7 +49,7 @@ void allRowsReduction()
    /***
     * Compute the largest values in each row.
     */
-   matrix.allRowsReduction( fetch, std::plus<>{}, keep, std::numeric_limits< double >::lowest() );
+   matrix.allRowsReduction( fetch, reduce, keep, std::numeric_limits< double >::lowest() );
 
    std::cout << "Max. elements in rows are: " << rowMax << std::endl;
 }

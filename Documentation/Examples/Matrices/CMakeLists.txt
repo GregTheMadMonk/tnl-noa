@@ -28,6 +28,7 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_forRows_cuda >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
                        OUTPUT DenseMatrixExample_forRows.out )
+
 ELSE()
    ADD_EXECUTABLE( DenseMatrixExample_setElement DenseMatrixExample_setElement.cpp )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_setElement >
@@ -58,6 +59,7 @@ ELSE()
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_forRows >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
                        OUTPUT DenseMatrixExample_forRows.out )
+
 ENDIF()
 
 ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
