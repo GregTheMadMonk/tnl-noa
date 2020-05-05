@@ -1,10 +1,12 @@
 #include <iostream>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
-int main( int argc, char* argv[] )
+template< typename Device >
+void setElementsExample()
 {
-   TNL::Matrices::DenseMatrix< double, TNL::Devices::Host > matrix;
+   TNL::Matrices::DenseMatrix< double, Device > matrix;
    matrix.setElements( {
       {  1,  2,  3,  4,  5,  6 },
       {  7,  8,  9, 10, 11, 12 },
@@ -13,7 +15,7 @@ int main( int argc, char* argv[] )
 
    std::cout << matrix << std::endl;
 
-   TNL::Matrices::DenseMatrix< double, TNL::Devices::Host > triangularMatrix;
+   TNL::Matrices::DenseMatrix< double, Device > triangularMatrix;
    triangularMatrix.setElements( {
       {  1 },
       {  2,  3 },
@@ -23,4 +25,15 @@ int main( int argc, char* argv[] )
    } );
 
    std::cout << triangularMatrix << std::endl;
+}
+
+int main( int argc, char* argv[] )
+{
+   std::cout << "Setting matrix elements on host: " << std::endl;
+   setElementsExample< TNL::Devices::Host >();
+
+#ifdef HAVE_CUDA
+   std::cout << "Setting matrix elements on CUDA device: " << std::endl;
+   setElementsExample< TNL::Devices::Cuda >();
+#endif
 }

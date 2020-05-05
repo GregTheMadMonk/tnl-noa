@@ -42,8 +42,9 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+   template< typename Value >
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-DenseMatrix( std::initializer_list< std::initializer_list< RealType > > data )
+DenseMatrix( std::initializer_list< std::initializer_list< Value > > data )
 {
    this->setElements( data );
 }
@@ -53,9 +54,10 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+   template< typename Value >
 void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-setElements( std::initializer_list< std::initializer_list< RealType > > data )
+setElements( std::initializer_list< std::initializer_list< Value > > data )
 {
    IndexType rows = data.size();
    IndexType columns = 0;

@@ -3,30 +3,22 @@
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SharedPointer.h>
 
 template< typename Device >
 void getRowExample()
 {
-   using MatrixType = TNL::Matrices::DenseMatrix< double, Device >;
-   TNL::Pointers::SharedPointer< MatrixType > matrix( 5, 5 );
+   TNL::Matrices::DenseMatrix< double, Device > matrix( 5, 5 );
 
+   /***
+    * We need a matrix view to pass the matrix to lambda function even on CUDA device.
+    */
+   auto matrixView = matrix.getView();
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
-      auto row = matrix->getRow( rowIdx );
+      auto row = matrixView.getRow( rowIdx );
       row.setElement( rowIdx, 10* ( rowIdx + 1 ) );
    };
 
-   /***
-    * For the case when Device is CUDA device we need to synchronize smart
-    * pointers. To avoid this you may use DenseMatrixView. See
-    * DenseMatrixView::getRow example for details.
-    */
-   TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
-
-   /***
-    * Set the matrix elements.
-    */
-   TNL::Algorithms::ParallelFor< Device >::exec( 0, matrix->getRows(), f );
+   TNL::Algorithms::ParallelFor< Device >::exec( 0, matrix.getRows(), f );
    std::cout << matrix << std::endl;
 }
 

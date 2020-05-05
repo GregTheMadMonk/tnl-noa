@@ -4,13 +4,11 @@
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SharedPointer.h>
 
 template< typename Device >
 void getRowExample()
 {
-   using MatrixType = TNL::Matrices::DenseMatrix< double, Device >;
-   TNL::Pointers::SharedPointer< MatrixType > matrix {
+   TNL::Matrices::DenseMatrix< double, Device > matrix {
       { 1, 0, 0, 0, 0 },
       { 1, 2, 0, 0, 0 },
       { 1, 2, 3, 0, 0 },
@@ -19,24 +17,19 @@ void getRowExample()
    };
 
    /***
+    * We need a matrix view to pass the matrix to lambda function even on CUDA device.
+    */
+   const auto matrixView = matrix.getConstView();
+
+   /***
     * Fetch lambda function returns diagonal element in each row.
     */
    auto fetch = [=] __cuda_callable__ ( int rowIdx ) mutable -> double {
-      auto row = matrix->getRow( rowIdx );
+      auto row = matrixView.getRow( rowIdx );
       return row.getElement( rowIdx );
    };
 
-   /***
-    * For the case when Device is CUDA device we need to synchronize smart
-    * pointers. To avoid this you may use DenseMatrixView. See
-    * DenseMatrixView::getConstRow example for details.
-    */
-   TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
-
-   /***
-    * Compute the matrix trace.
-    */
-   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix->getRows(), std::plus<>{}, fetch, 0 );
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix.getRows(), std::plus<>{}, fetch, 0 );
    std::cout << "Matrix trace is " << trace << "." << std::endl;
 }
 

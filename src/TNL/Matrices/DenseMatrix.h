@@ -124,7 +124,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \par Output
        * \include DenseMatrixExample_Constructor_init_list.out
        */
-      DenseMatrix( std::initializer_list< std::initializer_list< RealType > > data );
+      template< typename Value >
+      DenseMatrix( std::initializer_list< std::initializer_list< Value > > data );
 
       /**
        * \brief Returns a modifiable view of the dense matrix.
@@ -197,7 +198,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \par Output
        * \include DenseMatrixExample_setElements.out
        */
-      void setElements( std::initializer_list< std::initializer_list< RealType > > data );
+      template< typename Value >
+      void setElements( std::initializer_list< std::initializer_list< Value > > data );
 
       /**
        * \brief This method is only for the compatibility with the sparse matrices.

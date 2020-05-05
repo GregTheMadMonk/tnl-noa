@@ -3,7 +3,6 @@
 #include <functional>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
 
 template< typename Device >
 void allRowsReduction()
@@ -14,6 +13,7 @@ void allRowsReduction()
       {  0,  1,  8,  0,  0 },
       {  0,  0,  1,  9,  0 },
       {  0,  0,  0,  0,  1 } };
+   auto matrixView = matrix.getView();
 
    /***
     * Find largest element in each row.
@@ -49,7 +49,7 @@ void allRowsReduction()
    /***
     * Compute the largest values in each row.
     */
-   matrix.allRowsReduction( fetch, reduce, keep, std::numeric_limits< double >::lowest() );
+   matrixView.allRowsReduction( fetch, reduce, keep, std::numeric_limits< double >::lowest() );
 
    std::cout << "Max. elements in rows are: " << rowMax << std::endl;
 }

@@ -1,10 +1,12 @@
 #include <iostream>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
-int main( int argc, char* argv[] )
+template< typename Device >
+void getCompressedRowLengthsExample()
 {
-   TNL::Matrices::DenseMatrix< double, TNL::Devices::Host > triangularMatrix {
+   TNL::Matrices::DenseMatrix< double, Device > triangularMatrix {
       {  1 },
       {  2,  3 },
       {  4,  5,  6 },
@@ -14,8 +16,19 @@ int main( int argc, char* argv[] )
 
    std::cout << triangularMatrix << std::endl;
 
-   TNL::Containers::Vector< int, TNL::Devices::Host > rowLengths;
+   TNL::Containers::Vector< int, Device > rowLengths;
    triangularMatrix.getCompressedRowLengths( rowLengths );
 
    std::cout << "Compressed row lengths are: " << rowLengths << std::endl;
+}
+
+int main( int argc, char* argv[] )
+{
+   std::cout << "Getting compressed row lengths on host: " << std::endl;
+   getCompressedRowLengthsExample< TNL::Devices::Host >();
+
+#ifdef HAVE_CUDA
+   std::cout << "Getting compressed row lengths on CUDA device: " << std::endl;
+   getCompressedRowLengthsExample< TNL::Devices::Cuda >();
+#endif
 }
