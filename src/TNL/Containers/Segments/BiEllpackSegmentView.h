@@ -46,7 +46,7 @@ class BiEllpackSegmentView
       BiEllpackSegmentView( const IndexType offset,
                             const IndexType inStripIdx,
                             const GroupsWidthType& groupsWidth )
-      : groupOffset( offset ), segmentSize( TNL::sum( groupsWidth ) ), inStripIdx( inStripIdx ), groupsWidth( groupsWidth ){};
+      : groupOffset( offset ), inStripIdx( inStripIdx ), segmentSize( TNL::sum( groupsWidth ) ), groupsWidth( groupsWidth ){};
 
       __cuda_callable__
       IndexType getSize() const
