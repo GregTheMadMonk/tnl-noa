@@ -15,7 +15,7 @@
 #include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/SparseMatrix.h>
 
 namespace TNL {
 namespace Solvers {
@@ -66,7 +66,7 @@ protected:
    Real tau = 1e-4;
 
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::Legacy::CSR< RealType, DeviceType, IndexType > L, U;
+   Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Containers::Segments::CSR > L, U;
 
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.
