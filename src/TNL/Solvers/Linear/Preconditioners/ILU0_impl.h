@@ -83,7 +83,7 @@ update( const MatrixPointer& matrixPointer )
          values++;
       }
 
-      // update column column indices
+      // update column indices
       if( minColumn > 0 )
          for( IndexType c_j = 0; c_j < max_length; c_j++ )
             all_columns[ c_j ] -= minColumn;
@@ -110,13 +110,11 @@ update( const MatrixPointer& matrixPointer )
             // and split into two loops over L and U separately
             for( IndexType c_j = c_k + 1; c_j < L_entries; c_j++ ) {
                const auto L_ij = L_i.getValue( c_j ) - L_ik * U_k.getValue( c_j );
-               const auto j = L_i.getColumnIndex( c_j );
-               L_i.setElement( c_j, j, L_ij );
+               L_i.setValue( c_j, L_ij );
             }
             for( IndexType c_j = 0; c_j < U_entries; c_j++ ) {
                const auto U_ij = U_i.getValue( c_j ) - L_ik * U_k.getValue( c_j );
-               const auto j = U_i.getColumnIndex( c_j );
-               U_i.setElement( c_j, j, U_ij );
+               U_i.setValue( c_j, U_ij );
             }
          }
       }
