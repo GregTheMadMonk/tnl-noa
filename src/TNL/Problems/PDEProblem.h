@@ -13,7 +13,8 @@
 #include <TNL/Problems/Problem.h>
 #include <TNL/Problems/CommonData.h>
 #include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Containers/Segments/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
@@ -39,7 +40,14 @@ class PDEProblem : public Problem< Real, Device, Index >
       using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
       using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
-      using MatrixType = Matrices::Legacy::SlicedEllpack< RealType, DeviceType, IndexType >;
+      template< typename _Device, typename _Index, typename _IndexAlocator >
+      using SegmentsType = Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
+      using MatrixType = TNL::Matrices::SparseMatrix< Real,
+                                                      Device,
+                                                      Index,
+                                                      TNL::Matrices::GeneralMatrix,
+                                                      SegmentsType
+                                                    >;
       using CommunicatorType = Communicator;
       using CommonDataType = CommonData;
       using CommonDataPointer = Pointers::SharedPointer< CommonDataType, DeviceType >;
