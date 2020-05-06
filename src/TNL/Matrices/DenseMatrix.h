@@ -490,6 +490,11 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_forAllRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forAllRows.out
        */
       template< typename Function >
       void forAllRows( Function& function ) const;
@@ -501,6 +506,11 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_forAllRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forAllRows.out
        */
       template< typename Function >
       void forAllRows( Function& function );
@@ -513,7 +523,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
        * \param row is index of the row used for the scalar product.
        * \param vector is the input vector.
-       * \return 
+       * \return result of the matrix row and vector product.
        */
       template< typename Vector >
       __cuda_callable__

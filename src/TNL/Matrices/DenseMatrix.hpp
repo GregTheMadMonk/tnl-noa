@@ -204,7 +204,9 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-Index DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getElementsCount() const
+Index
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -214,7 +216,9 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-Index DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getNonzeroElementsCount() const
+Index
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getNonzeroElementsCount() const
 {
    return this->view.getNonzeroElementsCount();
 }
@@ -224,7 +228,9 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::reset()
+void
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+reset()
 {
    Matrix< Real, Device, Index >::reset();
 }
@@ -234,7 +240,9 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::setValue( const Real& value )
+void
+DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+setValue( const Real& value )
 {
    this->view.setValue( value );
 }

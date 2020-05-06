@@ -124,7 +124,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getRowLength( const IndexType row ) const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getRowLength( const IndexType row ) const
 {
    return this->getColumns();
 }
@@ -133,7 +135,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getMaxRowLength() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getMaxRowLength() const
 {
    return this->getColumns();
 }
@@ -142,7 +146,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getElementsCount() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -151,7 +157,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNonzeroElementsCount() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -164,7 +172,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::reset()
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+reset()
 {
    Matrix< Real, Device, Index >::reset();
 }
@@ -173,7 +183,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::setValue( const Real& value )
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+setValue( const Real& value )
 {
    this->values = value;
 }
