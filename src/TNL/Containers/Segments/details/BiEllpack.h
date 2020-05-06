@@ -59,6 +59,8 @@ class BiEllpack
                return numberOfGroups - i;
             bisection *= 2;
          }
+         TNL_ASSERT_TRUE( false, "segmentIdx was not found" );
+         return -1; // to avoid compiler warning
       }
 
       static IndexType getActiveGroupsCount( const ConstOffsetsHolderView& rowPermArray, const IndexType segmentIdx )
@@ -211,6 +213,7 @@ class BiEllpack
             groupHeight /= 2;
          }
          TNL_ASSERT_TRUE( false, "Segment capacity exceeded, wrong localIdx." );
+         return -1; // to avoid compiler warning
       }
 
       static __cuda_callable__
