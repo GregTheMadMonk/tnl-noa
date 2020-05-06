@@ -10,8 +10,12 @@
 
 #pragma once
 
+#include <ostream>
+
+#include <TNL/Cuda/CudaCallable.h>
+
 namespace TNL {
-   namespace Matrices {
+namespace Matrices {
 
 template< typename SegmentView,
           typename ValuesView,
@@ -53,6 +57,10 @@ class SparseMatrixRowView
       RealType& getValue( const IndexType localIdx );
 
       __cuda_callable__
+      void setValue( const IndexType localIdx,
+                     const RealType& value );
+
+      __cuda_callable__
       void setElement( const IndexType localIdx,
                        const IndexType column,
                        const RealType& value );
@@ -64,7 +72,14 @@ class SparseMatrixRowView
 
       ColumnsIndexesViewType columnIndexes;
 };
-   } // namespace Matrices
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row );
+
+} // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrixRowView.hpp>
