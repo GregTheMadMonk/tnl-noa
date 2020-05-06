@@ -25,11 +25,16 @@
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
+#include <TNL/Matrices/SparseOperations.h>
 
 #include "../Benchmarks.h"
 #include "ordering.h"
 
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Containers/Segments/SlicedEllpack.h>
+
+template< typename _Device, typename _Index, typename _IndexAlocator >
+using SegmentsType = TNL::Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
@@ -243,11 +248,15 @@ struct SpmvBenchmark
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
          distributedVector[ gi ] = vector[ gi ];
 
-         const IndexType rowLength = matrix.getRowLength( i );
-         IndexType columns[ rowLength ];
-         RealType values[ rowLength ];
-         matrix.getRowFast( gi, columns, values );
-         distributedMatrix.setRowFast( gi, columns, values, rowLength );
+//         const IndexType rowLength = matrix.getRowLength( i );
+//         IndexType columns[ rowLength ];
+//         RealType values[ rowLength ];
+//         matrix.getRowFast( gi, columns, values );
+//         distributedMatrix.setRowFast( gi, columns, values, rowLength );
+         const auto global_row = matrix.getRow( gi );
+         auto local_row = distributedMatrix.getRow( gi );
+         for( IndexType j = 0; j < global_row.getSize(); j++ )
+            local_row.setElement( j, global_row.getColumnIndex( j ), global_row.getValue( j ) );
       }
 
       benchmarkDistributedSpmv( benchmark, distributedMatrix, distributedVector );
@@ -339,7 +348,12 @@ main( int argc, char* argv[] )
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
 //                                         SpmvBenchmark >( benchmark, metadata, parameters );
-   using MatrixType = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
+   using MatrixType = TNL::Matrices::SparseMatrix< double,
+                                                   Devices::Host,
+                                                   int,
+                                                   TNL::Matrices::GeneralMatrix,
+                                                   SegmentsType
+                                                 >;
    const bool status = SpmvBenchmark< MatrixType >::run( benchmark, metadata, parameters );
 
    if( rank == 0 )
