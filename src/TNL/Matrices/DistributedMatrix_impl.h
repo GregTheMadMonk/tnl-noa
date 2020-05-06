@@ -234,32 +234,32 @@ getElementFast( IndexType row,
    return localMatrix.getElementFast( localRow, column );
 }
 
-template< typename Matrix,
-          typename Communicator >
-__cuda_callable__
-bool
-DistributedMatrix< Matrix, Communicator >::
-setRowFast( IndexType row,
-            const IndexType* columnIndexes,
-            const RealType* values,
-            IndexType elements )
-{
-   const IndexType localRow = localRowRange.getLocalIndex( row );
-   return localMatrix.setRowFast( localRow, columnIndexes, values, elements );
-}
+//template< typename Matrix,
+//          typename Communicator >
+//__cuda_callable__
+//bool
+//DistributedMatrix< Matrix, Communicator >::
+//setRowFast( IndexType row,
+//            const IndexType* columnIndexes,
+//            const RealType* values,
+//            IndexType elements )
+//{
+//   const IndexType localRow = localRowRange.getLocalIndex( row );
+//   return localMatrix.setRowFast( localRow, columnIndexes, values, elements );
+//}
 
-template< typename Matrix,
-          typename Communicator >
-__cuda_callable__
-void
-DistributedMatrix< Matrix, Communicator >::
-getRowFast( IndexType row,
-            IndexType* columns,
-            RealType* values ) const
-{
-   const IndexType localRow = localRowRange.getLocalIndex( row );
-   return localMatrix.getRowFast( localRow, columns, values );
-}
+//template< typename Matrix,
+//          typename Communicator >
+//__cuda_callable__
+//void
+//DistributedMatrix< Matrix, Communicator >::
+//getRowFast( IndexType row,
+//            IndexType* columns,
+//            RealType* values ) const
+//{
+//   const IndexType localRow = localRowRange.getLocalIndex( row );
+//   return localMatrix.getRowFast( localRow, columns, values );
+//}
 
 template< typename Matrix,
           typename Communicator >

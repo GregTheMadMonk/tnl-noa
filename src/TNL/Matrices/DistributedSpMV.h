@@ -85,8 +85,8 @@ public:
          const auto row = localMatrix->getRow( i );
          bool comm_left = false;
          bool comm_right = false;
-         for( IndexType c = 0; c < row.getLength(); c++ ) {
-            const IndexType j = row.getElementColumn( c );
+         for( IndexType c = 0; c < row.getSize(); c++ ) {
+            const IndexType j = row.getColumnIndex( c );
             if( j < columns ) {
                const int owner = Partitioner::getOwner( j, columns, nproc );
                // atomic assignment
