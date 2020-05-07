@@ -308,6 +308,7 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
+__cuda_callable__
 Real
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getElement( IndexType row,

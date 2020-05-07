@@ -153,6 +153,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                        const RealType& value,
                        const RealType& thisElementMultiplicator );
 
+      __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 

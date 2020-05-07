@@ -105,6 +105,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      __cuda_callable__
       RealType getElement( IndexType row,
                            IndexType column ) const;
 
