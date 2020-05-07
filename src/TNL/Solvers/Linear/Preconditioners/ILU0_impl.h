@@ -66,11 +66,11 @@ update( const MatrixPointer& matrixPointer )
    // The factors L and U are stored separately and the rows of U are reversed.
    for( IndexType i = 0; i < N; i++ ) {
       // copy all non-zero entries from A into L and U
-      const auto max_length = localMatrix.getRowLength( i );
+      const auto row = localMatrix.getRow( i );
+      const auto max_length = row.getSize();
       IndexType all_columns[ max_length ];
       RealType all_values[ max_length ];
-      const auto row = localMatrix.getRow( i );
-      for( IndexType j = 0; j < row.getSize(); j++ ) {
+      for( IndexType j = 0; j < max_length; j++ ) {
          all_columns[ j ] = row.getColumnIndex( j );
          all_values[ j ] = row.getValue( j );
       }
@@ -102,25 +102,26 @@ update( const MatrixPointer& matrixPointer )
       if( L_entries > 0 ) {
          // copy values into L
          auto L_i = L.getRow( i );
-         for( IndexType c_j = 0; c_j < U_entries; c_j++ )
+         for( IndexType c_j = 0; c_j < L_entries; c_j++ )
             L_i.setElement( c_j, columns[ c_j ], values[ c_j ] );
 
          // loop for k = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_k = 0; c_k < L_entries; c_k++ ) {
             const auto k = L_i.getColumnIndex( c_k );
-            const auto U_k = U.getRow( N - 1 - k );
 
-            auto L_ik = L_i.getValue( c_k ) / U_k.getValue( c_k );
-            L_i.setElement( c_k, k, L_ik );
+            auto L_ik = L_i.getValue( c_k ) / U.getElement( N - 1 - k, k );
+            L_i.setValue( c_k, L_ik );
 
             // loop for j = k+1, ..., N-1; but only over the non-zero entries
             // and split into two loops over L and U separately
             for( IndexType c_j = c_k + 1; c_j < L_entries; c_j++ ) {
-               const auto L_ij = L_i.getValue( c_j ) - L_ik * U_k.getValue( c_j );
+               const auto j = L_i.getColumnIndex( c_j );
+               const auto L_ij = L_i.getValue( c_j ) - L_ik * U.getElement( N - 1 - k, j );
                L_i.setValue( c_j, L_ij );
             }
             for( IndexType c_j = 0; c_j < U_entries; c_j++ ) {
-               const auto U_ij = U_i.getValue( c_j ) - L_ik * U_k.getValue( c_j );
+               const auto j = U_i.getColumnIndex( c_j );
+               const auto U_ij = U_i.getValue( c_j ) - L_ik * U.getElement( N - 1 - k, j );
                U_i.setValue( c_j, U_ij );
             }
          }
