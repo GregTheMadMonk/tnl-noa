@@ -32,6 +32,7 @@ setElement( Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) data, ( void* ) &value, sizeof( Element ), cudaMemcpyHostToDevice );
+   TNL_CHECK_CUDA_DEVICE;
 #endif
    // TODO: For some reason the following does not work after adding
    // #ifdef __CUDA_ARCH__ to Array::setElement and ArrayView::setElement.
@@ -49,6 +50,7 @@ getElement( const Element* data )
    Element result;
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &result, ( void* ) data, sizeof( Element ), cudaMemcpyDeviceToHost );
+   TNL_CHECK_CUDA_DEVICE;
 #endif
    // TODO: For some reason the following does not work after adding
    // #ifdef __CUDA_ARCH__ to Array::getElement and ArrayView::getElement 
