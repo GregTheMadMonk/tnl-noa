@@ -119,7 +119,7 @@ update( const MatrixPointer& matrixPointer )
             j -= minColumn;
          }
          // handle ellpack dummy entries
-         if( j >= N ) break;
+         if( j == localMatrix.getPaddingIndex() ) break;
          w[ j ] = A_i.getValue( c_j );
 
          // running computation of norm
@@ -155,7 +155,7 @@ update( const MatrixPointer& matrixPointer )
                const auto j = U_k.getColumnIndex( c_j );
 
                // skip dropped entries
-               if( j >= N ) break;
+               if( j == localMatrix.getPaddingIndex() ) break;
                w[ j ] -= w_k * U_k.getValue( c_j );
 
                // add non-zero to the w_k_set
