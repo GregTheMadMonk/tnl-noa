@@ -9,10 +9,8 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
-#include<TNL/Containers/Segments/details/CheckLambdas.h>
 
 #include "CheckLambdas.h"
-
 
 namespace TNL {
    namespace Containers {
@@ -31,7 +29,8 @@ template< typename Index,
 struct FetchLambdaAdapter< Index, Lambda, true >
 {
    using ReturnType = decltype( std::declval< Lambda >()( Index(), Index(), Index(), std::declval< bool& >() ) );
-   
+
+   __cuda_callable__
    static ReturnType call( Lambda& f, Index segmentIdx, Index localIdx, Index globalIdx, bool& compute )
    {
       return f( segmentIdx, localIdx, globalIdx, compute );
@@ -43,6 +42,8 @@ template< typename Index,
 struct FetchLambdaAdapter< Index, Lambda, false >
 {
    using ReturnType = decltype( std::declval< Lambda >()( Index(), std::declval< bool& >() ) );
+
+   __cuda_callable__
    static ReturnType call( Lambda& f, Index segmentIdx, Index localIdx, Index globalIdx, bool& compute )
    {
       return f( globalIdx, compute );
