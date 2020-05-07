@@ -196,7 +196,7 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getRow( const IndexType& rowIdx ) const -> ConstRowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return ConstRowView( this->segments.getSegmentView( rowIdx ), this->values.getConstView(), this->columnIndexes.getConstView() );
+   return ConstRowView( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
 }
 
 template< typename Real,
@@ -209,7 +209,7 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView(), this->columnIndexes.getView() );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
 }
 
 template< typename Real,
