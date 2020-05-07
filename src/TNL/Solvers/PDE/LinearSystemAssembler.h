@@ -114,8 +114,8 @@ class LinearSystemAssembler
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitUpdate."  );
 
-      const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
-      TNL_ASSERT_GT( maxRowLength, 0, "maximum row length must be positive" );
+      //const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
+      //TNL_ASSERT_GT( maxRowLength, 0, "maximum row length must be positive" );
       this->userData.time = time;
       this->userData.tau = tau;
       this->userData.u = &uPointer.template getData< DeviceType >();

@@ -155,7 +155,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
       {
          const auto& neighborEntities = entity.getNeighborEntities();
          const IndexType& index = entity.getIndex();
-         typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+         auto matrixRow = matrix.getRow( index );
          if( entity.getCoordinates().x() == 0 )
          {
             matrixRow.setElement( 0, index, 1.0 );
@@ -261,7 +261,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
       {
          const auto& neighborEntities = entity.getNeighborEntities();
          const IndexType& index = entity.getIndex();
-         typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+         auto matrixRow = matrix.getRow( index );
          if( entity.getCoordinates().x() == 0 )
          {
             matrixRow.setElement( 0, index,                                                1.0 );
@@ -390,7 +390,7 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
       {
          const auto& neighborEntities = entity.getNeighborEntities();
          const IndexType& index = entity.getIndex();
-         typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+         auto matrixRow = matrix.getRow( index );
          if( entity.getCoordinates().x() == 0 )
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
