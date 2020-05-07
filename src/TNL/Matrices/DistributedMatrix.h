@@ -108,14 +108,9 @@ public:
 
    IndexType getRowLength( IndexType row ) const;
 
-   bool setElement( IndexType row,
+   void setElement( IndexType row,
                     IndexType column,
                     RealType value );
-
-   __cuda_callable__
-   bool setElementFast( IndexType row,
-                        IndexType column,
-                        RealType value );
 
    RealType getElement( IndexType row,
                         IndexType column ) const;
@@ -123,17 +118,6 @@ public:
    __cuda_callable__
    RealType getElementFast( IndexType row,
                             IndexType column ) const;
-
-//   __cuda_callable__
-//   bool setRowFast( IndexType row,
-//                    const IndexType* columnIndexes,
-//                    const RealType* values,
-//                    IndexType elements );
-
-//   __cuda_callable__
-//   void getRowFast( IndexType row,
-//                    IndexType* columns,
-//                    RealType* values ) const;
 
    __cuda_callable__
    MatrixRow getRow( IndexType row );
