@@ -90,13 +90,20 @@ update( const MatrixPointer& matrixPointer )
 
       const auto L_entries = L_rowLengths[ i ];
       const auto U_entries = U_rowLengths[ N - 1 - i ];
-      L.setRow( i, columns, values, L_entries );
-      U.setRow( N - 1 - i, &columns[ L_entries ], &values[ L_entries ], U_entries );
+//      L.setRow( i, columns, values, L_entries );
+//      U.setRow( N - 1 - i, &columns[ L_entries ], &values[ L_entries ], U_entries );
+
+      // copy values into U
+      auto U_i = U.getRow( N - 1 - i );
+      for( IndexType c_j = 0; c_j < U_entries; c_j++ )
+         U_i.setElement( c_j, columns[ L_entries + c_j ], values[ L_entries + c_j ] );
 
       // this condition is to avoid segfaults on empty L.getRow( i )
       if( L_entries > 0 ) {
+         // copy values into L
          auto L_i = L.getRow( i );
-         auto U_i = U.getRow( N - 1 - i );
+         for( IndexType c_j = 0; c_j < U_entries; c_j++ )
+            L_i.setElement( c_j, columns[ c_j ], values[ c_j ] );
 
          // loop for k = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_k = 0; c_k < L_entries; c_k++ ) {
