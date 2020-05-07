@@ -313,22 +313,24 @@ public:
    /**
     * \brief Sets the value of the \e i-th element to \e v.
     *
-    * This method can be called only from the host, but even for array views
-    * allocated in a different memory space (e.g. GPU global memory).
+    * This method can be called from both the host system and the device
+    * where the array is allocated.
     *
     * \param i The index of the element to be set.
     * \param v The new value of the element.
     */
+   __cuda_callable__
    void setElement( Index i, Value value );
 
    /**
     * \brief Returns the value of the \e i-th element.
     *
-    * This method can be called only from the host, but even for array views
-    * allocated in a different memory space (e.g. GPU global memory).
+    * This method can be called from both the host system and the device
+    * where the array is allocated.
     *
     * \param i The index of the element to be returned.
     */
+   __cuda_callable__
    Value getElement( Index i ) const;
 
    /**

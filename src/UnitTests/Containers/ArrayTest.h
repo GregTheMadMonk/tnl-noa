@@ -16,6 +16,9 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Pointers/DevicePointer.h>
+#include <TNL/Pointers/SharedPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #include "gtest/gtest.h"
 
@@ -338,6 +341,37 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    using ArrayType = typename TestFixture::ArrayType;
 
    testArrayElementwiseAccess( ArrayType() );
+}
+
+template< typename ArrayType >
+void test_setElement()
+{
+   Pointers::SharedPointer< ArrayType > a( 10, 0 ), b( 10, 0 );
+   auto set = [=] __cuda_callable__ ( int i ) mutable {
+      a->setElement( i, i );
+      b->setElement( i, a->getElement( i ) );
+   };
+   Pointers::synchronizeSmartPointersOnDevice< typename ArrayType::DeviceType >();
+   Algorithms::ParallelFor< typename ArrayType::DeviceType >::exec( 0, 10, set );
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_EQ( a->getElement( i ), i );
+      EXPECT_EQ( b->getElement( i ), i );
+   }
+}
+
+TYPED_TEST( ArrayTest, setElement )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+
+   ArrayType a( 10 );
+   for( int i = 0; i < 10; i++ )
+      a.setElement( i, i );
+
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( a.getElement( i ), i );
+
+   test_setElement< ArrayType >();
 }
 
 TYPED_TEST( ArrayTest, containsValue )

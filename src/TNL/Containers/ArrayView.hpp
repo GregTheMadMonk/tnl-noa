@@ -211,25 +211,34 @@ getSize() const
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
 void
 ArrayView< Value, Device, Index >::
 setElement( Index i, Value value )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::MemoryOperations< Device >::setElement( &data[ i ], value );
+#ifdef __CUDA_ARCH__
+   data[ i ] = value;
+#else
+   Algorithms::MemoryOperations< Device >::setElement( &this->data[ i ], value );
+#endif
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-Value
+__cuda_callable__ Value
 ArrayView< Value, Device, Index >::
 getElement( Index i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
+#ifdef __CUDA_ARCH__
+   return data[ i ];
+#else
    return Algorithms::MemoryOperations< Device >::getElement( &data[ i ] );
+#endif
 }
 
 template< typename Value,
