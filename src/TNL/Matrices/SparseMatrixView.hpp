@@ -355,7 +355,7 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
-
+   throw Exceptions::NotImplementedError("TODO: rowVectorProduct is not implemented yet.");
 }
 
 template< typename Real,

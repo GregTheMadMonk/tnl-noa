@@ -446,7 +446,7 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
-   this->view.rowVectorProduct( row, vector );
+   return this->view.rowVectorProduct( row, vector );
 }
 
 template< typename Real,
