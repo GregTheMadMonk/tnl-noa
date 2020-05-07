@@ -91,7 +91,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void reset();
 
       __cuda_callable__
-      const ConstRowView getRow( const IndexType& rowIdx ) const;
+      ConstRowView getRow( const IndexType& rowIdx ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );

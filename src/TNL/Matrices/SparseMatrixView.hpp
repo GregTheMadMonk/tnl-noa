@@ -193,7 +193,7 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 __cuda_callable__ auto
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getRow( const IndexType& rowIdx ) const -> const ConstRowView
+getRow( const IndexType& rowIdx ) const -> ConstRowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
    return ConstRowView( this->segments.getSegmentView( rowIdx ), this->values.getConstView(), this->columnIndexes.getConstView() );
