@@ -172,7 +172,7 @@ getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
       rowLengths.setDistribution( getLocalRowRange(), getRows(), getCommunicationGroup() );
-      auto localRowLengths = rowLengths.getView();
+      auto localRowLengths = rowLengths.getLocalView();
       localMatrix.getCompressedRowLengths( localRowLengths );
    }
 }
@@ -183,8 +183,7 @@ typename Matrix::IndexType
 DistributedMatrix< Matrix, Communicator >::
 getRowLength( IndexType row ) const
 {
-   const IndexType localRow = localRowRange.getLocalIndex( row );
-   return localMatrix.getRowLength( localRow );
+   return getRow( row ).getSize();
 }
 
 template< typename Matrix,
