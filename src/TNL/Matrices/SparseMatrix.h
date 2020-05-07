@@ -68,6 +68,15 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
       using ConstRowView = typename RowView::ConstViewType;
 
+      template< typename _Real = Real,
+                typename _Device = Device,
+                typename _Index = Index,
+                typename _MatrixType = MatrixType,
+                template< typename, typename, typename > class _Segments = Segments,
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real >,
+                typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
+      using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _RealAllocator, _IndexAllocator >;
+
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
