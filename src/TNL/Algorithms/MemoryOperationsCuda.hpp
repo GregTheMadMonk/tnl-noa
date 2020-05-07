@@ -33,6 +33,8 @@ setElement( Element* data,
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) data, ( void* ) &value, sizeof( Element ), cudaMemcpyHostToDevice );
    TNL_CHECK_CUDA_DEVICE;
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
    // TODO: For some reason the following does not work after adding
    // #ifdef __CUDA_ARCH__ to Array::setElement and ArrayView::setElement.
@@ -51,6 +53,8 @@ getElement( const Element* data )
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &result, ( void* ) data, sizeof( Element ), cudaMemcpyDeviceToHost );
    TNL_CHECK_CUDA_DEVICE;
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
    // TODO: For some reason the following does not work after adding
    // #ifdef __CUDA_ARCH__ to Array::getElement and ArrayView::getElement 
