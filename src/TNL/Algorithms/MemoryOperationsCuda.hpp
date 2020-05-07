@@ -30,6 +30,9 @@ setElement( Element* data,
             const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
+#ifdef __CUDA_ARCH__
+   *data = value;
+#else
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) data, ( void* ) &value, sizeof( Element ), cudaMemcpyHostToDevice );
    TNL_CHECK_CUDA_DEVICE;
@@ -41,6 +44,7 @@ setElement( Element* data,
    // Probably it might be a problem with lambda function 'kernel' which
    // nvcc probably does not handle properly.
    //MemoryOperations< Devices::Cuda >::set( data, value, 1 );
+#endif
 }
 
 template< typename Element >
@@ -49,6 +53,9 @@ MemoryOperations< Devices::Cuda >::
 getElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
+#ifdef __CUDA_ARCH__
+   return *data;
+#else
    Element result;
 #ifdef HAVE_CUDA
    cudaMemcpy( ( void* ) &result, ( void* ) data, sizeof( Element ), cudaMemcpyDeviceToHost );
@@ -62,6 +69,7 @@ getElement( const Element* data )
    // nvcc probably does not handle properly.
    //MultiDeviceMemoryOperations< void, Devices::Cuda >::template copy< Element, Element, int >( &result, data, 1 );
    return result;
+#endif
 }
 
 template< typename Element, typename Index >
