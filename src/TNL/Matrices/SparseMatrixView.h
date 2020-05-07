@@ -164,6 +164,22 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       ColumnsIndexesViewType columnIndexes;
 
       SegmentsViewType segments;
+
+   private:
+      // TODO: this should be probably moved into a detail namespace
+      template< typename VectorOrView,
+                std::enable_if_t< HasSetSizeMethod< VectorOrView >::value, bool > = true >
+      static void set_size_if_resizable( VectorOrView& v, IndexType size )
+      {
+         v.setSize( size );
+      }
+
+      template< typename VectorOrView,
+                std::enable_if_t< ! HasSetSizeMethod< VectorOrView >::value, bool > = true >
+      static void set_size_if_resizable( VectorOrView& v, IndexType size )
+      {
+         TNL_ASSERT_EQ( v.getSize(), size, "view has wrong size" );
+      }
 };
 
 }  // namespace Conatiners

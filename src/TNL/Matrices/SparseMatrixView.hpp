@@ -116,7 +116,7 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   rowLengths.setSize( this->getRows() );
+   set_size_if_resizable( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
