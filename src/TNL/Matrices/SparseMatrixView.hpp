@@ -614,6 +614,40 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
+   template< typename Matrix >
+bool
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+operator==( const Matrix& m ) const
+{
+   const auto& view1 = *this;
+   // FIXME: getConstView does not work
+   //const auto view2 = m.getConstView();
+   const auto view2 = m.getView();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> bool
+   {
+      return view1.getRow( i ) == view2.getRow( i );
+   };
+   return Algorithms::Reduction< DeviceType >::reduce( this->getRows(), std::logical_and<>{}, fetch, true );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Matrix >
+bool
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+operator!=( const Matrix& m ) const
+{
+   return ! operator==( m );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 save( File& file ) const

@@ -127,6 +127,38 @@ template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
           bool isBinary_ >
+   template< typename _SegmentView,
+             typename _ValuesView,
+             typename _ColumnsIndexesView,
+             bool _isBinary >
+__cuda_callable__
+bool
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const
+{
+   IndexType i = 0;
+   while( i < getSize() && i < other.getSize() ) {
+      if( getColumnIndex( i ) != other.getColumnIndex( i ) )
+         return false;
+      if( getValue( i ) != other.getValue( i ) )
+         return false;
+      ++i;
+   }
+   for( IndexType j = i; j < getSize(); j++ )
+      // TODO: use ... != getPaddingIndex()
+      if( getColumnIndex( j ) >= 0 )
+         return false;
+   for( IndexType j = i; j < other.getSize(); j++ )
+      // TODO: use ... != getPaddingIndex()
+      if( other.getColumnIndex( j ) >= 0 )
+         return false;
+   return true;
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row )
 {
    using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::IndexType >;

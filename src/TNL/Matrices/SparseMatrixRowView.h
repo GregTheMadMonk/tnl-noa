@@ -64,6 +64,14 @@ class SparseMatrixRowView
       void setElement( const IndexType localIdx,
                        const IndexType column,
                        const RealType& value );
+
+      template< typename _SegmentView,
+                typename _ValuesView,
+                typename _ColumnsIndexesView,
+                bool _isBinary >
+      __cuda_callable__
+      bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
+
    protected:
 
       SegmentViewType segmentView;

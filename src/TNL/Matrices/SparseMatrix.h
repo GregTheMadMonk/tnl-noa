@@ -243,6 +243,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename RHSMatrix >
       SparseMatrix& operator=( const RHSMatrix& matrix );
 
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
+
       void save( File& file ) const;
 
       void load( File& file );

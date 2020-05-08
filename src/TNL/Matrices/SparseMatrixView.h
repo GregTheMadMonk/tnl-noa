@@ -153,6 +153,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       SparseMatrixView& operator=( const SparseMatrixView& matrix );
 
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
+
       void save( File& file ) const;
 
       void save( const String& fileName ) const;
