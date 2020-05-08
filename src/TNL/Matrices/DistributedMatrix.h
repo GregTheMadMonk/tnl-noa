@@ -104,7 +104,8 @@ public:
 
    void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
-   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+   template< typename Vector >
+   void getCompressedRowLengths( Vector& rowLengths ) const;
 
    IndexType getRowLength( IndexType row ) const;
 

@@ -52,10 +52,28 @@ class SparseRow
       const Index& getElementColumn( const Index& elementIndex ) const;
 
       __cuda_callable__
+      const Index& getColumnIndex( const Index& elementIndex ) const
+      {
+         return getElementColumn( elementIndex );
+      };
+
+      
+      __cuda_callable__
       const Real& getElementValue( const Index& elementIndex ) const;
 
       __cuda_callable__
+      const Real& getValue( const Index& elementIndex ) const
+      {
+         return getElementValue( elementIndex );
+      };
+
+
+      __cuda_callable__
       Index getLength() const;
+
+      __cuda_callable__
+      Index getSize() const { return length; };
+
 
       __cuda_callable__
       Index getNonZeroElementsCount() const;

@@ -20,6 +20,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
+#include <TNL/Matrices/Legacy/CSR.h>
 #include <cusparse.h>
 #endif
 

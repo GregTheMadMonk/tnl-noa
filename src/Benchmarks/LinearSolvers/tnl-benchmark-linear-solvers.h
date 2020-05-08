@@ -461,7 +461,7 @@ struct LinearSolversBenchmark
       DistributedRowLengths distributedRowLengths( localRange, matrixPointer->getRows(), group );
       for( IndexType i = 0; i < distMatrixPointer->getLocalMatrix().getRows(); i++ ) {
          const auto gi = distMatrixPointer->getLocalRowRange().getGlobalIndex( i );
-         distributedRowLengths[ gi ] = matrixPointer->getRowLength( gi );
+         distributedRowLengths[ gi ] = matrixPointer->getRowCapacity( gi );
       }
       distMatrixPointer->setCompressedRowLengths( distributedRowLengths );
 

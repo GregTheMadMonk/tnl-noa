@@ -155,13 +155,13 @@ TYPED_TEST( DistributedMatrixTest, setCompressedRowLengths )
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
       const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       EXPECT_EQ( this->matrix.getRowLength( gi ), 0 );
-      EXPECT_EQ( this->matrix.getLocalMatrix().getRowLength( i ), 0 );
+      EXPECT_EQ( this->matrix.getLocalMatrix().getRowCapacity( i ), 0 );
    }
    this->matrix.setCompressedRowLengths( this->rowLengths );
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
       const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       EXPECT_EQ( this->matrix.getRowLength( gi ), gi + 1 );
-      EXPECT_EQ( this->matrix.getLocalMatrix().getRowLength( i ), gi + 1 );
+      EXPECT_EQ( this->matrix.getLocalMatrix().getRowCapacity( i ), gi + 1 );
    }
 }
 

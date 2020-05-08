@@ -14,6 +14,7 @@
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Algorithms/Reduction.h>
 #include <TNL/Algorithms/AtomicOperations.h>
+#include <TNL/Matrices/details/SparseMatrix.h>
 
 namespace TNL {
 namespace Matrices {
@@ -116,7 +117,7 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   set_size_if_resizable( rowLengths, this->getRows() );
+   details::CompressedRowLengthVectorSizeSetter< Vector >::setSize( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
@@ -138,9 +139,9 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getRowLength( const IndexType row ) const
+getRowCapacity( const IndexType row ) const
 {
-   return 0;
+   return this->segments.getSegmentSize( row );
 }
 
 template< typename Real,
@@ -217,7 +218,7 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-void
+__cuda_callable__ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 setElement( const IndexType row,
             const IndexType column,
@@ -231,7 +232,7 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-void
+__cuda_callable__ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 addElement( IndexType row,
             IndexType column,
@@ -270,9 +271,14 @@ addElement( IndexType row,
    }
    if( i == rowSize )
    {
+#ifndef __CUDA_ARCH__
       std::stringstream msg;
       msg << "The capacity of the sparse matrix row number "  << row << " was exceeded.";
       throw std::logic_error( msg.str() );
+#else
+      TNL_ASSERT_TRUE( false, "");
+      return;
+#endif
    }
    if( col == this->getPaddingIndex() )
    {
@@ -308,7 +314,7 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-__cuda_callable__
+__cuda_callable__ 
 Real
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getElement( IndexType row,
@@ -355,7 +361,7 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
-   throw Exceptions::NotImplementedError("TODO: rowVectorProduct is not implemented yet.");
+   TNL_ASSERT_TRUE( false, "TODO: rowVectorProduct is not implemented yet.");
 }
 
 template< typename Real,

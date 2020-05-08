@@ -28,7 +28,7 @@ template< typename Real,
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 SparseMatrix( const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-   : BaseType( realAllocator ), columnIndexes( indexAllocator )
+   : BaseType( realAllocator ), columnIndexes( indexAllocator ), view( this->getView() )
 {
 }
 
@@ -41,7 +41,8 @@ template< typename Real,
           typename IndexAllocator >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 SparseMatrix( const SparseMatrix& m )
-   : Matrix< Real, Device, Index, RealAllocator >( m ), columnIndexes( m.columnIndexes )
+   : Matrix< Real, Device, Index, RealAllocator >( m ), columnIndexes( m.columnIndexes ),
+   segments( m.segments ), view( this->getView() )
 {
 }
 
@@ -54,7 +55,9 @@ template< typename Real,
           typename IndexAllocator >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 SparseMatrix( const SparseMatrix&& m )
-   : Matrix< Real, Device, Index, RealAllocator >( std::move( m ) ), columnIndexes( std::move( m.columnIndexes ) )
+   : Matrix< Real, Device, Index, RealAllocator >( std::move( m ) ),
+   columnIndexes( std::move( m.columnIndexes ) ), segments( std::move( m.segments ) ),
+   view( this->getView() )
 {
 }
 
@@ -70,7 +73,9 @@ SparseMatrix( const IndexType rows,
               const IndexType columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ),
+   segments( Containers::Vector< IndexType, DeviceType, IndexType >( rows, 0 ) ),
+   view( this->getView() )
 {
 }
 
@@ -319,6 +324,20 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+Index
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+getRowCapacity( const IndexType row ) const
+{
+   return this->view.getRowCapacity( row );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
    template< typename Matrix_ >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
@@ -390,7 +409,7 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
-void
+__cuda_callable__ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 setElement( const IndexType row,
             const IndexType column,
@@ -406,7 +425,7 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
-void
+__cuda_callable__ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 addElement( const IndexType row,
             const IndexType column,

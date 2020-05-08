@@ -137,8 +137,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      [[deprecated]]
-      virtual IndexType getRowLength( const IndexType row ) const { return 0;};
+      IndexType getRowCapacity( const IndexType row ) const;
 
       template< typename Matrix >
       void setLike( const Matrix& matrix );
@@ -153,10 +152,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,

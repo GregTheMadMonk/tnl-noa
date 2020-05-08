@@ -239,7 +239,7 @@ struct SpmvBenchmark
       DistributedRowLengths distributedRowLengths( localRange, matrix.getRows(), group );
       for( IndexType i = 0; i < distributedMatrix.getLocalMatrix().getRows(); i++ ) {
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
-         distributedRowLengths[ gi ] = matrix.getRowLength( gi );
+         distributedRowLengths[ gi ] = matrix.getRowCapacity( gi );
       }
       distributedMatrix.setCompressedRowLengths( distributedRowLengths );
 

@@ -350,9 +350,9 @@ copy_triangular_factors()
       for( int c_j = 0; c_j < row.getSize(); c_j++ ) {
          const IndexType j = row.getColumnIndex( c_j );
          if( j < i )
-            kernel_L->setElementFast( i, j, row.getValue( c_j ) );
+            kernel_L->setElement( i, j, row.getValue( c_j ) );
          else if( j < N )
-            kernel_U->setElementFast( i, j, row.getValue( c_j ) );
+            kernel_U->setElement( i, j, row.getValue( c_j ) );
          else
             break;
       }

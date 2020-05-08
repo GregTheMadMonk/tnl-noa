@@ -166,9 +166,10 @@ setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 
 template< typename Matrix,
           typename Communicator >
+   template< typename Vector >
 void
 DistributedMatrix< Matrix, Communicator >::
-getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
+getCompressedRowLengths( Vector& rowLengths ) const
 {
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
       rowLengths.setDistribution( getLocalRowRange(), getRows(), getCommunicationGroup() );
@@ -183,7 +184,8 @@ typename Matrix::IndexType
 DistributedMatrix< Matrix, Communicator >::
 getRowLength( IndexType row ) const
 {
-   return getRow( row ).getSize();
+   const IndexType localRow = localRowRange.getLocalIndex( row );
+   return localMatrix.getRowCapacity( localRow );
 }
 
 template< typename Matrix,

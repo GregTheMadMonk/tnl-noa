@@ -43,7 +43,7 @@ void triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
    for( IndexType i = 0; i < N; i++ ) {
       RealType x_i = b[ i ];
 
-      const auto L_entries = L.getRowLength( i );
+      const auto L_entries = L.getRowCapacity( i );
 
       // this condition is to avoid segfaults on empty L.getRow( i )
       if( L_entries > 0 ) {
@@ -93,7 +93,7 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
 
       const IndexType U_idx = (reversedRows) ? N - 1 - i : i;
 
-      const auto U_entries = U.getRowLength( U_idx );
+      const auto U_entries = U.getRowCapacity( U_idx );
       const auto U_i = U.getRow( U_idx );
 
       const auto U_ii = U_i.getValue( 0 );

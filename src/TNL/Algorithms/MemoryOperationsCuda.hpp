@@ -24,7 +24,7 @@ namespace TNL {
 namespace Algorithms {
 
 template< typename Element >
-void
+__cuda_callable__ void
 MemoryOperations< Devices::Cuda >::
 setElement( Element* data,
             const Element& value )
@@ -48,7 +48,7 @@ setElement( Element* data,
 }
 
 template< typename Element >
-Element
+__cuda_callable__ Element
 MemoryOperations< Devices::Cuda >::
 getElement( const Element* data )
 {
