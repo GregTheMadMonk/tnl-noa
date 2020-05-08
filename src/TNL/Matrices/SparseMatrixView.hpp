@@ -419,10 +419,10 @@ vectorProduct( const InVector& inVector,
          outVectorView[ row ] += matrixMultiplicator * value;
       else
       {
-         /*if( outVectorMultiplicator == 0.0 )
+         if( outVectorMultiplicator == 0.0 )
             outVectorView[ row ] = matrixMultiplicator * value;
          else
-            outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;*/
+            outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
       }
    };
    if( lastRow == -1 )

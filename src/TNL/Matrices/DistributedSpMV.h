@@ -201,7 +201,6 @@ public:
       }
       // optimization for banded matrices
       else {
-         return;
          auto outVectorView = outVector.getLocalView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
          //const auto inView = inVector.getConstView();
