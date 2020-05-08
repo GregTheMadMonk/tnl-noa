@@ -425,7 +425,7 @@ vectorProduct( const InVector& inVector,
             outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
       }
    };
-   if( lastRow == -1 )
+   if( lastRow == 0 )
       lastRow = this->getRows();
    if( isSymmetric() )
       this->segments.segmentsReduction( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeper, ( RealType ) 0.0 );

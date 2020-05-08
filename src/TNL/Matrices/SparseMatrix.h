@@ -185,7 +185,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                           const RealType& matrixMultiplicator = 1.0,
                           const RealType& outVectorMultiplicator = 0.0,
                           const IndexType firstRow = 0,
-                          const IndexType lastRow = -1 ) const;
+                          const IndexType lastRow = 0 ) const;
 
       /*template< typename Real2, typename Index2 >
       void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,

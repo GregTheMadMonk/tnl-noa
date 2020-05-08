@@ -125,7 +125,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                           const RealType matrixMultiplicator = 1.0,
                           const RealType outVectorMultiplicator = 0.0,
                           const IndexType firstRow = 0,
-                          IndexType lastRow = -1 ) const;
+                          IndexType lastRow = 0 ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
