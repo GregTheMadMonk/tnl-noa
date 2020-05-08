@@ -362,6 +362,7 @@ rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
    TNL_ASSERT_TRUE( false, "TODO: rowVectorProduct is not implemented yet.");
+   return 0;
 }
 
 template< typename Real,
