@@ -57,9 +57,7 @@ void setMatrix( Matrix& matrix, const RowLengths& rowLengths )
  * - Number of processes is not limited.
  * - Global size is hardcoded as 97 to force non-uniform distribution.
  * - Communication group is hardcoded as AllGroup -- it may be changed as needed.
- * - Matrix format is hardcoded as CSR -- it should be possible to change it to
- *   any other format which does not include padding zeros in the getRowLength()
- *   result.
+ * - Matrix format is hardcoded as CSR.
  */
 template< typename DistributedMatrix >
 class DistributedMatrixTest
@@ -154,13 +152,13 @@ TYPED_TEST( DistributedMatrixTest, setCompressedRowLengths )
 {
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
       const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
-      EXPECT_EQ( this->matrix.getRowLength( gi ), 0 );
+      EXPECT_EQ( this->matrix.getRowCapacity( gi ), 0 );
       EXPECT_EQ( this->matrix.getLocalMatrix().getRowCapacity( i ), 0 );
    }
    this->matrix.setCompressedRowLengths( this->rowLengths );
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
       const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
-      EXPECT_EQ( this->matrix.getRowLength( gi ), gi + 1 );
+      EXPECT_EQ( this->matrix.getRowCapacity( gi ), gi + 1 );
       EXPECT_EQ( this->matrix.getLocalMatrix().getRowCapacity( i ), gi + 1 );
    }
 }
@@ -171,7 +169,13 @@ TYPED_TEST( DistributedMatrixTest, getCompressedRowLengths )
 
    this->matrix.setCompressedRowLengths( this->rowLengths );
    RowLengthsVector output;
-   this->matrix.getCompressedRowLengths( output ); // TODO: replace this with getRowCapacities
+   this->matrix.getCompressedRowLengths( output );
+   // zero row lengths because the matrix is empty
+   EXPECT_EQ( output, 0 );
+   for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
+      const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
+      output[ gi ] = this->matrix.getRowCapacity( gi );
+   }
    EXPECT_EQ( output, this->rowLengths );
 }
 

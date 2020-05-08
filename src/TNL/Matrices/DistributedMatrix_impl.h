@@ -182,7 +182,7 @@ template< typename Matrix,
           typename Communicator >
 typename Matrix::IndexType
 DistributedMatrix< Matrix, Communicator >::
-getRowLength( IndexType row ) const
+getRowCapacity( IndexType row ) const
 {
    const IndexType localRow = localRowRange.getLocalIndex( row );
    return localMatrix.getRowCapacity( localRow );
