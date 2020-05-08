@@ -47,8 +47,8 @@ public:
            const IndexType columns,
            const RealAllocatorType& allocator = RealAllocatorType() );
 
-   void setDimensions( const IndexType rows,
-                       const IndexType columns );
+   virtual void setDimensions( const IndexType rows,
+                               const IndexType columns );
 
    template< typename Matrix_ >
    void setLike( const Matrix_& matrix );

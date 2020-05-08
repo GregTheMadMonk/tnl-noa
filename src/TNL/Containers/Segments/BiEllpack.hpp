@@ -117,6 +117,9 @@ template< typename Device,
 void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
 performRowBubbleSort( const SizesHolder& segmentsSizes )
 {
+   if( segmentsSizes.getSize() == 0 )
+      return;
+
    this->rowPermArray.evaluate( [] __cuda_callable__ ( const IndexType i ) -> IndexType { return i; } );
 
    //if( std::is_same< DeviceType, Devices::Host >::value )
@@ -356,7 +359,9 @@ template< typename Device,
 __cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
 getSegmentsCount() const -> IndexType
 {
-   return this->segmentsCount;
+   // FIXME
+//   return this->segmentsCount;
+   return 0;
 }
 
 template< typename Device,

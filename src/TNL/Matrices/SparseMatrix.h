@@ -85,9 +85,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const SparseMatrix& m );
+      SparseMatrix( const SparseMatrix& m ) = default;
 
-      SparseMatrix( const SparseMatrix&& m );
+      SparseMatrix( SparseMatrix&& m ) = default;
 
       SparseMatrix( const IndexType rows,
                     const IndexType columns,
@@ -110,6 +110,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       explicit SparseMatrix( const IndexType rows,
                              const IndexType columns,
                              const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
+
+      virtual void setDimensions( const IndexType rows,
+                                  const IndexType columns ) override;
 
       ViewType getView() const; // TODO: remove const
 
@@ -267,7 +270,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       ViewType view;
 };
 
-} // namespace Matrices
+   } // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrix.hpp>

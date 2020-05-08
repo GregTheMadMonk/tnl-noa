@@ -42,7 +42,7 @@ SparseMatrixView( const IndexType rows,
                   const ValuesViewType& values,
                   const ColumnsIndexesViewType& columnIndexes,
                   const SegmentsViewType& segments )
- : MatrixView< Real, Device, Index >( rows, columns, values ), columnIndexes( columnIndexes ), segments( segments )
+: MatrixView< Real, Device, Index >( rows, columns, values ), columnIndexes( columnIndexes ), segments( segments )
 {
 }
 

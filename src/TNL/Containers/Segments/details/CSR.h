@@ -29,8 +29,11 @@ class CSR
       static void setSegmentsSizes( const SizesHolder& sizes, CSROffsets& offsets )
       {
          offsets.setSize( sizes.getSize() + 1 );
-         auto view = offsets.getView( 0, sizes.getSize() );
-         view = sizes;
+         // GOTCHA: when sizes.getSize() == 0, getView returns a full view with size == 1
+         if( sizes.getSize() > 0 ) {
+            auto view = offsets.getView( 0, sizes.getSize() );
+            view = sizes;
+         }
          offsets.setElement( sizes.getSize(), 0 );
          offsets.template scan< Algorithms::ScanType::Exclusive >();
       }

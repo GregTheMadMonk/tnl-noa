@@ -308,7 +308,9 @@ template< typename Device,
 __cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 getSegmentsCount() const -> IndexType
 {
-   return this->segmentsCount;
+   // FIXME
+//   return this->segmentsCount;
+   return 0;
 }
 
 template< typename Device,

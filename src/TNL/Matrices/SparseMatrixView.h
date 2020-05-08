@@ -183,7 +183,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       }
 };
 
-}  // namespace Conatiners
+} // namespace Conatiners
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrixView.hpp>
