@@ -445,7 +445,7 @@ getElement( const IndexType row,
    return this->view.getElement( row, column );
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
@@ -460,7 +460,7 @@ rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
    return this->view.rowVectorProduct( row, vector );
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -476,31 +476,11 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType& matrixMultiplicator,
-               const RealType& outVectorMultiplicator ) const
+               const RealType& outVectorMultiplicator,
+               const IndexType firstRow,
+               const IndexType lastRow ) const
 {
-   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator );
-   /*TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
-   TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
-
-   const auto inVectorView = inVector.getConstView();
-   auto outVectorView = outVector.getView();
-   const auto valuesView = this->values.getConstView();
-   const auto columnIndexesView = this->columnIndexes.getConstView();
-   const IndexType paddingIndex = this->getPaddingIndex();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
-      const IndexType column = columnIndexesView[ globalIdx ];
-      compute = ( column != paddingIndex );
-      if( ! compute )
-         return 0.0;
-      return valuesView[ globalIdx ] * inVectorView[ column ];
-   };
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
-   };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
-   };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );*/
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
 }
 
 template< typename Real,
@@ -516,16 +496,6 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
-   /*const auto columns_view = this->columnIndexes.getConstView();
-   const auto values_view = this->values.getConstView();
-   const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) ) {
-      IndexType columnIdx = columns_view[ globalIdx ];
-      if( columnIdx != paddingIndex_ )
-         return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
-      return zero;
-   };
-   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );*/
 }
 
 template< typename Real,
@@ -556,15 +526,6 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    this->view.forRows( first, last, function );
-   /*const auto columns_view = this->columnIndexes.getConstView();
-   const auto values_view = this->values.getConstView();
-   const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
-      return true;
-   };
-   this->segments.forSegments( first, last, f );
-    */
 }
 
 template< typename Real,
@@ -580,14 +541,6 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 forRows( IndexType first, IndexType last, Function& function )
 {
    this->view.forRows( first, last, function );
-   /*auto columns_view = this->columnIndexes.getView();
-   auto values_view = this->values.getView();
-   const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
-      return true;
-   };
-   this->segments.forSegments( first, last, f );*/
 }
 
 template< typename Real,

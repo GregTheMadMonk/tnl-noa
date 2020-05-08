@@ -189,41 +189,47 @@ public:
          CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
 
          // perform matrix-vector multiplication
-         auto outVectorView = outVector.getLocalView();
+         localMatrix.vectorProduct( globalBuffer, outVector );
+         /*auto outVectorView = outVector.getLocalView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
          auto kernel = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
          {
             outVectorView[ i ] = localMatrix->rowVectorProduct( i, globalBufferView );
          };
          Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localMatrix.getRows(), kernel,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+                                                      &localMatrixPointer.template getData< DeviceType >() );*/
       }
       // optimization for banded matrices
       else {
+         return;
          auto outVectorView = outVector.getLocalView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
-         const auto inView = inVector.getConstView();
+         //const auto inView = inVector.getConstView();
 
          // matrix-vector multiplication using local-only rows
-         auto kernel1 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
+         localMatrix.vectorProduct( inVector, outVector, 1.0, 0.0, localOnlySpan.first, localOnlySpan.second );
+         /*auto kernel1 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
          {
             outVectorView[ i ] = localMatrix->rowVectorProduct( i, inView );
          };
          Algorithms::ParallelFor< DeviceType >::exec( localOnlySpan.first, localOnlySpan.second, kernel1,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+                                                      &localMatrixPointer.template getData< DeviceType >() );*/
+
 
          // wait for all communications to finish
          CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
 
          // finish the multiplication by adding the non-local entries
-         auto kernel2 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
+         localMatrix.vectorProduct( globalBufferView, outVector, 1.0, 0.0, 0, localOnlySpan.first );
+         localMatrix.vectorProduct( globalBufferView, outVector, 1.0, 0.0, localOnlySpan.second, localMatrix.getRows() );
+         /*auto kernel2 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
          {
             outVectorView[ i ] = localMatrix->rowVectorProduct( i, globalBufferView );
          };
          Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localOnlySpan.first, kernel2,
                                                       &localMatrixPointer.template getData< DeviceType >() );
          Algorithms::ParallelFor< DeviceType >::exec( localOnlySpan.second, localMatrix.getRows(), kernel2,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+                                                      &localMatrixPointer.template getData< DeviceType >() );*/
       }
    }
 

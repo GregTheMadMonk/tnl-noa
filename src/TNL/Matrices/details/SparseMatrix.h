@@ -20,60 +20,20 @@ namespace TNL {
    namespace Matrices {
       namespace details {
 
-template< typename Vector >
-struct CompressedRowLengthVectorSizeSetter
-{
-   static void setSize( Vector& v, typename Vector::IndexType size )
-   {
-      v.setSize( size );
-   }
-};
 
-template< typename Value,
-   typename Device,
-   typename Index >
-struct CompressedRowLengthVectorSizeSetter< Containers::ArrayView< Value, Device, Index > >
+template< typename VectorOrView,
+          std::enable_if_t< HasSetSizeMethod< VectorOrView >::value, bool > = true >
+static void set_size_if_resizable( VectorOrView& v, typename VectorOrView::IndexType size )
 {
-   static void setSize( Containers::ArrayView< Value, Device, Index >& v, Index size )
-   {
-      TNL_ASSERT_EQ( v.getSize(), size, "ArrayView has wrong size, different from number of matrix rows." );
-   }
-};
+   v.setSize( size );
+}
 
-template< typename Value,
-   typename Device,
-   typename Index >
-struct CompressedRowLengthVectorSizeSetter< Containers::VectorView< Value, Device, Index > >
+template< typename VectorOrView,
+          std::enable_if_t< ! HasSetSizeMethod< VectorOrView >::value, bool > = true >
+static void set_size_if_resizable( VectorOrView& v, typename VectorOrView::IndexType size )
 {
-   static void setSize( Containers::VectorView< Value, Device, Index >& v, Index size )
-   {
-      TNL_ASSERT_EQ( v.getSize(), size, "VectorView has wrong size, different from number of matrix rows." );
-   }
-};
-
-template< typename Value,
-   typename Device,
-   typename Index,
-   typename Communicator >
-struct CompressedRowLengthVectorSizeSetter< Containers::DistributedArray< Value, Device, Index, Communicator > >
-{
-   static void setSize( Containers::DistributedArray< Value, Device, Index, Communicator >& v, Index size )
-   {
-      TNL_ASSERT_EQ( v.getSize(), size, "DistributedArray has wrong size, different from number of matrix rows." );
-   }
-};
-
-template< typename Value,
-   typename Device,
-   typename Index,
-   typename Communicator >
-struct CompressedRowLengthVectorSizeSetter< Containers::DistributedVector< Value, Device, Index, Communicator > >
-{
-   static void setSize( Containers::DistributedVector< Value, Device, Index, Communicator >& v, Index size )
-   {
-      TNL_ASSERT_EQ( v.getSize(), size, "DistributedVector has wrong size, different from number of matrix rows." );
-   }
-};
+   TNL_ASSERT_EQ( v.getSize(), size, "view has wrong size" );
+}
 
       } //namespace details
    } //namepsace Matrices

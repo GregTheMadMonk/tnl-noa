@@ -170,10 +170,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
-      template< typename Vector >
+      /*template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
+                                                  const Vector& vector ) const;*/
 
       /***
        * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
@@ -183,7 +183,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
                           const RealType& matrixMultiplicator = 1.0,
-                          const RealType& outVectorMultiplicator = 0.0 ) const;
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          const IndexType lastRow = -1 ) const;
 
       /*template< typename Real2, typename Index2 >
       void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,

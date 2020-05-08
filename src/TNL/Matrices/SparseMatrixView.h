@@ -110,10 +110,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       RealType getElement( IndexType row,
                            IndexType column ) const;
 
-      template< typename Vector >
+      /*template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
+                                                  const Vector& vector ) const;*/
 
       /***
        * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
@@ -123,7 +123,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
                           const RealType matrixMultiplicator = 1.0,
-                          const RealType outVectorMultiplicator = 0.0 ) const;
+                          const RealType outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          IndexType lastRow = -1 ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;

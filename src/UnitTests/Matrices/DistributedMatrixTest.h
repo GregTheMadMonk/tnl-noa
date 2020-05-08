@@ -111,7 +111,7 @@ using DistributedMatrixTypes = ::testing::Types<
 >;
 
 TYPED_TEST_SUITE( DistributedMatrixTest, DistributedMatrixTypes );
-
+/*
 TYPED_TEST( DistributedMatrixTest, checkSumOfLocalSizes )
 {
    using CommunicatorType = typename TestFixture::CommunicatorType;
@@ -207,6 +207,7 @@ TYPED_TEST( DistributedMatrixTest, setGetElement )
 
 // TODO: getRow (const and non-const)
 
+
 TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 {
    using GlobalVector = typename TestFixture::GlobalVector;
@@ -224,7 +225,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
       << "outVector.getLocalView() = " << outVector.getLocalView()
       << ",\nthis->rowLengths.getLocalView() = " << this->rowLengths.getLocalView();
 }
-
+*/
 TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
 {
    using DistributedVector = typename TestFixture::DistributedVector;
@@ -241,6 +242,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
       << "outVector.getLocalView() = " << outVector.getLocalView()
       << ",\nthis->rowLengths.getLocalView() = " << this->rowLengths.getLocalView();
 }
+
 
 #endif  // HAVE_GTEST
 

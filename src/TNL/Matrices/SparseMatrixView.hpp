@@ -117,15 +117,12 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   details::CompressedRowLengthVectorSizeSetter< Vector >::setSize( rowLengths, this->getRows() );
+   details::set_size_if_resizable( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
-   //auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-   //   aux += a;
-   //};
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
@@ -349,7 +346,7 @@ getElement( IndexType row,
    return 0.0;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
@@ -363,7 +360,7 @@ rowVectorProduct( const IndexType row,
 {
    TNL_ASSERT_TRUE( false, "TODO: rowVectorProduct is not implemented yet.");
    return 0;
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -377,10 +374,12 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType matrixMultiplicator,
-               const RealType outVectorMultiplicator ) const
+               const RealType outVectorMultiplicator,
+               const IndexType firstRow,
+               IndexType lastRow ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
-   TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
+   //TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
 
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
@@ -415,45 +414,23 @@ vectorProduct( const InVector& inVector,
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
 
-   //auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-   //   sum += value;
-   //};
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       if( isSymmetric() )
          outVectorView[ row ] += matrixMultiplicator * value;
       else
       {
-         if( outVectorMultiplicator == 0.0 )
+         /*if( outVectorMultiplicator == 0.0 )
             outVectorView[ row ] = matrixMultiplicator * value;
          else
-            outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
+            outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;*/
       }
    };
+   if( lastRow == -1 )
+      lastRow = this->getRows();
    if( isSymmetric() )
-      this->segments.segmentsReduction( 0, this->getRows(), symmetricFetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+      this->segments.segmentsReduction( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
    else
-      this->segments.segmentsReduction( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
-
-   /*const auto inVectorView = inVector.getConstView();
-   auto outVectorView = outVector.getView();
-   const auto valuesView = this->values.getConstView();
-   const auto columnIndexesView = this->columnIndexes.getConstView();
-   const IndexType paddingIndex = this->getPaddingIndex();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset, bool& compute ) -> RealType {
-      const IndexType column = columnIndexesView[ offset ];
-      compute = ( column != paddingIndex );
-      if( ! compute )
-         return 0.0;
-      return valuesView[ offset ] * inVectorView[ column ];
-   };
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
-   };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
-   };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
-   */
+      this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,

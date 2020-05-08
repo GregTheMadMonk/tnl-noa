@@ -58,13 +58,16 @@ class ChunkedEllpack
       const ConstViewType getConstView() const;
 
       /**
+       * \brief Number of segments.
+       */
+      __cuda_callable__
+      IndexType getSegmentsCount() const;
+
+      /**
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
-
-      __cuda_callable__
-      IndexType getSegmentsCount() const;
 
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 

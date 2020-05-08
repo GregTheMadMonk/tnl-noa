@@ -60,7 +60,7 @@ class CSR
       const ConstViewType getConstView() const;
 
       /**
-       * \brief Number segments.
+       * \brief Number of segments.
        */
       __cuda_callable__
       IndexType getSegmentsCount() const;

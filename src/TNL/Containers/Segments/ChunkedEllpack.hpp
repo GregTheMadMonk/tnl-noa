@@ -222,7 +222,6 @@ setSlice( SegmentsSizes& rowLengths,
       maxChunkInSlice = TNL::max( maxChunkInSlice,
                               roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
    }
-   TNL_ASSERT_GT( maxChunkInSlice, 0, "" );
 
    /****
     * Set-up the slice info.
@@ -308,9 +307,7 @@ template< typename Device,
 __cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 getSegmentsCount() const -> IndexType
 {
-   // FIXME
-//   return this->segmentsCount;
-   return 0;
+   return this->size;
 }
 
 template< typename Device,

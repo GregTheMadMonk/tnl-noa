@@ -113,6 +113,17 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int WarpSize >
+auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+getSegmentsCount() const -> IndexType
+{
+   return this->size;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int WarpSize >
    template< typename SizesHolder >
 void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
 performRowBubbleSort( const SizesHolder& segmentsSizes )
@@ -349,19 +360,6 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
       *this = hostSegments;
    }
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          bool RowMajorOrder,
-          int WarpSize >
-__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
-getSegmentsCount() const -> IndexType
-{
-   // FIXME
-//   return this->segmentsCount;
-   return 0;
 }
 
 template< typename Device,
