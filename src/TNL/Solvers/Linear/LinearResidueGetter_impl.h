@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <cmath>
-
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Solvers {
@@ -30,19 +29,11 @@ getResidue( const Matrix& matrix,
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   const IndexType size = matrix.getRows();
-   RealType res( 0.0 );
    if( bNorm == 0.0 )
       bNorm = lpNorm( b, 2.0 );
    Containers::Vector< RealType, DeviceType, IndexType > v( b.getSize() );
    matrix.vectorProduct( x, v );
-   return l2Norm( v - b );
-   /*for( IndexType i = 0; i < size; i ++ )
-   {
-      RealType err = abs( matrix.rowVectorProduct( i, x ) - b[ i ] );
-      res += err * err;
-   }
-   return std::sqrt( res ) / bNorm;*/
+   return l2Norm( v - b ) / bNorm;
 }
 
 } // namespace Linear
