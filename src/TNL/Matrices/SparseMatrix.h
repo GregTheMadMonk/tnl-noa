@@ -140,6 +140,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
+      __cuda_callable__
       IndexType getRowCapacity( const IndexType row ) const;
 
       template< typename Matrix >

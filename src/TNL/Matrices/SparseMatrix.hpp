@@ -312,6 +312,7 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+__cuda_callable__
 Index
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getRowCapacity( const IndexType row ) const

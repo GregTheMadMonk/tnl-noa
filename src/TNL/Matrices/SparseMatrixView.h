@@ -83,6 +83,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
+      __cuda_callable__
       IndexType getRowCapacity( const IndexType row ) const;
 
       IndexType getNumberOfNonzeroMatrixElements() const;
