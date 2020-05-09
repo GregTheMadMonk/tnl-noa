@@ -366,7 +366,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
        * \param thisElementMultiplicator is multiplicator the original matrix element
-       *   value is multiplied by before addition of given e value.
+       *   value is multiplied by before addition of given \e value.
        */
       __cuda_callable__
       void addElement( const IndexType row,
