@@ -951,13 +951,10 @@ void test_RowsReduction()
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( fetch, reduce, keep, 0 );
+   m.allRowsReduction( fetch, std::plus<>{}, keep, 0 );
    EXPECT_EQ( rowsCapacities, rowLengths );
    m.getCompressedRowLengths( rowLengths );
    EXPECT_EQ( rowsCapacities, rowLengths );
@@ -969,13 +966,10 @@ void test_RowsReduction()
    auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return abs( value );
    };
-   auto max_reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( max_fetch, max_reduce, max_keep, 0 );
+   m.allRowsReduction( max_fetch, std::plus<>{}, max_keep, 0 );
    const RealType maxNorm = TNL::max( rowSums );
    EXPECT_EQ( maxNorm, 8 ) ; // 29+30+31+32+33+34+35+36
 }

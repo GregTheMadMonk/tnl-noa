@@ -18,7 +18,6 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/Matrices/Legacy/Ellpack.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
@@ -50,7 +49,6 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
-      typedef Matrices::Legacy::SlicedEllpack< RealType, DeviceType, IndexType > MatrixType;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
@@ -59,6 +57,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
+      using typename BaseType::MatrixType;
 
       typedef Communicator CommunicatorType;
 

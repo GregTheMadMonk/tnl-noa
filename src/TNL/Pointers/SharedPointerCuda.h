@@ -91,6 +91,34 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       /**
+       * \brief Constructor with initializer list.
+       *
+       * \tparam Value is type of the initializer list elements.
+       * \param list is the instance of the initializer list..
+       */
+      template< typename Value >
+      explicit  SharedPointer( std::initializer_list< Value > list )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {
+         this->allocate( list );
+      }
+
+      /**
+       * \brief Constructor with nested initializer lists.
+       *
+       * \tparam Value is type of the nested initializer list elements.
+       * \param list is the instance of the nested initializer list..
+       */
+      template< typename Value >
+      explicit  SharedPointer( std::initializer_list< std::initializer_list< Value > > list )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {
+         this->allocate( list );
+      }
+
+      /**
        * \brief Copy constructor.
        *
        * \param pointer is the source shared pointer.

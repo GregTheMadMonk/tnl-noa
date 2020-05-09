@@ -20,7 +20,7 @@
 #include <utility>  // std::pair
 #include <limits>   // std::numeric_limits
 #include <TNL/Allocators/Host.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Matrices/ThreePartVector.h>
@@ -85,8 +85,8 @@ public:
          const auto row = localMatrix->getRow( i );
          bool comm_left = false;
          bool comm_right = false;
-         for( IndexType c = 0; c < row.getLength(); c++ ) {
-            const IndexType j = row.getElementColumn( c );
+         for( IndexType c = 0; c < row.getSize(); c++ ) {
+            const IndexType j = row.getColumnIndex( c );
             if( j < columns ) {
                const int owner = Partitioner::getOwner( j, columns, nproc );
                // atomic assignment
@@ -120,7 +120,7 @@ public:
 
       // copy the buffer into all rows of the preCommPattern* matrices
       // (in-place copy does not work with some OpenMPI configurations)
-      Matrices::Dense< IndexType, Devices::Host, int > preCommPatternStarts, preCommPatternEnds;
+      Matrices::DenseMatrix< IndexType, Devices::Host, int > preCommPatternStarts, preCommPatternEnds;
       preCommPatternStarts.setLike( commPatternStarts );
       preCommPatternEnds.setLike( commPatternEnds );
       for( int j = 0; j < nproc; j++ )
@@ -190,40 +190,21 @@ public:
 
          // perform matrix-vector multiplication
          auto outVectorView = outVector.getLocalView();
-         const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
-         auto kernel = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
-         {
-            outVectorView[ i ] = localMatrix->rowVectorProduct( i, globalBufferView );
-         };
-         Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localMatrix.getRows(), kernel,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+         localMatrix.vectorProduct( globalBuffer, outVectorView );
       }
       // optimization for banded matrices
       else {
          auto outVectorView = outVector.getLocalView();
-         const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
-         const auto inView = inVector.getConstView();
 
          // matrix-vector multiplication using local-only rows
-         auto kernel1 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
-         {
-            outVectorView[ i ] = localMatrix->rowVectorProduct( i, inView );
-         };
-         Algorithms::ParallelFor< DeviceType >::exec( localOnlySpan.first, localOnlySpan.second, kernel1,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+         localMatrix.vectorProduct( inVector, outVectorView, 1.0, 0.0, localOnlySpan.first, localOnlySpan.second );
 
          // wait for all communications to finish
          CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
 
          // finish the multiplication by adding the non-local entries
-         auto kernel2 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
-         {
-            outVectorView[ i ] = localMatrix->rowVectorProduct( i, globalBufferView );
-         };
-         Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localOnlySpan.first, kernel2,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
-         Algorithms::ParallelFor< DeviceType >::exec( localOnlySpan.second, localMatrix.getRows(), kernel2,
-                                                      &localMatrixPointer.template getData< DeviceType >() );
+         localMatrix.vectorProduct( globalBufferView, outVectorView, 1.0, 0.0, 0, localOnlySpan.first );
+         localMatrix.vectorProduct( globalBufferView, outVectorView, 1.0, 0.0, localOnlySpan.second, localMatrix.getRows() );
       }
    }
 
@@ -237,7 +218,7 @@ public:
 
 protected:
    // communication pattern
-   Matrices::Dense< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
+   Matrices::DenseMatrix< IndexType, Devices::Host, int, true, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;

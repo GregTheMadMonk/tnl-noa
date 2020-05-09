@@ -25,6 +25,9 @@ IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( SparseMatrixTest_ChunkedEllpack SparseMatrixTest_ChunkedEllpack.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_ChunkedEllpack ${GTEST_BOTH_LIBRARIES} )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixTest_BiEllpack SparseMatrixTest_BiEllpack.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_BiEllpack ${GTEST_BOTH_LIBRARIES} )
+
    CUDA_ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
@@ -79,6 +82,10 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest_ChunkedEllpack PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_ChunkedEllpack ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( SparseMatrixTest_BiEllpack SparseMatrixTest_BiEllpack.cpp )
+   TARGET_COMPILE_OPTIONS( SparseMatrixTest_BiEllpack PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_BiEllpack ${GTEST_BOTH_LIBRARIES} )
+
    ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
    TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
@@ -117,6 +124,7 @@ ADD_TEST( SparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR${C
 ADD_TEST( SparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_ChunkedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_ChunkedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SparseMatrixTest_BiEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_BiEllpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( BinarySparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( BinarySparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )

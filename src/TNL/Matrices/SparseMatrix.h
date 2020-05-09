@@ -17,7 +17,7 @@
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 #include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 
 namespace TNL {
 namespace Matrices {
@@ -59,11 +59,23 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
       using ColumnsIndexesVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
+      using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using ConstRowView = typename RowView::ConstViewType;
+
+      template< typename _Real = Real,
+                typename _Device = Device,
+                typename _Index = Index,
+                typename _MatrixType = MatrixType,
+                template< typename, typename, typename > class _Segments = Segments,
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real >,
+                typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
+      using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _RealAllocator, _IndexAllocator >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -73,9 +85,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const SparseMatrix& m );
+      SparseMatrix( const SparseMatrix& m ) = default;
 
-      SparseMatrix( const SparseMatrix&& m );
+      SparseMatrix( SparseMatrix&& m ) = default;
 
       SparseMatrix( const IndexType rows,
                     const IndexType columns,
@@ -99,6 +111,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                              const IndexType columns,
                              const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
 
+      virtual void setDimensions( const IndexType rows,
+                                  const IndexType columns ) override;
+
       ViewType getView() const; // TODO: remove const
 
       ConstViewType getConstView() const;
@@ -108,11 +123,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       virtual String getSerializationTypeVirtual() const;
 
       template< typename RowsCapacitiesVector >
-      void setCompressedRowLengths( const RowsCapacitiesVector& rowCapacities );
+      void setRowCapacities( const RowsCapacitiesVector& rowCapacities );
 
       // TODO: Remove this when possible
-      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) {
-         this->setCompressedRowLengths( rowLengths );
+      template< typename RowsCapacitiesVector >
+      void setCompressedRowLengths( const RowsCapacitiesVector& rowLengths ) {
+         this->setRowCapacities( rowLengths );
       };
 
       void setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data );
@@ -124,8 +140,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      [[deprecated]]
-      virtual IndexType getRowLength( const IndexType row ) const { return 0;};
+      IndexType getRowCapacity( const IndexType row ) const;
 
       template< typename Matrix >
       void setLike( const Matrix& matrix );
@@ -135,27 +150,30 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void reset();
 
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator );
 
+      __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
-      template< typename Vector >
+      /*template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
+                                                  const Vector& vector ) const;*/
 
       /***
        * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
@@ -165,7 +183,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
                           const RealType& matrixMultiplicator = 1.0,
-                          const RealType& outVectorMultiplicator = 0.0 ) const;
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          const IndexType lastRow = 0 ) const;
 
       /*template< typename Real2, typename Index2 >
       void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
@@ -178,10 +198,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;
@@ -212,7 +232,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Assignment of dense matrix
        */
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
-      SparseMatrix& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
+      SparseMatrix& operator=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
 
 
       /**
@@ -222,6 +242,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename RHSMatrix >
       SparseMatrix& operator=( const RHSMatrix& matrix );
+
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
 
       void save( File& file ) const;
 
@@ -252,7 +278,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       ViewType view;
 };
 
-} // namespace Matrices
+   } // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrix.hpp>

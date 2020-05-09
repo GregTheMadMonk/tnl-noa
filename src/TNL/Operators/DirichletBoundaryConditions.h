@@ -105,7 +105,7 @@ class DirichletBoundaryConditions
                               Matrix& matrix,
                               Vector& b ) const
       {
-         typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
+         auto matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
          b[ index ] = Functions::FunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );

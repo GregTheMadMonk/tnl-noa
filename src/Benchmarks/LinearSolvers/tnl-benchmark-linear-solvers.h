@@ -30,6 +30,7 @@
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
+#include <TNL/Matrices/SparseOperations.h>
 #include <TNL/Matrices/MatrixReader.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
 #include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
@@ -54,7 +55,12 @@
    #define HAVE_CUSOLVER
 #endif
 
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Containers/Segments/SlicedEllpack.h>
+
+template< typename _Device, typename _Index, typename _IndexAlocator >
+using SegmentsType = TNL::Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
@@ -455,7 +461,7 @@ struct LinearSolversBenchmark
       DistributedRowLengths distributedRowLengths( localRange, matrixPointer->getRows(), group );
       for( IndexType i = 0; i < distMatrixPointer->getLocalMatrix().getRows(); i++ ) {
          const auto gi = distMatrixPointer->getLocalRowRange().getGlobalIndex( i );
-         distributedRowLengths[ gi ] = matrixPointer->getRowLength( gi );
+         distributedRowLengths[ gi ] = matrixPointer->getRowCapacity( gi );
       }
       distMatrixPointer->setCompressedRowLengths( distributedRowLengths );
 
@@ -465,11 +471,15 @@ struct LinearSolversBenchmark
          dist_x0[ gi ] = x0[ gi ];
          dist_b[ gi ] = b[ gi ];
 
-         const IndexType rowLength = matrixPointer->getRowLength( i );
-         IndexType columns[ rowLength ];
-         RealType values[ rowLength ];
-         matrixPointer->getRowFast( gi, columns, values );
-         distMatrixPointer->setRowFast( gi, columns, values, rowLength );
+//         const IndexType rowLength = matrixPointer->getRowLength( i );
+//         IndexType columns[ rowLength ];
+//         RealType values[ rowLength ];
+//         matrixPointer->getRowFast( gi, columns, values );
+//         distMatrixPointer->setRowFast( gi, columns, values, rowLength );
+         const auto global_row = matrixPointer->getRow( gi );
+         auto local_row = distMatrixPointer->getRow( gi );
+         for( IndexType j = 0; j < global_row.getSize(); j++ )
+            local_row.setElement( j, global_row.getColumnIndex( j ), global_row.getValue( j ) );
       }
 
       std::cout << "Iterative solvers:" << std::endl;
@@ -488,7 +498,12 @@ struct LinearSolversBenchmark
    {
       // direct solvers
       if( parameters.getParameter< bool >( "with-direct" ) ) {
-         using CSR = Matrices::Legacy::CSR< RealType, DeviceType, IndexType >;
+         using CSR = TNL::Matrices::SparseMatrix< RealType,
+                                                  DeviceType,
+                                                  IndexType,
+                                                  TNL::Matrices::GeneralMatrix,
+                                                  Containers::Segments::CSR
+                                                >;
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
@@ -511,11 +526,21 @@ struct LinearSolversBenchmark
 #ifdef HAVE_CUSOLVER
       std::cout << "CuSOLVER:" << std::endl;
       {
-         using CSR = Matrices::CSR< RealType, DeviceType, IndexType >;
+         using CSR = TNL::Matrices::SparseMatrix< RealType,
+                                                  DeviceType,
+                                                  IndexType,
+                                                  TNL::Matrices::GeneralMatrix,
+                                                  Containers::Segments::CSR
+                                                >;
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
-         using CudaCSR = Matrices::CSR< RealType, Devices::Cuda, IndexType >;
+         using CudaCSR = TNL::Matrices::SparseMatrix< RealType,
+                                                      Devices::Cuda,
+                                                      IndexType,
+                                                      TNL::Matrices::GeneralMatrix,
+                                                      Containers::Segments::CSR
+                                                    >;
          using CudaVector = typename VectorType::template Self< RealType, Devices::Cuda >;
          SharedPointer< CudaCSR > cuda_matrixCopy;
          *cuda_matrixCopy = *matrixCopy;
@@ -567,7 +592,7 @@ configSetup( Config::ConfigDescription& config )
 
    config.addDelimiter( "Linear solver settings:" );
    Solvers::IterativeSolver< double, int >::configSetup( config );
-   using Matrix = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
+   using Matrix = Matrices::SparseMatrix< double >;
    using GMRES = Solvers::Linear::GMRES< Matrix >;
    GMRES::configSetup( config );
    using BiCGstabL = Solvers::Linear::BICGStabL< Matrix >;
@@ -621,7 +646,12 @@ main( int argc, char* argv[] )
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
 //                                         LinearSolversBenchmark >( benchmark, metadata, parameters );
-   using MatrixType = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
+   using MatrixType = TNL::Matrices::SparseMatrix< double,
+                                                   Devices::Host,
+                                                   int,
+                                                   TNL::Matrices::GeneralMatrix,
+                                                   SegmentsType
+                                                 >;
    const bool status = LinearSolversBenchmark< MatrixType >::run( benchmark, metadata, parameters );
 
    if( rank == 0 )

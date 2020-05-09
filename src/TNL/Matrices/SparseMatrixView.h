@@ -41,10 +41,13 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesViewType = typename BaseType::ValuesView;
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
       using ColumnsIndexesViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using ConstRowView = typename RowView::ConstViewType;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -80,35 +83,37 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      [[deprecated]]
-      IndexType getRowLength( const IndexType row ) const;
+      IndexType getRowCapacity( const IndexType row ) const;
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
       void reset();
 
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      ConstRowView getRow( const IndexType& rowIdx ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( IndexType row,
                        IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      __cuda_callable__
       RealType getElement( IndexType row,
                            IndexType column ) const;
 
-      template< typename Vector >
+      /*template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
+                                                  const Vector& vector ) const;*/
 
       /***
        * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
@@ -118,13 +123,15 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
                           const RealType matrixMultiplicator = 1.0,
-                          const RealType outVectorMultiplicator = 0.0 ) const;
+                          const RealType outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          IndexType lastRow = 0 ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;
@@ -146,6 +153,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       SparseMatrixView& operator=( const SparseMatrixView& matrix );
 
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
+
       void save( File& file ) const;
 
       void save( const String& fileName ) const;
@@ -160,9 +173,25 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       ColumnsIndexesViewType columnIndexes;
 
       SegmentsViewType segments;
+
+   private:
+      // TODO: this should be probably moved into a detail namespace
+      template< typename VectorOrView,
+                std::enable_if_t< HasSetSizeMethod< VectorOrView >::value, bool > = true >
+      static void set_size_if_resizable( VectorOrView& v, IndexType size )
+      {
+         v.setSize( size );
+      }
+
+      template< typename VectorOrView,
+                std::enable_if_t< ! HasSetSizeMethod< VectorOrView >::value, bool > = true >
+      static void set_size_if_resizable( VectorOrView& v, IndexType size )
+      {
+         TNL_ASSERT_EQ( v.getSize(), size, "view has wrong size" );
+      }
 };
 
-}  // namespace Conatiners
+} // namespace Conatiners
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrixView.hpp>

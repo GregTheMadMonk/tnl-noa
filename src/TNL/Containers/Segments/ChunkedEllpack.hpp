@@ -25,7 +25,6 @@ template< typename Device,
           bool RowMajorOrder >
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
-   : size( 0 ), storageSize( 0 ), chunksInSlice( 0 ), desiredChunkSize( 0 )
 {
    this->setSegmentsSizes( sizes );
 }
@@ -41,7 +40,7 @@ ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
      chunksInSlice( chunkedEllpack.chunksInSlice ), 
      desiredChunkSize( chunkedEllpack.desiredChunkSize ),
      rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
-     rowToSliceMapping( chunkedEllpack.rowTopSliceMapping ),
+     rowToSliceMapping( chunkedEllpack.rowToSliceMapping ),
      chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
      rowPointers( chunkedEllpack.rowPointers ),
      slices( chunkedEllpack.slices ),
@@ -111,9 +110,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-typename ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::ConstViewType
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getConstView() const
+auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, storageSize, chunksInSlice, desiredChunkSize,
                          rowToChunkMapping.getConstView(),
@@ -224,7 +222,6 @@ setSlice( SegmentsSizes& rowLengths,
       maxChunkInSlice = TNL::max( maxChunkInSlice,
                               roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
    }
-   TNL_ASSERT_GT( maxChunkInSlice, 0, "" );
 
    /****
     * Set-up the slice info.
@@ -296,7 +293,8 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
    else
    {
       ChunkedEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< Index >, RowMajorOrder > hostSegments;
-      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes( segmentsSizes );
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes;
+      hostSegmentsSizes = segmentsSizes;
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
       *this = hostSegments;
    }
@@ -306,21 +304,36 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
+void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSegmentsCount() const
+reset()
 {
-   return this->segmentsCount;
+   this->size = 0;
+   this->storageSize = 0;
+   this->rowToSliceMapping.reset();
+   this->rowToChunkMapping.reset();
+   this->chunksToSegmentsMapping.reset();
+   this->rowPointers.reset();
+   this->slices.reset();
+   this->numberOfSlices = 0;
 }
 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSegmentsCount() const -> IndexType
+{
+   return this->size;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder >
+auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
       rowToSliceMapping.getView(),
@@ -333,10 +346,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getSize() const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -345,10 +356,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getStorageSize() const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getStorageSize() const -> IndexType
 {
    return this->storageSize;
 }
@@ -357,10 +366,8 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-Index
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
       return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
          rowToSliceMapping,
@@ -375,9 +382,7 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
-__cuda_callable__
-auto
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
 }
@@ -413,7 +418,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
 }
@@ -425,7 +430,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

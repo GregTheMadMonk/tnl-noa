@@ -36,11 +36,10 @@ SparseMatrixSetRowLengthsVectorKernel( Vector* rowLengths,
    const IndexType gridSize = blockDim.x * gridDim.x;
 
    while( rowIdx < rows ) {
-      const auto max_length = matrix->getRowLengthFast( rowIdx );
       const auto row = matrix->getRow( rowIdx );
       IndexType length = 0;
-      for( IndexType c_j = 0; c_j < max_length; c_j++ )
-         if( row.getElementColumn( c_j ) < cols )
+      for( IndexType c_j = 0; c_j < row.getSize(); c_j++ )
+         if( row.getColumnIndex( c_j ) < cols )
             length++;
          else
             break;
@@ -66,7 +65,7 @@ SparseMatrixCopyKernel( Matrix1* A,
       const auto rowB = B->getRow( rowIdx );
       auto rowA = A->getRow( rowIdx );
       for( IndexType c = 0; c < length; c++ )
-         rowA.setElement( c, rowB.getElementColumn( c ), rowB.getElementValue( c ) );
+         rowA.setElement( c, rowB.getColumnIndex( c ), rowB.getValue( c ) );
       rowIdx += gridSize;
    }
 }
@@ -102,11 +101,10 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
       for( IndexType i = 0; i < rows; i++ ) {
-         const auto max_length = B.getRowLength( i );
          const auto row = B.getRow( i );
          IndexType length = 0;
-         for( IndexType c_j = 0; c_j < max_length; c_j++ )
-            if( row.getElementColumn( c_j ) < cols )
+         for( IndexType c_j = 0; c_j < row.getSize(); c_j++ )
+            if( row.getColumnIndex( c_j ) < cols )
                length++;
             else
                break;
@@ -122,7 +120,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
          const auto rowB = B.getRow( i );
          auto rowA = A.getRow( i );
          for( IndexType c = 0; c < length; c++ )
-            rowA.setElement( c, rowB.getElementColumn( c ), rowB.getElementValue( c ) );
+            rowA.setElement( c, rowB.getColumnIndex( c ), rowB.getValue( c ) );
       }
    }
 
@@ -228,11 +226,10 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
    rowLengths.setSize( N );
    rowLengths.setValue( 0 );
    for( IndexType i = 0; i < A.getRows(); i++ ) {
-      const int maxLength = A.getRowLength( i );
       const auto row = A.getRow( i );
       IndexType length = 0;
-      for( int c_j = 0; c_j < maxLength; c_j++ ) {
-         const IndexType j = row.getElementColumn( c_j );
+      for( int c_j = 0; c_j < row.getSize(); c_j++ ) {
+         const IndexType j = row.getColumnIndex( c_j );
          if( j >= A.getColumns() )
             break;
          length++;
@@ -248,10 +245,9 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
 
    // set non-zeros
    for( IndexType i = 0; i < A.getRows(); i++ ) {
-      const int maxLength = A.getRowLength( i );
       const auto row = A.getRow( i );
-      for( int c_j = 0; c_j < maxLength; c_j++ ) {
-         const IndexType j = row.getElementColumn( c_j );
+      for( int c_j = 0; c_j < row.getSize(); c_j++ ) {
+         const IndexType j = row.getColumnIndex( c_j );
          if( j >= A.getColumns() )
             break;
          if( ! ignore_diagonal || i != j )
@@ -282,11 +278,10 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
    typename Matrix2::CompressedRowLengthsVector rowLengths;
    rowLengths.setSize( matrix1.getRows() );
    for( IndexType i = 0; i < matrix1.getRows(); i++ ) {
-      const IndexType maxLength = matrix1.getRowLength( perm[ i ] );
       const auto row = matrix1.getRow( perm[ i ] );
       IndexType length = 0;
-      for( IndexType j = 0; j < maxLength; j++ )
-         if( row.getElementColumn( j ) < matrix1.getColumns() )
+      for( IndexType j = 0; j < row.getSize(); j++ )
+         if( row.getColumnIndex( j ) < matrix1.getColumns() )
             length++;
       rowLengths[ i ] = length;
    }
@@ -303,8 +298,8 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
       typename Matrix2::IndexType columns[ rowLength ];
       typename Matrix2::RealType values[ rowLength ];
       for( IndexType j = 0; j < rowLength; j++ ) {
-         columns[ j ] = iperm[ row1.getElementColumn( j ) ];
-         values[ j ] = row1.getElementValue( j );
+         columns[ j ] = iperm[ row1.getColumnIndex( j ) ];
+         values[ j ] = row1.getValue( j );
       }
 
       // sort
@@ -319,14 +314,10 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
       };
       std::sort( indices, indices + rowLength, comparator );
 
-      typename Matrix2::IndexType sortedColumns[ rowLength ];
-      typename Matrix2::RealType sortedValues[ rowLength ];
-      for( IndexType j = 0; j < rowLength; j++ ) {
-         sortedColumns[ j ] = columns[ indices[ j ] ];
-         sortedValues[ j ] = values[ indices[ j ] ];
-      }
-
-      matrix2.setRow( i, sortedColumns, sortedValues, rowLength );
+      // set the row
+      auto row2 = matrix2.getRow( i );
+      for( IndexType j = 0; j < rowLength; j++ )
+         row2.setElement( j, columns[ indices[ j ] ], values[ indices[ j ] ] );
    }
 }
 

@@ -73,7 +73,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
        * \brief Constructor with parameters of the Object constructor.
        *
        * \tparam Args is variadic template type of arguments of the Object constructor.
-       * \tparam args are arguments passed to the Object constructor.
+       * \param args are arguments passed to the Object constructor.
        */
       template< typename... Args >
       explicit  SharedPointer( Args... args )
@@ -83,6 +83,38 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          std::cerr << "Creating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          this->allocate( args... );
+      }
+
+      /**
+       * \brief Constructor with initializer list.
+       *
+       * \tparam Value is type of the initializer list elements.
+       * \param list is the instance of the initializer list..
+       */
+      template< typename Value >
+      explicit  SharedPointer( std::initializer_list< Value > list )
+      : pd( nullptr )
+      {
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Creating shared pointer to " << getType< ObjectType >() << std::endl;
+#endif
+         this->allocate( list );
+      }
+
+      /**
+       * \brief Constructor with nested initializer lists.
+       *
+       * \tparam Value is type of the nested initializer list elements.
+       * \param list is the instance of the nested initializer list..
+       */
+      template< typename Value >
+      explicit  SharedPointer( std::initializer_list< std::initializer_list< Value > > list )
+      : pd( nullptr )
+      {
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Creating shared pointer to " << getType< ObjectType >() << std::endl;
+#endif
+         this->allocate( list );
       }
 
       /**

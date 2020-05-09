@@ -15,11 +15,12 @@
 #include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Pointers/UniquePointer.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
+#include <TNL/Matrices/Legacy/CSR.h>
 #include <cusparse.h>
 #endif
 
@@ -76,7 +77,7 @@ public:
 
 protected:
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::Legacy::CSR< RealType, DeviceType, IndexType > L, U;
+   Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Containers::Segments::CSR > L, U;
 
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.

@@ -61,11 +61,10 @@ update( const MatrixPointer& matrixPointer )
    typename decltype(U)::CompressedRowLengthsVector U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
-      const auto max_length = localMatrix.getRowLength( i );
       IndexType L_entries = 0;
       IndexType U_entries = 0;
-      for( IndexType j = 0; j < max_length; j++ ) {
-         const auto column = row.getElementColumn( j );
+      for( IndexType j = 0; j < row.getSize(); j++ ) {
+         const auto column = row.getColumnIndex( j );
          if( column < minColumn )
             continue;
          if( column < i + minColumn )
@@ -103,7 +102,6 @@ update( const MatrixPointer& matrixPointer )
    // Incomplete LU factorization with threshold
    // (see Saad - Iterative methods for sparse linear systems, section 10.4)
    for( IndexType i = 0; i < N; i++ ) {
-      const auto max_length = localMatrix.getRowLength( i );
       const auto A_i = localMatrix.getRow( i );
 
       RealType A_i_norm = 0.0;
@@ -113,16 +111,16 @@ update( const MatrixPointer& matrixPointer )
 
       // copy A_i into the full vector w
 //      timer_copy_into_w.start();
-      for( IndexType c_j = 0; c_j < max_length; c_j++ ) {
-         auto j = A_i.getElementColumn( c_j );
+      for( IndexType c_j = 0; c_j < A_i.getSize(); c_j++ ) {
+         auto j = A_i.getColumnIndex( c_j );
          if( minColumn > 0 ) {
             // skip non-local elements
             if( j < minColumn ) continue;
             j -= minColumn;
          }
          // handle ellpack dummy entries
-         if( j >= N ) break;
-         w[ j ] = A_i.getElementValue( c_j );
+         if( j == localMatrix.getPaddingIndex() ) break;
+         w[ j ] = A_i.getValue( c_j );
 
          // running computation of norm
          A_i_norm += w[ j ] * w[ j ];
@@ -141,7 +139,7 @@ update( const MatrixPointer& matrixPointer )
          if( k >= i )
             break;
 
-         RealType w_k = w[ k ] / localMatrix.getElementFast( k, k + minColumn );
+         RealType w_k = w[ k ] / localMatrix.getElement( k, k + minColumn );
 
          // apply dropping rule to w_k
          if( std::abs( w_k ) < tau_i )
@@ -154,11 +152,11 @@ update( const MatrixPointer& matrixPointer )
             const auto U_k = U.getRow( N - 1 - k );
             // loop for j = 0, ..., N-1; but only over the non-zero entries
             for( Index c_j = 0; c_j < U_rowLengths[ N - 1 - k ]; c_j++ ) {
-               const auto j = U_k.getElementColumn( c_j );
+               const auto j = U_k.getColumnIndex( c_j );
 
                // skip dropped entries
-               if( j >= N ) break;
-               w[ j ] -= w_k * U_k.getElementValue( c_j );
+               if( j == localMatrix.getPaddingIndex() ) break;
+               w[ j ] -= w_k * U_k.getValue( c_j );
 
                // add non-zero to the w_k_set
                w_k_set.insert( j );

@@ -10,8 +10,12 @@
 
 #pragma once
 
+#include <ostream>
+
+#include <TNL/Cuda/CudaCallable.h>
+
 namespace TNL {
-   namespace Matrices {
+namespace Matrices {
 
 template< typename SegmentView,
           typename ValuesView,
@@ -26,6 +30,9 @@ class SparseMatrixRowView
       using IndexType = typename SegmentViewType::IndexType;
       using ValuesViewType = ValuesView;
       using ColumnsIndexesViewType = ColumnsIndexesView;
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
+      using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
+      using ConstViewType = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
 
       static constexpr bool isBinary() { return isBinary_; };
 
@@ -50,9 +57,21 @@ class SparseMatrixRowView
       RealType& getValue( const IndexType localIdx );
 
       __cuda_callable__
+      void setValue( const IndexType localIdx,
+                     const RealType& value );
+
+      __cuda_callable__
       void setElement( const IndexType localIdx,
                        const IndexType column,
                        const RealType& value );
+
+      template< typename _SegmentView,
+                typename _ValuesView,
+                typename _ColumnsIndexesView,
+                bool _isBinary >
+      __cuda_callable__
+      bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
+
    protected:
 
       SegmentViewType segmentView;
@@ -61,7 +80,14 @@ class SparseMatrixRowView
 
       ColumnsIndexesViewType columnIndexes;
 };
-   } // namespace Matrices
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row );
+
+} // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/SparseMatrixRowView.hpp>

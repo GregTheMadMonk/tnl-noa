@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/DenseMatrixView.h>
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/SparseMatrixView.h>
@@ -48,8 +48,8 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-struct MatrixInfo< Dense< Real, Device, Index, RowMajorOrder, RealAllocator > >
-: public MatrixInfo< typename Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::ViewType >
+struct MatrixInfo< DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator > >
+: public MatrixInfo< typename DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::ViewType >
 {
 };
 

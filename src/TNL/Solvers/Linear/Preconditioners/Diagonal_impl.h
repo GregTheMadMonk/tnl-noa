@@ -32,7 +32,8 @@ update( const MatrixPointer& matrixPointer )
    diagonal.setSize( matrixPointer->getRows() );
 
    VectorViewType diag_view( diagonal );
-   const auto kernel_matrix = matrixPointer->getView(); //.template getData< DeviceType >();
+
+   const auto kernel_matrix = matrixPointer->getView();
 
    // TODO: Rewrite this with SparseMatrix::forAllRows
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
@@ -75,7 +76,7 @@ update( const MatrixPointer& matrixPointer )
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       const IndexType gi = kernel_matrix->getLocalRowRange().getGlobalIndex( i );
-      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElementFast( i, gi );
+      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElement( i, gi );
    };
 
    Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );

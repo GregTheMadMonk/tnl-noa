@@ -14,7 +14,7 @@
 
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Containers/Segments/CSR.h>
@@ -542,8 +542,8 @@ void denseMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
-   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   using DenseHost = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    DenseHost hostMatrix( rows, columns );

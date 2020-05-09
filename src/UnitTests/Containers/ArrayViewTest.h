@@ -287,6 +287,40 @@ void ArrayViewEvaluateTest( ArrayType& u )
    }
 }
 
+template< typename ArrayType >
+void test_setElement()
+{
+   ArrayType a( 10, 0 ), b( 10, 0 );
+   auto a_view = a.getView();
+   auto b_view = b.getView();
+   auto set = [=] __cuda_callable__ ( int i ) mutable {
+      a_view.setElement( i, i );
+      b_view.setElement( i, a_view.getElement( i ) );
+   };
+   Algorithms::ParallelFor< typename ArrayType::DeviceType >::exec( 0, 10, set );
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_EQ( a.getElement( i ), i );
+      EXPECT_EQ( b.getElement( i ), i );
+   }
+}
+
+TYPED_TEST( ArrayViewTest, setElement )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+
+   ArrayType a( 10 );
+   auto a_view = a.getView();
+   for( int i = 0; i < 10; i++ )
+      a_view.setElement( i, i );
+
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( a_view.getElement( i ), i );
+
+   test_setElement< ArrayType >();
+}
+
+
 TYPED_TEST( ArrayViewTest, evaluate )
 {
    using ArrayType = typename TestFixture::ArrayType;

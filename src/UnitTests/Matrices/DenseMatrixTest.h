@@ -10,7 +10,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Containers/Array.h>
 
 #include <TNL/Containers/Vector.h>
@@ -18,11 +18,11 @@
 #include <TNL/Math.h>
 #include <iostream>
 
-using Dense_host_float = TNL::Matrices::Dense< float, TNL::Devices::Host, int >;
-using Dense_host_int = TNL::Matrices::Dense< int, TNL::Devices::Host, int >;
+using Dense_host_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int >;
+using Dense_host_int = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int >;
 
-using Dense_cuda_float = TNL::Matrices::Dense< float, TNL::Devices::Cuda, int >;
-using Dense_cuda_int = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int >;
+using Dense_cuda_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int >;
+using Dense_cuda_int = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int >;
 
 static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
@@ -33,14 +33,14 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -163,31 +163,7 @@ void test_GetCompressedRowLengths()
 }
 
 template< typename Matrix >
-void test_GetRowLength()
-{
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-
-    const IndexType rows = 8;
-    const IndexType cols = 7;
-
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
-
-    EXPECT_EQ( m.getRowLength( 0 ), 7 );
-    EXPECT_EQ( m.getRowLength( 1 ), 7 );
-    EXPECT_EQ( m.getRowLength( 2 ), 7 );
-    EXPECT_EQ( m.getRowLength( 3 ), 7 );
-    EXPECT_EQ( m.getRowLength( 4 ), 7 );
-    EXPECT_EQ( m.getRowLength( 5 ), 7 );
-    EXPECT_EQ( m.getRowLength( 6 ), 7 );
-    EXPECT_EQ( m.getRowLength( 7 ), 7 );
-}
-
-template< typename Matrix >
-void test_GetNumberOfMatrixElements()
+void test_GetElementsCount()
 {
     using RealType = typename Matrix::RealType;
     using DeviceType = typename Matrix::DeviceType;
@@ -200,11 +176,11 @@ void test_GetNumberOfMatrixElements()
     m.reset();
     m.setDimensions( rows, cols );
 
-    EXPECT_EQ( m.getNumberOfMatrixElements(), 42 );
+    EXPECT_EQ( m.getElementsCount(), 42 );
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
     using RealType = typename Matrix::RealType;
     using DeviceType = typename Matrix::DeviceType;
@@ -236,7 +212,7 @@ void test_GetNumberOfNonzeroMatrixElements()
     m.setElement( 0, 0, 0); // Set the first element of the diagonal to 0.
     m.setElement( 6, 5, 0); // Set the last element of the diagonal to 0.
 
-    EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 40 );
+    EXPECT_EQ( m.getNonzeroElementsCount(), 40 );
 }
 
 template< typename Matrix >
@@ -730,7 +706,7 @@ void test_AddRow()
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
       {
-         RealType& val = row.getValue( i );
+         RealType& val = row.getElement( i );
          val = rowIdx * val + values[ rowIdx ][ i ];
       }
    };
@@ -1191,8 +1167,8 @@ void test_AssignmentOperator()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
-   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   using DenseHost = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    DenseHost hostMatrix( rows, columns );
@@ -1305,53 +1281,6 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
 }
 
-template< typename Matrix >
-void test_Print()
-{
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x4 sparse matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
-
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
-
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++)
-        for( IndexType j = 0; j < cols; j++)
-            m.setElement( i, j, value++ );
-
-    #include <sstream>
-    std::stringstream printed;
-    std::stringstream couted;
-
-    //change the underlying buffer and save the old buffer
-    auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-    m.print( std::cout ); //all the std::cout goes to ss
-
-    std::cout.rdbuf(old_buf); //reset
-
-    couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3	 Col:3->4\t\n"
-              "Row: 1 ->  Col:0->5	 Col:1->6	 Col:2->7	 Col:3->8\t\n"
-              "Row: 2 ->  Col:0->9	 Col:1->10	 Col:2->11	 Col:3->12\t\n"
-              "Row: 3 ->  Col:0->13	 Col:1->14	 Col:2->15	 Col:3->16\t\n"
-              "Row: 4 ->  Col:0->17	 Col:1->18	 Col:2->19	 Col:3->20\t\n";
-
-    EXPECT_EQ( printed.str(), couted.str() );
-}
-
 // test fixture for typed tests
 template< typename Matrix >
 class MatrixTest : public ::testing::Test
@@ -1363,31 +1292,31 @@ protected:
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, long >
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, short >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, int >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, long >
+    ,TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::DenseMatrix< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::DenseMatrix< double, TNL::Devices::Cuda, long >
 #endif
 >;
 
@@ -1419,25 +1348,18 @@ TYPED_TEST( MatrixTest, setElementsTest )
     test_SetElements< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getRowLengthTest )
+TYPED_TEST( MatrixTest, getElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetRowLength< MatrixType >();
+    test_GetElementsCount< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfMatrixElementsTest )
+TYPED_TEST( MatrixTest, getNonzeroElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfMatrixElements< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+    test_GetNonzeroElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, resetTest )
@@ -1508,13 +1430,6 @@ TYPED_TEST( MatrixTest, saveAndLoadTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SaveAndLoad< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, printTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Print< MatrixType >();
 }
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.

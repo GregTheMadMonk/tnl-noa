@@ -83,8 +83,6 @@ public:
 
    virtual void save( File& file ) const;
 
-   virtual void load( File& file );
-
    virtual void print( std::ostream& str ) const;
 
 

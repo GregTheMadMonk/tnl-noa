@@ -32,7 +32,7 @@ class BackwardTimeDiscretisation
                                                                const RealType& rhs )
         {
             b += u + tau * rhs;
-            matrix.addElementFast( index, index, 1.0, 1.0 );
+            matrix.addElement( index, index, 1.0, 1.0 );
         }
 };
 

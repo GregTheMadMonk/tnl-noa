@@ -110,9 +110,9 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-typename SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::ConstViewType
+auto
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, alignedSize, segmentsCount, sliceOffsets.getConstView(), sliceSegmentSizes.getConstView() );
 }
@@ -144,8 +144,8 @@ setSegmentsSizes( const SizesHolder& sizes )
          return sizes_view[ globalIdx ];
       return 0;
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType i ) {
-      aux = TNL::max( aux, i );
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType i ) -> IndexType {
+      return TNL::max( aux, i );
    };
    auto keep = [=] __cuda_callable__ ( IndexType i, IndexType res ) mutable {
       slices_view[ i ] = res * SliceSize;
@@ -162,10 +162,24 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
+void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getSegmentsCount() const
+reset()
+{
+   this->size = 0;
+   this->alignedSize = 0;
+   this->segmentsCount = 0;
+   this->sliceOffsets.reset();
+   this->sliceSegmentSizes.reset();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int SliceSize >
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getSegmentsCount() const -> IndexType
 {
    return this->segmentsCount;
 }
@@ -175,10 +189,8 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    const Index sliceIdx = segmentIdx / SliceSize;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -198,10 +210,8 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getSize() const
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -211,10 +221,8 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getStorageSize() const
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getStorageSize() const -> IndexType
 {
    return this->alignedSize;
 }
@@ -224,10 +232,8 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
    const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
@@ -296,38 +302,7 @@ void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
-   const auto sliceOffsets_view = this->sliceOffsets.getConstView();
-   if( RowMajorOrder )
-   {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-         const IndexType sliceIdx = segmentIdx / SliceSize;
-         const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
-         const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
-         const IndexType end = begin + segmentSize;
-         IndexType localIdx( 0 );
-         for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
-            if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
-               break;
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-   }
-   else
-   {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-         const IndexType sliceIdx = segmentIdx / SliceSize;
-         const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
-         const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
-         const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
-         IndexType localIdx( 0 );
-         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize )
-            if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
-               break;
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-   }
+   this->getConstView().forSegments( first, last, f, args... );
 }
 
 template< typename Device,
@@ -351,45 +326,9 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
-   const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
-   const auto sliceOffsets_view = this->sliceOffsets.getConstView();
-   if( RowMajorOrder )
-   {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-         const IndexType sliceIdx = segmentIdx / SliceSize;
-         const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
-         const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
-         const IndexType end = begin + segmentSize;
-         RealType aux( zero );
-         bool compute( true );
-         IndexType localIdx( 0 );
-         for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
-            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
-         keeper( segmentIdx, aux );
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-   }
-   else
-   {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-         const IndexType sliceIdx = segmentIdx / SliceSize;
-         const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
-         const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
-         const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
-         RealType aux( zero );
-         bool compute( true );
-         IndexType localIdx( 0 );
-         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
-            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
-         keeper( segmentIdx, aux );
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-   }
+   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -400,7 +339,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

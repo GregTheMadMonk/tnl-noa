@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ChunkedEllpackChunkedEllpackSegmentView.h -  description
+                          ChunkedEllpackSegmentView.h -  description
                              -------------------
     begin                : Mar 24, 2020
     copyright            : (C) 2020 by Tomas Oberhuber

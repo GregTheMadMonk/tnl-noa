@@ -14,7 +14,6 @@
 
 #include <type_traits>
 
-#include <TNL/Matrices/Legacy/SparseRow.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -56,8 +55,8 @@ public:
 
    using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
-   using MatrixRow = Matrices::Legacy::SparseRow< RealType, IndexType >;
-   using ConstMatrixRow = Matrices::Legacy::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
+   using MatrixRow = typename Matrix::RowView;
+   using ConstMatrixRow = typename Matrix::ConstRowView;
 
    template< typename _Real = RealType,
              typename _Device = DeviceType,
@@ -105,18 +104,14 @@ public:
 
    void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
 
-   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+   template< typename Vector >
+   void getCompressedRowLengths( Vector& rowLengths ) const;
 
-   IndexType getRowLength( IndexType row ) const;
+   IndexType getRowCapacity( IndexType row ) const;
 
-   bool setElement( IndexType row,
+   void setElement( IndexType row,
                     IndexType column,
                     RealType value );
-
-   __cuda_callable__
-   bool setElementFast( IndexType row,
-                        IndexType column,
-                        RealType value );
 
    RealType getElement( IndexType row,
                         IndexType column ) const;
@@ -124,17 +119,6 @@ public:
    __cuda_callable__
    RealType getElementFast( IndexType row,
                             IndexType column ) const;
-
-   __cuda_callable__
-   bool setRowFast( IndexType row,
-                    const IndexType* columnIndexes,
-                    const RealType* values,
-                    IndexType elements );
-
-   __cuda_callable__
-   void getRowFast( IndexType row,
-                    IndexType* columns,
-                    RealType* values ) const;
 
    __cuda_callable__
    MatrixRow getRow( IndexType row );

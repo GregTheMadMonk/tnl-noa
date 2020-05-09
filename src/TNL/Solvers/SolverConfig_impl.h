@@ -16,7 +16,7 @@
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 #include <TNL/Solvers/LinearSolverTypeResolver.h>
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/SparseMatrix.h>
 
 namespace TNL {
 namespace Solvers {
@@ -139,7 +139,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
-      typedef Matrices::Legacy::CSR< double, Devices::Host, int > MatrixType;
+      using MatrixType = Matrices::SparseMatrix< double >;
       Linear::CG< MatrixType >::configSetup( config );
       Linear::BICGStab< MatrixType >::configSetup( config );
       Linear::BICGStabL< MatrixType >::configSetup( config );
@@ -157,7 +157,6 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addEntry< String >( "log-file", "Log file for the computation.", "log.txt" );
    config.addEntry< int >( "log-width", "Number of columns of the log table.", 80 );
    return true;
-
 }
 
 } // namespace Solvers

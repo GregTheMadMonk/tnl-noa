@@ -132,10 +132,12 @@ template<>
 struct MemoryOperations< Devices::Cuda >
 {
    template< typename Element >
+   __cuda_callable__
    static void setElement( Element* data,
                            const Element& value );
 
    template< typename Element >
+   __cuda_callable__
    static Element getElement( const Element* data );
 
    template< typename Element, typename Index >

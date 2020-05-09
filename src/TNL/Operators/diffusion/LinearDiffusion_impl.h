@@ -87,7 +87,7 @@ setMatrixElements( const PreimageFunction& u,
    static_assert( PreimageFunction::getEntitiesDimension() == 1, "Wrong preimage function" );
    const typename MeshEntity::template NeighborEntities< 1 >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
-   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+   auto matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
    matrixRow.setElement( 0, neighborEntities.template getEntityIndex< -1 >(),      - lambdaX );
    matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
@@ -162,7 +162,7 @@ setMatrixElements( const PreimageFunction& u,
    static_assert( MeshEntity::getEntityDimension() == 2, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == 2, "Wrong preimage function" );
    const IndexType& index = entity.getIndex();
-   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+   auto matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
    const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
    const typename MeshEntity::template NeighborEntities< 2 >& neighborEntities = entity.getNeighborEntities();
@@ -244,7 +244,7 @@ setMatrixElements( const PreimageFunction& u,
    static_assert( PreimageFunction::getEntitiesDimension() == 3, "Wrong preimage function" );
    const typename MeshEntity::template NeighborEntities< 3 >& neighborEntities = entity.getNeighborEntities();
    const IndexType& index = entity.getIndex();
-   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
+   auto matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0, 0 >();
    const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2, 0 >();
    const RealType lambdaZ = tau * entity.getMesh().template getSpaceStepsProducts< 0, 0, -2 >();

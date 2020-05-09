@@ -43,11 +43,10 @@ update( const MatrixPointer& matrixPointer )
    typename decltype(U)::CompressedRowLengthsVector U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
-      const auto max_length = row.getLength();
       IndexType L_entries = 0;
       IndexType U_entries = 0;
-      for( IndexType j = 0; j < max_length; j++ ) {
-         const auto column = row.getElementColumn( j );
+      for( IndexType j = 0; j < row.getSize(); j++ ) {
+         const auto column = row.getColumnIndex( j );
          if( column < minColumn )
             continue;
          if( column < i + minColumn )
@@ -67,10 +66,14 @@ update( const MatrixPointer& matrixPointer )
    // The factors L and U are stored separately and the rows of U are reversed.
    for( IndexType i = 0; i < N; i++ ) {
       // copy all non-zero entries from A into L and U
-      const auto max_length = localMatrix.getRowLength( i );
+      const auto row = localMatrix.getRow( i );
+      const auto max_length = row.getSize();
       IndexType all_columns[ max_length ];
       RealType all_values[ max_length ];
-      localMatrix.getRowFast( i, all_columns, all_values );
+      for( IndexType j = 0; j < max_length; j++ ) {
+         all_columns[ j ] = row.getColumnIndex( j );
+         all_values[ j ] = row.getValue( j );
+      }
 
       // skip non-local elements
       IndexType* columns = all_columns;
@@ -80,39 +83,46 @@ update( const MatrixPointer& matrixPointer )
          values++;
       }
 
-      // update column column indices
+      // update column indices
       if( minColumn > 0 )
          for( IndexType c_j = 0; c_j < max_length; c_j++ )
             all_columns[ c_j ] -= minColumn;
 
       const auto L_entries = L_rowLengths[ i ];
       const auto U_entries = U_rowLengths[ N - 1 - i ];
-      L.setRow( i, columns, values, L_entries );
-      U.setRow( N - 1 - i, &columns[ L_entries ], &values[ L_entries ], U_entries );
+//      L.setRow( i, columns, values, L_entries );
+//      U.setRow( N - 1 - i, &columns[ L_entries ], &values[ L_entries ], U_entries );
+
+      // copy values into U
+      auto U_i = U.getRow( N - 1 - i );
+      for( IndexType c_j = 0; c_j < U_entries; c_j++ )
+         U_i.setElement( c_j, columns[ L_entries + c_j ], values[ L_entries + c_j ] );
 
       // this condition is to avoid segfaults on empty L.getRow( i )
       if( L_entries > 0 ) {
-         const auto L_i = L.getRow( i );
-         const auto U_i = U.getRow( N - 1 - i );
+         // copy values into L
+         auto L_i = L.getRow( i );
+         for( IndexType c_j = 0; c_j < L_entries; c_j++ )
+            L_i.setElement( c_j, columns[ c_j ], values[ c_j ] );
 
          // loop for k = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_k = 0; c_k < L_entries; c_k++ ) {
-            const auto k = L_i.getElementColumn( c_k );
+            const auto k = L_i.getColumnIndex( c_k );
 
-            auto L_ik = L.getElementFast( i, k ) / U.getElementFast( N - 1 - k, k );
-            L.setElement( i, k, L_ik );
+            auto L_ik = L_i.getValue( c_k ) / U.getElement( N - 1 - k, k );
+            L_i.setValue( c_k, L_ik );
 
             // loop for j = k+1, ..., N-1; but only over the non-zero entries
             // and split into two loops over L and U separately
             for( IndexType c_j = c_k + 1; c_j < L_entries; c_j++ ) {
-               const auto j = L_i.getElementColumn( c_j );
-               const auto L_ij = L.getElementFast( i, j ) - L_ik * U.getElementFast( N - 1 - k, j );
-               L.setElement( i, j, L_ij );
+               const auto j = L_i.getColumnIndex( c_j );
+               const auto L_ij = L_i.getValue( c_j ) - L_ik * U.getElement( N - 1 - k, j );
+               L_i.setValue( c_j, L_ij );
             }
             for( IndexType c_j = 0; c_j < U_entries; c_j++ ) {
-               const auto j = U_i.getElementColumn( c_j );
-               const auto U_ij = U.getElementFast( N - 1 - i, j ) - L_ik * U.getElementFast( N - 1 - k, j );
-               U.setElement( N - 1 - i, j, U_ij );
+               const auto j = U_i.getColumnIndex( c_j );
+               const auto U_ij = U_i.getValue( c_j ) - L_ik * U.getElement( N - 1 - k, j );
+               U_i.setValue( c_j, U_ij );
             }
          }
       }
@@ -293,11 +303,10 @@ allocate_LU()
    auto kernel_copy_row_lengths = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       const auto row = kernel_A->getRow( i );
-      const int max_length = row.getLength();
       int L_entries = 0;
       int U_entries = 0;
-      for( int c_j = 0; c_j < max_length; c_j++ ) {
-         const IndexType j = row.getElementColumn( c_j );
+      for( int c_j = 0; c_j < row.getSize(); c_j++ ) {
+         const IndexType j = row.getColumnIndex( c_j );
          if( j < i )
             L_entries++;
          else if( j < N )
@@ -338,13 +347,12 @@ copy_triangular_factors()
    auto kernel_copy_values = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       const auto row = kernel_A->getRow( i );
-      const int max_length = row.getLength();
-      for( int c_j = 0; c_j < max_length; c_j++ ) {
-         const IndexType j = row.getElementColumn( c_j );
+      for( int c_j = 0; c_j < row.getSize(); c_j++ ) {
+         const IndexType j = row.getColumnIndex( c_j );
          if( j < i )
-            kernel_L->setElementFast( i, j, row.getElementValue( c_j ) );
+            kernel_L->setElement( i, j, row.getValue( c_j ) );
          else if( j < N )
-            kernel_U->setElementFast( i, j, row.getElementValue( c_j ) );
+            kernel_U->setElement( i, j, row.getValue( c_j ) );
          else
             break;
       }

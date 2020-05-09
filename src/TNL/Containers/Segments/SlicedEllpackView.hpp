@@ -13,6 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/SlicedEllpackView.h>
+#include <TNL/Containers/Segments/details/LambdaAdapter.h>
 
 #include "SlicedEllpackView.h"
 
@@ -113,9 +114,9 @@ template< typename Device,
           bool RowMajorOrder,
           int SliceSize >
 __cuda_callable__
-typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ConstViewType
+auto
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, alignedSize, segmentsCount, sliceOffsets.getConstView(), sliceSegmentSizes.getConstView() );
 }
@@ -124,10 +125,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSegmentsCount() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSegmentsCount() const -> IndexType
 {
    return this->segmentsCount;
 }
@@ -136,10 +135,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    const Index sliceIdx = segmentIdx / SliceSize;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -158,10 +155,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSize() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSize() const -> IndexType
 {
    return this->size;
 }
@@ -170,10 +165,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getStorageSize() const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getStorageSize() const -> IndexType
 {
    return this->alignedSize;
 }
@@ -182,10 +175,8 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
-__cuda_callable__
-Index
-SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
    const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
@@ -304,9 +295,10 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( RowMajorOrder )
@@ -321,7 +313,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
-            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
+            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -338,7 +330,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
-            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
+            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -352,7 +344,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

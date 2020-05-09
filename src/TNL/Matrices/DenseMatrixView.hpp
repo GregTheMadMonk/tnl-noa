@@ -10,8 +10,10 @@
 
 #pragma once
 
+#include <iomanip>
+#include <functional>
 #include <TNL/Assert.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
@@ -80,7 +82,7 @@ String
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getSerializationType()
 {
-   return String( "Matrices::Dense< " ) +
+   return String( "Matrices::DenseMatrix< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
           ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
@@ -112,20 +114,19 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, reduce, keep, 0 );
+   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getRowLength( const IndexType row ) const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getRowLength( const IndexType row ) const
 {
    return this->getColumns();
 }
@@ -134,7 +135,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getMaxRowLength() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getMaxRowLength() const
 {
    return this->getColumns();
 }
@@ -143,7 +146,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNumberOfMatrixElements() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -152,7 +157,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getNumberOfNonzeroMatrixElements() const
+Index
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -165,7 +172,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::reset()
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+reset()
 {
    Matrix< Real, Device, Index >::reset();
 }
@@ -174,7 +183,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::setValue( const Real& value )
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+setValue( const Real& value )
 {
    this->values = value;
 }
@@ -188,7 +199,7 @@ DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getConstView() );
 }
 
 template< typename Real,
@@ -287,7 +298,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto values_view = this->values.getConstView();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
@@ -304,7 +315,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
@@ -403,13 +414,10 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
-   };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = value;
    };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+   this->segments.segmentsReduction( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,
@@ -682,7 +690,11 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream&
    {
       str <<"Row: " << row << " -> ";
       for( IndexType column = 0; column < this->getColumns(); column++ )
-         str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
+      {
+         std::stringstream str_;
+         str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << this->getElement( row, column );
+         str << std::setw( 10 ) << str_.str();
+      }
       str << std::endl;
    }
 }

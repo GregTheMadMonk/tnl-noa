@@ -24,6 +24,7 @@ template< typename Real,
           typename Index = int >
 class ThreePartVectorView
 {
+   using ConstReal = std::add_const_t< Real >;
 public:
    using RealType = Real;
    using DeviceType = Device;
@@ -51,6 +52,16 @@ public:
       left.reset();
       middle.reset();
       right.reset();
+   }
+
+   IndexType getSize() const
+   {
+      return left.getSize() + middle.getSize() + right.getSize();
+   }
+
+   ThreePartVectorView< ConstReal, Device, Index > getConstView() const
+   {
+      return {left.getConstView(), middle, right.getConstView()};
    }
 
 //   __cuda_callable__
@@ -127,7 +138,12 @@ public:
       right.reset();
    }
 
-   ThreePartVectorView< ConstReal, Device, Index > getConstView()
+   IndexType getSize() const
+   {
+      return left.getSize() + middle.getSize() + right.getSize();
+   }
+
+   ThreePartVectorView< ConstReal, Device, Index > getConstView() const
    {
       return {left.getConstView(), middle, right.getConstView()};
    }

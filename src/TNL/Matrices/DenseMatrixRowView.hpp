@@ -38,7 +38,7 @@ template< typename SegmentView,
           typename ValuesView >
 __cuda_callable__ auto
 DenseMatrixRowView< SegmentView, ValuesView >::
-getValue( const IndexType column ) const -> const RealType&
+getElement( const IndexType column ) const -> const RealType&
 {
    TNL_ASSERT_LT( column, this->getSize(), "Column index exceeds matrix row size." );
    return values[ segmentView.getGlobalIndex( column ) ];
@@ -48,7 +48,7 @@ template< typename SegmentView,
           typename ValuesView >
 __cuda_callable__ auto
 DenseMatrixRowView< SegmentView, ValuesView >::
-getValue( const IndexType column ) -> RealType&
+getElement( const IndexType column ) -> RealType&
 {
    TNL_ASSERT_LT( column, this->getSize(), "Column index exceeds matrix row size." );
    return values[ segmentView.getGlobalIndex( column ) ];

@@ -14,6 +14,7 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/CSRView.h>
 #include <TNL/Containers/Segments/details/CSR.h>
+#include <TNL/Containers/Segments/details/LambdaAdapter.h>
 
 namespace TNL {
    namespace Containers {
@@ -95,59 +96,49 @@ getView()
 template< typename Device,
           typename Index >
 __cuda_callable__
-typename CSRView< Device, Index >::ConstViewType
+auto
 CSRView< Device, Index >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( this->offsets.getConstView() );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSegmentsCount() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSegmentsCount() const -> IndexType
 {
    return this->offsets.getSize() - 1;
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getSize() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getSize() const -> IndexType
 {
    return this->getStorageSize();
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getStorageSize() const
+__cuda_callable__ auto CSRView< Device, Index >::
+getStorageSize() const -> IndexType
 {
    return details::CSR< Device, Index >::getStorageSize( this->offsets );
 }
 
 template< typename Device,
           typename Index >
-__cuda_callable__
-Index
-CSRView< Device, Index >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto CSRView< Device, Index >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -213,19 +204,19 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 CSRView< Device, Index >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-      const IndexType begin = offsetsView[ i ];
-      const IndexType end = offsetsView[ i + 1 ];
+   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      const IndexType begin = offsetsView[ segmentIdx ];
+      const IndexType end = offsetsView[ segmentIdx + 1 ];
       RealType aux( zero );
       IndexType localIdx( 0 );
       bool compute( true );
-      for( IndexType j = begin; j < end && compute; j++  )
-         reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
-      keeper( i, aux );
+      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+         aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+      keeper( segmentIdx, aux );
    };
    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
 }
@@ -235,7 +226,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 CSRView< Device, Index >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

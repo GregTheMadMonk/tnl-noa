@@ -43,7 +43,7 @@ void triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
    for( IndexType i = 0; i < N; i++ ) {
       RealType x_i = b[ i ];
 
-      const auto L_entries = L.getRowLength( i );
+      const auto L_entries = L.getRowCapacity( i );
 
       // this condition is to avoid segfaults on empty L.getRow( i )
       if( L_entries > 0 ) {
@@ -51,11 +51,11 @@ void triangularSolveLower( const Matrix& L, Vector1& x, const Vector2& b )
 
          // loop for j = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_j = 0; c_j < L_entries; c_j++ ) {
-            const auto j = L_i.getElementColumn( c_j );
+            const auto j = L_i.getColumnIndex( c_j );
             // skip padding zeros
             if( fullStorage == false && j >= N )
                break;
-            x_i -= L_i.getElementValue( c_j ) * x[ j ];
+            x_i -= L_i.getValue( c_j ) * x[ j ];
          }
       }
 
@@ -93,18 +93,18 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
 
       const IndexType U_idx = (reversedRows) ? N - 1 - i : i;
 
-      const auto U_entries = U.getRowLength( U_idx );
+      const auto U_entries = U.getRowCapacity( U_idx );
       const auto U_i = U.getRow( U_idx );
 
-      const auto U_ii = U_i.getElementValue( 0 );
+      const auto U_ii = U_i.getValue( 0 );
 
       // loop for j = i+1, ..., N-1; but only over the non-zero entries
       for( IndexType c_j = 1; c_j < U_entries ; c_j++ ) {
-         const auto j = U_i.getElementColumn( c_j );
+         const auto j = U_i.getColumnIndex( c_j );
          // skip padding zeros
          if( fullStorage == false && j >= N )
             break;
-         x_i -= U_i.getElementValue( c_j ) * x[ j ];
+         x_i -= U_i.getValue( c_j ) * x[ j ];
       }
 
       x[ i ] = x_i / U_ii;

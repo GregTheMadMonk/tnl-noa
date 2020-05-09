@@ -18,7 +18,6 @@
 
 #include <TNL/FileName.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Matrices/Legacy/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
 
@@ -192,7 +191,6 @@ setupLinearSystem( MatrixPointer& matrixPointer )
    matrixPointer->setDimensions( dofs, dofs );
    matrixPointer->setCompressedRowLengths( *rowLengthsPointer );
    return true;
-   //return MultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
 }
 
 template< typename Mesh,

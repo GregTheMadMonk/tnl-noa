@@ -88,6 +88,18 @@ setSegmentsSizes( const SizesHolder& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator >
+void
+CSR< Device, Index, IndexAllocator >::
+reset()
+{
+   this->offsets.setSize( 1 );
+   this->offsets = 0;
+}
+
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator >
 typename CSR< Device, Index, IndexAllocator >::ViewType
 CSR< Device, Index, IndexAllocator >::
 getView()
@@ -98,9 +110,9 @@ getView()
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-typename CSR< Device, Index, IndexAllocator >::ConstViewType
+auto
 CSR< Device, Index, IndexAllocator >::
-getConstView() const
+getConstView() const -> const ConstViewType
 {
    return ConstViewType( this->offsets.getConstView() );
 }
@@ -108,10 +120,8 @@ getConstView() const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-__cuda_callable__
-Index
-CSR< Device, Index, IndexAllocator >::
-getSegmentsCount() const
+__cuda_callable__ auto CSR< Device, Index, IndexAllocator >::
+getSegmentsCount() const -> IndexType
 {
    return this->offsets.getSize() - 1;
 }
@@ -119,10 +129,8 @@ getSegmentsCount() const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-__cuda_callable__
-Index
-CSR< Device, Index, IndexAllocator >::
-getSegmentSize( const IndexType segmentIdx ) const
+__cuda_callable__ auto CSR< Device, Index, IndexAllocator >::
+getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
@@ -130,10 +138,8 @@ getSegmentSize( const IndexType segmentIdx ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-__cuda_callable__
-Index
-CSR< Device, Index, IndexAllocator >::
-getSize() const
+__cuda_callable__ auto CSR< Device, Index, IndexAllocator >::
+getSize() const -> IndexType
 {
    return this->getStorageSize();
 }
@@ -141,10 +147,8 @@ getSize() const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-__cuda_callable__
-Index
-CSR< Device, Index, IndexAllocator >::
-getStorageSize() const
+__cuda_callable__ auto CSR< Device, Index, IndexAllocator >::
+getStorageSize() const -> IndexType
 {
    return details::CSR< Device, Index >::getStorageSize( this->offsets );
 }
@@ -152,10 +156,8 @@ getStorageSize() const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-__cuda_callable__
-Index
-CSR< Device, Index, IndexAllocator >::
-getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+__cuda_callable__ auto CSR< Device, Index, IndexAllocator >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -197,16 +199,7 @@ void
 CSR< Device, Index, IndexAllocator >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-      const IndexType begin = offsetsView[ segmentIdx ];
-      const IndexType end = offsetsView[ segmentIdx + 1 ];
-      IndexType localIdx( 0 );
-      for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
-         if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
-            break;
-   };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   this->getConstView().forSegments( first, last, f, args... );
 }
 
 template< typename Device,
@@ -226,21 +219,9 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 CSR< Device, Index, IndexAllocator >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
-   const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-      const IndexType begin = offsetsView[ i ];
-      const IndexType end = offsetsView[ i + 1 ];
-      RealType aux( zero );
-      bool compute( true );
-      IndexType localIdx( 0 );
-      for( IndexType j = begin; j < end && compute; j++  )
-         reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
-      keeper( i, aux );
-   };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -249,7 +230,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 CSR< Device, Index, IndexAllocator >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
@@ -279,7 +260,7 @@ save( File& file ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator >
-void
+void 
 CSR< Device, Index, IndexAllocator >::
 load( File& file )
 {

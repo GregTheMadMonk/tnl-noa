@@ -29,8 +29,8 @@ class SlicedEllpack
    public:
 
       using DeviceType = Device;
-      using IndexType = Index;
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
+      using IndexType = std::remove_const_t< Index >;
+      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       using ViewType = SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >;
@@ -53,13 +53,15 @@ class SlicedEllpack
 
       ViewType getView();
 
-      ConstViewType getConstView() const;
+      const ConstViewType getConstView() const;
 
       /**
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
+
+      void reset();
 
       __cuda_callable__
       IndexType getSegmentsCount() const;
@@ -103,10 +105,10 @@ class SlicedEllpack
        * \brief Go over all segments and perform a reduction in each of them.
        */
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
       SlicedEllpack& operator=( const SlicedEllpack& source ) = default;
 

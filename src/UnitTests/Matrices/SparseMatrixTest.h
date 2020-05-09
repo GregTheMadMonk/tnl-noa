@@ -115,5 +115,4 @@ TYPED_TEST( MatrixTest, printTest )
 
     test_Print< MatrixType >();
 }
-
 #endif

@@ -27,18 +27,22 @@ getResidue( const Matrix& matrix,
             typename Matrix::RealType bNorm )
 {
    using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
    const IndexType size = matrix.getRows();
    RealType res( 0.0 );
    if( bNorm == 0.0 )
       bNorm = lpNorm( b, 2.0 );
-   for( IndexType i = 0; i < size; i ++ )
+   Containers::Vector< RealType, DeviceType, IndexType > v( b.getSize() );
+   matrix.vectorProduct( x, v );
+   return l2Norm( v - b );
+   /*for( IndexType i = 0; i < size; i ++ )
    {
       RealType err = abs( matrix.rowVectorProduct( i, x ) - b[ i ] );
       res += err * err;
    }
-   return std::sqrt( res ) / bNorm;
+   return std::sqrt( res ) / bNorm;*/
 }
 
 } // namespace Linear
