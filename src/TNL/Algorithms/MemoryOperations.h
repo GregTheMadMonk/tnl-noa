@@ -82,10 +82,12 @@ template<>
 struct MemoryOperations< Devices::Host >
 {
    template< typename Element >
+   __cuda_callable__ // only to avoid nvcc warning
    static void setElement( Element* data,
                            const Element& value );
 
    template< typename Element >
+   __cuda_callable__ // only to avoid nvcc warning
    static Element getElement( const Element* data );
 
    template< typename Element, typename Index >

@@ -22,6 +22,7 @@ namespace TNL {
 namespace Algorithms {
 
 template< typename Element >
+__cuda_callable__ // only to avoid nvcc warning
 void
 MemoryOperations< Devices::Host >::
 setElement( Element* data,
@@ -32,6 +33,7 @@ setElement( Element* data,
 }
 
 template< typename Element >
+__cuda_callable__ // only to avoid nvcc warning
 Element
 MemoryOperations< Devices::Host >::
 getElement( const Element* data )
