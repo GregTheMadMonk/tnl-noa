@@ -174,7 +174,7 @@ TYPED_TEST( DistributedMatrixTest, getCompressedRowLengths )
    EXPECT_EQ( output, 0 );
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
       const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
-      output[ gi ] = this->matrix.getRowCapacity( gi );
+      output.setElement( gi, this->matrix.getRowCapacity( gi ) );
    }
    EXPECT_EQ( output, this->rowLengths );
 }
