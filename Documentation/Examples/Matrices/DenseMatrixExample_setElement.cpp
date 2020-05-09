@@ -1,15 +1,29 @@
 #include <iostream>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Pointers/SharedPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 
 template< typename Device >
 void setElements()
 {
-   TNL::Matrices::DenseMatrix< double, Device > matrix( 5, 5 );
+   TNL::Pointers::SharedPointer< TNL::Matrices::DenseMatrix< double, Device > > matrix( 5, 5 );
    for( int i = 0; i < 5; i++ )
-      matrix.setElement( i, i, i );
+      matrix->setElement( i, i, i );
 
-   std::cout << matrix << std::endl;
+   std::cout << "Matrix set from the host:" << std::endl;
+   std::cout << *matrix << std::endl;
+
+   auto f = [=] __cuda_callable__ ( int i ) mutable {
+      matrix->setElement( i, i, -i );
+   };
+   TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
+   TNL::Algorithms::ParallelFor< Device >::exec( 0, 5, f );
+
+   std::cout << "Matrix set from its native device:" << std::endl;
+   std::cout << *matrix << std::endl;
+
 }
 
 int main( int argc, char* argv[] )
