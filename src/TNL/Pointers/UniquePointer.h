@@ -97,6 +97,30 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       }
 
       /**
+       * \brief Constructor with initializer list.
+       *
+       * \tparam Value is type of the initializer list elements.
+       * \param list is the instance of the initializer list..
+       */
+      template< typename Value >
+      explicit  UniquePointer( std::initializer_list< Value > list )
+      {
+         this->pointer = new Object( list );
+      }
+
+      /**
+       * \brief Constructor with nested initializer lists.
+       *
+       * \tparam Value is type of the nested initializer list elements.
+       * \param list is the instance of the nested initializer list..
+       */
+      template< typename Value >
+      explicit  UniquePointer( std::initializer_list< std::initializer_list< Value > > list )
+      {
+         this->pointer = new Object( list );
+      }
+
+      /**
        * \brief Arrow operator for accessing the object owned by constant smart pointer.
        *
        * \return constant pointer to the object owned by this smart pointer.
@@ -298,6 +322,34 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
         cuda_pointer( nullptr )
       {
          this->allocate( args... );
+      }
+
+      /**
+       * \brief Constructor with initializer list.
+       *
+       * \tparam Value is type of the initializer list elements.
+       * \param list is the instance of the initializer list..
+       */
+      template< typename Value >
+      explicit  UniquePointer( std::initializer_list< Value > list )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {
+         this->allocate( list );
+      }
+
+      /**
+       * \brief Constructor with nested initializer lists.
+       *
+       * \tparam Value is type of the nested initializer list elements.
+       * \param list is the instance of the nested initializer list..
+       */
+      template< typename Value >
+      explicit  UniquePointer( std::initializer_list< std::initializer_list< Value > > list )
+      : pd( nullptr ),
+        cuda_pointer( nullptr )
+      {
+         this->allocate( list );
       }
 
       /**
