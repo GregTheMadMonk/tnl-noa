@@ -8,15 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <iostream>
+#include <functional>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Containers/Array.h>
-
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/Reduction.h>
 #include <TNL/Math.h>
-#include <iostream>
 
 using Dense_host_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int >;
 using Dense_host_int = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int >;
@@ -377,178 +379,192 @@ void test_SetValue()
 template< typename Matrix >
 void test_SetElement()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    \ 21 22 23 24 25 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 5;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x5 dense matrix:
+    *
+    *    /  1  2  3  4  5 \
+    *    |  6  7  8  9 10 |
+    *    | 11 12 13 14 15 |
+    *    | 16 17 18 19 20 |
+    *    \ 21 22 23 24 25 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 5;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+         m.setElement( i, j, value++ );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  6 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  7 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  8 );
-    EXPECT_EQ( m.getElement( 1, 3 ),  9 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 10 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  3 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  4 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  5 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 11 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 12 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 13 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 14 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  6 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  7 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  9 );
+   EXPECT_EQ( m.getElement( 1, 4 ), 10 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 16 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 17 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 18 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 19 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 20 );
+   EXPECT_EQ( m.getElement( 2, 0 ), 11 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 12 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 13 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 14 );
+   EXPECT_EQ( m.getElement( 2, 4 ), 15 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 21 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 22 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 23 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 24 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 25 );
+   EXPECT_EQ( m.getElement( 3, 0 ), 16 );
+   EXPECT_EQ( m.getElement( 3, 1 ), 17 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 18 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 19 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 20 );
+
+   EXPECT_EQ( m.getElement( 4, 0 ), 21 );
+   EXPECT_EQ( m.getElement( 4, 1 ), 22 );
+   EXPECT_EQ( m.getElement( 4, 2 ), 23 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 24 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 25 );
+
+   TNL::Containers::Vector< RealType, DeviceType, IndexType > v( m.getRows(), 0 );
+   auto v_view = v.getView();
+   auto m_view = m.getView();
+   auto f1 = [=] __cuda_callable__ ( IndexType i ) mutable {
+      v_view[ i ] = m_view.getElement( i, i );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, m.getRows(), f1 );
+
+   for( IndexType i = 0; i < m.getRows(); i++ )
+      EXPECT_EQ( v.getElement( i ), m.getElement( i, i ) );
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool {
+      return ( v_view[ i ] == m_view.getElement( i, i ) );
+   };
+   EXPECT_TRUE( TNL::Algorithms::Reduction< DeviceType >::reduce( m.getRows(), std::logical_and<>{}, fetch, true ) );
+
 }
 
 template< typename Matrix >
 void test_AddElement()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 6x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    | 21 22 23 24 25 |
- *    \ 26 27 28 29 30 /
- */
-    const IndexType rows = 6;
-    const IndexType cols = 5;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 6x5 dense matrix:
+    *
+    *    /  1  2  3  4  5 \
+    *    |  6  7  8  9 10 |
+    *    | 11 12 13 14 15 |
+    *    | 16 17 18 19 20 |
+    *    | 21 22 23 24 25 |
+    *    \ 26 27 28 29 30 /
+    */
+   const IndexType rows = 6;
+   const IndexType cols = 5;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
-    // Check the added elements
-    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+         m.setElement( i, j, value++ );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  6 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  7 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  8 );
-    EXPECT_EQ( m.getElement( 1, 3 ),  9 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 10 );
+   // Check the added elements
+   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  3 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  4 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  5 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 11 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 12 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 13 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 14 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  6 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  7 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  9 );
+   EXPECT_EQ( m.getElement( 1, 4 ), 10 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 16 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 17 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 18 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 19 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 20 );
+   EXPECT_EQ( m.getElement( 2, 0 ), 11 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 12 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 13 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 14 );
+   EXPECT_EQ( m.getElement( 2, 4 ), 15 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 21 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 22 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 23 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 24 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 25 );
+   EXPECT_EQ( m.getElement( 3, 0 ), 16 );
+   EXPECT_EQ( m.getElement( 3, 1 ), 17 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 18 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 19 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 20 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 26 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 27 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 28 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 29 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 30 );
+   EXPECT_EQ( m.getElement( 4, 0 ), 21 );
+   EXPECT_EQ( m.getElement( 4, 1 ), 22 );
+   EXPECT_EQ( m.getElement( 4, 2 ), 23 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 24 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 25 );
 
-    // Add new elements to the old elements with a multiplying factor applied to the old elements.
-/*
- * The following setup results in the following 6x5 dense matrix:
- *
- *    /  3  6  9 12 15 \
- *    | 18 21 24 27 30 |
- *    | 33 36 39 42 45 |
- *    | 48 51 54 57 60 |
- *    | 63 66 69 72 75 |
- *    \ 78 81 84 87 90 /
- */
-    RealType newValue = 1;
-    RealType multiplicator = 2;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.addElement( i, j, newValue++, multiplicator );
+   EXPECT_EQ( m.getElement( 5, 0 ), 26 );
+   EXPECT_EQ( m.getElement( 5, 1 ), 27 );
+   EXPECT_EQ( m.getElement( 5, 2 ), 28 );
+   EXPECT_EQ( m.getElement( 5, 3 ), 29 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 30 );
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  6 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  9 );
-    EXPECT_EQ( m.getElement( 0, 3 ), 12 );
-    EXPECT_EQ( m.getElement( 0, 4 ), 15 );
+   // Add new elements to the old elements with a multiplying factor applied to the old elements.
+   /*
+    * The following setup results in the following 6x5 dense matrix:
+    *
+    *    /  3  6  9 12 15 \
+    *    | 18 21 24 27 30 |
+    *    | 33 36 39 42 45 |
+    *    | 48 51 54 57 60 |
+    *    | 63 66 69 72 75 |
+    *    \ 78 81 84 87 90 /
+    */
+   RealType newValue = 1;
+   RealType multiplicator = 2;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+         m.addElement( i, j, newValue++, multiplicator );
 
-    EXPECT_EQ( m.getElement( 1, 0 ), 18 );
-    EXPECT_EQ( m.getElement( 1, 1 ), 21 );
-    EXPECT_EQ( m.getElement( 1, 2 ), 24 );
-    EXPECT_EQ( m.getElement( 1, 3 ), 27 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 30 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  3 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  6 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  9 );
+   EXPECT_EQ( m.getElement( 0, 3 ), 12 );
+   EXPECT_EQ( m.getElement( 0, 4 ), 15 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 33 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 36 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 39 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 45 );
+   EXPECT_EQ( m.getElement( 1, 0 ), 18 );
+   EXPECT_EQ( m.getElement( 1, 1 ), 21 );
+   EXPECT_EQ( m.getElement( 1, 2 ), 24 );
+   EXPECT_EQ( m.getElement( 1, 3 ), 27 );
+   EXPECT_EQ( m.getElement( 1, 4 ), 30 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 48 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 51 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 54 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 57 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 60 );
+   EXPECT_EQ( m.getElement( 2, 0 ), 33 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 36 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 39 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 42 );
+   EXPECT_EQ( m.getElement( 2, 4 ), 45 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 63 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 66 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 69 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 72 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 75 );
+   EXPECT_EQ( m.getElement( 3, 0 ), 48 );
+   EXPECT_EQ( m.getElement( 3, 1 ), 51 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 54 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 57 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 60 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 78 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 81 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 84 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 87 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 90 );
+   EXPECT_EQ( m.getElement( 4, 0 ), 63 );
+   EXPECT_EQ( m.getElement( 4, 1 ), 66 );
+   EXPECT_EQ( m.getElement( 4, 2 ), 69 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 72 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 75 );
+
+   EXPECT_EQ( m.getElement( 5, 0 ), 78 );
+   EXPECT_EQ( m.getElement( 5, 1 ), 81 );
+   EXPECT_EQ( m.getElement( 5, 2 ), 84 );
+   EXPECT_EQ( m.getElement( 5, 3 ), 87 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 90 );
 }
 
 template< typename Matrix >
