@@ -429,10 +429,10 @@ vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType& matrixMultiplicator,
                const RealType& outVectorMultiplicator,
-               const IndexType firstRow,
-               const IndexType lastRow ) const
+               const IndexType begin,
+               const IndexType end ) const
 {
-   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, begin, end );
 }
 
 template< typename Real,

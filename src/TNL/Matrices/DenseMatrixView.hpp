@@ -379,8 +379,8 @@ vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType& matrixMultiplicator,
                const RealType& outVectorMultiplicator,
-               const IndexType firstRow,
-               IndexType lastRow ) const
+               const IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns count differs with input vector size." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows count differs with output vector size." );
@@ -388,15 +388,15 @@ vectorProduct( const InVector& inVector,
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
    const auto valuesView = this->values.getConstView();
-   if( lastRow == 0 )
-      lastRow = this->getRows();
+   if( end == 0 )
+      end = this->getRows();
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+   this->segments.segmentsReduction( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,
