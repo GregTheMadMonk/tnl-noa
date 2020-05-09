@@ -64,6 +64,9 @@ class Ellpack
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
+
+      void reset();
+
       /**
        * \brief Number segments.
        */

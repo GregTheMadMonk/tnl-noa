@@ -162,6 +162,22 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
+void
+SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+reset()
+{
+   this->size = 0;
+   this->alignedSize = 0;
+   this->segmentsCount = 0;
+   this->sliceOffsets.reset();
+   this->sliceSegmentSizes.reset();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int SliceSize >
 __cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 getSegmentsCount() const -> IndexType
 {

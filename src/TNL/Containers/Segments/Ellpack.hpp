@@ -149,6 +149,20 @@ template< typename Device,
           int Alignment >
 void
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
+reset()
+{
+   this->segmentSize = 0;
+   this->size = 0;
+   this->alignedSize = 0;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int Alignment >
+void
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize )
 {
    this->segmentSize = segmentSize;

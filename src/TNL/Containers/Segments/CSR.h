@@ -55,6 +55,8 @@ class CSR
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
 
+      void reset();
+
       ViewType getView();
 
       const ConstViewType getConstView() const;

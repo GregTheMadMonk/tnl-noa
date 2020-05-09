@@ -61,6 +61,8 @@ class SlicedEllpack
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
 
+      void reset();
+
       __cuda_callable__
       IndexType getSegmentsCount() const;
 

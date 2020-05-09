@@ -304,6 +304,24 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           bool RowMajorOrder >
+void
+ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+reset()
+{
+   this->size = 0;
+   this->storageSize = 0;
+   this->rowToSliceMapping.reset();
+   this->rowToChunkMapping.reset();
+   this->chunksToSegmentsMapping.reset();
+   this->rowPointers.reset();
+   this->slices.reset();
+   this->numberOfSlices = 0;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder >
 __cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
 getSegmentsCount() const -> IndexType
 {

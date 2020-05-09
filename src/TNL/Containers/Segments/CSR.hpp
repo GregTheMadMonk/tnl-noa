@@ -88,6 +88,18 @@ setSegmentsSizes( const SizesHolder& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator >
+void
+CSR< Device, Index, IndexAllocator >::
+reset()
+{
+   this->offsets.setSize( 1 );
+   this->offsets = 0;
+}
+
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator >
 typename CSR< Device, Index, IndexAllocator >::ViewType
 CSR< Device, Index, IndexAllocator >::
 getView()

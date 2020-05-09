@@ -69,6 +69,8 @@ class ChunkedEllpack
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
 
+      void reset();
+
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /**

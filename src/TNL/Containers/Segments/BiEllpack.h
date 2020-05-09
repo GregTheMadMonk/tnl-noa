@@ -66,6 +66,8 @@ class BiEllpack
       template< typename SizesHolder = OffsetsHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
 
+      void reset();
+
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /**
@@ -147,8 +149,6 @@ class BiEllpack
       OffsetsHolder rowPermArray;
 
       OffsetsHolder groupPointers;
-
-
 
       // TODO: Replace later
       __cuda_callable__ Index power( const IndexType number, const IndexType exponent ) const

@@ -367,6 +367,22 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int WarpSize >
+void
+BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+reset()
+{
+   this->size = 0;
+   this->storageSize = 0;
+   this->virtualRows = 0;
+   rowPermArray.reset();
+   groupPointers.reset();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int WarpSize >
 auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {

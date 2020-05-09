@@ -363,7 +363,7 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 reset()
 {
    BaseType::reset();
-   this->segments = SegmentsType( Containers::Vector< IndexType, DeviceType, IndexType >() ),
+   this->segments.reset();
    this->view = this->getView();
    TNL_ASSERT_EQ( this->getRows(), segments.getSegmentsCount(), "mismatched segments count" );
 }
