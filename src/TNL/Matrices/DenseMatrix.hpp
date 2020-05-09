@@ -421,27 +421,18 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType 
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-rowVectorProduct( const IndexType row, const Vector& vector ) const
-{
-   return this->view.rowVectorProduct( row, vector );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
    template< typename InVector,
              typename OutVector >
 void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType& matrixMultiplicator,
+               const RealType& outVectorMultiplicator,
+               const IndexType firstRow,
+               const IndexType lastRow ) const
 {
-   this->view.vectorProduct( inVector, outVector );
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
 }
 
 template< typename Real,
