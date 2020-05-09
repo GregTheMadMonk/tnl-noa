@@ -346,6 +346,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \par Output
        * \include DenseMatrixExample_setElement.out
        */
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
@@ -365,6 +366,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param thisElementMultiplicator is multiplicator the original matrix element
        *   value is multiplied by before addition of given e value.
        */
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
@@ -384,6 +386,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \return value of given matrix element.
        */
+      __cuda_callable__
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 

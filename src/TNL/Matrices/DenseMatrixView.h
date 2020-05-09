@@ -91,8 +91,6 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getNonzeroElementsCount() const;
 
-      void reset();
-
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
@@ -110,15 +108,18 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       const Real& operator()( const IndexType row,
                               const IndexType column ) const;
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      __cuda_callable__
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 

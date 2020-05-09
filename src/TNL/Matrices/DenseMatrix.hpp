@@ -233,6 +233,7 @@ DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
 reset()
 {
    Matrix< Real, Device, Index >::reset();
+   this->segments.reset();
 }
 
 template< typename Real,
@@ -300,7 +301,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void
+__cuda_callable__ void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
 setElement( const IndexType row,
             const IndexType column,
@@ -314,7 +315,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void
+__cuda_callable__ void
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
 addElement( const IndexType row,
             const IndexType column,
@@ -329,7 +330,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-Real
+__cuda_callable__ Real
 DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const

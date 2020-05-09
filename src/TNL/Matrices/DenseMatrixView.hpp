@@ -174,17 +174,6 @@ template< typename Real,
           bool RowMajorOrder >
 void
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-reset()
-{
-   Matrix< Real, Device, Index >::reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
-void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 setValue( const Real& value )
 {
    this->values = value;
@@ -250,7 +239,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void
+__cuda_callable__ void
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 setElement( const IndexType row,
             const IndexType column,
@@ -263,7 +252,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void
+__cuda_callable__ void
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 addElement( const IndexType row,
             const IndexType column,
@@ -283,7 +272,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Real
+__cuda_callable__ Real
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getElement( const IndexType row,
             const IndexType column ) const
