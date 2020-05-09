@@ -331,9 +331,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -354,9 +355,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Add element at given \e row and \e column to given \e value.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -375,9 +377,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -519,21 +522,6 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       void forAllRows( Function& function );
 
       /**
-       * \brief This method computes scalar product of given vector and one 
-       *  row of the matrix.
-       * 
-       * \tparam Vector is type of input vector. It can be \ref Vector,
-       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
-       * \param row is index of the row used for the scalar product.
-       * \param vector is the input vector.
-       * \return result of the matrix row and vector product.
-       */
-      template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
-
-      /**
        * \brief Computes product of matrix and vector.
        * 
        * \tparam InVector is type of input vector.  It can be \ref Vector,
@@ -546,7 +534,11 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType& matrixMultiplicator = 1.0,
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          const IndexType lastRow = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,

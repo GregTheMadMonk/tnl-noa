@@ -141,14 +141,13 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Function >
       void forAllRows( Function& function );
 
-      template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
-
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType& matrixMultiplicator = 1.0,
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType firstRow = 0,
+                          IndexType lastRow = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,
