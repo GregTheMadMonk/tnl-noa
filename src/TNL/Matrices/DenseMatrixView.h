@@ -146,8 +146,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
                           OutVector& outVector,
                           const RealType& matrixMultiplicator = 1.0,
                           const RealType& outVectorMultiplicator = 0.0,
-                          const IndexType firstRow = 0,
-                          IndexType lastRow = 0 ) const;
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,

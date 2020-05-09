@@ -524,6 +524,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Computes product of matrix and vector.
        * 
+       * More precisely, it computes:
+       * 
+       * outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.
+       * 
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
        * \tparam OutVector is type of output vector. It can be \ref Vector,
@@ -531,14 +535,21 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \param inVector is input vector.
        * \param outVector is output vector.
+       * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
+       * \param outVectorMultiplicator is a factor by which the outVector is multiplied before added
+       *    to the result of matrix-vector product. It is zero by default.
+       * \param begin is the beginning of the rows range for which the vector product
+       *    is computed. It is zero by default.
+       * \param end is the end of the rows range for which the vector product
+       *    is computed. It is number if the matrix rows by default.
        */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
                           const RealType& matrixMultiplicator = 1.0,
                           const RealType& outVectorMultiplicator = 0.0,
-                          const IndexType firstRow = 0,
-                          const IndexType lastRow = 0 ) const;
+                          const IndexType begin = 0,
+                          const IndexType end = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,
