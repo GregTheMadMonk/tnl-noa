@@ -35,7 +35,7 @@ template< typename Mesh,
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshPointer& meshPointer )
 {
-   this->meshPointer=meshPointer;
+   this->meshPointer = meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -45,43 +45,8 @@ template< typename Mesh,
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const MeshFunction& meshFunction )
 {
-   this->meshPointer=meshFunction.meshPointer;
-   this->data.bind( meshFunction.getData() );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-   template< typename Vector >
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-MeshFunction( const MeshPointer& meshPointer,
-              Vector& data,
-              const IndexType& offset )
-//: meshPointer( meshPointer )
-{
-   TNL_ASSERT_GE( data.getSize(), meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "The input vector is not large enough for binding to the mesh function." );
-
-   this->meshPointer=meshPointer;
-   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-}
-
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-   template< typename Vector >
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-MeshFunction( const MeshPointer& meshPointer,
-              Pointers::SharedPointer<  Vector >& data,
-              const IndexType& offset )
-//: meshPointer( meshPointer )
-{
-   TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "The input vector is not large enough for binding to the mesh function." );
-
-   this->meshPointer=meshPointer;
-   this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
+   this->meshPointer = meshFunction.meshPointer;
+   this->data = meshFunction.getData();
 }
 
 template< typename Mesh,
@@ -96,7 +61,7 @@ getSerializationType()
           convertToString( MeshEntityDimension ) + ", " +
           getType< Real >() +
           " >";
-};
+}
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -106,7 +71,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
-};
+}
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -146,69 +111,9 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( MeshFunction& meshFunction )
-{
-   this->meshPointer=meshFunction.meshPointer;
-   this->data.bind( meshFunction.getData() );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-   template< typename Vector >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( const Vector& data,
-      const IndexType& offset )
-{
-   TNL_ASSERT_GE( data.getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "The input vector is not large enough for binding to the mesh function." );
-   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-   template< typename Vector >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( const MeshPointer& meshPointer,
-      const Vector& data,
-      const IndexType& offset )
-{
-   TNL_ASSERT_GE( data.getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "The input vector is not large enough for binding to the mesh function." );
-
-   this->meshPointer=meshPointer;
-   this->data.bind( data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-   template< typename Vector >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( const MeshPointer& meshPointer,
-      const Pointers::SharedPointer<  Vector >& data,
-      const IndexType& offset )
-{
-   TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "The input vector is not large enough for binding to the mesh function." );
-   static_assert( std::is_same< typename Vector::RealType, RealType >::value, "Cannot bind Vector with different Real type." );
-
-   this->meshPointer=meshPointer;
-   this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
 setMesh( const MeshPointer& meshPointer )
 {
-   this->meshPointer=meshPointer;
+   this->meshPointer = meshPointer;
    this->data.setSize( getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
 
@@ -422,7 +327,7 @@ Real
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getLpNorm( const RealType& p ) const
 {
-   return MeshFunctionNormGetter< MeshFunction >::getNorm( *this, p );
+   return MeshFunctionNormGetter< Mesh >::getNorm( *this, p );
 }
 
 template< typename Mesh,

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshFunction.h  -  description
+                          MeshFunctionView.h  -  description
                              -------------------
     begin                : Nov 8, 2015
     copyright            : (C) 2015 by oberhuber
@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/VectorView.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Pointers/SharedPointer.h>
 
@@ -21,7 +21,7 @@ namespace Functions {
 template< typename Mesh,
           int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType >
-class MeshFunction :
+class MeshFunctionView :
    public Object,
    public Domain< Mesh::getMeshDimension(), MeshDomain >
 {
@@ -34,17 +34,25 @@ class MeshFunction :
       using IndexType = typename MeshType::GlobalIndexType;
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using RealType = Real;
-      using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+      using VectorType = Containers::VectorView< RealType, DeviceType, IndexType >;
 
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
 
       static constexpr int getMeshDimension() { return MeshType::getMeshDimension(); }
 
-      MeshFunction();
+      MeshFunctionView();
 
-      MeshFunction( const MeshPointer& meshPointer );
+      MeshFunctionView( const MeshFunctionView& meshFunction );
 
-      MeshFunction( const MeshFunction& meshFunction );
+      template< typename Vector >
+      MeshFunctionView( const MeshPointer& meshPointer,
+                        Vector& data,
+                        const IndexType& offset = 0 );
+
+      template< typename Vector >
+      MeshFunctionView( const MeshPointer& meshPointer,
+                        Pointers::SharedPointer<  Vector >& data,
+                        const IndexType& offset = 0 );
 
       static String getSerializationType();
 
@@ -56,6 +64,22 @@ class MeshFunction :
       bool setup( const MeshPointer& meshPointer,
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
+
+      void bind( MeshFunctionView& meshFunction );
+
+      template< typename Vector >
+      void bind( Vector& data,
+                 const IndexType& offset = 0 );
+
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 Vector& data,
+                 const IndexType& offset = 0 );
+
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 Pointers::SharedPointer< Vector >& dataPtr,
+                 const IndexType& offset = 0 );
 
       void setMesh( const MeshPointer& meshPointer );
 
@@ -97,16 +121,16 @@ class MeshFunction :
       __cuda_callable__
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
-      MeshFunction& operator = ( const MeshFunction& f );
+      MeshFunctionView& operator = ( const MeshFunctionView& f );
 
       template< typename Function >
-      MeshFunction& operator = ( const Function& f );
+      MeshFunctionView& operator = ( const Function& f );
 
       template< typename Function >
-      MeshFunction& operator -= ( const Function& f );
+      MeshFunctionView& operator -= ( const Function& f );
 
       template< typename Function >
-      MeshFunction& operator += ( const Function& f );
+      MeshFunctionView& operator += ( const Function& f );
 
       RealType getLpNorm( const RealType& p ) const;
 
@@ -139,9 +163,9 @@ class MeshFunction :
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, Real >& f );
+std::ostream& operator << ( std::ostream& str, const MeshFunctionView< Mesh, MeshEntityDimension, Real >& f );
 
 } // namespace Functions
 } // namespace TNL
 
-#include <TNL/Functions/MeshFunction.hpp>
+#include <TNL/Functions/MeshFunctionView.hpp>

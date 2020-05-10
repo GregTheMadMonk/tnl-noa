@@ -10,13 +10,13 @@
 
 #pragma once
 
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Functions {   
 
-template< typename MeshFunction,
-          typename Mesh = typename MeshFunction::MeshType >
+template< typename Mesh >
 class MeshFunctionNormGetter
 {
 };
@@ -27,26 +27,23 @@ class MeshFunctionNormGetter
  */
 template< int Dimension,
           typename MeshReal,
-          typename MeshIndex,
-          int EntityDimension,
-          typename Real >
-class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex >, EntityDimension, Real >,
-                                 Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > >
+          typename MeshIndex >
+class MeshFunctionNormGetter< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex >, EntityDimension, Real > MeshFunctionType;
       typedef Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Host DeviceType;
       typedef MeshIndex MeshIndexType;
-      typedef typename MeshFunctionType::RealType RealType;
-      typedef typename MeshFunctionType::MeshType MeshType;
-      typedef typename MeshType::Face EntityType;
  
-      static RealType getNorm( const MeshFunctionType& function,
-                               const RealType& p )
+      template< typename MeshFunctionType >
+      static typename MeshFunctionType::RealType
+      getNorm( const MeshFunctionType& function,
+               const typename MeshFunctionType::RealType& p )
       {
+         typedef typename MeshFunctionType::RealType RealType;
+         static constexpr int EntityDimension = MeshFunctionType::getEntitiesDimension();
          if( EntityDimension == Dimension )
          {
             if( p == 1.0 )
@@ -57,6 +54,8 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
          }
          if( EntityDimension > 0 )
          {
+            typedef typename MeshFunctionType::MeshType MeshType;
+            typedef typename MeshType::Face EntityType;
             if( p == 1.0 )
             {
                RealType result( 0.0 );
@@ -106,26 +105,23 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
  */
 template< int Dimension,
           typename MeshReal,
-          typename MeshIndex,
-          int EntityDimension,
-          typename Real >
-class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex >, EntityDimension, Real >,
-                                 Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > >
+          typename MeshIndex >
+class MeshFunctionNormGetter< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex >, EntityDimension, Real > MeshFunctionType;
       typedef Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Cuda DeviceType;
       typedef MeshIndex MeshIndexType;
-      typedef typename MeshFunctionType::RealType RealType;
-      typedef typename MeshFunctionType::MeshType MeshType;
-      typedef typename MeshType::Face EntityType;
  
-      static RealType getNorm( const MeshFunctionType& function,
-                               const RealType& p )
+      template< typename MeshFunctionType >
+      static typename MeshFunctionType::RealType
+      getNorm( const MeshFunctionType& function,
+               const typename MeshFunctionType::RealType& p )
       {
+         typedef typename MeshFunctionType::RealType RealType;
+         static constexpr int EntityDimension = MeshFunctionType::getEntitiesDimension();
          if( EntityDimension == Dimension )
          {
             if( p == 1.0 )
@@ -136,6 +132,8 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
          }
          if( EntityDimension > 0 )
          {
+            typedef typename MeshFunctionType::MeshType MeshType;
+            typedef typename MeshType::Face EntityType;
             throw Exceptions::NotImplementedError("Not implemented yet.");
          }
  
@@ -149,4 +147,3 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
 
 } // namespace Functions
 } // namespace TNL
-
