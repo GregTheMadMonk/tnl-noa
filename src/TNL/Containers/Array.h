@@ -297,55 +297,6 @@ class Array
       void setLike( const ArrayT& array );
 
       /**
-       * \brief Binds \e _data with this array.
-       *
-       * Releases old data and binds this array with new \e _data. Also sets new
-       * \e _size of this array.
-       *
-       * This method is deprecated, use \ref ArrayView instead.
-       *
-       * \param _data Pointer to new data.
-       * \param _size Size of new _data. Number of elements.
-       */
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
-      void bind( Value* _data,
-                 const Index _size );
-
-      /**
-       * \brief Binds this array with another \e array.
-       *
-       * Releases old data and binds this array with new \e array starting at
-       * position \e begin. Also sets new \e size of this array.
-       *
-       * This method is deprecated, use \ref ArrayView instead.
-       *
-       * \tparam ArrayT Type of array.
-       * \param array Reference to a new array.
-       * \param begin Starting index position.
-       * \param size Size of new array. Number of elements.
-       */
-      template< typename ArrayT >
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
-      void bind( const ArrayT& array,
-                 const IndexType& begin = 0,
-                 const IndexType& size = 0 );
-
-      /**
-       * \brief Binds this array with a static array of size \e Size.
-       *
-       * Releases old data and binds this array with a static array of size \e
-       * Size.
-       *
-       * This method is deprecated, use \ref ArrayView instead.
-       *
-       * \tparam Size Size of array.
-       * \param array Reference to a static array.
-       */
-      template< int Size >
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
-      void bind( StaticArray< Size, Value >& array );
-
-      /**
        * \brief Returns a modifiable view of the array.
        *
        * By default, a view for the whole array is returned. If \e begin or
@@ -673,30 +624,11 @@ class Array
       /** \brief Method for releasing (deallocating) array data. */
       void releaseData();
 
-      /** \brief Number of elements in the array. */
-      mutable Index size = 0;
-
       /** \brief Pointer to the data. */
-      mutable Value* data = nullptr;
+      Value* data = nullptr;
 
-      /**
-       * \brief Pointer to the originally allocated data.
-       *
-       * They might differ if one long array is partitioned into more shorter
-       * arrays. Each of them must know the pointer on allocated data because
-       * the last one must deallocate the array. If outer data (not allocated
-       * by TNL) are bind then this pointer is zero since no deallocation is
-       * necessary.
-       */
-      mutable Value* allocationPointer = nullptr;
-
-      /**
-       * \brief Counter of objects sharing this array or some parts of it.
-       *
-       * The reference counter is allocated after first sharing of the data between
-       * more arrays. This is to avoid unnecessary dynamic memory allocation.
-       */
-      mutable int* referenceCounter = nullptr;
+      /** \brief Number of elements in the array. */
+      Index size = 0;
 
       /**
        * \brief The internal allocator instance.

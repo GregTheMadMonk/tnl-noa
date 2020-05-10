@@ -30,15 +30,11 @@ template< typename Value,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
 Array( Array&& array )
-: size( std::move(array.size) ),
-  data( std::move(array.data) ),
-  allocationPointer( std::move(array.allocationPointer) ),
-  referenceCounter( std::move(array.referenceCounter) ),
+: data( std::move(array.data) ),
+  size( std::move(array.size) ),
   allocator( std::move(array.allocator) )
 {
    array.data = nullptr;
-   array.allocationPointer = nullptr;
-   array.referenceCounter = nullptr;
 }
 
 template< typename Value,
@@ -232,22 +228,10 @@ void
 Array< Value, Device, Index, Allocator >::
 releaseData()
 {
-   if( this->referenceCounter )
-   {
-      if( --*this->referenceCounter == 0 )
-      {
-         allocator.deallocate( this->allocationPointer, this->size );
-         delete this->referenceCounter;
-         //std::cerr << "Deallocating reference counter " << this->referenceCounter << std::endl;
-      }
-   }
-   else
-      if( allocationPointer )
-         allocator.deallocate( this->allocationPointer, this->size );
-   this->allocationPointer = 0;
-   this->data = 0;
+   if( this->data )
+      allocator.deallocate( this->data, this->size );
+   this->data = nullptr;
    this->size = 0;
-   this->referenceCounter = 0;
 }
 
 template< typename Value,
@@ -260,17 +244,16 @@ setSize( Index size )
 {
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 
-   if( this->size == size && allocationPointer && ! referenceCounter )
+   if( this->size == size )
       return;
    this->releaseData();
 
    // Allocating zero bytes is useless. Moreover, the allocators don't behave the same way:
    // "operator new" returns some non-zero address, the latter returns a null pointer.
    if( size > 0 ) {
-      this->allocationPointer = allocator.allocate( size );
-      this->data = this->allocationPointer;
+      this->data = allocator.allocate( size );
       this->size = size;
-      TNL_ASSERT_TRUE( this->allocationPointer,
+      TNL_ASSERT_TRUE( this->data,
                        "This should never happen - allocator did not throw on an error." );
    }
 }
@@ -297,76 +280,6 @@ Array< Value, Device, Index, Allocator >::
 setLike( const ArrayT& array )
 {
    setSize( array.getSize() );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-void
-Array< Value, Device, Index, Allocator >::
-bind( Value* data,
-      const Index size )
-{
-   TNL_ASSERT_TRUE( data, "Null pointer cannot be bound." );
-   this->releaseData();
-   this->data = data;
-   this->size = size;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename ArrayT >
-void
-Array< Value, Device, Index, Allocator >::
-bind( const ArrayT& array,
-      const IndexType& begin,
-      const IndexType& size )
-{
-   // all template parameters of Array must match, otherwise binding does not make sense
-   static_assert( std::is_same< Value, typename ArrayT::ValueType >::value, "ValueType of both arrays must be the same." );
-   static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
-   static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
-   TNL_ASSERT_TRUE( array.getData(), "Empty array cannot be bound." );
-   TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
-   TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
-
-   this->releaseData();
-   if( size )
-      this->size = size;
-   else
-      this->size = array.getSize() - begin;
-   this->data = const_cast< Value* >( &array.getData()[ begin ] );
-   this->allocationPointer = array.allocationPointer;
-   if( array.allocationPointer )
-   {
-      if( array.referenceCounter )
-      {
-         this->referenceCounter = array.referenceCounter;
-         ( *this->referenceCounter )++;
-      }
-      else
-      {
-         this->referenceCounter = array.referenceCounter = new int( 2 );
-         //std::cerr << "Allocating reference counter " << this->referenceCounter << std::endl;
-      }
-   }
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< int Size >
-void
-Array< Value, Device, Index, Allocator >::
-bind( StaticArray< Size, Value >& array )
-{
-   this->releaseData();
-   this->size = Size;
-   this->data = array.getData();
 }
 
 template< typename Value,
@@ -425,8 +338,6 @@ swap( Array< Value, Device, Index, Allocator >& array )
 {
    TNL::swap( this->size, array.size );
    TNL::swap( this->data, array.data );
-   TNL::swap( this->allocationPointer, array.allocationPointer );
-   TNL::swap( this->referenceCounter, array.referenceCounter );
 }
 
 template< typename Value,
@@ -595,13 +506,8 @@ operator=( Array< Value, Device, Index, Allocator >&& array )
 
    this->size = array.size;
    this->data = array.data;
-   this->allocationPointer = array.allocationPointer;
-   this->referenceCounter = array.referenceCounter;
-
    array.size = 0;
    array.data = nullptr;
-   array.allocationPointer = nullptr;
-   array.referenceCounter = nullptr;
    return *this;
 }
 
