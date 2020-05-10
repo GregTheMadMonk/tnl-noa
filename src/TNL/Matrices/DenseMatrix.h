@@ -126,7 +126,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * list of matrix rows.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_Constructor_init_list.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
        * \par Output
        * \include DenseMatrixExample_Constructor_init_list.out
        */
@@ -200,7 +200,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * list of matrix rows.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_setElements.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_setElements.cpp
        * \par Output
        * \include DenseMatrixExample_setElements.out
        */
@@ -223,7 +223,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * will be stored.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_getCompressedRowLengths.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getCompressedRowLengths.cpp
        * \par Output
        * \include DenseMatrixExample_getCompressedRowLengths.out
        */
@@ -240,7 +240,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return number of all matrix elements.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getElementsCount.cpp
        * \par Output
        * \include DenseMatrixExample_getElementsCount.out
        */
@@ -252,7 +252,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return number of all non-zero matrix elements.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getElementsCount.cpp
        * \par Output
        * \include DenseMatrixExample_getElementsCount.out
        */
@@ -271,7 +271,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return RowView for accessing given matrix row.
        *
        * \par Example
-       * \include Matrices/DenseMatrixExample_getConstRow.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getConstRow.cpp
        * \par Output
        * \include DenseMatrixExample_getConstRow.out
        * 
@@ -288,7 +288,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return RowView for accessing given matrix row.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_getRow.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getRow.cpp
        * \par Output
        * \include DenseMatrixExample_getRow.out
        * 
@@ -349,7 +349,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param value is the value the element will be set to.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixViewExample_setElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_setElement.cpp
        * \par Output
        * \include DenseMatrixExample_setElement.out
        */
@@ -375,7 +375,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        *   value is multiplied by before addition of given \e value.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixViewExample_addElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_addElement.cpp
        * \par Output
        * \include DenseMatrixExample_addElement.out
        * 
@@ -402,7 +402,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return value of given matrix element.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixViewExample_getElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_getElement.cpp
        * \par Output
        * \include DenseMatrixExample_getElement.out
        * 
@@ -431,7 +431,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_rowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_rowsReduction.cpp
        * \par Output
        * \include DenseMatrixExample_rowsReduction.out
        */
@@ -456,7 +456,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_allRowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_allRowsReduction.cpp
        * \par Output
        * \include DenseMatrixExample_allRowsReduction.out
        */
@@ -478,7 +478,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_forRows.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
        * \par Output
        * \include DenseMatrixExample_forRows.out
        */
@@ -500,7 +500,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_forRows.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
        * \par Output
        * \include DenseMatrixExample_forRows.out
        */
@@ -516,7 +516,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param function  is an instance of the lambda function to be called in each row.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_forAllRows.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_forAllRows.cpp
        * \par Output
        * \include DenseMatrixExample_forAllRows.out
        */
@@ -532,7 +532,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param function  is an instance of the lambda function to be called in each row.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_forAllRows.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_forAllRows.cpp
        * \par Output
        * \include DenseMatrixExample_forAllRows.out
        */
