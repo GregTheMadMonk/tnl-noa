@@ -18,6 +18,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 
 #include <TNL/Communicators/NoDistrCommunicator.h>
@@ -256,7 +257,7 @@ bool convertObject( const MeshPointer& meshPointer,
 //      Containers::Vector< Value, Devices::Host, Index > vector;
       Containers::Vector< Value, Devices::Host, typename MeshType::GlobalIndexType > vector;
       File( inputFileName, std::ios_base::in ) >> vector;
-      Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Value > mf;
+      Functions::MeshFunctionView< MeshType, MeshType::getMeshDimension(), Value > mf;
       mf.bind( meshPointer, vector );
       mf.write( outputFileName, outputFormat );
    }

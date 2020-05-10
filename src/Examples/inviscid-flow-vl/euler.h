@@ -87,7 +87,7 @@ class eulerSetter
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef Functions::MeshFunction< MeshType > MeshFunction;
+          typedef Functions::MeshFunctionView< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;

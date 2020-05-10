@@ -19,7 +19,7 @@
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Problems/HeatEquationProblem.h>
 #include <TNL/Meshes/Grid.h>
 #include "HeatEquationBuildConfigTag.h"
@@ -42,7 +42,7 @@ class heatEquationConfig
             config.addEntryEnum< String >( "neumann" );
 
          typedef Meshes::Grid< 1, double, Devices::Host, int > Mesh;
-         typedef Functions::MeshFunction< Mesh > MeshFunction;
+         typedef Functions::MeshFunctionView< Mesh > MeshFunction;
          Operators::DirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
          Operators::DirichletBoundaryConditions< Mesh, Functions::Analytic::Constant< 1 > >::configSetup( config );
          config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
@@ -92,7 +92,7 @@ class heatEquationSetter
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
-      typedef Functions::MeshFunction< MeshType > MeshFunction;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction > BoundaryConditions;

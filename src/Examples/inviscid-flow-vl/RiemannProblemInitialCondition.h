@@ -37,7 +37,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Containers::StaticVector< Dimensions, RealType > PointType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
 //       for cyklus i = 0 to mesh.getDimensions().x() j pro .y() a k pro .z()
@@ -194,7 +194,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2, MeshReal, Device, M
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Containers::StaticVector< Dimensions, RealType > PointType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
 //       for cyklus i = 0 to mesh.getDimensions().x() j pro .y() a k pro .z()
@@ -414,7 +414,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3, MeshReal, Device, M
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Containers::StaticVector< Dimensions, RealType > PointType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
 //       for cyklus i = 0 to mesh.getDimensions().x() j pro .y() a k pro .z()
@@ -767,7 +767,7 @@ class RiemannProblemInitialCondition
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getMeshDimension();
       typedef Containers::StaticVector< Dimensions, RealType > PointType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
       

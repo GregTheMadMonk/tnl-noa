@@ -18,7 +18,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include "pure-c-rhs.h"
 
 using namespace std;
@@ -325,13 +325,13 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
-   Containers::Vector< Real, Devices::Cuda, Index > vecU;
+   Containers::VectorView< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
-   Functions::MeshFunction< GridType > meshFunction;
+   Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-initial.tnl" );
    
-   Containers::Vector< Real, Devices::Cuda, Index > vecAux;
+   Containers::VectorView< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
    vecAux.setValue( 0.0 );   
 
@@ -552,9 +552,9 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    Pointers::SharedPointer<  GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
-   Containers::Vector< Real, Devices::Host, Index > vecU;
+   Containers::VectorView< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
-   Functions::MeshFunction< GridType > meshFunction;
+   Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    

@@ -18,7 +18,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
@@ -47,7 +47,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename Mesh::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename Mesh::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
@@ -85,7 +85,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 
       IndexType getDofs() const;
 
-      void bindDofs( const DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
                               const RealType& tau,
@@ -98,7 +98,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const DofVectorPointer& dofsPointer,
+                                 DofVectorPointer& dofsPointer,
                                  MatrixPointer& matrixPointer,
                                  DofVectorPointer& rightHandSidePointer );
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 using namespace TNL::Problems;
 
@@ -22,7 +22,7 @@ class eulerProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;

@@ -2,7 +2,7 @@
 #define HeatEquationBenchmarkPROBLEM_H_
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include "Tuning/ExplicitUpdater.h"
 
@@ -26,8 +26,8 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionViewType;
+      typedef Pointers::SharedPointer< MeshFunctionViewType, DeviceType > MeshFunctionViewPointer;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -86,7 +86,7 @@ class HeatEquationBenchmarkProblem:
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       
-      MeshFunctionPointer fu, u;
+      MeshFunctionViewPointer fu, u;
       
       String cudaKernelType;
       
@@ -95,8 +95,8 @@ class HeatEquationBenchmarkProblem:
       RightHandSide* cudaRightHandSide;
       DifferentialOperator* cudaDifferentialOperator;
       
-      TNL::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > tuningExplicitUpdater;
-      TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+      TNL::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide > tuningExplicitUpdater;
+      TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
       
 };
 

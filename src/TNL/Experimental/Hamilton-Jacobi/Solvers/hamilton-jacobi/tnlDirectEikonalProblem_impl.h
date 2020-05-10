@@ -106,9 +106,9 @@ template< typename Mesh,
           typename Index >
 void
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
-bindDofs( const DofVectorPointer& dofs )
+bindDofs( DofVectorPointer& dofs )
 {
-   this->u->bind( this->getMesh(), dofs );
+   this->u->bind( this->getMesh(), *dofs );
 }
 
 template< typename Mesh,

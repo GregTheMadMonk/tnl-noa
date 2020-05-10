@@ -16,7 +16,9 @@ namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
-template <typename MeshFunctionType>
+template< typename MeshFunction,
+          // Mesh is used only for DistributedGrid specializations
+          typename Mesh = typename MeshFunction::MeshType >
 class DistributedMeshSynchronizer
 {
    public:

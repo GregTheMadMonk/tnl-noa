@@ -19,7 +19,7 @@ class BoundaryConditionsCavity
       typedef Real RealType;
       typedef Index IndexType;
       typedef Function FunctionType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef typename Mesh::DeviceType DeviceType;
 
       typedef TNL::Operators::DensityBoundaryConditionsCavity< MeshType, FunctionType, RealType, IndexType > DensityBoundaryConditionsType;

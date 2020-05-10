@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Functions/CutMeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
@@ -31,7 +32,7 @@ TEST(CutMeshFunction, 2D)
 
    //Original MeshFunciton --filed with linear function
    Pointers::SharedPointer<MeshType> originalGrid;
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -45,14 +46,14 @@ TEST(CutMeshFunction, 2D)
    dof.setValue(0); 
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<1,int>(0),
             StaticVector<1,int>(1),
@@ -60,8 +61,8 @@ TEST(CutMeshFunction, 2D)
 
    ASSERT_TRUE(inCut)<<"nedistribuovaná meshfunction musí být vždy v řezu";
 
-   MeshFunction<CutMeshType> cutMeshFunction;
-        cutMeshFunction.bind(cutGrid,cutDof); 
+   MeshFunctionView<CutMeshType> cutMeshFunction;
+   cutMeshFunction.bind(cutGrid,cutDof); 
 
     for(int i=0;i<10;i++)
     {
@@ -94,7 +95,7 @@ TEST(CutMeshFunction, 3D_1)
 
    //Original MeshFunciton --filed with linear function
    Pointers::SharedPointer<MeshType> originalGrid;
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -108,14 +109,14 @@ TEST(CutMeshFunction, 3D_1)
    dof.setValue(0); 
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<1,int>(1),
             StaticVector<2,int>(0,2),
@@ -123,8 +124,8 @@ TEST(CutMeshFunction, 3D_1)
 
    ASSERT_TRUE(inCut)<<"nedistribuovaná meshfunction musí být vždy v řezu";
 
-   MeshFunction<CutMeshType> cutMeshFunction;
-        cutMeshFunction.bind(cutGrid,cutDof); 
+   MeshFunctionView<CutMeshType> cutMeshFunction;
+   cutMeshFunction.bind(cutGrid,cutDof); 
 
     for(int i=0;i<10;i++)
     {
@@ -157,7 +158,7 @@ TEST(CutMeshFunction, 3D_2)
 
    //Original MeshFunciton --filed with linear function
    Pointers::SharedPointer<MeshType> originalGrid;
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -171,14 +172,14 @@ TEST(CutMeshFunction, 3D_2)
    dof.setValue(0); 
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<NoDistrCommunicator, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<2,int>(2,1),
             StaticVector<1,int>(0),
@@ -186,8 +187,8 @@ TEST(CutMeshFunction, 3D_2)
 
    ASSERT_TRUE(inCut)<<"nedistribuovaná meshfunction musí být vždy v řezu";
 
-   MeshFunction<CutMeshType> cutMeshFunction;
-        cutMeshFunction.bind(cutGrid,cutDof); 
+   MeshFunctionView<CutMeshType> cutMeshFunction;
+   cutMeshFunction.bind(cutGrid,cutDof); 
 
     for(int i=0;i<10;i++)
     {

@@ -7,7 +7,7 @@
  ***************************************************************************/
 
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 
 #ifdef HAVE_GTEST 
@@ -155,7 +155,7 @@ class TestCopyEntities
 		static void Test()
 		{
 			typedef Grid<dim,double,Host,int> MeshType;
-			typedef MeshFunction<MeshType> MeshFunctionType;
+			typedef MeshFunctionView<MeshType> MeshFunctionType;
 			typedef Vector<double,Host,int> DofType;
 
 			typedef typename MeshType::PointType PointType; 

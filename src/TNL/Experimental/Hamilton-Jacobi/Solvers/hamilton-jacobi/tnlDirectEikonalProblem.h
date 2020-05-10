@@ -14,7 +14,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
@@ -38,7 +38,7 @@ class tnlDirectEikonalProblem
       typedef Real RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
       using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
@@ -68,7 +68,7 @@ class tnlDirectEikonalProblem
 
       IndexType getDofs() const;
 
-      void bindDofs( const DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
       
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 DofVectorPointer& dofs );

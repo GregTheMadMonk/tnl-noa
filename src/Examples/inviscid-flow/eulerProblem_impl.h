@@ -103,7 +103,7 @@ void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, InviscidOperators >::
 bindDofs( DofVectorPointer& dofVector )
 {
-   this->conservativeVariables->bind( this->getMesh(), dofVector );
+   this->conservativeVariables->bind( this->getMesh(), *dofVector );
 }
 
 template< typename Mesh,
@@ -117,7 +117,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {
    CompressibleConservativeVariables< MeshType > conservativeVariables;
-   conservativeVariables.bind( this->getMesh(), dofs );
+   conservativeVariables.bind( this->getMesh(), *dofs );
    const String& initialConditionType = parameters.getParameter< String >( "initial-condition" );
    if( initialConditionType == "riemann-problem" )
    {
@@ -210,8 +210,8 @@ getExplicitUpdate( const RealType& time,
     /****
      * Bind DOFs
      */
-    this->conservativeVariables->bind( this->getMesh(), _u );
-    this->conservativeVariablesRHS->bind( this->getMesh(), _fu );
+    this->conservativeVariables->bind( this->getMesh(), *_u );
+    this->conservativeVariablesRHS->bind( this->getMesh(), *_fu );
     this->velocity->setMesh( this->getMesh() );
     this->pressure->setMesh( this->getMesh() );
     
@@ -335,7 +335,7 @@ assemblyLinearSystem( const RealType& time,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   MeshFunction< Mesh > u( mesh, _u );
+   MeshFunctionView< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              this->differentialOperator,

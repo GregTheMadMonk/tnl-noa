@@ -12,33 +12,24 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
 #include <TNL/Communicators/MPIPrint.h>
 #include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
-namespace Functions{
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real  >
-class MeshFunction;
-}//Functions
-}//TNL
-
-namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes { 
 
-template <typename RealType,
-          int EntityDimension,
+template< typename MeshFunction,
           int MeshDimension,
           typename Index,
           typename Device,
-          typename GridReal>  
-class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension, GridReal, Device, Index >,EntityDimension, RealType>>
+          typename GridReal >
+class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, Device, Index > >
 {
-
+   using RealType = typename MeshFunction::RealType;
    public:
       static constexpr int getMeshDimension() { return MeshDimension; };
       static constexpr int getNeighborCount() {return DirectionCount<MeshDimension>::get();};

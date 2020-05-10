@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunction.h>
+
 template< typename Real,
         typename Device,
         typename Index,
@@ -277,7 +279,10 @@ solve( const MeshPointer& mesh,
         int nBlocksNeigh = ( numBlocksX * numBlocksY )/1024 + ((( numBlocksX * numBlocksY )%1024 != 0) ? 1:0);
         
         // Helping meshFunction that switches with AuxPtr in every calculation of CudaUpdateCellCaller<<<>>>()
-        MeshFunctionPointer helpFunc( mesh );
+        Containers::Vector< RealType, DeviceType, IndexType > helpVec;
+        helpVec.setLike( auxPtr.template getData().getData() );
+        MeshFunctionPointer helpFunc;
+        helpFunc->bind( mesh, helpVec );
         helpFunc.template modifyData() = auxPtr.template getData(); 
         
         // number of iterations of while calculateCudaBlocksAgain

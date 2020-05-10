@@ -382,9 +382,9 @@ getNewValue( RealType valuesAndSteps[], const RealType originalValue, const Real
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
-__global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
+__global__ void CudaInitCaller3d( const Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index > >& input, 
+        Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index > >& output,
+        Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
         Containers::StaticVector< 3, Index > vLower, Containers::StaticVector< 3, Index > vUpper )
 {
   int i = threadIdx.x + blockDim.x*blockIdx.x;
@@ -517,9 +517,9 @@ __global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, I
 
 template < int sizeSArray, typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,
-        const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
-        const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
+        const Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
+        const Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index > >& aux,
+        Functions::MeshFunctionView< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
         TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
         Containers::StaticVector< 3, Index > vecLowerOverlaps, Containers::StaticVector< 3, Index > vecUpperOverlaps )
 {

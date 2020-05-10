@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 #include "../../UnitTests/Functions/Functions.h"
 
@@ -33,7 +33,7 @@ int main(int argc, char ** argv)
 #endif
 
   using MeshType= Grid<2, double,Device,int>;
-  using MeshFunctionType = MeshFunction<MeshType>;
+  using MeshFunctionType = MeshFunctionView<MeshType>;
   using DofType = Vector<double,Device,int>;
   using Cell = typename MeshType::Cell ;
   using IndexType = typename MeshType::IndexType ; 

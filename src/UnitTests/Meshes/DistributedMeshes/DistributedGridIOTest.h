@@ -8,7 +8,7 @@
 
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -194,7 +194,7 @@ class TestDistributedGridIO
     public:
 
     typedef Grid<dim,double,Device,int> MeshType;
-    typedef MeshFunction<MeshType> MeshFunctionType;
+    typedef MeshFunctionView<MeshType> MeshFunctionType;
     typedef Vector<double,Device,int> DofType;
     typedef typename MeshType::Cell Cell;
     typedef typename MeshType::IndexType IndexType;

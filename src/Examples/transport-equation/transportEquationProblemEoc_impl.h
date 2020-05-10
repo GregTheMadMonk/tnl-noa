@@ -16,6 +16,7 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include <TNL/Functions/Analytic/Paraboloid.h>
+#include <TNL/Functions/OperatorFunction.h>
 #include <TNL/Operators/Analytic/Heaviside.h>
 #include <TNL/Operators/Analytic/Shift.h>
 

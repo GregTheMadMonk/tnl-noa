@@ -18,7 +18,7 @@ class EulerVelXGetter
       typedef typename MeshType::DeviceType DeviceType;
       typedef Real RealType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       EulerVelXGetter( const MeshFunctionType& rho,

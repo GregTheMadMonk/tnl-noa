@@ -24,7 +24,7 @@
 #include <TNL/Operators/Operator.h>
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/FunctionAdapter.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 namespace TNL {
 namespace Operators {

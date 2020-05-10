@@ -17,25 +17,30 @@ namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
+template< typename MeshFunction,
+          DistrGridIOTypes type = LocalCopy,
+          typename Mesh = typename MeshFunction::MeshType,
+          typename Device = typename MeshFunction::DeviceType >
+class DistributedGridIO_VectorField
+{
+};
+
 template<
    int Size,
+   typename MeshFunction,
    int Dimension,
-   int MeshEntityDimension,
    typename MeshReal,
    typename Device,
-   typename Index,
-   typename Real >
-class DistributedGridIO<
-   Functions::VectorField<
-      Size,
-      Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Device, Index >,
-         MeshEntityDimension,
-         Real > >,
-   MpiIO >
+   typename Index >
+class DistributedGridIO_VectorField<
+   Functions::VectorField< Size, MeshFunction >,
+   MpiIO,
+   Meshes::Grid< Dimension, MeshReal, Device, Index >,
+   Device >
 {
    public:
-      using MeshType = Meshes::Grid< Dimension, Real, Device, Index >;
-      using MeshFunctionType = Functions::MeshFunction< MeshType, MeshEntityDimension, Real >;
+      using MeshType = Meshes::Grid< Dimension, MeshReal, Device, Index >;
+      using MeshFunctionType = MeshFunction;
       using VectorFieldType = Functions::VectorField< Size, MeshFunctionType >;
       using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
       using PointType = typename MeshFunctionType::MeshType::PointType;

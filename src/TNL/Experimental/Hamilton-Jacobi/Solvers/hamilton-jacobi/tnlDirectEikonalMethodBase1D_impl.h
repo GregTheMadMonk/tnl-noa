@@ -149,9 +149,9 @@ updateCell( volatile Real sArray[18], int thri, const Real h, const Real v )
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
-__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& input, 
-        Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index >, 1, bool >& interfaceMap )
+__global__ void CudaInitCaller( const Functions::MeshFunctionView< Meshes::Grid< 1, Real, Device, Index > >& input, 
+        Functions::MeshFunctionView< Meshes::Grid< 1, Real, Device, Index > >& output,
+        Functions::MeshFunctionView< Meshes::Grid< 1, Real, Device, Index >, 1, bool >& interfaceMap )
 {
   int i = threadIdx.x + blockDim.x*blockIdx.x;
   const Meshes::Grid< 1, Real, Device, Index >& mesh = input.template getMesh< Devices::Cuda >();

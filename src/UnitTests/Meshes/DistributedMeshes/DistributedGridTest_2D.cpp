@@ -13,7 +13,7 @@
 #ifdef HAVE_MPI    
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
@@ -315,8 +315,8 @@ void check_Inner_2D(int rank, const GridType& grid, const DofType& dof, typename
  */
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<2,double,Host,int> GridType;
-typedef MeshFunction<GridType> MeshFunctionType;
-typedef MeshFunction< GridType, GridType::getMeshDimension(), bool > MaskType;
+typedef MeshFunctionView<GridType> MeshFunctionType;
+typedef MeshFunctionView< GridType, GridType::getMeshDimension(), bool > MaskType;
 typedef Vector<double,Host,int> DofType;
 typedef Vector< bool, Host, int > MaskDofType;
 typedef typename GridType::Cell Cell;

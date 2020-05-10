@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "transportEquationProblem.h"
 
@@ -32,7 +32,7 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communi
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator > BaseType;
       typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;

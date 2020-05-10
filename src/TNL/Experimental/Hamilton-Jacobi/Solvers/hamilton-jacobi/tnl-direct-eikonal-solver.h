@@ -17,7 +17,7 @@
 #include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/Grid.h>
 #include "tnlDirectEikonalProblem.h"
 #include "MainBuildConfig.h"

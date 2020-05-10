@@ -117,7 +117,7 @@ void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 bindDofs( DofVectorPointer& dofsPointer )
 {
-   this->u->bind( this->getMesh(), dofsPointer );
+   this->u->bind( this->getMesh(), *dofsPointer );
 }
 
 template< typename Mesh,
@@ -131,7 +131,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofsPointer )
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   Functions::MeshFunction< Mesh > u( this->getMesh(), dofsPointer );
+   MeshFunctionViewType u;
+   u.bind( this->getMesh(), *dofsPointer );
    try
    {
       u.boundLoad( initialConditionFile );
@@ -183,9 +184,9 @@ makeSnapshot( const RealType& time,
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( dofsPointer );
-   MeshFunctionType u;
+   MeshFunctionViewType u;
    u.bind( this->getMesh(), *dofsPointer );
-   
+
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -475,8 +476,8 @@ getExplicitUpdate( const RealType& time,
          //typedef typename MeshType::Cell CellType;
          //std::cerr << "Size of entity is ... " << sizeof( TestEntity< MeshType > ) << " vs. " << sizeof( CellType ) << std::endl;
          typedef typename CellType::CoordinatesType CoordinatesType;
-         u->bind( mesh, uDofs );
-         fu->bind( mesh, fuDofs );
+         u->bind( mesh, *uDofs );
+         fu->bind( mesh, *fuDofs );
          fu->getData().setValue( 1.0 );
          const CoordinatesType begin( 0,0 );
          const CoordinatesType& end = mesh->getDimensions();
@@ -493,7 +494,7 @@ getExplicitUpdate( const RealType& time,
          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-               boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
+               boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionViewType >
                   <<< cudaBlocks, cudaBlockSize >>>
                   ( &mesh.template getData< Devices::Cuda >(),
                     &boundaryConditionPointer.template getData< Devices::Cuda >(),
@@ -511,7 +512,7 @@ getExplicitUpdate( const RealType& time,
          //std::cerr << "Computing the heat equation ..." << std::endl;
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-               heatEquationTemplatedCompact< MeshType, CellType, DifferentialOperator, RightHandSide, MeshFunctionType >
+               heatEquationTemplatedCompact< MeshType, CellType, DifferentialOperator, RightHandSide, MeshFunctionViewType >
                   <<< cudaBlocks, cudaBlockSize >>>
                   ( &mesh.template getData< DeviceType >(),
                     &differentialOperatorPointer.template getData< DeviceType >(),
@@ -532,8 +533,8 @@ getExplicitUpdate( const RealType& time,
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
-         this->u->bind( mesh, uDofs );
-         this->fu->bind( mesh, fuDofs );         
+         this->u->bind( mesh, *uDofs );
+         this->fu->bind( mesh, *fuDofs );
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh, this->u, this->fu );
       }
@@ -541,19 +542,19 @@ getExplicitUpdate( const RealType& time,
       {
          if( std::is_same< DeviceType, Devices::Cuda >::value )
          {   
-            this->u->bind( mesh, uDofs );
-            this->fu->bind( mesh, fuDofs );                     
+            this->u->bind( mesh, *uDofs );
+            this->fu->bind( mesh, *fuDofs );
             
             
             /*this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
             return;*/
             
 #ifdef WITH_TNL
-            using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide >;
             using Cell = typename MeshType::Cell;
             using MeshTraverserType = Meshes::Traverser< MeshType, Cell >;
             using UserData = TNL::Solvers::PDE::ExplicitUpdaterTraverserUserData< RealType,
-               MeshFunctionType,
+               MeshFunctionViewType,
                DifferentialOperator,
                BoundaryCondition,
                RightHandSide >;
@@ -561,12 +562,12 @@ getExplicitUpdate( const RealType& time,
 #else
             //using CellConfig = Meshes::GridEntityNoStencilStorage;
             using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
-            using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
+            using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide >;
             using Cell = typename MeshType::Cell; 
             //using Cell = SimpleCell< Mesh, CellConfig >;
             using MeshTraverserType = Traverser< MeshType, Cell >;
             using UserData = ExplicitUpdaterTraverserUserData< RealType,
-               MeshFunctionType,
+               MeshFunctionViewType,
                DifferentialOperator,
                BoundaryCondition,
                RightHandSide >;
@@ -735,16 +736,15 @@ assemblyLinearSystem( const RealType& time,
 {
    // TODO: the instance should be "cached" like this->explicitUpdater, but there is a problem with MatrixPointer
    Solvers::PDE::LinearSystemAssembler< Mesh,
-                             MeshFunctionType,
+                             MeshFunctionViewType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
                              Solvers::PDE::BackwardTimeDiscretisation,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
-   typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-   typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-   MeshFunctionPointer u( this->getMesh(), *_u );
+   MeshFunctionViewPointer u;
+   u->bind( this->getMesh(), *_u );
    systemAssembler.setDifferentialOperator( this->differentialOperator );
    systemAssembler.setBoundaryConditions( this->boundaryCondition );
    systemAssembler.setRightHandSide( this->rightHandSide );

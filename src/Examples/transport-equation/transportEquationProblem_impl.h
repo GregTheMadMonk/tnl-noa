@@ -91,7 +91,7 @@ transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, 
 bindDofs( DofVectorPointer& dofVector )
 {
    //const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( this->getMesh(), dofVector );
+   this->uPointer->bind( this->getMesh(), *dofVector );
 }
 
 template< typename Mesh,
@@ -157,7 +157,8 @@ makeSnapshot( const RealType& time,
 {
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( dofs );
-   MeshFunctionType printDofs( this->getMesh(), dofs );
+   MeshFunctionType printDofs;
+   printDofs.bind( this->getMesh(), *dofs );
    FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -191,8 +192,10 @@ getExplicitUpdate( const RealType& time,
    //int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
    this->bindDofs( _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   Pointers::SharedPointer<  MeshFunctionType > u( mesh, _u ); 
-   Pointers::SharedPointer<  MeshFunctionType > fu( mesh, _fu );
+   Pointers::SharedPointer<  MeshFunctionType > u;
+   u->bind( mesh, *_u ); 
+   Pointers::SharedPointer<  MeshFunctionType > fu;
+   fu->bind( mesh, *_fu );
    differentialOperatorPointer->setTau(tau); 
    differentialOperatorPointer->setVelocityField( this->velocityField );
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );

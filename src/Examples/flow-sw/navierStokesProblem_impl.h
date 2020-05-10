@@ -102,7 +102,7 @@ void
 navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
 bindDofs( DofVectorPointer& dofVector )
 {
-   this->conservativeVariables->bind( this->getMesh(), dofVector );
+   this->conservativeVariables->bind( this->getMesh(), *dofVector );
 }
 
 template< typename Mesh,
@@ -116,7 +116,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {
    CompressibleConservativeVariables< MeshType > conservativeVariables;
-   conservativeVariables.bind( this->getMesh(), dofs );
+   conservativeVariables.bind( this->getMesh(), *dofs );
    const String& initialConditionType = parameters.getParameter< String >( "initial-condition" );
    this->speedIncrementUntil = parameters.getParameter< RealType >( "speed-increment-until" );
    this->speedIncrement = parameters.getParameter< RealType >( "speed-increment" );
@@ -218,8 +218,8 @@ getExplicitUpdate( const RealType& time,
     /****
      * Bind DOFs
      */
-    this->conservativeVariables->bind( mesh, _u );
-    this->conservativeVariablesRHS->bind( mesh, _fu );
+    this->conservativeVariables->bind( mesh, *_u );
+    this->conservativeVariablesRHS->bind( mesh, *_fu );
     this->velocity->setMesh( mesh );
     this->pressure->setMesh( mesh );
 
@@ -367,7 +367,7 @@ assemblyLinearSystem( const RealType& time,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   MeshFunction< Mesh > u( mesh, _u );
+   MeshFunctionView< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,

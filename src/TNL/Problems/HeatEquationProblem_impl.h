@@ -121,10 +121,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
-bindDofs( const DofVectorPointer& dofVector )
+bindDofs( DofVectorPointer& dofVector )
 {
-   //const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( this->getMesh(), dofVector );
+   this->uPointer->bind( this->getMesh(), *dofVector );
 }
 
 template< typename Mesh,
@@ -278,7 +277,7 @@ void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const DofVectorPointer& dofsPointer,
+                      DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
                       DofVectorPointer& bPointer )
 {

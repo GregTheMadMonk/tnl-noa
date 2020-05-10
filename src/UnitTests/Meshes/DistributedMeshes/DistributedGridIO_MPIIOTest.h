@@ -16,7 +16,7 @@
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 
 #include "../../Functions/Functions.h"
@@ -36,7 +36,7 @@ class TestDistributedGridMPIIO{
     public:
 
     typedef Grid<dim,double,Device,int> MeshType;
-    typedef MeshFunction<MeshType> MeshFunctionType;
+    typedef MeshFunctionView<MeshType> MeshFunctionType;
     typedef Vector<double,Device,int> DofType;
     typedef typename MeshType::Cell Cell;
     typedef typename MeshType::IndexType IndexType;
