@@ -22,7 +22,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
@@ -30,10 +30,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       using DeviceType = Device;
       using IndexType = Index;
       using BaseType = MatrixView< Real, Device, Index >;
-      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, Organization >;
       using ValuesViewType = typename BaseType::ValuesView;
-      using ViewType = TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ViewType = TridiagonalMatrixView< Real, Device, Index, Organization >;
+      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
       using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
@@ -44,8 +44,8 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                bool RowMajorOrder_ = std::is_same< Device, Devices::Host >::value >
-      using Self = TridiagonalMatrixView< _Real, _Device, _Index, RowMajorOrder_ >;
+                ElementsOrganization Organization_ = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+      using Self = TridiagonalMatrixView< _Real, _Device, _Index, Organization_ >;
 
       TridiagonalMatrixView();
 
@@ -69,11 +69,11 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator == ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      bool operator == ( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator != ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      bool operator != ( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -123,8 +123,8 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      void addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      void addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 

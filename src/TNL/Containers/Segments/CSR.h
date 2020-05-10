@@ -35,7 +35,7 @@ class CSR
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ViewType = CSRView< Device, Index >;
       using ConstViewType = CSRView< Device, std::add_const_t< IndexType > >;
-      using SegmentViewType = SegmentView< IndexType, true >;
+      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       CSR();
 

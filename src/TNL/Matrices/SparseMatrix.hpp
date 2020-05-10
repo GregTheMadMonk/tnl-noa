@@ -649,12 +649,12 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization, typename RealAllocator_ >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-operator=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix )
+operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix )
 {
-   using RHSMatrix = DenseMatrix< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >;
+   using RHSMatrix = DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >;
    using RHSIndexType = typename RHSMatrix::IndexType;
    using RHSRealType = typename RHSMatrix::RealType;
    using RHSDeviceType = typename RHSMatrix::DeviceType;

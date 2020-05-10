@@ -23,9 +23,9 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 BiEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
 {
    this->setSegmentsSizes( sizes );
@@ -34,9 +34,9 @@ BiEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 BiEllpack( const BiEllpack& biEllpack )
    : size( biEllpack.size ),
      storageSize( biEllpack.storageSize ),
@@ -49,9 +49,9 @@ BiEllpack( const BiEllpack& biEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 BiEllpack( const BiEllpack&& biEllpack )
    : size( biEllpack.size ),
      storageSize( biEllpack.storageSize ),
@@ -64,10 +64,10 @@ BiEllpack( const BiEllpack&& biEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 String
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSerializationType()
 {
    return "BiEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
@@ -76,10 +76,10 @@ getSerializationType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 String
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSegmentsType()
 {
    return ViewType::getSegmentsType();
@@ -88,10 +88,10 @@ getSegmentsType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-typename BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::ViewType
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+typename BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::ViewType
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getView()
 {
    return ViewType( size, storageSize, virtualRows, rowPermArray.getView(), groupPointers.getView() );
@@ -100,9 +100,9 @@ getView()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, storageSize, virtualRows, rowPermArray.getConstView(), groupPointers.getConstView() );
@@ -111,9 +111,9 @@ getConstView() const -> const ConstViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSegmentsCount() const -> IndexType
 {
    return this->size;
@@ -122,10 +122,10 @@ getSegmentsCount() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename SizesHolder >
-void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+void BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 performRowBubbleSort( const SizesHolder& segmentsSizes )
 {
    if( segmentsSizes.getSize() == 0 )
@@ -190,10 +190,10 @@ performRowBubbleSort( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename SizesHolder >
-void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+void BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 computeColumnSizes( const SizesHolder& segmentsSizes )
 {
    IndexType numberOfStrips = this->virtualRows / getWarpSize();
@@ -237,10 +237,10 @@ computeColumnSizes( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename SizesHolder >
-void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+void BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 verifyRowPerm( const SizesHolder& segmentsSizes )
 {
    bool ok = true;
@@ -284,10 +284,10 @@ verifyRowPerm( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename SizesHolder >
-void BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+void BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 verifyRowLengths( const SizesHolder& segmentsSizes )
 {
    bool ok = true;
@@ -300,7 +300,7 @@ verifyRowLengths( const SizesHolder& segmentsSizes )
       const IndexType begin = this->groupPointers.getElement( groupBegin ) * getWarpSize() + rowStripPerm * stripLength;
       IndexType elementPtr = begin;
       IndexType rowLength = 0;
-      const IndexType groupsCount = details::BiEllpack< Index, Device, RowMajorOrder, WarpSize >::getActiveGroupsCount( this->rowPermArray.getConstView(), segmentIdx );
+      const IndexType groupsCount = details::BiEllpack< Index, Device, Organization, WarpSize >::getActiveGroupsCount( this->rowPermArray.getConstView(), segmentIdx );
       for( IndexType group = 0; group < groupsCount; group++ )
       {
          for( IndexType i = 0; i < this->getGroupLength( strip, group ); i++ )
@@ -324,11 +324,11 @@ verifyRowLengths( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename SizesHolder >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 setSegmentsSizes( const SizesHolder& segmentsSizes )
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -354,7 +354,7 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
    }
    else
    {
-      BiEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< IndexType >, RowMajorOrder > hostSegments;
+      BiEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< IndexType >, Organization > hostSegments;
       Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes;
       hostSegmentsSizes = segmentsSizes;
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
@@ -365,10 +365,10 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 reset()
 {
    this->size = 0;
@@ -381,12 +381,12 @@ reset()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::BiEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
+   return details::BiEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowPermArray.getConstView(),
       groupPointers.getConstView(),
       segmentIdx );
@@ -395,9 +395,9 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSize() const -> IndexType
 {
    return this->size;
@@ -406,9 +406,9 @@ getSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getStorageSize() const -> IndexType
 {
    return this->storageSize;
@@ -417,12 +417,12 @@ getStorageSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getGlobalIndex( const IndexType segmentIdx, const IndexType localIdx ) const -> IndexType
 {
-      return details::BiEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
+      return details::BiEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowPermArray.getConstView(),
          groupPointers.getConstView(),
          segmentIdx,
@@ -432,9 +432,9 @@ getGlobalIndex( const IndexType segmentIdx, const IndexType localIdx ) const -> 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+__cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
 }
@@ -442,11 +442,11 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename Function, typename... Args >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    this->getConstView().forSegments( first, last, f, args... );
@@ -455,11 +455,11 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename Function, typename... Args >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
@@ -468,11 +468,11 @@ forAll( Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
@@ -481,11 +481,11 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
@@ -494,12 +494,12 @@ allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, co
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-   template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >&
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
-operator=( const BiEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, WarpSize >& source )
+   template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >&
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+operator=( const BiEllpack< Device_, Index_, IndexAllocator_, Organization_, WarpSize >& source )
 {
    this->size = source.size;
    this->storageSize = source.storageSize;
@@ -512,10 +512,10 @@ operator=( const BiEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, Wa
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 save( File& file ) const
 {
    file.save( &this->size );
@@ -528,10 +528,10 @@ save( File& file ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 load( File& file )
 {
    file.load( &this->size );
@@ -544,10 +544,10 @@ load( File& file )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
 void
-BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 printStructure( std::ostream& str ) const
 {
    this->view.printStructure( str );
@@ -556,20 +556,20 @@ printStructure( std::ostream& str ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getStripLength( const IndexType stripIdx ) const -> IndexType
 {
-   return details::BiEllpack< Index, Device, RowMajorOrder, WarpSize >::getStripLength( this->groupPointers.getConstView(), stripIdx );
+   return details::BiEllpack< Index, Device, Organization, WarpSize >::getStripLength( this->groupPointers.getConstView(), stripIdx );
 }
 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int WarpSize >
-auto BiEllpack< Device, Index, IndexAllocator, RowMajorOrder, WarpSize >::
+auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getGroupLength( const IndexType strip, const IndexType group ) const -> IndexType
 {
    return this->groupPointers.getElement( strip * ( getLogWarpSize() + 1 ) + group + 1 )

@@ -16,12 +16,15 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Matrices/MatrixView.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 
 namespace TNL {
 /**
  * \brief Namespace for matrix formats.
  */
 namespace Matrices {
+
+using Containers::Segments::ElementsOrganization;
 
 template< typename Real = double,
           typename Device = Devices::Host,

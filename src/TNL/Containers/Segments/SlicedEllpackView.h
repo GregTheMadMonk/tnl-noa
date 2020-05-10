@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 #include <TNL/Containers/Segments/SegmentView.h>
 
 namespace TNL {
@@ -21,7 +22,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int SliceSize = 32 >
 class SlicedEllpackView
 {
@@ -31,12 +32,12 @@ class SlicedEllpackView
       using IndexType = std::remove_const_t< Index >;
       using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      static constexpr bool getOrganization() { return Organization; }
       template< typename Device_, typename Index_ >
-      using ViewTemplate = SlicedEllpackView< Device_, Index_, RowMajorOrder, SliceSize >;
+      using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
       using ViewType = SlicedEllpackView;
       using ConstViewType = ViewType;
-      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
       __cuda_callable__
       SlicedEllpackView();

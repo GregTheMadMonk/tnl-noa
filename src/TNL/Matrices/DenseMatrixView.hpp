@@ -22,9 +22,9 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 DenseMatrixView()
 {
 }
@@ -32,9 +32,9 @@ DenseMatrixView()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 DenseMatrixView( const IndexType rows,
                  const IndexType columns,
                  const ValuesViewType& values )
@@ -47,25 +47,24 @@ DenseMatrixView( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getView() -> ViewType
 {
    return ViewType( this->getRows(),
                     this->getColumns(),
-                    this->getValues().getView(),
-                    this->columnIndexes.getView() );
+                    this->getValues().getView() );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
@@ -77,23 +76,23 @@ getConstView() const -> ConstViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
    return String( "Matrices::DenseMatrix< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
+          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -102,10 +101,10 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Vector >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
@@ -123,9 +122,9 @@ getCompressedRowLengths( Vector& rowLengths ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getRowLength( const IndexType row ) const
 {
    return this->getColumns();
@@ -134,9 +133,9 @@ getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getMaxRowLength() const
 {
    return this->getColumns();
@@ -145,9 +144,9 @@ getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getElementsCount() const
 {
    return this->getRows() * this->getColumns();
@@ -156,9 +155,9 @@ getElementsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
@@ -171,20 +170,9 @@ getNonzeroElementsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-reset()
-{
-   Matrix< Real, Device, Index >::reset();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
-void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 setValue( const Real& value )
 {
    this->values = value;
@@ -193,9 +181,9 @@ setValue( const Real& value )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__ auto
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
@@ -205,9 +193,9 @@ getRow( const IndexType& rowIdx ) const -> const RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__ auto
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
@@ -217,9 +205,9 @@ getRow( const IndexType& rowIdx ) -> RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-Real& DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator()( const IndexType row,
+Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row,
                                                 const IndexType column )
 {
    TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
@@ -233,9 +221,9 @@ Real& DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator()( const I
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-const Real& DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator()( const IndexType row,
+const Real& DenseMatrixView< Real, Device, Index, Organization >::operator()( const IndexType row,
                                                       const IndexType column ) const
 {
    TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
@@ -249,9 +237,9 @@ const Real& DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator()( c
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ void
+DenseMatrixView< Real, Device, Index, Organization >::
 setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
@@ -262,9 +250,9 @@ setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ void
+DenseMatrixView< Real, Device, Index, Organization >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -282,9 +270,9 @@ addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-Real
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ Real
+DenseMatrixView< Real, Device, Index, Organization >::
 getElement( const IndexType row,
             const IndexType column ) const
 {
@@ -294,10 +282,10 @@ getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto values_view = this->values.getConstView();
@@ -311,10 +299,10 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& redu
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -323,10 +311,10 @@ allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchRea
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
@@ -340,10 +328,10 @@ forRows( IndexType first, IndexType last, Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
@@ -357,10 +345,10 @@ forRows( IndexType first, IndexType last, Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 forAllRows( Function& function ) const
 {
    this->forRows( 0, this->getRows(), function );
@@ -369,10 +357,10 @@ forAllRows( Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 forAllRows( Function& function )
 {
    this->forRows( 0, this->getRows(), function );
@@ -381,29 +369,17 @@ forAllRows( Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-rowVectorProduct( const IndexType row, const Vector& vector ) const
-{
-   RealType sum( 0.0 );
-   // TODO: Fix this
-   //for( IndexType column = 0; column < this->getColumns(); column++ )
-   //   sum += this->getElementFast( row, column ) * vector[ column ];
-   return sum;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+DenseMatrixView< Real, Device, Index, Organization >::
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType& matrixMultiplicator,
+               const RealType& outVectorMultiplicator,
+               const IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns count differs with input vector size." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows count differs with output vector size." );
@@ -411,22 +387,24 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
    const auto valuesView = this->values.getConstView();
+   if( end == 0 )
+      end = this->getRows();
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
+      outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+   this->segments.segmentsReduction( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Matrix >
 void
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+DenseMatrixView< Real, Device, Index, Organization >::
 addMatrix( const Matrix& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
@@ -447,9 +425,9 @@ addMatrix( const Matrix& matrix,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Matrix1, typename Matrix2, int tileDim >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::getMatrixProduct( const Matrix1& matrix1,
+void DenseMatrixView< Real, Device, Index, Organization >::getMatrixProduct( const Matrix1& matrix1,
                                                               const Matrix2& matrix2,
                                                               const RealType& matrix1Multiplicator,
                                                               const RealType& matrix2Multiplicator )
@@ -537,9 +515,9 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::getMatrixProduct( co
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Matrix, int tileDim >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::getTransposition( const Matrix& matrix,
+void DenseMatrixView< Real, Device, Index, Organization >::getTransposition( const Matrix& matrix,
                                                               const RealType& matrixMultiplicator )
 {
    TNL_ASSERT( this->getColumns() == matrix.getRows() &&
@@ -629,9 +607,9 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::getTransposition( co
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Vector1, typename Vector2 >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::performSORIteration( const Vector1& b,
+void DenseMatrixView< Real, Device, Index, Organization >::performSORIteration( const Vector1& b,
                                                         const IndexType row,
                                                         Vector2& x,
                                                         const RealType& omega ) const
@@ -651,9 +629,9 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::performSORIteration(
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-DenseMatrixView< Real, Device, Index, RowMajorOrder >&
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+DenseMatrixView< Real, Device, Index, Organization >&
+DenseMatrixView< Real, Device, Index, Organization >::
 operator=( const DenseMatrixView& matrix )
 {
    MatrixView< Real, Device, Index >::operator=( matrix );
@@ -664,8 +642,8 @@ operator=( const DenseMatrixView& matrix )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( const String& fileName ) const
+          ElementsOrganization Organization >
+void DenseMatrixView< Real, Device, Index, Organization >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
@@ -673,8 +651,8 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( const String& 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( File& file ) const
+          ElementsOrganization Organization >
+void DenseMatrixView< Real, Device, Index, Organization >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );
    this->segments.save( file );
@@ -683,8 +661,8 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( File& file ) c
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream& str ) const
+          ElementsOrganization Organization >
+void DenseMatrixView< Real, Device, Index, Organization >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -702,9 +680,9 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-Index DenseMatrixView< Real, Device, Index, RowMajorOrder >::getElementIndex( const IndexType row,
+Index DenseMatrixView< Real, Device, Index, Organization >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );

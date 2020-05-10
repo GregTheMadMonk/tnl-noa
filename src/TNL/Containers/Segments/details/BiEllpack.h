@@ -22,7 +22,7 @@ namespace TNL {
 
 template< typename Index,
           typename Device,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpack
 {
@@ -30,12 +30,12 @@ class BiEllpack
 
       using DeviceType = Device;
       using IndexType = Index;
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      static constexpr bool getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using OffsetsHolderView = typename OffsetsHolder::ViewType;
       using ConstOffsetsHolderView = typename OffsetsHolderView::ConstViewType;
       using SegmentsSizes = OffsetsHolder;
-      using SegmentViewType = BiEllpackSegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
       
       static constexpr int getWarpSize() { return WarpSize; };
 
@@ -165,7 +165,7 @@ class BiEllpack
                }
                else
                {
-                  if( RowMajorOrder )
+                  if( Organization == RowMajorOrder )
                      return globalIdx + rowStripPerm * groupWidth + localIdx;
                   else
                      return globalIdx + rowStripPerm + localIdx * groupHeight;
@@ -202,7 +202,7 @@ class BiEllpack
                }
                else
                {
-                  if( RowMajorOrder )
+                  if( Organization == RowMajorOrder )
                   {
                      return globalIdx + rowStripPerm * groupWidth + localIdx;
                   }

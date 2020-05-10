@@ -14,64 +14,138 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/DenseMatrixRowView.h>
 #include <TNL/Matrices/MatrixView.h>
+#include <TNL/Matrices/MatrixType.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
 namespace Matrices {
 
+/**
+ * \brief Implementation of dense matrix view.
+ * 
+ * It serves as an accessor to \ref DenseMatrix for example when passing the
+ * matrix to lambda functions. DenseMatrix view can be also created in CUDA kernels.
+ * 
+ * \tparam Real is a type of matrix elements.
+ * \tparam Device is a device where the matrix is allocated.
+ * \tparam Index is a type for indexing of the matrix elements.
+ * \tparam MatrixElementsOrganization tells the ordering of matrix elements. It is either RowMajorOrder
+ *         or ColumnMajorOrder.
+ * 
+ * See \ref DenseMatrix.
+ */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class DenseMatrixView : public MatrixView< Real, Device, Index >
 {
-   private:
-      // convenient template alias for controlling the selection of copy-assignment operator
-      template< typename Device2 >
-      using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
-
-      // friend class will be needed for templated assignment operators
-      //template< typename Real2, typename Device2, typename Index2 >
-      //friend class Dense;
-
-   public:
-      using RealType = Real;
-      using DeviceType = Device;
-      using IndexType = Index;
+   protected:
       using BaseType = Matrix< Real, Device, Index >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
-      using ValuesViewType = typename ValuesVectorType::ViewType;
-      using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
+      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
+
+   public:
+
+      /**
+       * \brief The type of matrix elements.
+       */
+      using RealType = Real;
+
+      /**
+       * \brief The device where the matrix is allocated.
+       */
+      using DeviceType = Device;
+
+      /**
+       * \brief The type used for matrix elements indexing.
+       */
+      using IndexType = Index;
+
+      /**
+       * \brief Matrix elements organization getter.
+       * 
+       * \return matrix elements organization - RowMajorOrder of ColumnMajorOrder.
+       */
+      static constexpr ElementsOrganization getOrganization() { return Organization; };
+
+      /**
+       * \brief Matrix elements container view type.
+       * 
+       * Use this for embedding of the matrix elements values.
+       */
+      using ValuesViewType = typename ValuesVectorType::ViewType;
+
+      /**
+       * \brief Matrix view type.
+       * 
+       * See \ref DenseMatrixView.
+       */
+      using ViewType = DenseMatrixView< Real, Device, Index, Organization >;
+
+      /**
+       * \brief Matrix view type for constant instances.
+       * 
+       * See \ref DenseMatrixView.
+       */
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
+
+      /**
+       * \brief Type for accessing matrix row.
+       */
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
-      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
 
-
-      // TODO: remove this
-      using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
-      using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
-
+      /**
+       * \brief Helper type for getting self type or its modifications.
+       */
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index >
       using Self = DenseMatrixView< _Real, _Device, _Index >;
 
+      /**
+       * \brief Constructor without parameters.
+       */
       __cuda_callable__
       DenseMatrixView();
 
+      /**
+       * \brief Constructor with matrix dimensions and values.
+       * 
+       * Organization of matrix elements values in 
+       * 
+       * \param rows number of matrix rows.
+       * \param columns number of matrix columns.
+       * \param values is vector view with matrix elements values.
+       */
       __cuda_callable__
       DenseMatrixView( const IndexType rows,
                        const IndexType columns,
                        const ValuesViewType& values );
 
+      /**
+       * \brief Copy constructor.
+       * 
+       * \param matrix is the source matrix view.
+       */
       __cuda_callable__
-      DenseMatrixView( const DenseMatrixView& m ) = default;
+      DenseMatrixView( const DenseMatrixView& matrix ) = default;
 
+      /**
+       * \brief Returns a modifiable dense matrix view.
+       * 
+       * \return dense matrix view.
+       */
       __cuda_callable__
       ViewType getView();
 
+      /**
+       * \brief Returns a non-modifiable dense matrix view.
+       * 
+       * \return dense matrix view.
+       */
       __cuda_callable__
       ConstViewType getConstView() const;
 
@@ -91,8 +165,6 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getNonzeroElementsCount() const;
 
-      void reset();
-
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
@@ -110,15 +182,18 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       const Real& operator()( const IndexType row,
                               const IndexType column ) const;
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      __cuda_callable__
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 
@@ -140,14 +215,13 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Function >
       void forAllRows( Function& function );
 
-      template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
-
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType& matrixMultiplicator = 1.0,
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,

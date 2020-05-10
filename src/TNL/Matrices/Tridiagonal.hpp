@@ -24,9 +24,9 @@ class TridiagonalDeviceDependentCode;
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 Tridiagonal()
 {
 }
@@ -34,9 +34,9 @@ Tridiagonal()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 Tridiagonal( const IndexType rows, const IndexType columns )
 {
    this->setDimensions( rows, columns );
@@ -45,10 +45,10 @@ Tridiagonal( const IndexType rows, const IndexType columns )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getView() const -> ViewType
 {
    // TODO: fix when getConstView works
@@ -58,10 +58,10 @@ getView() const -> ViewType
 /*template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->values.getConstView(), indexer );
@@ -70,25 +70,25 @@ getConstView() const -> ConstViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 String
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getSerializationType()
 {
    return String( "Matrices::Tridiagonal< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
+          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 String
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -97,10 +97,10 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 setDimensions( const IndexType rows, const IndexType columns )
 {
    Matrix< Real, Device, Index >::setDimensions( rows, columns );
@@ -113,11 +113,11 @@ setDimensions( const IndexType rows, const IndexType columns )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
  //  template< typename Vector >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 setCompressedRowLengths( const ConstCompressedRowLengthsVectorView rowLengths )
 {
    if( max( rowLengths ) > 3 )
@@ -139,11 +139,11 @@ setCompressedRowLengths( const ConstCompressedRowLengthsVectorView rowLengths )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Vector >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    return this->view.getCompressedRowLengths( rowLengths );
@@ -152,10 +152,10 @@ getCompressedRowLengths( Vector& rowLengths ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Index
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getRowLength( const IndexType row ) const
 {
    return this->view.getRowLength( row );
@@ -164,10 +164,10 @@ getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Index
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getMaxRowLength() const
 {
    return this->view.getMaxRowLength();
@@ -176,12 +176,12 @@ getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
-setLike( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& m )
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
+setLike( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& m )
 {
    this->setDimensions( m.getRows(), m.getColumns() );
 }
@@ -189,10 +189,10 @@ setLike( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocato
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Index
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getNumberOfNonzeroMatrixElements() const
 {
    return this->view.getNumberOfNonzeroMatrixElements();
@@ -201,10 +201,10 @@ getNumberOfNonzeroMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 reset()
 {
    Matrix< Real, Device, Index >::reset();
@@ -213,14 +213,14 @@ reset()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 bool
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator == ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
+operator == ( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const
 {
-   if( RowMajorOrder == RowMajorOrder_ )
+   if( Organization == Organization_ )
       return this->values == matrix.values;
    else
    {
@@ -231,12 +231,12 @@ operator == ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAll
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 bool
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator != ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
+operator != ( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const
 {
    return ! this->operator==( matrix );
 }
@@ -244,10 +244,10 @@ operator != ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAll
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 setValue( const RealType& v )
 {
    this->view.setValue( v );
@@ -256,11 +256,11 @@ setValue( const RealType& v )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    return this->view.getRow( rowIdx );
@@ -269,11 +269,11 @@ getRow( const IndexType& rowIdx ) const -> const RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
@@ -282,10 +282,10 @@ getRow( const IndexType& rowIdx ) -> RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
    this->view.setElement( row, column, value );
@@ -294,10 +294,10 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -309,10 +309,10 @@ addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Real
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getElement( const IndexType row, const IndexType column ) const
 {
    return this->view.getElement( row, column );
@@ -321,11 +321,11 @@ getElement( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
@@ -334,11 +334,11 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->view.rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -347,11 +347,11 @@ allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zer
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    this->view.forRows( first, last, function );
@@ -360,11 +360,11 @@ forRows( IndexType first, IndexType last, Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
   template< typename Function >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    this->view.forRows( first, last, function );
@@ -373,11 +373,11 @@ forRows( IndexType first, IndexType last, Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 forAllRows( Function& function ) const
 {
    this->view.forRows( 0, this->getRows(), function );
@@ -386,11 +386,11 @@ forAllRows( Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 forAllRows( Function& function )
 {
    this->view.forRows( 0, this->getRows(), function );
@@ -399,12 +399,12 @@ forAllRows( Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 template< typename Vector >
 __cuda_callable__
 typename Vector::RealType
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
    return this->view.rowVectorProduct();
@@ -413,12 +413,12 @@ rowVectorProduct( const IndexType row, const Vector& vector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename InVector,
              typename OutVector >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
    this->view.vectorProduct( inVector, outVector );
@@ -427,12 +427,12 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
-addMatrix( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix,
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
+addMatrix( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
 {
@@ -470,10 +470,10 @@ __global__ void TridiagonalTranspositionCudaKernel( const Tridiagonal< Real2, De
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Real2, typename Index2 >
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
    TNL_ASSERT( this->getRows() == matrix.getRows(),
@@ -519,11 +519,11 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::getTransp
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Vector1, typename Vector2 >
 __cuda_callable__
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORIteration( const Vector1& b,
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::performSORIteration( const Vector1& b,
                                                               const IndexType row,
                                                               Vector2& x,
                                                               const RealType& omega ) const
@@ -541,10 +541,10 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::performSO
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >&
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::operator=( const Tridiagonal& matrix )
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >&
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::operator=( const Tridiagonal& matrix )
 {
    this->setLike( matrix );
    this->values = matrix.values;
@@ -555,12 +555,12 @@ Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::operator=( con
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >&
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix )
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >&
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
+operator=( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix )
 {
    static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
                   "unknown device" );
@@ -568,7 +568,7 @@ operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAlloca
                   "unknown device" );
 
    this->setLike( matrix );
-   if( RowMajorOrder == RowMajorOrder_ )
+   if( Organization == Organization_ )
       this->values = matrix.getValues();
    else
    {
@@ -582,7 +582,7 @@ operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAlloca
       }
       else
       {
-         Tridiagonal< Real, Device, Index, RowMajorOrder_ > auxMatrix;
+         Tridiagonal< Real, Device, Index, Organization_ > auxMatrix;
          auxMatrix = matrix;
          const auto matrix_view = auxMatrix.getView();
          auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
@@ -597,9 +597,9 @@ operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAlloca
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::save( File& file ) const
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
 }
@@ -607,9 +607,9 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::save( Fil
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::load( File& file )
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
    this->indexer.setDimensions( this->getRows(), this->getColumns() );
@@ -619,9 +619,9 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::load( Fil
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::save( const String& fileName ) const
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
@@ -629,9 +629,9 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::save( con
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::load( const String& fileName )
+void Tridiagonal< Real, Device, Index, Organization, RealAllocator >::load( const String& fileName )
 {
    Object::load( fileName );
 }
@@ -639,10 +639,10 @@ void Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::load( con
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 print( std::ostream& str ) const
 {
    this->view.print( str );
@@ -651,10 +651,10 @@ print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getIndexer() const -> const IndexerType&
 {
    return this->indexer;
@@ -663,10 +663,10 @@ getIndexer() const -> const IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getIndexer() -> IndexerType&
 {
    return this->indexer;
@@ -675,11 +675,11 @@ getIndexer() -> IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
 Index
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    IndexType localIdx = column - row;
@@ -695,11 +695,11 @@ getElementIndex( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
 Index
-Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Tridiagonal< Real, Device, Index, Organization, RealAllocator >::
 getPaddingIndex() const
 {
    return this->view.getPaddingIndex();
@@ -747,7 +747,7 @@ class TridiagonalDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix,
+      static void vectorProduct( const Tridiagonal< Real, Device, Index, Organization, RealAllocator >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -800,7 +800,7 @@ class TridiagonalDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix,
+      static void vectorProduct( const Tridiagonal< Real, Device, Index, Organization, RealAllocator >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

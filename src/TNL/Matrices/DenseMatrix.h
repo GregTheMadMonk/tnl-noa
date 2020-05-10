@@ -26,14 +26,14 @@ namespace Matrices {
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam RowMajorOrder tells the ordering of matrix elements. If it is \e true the matrix elements
- *         are stored in row major order. If it is \e false, the matrix elements are stored in column major order.
+ * \tparam Organization tells the ordering of matrix elements. It is either RowMajorOrder
+ *         or ColumnMajorOrder.
  * \tparam RealAllocator is allocator for the matrix elements.
  */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class DenseMatrix : public Matrix< Real, Device, Index >
 {
@@ -41,9 +41,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, RowMajorOrder, 1 >;
+      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
-
 
    public:
 
@@ -63,6 +62,13 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using IndexType = Index;
 
       /**
+       * \brief Matrix elements organization getter.
+       * 
+       * \return matrix elements organization - RowMajorOrder of ColumnMajorOrder.
+       */
+      static constexpr ElementsOrganization getOrganization() { return Organization; };
+
+      /**
        * \brief The allocator for matrix elements.
        */
       using RealAllocatorType = RealAllocator;
@@ -72,14 +78,14 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * See \ref DenseMatrixView.
        */
-      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ViewType = DenseMatrixView< Real, Device, Index, Organization >;
 
       /**
        * \brief Matrix view type for constant instances.
        * 
        * See \ref DenseMatrixView.
        */
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
 
       /**
        * \brief Type for accessing matrix row.
@@ -92,9 +98,9 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                bool _RowMajorOrder = RowMajorOrder,
+                ElementsOrganization _Organization = Organization,
                 typename _RealAllocator = RealAllocator >
-      using Self = DenseMatrix< _Real, _Device, _Index, _RowMajorOrder, _RealAllocator >;
+      using Self = DenseMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       /**
        * \brief Constructor without parameters.
@@ -331,9 +337,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -346,6 +353,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \par Output
        * \include DenseMatrixExample_setElement.out
        */
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
@@ -353,9 +361,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Add element at given \e row and \e column to given \e value.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -363,8 +372,9 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
        * \param thisElementMultiplicator is multiplicator the original matrix element
-       *   value is multiplied by before addition of given e value.
+       *   value is multiplied by before addition of given \e value.
        */
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
@@ -373,9 +383,10 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
        * 
-       * This method can be called only from the host system (CPU) no matter
-       * where the matrix is allocated. If the matrix is allocated in GPU device
-       * this methods transfer values of each matrix element separately and so the
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
        * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
        * 
@@ -384,6 +395,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \return value of given matrix element.
        */
+      __cuda_callable__
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 
@@ -516,22 +528,11 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       void forAllRows( Function& function );
 
       /**
-       * \brief This method computes scalar product of given vector and one 
-       *  row of the matrix.
-       * 
-       * \tparam Vector is type of input vector. It can be \ref Vector,
-       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
-       * \param row is index of the row used for the scalar product.
-       * \param vector is the input vector.
-       * \return result of the matrix row and vector product.
-       */
-      template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;
-
-      /**
        * \brief Computes product of matrix and vector.
+       * 
+       * More precisely, it computes:
+       * 
+       * outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.
        * 
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
@@ -540,10 +541,21 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \param inVector is input vector.
        * \param outVector is output vector.
+       * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
+       * \param outVectorMultiplicator is a factor by which the outVector is multiplied before added
+       *    to the result of matrix-vector product. It is zero by default.
+       * \param begin is the beginning of the rows range for which the vector product
+       *    is computed. It is zero by default.
+       * \param end is the end of the rows range for which the vector product
+       *    is computed. It is number if the matrix rows by default.
        */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType& matrixMultiplicator = 1.0,
+                          const RealType& outVectorMultiplicator = 0.0,
+                          const IndexType begin = 0,
+                          const IndexType end = 0 ) const;
 
       template< typename Matrix >
       void addMatrix( const Matrix& matrix,
@@ -581,8 +593,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return reference to this matrix.
        */
       template< typename RHSReal, typename RHSDevice, typename RHSIndex,
-                 bool RHSRowMajorOrder, typename RHSRealAllocator >
-      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
+                 ElementsOrganization RHSOrganization, typename RHSRealAllocator >
+      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix );
 
       /**
        * \brief Assignment operator for other (sparse) types of matrices.
@@ -600,7 +612,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return \e true if the RHS matrix is equal, \e false otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
 
       /**
        * \brief Comparison operator with another dense matrix.
@@ -609,7 +621,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return \e false if the RHS matrix is equal, \e true otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -667,9 +679,9 @@ class DenseMatrix : public Matrix< Real, Device, Index >
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix );
+std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix );
 
 } // namespace Matrices
 } // namespace TNL

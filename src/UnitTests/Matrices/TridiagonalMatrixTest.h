@@ -16,6 +16,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 #include <TNL/Math.h>
 #include <iostream>
 
@@ -34,14 +35,15 @@ static const char* TEST_FILE_NAME = "test_TridiagonalMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
+   using namespace TNL::Containers::Segments;
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -1166,10 +1168,11 @@ void test_AssignmentOperator()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   constexpr bool rowMajorOrder = Matrix::getRowMajorOrder();
+   constexpr TNL::Containers::Segments::ElementsOrganization organization = Matrix::getOrganization();
 
-   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType, rowMajorOrder >;
-   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType, !rowMajorOrder >;
+   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType, organization >;
+   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType,
+      organization == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
    TridiagonalHost hostMatrix( rows, columns );
@@ -1485,7 +1488,9 @@ TYPED_TEST( MatrixTest, addMatrixTest_differentOrdering )
     using DeviceType = typename MatrixType::DeviceType;
     using IndexType = typename MatrixType::IndexType;
     using RealAllocatorType = typename MatrixType::RealAllocatorType;
-    using MatrixType2 = TNL::Matrices::Tridiagonal< RealType, DeviceType, IndexType, ! MatrixType::getRowMajorOrder(), RealAllocatorType >;
+    using MatrixType2 = TNL::Matrices::Tridiagonal< RealType, DeviceType, IndexType,
+     MatrixType::getOrganization() == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder,
+      RealAllocatorType >;
 
     test_AddMatrix< MatrixType, MatrixType2 >();
 }

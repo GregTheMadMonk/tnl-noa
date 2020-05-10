@@ -23,7 +23,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
 {
@@ -33,11 +33,11 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, Organization >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using ViewType = TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ViewType = TridiagonalMatrixView< Real, Device, Index, Organization >;
+      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
       using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
@@ -50,7 +50,7 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Index = Index >
       using Self = Tridiagonal< _Real, _Device, _Index >;
 
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; };
+      static constexpr ElementsOrganization getOrganization() { return Organization; };
 
       Tridiagonal();
 
@@ -78,18 +78,18 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
 
       IndexType getMaxRowLength() const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      void setLike( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& m );
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      void setLike( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& m );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
       void reset();
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      bool operator == ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      bool operator == ( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      bool operator != ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      bool operator != ( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -139,8 +139,8 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      void addMatrix( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix,
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      void addMatrix( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 
@@ -159,8 +159,8 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       Tridiagonal& operator=( const Tridiagonal& matrix );
 
       // cross-device copy assignment
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      Tridiagonal& operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix );
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      Tridiagonal& operator=( const Tridiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix );
 
       void save( File& file ) const;
 

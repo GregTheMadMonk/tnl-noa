@@ -20,18 +20,18 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::DenseMatrix()
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::DenseMatrix()
 {
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 DenseMatrix( const IndexType rows, const IndexType columns )
 {
    this->setDimensions( rows, columns );
@@ -40,10 +40,10 @@ DenseMatrix( const IndexType rows, const IndexType columns )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Value >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 DenseMatrix( std::initializer_list< std::initializer_list< Value > > data )
 {
    this->setElements( data );
@@ -52,11 +52,11 @@ DenseMatrix( std::initializer_list< std::initializer_list< Value > > data )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Value >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setElements( std::initializer_list< std::initializer_list< Value > > data )
 {
    IndexType rows = data.size();
@@ -93,10 +93,10 @@ setElements( std::initializer_list< std::initializer_list< Value > > data )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getView() -> ViewType
 {
    return ViewType( this->getRows(),
@@ -107,10 +107,10 @@ getView() -> ViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 auto
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
@@ -121,10 +121,10 @@ getConstView() const -> ConstViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 String
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getSerializationType()
 {
    return ViewType::getSerializationType();
@@ -133,10 +133,10 @@ getSerializationType()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 String
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -145,10 +145,10 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns )
 {
@@ -162,11 +162,11 @@ setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Matrix_ >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setLike( const Matrix_& matrix )
 {
    this->setDimensions( matrix.getRows(), matrix.getColumns() );
@@ -175,11 +175,11 @@ setLike( const Matrix_& matrix )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename RowCapacitiesVector >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setRowCapacities( const RowCapacitiesVector& rowCapacities )
 {
    TNL_ASSERT_EQ( rowCapacities.getSize(), this->getRows(), "" );
@@ -189,11 +189,11 @@ setRowCapacities( const RowCapacitiesVector& rowCapacities )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename RowLengthsVector >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getCompressedRowLengths( RowLengthsVector& rowLengths ) const
 {
    this->view.getCompressedRowLengths( rowLengths );
@@ -202,10 +202,10 @@ getCompressedRowLengths( RowLengthsVector& rowLengths ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Index
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getElementsCount() const
 {
    return this->getRows() * this->getColumns();
@@ -214,10 +214,10 @@ getElementsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 Index
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getNonzeroElementsCount() const
 {
    return this->view.getNonzeroElementsCount();
@@ -226,22 +226,23 @@ getNonzeroElementsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 reset()
 {
    Matrix< Real, Device, Index >::reset();
+   this->segments.reset();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setValue( const Real& value )
 {
    this->view.setValue( value );
@@ -250,10 +251,10 @@ setValue( const Real& value )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__ auto
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    return this->view.getRow( rowIdx );
@@ -262,10 +263,10 @@ getRow( const IndexType& rowIdx ) const -> const RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__ auto
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
@@ -274,10 +275,10 @@ getRow( const IndexType& rowIdx ) -> RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
-Real& DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::operator()( const IndexType row,
+Real& DenseMatrix< Real, Device, Index, Organization, RealAllocator >::operator()( const IndexType row,
                                                 const IndexType column )
 {
    return this->view.operator()( row, column );
@@ -286,10 +287,10 @@ Real& DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::operator
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
-const Real& DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::operator()( const IndexType row,
+const Real& DenseMatrix< Real, Device, Index, Organization, RealAllocator >::operator()( const IndexType row,
                                                       const IndexType column ) const
 {
    return this->view.operator()( row, column );
@@ -298,10 +299,10 @@ const Real& DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::op
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+__cuda_callable__ void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
@@ -312,10 +313,10 @@ setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+__cuda_callable__ void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -327,10 +328,10 @@ addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-Real
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+__cuda_callable__ Real
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const
 {
@@ -340,11 +341,11 @@ getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
@@ -353,11 +354,11 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& redu
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -366,11 +367,11 @@ allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchRea
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    this->view.forRows( first, last, function );
@@ -379,11 +380,11 @@ forRows( IndexType first, IndexType last, Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    this->view.forRows( first, last, function );
@@ -392,11 +393,11 @@ forRows( IndexType first, IndexType last, Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllRows( Function& function ) const
 {
    this->forRows( 0, this->getRows(), function );
@@ -405,11 +406,11 @@ forAllRows( Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Function >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllRows( Function& function )
 {
    this->forRows( 0, this->getRows(), function );
@@ -418,39 +419,30 @@ forAllRows( Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType 
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-rowVectorProduct( const IndexType row, const Vector& vector ) const
-{
-   return this->view.rowVectorProduct( row, vector );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename InVector,
              typename OutVector >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType& matrixMultiplicator,
+               const RealType& outVectorMultiplicator,
+               const IndexType begin,
+               const IndexType end ) const
 {
-   this->view.vectorProduct( inVector, outVector );
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, begin, end );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Matrix >
 void
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 addMatrix( const Matrix& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
@@ -471,7 +463,7 @@ addMatrix( const Matrix& matrix,
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename Matrix1,
           typename Matrix2,
@@ -572,10 +564,10 @@ __global__ void DenseMatrixProductKernel( DenseMatrix< Real, Devices::Cuda, Inde
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Matrix1, typename Matrix2, int tileDim >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getMatrixProduct( const Matrix1& matrix1,
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::getMatrixProduct( const Matrix1& matrix1,
                                                               const Matrix2& matrix2,
                                                               const RealType& matrix1Multiplicator,
                                                               const RealType& matrix2Multiplicator )
@@ -663,7 +655,7 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getMatrix
 template< typename Real,
           typename Index,
           typename Matrix,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           int tileDim,
           int tileRowBlockSize >
@@ -733,7 +725,7 @@ __global__ void DenseTranspositionAlignedKernel( DenseMatrix< Real, Devices::Cud
 
 template< typename Real,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename Matrix,
           int tileDim,
@@ -816,10 +808,10 @@ __global__ void DenseTranspositionNonAlignedKernel( DenseMatrix< Real, Devices::
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Matrix, int tileDim >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getTransposition( const Matrix& matrix,
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::getTransposition( const Matrix& matrix,
                                                               const RealType& matrixMultiplicator )
 {
    TNL_ASSERT( this->getColumns() == matrix.getRows() &&
@@ -909,10 +901,10 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::getTransp
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Vector1, typename Vector2 >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORIteration( const Vector1& b,
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::performSORIteration( const Vector1& b,
                                                         const IndexType row,
                                                         Vector2& x,
                                                         const RealType& omega ) const
@@ -931,11 +923,11 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::performSO
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >&
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator=( const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix )
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator=( const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix )
 {
    setLike( matrix );
    this->values = matrix.values;
@@ -945,21 +937,21 @@ operator=( const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename RHSReal, typename RHSDevice, typename RHSIndex,
-             bool RHSRowMajorOrder, typename RHSRealAllocator >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >&
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix )
+             ElementsOrganization RHSOrganization, typename RHSRealAllocator >
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix )
 {
-   using RHSMatrix = DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >;
+   using RHSMatrix = DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >;
    using RHSIndexType = typename RHSMatrix::IndexType;
    using RHSRealType = typename RHSMatrix::RealType;
    using RHSDeviceType = typename RHSMatrix::DeviceType;
 
    this->setLike( matrix );
-   if( RowMajorOrder == RHSRowMajorOrder )
+   if( Organization == RHSOrganization )
    {
       this->values = matrix.getValues();
       return *this;
@@ -1018,11 +1010,11 @@ operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RH
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename RHSMatrix >
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >&
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 operator=( const RHSMatrix& matrix )
 {
    using RHSIndexType = typename RHSMatrix::IndexType;
@@ -1108,12 +1100,12 @@ operator=( const RHSMatrix& matrix )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
 bool
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const
 {
    return( this->getRows() == matrix.getRows() &&
            this->getColumns() == matrix.getColumns() &&
@@ -1123,12 +1115,12 @@ operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
    template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
 bool
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
-operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const
 {
    return ! ( *this == matrix );
 }
@@ -1136,9 +1128,9 @@ operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::save( const String& fileName ) const
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::save( const String& fileName ) const
 {
    this->view.save( fileName );
 }
@@ -1146,9 +1138,9 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::save( con
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::load( const String& fileName )
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::load( const String& fileName )
 {
    Object::load( fileName );
 }
@@ -1156,9 +1148,9 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::load( con
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::save( File& file ) const
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::save( File& file ) const
 {
    this->view.save( file );
 }
@@ -1166,9 +1158,9 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::save( Fil
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::load( File& file )
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
    this->segments.load( file );
@@ -1178,9 +1170,9 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::load( Fil
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::print( std::ostream& str ) const
+void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::print( std::ostream& str ) const
 {
    this->view.print( str );
 }
@@ -1188,11 +1180,11 @@ void DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::print( st
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
 __cuda_callable__
 Index
-DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );
@@ -1201,9 +1193,9 @@ getElementIndex( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix )
+std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix )
 { 
    matrix.print( str );
    return str;

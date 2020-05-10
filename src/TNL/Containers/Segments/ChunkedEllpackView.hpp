@@ -22,9 +22,9 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 ChunkedEllpackView( const IndexType size,
                     const IndexType storageSize,
                     const IndexType chunksInSlice,
@@ -50,9 +50,9 @@ ChunkedEllpackView( const IndexType size,
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 ChunkedEllpackView( const IndexType size,
                     const IndexType storageSize,
                     const IndexType chunksInSlice,
@@ -78,9 +78,9 @@ ChunkedEllpackView( const IndexType size,
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view )
 : size( chunked_ellpack_view.size ),
   storageSize( chunked_ellpack_view.storageSize ),
@@ -97,9 +97,9 @@ ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 ChunkedEllpackView( const ChunkedEllpackView&& chunked_ellpack_view )
 : size( chunked_ellpack_view.size ),
   storageSize( chunked_ellpack_view.storageSize ),
@@ -116,9 +116,9 @@ ChunkedEllpackView( const ChunkedEllpackView&& chunked_ellpack_view )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 getSerializationType()
 {
    return "ChunkedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
@@ -126,9 +126,9 @@ getSerializationType()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 getSegmentsType()
 {
    return "ChunkedEllpack";
@@ -136,10 +136,10 @@ getSegmentsType()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
-typename ChunkedEllpackView< Device, Index, RowMajorOrder >::ViewType
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+typename ChunkedEllpackView< Device, Index, Organization >::ViewType
+ChunkedEllpackView< Device, Index, Organization >::
 getView()
 {
    return ViewType( size, chunksInSlice, desiredChunkSize,
@@ -153,8 +153,8 @@ getView()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, chunksInSlice, desiredChunkSize,
@@ -168,8 +168,8 @@ getConstView() const -> const ConstViewType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getSegmentsCount() const -> IndexType
 {
    return this->size;
@@ -177,12 +177,12 @@ getSegmentsCount() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSizeDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -190,13 +190,13 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSizeDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
          segmentIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -207,8 +207,8 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getSize() const -> IndexType
 {
    return this->size;
@@ -216,8 +216,8 @@ getSize() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getStorageSize() const -> IndexType
 {
    return this->storageSize;
@@ -225,12 +225,12 @@ getStorageSize() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndexDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -240,7 +240,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndexDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -248,7 +248,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
          segmentIdx,
          localIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -261,14 +261,14 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentViewDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -277,14 +277,14 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentViewDirect(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
          chunksInSlice,
          segmentIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentView(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentView(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -296,10 +296,10 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function, typename... Args >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const IndexType chunksInSlice = this->chunksInSlice;
@@ -322,7 +322,7 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 
       const IndexType segmentSize = segmentChunksCount * chunkSize;
       bool compute( true );
-      if( RowMajorOrder )
+      if( Organization == RowMajorOrder )
       {
          IndexType begin = sliceOffset + firstChunkOfSegment * chunkSize;
          IndexType end = begin + segmentSize;
@@ -349,10 +349,10 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function, typename... Args >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
@@ -360,10 +360,10 @@ forAll( Function& f, Args... args ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
@@ -388,7 +388,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          const IndexType segmentSize = segmentChunksCount * chunkSize;
          RealType aux( zero );
          bool compute( true );
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
          {
             IndexType begin = sliceOffset + firstChunkOfSegment * chunkSize;
             IndexType end = begin + segmentSize;
@@ -434,10 +434,10 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
@@ -445,9 +445,9 @@ allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, co
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
-ChunkedEllpackView< Device, Index, RowMajorOrder >&
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+ChunkedEllpackView< Device, Index, Organization >&
+ChunkedEllpackView< Device, Index, Organization >::
 operator=( const ChunkedEllpackView& view )
 {
    this->size = view.size;
@@ -465,9 +465,9 @@ operator=( const ChunkedEllpackView& view )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 save( File& file ) const
 {
    file.save( &this->size );
@@ -484,9 +484,9 @@ save( File& file ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 printStructure( std::ostream& str ) const
 {
    //const IndexType numberOfSlices = this->getNumberOfSlices();
@@ -507,7 +507,7 @@ printStructure( std::ostream& str ) const
 #ifdef HAVE_CUDA
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
@@ -515,7 +515,7 @@ template< typename Device,
              typename... Args >
 __device__
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 segmentsReductionKernelWithAllParameters( IndexType gridIdx,
                                           IndexType first,
                                           IndexType last,
@@ -553,7 +553,7 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
    IndexType localIdx = ( threadIdx.x - firstChunkOfSegment ) * chunkSize;
    bool compute( true );
 
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
    {
       IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
       IndexType end = begin + chunkSize;
@@ -585,7 +585,7 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
@@ -593,7 +593,7 @@ template< typename Device,
              typename... Args >
 __device__
 void
-ChunkedEllpackView< Device, Index, RowMajorOrder >::
+ChunkedEllpackView< Device, Index, Organization >::
 segmentsReductionKernel( IndexType gridIdx,
                          IndexType first,
                          IndexType last,
@@ -625,7 +625,7 @@ segmentsReductionKernel( IndexType gridIdx,
    const IndexType chunkIdx = sliceIdx * chunksInSlice + threadIdx.x;
    bool compute( true );
 
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
    {
       IndexType begin = sliceOffset + threadIdx.x * chunkSize; // threadIdx.x = chunkIdx within the slice
       IndexType end = begin + chunkSize;

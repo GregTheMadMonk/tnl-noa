@@ -22,7 +22,7 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class ChunkedEllpack
 {
    public:
@@ -30,12 +30,12 @@ class ChunkedEllpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
-      using ViewType = ChunkedEllpackView< Device, Index, RowMajorOrder >;
+      static constexpr bool getOrganization() { return Organization; }
+      using ViewType = ChunkedEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = ChunkedEllpackView< Device_, Index_, RowMajorOrder >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, RowMajorOrder >;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
+      using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
+      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
+      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
       using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
@@ -112,8 +112,8 @@ class ChunkedEllpack
 
       ChunkedEllpack& operator=( const ChunkedEllpack& source ) = default;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_ >& source );
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, Organization_ >& source );
 
       void save( File& file ) const;
 
@@ -157,7 +157,7 @@ class ChunkedEllpack
 
       IndexType numberOfSlices = 0;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
       friend class ChunkedEllpack;
 };
 

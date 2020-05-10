@@ -64,6 +64,11 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forAllRows.out
                        OUTPUT DenseMatrixExample_forAllRows.out )
 
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_constructor_cuda DenseMatrixViewExample_constructor.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_constructor_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_constructor.out
+                       OUTPUT DenseMatrixViewExample_constructor.out )
+
 ELSE()
    ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_Constructor_init_list >
@@ -130,11 +135,12 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forAllRows.out
                        OUTPUT DenseMatrixExample_forAllRows.out )
 
+   ADD_EXECUTABLE( DenseMatrixViewExample_constructor DenseMatrixViewExample_constructor.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_constructor >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_constructor.out
+                       OUTPUT DenseMatrixViewExample_constructor.out )
+
 ENDIF()
-
-
-
-
 
 ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    DenseMatrixExample_Constructor_init_list.out
@@ -150,5 +156,6 @@ ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    DenseMatrixExample_allRowsReduction.out
    DenseMatrixExample_forRows.out
    DenseMatrixExample_forAllRows.out
+   DenseMatrixViewExample_constructor.out
 )
 

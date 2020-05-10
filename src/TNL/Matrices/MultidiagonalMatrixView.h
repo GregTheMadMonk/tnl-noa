@@ -22,7 +22,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
@@ -34,10 +34,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using DiagonalsShiftsView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       //using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
       using HostDiagonalsShiftsView = Containers::VectorView< IndexType, Devices::Host, IndexType >;
-      using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, Organization >;
       using ValuesViewType = typename BaseType::ValuesView;
-      using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ViewType = MultidiagonalMatrixView< Real, Device, Index, Organization >;
+      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
       using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
@@ -48,8 +48,8 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                bool RowMajorOrder_ = std::is_same< Device, Devices::Host >::value >
-      using Self = MultidiagonalMatrixView< _Real, _Device, _Index, RowMajorOrder_ >;
+                ElementsOrganization Organization_ = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+      using Self = MultidiagonalMatrixView< _Real, _Device, _Index, Organization_ >;
 
       MultidiagonalMatrixView();
 
@@ -81,11 +81,11 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      bool operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      bool operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -137,8 +137,8 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      void addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      void addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 

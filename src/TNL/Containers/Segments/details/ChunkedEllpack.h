@@ -55,14 +55,14 @@ struct ChunkedEllpackSliceInfo
          
 template< typename Index,
           typename Device,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class ChunkedEllpack
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using OffsetsHolderView = typename OffsetsHolder::ViewType;
       using SegmentsSizes = OffsetsHolder;
@@ -70,7 +70,7 @@ class ChunkedEllpack
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
 
       __cuda_callable__ static
       IndexType getSegmentSizeDirect( const OffsetsHolderView& segmentsToSlicesMapping,
@@ -125,7 +125,7 @@ class ChunkedEllpack
          const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
          TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
 
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
             return sliceOffset + firstChunkOfSegment * chunkSize + localIdx;
          else
          {
@@ -154,7 +154,7 @@ class ChunkedEllpack
          const IndexType chunkSize = slices.getElement( sliceIndex ).chunkSize;
          TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
 
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
             return sliceOffset + firstChunkOfSegment * chunkSize + localIdx;
          else
          {
@@ -182,7 +182,7 @@ class ChunkedEllpack
          const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
          const IndexType segmentSize = segmentChunksCount * chunkSize;
 
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
             return SegmentViewType( sliceOffset + firstChunkOfSegment * chunkSize,
                                     segmentSize,
                                     chunkSize,
@@ -212,7 +212,7 @@ class ChunkedEllpack
          const IndexType chunkSize = slices.getElement( sliceIndex ).chunkSize;
          const IndexType segmentSize = segmentChunksCount * chunkSize;
 
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
             return SegmentViewType( sliceOffset + firstChunkOfSegment * chunkSize,
                                     segmentSize,
                                     chunkSize,
