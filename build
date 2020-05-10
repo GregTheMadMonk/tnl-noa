@@ -218,6 +218,6 @@ fi
 
 if [[ ${WITH_TESTS} == "yes" ]] || [[ ${WITH_MATRIX_TESTS} == "yes" ]]; then
    if [[ ${RUN_TESTS} == "yes" ]]; then
-      CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
+      OMP_NUM_THREADS=${TESTS_JOBS} CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
    fi
 fi
