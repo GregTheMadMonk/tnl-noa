@@ -244,7 +244,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \par Output
        * \include DenseMatrixExample_getElementsCount.out
        */
-      IndexType getElementsCount() const;
+      IndexType getAllocatedElementsCount() const;
 
       /**
        * \brief Returns number of non-zero matrix elements.

@@ -119,6 +119,12 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \param rows number of matrix rows.
        * \param columns number of matrix columns.
        * \param values is vector view with matrix elements values.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_constructor.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_constructor.out
+
        */
       __cuda_callable__
       DenseMatrixView( const IndexType rows,
@@ -149,20 +155,69 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       ConstViewType getConstView() const;
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * The string has a form \e `Matrices::DenseMatrix< RealType,  [any_device], IndexType, [any_allocator], true/false >`.
+       * 
+       * \return \e String with the serialization type.
+       */
       static String getSerializationType();
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * See \ref DenseMatrixView::getSerializationType.
+       * 
+       * \return \e String with the serialization type.
+       */
       virtual String getSerializationTypeVirtual() const;
 
+      /**
+       * \brief Computes number of non-zeros in each row.
+       * 
+       * \param rowLengths is a vector into which the number of non-zeros in each row
+       * will be stored.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getCompressedRowLengths.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_getCompressedRowLengths.out
+       */
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      [[deprecated]]
-      IndexType getRowLength( const IndexType row ) const;
+      //[[deprecated]]
+      //IndexType getRowLength( const IndexType row ) const;
 
-      IndexType getMaxRowLength() const;
+      //IndexType getMaxRowLength() const;
 
-      IndexType getElementsCount() const;
+      /**
+       * \brief Returns number of all matrix elements.
+       * 
+       * This method is here mainly for compatibility with sparse matrices since
+       * the number of all matrix elements is just number of rows times number of
+       * columns.
+       * 
+       * \return number of all matrix elements.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \par Output
+       * \include DenseMatrixExample_getElementsCount.out
+       */
+      IndexType getAllocatedElementsCount() const;
 
+      /**
+       * \brief Returns number of non-zero matrix elements.
+       * 
+       * \return number of all non-zero matrix elements.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getElementsCount.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_getElementsCount.out
+       */
       IndexType getNonzeroElementsCount() const;
 
       __cuda_callable__

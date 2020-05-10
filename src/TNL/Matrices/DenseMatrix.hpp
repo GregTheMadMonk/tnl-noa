@@ -206,7 +206,7 @@ template< typename Real,
           typename RealAllocator >
 Index
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-getElementsCount() const
+getAllocatedElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }

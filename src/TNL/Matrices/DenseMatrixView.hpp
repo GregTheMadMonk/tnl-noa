@@ -82,9 +82,9 @@ DenseMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
    return String( "Matrices::DenseMatrix< " ) +
-          TNL::getSerializationType< RealType >() + ", [any_device], " +
-          TNL::getSerializationType< IndexType >() + ", " +
-          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
+      TNL::getSerializationType< RealType >() + ", [any_device], " +
+      TNL::getSerializationType< IndexType >() + ", " +
+      TNL::getSerializationType( Organization ) + " >";
 }
 
 template< typename Real,
@@ -125,29 +125,7 @@ template< typename Real,
           ElementsOrganization Organization >
 Index
 DenseMatrixView< Real, Device, Index, Organization >::
-getRowLength( const IndexType row ) const
-{
-   return this->getColumns();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-DenseMatrixView< Real, Device, Index, Organization >::
-getMaxRowLength() const
-{
-   return this->getColumns();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-DenseMatrixView< Real, Device, Index, Organization >::
-getElementsCount() const
+getAllocatedElementsCount() const
 {
    return this->getRows() * this->getColumns();
 }

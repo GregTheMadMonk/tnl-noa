@@ -12,19 +12,19 @@ void createMatrixView()
       5,  6,  7,  8,
       9, 10, 11, 12 };
 
-   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Containers::Segments::RowMajorOrder > matrix( 5, 5, values.getView() );
+   /***
+    * Create dense matrix view with row major order
+    */
+   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Containers::Segments::RowMajorOrder > rowMajorMatrix( 3, 4, values.getView() );
+   std::cout << "Row major order matrix:" << std::endl;
+   std::cout << rowMajorMatrix << std::endl;
 
    /***
-    * We need a matrix view to pass the matrix to lambda function even on CUDA device.
+    * Create dense matrix view with column major order
     */
-   /*auto matrixView = matrix.getView();
-   auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
-      auto row = matrixView.getRow( rowIdx );
-      row.setElement( rowIdx, 10* ( rowIdx + 1 ) );
-   };
-
-   TNL::Algorithms::ParallelFor< Device >::exec( 0, matrix.getRows(), f );
-   std::cout << matrix << std::endl;*/
+   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Containers::Segments::RowMajorOrder > columnMajorMatrix( 4, 3, values.getView() );
+   std::cout << "Column major order matrix:" << std::endl;
+   std::cout << columnMajorMatrix << std::endl;
 }
 
 int main( int argc, char* argv[] )

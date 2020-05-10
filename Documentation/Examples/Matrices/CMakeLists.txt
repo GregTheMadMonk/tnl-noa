@@ -69,6 +69,17 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_constructor.out
                        OUTPUT DenseMatrixViewExample_constructor.out )
 
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_getCompressedRowLengths_cuda DenseMatrixViewExample_getCompressedRowLengths.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getCompressedRowLengths_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getCompressedRowLengths.out
+                       OUTPUT DenseMatrixViewExample_getCompressedRowLengths.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_getElementsCount_cuda DenseMatrixViewExample_getElementsCount.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getElementsCount_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElementsCount.out
+                       OUTPUT DenseMatrixViewExample_getElementsCount.out )
+
+
 ELSE()
    ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_Constructor_init_list >
@@ -140,6 +151,16 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_constructor.out
                        OUTPUT DenseMatrixViewExample_constructor.out )
 
+   ADD_EXECUTABLE( DenseMatrixViewExample_getCompressedRowLengths DenseMatrixViewExample_getCompressedRowLengths.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getCompressedRowLengths >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getCompressedRowLengths.out
+                       OUTPUT DenseMatrixViewExample_getCompressedRowLengths.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_getElementsCount DenseMatrixViewExample_getElementsCount.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getElementsCount >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElementsCount.out
+                       OUTPUT DenseMatrixViewExample_getElementsCount.out )
+
 ENDIF()
 
 ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
@@ -157,5 +178,7 @@ ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    DenseMatrixExample_forRows.out
    DenseMatrixExample_forAllRows.out
    DenseMatrixViewExample_constructor.out
+   DenseMatrixViewExample_getCompressedRowLengths.out
+   DenseMatrixViewExample_getElementsCount.out
 )
 

@@ -13,9 +13,10 @@ void getElementsCountExample()
       {  7,  8,  9, 10 },
       { 11, 12, 13, 14, 15 }
    };
-
-   std::cout << "Matrix elements count is " << triangularMatrix.getAllocatedElementsCount() << "." << std::endl;
-   std::cout << "Non-zero matrix elements count is " << triangularMatrix.getNonzeroElementsCount() << "." << std::endl;
+   auto triangularMatrixView = triangularMatrix.getConstView();
+   
+   std::cout << "Matrix elements count is " << triangularMatrixView.getAllocatedElementsCount() << "." << std::endl;
+   std::cout << "Non-zero matrix elements count is " << triangularMatrixView.getNonzeroElementsCount() << "." << std::endl;
 }
 
 int main( int argc, char* argv[] )
