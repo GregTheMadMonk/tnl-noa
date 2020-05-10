@@ -48,20 +48,29 @@ public:
 protected:
    template< int Subdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >::StorageNetworkType&
-   getSubentityStorageNetwork()
+   typename MeshTraitsType::LocalIndexType
+   getSubentitiesCount() const
    {
       static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
-      return BaseType::getSubentityStorageNetwork( DimensionTag< Subdimension >() );
+      return BaseType::getSubentitiesCount( DimensionTag< Subdimension >() );
    }
 
    template< int Subdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >::StorageNetworkType&
-   getSubentityStorageNetwork() const
+   typename MeshTraitsType::SubentityMatrixType&
+   getSubentitiesMatrix()
    {
       static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
-      return BaseType::getSubentityStorageNetwork( DimensionTag< Subdimension >() );
+      return BaseType::getSubentitiesMatrix( DimensionTag< Subdimension >() );
+   }
+
+   template< int Subdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::SubentityMatrixType&
+   getSubentitiesMatrix() const
+   {
+      static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      return BaseType::getSubentitiesMatrix( DimensionTag< Subdimension >() );
    }
 };
 
@@ -78,11 +87,11 @@ class SubentityStorageLayer< MeshConfig,
 {
    using BaseType = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
    using MeshTraitsType      = MeshTraits< MeshConfig, Device >;
-   using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubdimensionTag::value >;
 
 protected:
    using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
-   using StorageNetworkType = typename SubentityTraitsType::StorageNetworkType;
+   using LocalIndexType     = typename MeshTraitsType::LocalIndexType;
+   using SubentityMatrixType = typename MeshTraitsType::SubentityMatrixType;
 
    SubentityStorageLayer() = default;
 
@@ -100,8 +109,7 @@ protected:
    SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
    {
       BaseType::operator=( other );
-      storageNetwork.setLike( other.storageNetwork );
-      storageNetwork = other.storageNetwork;
+      matrix = other.matrix;
       return *this;
    }
 
@@ -109,8 +117,7 @@ protected:
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
    {
       BaseType::operator=( other );
-      storageNetwork.setLike( other.storageNetwork );
-      storageNetwork = other.storageNetwork;
+      matrix = other.matrix;
       return *this;
    }
 
@@ -118,51 +125,52 @@ protected:
    void save( File& file ) const
    {
       BaseType::save( file );
-      this->storageNetwork.save( file );
+      matrix.save( file );
    }
 
    void load( File& file )
    {
       BaseType::load( file );
-      this->storageNetwork.load( file );
+      matrix.load( file );
    }
 
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "Storage network for subentities with dimension " << SubdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
-      str << this->storageNetwork << std::endl;
+      str << "Adjacency matrix for subentities with dimension " << SubdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
+      str << matrix << std::endl;
    }
 
    bool operator==( const SubentityStorageLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
-               storageNetwork == layer.storageNetwork );
+               matrix == layer.matrix );
    }
 
 protected:
-   void setEntitiesCount( const GlobalIndexType& entitiesCount )
+   using BaseType::getSubentitiesCount;
+   __cuda_callable__
+   LocalIndexType getSubentitiesCount( SubdimensionTag ) const
    {
-      BaseType::setEntitiesCount( entitiesCount );
-      this->storageNetwork.setKeysRange( entitiesCount );
-      this->storageNetwork.allocate();
+      using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubdimensionTag::value >;
+      return SubentityTraitsType::count;
    }
 
-   using BaseType::getSubentityStorageNetwork;
+   using BaseType::getSubentitiesMatrix;
    __cuda_callable__
-   StorageNetworkType& getSubentityStorageNetwork( SubdimensionTag )
+   SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag )
    {
-      return this->storageNetwork;
+      return matrix;
    }
 
    __cuda_callable__
-   const StorageNetworkType& getSubentityStorageNetwork( SubdimensionTag ) const
+   const SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag ) const
    {
-      return this->storageNetwork;
+      return matrix;
    }
 
 private:
-   StorageNetworkType storageNetwork;
+   SubentityMatrixType matrix;
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_ >
@@ -209,8 +217,6 @@ protected:
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
 
-   void setEntitiesCount( GlobalIndexType entitiesCount ) {}
-
    void print( std::ostream& str ) const {}
 
    bool operator==( const SubentityStorageLayer& layer ) const
@@ -221,7 +227,8 @@ protected:
    void save( File& file ) const {}
    void load( File& file ) {}
 
-   void getSubentityStorageNetwork( SubdimensionTag ) {}
+   void getSubentitiesCount( SubdimensionTag ) {}
+   void getSubentitiesMatrix( SubdimensionTag ) {}
 };
 
 } // namespace Meshes

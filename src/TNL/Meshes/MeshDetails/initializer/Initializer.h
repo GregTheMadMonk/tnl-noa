@@ -84,6 +84,7 @@ class Initializer
       using PointArrayType    = typename MeshTraitsType::PointArrayType;
       using CellSeedArrayType = typename MeshTraitsType::CellSeedArrayType;
       using GlobalIndexType   = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType    = typename MeshTraitsType::LocalIndexType;
 
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
@@ -100,42 +101,63 @@ class Initializer
          BaseType::initEntities( *this, cellSeeds, mesh );
       }
 
-      template< int Dimension >
-      void setEntitiesCount( const GlobalIndexType& entitiesCount )
+      template< int Dimension, int Subdimension >
+      void initSubentityMatrix( const GlobalIndexType entitiesCount, GlobalIndexType subentitiesCount = 0 )
       {
-         //std::cout << "Setting number of entities with " << Dimension << " dimension to " << entitiesCount << std::endl;
+         if( Subdimension == 0 )
+            subentitiesCount = mesh->template getEntitiesCount< 0 >();
+         auto& matrix = mesh->template getSubentitiesMatrix< Dimension, Subdimension >();
+         matrix.setDimensions( entitiesCount, subentitiesCount );
+         using EntityTraitsType    = typename MeshTraitsType::template EntityTraits< Dimension >;
+         using EntityTopology      = typename EntityTraitsType::EntityTopology;
+         using SubentityTraitsType = typename MeshTraitsType::template SubentityTraits< EntityTopology, Subdimension >;
+         constexpr int count = SubentityTraitsType::count;
+         typename std::decay_t<decltype(matrix)>::RowsCapacitiesType capacities( entitiesCount );
+         capacities.setValue( count );
+         matrix.setRowCapacities( capacities );
+      }
+
+      template< int Dimension >
+      void setEntitiesCount( const GlobalIndexType entitiesCount )
+      {
          mesh->template setEntitiesCount< Dimension >( entitiesCount );
       }
 
-      template< int Dimension, int Subdimension, typename LocalIndex, typename GlobalIndex >
+      template< int Dimension, int Subdimension >
       void
-      setSubentityIndex( const GlobalIndex& entityIndex, const LocalIndex& localIndex, const GlobalIndex& globalIndex )
+      setSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType localIndex, const GlobalIndexType globalIndex )
       {
-         mesh->template getSubentityStorageNetwork< Dimension, Subdimension >().getValues( entityIndex )[ localIndex ] = globalIndex;
+         mesh->template getSubentitiesMatrix< Dimension, Subdimension >().getRow( entityIndex ).setElement( localIndex, globalIndex, true );
       }
 
-      template< int Dimension, typename GlobalIndex >
+      template< int Dimension >
       auto
-      getSubvertices( const GlobalIndex& entityIndex )
-         -> decltype( this->mesh->template getSubentityStorageNetwork< Dimension, 0 >().getValues( 0 ) )
+      getSubvertices( const GlobalIndexType entityIndex )
+         -> decltype( this->mesh->template getSubentitiesMatrix< Dimension, 0 >().getRow( 0 ) )
       {
-         // The mesh entities are not yet bound to the storage network at this point,
-         // so we operate directly on the storage.
-         return mesh->template getSubentityStorageNetwork< Dimension, 0 >().getValues( entityIndex );
+         return mesh->template getSubentitiesMatrix< Dimension, 0 >().getRow( entityIndex );
       }
 
       template< int Dimension, int Superdimension >
       auto
-      meshSuperentityStorageNetwork()
-         -> decltype( this->mesh->template getSuperentityStorageNetwork< Dimension, Superdimension >() )
+      getSuperentitiesCountsArray()
+         -> decltype( this->mesh->template getSuperentitiesCountsArray< Dimension, Superdimension >() )
       {
-         return mesh->template getSuperentityStorageNetwork< Dimension, Superdimension >();
+         return mesh->template getSuperentitiesCountsArray< Dimension, Superdimension >();
+      }
+
+      template< int Dimension, int Superdimension >
+      auto
+      getSuperentitiesMatrix()
+         -> decltype( this->mesh->template getSuperentitiesMatrix< Dimension, Superdimension >() )
+      {
+         return mesh->template getSuperentitiesMatrix< Dimension, Superdimension >();
       }
 
 
-      template< int Dimension, int Subdimension, typename GlobalIndex >
+      template< int Dimension, int Subdimension >
       auto
-      subentityOrientationsArray( const GlobalIndex entityIndex )
+      subentityOrientationsArray( const GlobalIndexType entityIndex )
          -> decltype( this->mesh->template subentityOrientationsArray< Dimension, Subdimension >( entityIndex ) )
       {
          return mesh->template subentityOrientationsArray< Dimension, Subdimension >( entityIndex );
@@ -143,7 +165,7 @@ class Initializer
 
       template< typename DimensionTag >
       const MeshEntityReferenceOrientation< MeshConfig, typename MeshTraitsType::template EntityTraits< DimensionTag::value >::EntityTopology >&
-      getReferenceOrientation( GlobalIndexType index ) const
+      getReferenceOrientation( const GlobalIndexType index ) const
       {
          return BaseType::getReferenceOrientation( DimensionTag(), index );
       }
@@ -180,6 +202,7 @@ class InitializerLayer< MeshConfig,
       {
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          initializer.template setEntitiesCount< DimensionTag::value >( cellSeeds.getSize() );
+         initializer.template initSubentityMatrix< DimensionTag::value, 0 >( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
             EntityInitializerType::initEntity( i, cellSeeds[ i ], initializer );
          cellSeeds.reset();
@@ -245,6 +268,7 @@ class InitializerLayer< MeshConfig,
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          const GlobalIndexType numberOfEntities = getEntitiesCount( initializer, mesh );
          initializer.template setEntitiesCount< DimensionTag::value >( numberOfEntities );
+         EntityInitializerType::initSubvertexMatrix( numberOfEntities, initializer );
 
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
@@ -332,6 +356,7 @@ class InitializerLayer< MeshConfig,
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          const GlobalIndexType numberOfEntities = getEntitiesCount( initializer, mesh );
          initializer.template setEntitiesCount< DimensionTag::value >( numberOfEntities );
+         EntityInitializerType::initSubvertexMatrix( numberOfEntities, initializer );
          this->referenceOrientations.resize( numberOfEntities );
 
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;

@@ -128,58 +128,100 @@ public:
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
-   getSubentityStorageNetwork()
+   typename MeshTraitsType::LocalIndexType
+   getSubentitiesCount() const
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
-                     "You try to get subentity storage network which is disabled in the mesh configuration." );
+                     "You try to get subentities count for subentities which are disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                    Device,
                                                    typename EntityTraits< Dimension >::EntityTopology >;
-      return BaseType::template getSubentityStorageNetwork< Subdimension >();
+      return BaseType::template getSubentitiesCount< Subdimension >();
    }
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::StorageNetworkType&
-   getSubentityStorageNetwork() const
+   typename MeshTraitsType::SubentityMatrixType&
+   getSubentitiesMatrix()
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
-                     "You try to get subentity storage network which is disabled in the mesh configuration." );
+                     "You try to get subentities matrix which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                    Device,
                                                    typename EntityTraits< Dimension >::EntityTopology >;
-      return BaseType::template getSubentityStorageNetwork< Subdimension >();
+      return BaseType::template getSubentitiesMatrix< Subdimension >();
+   }
+
+   template< int Dimension, int Subdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::SubentityMatrixType&
+   getSubentitiesMatrix() const
+   {
+      static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
+                     "You try to get subentities matrix which is disabled in the mesh configuration." );
+      using BaseType = SubentityStorageLayerFamily< MeshConfig,
+                                                   Device,
+                                                   typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSubentitiesMatrix< Subdimension >();
    }
 
    template< int Dimension, int Superdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
-   getSuperentityStorageNetwork()
+   typename MeshTraitsType::NeighborCountsArray&
+   getSuperentitiesCountsArray()
    {
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
-                     "You try to get superentity storage network which is disabled in the mesh configuration." );
+                     "You try to get superentities counts array which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
                                                      typename EntityTraits< Dimension >::EntityTopology >;
-      return BaseType::template getSuperentityStorageNetwork< Superdimension >();
+      return BaseType::template getSuperentitiesCountsArray< Superdimension >();
    }
 
    template< int Dimension, int Superdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >::StorageNetworkType&
-   getSuperentityStorageNetwork() const
+   const typename MeshTraitsType::NeighborCountsArray&
+   getSuperentitiesCountsArray() const
    {
       static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
       static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
-                     "You try to get superentity storage network which is disabled in the mesh configuration." );
+                     "You try to get superentities counts array which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
                                                      typename EntityTraits< Dimension >::EntityTopology >;
-      return BaseType::template getSuperentityStorageNetwork< Superdimension >();
+      return BaseType::template getSuperentitiesCountsArray< Superdimension >();
+   }
+
+   template< int Dimension, int Superdimension >
+   __cuda_callable__
+   typename MeshTraitsType::SuperentityMatrixType&
+   getSuperentitiesMatrix()
+   {
+      static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
+                     "You try to get superentities matrix which is disabled in the mesh configuration." );
+      using BaseType = SuperentityStorageLayerFamily< MeshConfig,
+                                                     Device,
+                                                     typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSuperentitiesMatrix< Superdimension >();
+   }
+
+   template< int Dimension, int Superdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::SuperentityMatrixType&
+   getSuperentitiesMatrix() const
+   {
+      static_assert( Dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( SuperentityTraits< Dimension, Superdimension >::storageEnabled,
+                     "You try to get superentities matrix which is disabled in the mesh configuration." );
+      using BaseType = SuperentityStorageLayerFamily< MeshConfig,
+                                                     Device,
+                                                     typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSuperentitiesMatrix< Superdimension >();
    }
 
    template< int Dimension, int Subdimension >
@@ -314,9 +356,7 @@ protected:
    void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       this->entitiesCount = entitiesCount;
-      SubentityStorageBaseType::setEntitiesCount( entitiesCount );
       SubentityOrientationsBaseType::setEntitiesCount( entitiesCount );
-      SuperentityStorageBaseType::setEntitiesCount( entitiesCount );
    }
 
    GlobalIndexType entitiesCount = 0;

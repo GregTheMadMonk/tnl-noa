@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Containers/Multimaps/MultimapPermutationApplier.h>
+#include <TNL/Matrices/MatrixPermutationApplier.h>
 
 namespace TNL {
 namespace Meshes {
@@ -32,8 +32,8 @@ private:
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
-         auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Dimension, Subdimension >();
-         Containers::Multimaps::permuteMultimapKeys( subentitiesStorage, perm );
+         auto& subentitiesStorage = mesh.template getSubentitiesMatrix< Dimension, Subdimension >();
+         Matrices::permuteMatrixRows( subentitiesStorage, perm );
       }
    };
 
@@ -53,8 +53,9 @@ private:
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
-         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Dimension, Superdimension >();
-         Containers::Multimaps::permuteMultimapKeys( superentitiesStorage, perm );
+         permuteArray( mesh.template getSuperentitiesCountsArray< Dimension, Superdimension >(), perm );
+         auto& superentitiesStorage = mesh.template getSuperentitiesMatrix< Dimension, Superdimension >();
+         Matrices::permuteMatrixRows( superentitiesStorage, perm );
       }
    };
 
@@ -74,8 +75,8 @@ private:
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
-         auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Subdimension, Dimension >();
-         Containers::Multimaps::permuteMultimapValues( superentitiesStorage, iperm );
+         auto& superentitiesStorage = mesh.template getSuperentitiesMatrix< Subdimension, Dimension >();
+         Matrices::permuteMatrixColumns( superentitiesStorage, iperm );
       }
    };
 
@@ -95,8 +96,8 @@ private:
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
-         auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Superdimension, Dimension >();
-         Containers::Multimaps::permuteMultimapValues( subentitiesStorage, iperm );
+         auto& subentitiesStorage = mesh.template getSubentitiesMatrix< Superdimension, Dimension >();
+         Matrices::permuteMatrixColumns( subentitiesStorage, iperm );
       }
    };
 
@@ -125,8 +126,8 @@ private:
    {
       permuteArray( mesh.getNeighborCounts(), perm );
       auto& graph = mesh.getDualGraph();
-      Containers::Multimaps::permuteMultimapKeys( graph, perm );
-      Containers::Multimaps::permuteMultimapValues( graph, iperm );
+      Matrices::permuteMatrixRows( graph, perm );
+      Matrices::permuteMatrixColumns( graph, iperm );
    }
 
    template< typename Mesh_, std::enable_if_t< ! Mesh_::Config::dualGraphStorage(), bool > = true >

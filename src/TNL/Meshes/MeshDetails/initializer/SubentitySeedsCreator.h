@@ -31,7 +31,7 @@ class SubentitySeedsCreator
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionTag::value >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
@@ -68,7 +68,7 @@ private:
                static void exec( SubentitySeed& subentitySeed, const SubvertexAccessorType& subvertices )
                {
                   static constexpr LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
-                  subentitySeed.setCornerId( subentityVertexIndex, subvertices[ VERTEX_INDEX ] );
+                  subentitySeed.setCornerId( subentityVertexIndex, subvertices.getColumnIndex( VERTEX_INDEX ) );
                }
          };
    };
@@ -82,7 +82,7 @@ class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
@@ -93,7 +93,7 @@ public:
    {
       SubentitySeedArray seeds;
       for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
-         seeds[ i ].setCornerId( 0, subvertices[ i ] );
+         seeds[ i ].setCornerId( 0, subvertices.getColumnIndex( i ) );
       return seeds;
    }
 };

@@ -18,7 +18,9 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 
@@ -30,6 +32,12 @@ template< typename MeshConfig, typename EntityTopology > class EntitySeed;
 template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
 template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
 template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
+
+// helper templates (must be public because nvcc sucks, and outside of MeshTraits to avoid duplicate code generation)
+template< typename Device, typename Index, typename IndexAlocator >
+using EllpackSegments = Algorithms::Segments::Ellpack< Device, Index, IndexAlocator >;
+template< typename Device, typename Index, typename IndexAlocator >
+using SlicedEllpackSegments = Algorithms::Segments::SlicedEllpack< Device, Index, IndexAlocator >;
 
 template< typename MeshConfig,
           typename Device = Devices::Host >
@@ -50,6 +58,7 @@ public:
    using CellSeedType        = EntitySeed< MeshConfig, CellTopology >;
    using EntityTagType       = std::uint8_t;
 
+   using NeighborCountsArray = Containers::Vector< LocalIndexType, DeviceType, GlobalIndexType >;
    using PointArrayType      = Containers::Array< PointType, DeviceType, GlobalIndexType >;
    using CellSeedArrayType   = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
    using EntityTagsArrayType = Containers::Array< EntityTagType, DeviceType, GlobalIndexType >;
@@ -65,8 +74,14 @@ public:
 
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
 
-   // TODO: write general operator= for different SliceSize and remove the '32' here
-   using DualGraph = Containers::Multimaps::EllpackIndexMultimap< GlobalIndexType, DeviceType, GlobalIndexType, 32 >;
+   // container for storing the subentity indices
+   using SubentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, EllpackSegments >;
+
+   // container for storing the superentity indices
+   using SuperentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
+
+   // container for storing the dual graph adjacency matrix
+   using DualGraph = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
 };
 
 } // namespace Meshes

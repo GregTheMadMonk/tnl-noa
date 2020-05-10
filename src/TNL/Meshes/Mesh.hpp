@@ -175,7 +175,7 @@ constexpr typename Mesh< MeshConfig, Device >::LocalIndexType
 Mesh< MeshConfig, Device >::
 getSubentitiesCount( const GlobalIndexType entityIndex ) const
 {
-   return this->template getSubentityStorageNetwork< EntityDimension, SubentityDimension >().getValuesCount( entityIndex );
+   return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >();
 }
 
 template< typename MeshConfig, typename Device >
@@ -185,7 +185,9 @@ typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const
 {
-   return this->template getSubentityStorageNetwork< EntityDimension, SubentityDimension >().getValue( entityIndex, subentityIndex );
+   const auto& row = this->template getSubentitiesMatrix< EntityDimension, SubentityDimension >().getRow( entityIndex );
+   TNL_ASSERT_GE( row.getColumnIndex( subentityIndex ), 0, "padding index returned for given subentity index" );
+   return row.getColumnIndex( subentityIndex );
 }
 
 template< typename MeshConfig, typename Device >
@@ -195,7 +197,7 @@ typename Mesh< MeshConfig, Device >::LocalIndexType
 Mesh< MeshConfig, Device >::
 getSuperentitiesCount( const GlobalIndexType entityIndex ) const
 {
-   return this->template getSuperentityStorageNetwork< EntityDimension, SuperentityDimension >().getValuesCount( entityIndex );
+   return this->template getSuperentitiesCountsArray< EntityDimension, SuperentityDimension >()[ entityIndex ];
 }
 
 template< typename MeshConfig, typename Device >
@@ -205,7 +207,9 @@ typename Mesh< MeshConfig, Device >::GlobalIndexType
 Mesh< MeshConfig, Device >::
 getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const
 {
-   return this->template getSuperentityStorageNetwork< EntityDimension, SuperentityDimension >().getValue( entityIndex, superentityIndex );
+   const auto row = this->template getSuperentitiesMatrix< EntityDimension, SuperentityDimension >().getRow( entityIndex );
+   TNL_ASSERT_GE( row.getColumnIndex( superentityIndex ), 0, "padding index returned for given superentity index" );
+   return row.getColumnIndex( superentityIndex );
 }
 
 template< typename MeshConfig, typename Device >
@@ -229,7 +233,9 @@ getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neig
                   "You try to access the dual graph which is disabled in the mesh configuration." );
    TNL_ASSERT_GE( neighborIndex, 0, "Invalid cell neighbor index." );
    TNL_ASSERT_LT( neighborIndex, getCellNeighborsCount( cellIndex ), "Invalid cell neighbor index." );
-   return this->getDualGraph().getValues( cellIndex )[ neighborIndex ];
+   const auto row = this->getDualGraph().getRow( cellIndex );
+   TNL_ASSERT_GE( row.getColumnIndex( neighborIndex ), 0, "padding index returned for given neighbor index" );
+   return row.getColumnIndex( neighborIndex );
 }
 
 
@@ -275,9 +281,17 @@ void
 Mesh< MeshConfig, Device >::
 save( File& file ) const
 {
-   Object::save( file );
-   StorageBaseType::save( file );
-   EntityTagsLayerFamily::save( file );
+   // saving via host is necessary due to segment-based sparse matrices
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+      Mesh< MeshConfig, Devices::Host > hostMesh;
+      hostMesh = *this;
+      hostMesh.save( file );
+   }
+   else {
+      Object::save( file );
+      StorageBaseType::save( file );
+      EntityTagsLayerFamily::save( file );
+   }
 }
 
 template< typename MeshConfig, typename Device >
@@ -285,7 +299,7 @@ void
 Mesh< MeshConfig, Device >::
 load( File& file )
 {
-   // loading via host is necessary for the initialization of the dual graph
+   // loading via host is necessary for the initialization of the dual graph (and due to segment-based sparse matrices)
    if( std::is_same< Device, Devices::Cuda >::value ) {
       Mesh< MeshConfig, Devices::Host > hostMesh;
       hostMesh.load( file );

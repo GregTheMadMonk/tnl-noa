@@ -27,7 +27,7 @@ public:
    using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType = typename MeshTraitsType::LocalIndexType;
    using DualGraph = typename MeshTraitsType::DualGraph;
-   using NeighborCountsArray = typename DualGraph::ValuesAllocationVectorType;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
    DualGraphLayer() = default;
 
@@ -45,7 +45,6 @@ public:
    DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
    {
       neighborCounts = other.getNeighborCounts();
-      graph.setLike( other.getDualGraph() );
       graph = other.getDualGraph();
       return *this;
    }
@@ -146,15 +145,15 @@ public:
          neighborCounts[ k ] = findNeighbors( k );
 
       // allocate adjacency matrix
-      graph.setKeysRange( cellsCount );
-      graph.allocate( neighborCounts );
+      graph.setDimensions( cellsCount, cellsCount );
+      graph.setRowCapacities( neighborCounts );
 
       // fill in neighbor indices
       for( GlobalIndexType k = 0; k < cellsCount; k++) {
-         auto adjncy = graph.getValues( k );
+         auto row = graph.getRow( k );
          const LocalIndexType nnbrs = findNeighbors( k );
          for( LocalIndexType j = 0; j < nnbrs; j++)
-            adjncy[ j ] = neighbors[ j ];
+            row.setElement( j, neighbors[ j ], true );
       }
    }
 

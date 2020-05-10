@@ -659,10 +659,11 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          --nnbrs;
       if( j == 0 || j == ySize - 1 )
          --nnbrs;
-      ASSERT_EQ( mesh.getDualGraph().getValues( cellIdx ).getSize(), nnbrs );
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
       std::set< IndexType > neighbors;
       for( IndexType n = 0; n < nnbrs; n++ )
-         neighbors.insert( mesh.getDualGraph().getValues( cellIdx )[ n ] );
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
 
       // the cell itself should not be its own neighbor
       EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
@@ -860,10 +861,11 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
          --nnbrs;
       if( k == 0 || k == zSize - 1 )
          --nnbrs;
-      ASSERT_EQ( mesh.getDualGraph().getValues( cellIdx ).getSize(), nnbrs );
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
       std::set< IndexType > neighbors;
       for( IndexType n = 0; n < nnbrs; n++ )
-         neighbors.insert( mesh.getDualGraph().getValues( cellIdx )[ n ] );
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
 
       // the cell itself should not be its own neighbor
       EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
@@ -906,10 +908,10 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
       if( (j == 0 || j == ySize - 1) && (k == 0 || k == zSize - 1) )
          ++nnbrs;
 
-      ASSERT_EQ( mesh.getDualGraph().getValues( cellIdx ).getSize(), nnbrs );
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
       std::set< IndexType > neighbors;
       for( IndexType n = 0; n < nnbrs; n++ )
-         neighbors.insert( mesh.getDualGraph().getValues( cellIdx )[ n ] );
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
 
       // the cell itself should not be its own neighbor
       EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
@@ -967,10 +969,10 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
       if( (i == 0 || i == xSize - 1) && (j == 0 || j == ySize - 1) && (k == 0 || k == zSize - 1) )
          --nnbrs;
 
-      ASSERT_EQ( mesh.getDualGraph().getValues( cellIdx ).getSize(), nnbrs );
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
       std::set< IndexType > neighbors;
       for( IndexType n = 0; n < nnbrs; n++ )
-         neighbors.insert( mesh.getDualGraph().getValues( cellIdx )[ n ] );
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
 
       // the cell itself should not be its own neighbor
       EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );

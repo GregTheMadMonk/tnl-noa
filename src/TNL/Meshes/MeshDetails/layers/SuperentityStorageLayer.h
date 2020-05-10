@@ -54,20 +54,38 @@ public:
 protected:
    template< int Superdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
-   getSuperentityStorageNetwork()
+   typename MeshTraitsType::NeighborCountsArray&
+   getSuperentitiesCountsArray()
    {
       static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
-      return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );
+      return BaseType::getSuperentitiesCountsArray( DimensionTag< Superdimension >() );
    }
 
    template< int Superdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SuperentityTraits< EntityTopology, Superdimension >::StorageNetworkType&
-   getSuperentityStorageNetwork() const
+   const typename MeshTraitsType::NeighborCountsArray&
+   getSuperentitiesCountsArray() const
    {
       static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
-      return BaseType::getSuperentityStorageNetwork( DimensionTag< Superdimension >() );
+      return BaseType::getSuperentitiesCountsArray( DimensionTag< Superdimension >() );
+   }
+
+   template< int Superdimension >
+   __cuda_callable__
+   typename MeshTraitsType::SuperentityMatrixType&
+   getSuperentitiesMatrix()
+   {
+      static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      return BaseType::getSuperentitiesMatrix( DimensionTag< Superdimension >() );
+   }
+
+   template< int Superdimension >
+   __cuda_callable__
+   const typename MeshTraitsType::SuperentityMatrixType&
+   getSuperentitiesMatrix() const
+   {
+      static_assert( EntityTopology::dimension < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      return BaseType::getSuperentitiesMatrix( DimensionTag< Superdimension >() );
    }
 };
 
@@ -79,13 +97,12 @@ class SuperentityStorageLayer< MeshConfig, Device, EntityTopology, Superdimensio
    : public SuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >
 {
    using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityTopology, typename SuperdimensionTag::Decrement >;
-   using MeshTraitsType        = MeshTraits< MeshConfig, Device >;
-   using SuperentityTraitsType = typename MeshTraitsType::template SuperentityTraits< EntityTopology, SuperdimensionTag::value >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 protected:
-   using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
-   using StorageNetworkType = typename SuperentityTraitsType::StorageNetworkType;
- 
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+   using SuperentityMatrixType = typename MeshTraitsType::SuperentityMatrixType;
+
    SuperentityStorageLayer() = default;
 
    explicit SuperentityStorageLayer( const SuperentityStorageLayer& other )
@@ -102,8 +119,8 @@ protected:
    SuperentityStorageLayer& operator=( const SuperentityStorageLayer& other )
    {
       BaseType::operator=( other );
-      storageNetwork.setLike( other.storageNetwork );
-      storageNetwork = other.storageNetwork;
+      superentitiesCounts = other.superentitiesCounts;
+      matrix = other.matrix;
       return *this;
    }
 
@@ -111,8 +128,8 @@ protected:
    SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other )
    {
       BaseType::operator=( other );
-      storageNetwork.setLike( other.storageNetwork );
-      storageNetwork = other.storageNetwork;
+      superentitiesCounts = other.superentitiesCounts;
+      matrix = other.matrix;
       return *this;
    }
 
@@ -120,50 +137,60 @@ protected:
    void save( File& file ) const
    {
       BaseType::save( file );
-      this->storageNetwork.save( file );
+      matrix.save( file );
    }
 
    void load( File& file )
    {
       BaseType::load( file );
-      this->storageNetwork.load( file );
+      matrix.load( file );
+      matrix.getCompressedRowLengths( superentitiesCounts );
    }
 
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "Storage network for superentities with dimension " << SuperdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
-      str << this->storageNetwork << std::endl;
+      str << "Adjacency matrix for superentities with dimension " << SuperdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
+      str << matrix << std::endl;
    }
 
    bool operator==( const SuperentityStorageLayer& layer ) const
    {
       return ( BaseType::operator==( layer ) &&
-               storageNetwork == layer.storageNetwork );
+               superentitiesCounts == layer.superentitiesCounts &&
+               matrix == layer.matrix );
    }
 
 protected:
-   void setEntitiesCount( const GlobalIndexType& entitiesCount )
-   {
-      BaseType::setEntitiesCount( entitiesCount );
-      this->storageNetwork.setKeysRange( entitiesCount );
-   }
-
-   using BaseType::getSuperentityStorageNetwork;
+   using BaseType::getSuperentitiesCountsArray;
    __cuda_callable__
-   StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag )
+   NeighborCountsArray& getSuperentitiesCountsArray( SuperdimensionTag )
    {
-      return this->storageNetwork;
+      return superentitiesCounts;
    }
 
    __cuda_callable__
-   const StorageNetworkType& getSuperentityStorageNetwork( SuperdimensionTag ) const
+   const NeighborCountsArray& getSuperentitiesCountsArray( SuperdimensionTag ) const
    {
-      return this->storageNetwork;
+      return superentitiesCounts;
+   }
+
+   using BaseType::getSuperentitiesMatrix;
+   __cuda_callable__
+   SuperentityMatrixType& getSuperentitiesMatrix( SuperdimensionTag )
+   {
+      return matrix;
+   }
+
+   __cuda_callable__
+   const SuperentityMatrixType& getSuperentitiesMatrix( SuperdimensionTag ) const
+   {
+      return matrix;
    }
 
 private:
-   StorageNetworkType storageNetwork;
+   NeighborCountsArray superentitiesCounts;
+   SuperentityMatrixType matrix;
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SuperdimensionTag_, bool Storage_ >
@@ -193,8 +220,6 @@ class SuperentityStorageLayer< MeshConfig, Device, EntityTopology, DimensionTag<
    using SuperdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:
-   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
- 
    SuperentityStorageLayer() = default;
    explicit SuperentityStorageLayer( const SuperentityStorageLayer& other ) {}
    template< typename Device_ >
@@ -202,7 +227,7 @@ protected:
    template< typename Device_ >
    SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopology, SuperdimensionTag >& other ) { return *this; }
 
-   void setEntitiesCount( GlobalIndexType entitiesCount ) {}
+   void getSuperentitiesCountsArray() {}
 
    void print( std::ostream& str ) const {}
 
@@ -214,7 +239,7 @@ protected:
    void save( File& file ) const {}
    void load( File& file ) {}
 
-   void getSuperentityStorageNetwork( SuperdimensionTag ) {}
+   void getSuperentitiesMatrix( SuperdimensionTag ) {}
 };
 
 } // namespace Meshes
