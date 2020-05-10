@@ -250,9 +250,6 @@ setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__ void
-DenseMatrixView< Real, Device, Index, Organization >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -271,7 +268,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-__cuda_callable__ Real
+__cuda_callable__ void
 DenseMatrixView< Real, Device, Index, Organization >::
 getElement( const IndexType row,
             const IndexType column ) const
@@ -690,3 +687,6 @@ Index DenseMatrixView< Real, Device, Index, Organization >::getElementIndex( con
 
 } // namespace Matrices
 } // namespace TNL
+          ElementsOrganization Organization >
+__cuda_callable__ Real
+DenseMatrixView< Real, Device, Index, Organization >::
