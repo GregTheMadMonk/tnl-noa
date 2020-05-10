@@ -79,6 +79,50 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElementsCount.out
                        OUTPUT DenseMatrixViewExample_getElementsCount.out )
 
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_getConstRow_cuda DenseMatrixViewExample_getConstRow.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getConstRow_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getConstRow.out
+                       OUTPUT DenseMatrixViewExample_getConstRow.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_getRow_cuda DenseMatrixViewExample_getRow.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getRow_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getRow.out
+                       OUTPUT DenseMatrixViewExample_getRow.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_setElement_cuda DenseMatrixViewExample_setElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_setElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_setElement.out
+                       OUTPUT DenseMatrixViewExample_setElement.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_addElement_cuda DenseMatrixViewExample_addElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_addElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_addElement.out
+                       OUTPUT DenseMatrixViewExample_addElement.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_getElement_cuda DenseMatrixViewExample_getElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElement.out
+                       OUTPUT DenseMatrixViewExample_getElement.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_rowsReduction_cuda DenseMatrixViewExample_rowsReduction.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_rowsReduction_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_rowsReduction.out
+                       OUTPUT DenseMatrixViewExample_rowsReduction.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_allRowsReduction_cuda DenseMatrixViewExample_allRowsReduction.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_allRowsReduction_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_allRowsReduction.out
+                       OUTPUT DenseMatrixViewExample_allRowsReduction.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_forRows_cuda DenseMatrixViewExample_forRows.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_forRows_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_forRows.out
+                       OUTPUT DenseMatrixViewExample_forRows.out )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_forAllRows_cuda DenseMatrixViewExample_forAllRows.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_forAllRows_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_forAllRows.out
+                       OUTPUT DenseMatrixViewExample_forAllRows.out )
 
 ELSE()
    ADD_EXECUTABLE( DenseMatrixExample_Constructor_init_list DenseMatrixExample_Constructor_init_list.cpp )
@@ -161,6 +205,51 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElementsCount.out
                        OUTPUT DenseMatrixViewExample_getElementsCount.out )
 
+   ADD_EXECUTABLE( DenseMatrixViewExample_getConstRow DenseMatrixViewExample_getConstRow.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getConstRow >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getConstRow.out
+                       OUTPUT DenseMatrixViewExample_getConstRow.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_getRow DenseMatrixViewExample_getRow.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getRow >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getRow.out
+                       OUTPUT DenseMatrixViewExample_getRow.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_setElement DenseMatrixViewExample_setElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_setElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_setElement.out
+                       OUTPUT DenseMatrixViewExample_setElement.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_addElement DenseMatrixViewExample_addElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_addElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_addElement.out
+                       OUTPUT DenseMatrixViewExample_addElement.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_getElement DenseMatrixViewExample_getElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_getElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_getElement.out
+                       OUTPUT DenseMatrixViewExample_getElement.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_rowsReduction DenseMatrixViewExample_rowsReduction.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_rowsReduction >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_rowsReduction.out
+                       OUTPUT DenseMatrixViewExample_rowsReduction.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_allRowsReduction DenseMatrixViewExample_allRowsReduction.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_allRowsReduction >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_allRowsReduction.out
+                       OUTPUT DenseMatrixViewExample_allRowsReduction.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_forRows DenseMatrixViewExample_forRows.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_forRows >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_forRows.out
+                       OUTPUT DenseMatrixViewExample_forRows.out )
+
+   ADD_EXECUTABLE( DenseMatrixViewExample_forAllRows DenseMatrixViewExample_forAllRows.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_forAllRows >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_forAllRows.out
+                       OUTPUT DenseMatrixViewExample_forAllRows.out )
+
 ENDIF()
 
 ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
@@ -180,5 +269,15 @@ ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    DenseMatrixViewExample_constructor.out
    DenseMatrixViewExample_getCompressedRowLengths.out
    DenseMatrixViewExample_getElementsCount.out
+   DenseMatrixViewExample_getConstRow.out
+   DenseMatrixViewExample_getRow.out
+   DenseMatrixViewExample_setElement.out
+   DenseMatrixViewExample_addElement.out
+   DenseMatrixViewExample_getElement.out
+   DenseMatrixViewExample_rowsReduction.out
+   DenseMatrixViewExample_allRowsReduction.out
+   DenseMatrixViewExample_forRows.out
+   DenseMatrixViewExample_forAllRows.out
+
 )
 

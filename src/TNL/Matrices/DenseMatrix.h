@@ -349,7 +349,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param value is the value the element will be set to.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_setElement.cpp
+       * \include Matrices/DenseMatrixViewExample_setElement.cpp
        * \par Output
        * \include DenseMatrixExample_setElement.out
        */
@@ -373,6 +373,12 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param value is the value the element will be set to.
        * \param thisElementMultiplicator is multiplicator the original matrix element
        *   value is multiplied by before addition of given \e value.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_addElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_addElement.out
+       * 
        */
       __cuda_callable__
       void addElement( const IndexType row,
@@ -394,6 +400,12 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \param column i a column index of the matrix element.
        * 
        * \return value of given matrix element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_getElement.out
+       * 
        */
       __cuda_callable__
       Real getElement( const IndexType row,
@@ -514,7 +526,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       /**
        * \brief This method calls \e forRows for all matrix rows.
        * 
-       * See \ref DenseMatrix::forRows.
+       * See \ref DenseMatrix::forAllRows.
        * 
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -579,7 +591,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
                                 const RealType& omega = 1.0 ) const;
 
       /**
-       * \brief Assignment operator for exactly the same type of the dense matrix.
+       * \brief Assignment operator with exactly the same type of the dense matrix.
        * 
        * \param matrix is the right-hand side matrix.
        * \return reference to this matrix.
@@ -587,7 +599,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       DenseMatrix& operator=( const DenseMatrix& matrix );
 
       /**
-       * \brief Assignment operator for other dense matrices.
+       * \brief Assignment operator with other dense matrices.
        * 
        * \param matrix is the right-hand side matrix.
        * \return reference to this matrix.
@@ -597,7 +609,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix );
 
       /**
-       * \brief Assignment operator for other (sparse) types of matrices.
+       * \brief Assignment operator with other (sparse) types of matrices.
        * 
        * \param matrix is the right-hand side matrix.
        * \return reference to this matrix.

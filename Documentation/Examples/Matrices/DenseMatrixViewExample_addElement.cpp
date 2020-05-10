@@ -6,14 +6,16 @@ template< typename Device >
 void addElements()
 {
    TNL::Matrices::DenseMatrix< double, Device > matrix( 5, 5 );
+   auto matrixView = matrix.getView();
+
    for( int i = 0; i < 5; i++ )
-      matrix.setElement( i, i, i );
+      matrixView.setElement( i, i, i );
 
    std::cout << "Initial matrix is: " << std::endl << matrix << std::endl;
 
    for( int i = 0; i < 5; i++ )
       for( int j = 0; j < 5; j++ )
-         matrix.addElement( i, j, 1.0, 5.0 );
+         matrixView.addElement( i, j, 1.0, 5.0 );
 
    std::cout << "Matrix after addition is: " << std::endl << matrix << std::endl;
 }

@@ -202,9 +202,9 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \return number of all matrix elements.
        * 
        * \par Example
-       * \include Matrices/DenseMatrixExample_getElementsCount.cpp
+       * \include Matrices/DenseViewMatrixExample_getElementsCount.cpp
        * \par Output
-       * \include DenseMatrixExample_getElementsCount.out
+       * \include DenseMatrixViewExample_getElementsCount.out
        */
       IndexType getAllocatedElementsCount() const;
 
@@ -220,56 +220,304 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        */
       IndexType getNonzeroElementsCount() const;
 
+      /**
+       * \brief Constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getConstRow.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_getConstRow.out
+       * 
+       * See \ref DenseMatrixRowView.
+       */
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
+      /**
+       * \brief Non-constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getRow.cpp
+       * \par Output
+       * \include DenseMatrixExample_getRow.out
+       * 
+       * See \ref DenseMatrixRowView.
+       */
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-
+      /**
+       * \brief Sets all matrix elements to value \e v.
+       * 
+       * \param v is value all matrix elements will be set to.
+       */
       void setValue( const RealType& v );
 
+      /**
+       * \brief Returns non-constant reference to element at row \e row and column column.
+       * 
+       * Since this method returns reference to the element, it cannot be called across
+       * different address spaces. It means that it can be called only form CPU if the matrix
+       * is allocated on CPU or only from GPU kernels if the matrix is allocated on GPU.
+       * 
+       * \param row is a row index of the element.
+       * \param column is a columns index of the element. 
+       * \return reference to given matrix element.
+       */
       __cuda_callable__
       Real& operator()( const IndexType row,
                         const IndexType column );
 
+      /**
+       * \brief Returns constant reference to element at row \e row and column column.
+       * 
+       * Since this method returns reference to the element, it cannot be called across
+       * different address spaces. It means that it can be called only form CPU if the matrix
+       * is allocated on CPU or only from GPU kernels if the matrix is allocated on GPU.
+       * 
+       * \param row is a row index of the element.
+       * \param column is a columns index of the element. 
+       * \return reference to given matrix element.
+       */
       __cuda_callable__
       const Real& operator()( const IndexType row,
                               const IndexType column ) const;
 
+      /**
+       * \brief Sets element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_setElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_setElement.out
+       */
       __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      /**
+       * \brief Add element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       * \param thisElementMultiplicator is multiplicator the original matrix element
+       *   value is multiplied by before addition of given \e value.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_addElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_addElement.out
+       * 
+       */
       __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      /**
+       * \brief Returns value of matrix element at position given by its row and column index.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref DenseMatrix::getRow
+       * or \ref DenseMatrix::forRows and \ref DenseMatrix::forAllRows.
+       * 
+       * \param row is a row index of the matrix element.
+       * \param column i a column index of the matrix element.
+       * 
+       * \return value of given matrix element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_getElement.cpp
+       * \par Output
+       * \include DenseMatrixExample_getElement.out
+       * 
+       */
       __cuda_callable__
       Real getElement( const IndexType row,
                        const IndexType column ) const;
 
+      /**
+       * \brief Method for performing general reduction on matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param first is an index of the first row the reduction will be performed on.
+       * \param last is an index of the row  after the last row the reduction will be performed on.
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_rowsReduction.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_rowsReduction.out
+       */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
+      /**
+       * \brief Method for performing general reduction on ALL matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_allRowsReduction.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_allRowsReduction.out
+       */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
+      /**
+       * \brief Method for iteration over all matrix rows for constant instances.
+       * 
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices. 
+       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  be interrupted.
+       * 
+       * \param first is index is the first row to be processed.
+       * \param last is index of the row after the last row to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;
 
+      /**
+       * \brief Method for iteration over all matrix rows for non-constant instances.
+       * 
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices. 
+       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  be interrupted.
+       * 
+       * \param first is index is the first row to be processed.
+       * \param last is index of the row after the last row to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function );
 
+      /**
+       * \brief This method calls \e forRows for all matrix rows.
+       * 
+       * See \ref DenseMatrix::forRows.
+       * 
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixViewExample_forAllRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forAllRows.out
+       */
       template< typename Function >
       void forAllRows( Function& function ) const;
 
+      /**
+       * \brief This method calls \e forRows for all matrix rows.
+       * 
+       * See \ref DenseMatrix::forAllRows.
+       * 
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       * 
+       * \par Example
+       * \include Matrices/DenseMatrixExample_forAllRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forAllRows.out
+       */
       template< typename Function >
       void forAllRows( Function& function );
 
+      /**
+       * \brief Computes product of matrix and vector.
+       * 
+       * More precisely, it computes:
+       * 
+       * outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.
+       * 
+       * \tparam InVector is type of input vector.  It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * \tparam OutVector is type of output vector. It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * 
+       * \param inVector is input vector.
+       * \param outVector is output vector.
+       * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
+       * \param outVectorMultiplicator is a factor by which the outVector is multiplied before added
+       *    to the result of matrix-vector product. It is zero by default.
+       * \param begin is the beginning of the rows range for which the vector product
+       *    is computed. It is zero by default.
+       * \param end is the end of the rows range for which the vector product
+       *    is computed. It is number if the matrix rows by default.
+       */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
@@ -299,12 +547,37 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
+      /**
+       * \brief Assignment operator with DenseMatrix.
+       * 
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
+       */
       DenseMatrixView& operator=( const DenseMatrixView& matrix );
 
+      /**
+       * \brief Method for saving the matrix view to the file with given filename.
+       * 
+       * The ouput file can be loaded by \ref DenseMatrix.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( const String& fileName ) const;
 
+      /**
+       * \brief Method for saving the matrix view to a file.
+       * 
+       * The ouput file can be loaded by \ref DenseMatrix.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( File& file ) const;
 
+      /**
+       * \brief Method for printing the matrix to output stream.
+       * 
+       * \param str is the output stream.
+       */
       void print( std::ostream& str ) const;
 
    protected:
@@ -312,9 +585,6 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       IndexType getElementIndex( const IndexType row,
                                  const IndexType column ) const;
-
-      //typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
-      //friend class DenseDeviceDependentCode< DeviceType >;
 
       SegmentsViewType segments;
 };

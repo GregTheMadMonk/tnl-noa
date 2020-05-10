@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Devices/Host.h>
@@ -9,25 +10,34 @@ template< typename Device >
 void getRowExample()
 {
    using MatrixType = TNL::Matrices::DenseMatrix< double, Device >;
-   TNL::Pointers::SharedPointer< MatrixType > matrix( 5, 5 );
+   TNL::Pointers::SharedPointer< MatrixType > matrix {
+      { 1, 0, 0, 0, 0 },
+      { 1, 2, 0, 0, 0 },
+      { 1, 2, 3, 0, 0 },
+      { 1, 2, 3, 4, 0 },
+      { 1, 2, 3, 4, 5 }
+   };
 
-   auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
+   /***
+    * Fetch lambda function returns diagonal element in each row.
+    */
+   auto fetch = [=] __cuda_callable__ ( int rowIdx ) mutable -> double {
       auto row = matrix->getRow( rowIdx );
-      row.setElement( rowIdx, 10 * ( rowIdx + 1 ) );
+      return row.getElement( rowIdx );
    };
 
    /***
     * For the case when Device is CUDA device we need to synchronize smart
     * pointers. To avoid this you may use DenseMatrixView. See
-    * DenseMatrixView::getRow example for details.
+    * DenseMatrixView::getConstRow example for details.
     */
    TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
 
    /***
-    * Set the matrix elements.
+    * Compute the matrix trace.
     */
-   TNL::Algorithms::ParallelFor< Device >::exec( 0, matrix->getRows(), f );
-   std::cout << matrix << std::endl;
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix->getRows(), std::plus<>{}, fetch, 0 );
+   std::cout << "Matrix trace is " << trace << "." << std::endl;
 }
 
 int main( int argc, char* argv[] )
