@@ -15,11 +15,11 @@ namespace TNL {
       namespace Segments {
 
 template< typename Index,
-          bool RowMajorOrder = false >
+          ElementsOrganization Organization >
 class ChunkedEllpackSegmentView;
 
 template< typename Index >
-class ChunkedEllpackSegmentView< Index, false >
+class ChunkedEllpackSegmentView< Index, ColumnMajorOrder >
 {
    public:
 
@@ -55,7 +55,7 @@ class ChunkedEllpackSegmentView< Index, false >
 };
 
 template< typename Index >
-class ChunkedEllpackSegmentView< Index, true >
+class ChunkedEllpackSegmentView< Index, RowMajorOrder >
 {
    public:
 

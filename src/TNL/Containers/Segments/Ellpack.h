@@ -21,7 +21,7 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int Alignment = 32 >
 class Ellpack
 {
@@ -30,14 +30,14 @@ class Ellpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      static constexpr bool getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = EllpackView< Device_, Index_, RowMajorOrder, Alignment >;
-      using ViewType = EllpackView< Device, Index, RowMajorOrder, Alignment >;
+      using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
+      using ViewType = EllpackView< Device, Index, Organization, Alignment >;
       using ConstViewType = typename ViewType::ConstViewType;
-      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
       Ellpack();
 
@@ -115,8 +115,8 @@ class Ellpack
 
       Ellpack& operator=( const Ellpack& source ) = default;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int Alignment_ >
-      Ellpack& operator=( const Ellpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, Alignment_ >& source );
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int Alignment_ >
+      Ellpack& operator=( const Ellpack< Device_, Index_, IndexAllocator_, Organization_, Alignment_ >& source );
 
       void save( File& file ) const;
 

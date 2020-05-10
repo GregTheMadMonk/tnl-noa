@@ -232,8 +232,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Assignment of dense matrix
        */
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
-      SparseMatrix& operator=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization, typename RealAllocator_ >
+      SparseMatrix& operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix );
 
 
       /**

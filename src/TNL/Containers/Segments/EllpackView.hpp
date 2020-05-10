@@ -22,10 +22,10 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 EllpackView()
    : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
 {
@@ -33,10 +33,10 @@ EllpackView()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 EllpackView( IndexType segmentSize, IndexType size, IndexType alignedSize )
    : segmentSize( segmentSize ), size( size ), alignedSize( alignedSize )
 {
@@ -44,10 +44,10 @@ EllpackView( IndexType segmentSize, IndexType size, IndexType alignedSize )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 EllpackView( const EllpackView& ellpack )
    : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
 {
@@ -55,10 +55,10 @@ EllpackView( const EllpackView& ellpack )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 EllpackView( const EllpackView&& ellpack )
    : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
 {
@@ -66,10 +66,10 @@ EllpackView( const EllpackView&& ellpack )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 String
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 getSerializationType()
 {
    return "Ellpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
@@ -77,10 +77,10 @@ getSerializationType()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 String
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 getSegmentsType()
 {
    return "Ellpack";
@@ -88,11 +88,11 @@ getSegmentsType()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
-typename EllpackView< Device, Index, RowMajorOrder, Alignment >::ViewType
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+typename EllpackView< Device, Index, Organization, Alignment >::ViewType
+EllpackView< Device, Index, Organization, Alignment >::
 getView()
 {
    return ViewType( segmentSize, size, alignedSize );
@@ -100,11 +100,11 @@ getView()
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
 __cuda_callable__
 auto
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
+EllpackView< Device, Index, Organization, Alignment >::
 getConstView() const -> const ConstViewType
 {
    return ConstViewType( segmentSize, size, alignedSize );
@@ -112,9 +112,9 @@ getConstView() const -> const ConstViewType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentsCount() const -> IndexType
 {
    return this->size;
@@ -122,9 +122,9 @@ getSegmentsCount() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return this->segmentSize;
@@ -132,9 +132,9 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSize() const -> IndexType
 {
    return this->size * this->segmentSize;
@@ -143,9 +143,9 @@ getSize() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getStorageSize() const -> IndexType
 {
    return this->alignedSize * this->segmentSize;
@@ -153,12 +153,12 @@ getStorageSize() const -> IndexType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
       return segmentIdx * this->segmentSize + localIdx;
    else
       return segmentIdx + this->alignedSize * localIdx;
@@ -166,21 +166,21 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ void EllpackView< Device, Index, Organization, Alignment >::
 getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
 {
 }
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ auto EllpackView< Device, Index, RowMajorOrder, Alignment >::
+__cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
       return SegmentViewType( segmentIdx * this->segmentSize, this->segmentSize, 1 );
    else
       return SegmentViewType( segmentIdx, this->segmentSize, this->alignedSize );
@@ -188,13 +188,13 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
    template< typename Function, typename... Args >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
@@ -225,10 +225,10 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
    template< typename Function, typename... Args >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
@@ -236,15 +236,15 @@ forAll( Function& f, Args... args ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
@@ -279,10 +279,10 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
@@ -290,11 +290,11 @@ allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, co
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-EllpackView< Device, Index, RowMajorOrder, Alignment >&
-EllpackView< Device, Index, RowMajorOrder, Alignment >::
-operator=( const EllpackView< Device, Index, RowMajorOrder, Alignment >& view )
+EllpackView< Device, Index, Organization, Alignment >&
+EllpackView< Device, Index, Organization, Alignment >::
+operator=( const EllpackView< Device, Index, Organization, Alignment >& view )
 {
    this->segmentSize = view.segmentSize;
    this->size = view.size;
@@ -304,9 +304,9 @@ operator=( const EllpackView< Device, Index, RowMajorOrder, Alignment >& view )
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 save( File& file ) const
 {
    file.save( &segmentSize );
@@ -316,9 +316,9 @@ save( File& file ) const
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int Alignment >
-void EllpackView< Device, Index, RowMajorOrder, Alignment >::
+void EllpackView< Device, Index, Organization, Alignment >::
 load( File& file )
 {
    file.load( &segmentSize );

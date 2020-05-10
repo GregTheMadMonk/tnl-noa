@@ -20,8 +20,8 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 MultidiagonalMatrixView()
 {
 }
@@ -29,8 +29,8 @@ MultidiagonalMatrixView()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 MultidiagonalMatrixView( const ValuesViewType& values,
                          const DiagonalsShiftsView& diagonalsShifts,
                          const HostDiagonalsShiftsView& hostDiagonalsShifts,
@@ -45,9 +45,9 @@ MultidiagonalMatrixView( const ValuesViewType& values,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getView() -> ViewType
 {
    return ViewType( const_cast< MultidiagonalMatrixView* >( this )->values.getView(),
@@ -59,9 +59,9 @@ getView() -> ViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->values.getConstView(),
@@ -73,23 +73,23 @@ getConstView() const -> ConstViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
    return String( "Matrices::Multidiagonal< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
+          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -98,10 +98,10 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 const Index&
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getDiagonalsCount() const
 {
    return this->diagonalsShifts.getSize();
@@ -110,10 +110,10 @@ getDiagonalsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Vector >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
@@ -134,9 +134,9 @@ getCompressedRowLengths( Vector& rowLengths ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getNonemptyRowsCount() const
 {
    return this->indexer.getNonemptyRowsCount();
@@ -145,9 +145,9 @@ getNonemptyRowsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRowLength( const IndexType row ) const
 {
    return this->diagonalsShifts.getSize();
@@ -156,9 +156,9 @@ getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getMaxRowLength() const
 {
    return this->diagonalsShifts.getSize();
@@ -167,9 +167,9 @@ getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getNumberOfNonzeroMatrixElements() const
 {
    const auto values_view = this->values.getConstView();
@@ -182,13 +182,13 @@ getNumberOfNonzeroMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
 bool
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
-operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const
 {
-   if( RowMajorOrder == RowMajorOrder_ )
+   if( Organization == Organization_ )
       return this->values == matrix.values;
    else
    {
@@ -199,11 +199,11 @@ operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrd
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
 bool
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
-operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const
 {
    return ! this->operator==( matrix );
 }
@@ -211,9 +211,9 @@ operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrd
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 setValue( const RealType& v )
 {
    // we dont do this->values = v here because it would set even elements 'outside' the matrix
@@ -228,10 +228,10 @@ setValue( const RealType& v )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
@@ -240,10 +240,10 @@ getRow( const IndexType& rowIdx ) const -> const RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
@@ -252,9 +252,9 @@ getRow( const IndexType& rowIdx ) -> RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
    TNL_ASSERT_GE( row, 0, "" );
@@ -279,9 +279,9 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -310,9 +310,9 @@ addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 Real
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getElement( const IndexType row, const IndexType column ) const
 {
    TNL_ASSERT_GE( row, 0, "" );
@@ -329,9 +329,9 @@ getElement( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >&
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+          ElementsOrganization Organization >
+MultidiagonalMatrixView< Real, Device, Index, Organization >&
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 operator=( const MultidiagonalMatrixView& view )
 {
    MatrixView< Real, Device, Index >::operator=( view );
@@ -344,10 +344,10 @@ operator=( const MultidiagonalMatrixView& view )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
@@ -373,10 +373,10 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
@@ -385,10 +385,10 @@ allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zer
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
@@ -411,10 +411,10 @@ forRows( IndexType first, IndexType last, Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
   template< typename Function >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
@@ -437,10 +437,10 @@ forRows( IndexType first, IndexType last, Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forAllRows( Function& function ) const
 {
    this->forRows( 0, this->indxer.getNonEmptyRowsCount(), function );
@@ -449,10 +449,10 @@ forAllRows( Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forAllRows( Function& function )
 {
    this->forRows( 0, this->indexer.getNonemptyRowsCount(), function );
@@ -461,11 +461,11 @@ forAllRows( Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 template< typename Vector >
 __cuda_callable__
 typename Vector::RealType 
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
 }
@@ -473,11 +473,11 @@ rowVectorProduct( const IndexType row, const Vector& vector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
 void 
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
@@ -500,18 +500,18 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
-addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
 {
    TNL_ASSERT_EQ( this->getRows(), matrix.getRows(), "Matrices rows are not equal." );
    TNL_ASSERT_EQ( this->getColumns(), matrix.getColumns(), "Matrices columns are not equal." );
 
-   /*if( RowMajorOrder == RowMajorOrder_ )
+   /*if( Organization == Organization_ )
    {
       if( thisMatrixMultiplicator == 1.0 )
          this->values += matrixMultiplicator * matrix.getValues();
@@ -572,10 +572,10 @@ __global__ void MultidiagonalTranspositionCudaKernel( const Multidiagonal< Real2
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Real2, typename Index2 >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getTransposition( const MultidiagonalMatrixView< Real2, Device, Index2 >& matrix,
                   const RealType& matrixMultiplicator )
 {
@@ -622,11 +622,11 @@ getTransposition( const MultidiagonalMatrixView< Real2, Device, Index2 >& matrix
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Vector1, typename Vector2 >
 __cuda_callable__
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
@@ -644,8 +644,8 @@ performSORIteration( const Vector1& b,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::save( File& file ) const
+          ElementsOrganization Organization >
+void MultidiagonalMatrixView< Real, Device, Index, Organization >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );
 }
@@ -653,9 +653,9 @@ void MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::save( File& 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 save( const String& fileName ) const
 {
    Object::save( fileName );
@@ -664,8 +664,8 @@ save( const String& fileName ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-void MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::print( std::ostream& str ) const
+          ElementsOrganization Organization >
+void MultidiagonalMatrixView< Real, Device, Index, Organization >::print( std::ostream& str ) const
 {
    for( IndexType rowIdx = 0; rowIdx < this->getRows(); rowIdx++ )
    {
@@ -687,10 +687,10 @@ void MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::print( std::
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getIndexer() const -> const IndexerType&
 {
    return this->indexer;
@@ -699,10 +699,10 @@ getIndexer() const -> const IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getIndexer() -> IndexerType&
 {
    return this->indexer;
@@ -711,10 +711,10 @@ getIndexer() -> IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getElementIndex( const IndexType row, const IndexType localIdx ) const
 {
    return this->indexer.getGlobalIndex( row, localIdx );
@@ -723,10 +723,10 @@ getElementIndex( const IndexType row, const IndexType localIdx ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 __cuda_callable__
 Index
-MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getPaddingIndex() const
 {
    return -1;

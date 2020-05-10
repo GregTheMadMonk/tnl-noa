@@ -14,6 +14,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/SegmentView.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 
 
 namespace TNL {
@@ -22,7 +23,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int Alignment = 32 >
 class EllpackView
 {
@@ -31,14 +32,14 @@ class EllpackView
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      static constexpr bool getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = EllpackView< Device_, Index_, RowMajorOrder, Alignment >;
+      using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
       using ViewType = EllpackView;
       using ConstViewType = ViewType;
-      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
       __cuda_callable__
       EllpackView();

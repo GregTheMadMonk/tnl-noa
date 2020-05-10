@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 #include <TNL/Containers/Segments/ChunkedEllpackSegmentView.h>
 #include <TNL/Containers/Segments/details/ChunkedEllpack.h>
 
@@ -23,7 +24,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class ChunkedEllpackView
 {
    public:
@@ -36,7 +37,7 @@ class ChunkedEllpackView
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_ >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
       using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;

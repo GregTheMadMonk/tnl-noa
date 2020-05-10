@@ -23,9 +23,9 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 SlicedEllpack()
    : size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
 {
@@ -34,9 +34,9 @@ SlicedEllpack()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 SlicedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
    : size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
 {
@@ -46,9 +46,9 @@ SlicedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 SlicedEllpack( const SlicedEllpack& slicedEllpack )
    : size( slicedEllpack.size ), alignedSize( slicedEllpack.alignedSize ),
      segmentsCount( slicedEllpack.segmentsCount ), sliceOffsets( slicedEllpack.sliceOffsets ),
@@ -59,9 +59,9 @@ SlicedEllpack( const SlicedEllpack& slicedEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 SlicedEllpack( const SlicedEllpack&& slicedEllpack )
    : size( slicedEllpack.size ), alignedSize( slicedEllpack.alignedSize ),
      segmentsCount( slicedEllpack.segmentsCount ), sliceOffsets( slicedEllpack.sliceOffsets ),
@@ -72,10 +72,10 @@ SlicedEllpack( const SlicedEllpack&& slicedEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 String
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSerializationType()
 {
    return "SlicedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
@@ -84,10 +84,10 @@ getSerializationType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 String
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSegmentsType()
 {
    return ViewType::getSegmentsType();
@@ -96,10 +96,10 @@ getSegmentsType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-typename SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::ViewType
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+typename SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::ViewType
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getView()
 {
    return ViewType( size, alignedSize, segmentsCount, sliceOffsets.getView(), sliceSegmentSizes.getView() );
@@ -108,10 +108,10 @@ getView()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 auto
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, alignedSize, segmentsCount, sliceOffsets.getConstView(), sliceSegmentSizes.getConstView() );
@@ -120,11 +120,11 @@ getConstView() const -> const ConstViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
    template< typename SizesHolder >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 setSegmentsSizes( const SizesHolder& sizes )
 {
    this->segmentsCount = sizes.getSize();
@@ -132,7 +132,7 @@ setSegmentsSizes( const SizesHolder& sizes )
    this->sliceOffsets.setSize( slicesCount + 1 );
    this->sliceOffsets = 0;
    this->sliceSegmentSizes.setSize( slicesCount );
-   Ellpack< DeviceType, IndexType, IndexAllocator, true > ellpack;
+   Ellpack< DeviceType, IndexType, IndexAllocator, RowMajorOrder > ellpack;
    ellpack.setSegmentsSizes( slicesCount, SliceSize );
 
    const IndexType _size = sizes.getSize();
@@ -160,10 +160,10 @@ setSegmentsSizes( const SizesHolder& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 reset()
 {
    this->size = 0;
@@ -176,9 +176,9 @@ reset()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSegmentsCount() const -> IndexType
 {
    return this->segmentsCount;
@@ -187,9 +187,9 @@ getSegmentsCount() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    const Index sliceIdx = segmentIdx / SliceSize;
@@ -208,9 +208,9 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSize() const -> IndexType
 {
    return this->size;
@@ -219,9 +219,9 @@ getSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getStorageSize() const -> IndexType
 {
    return this->alignedSize;
@@ -230,9 +230,9 @@ getStorageSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+__cuda_callable__ auto SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
@@ -253,7 +253,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
       segmentSize = this->sliceSegmentSizes.getElement( sliceIdx );
 #endif
    }
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
       return sliceOffset + segmentInSliceIdx * segmentSize + localIdx;
    else
       return sliceOffset + segmentInSliceIdx + SliceSize * localIdx;
@@ -262,11 +262,11 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 __cuda_callable__
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
 {
 }
@@ -274,11 +274,11 @@ getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localI
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 __cuda_callable__
 auto
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
@@ -286,7 +286,7 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    const IndexType& sliceOffset = this->sliceOffsets[ sliceIdx ];
    const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 
-   if( RowMajorOrder )
+   if( Organization == RowMajorOrder )
       return SegmentViewType( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
    else
       return SegmentViewType( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
@@ -295,11 +295,11 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
    template< typename Function, typename... Args >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    this->getConstView().forSegments( first, last, f, args... );
@@ -308,11 +308,11 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
    template< typename Function, typename... Args >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
@@ -321,11 +321,11 @@ forAll( Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
@@ -334,11 +334,11 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
@@ -347,12 +347,12 @@ allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, co
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
-   template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >&
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
-operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, SliceSize >& source )
+   template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >&
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, Organization_, SliceSize >& source )
 {
    this->size = source.size;
    this->alignedSize = source.alignedSize;
@@ -365,10 +365,10 @@ operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 save( File& file ) const
 {
    file.save( &size );
@@ -381,10 +381,10 @@ save( File& file ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           int SliceSize >
 void
-SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 load( File& file )
 {
    file.load( &size );

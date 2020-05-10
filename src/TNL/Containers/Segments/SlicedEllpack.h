@@ -22,7 +22,7 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int SliceSize = 32 >
 class SlicedEllpack
 {
@@ -32,12 +32,12 @@ class SlicedEllpack
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
-      using ViewType = SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >;
+      static constexpr bool getOrganization() { return Organization; }
+      using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = SlicedEllpackView< Device_, Index_, RowMajorOrder, SliceSize >;
-      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder, SliceSize >;
-      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
+      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
       SlicedEllpack();
 
@@ -112,8 +112,8 @@ class SlicedEllpack
 
       SlicedEllpack& operator=( const SlicedEllpack& source ) = default;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      SlicedEllpack& operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, SliceSize >& source );
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+      SlicedEllpack& operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, Organization_, SliceSize >& source );
 
       void save( File& file ) const;
 

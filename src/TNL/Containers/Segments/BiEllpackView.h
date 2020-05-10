@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 #include <TNL/Containers/Segments/BiEllpackSegmentView.h>
 #include <TNL/Containers/Segments/details/BiEllpack.h>
 
@@ -23,7 +24,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpackView
 {
@@ -37,7 +38,7 @@ class BiEllpackView
       template< typename Device_, typename Index_ >
       using ViewTemplate = BiEllpackView< Device_, Index_ >;
       using ConstViewType = BiEllpackView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = BiEllpackSegmentView< IndexType, RowMajorOrder >;
+      using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
       __cuda_callable__
       BiEllpackView() = default;

@@ -23,7 +23,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
@@ -37,12 +37,12 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, Organization >;
       using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
       using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
-      using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ViewType = MultidiagonalMatrixView< Real, Device, Index, Organization >;
+      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
 
       using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
       using HostDiagonalsShiftsView = typename HostDiagonalsShiftsType::ViewType;
@@ -58,7 +58,7 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Index = Index >
       using Self = Multidiagonal< _Real, _Device, _Index >;
 
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; };
+      static constexpr ElementsOrganization getOrganization() { return Organization; };
 
       Multidiagonal();
 
@@ -100,18 +100,18 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
 
       IndexType getMaxRowLength() const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      void setLike( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& m );
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      void setLike( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& m );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
       void reset();
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      bool operator == ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      bool operator == ( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      bool operator != ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      bool operator != ( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -161,8 +161,8 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const;
 
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      void addMatrix( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix,
+      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
+      void addMatrix( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 
@@ -184,10 +184,10 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Real_,
                 typename Device_,
                 typename Index_,
-                bool RowMajorOrder_,
+                ElementsOrganization Organization_,
                 typename RealAllocator_,
                 typename IndexAllocator_ >
-      Multidiagonal& operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >& matrix );
+      Multidiagonal& operator=( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix );
 
       void save( File& file ) const;
 

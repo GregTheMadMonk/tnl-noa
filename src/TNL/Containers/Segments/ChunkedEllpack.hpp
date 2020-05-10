@@ -22,8 +22,8 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
 {
    this->setSegmentsSizes( sizes );
@@ -32,8 +32,8 @@ ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
    : size( chunkedEllpack.size ),
      storageSize( chunkedEllpack.storageSize ),
@@ -51,8 +51,8 @@ ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 ChunkedEllpack( const ChunkedEllpack&& chunkedEllpack )
    : size( chunkedEllpack.size ),
      storageSize( chunkedEllpack.storageSize ),
@@ -70,9 +70,9 @@ ChunkedEllpack( const ChunkedEllpack&& chunkedEllpack )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSerializationType()
 {
    return "ChunkedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
@@ -81,9 +81,9 @@ getSerializationType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 String
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentsType()
 {
    return ViewType::getSegmentsType();
@@ -92,9 +92,9 @@ getSegmentsType()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-typename ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::ViewType
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+typename ChunkedEllpack< Device, Index, IndexAllocator, Organization >::ViewType
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getView()
 {
    return ViewType( size, storageSize, chunksInSlice, desiredChunkSize,
@@ -109,8 +109,8 @@ getView()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getConstView() const -> const ConstViewType
 {
    return ConstViewType( size, storageSize, chunksInSlice, desiredChunkSize,
@@ -125,10 +125,10 @@ getConstView() const -> const ConstViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename SegmentsSizes >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 resolveSliceSizes( SegmentsSizes& segmentsSizes )
 {
    /****
@@ -166,10 +166,10 @@ resolveSliceSizes( SegmentsSizes& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename SegmentsSizes >
 bool
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 setSlice( SegmentsSizes& rowLengths,
           const IndexType sliceIndex,
           IndexType& elementsToAllocation )
@@ -254,10 +254,10 @@ setSlice( SegmentsSizes& rowLengths,
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename SizesHolder >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 setSegmentsSizes( const SizesHolder& segmentsSizes )
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -292,7 +292,7 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
    }
    else
    {
-      ChunkedEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< Index >, RowMajorOrder > hostSegments;
+      ChunkedEllpack< Devices::Host, Index, typename Allocators::Default< Devices::Host >::template Allocator< Index >, Organization > hostSegments;
       Containers::Vector< IndexType, Devices::Host, IndexType > hostSegmentsSizes;
       hostSegmentsSizes = segmentsSizes;
       hostSegments.setSegmentsSizes( hostSegmentsSizes );
@@ -303,9 +303,9 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 reset()
 {
    this->size = 0;
@@ -321,8 +321,8 @@ reset()
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentsCount() const -> IndexType
 {
    return this->size;
@@ -331,11 +331,11 @@ getSegmentsCount() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getSegmentSize(
+   return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowToSliceMapping.getView(),
       slices.getView(),
       rowToChunkMapping.getView(),
@@ -345,8 +345,8 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSize() const -> IndexType
 {
    return this->size;
@@ -355,8 +355,8 @@ getSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getStorageSize() const -> IndexType
 {
    return this->storageSize;
@@ -365,11 +365,11 @@ getStorageSize() const -> IndexType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
-      return details::ChunkedEllpack< IndexType, DeviceType, RowMajorOrder >::getGlobalIndex(
+      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -381,8 +381,8 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+          ElementsOrganization Organization >
+__cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
 }
@@ -390,10 +390,10 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function, typename... Args >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    this->getConstView().forSegments( first, last, f, args... );
@@ -402,10 +402,10 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Function, typename... Args >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
@@ -414,10 +414,10 @@ forAll( Function& f, Args... args ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
@@ -426,10 +426,10 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
@@ -438,11 +438,11 @@ allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, co
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
-   template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >&
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
-operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_ >& source )
+          ElementsOrganization Organization >
+   template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >&
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, Organization_ >& source )
 {
    this->size = source.size;
    this->storageSize = source.storageSize;
@@ -460,9 +460,9 @@ operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 save( File& file ) const
 {
    file.save( &this->size );
@@ -480,9 +480,9 @@ save( File& file ) const
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 load( File& file )
 {
    file.load( &this->size );
@@ -500,9 +500,9 @@ load( File& file )
 template< typename Device,
           typename Index,
           typename IndexAllocator,
-          bool RowMajorOrder >
+          ElementsOrganization Organization >
 void
-ChunkedEllpack< Device, Index, IndexAllocator, RowMajorOrder >::
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 printStructure( std::ostream& str )
 {
    this->getView().printStructure( str );

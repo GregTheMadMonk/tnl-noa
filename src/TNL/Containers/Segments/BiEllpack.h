@@ -22,7 +22,7 @@ namespace TNL {
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpack
 {
@@ -31,12 +31,12 @@ class BiEllpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
-      using ViewType = BiEllpackView< Device, Index, RowMajorOrder >;
+      static constexpr bool getOrganization() { return Organization; }
+      using ViewType = BiEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = BiEllpackView< Device_, Index_, RowMajorOrder >;
-      using ConstViewType = BiEllpackView< Device, std::add_const_t< IndexType >, RowMajorOrder >;
-      using SegmentViewType = BiEllpackSegmentView< IndexType, RowMajorOrder >;
+      using ViewTemplate = BiEllpackView< Device_, Index_, Organization >;
+      using ConstViewType = BiEllpackView< Device, std::add_const_t< IndexType >, Organization >;
+      using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
       BiEllpack() = default;
 
@@ -109,8 +109,8 @@ class BiEllpack
 
       BiEllpack& operator=( const BiEllpack& source ) = default;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
-      BiEllpack& operator=( const BiEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, WarpSize >& source );
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
+      BiEllpack& operator=( const BiEllpack< Device_, Index_, IndexAllocator_, Organization_, WarpSize >& source );
 
       void save( File& file ) const;
 
@@ -163,7 +163,7 @@ class BiEllpack
           return 0;
       };
 
-      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int WarpSize_ >
+      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int WarpSize_ >
       friend class BiEllpack;
 };
 

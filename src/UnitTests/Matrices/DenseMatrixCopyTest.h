@@ -33,10 +33,10 @@ using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL:
 using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
 using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
-using Dense_host               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, false >;
-using Dense_host_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, true >;
-using Dense_cuda               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, false >;
-using Dense_cuda_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, true >;
+using Dense_host               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Containers::Segments::ColumnMajorOrder >;
+using Dense_host_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Containers::Segments::RowMajorOrder >;
+using Dense_cuda               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Containers::Segments::ColumnMajorOrder >;
+using Dense_cuda_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Containers::Segments::RowMajorOrder >;
 
 
 #ifdef HAVE_GTEST

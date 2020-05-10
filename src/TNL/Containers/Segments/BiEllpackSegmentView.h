@@ -11,6 +11,7 @@
 #pragma once
 
 #include <math.h>
+#include <TNL/Containers/Segments/ElementsOrganization.h>
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
@@ -18,7 +19,7 @@ namespace TNL {
       namespace Segments {
 
 template< typename Index,
-          bool RowMajorOrder = false,
+          ElementsOrganization Organization,
           int WarpSize = 32 >
 class BiEllpackSegmentView
 {
@@ -68,7 +69,7 @@ class BiEllpackSegmentView
             groupHeight /= 2;
          }
          TNL_ASSERT_LE( groupIdx, TNL::log2( getWarpSize() - inStripIdx + 1 ), "Local index exceeds segment bounds." );
-         if( RowMajorOrder )
+         if( Organization == RowMajorOrder )
          {
             //std::cerr << " offset = " << offset << " inStripIdx = " << inStripIdx << " localIdx = " << localIdx 
             //          << " return = " << offset + inStripIdx * groupsWidth[ groupIdx ] + localIdx << std::endl;

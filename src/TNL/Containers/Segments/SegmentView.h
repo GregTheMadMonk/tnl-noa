@@ -10,16 +10,18 @@
 
 #pragma once
 
+#include <TNL/Containers/Segments/ElementsOrganization.h>
+
 namespace TNL {
    namespace Containers {
       namespace Segments {
 
 template< typename Index,
-          bool RowMajorOrder = false >
+          ElementsOrganization Organization >
 class SegmentView;
 
 template< typename Index >
-class SegmentView< Index, false >
+class SegmentView< Index, ColumnMajorOrder >
 {
    public:
 
@@ -54,7 +56,7 @@ class SegmentView< Index, false >
 };
 
 template< typename Index >
-class SegmentView< Index, true >
+class SegmentView< Index, RowMajorOrder >
 {
    public:
 

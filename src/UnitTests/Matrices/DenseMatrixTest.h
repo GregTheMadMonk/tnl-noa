@@ -35,14 +35,15 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
+   using namespace TNL::Containers::Segments;
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >

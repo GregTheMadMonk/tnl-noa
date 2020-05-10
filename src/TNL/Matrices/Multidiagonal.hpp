@@ -24,10 +24,10 @@ class MultidiagonalDeviceDependentCode;
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 Multidiagonal()
 {
 }
@@ -35,11 +35,11 @@ Multidiagonal()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector >
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 Multidiagonal( const IndexType rows,
                const IndexType columns,
                const Vector& diagonalsShifts )
@@ -51,11 +51,11 @@ Multidiagonal( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getView() const -> ViewType
 {
    // TODO: fix when getConstView works
@@ -68,11 +68,11 @@ getView() const -> ViewType
 /*template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->values.getConstView(), indexer );
@@ -81,27 +81,27 @@ getConstView() const -> ConstViewType
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 String
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getSerializationType()
 {
    return String( "Matrices::Multidiagonal< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator], [any_allocator] >";
+          ( Organization ? "true" : "false" ) + ", [any_allocator], [any_allocator] >";
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 String
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -110,12 +110,12 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns,
                const Vector& diagonalsShifts )
@@ -136,12 +136,12 @@ setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
  //  template< typename Vector >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setCompressedRowLengths( const ConstCompressedRowLengthsVectorView rowLengths )
 {
    if( max( rowLengths ) > 3 )
@@ -163,11 +163,11 @@ setCompressedRowLengths( const ConstCompressedRowLengthsVectorView rowLengths )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 const Index&
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getDiagonalsCount() const
 {
    return this->view.getDiagonalsCount();
@@ -176,11 +176,11 @@ getDiagonalsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getDiagonalsShifts() const -> const DiagonalsShiftsType&
 {
    return this->diagonalsShifts;
@@ -189,12 +189,12 @@ getDiagonalsShifts() const -> const DiagonalsShiftsType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    return this->view.getCompressedRowLengths( rowLengths );
@@ -203,11 +203,11 @@ getCompressedRowLengths( Vector& rowLengths ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 Index
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getNonemptyRowsCount() const
 {
    return this->indexer.getNonemptyRowsCount();
@@ -216,11 +216,11 @@ getNonemptyRowsCount() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 Index
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getRowLength( const IndexType row ) const
 {
    return this->view.getRowLength( row );
@@ -229,11 +229,11 @@ getRowLength( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 Index
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getMaxRowLength() const
 {
    return this->view.getMaxRowLength();
@@ -242,13 +242,13 @@ getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-setLike( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& m )
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+setLike( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& m )
 {
    this->setDimensions( m.getRows(), m.getColumns(), m.getDiagonalsShifts() );
 }
@@ -256,11 +256,11 @@ setLike( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAlloca
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 Index
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getNumberOfNonzeroMatrixElements() const
 {
    return this->view.getNumberOfNonzeroMatrixElements();
@@ -269,11 +269,11 @@ getNumberOfNonzeroMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 reset()
 {
    Matrix< Real, Device, Index >::reset();
@@ -282,15 +282,15 @@ reset()
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 bool
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-operator == ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+operator == ( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const
 {
-   if( RowMajorOrder == RowMajorOrder_ )
+   if( Organization == Organization_ )
       return this->values == matrix.values;
    else
    {
@@ -301,13 +301,13 @@ operator == ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealA
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 bool
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-operator != ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+operator != ( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const
 {
    return ! this->operator==( matrix );
 }
@@ -315,11 +315,11 @@ operator != ( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealA
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setValue( const RealType& v )
 {
    this->view.setValue( v );
@@ -328,12 +328,12 @@ setValue( const RealType& v )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
    return this->view.getRow( rowIdx );
@@ -342,12 +342,12 @@ getRow( const IndexType& rowIdx ) const -> const RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
@@ -356,11 +356,11 @@ getRow( const IndexType& rowIdx ) -> RowView
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
    this->view.setElement( row, column, value );
@@ -369,11 +369,11 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -385,11 +385,11 @@ addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 Real
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getElement( const IndexType row, const IndexType column ) const
 {
    return this->view.getElement( row, column );
@@ -398,12 +398,12 @@ getElement( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
@@ -412,12 +412,12 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->view.rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -426,12 +426,12 @@ allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zer
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    this->view.forRows( first, last, function );
@@ -440,12 +440,12 @@ forRows( IndexType first, IndexType last, Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
   template< typename Function >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    this->view.forRows( first, last, function );
@@ -454,12 +454,12 @@ forRows( IndexType first, IndexType last, Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forAllRows( Function& function ) const
 {
    this->view.forRows( 0, this->getRows(), function );
@@ -468,12 +468,12 @@ forAllRows( Function& function ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forAllRows( Function& function )
 {
    this->view.forRows( 0, this->getRows(), function );
@@ -482,13 +482,13 @@ forAllRows( Function& function )
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 template< typename Vector >
 __cuda_callable__
 typename Vector::RealType
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
    return this->view.rowVectorProduct();
@@ -497,13 +497,13 @@ rowVectorProduct( const IndexType row, const Vector& vector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename InVector,
              typename OutVector >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
    this->view.vectorProduct( inVector, outVector );
@@ -512,13 +512,13 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-addMatrix( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix,
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+addMatrix( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
 {
@@ -556,11 +556,11 @@ __global__ void MultidiagonalTranspositionCudaKernel( const Multidiagonal< Real2
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Real2, typename Index2 >
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::getTransposition( const Multidiagonal< Real2, Device, Index2 >& matrix,
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::getTransposition( const Multidiagonal< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
    TNL_ASSERT( this->getRows() == matrix.getRows(),
@@ -606,12 +606,12 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector1, typename Vector2 >
 __cuda_callable__
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::performSORIteration( const Vector1& b,
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::performSORIteration( const Vector1& b,
                                                               const IndexType row,
                                                               Vector2& x,
                                                               const RealType& omega ) const
@@ -629,11 +629,11 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >&
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::operator=( const Multidiagonal& matrix )
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >&
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::operator=( const Multidiagonal& matrix )
 {
    this->setLike( matrix );
    this->values = matrix.values;
@@ -644,15 +644,15 @@ Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_, typename IndexAllocator_ >
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >&
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >& matrix )
+   template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_, typename IndexAllocator_ >
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >&
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+operator=( const Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix )
 {
-   using RHSMatrix = Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >;
+   using RHSMatrix = Multidiagonal< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >;
    using RHSIndexType = typename RHSMatrix::IndexType;
    using RHSRealType = typename RHSMatrix::RealType;
    using RHSDeviceType = typename RHSMatrix::DeviceType;
@@ -660,7 +660,7 @@ operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllo
    using RHSIndexAllocatorType = typename RHSMatrix::IndexAllocatorType;
 
    this->setLike( matrix );
-   if( RowMajorOrder == RowMajorOrder_ )
+   if( Organization == Organization_ )
       this->values = matrix.getValues();
    else
    {
@@ -719,10 +719,10 @@ operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::save( File& file ) const
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
    file << diagonalsShifts;
@@ -731,10 +731,10 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::load( File& file )
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
    file >> this->diagonalsShifts;
@@ -750,10 +750,10 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::save( const String& fileName ) const
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
@@ -761,10 +761,10 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::load( const String& fileName )
+void Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::load( const String& fileName )
 {
    Object::load( fileName );
 }
@@ -772,11 +772,11 @@ void Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 void
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 print( std::ostream& str ) const
 {
    this->view.print( str );
@@ -785,11 +785,11 @@ print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getIndexer() const -> const IndexerType&
 {
    return this->indexer;
@@ -798,11 +798,11 @@ getIndexer() const -> const IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getIndexer() -> IndexerType&
 {
    return this->indexer;
@@ -811,11 +811,11 @@ getIndexer() -> IndexerType&
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
-Index Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Index Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    IndexType localIdx = column - row;
@@ -831,12 +831,12 @@ getElementIndex( const IndexType row, const IndexType column ) const
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 Index
-Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getPaddingIndex() const
 {
    return this->view.getPaddingIndex();
@@ -884,7 +884,7 @@ class MultidiagonalDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >& matrix,
+      static void vectorProduct( const Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -937,7 +937,7 @@ class MultidiagonalDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >& matrix,
+      static void vectorProduct( const Multidiagonal< Real, Device, Index, Organization, RealAllocator, IndexAllocator >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

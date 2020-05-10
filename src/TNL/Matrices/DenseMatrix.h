@@ -26,14 +26,14 @@ namespace Matrices {
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam RowMajorOrder tells the ordering of matrix elements. If it is \e true the matrix elements
- *         are stored in row major order. If it is \e false, the matrix elements are stored in column major order.
+ * \tparam Organization tells the ordering of matrix elements. It is either RowMajorOrder
+ *         or ColumnMajorOrder.
  * \tparam RealAllocator is allocator for the matrix elements.
  */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class DenseMatrix : public Matrix< Real, Device, Index >
 {
@@ -41,9 +41,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, RowMajorOrder, 1 >;
+      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
-
 
    public:
 
@@ -63,6 +62,13 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using IndexType = Index;
 
       /**
+       * \brief Matrix elements organization getter.
+       * 
+       * \return matrix elements organization - RowMajorOrder of ColumnMajorOrder.
+       */
+      static constexpr ElementsOrganization getOrganization() { return Organization; };
+
+      /**
        * \brief The allocator for matrix elements.
        */
       using RealAllocatorType = RealAllocator;
@@ -72,14 +78,14 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * See \ref DenseMatrixView.
        */
-      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ViewType = DenseMatrixView< Real, Device, Index, Organization >;
 
       /**
        * \brief Matrix view type for constant instances.
        * 
        * See \ref DenseMatrixView.
        */
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
 
       /**
        * \brief Type for accessing matrix row.
@@ -92,9 +98,9 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                bool _RowMajorOrder = RowMajorOrder,
+                ElementsOrganization _Organization = Organization,
                 typename _RealAllocator = RealAllocator >
-      using Self = DenseMatrix< _Real, _Device, _Index, _RowMajorOrder, _RealAllocator >;
+      using Self = DenseMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       /**
        * \brief Constructor without parameters.
@@ -587,8 +593,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return reference to this matrix.
        */
       template< typename RHSReal, typename RHSDevice, typename RHSIndex,
-                 bool RHSRowMajorOrder, typename RHSRealAllocator >
-      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
+                 ElementsOrganization RHSOrganization, typename RHSRealAllocator >
+      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix );
 
       /**
        * \brief Assignment operator for other (sparse) types of matrices.
@@ -606,7 +612,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return \e true if the RHS matrix is equal, \e false otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator==( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
 
       /**
        * \brief Comparison operator with another dense matrix.
@@ -615,7 +621,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \return \e false if the RHS matrix is equal, \e true otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator!=( const DenseMatrix< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -673,9 +679,9 @@ class DenseMatrix : public Matrix< Real, Device, Index >
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix );
+std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix );
 
 } // namespace Matrices
 } // namespace TNL

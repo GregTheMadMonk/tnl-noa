@@ -37,8 +37,8 @@ struct MatrixInfo
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder >
-struct MatrixInfo< DenseMatrixView< Real, Device, Index, RowMajorOrder > >
+          ElementsOrganization Organization >
+struct MatrixInfo< DenseMatrixView< Real, Device, Index, Organization > >
 {
    static String getDensity() { return String( "dense" ); };
 };
@@ -46,10 +46,10 @@ struct MatrixInfo< DenseMatrixView< Real, Device, Index, RowMajorOrder > >
 template< typename Real,
           typename Device,
           typename Index,
-          bool RowMajorOrder,
+          ElementsOrganization Organization,
           typename RealAllocator >
-struct MatrixInfo< DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator > >
-: public MatrixInfo< typename DenseMatrix< Real, Device, Index, RowMajorOrder, RealAllocator >::ViewType >
+struct MatrixInfo< DenseMatrix< Real, Device, Index, Organization, RealAllocator > >
+: public MatrixInfo< typename DenseMatrix< Real, Device, Index, Organization, RealAllocator >::ViewType >
 {
 };
 
