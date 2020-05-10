@@ -1,12 +1,6 @@
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( ArrayAllocation ArrayAllocation.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayAllocation > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayAllocation.out OUTPUT ArrayAllocation.out )
-   CUDA_ADD_EXECUTABLE( ArrayBinding-1 ArrayBinding-1.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-1 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayBinding-1.out OUTPUT ArrayBinding-1.out )
-   CUDA_ADD_EXECUTABLE( ArrayBinding-2 ArrayBinding-2.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-2 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayBinding-2.out OUTPUT ArrayBinding-2.out )
-   CUDA_ADD_EXECUTABLE( ArrayBinding-3 ArrayBinding-3.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-3 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayBinding-3.out OUTPUT ArrayBinding-3.out )
    CUDA_ADD_EXECUTABLE( ArrayIO ArrayIO.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayIO > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayIO.out OUTPUT ArrayIO.out )
    CUDA_ADD_EXECUTABLE( ArrayView-1 ArrayView-1.cu )
@@ -28,9 +22,6 @@ ENDIF()
 IF( BUILD_CUDA )
 ADD_CUSTOM_TARGET( TutorialsArrays-cuda ALL DEPENDS
    ArrayAllocation.out
-   ArrayBinding-1.out
-   ArrayBinding-2.out
-   ArrayBinding-3.out
    ArrayIO.out
    ArrayView-1.out
    ArrayView-2.out
