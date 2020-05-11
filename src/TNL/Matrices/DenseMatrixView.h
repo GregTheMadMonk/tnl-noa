@@ -187,11 +187,6 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      //[[deprecated]]
-      //IndexType getRowLength( const IndexType row ) const;
-
-      //IndexType getMaxRowLength() const;
-
       /**
        * \brief Returns number of all matrix elements.
        * 
@@ -202,7 +197,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \return number of all matrix elements.
        * 
        * \par Example
-       * \include Matrices/DenseViewMatrixExample_getElementsCount.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_getElementsCount.cpp
        * \par Output
        * \include DenseMatrixViewExample_getElementsCount.out
        */
