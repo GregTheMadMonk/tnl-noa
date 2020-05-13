@@ -218,7 +218,7 @@ public:
 
 protected:
    // communication pattern
-   Matrices::DenseMatrix< IndexType, Devices::Host, int, Containers::Segments::RowMajorOrder, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
+   Matrices::DenseMatrix< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;
