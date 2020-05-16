@@ -192,7 +192,7 @@ operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organizatio
       return this->values == matrix.values;
    else
    {
-      TNL_ASSERT( false, "TODO" );
+      TNL_ASSERT_TRUE( false, "TODO" );
    }
 }
 
