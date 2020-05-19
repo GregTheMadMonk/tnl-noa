@@ -39,10 +39,12 @@ struct ArrayAssignment< Array, T, true >
    static void assign( Array& a, const T& t )
    {
       TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
-      if( t.getSize() > 0 ) // we allow even assignment of empty arrays
-         Algorithms::MultiDeviceMemoryOperations< typename Array::DeviceType, typename T::DeviceType >::template
-            copy< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
-            ( a.getArrayData(), t.getArrayData(), t.getSize() );
+      // skip assignment of empty arrays
+      if( a.getSize() == 0 )
+         return;
+      Algorithms::MultiDeviceMemoryOperations< typename Array::DeviceType, typename T::DeviceType >::template
+         copy< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
+         ( a.getArrayData(), t.getArrayData(), t.getSize() );
    }
 };
 
@@ -60,7 +62,9 @@ struct ArrayAssignment< Array, T, false >
 
    static void assign( Array& a, const T& t )
    {
-      TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
+      // skip assignment to an empty array
+      if( a.getSize() == 0 )
+         return;
       Algorithms::MemoryOperations< typename Array::DeviceType >::template
          set< typename Array::ValueType, typename Array::IndexType >
          ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );
