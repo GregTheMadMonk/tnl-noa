@@ -87,7 +87,8 @@ typename VectorExpression::RealType
 getTriangleArea( const VectorExpression & v1,
                  const VectorExpression & v2 )
 {
-    return 0.5 * TNL::abs( v1.x() * v2.y() - v1.y() * v2.x() );
+    using Real = typename VectorExpression::RealType;
+    return Real( 0.5 ) * TNL::abs( v1.x() * v2.y() - v1.y() * v2.x() );
 }
 
 template< typename VectorExpression,
@@ -102,7 +103,7 @@ getTriangleArea( const VectorExpression & v1,
     const Real c1 = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
     const Real c2 = v1.z() * v2.x() - v1.x() * v2.z();   // second component of the cross product
     const Real c3 = v1.x() * v2.y() - v1.y() * v2.x();   // third component of the cross product
-    return 0.5 * TNL::sqrt( c1 * c1 + c2 * c2 + c3 * c3 );
+    return Real( 0.5 ) * TNL::sqrt( c1 * c1 + c2 * c2 + c3 * c3 );
 }
 
 template< typename MeshConfig, typename Device >
@@ -148,7 +149,7 @@ getTetrahedronVolume( const VectorExpression& v1,
                    ( v1.z() * v2.y() * v3.x() +
                      v1.y() * v2.x() * v3.z() +
                      v1.x() * v2.z() * v3.y() );
-    return ( 1.0 / 6.0 ) * TNL::abs( det );
+    return Real( 1.0 / 6.0 ) * TNL::abs( det );
 }
 
 template< typename MeshConfig, typename Device >
