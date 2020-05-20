@@ -89,9 +89,6 @@ class CSR
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
 
       __cuda_callable__
-      void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
-
-      __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
       /***

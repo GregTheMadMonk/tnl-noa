@@ -168,15 +168,6 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__ void EllpackView< Device, Index, Organization, Alignment >::
-getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int Alignment >
 __cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {

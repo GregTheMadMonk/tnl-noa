@@ -207,17 +207,6 @@ template< typename Device,
           ElementsOrganization Organization,
           int SliceSize >
 __cuda_callable__
-void
-SlicedEllpackView< Device, Index, Organization, SliceSize >::
-getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int SliceSize >
-__cuda_callable__
 auto
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType

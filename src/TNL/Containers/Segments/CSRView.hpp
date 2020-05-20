@@ -154,15 +154,6 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 template< typename Device,
           typename Index >
 __cuda_callable__
-void
-CSRView< Device, Index >::
-getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
-{
-}
-
-template< typename Device,
-          typename Index >
-__cuda_callable__
 auto
 CSRView< Device, Index >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
