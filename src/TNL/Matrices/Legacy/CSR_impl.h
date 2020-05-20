@@ -15,6 +15,7 @@
 #include <TNL/Math.h>
 #include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
+#include <TNL/Atomic.h>
 #include <vector>
 
 #ifdef HAVE_CUSPARSE
@@ -745,7 +746,6 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& 
                                                       int gridIdx) const
 {
    const IndexType index = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType THREADS_PER_ROW   = 4;
    const IndexType laneID      = index % warpSize;
    const IndexType groupID     = laneID / THREADS_PER_ROW;
    const IndexType inGroupID   = laneID % THREADS_PER_ROW;
@@ -1409,7 +1409,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
             std::vector<int> inBlock;
             inBlock.push_back(0);
             size_t sum = 0;
-            size_t i;
+            int i;
             int prev_i = 0;
             for (i = 1; i < matrix.getRowPointers().getSize() - 1; ++i) {
                size_t elements = matrix.getRowPointers().getElement(i) -
@@ -1437,12 +1437,12 @@ class CSRDeviceDependentCode< Devices::Cuda >
             const InVector *kernelInVector = Cuda::passToDevice( inVector );
             OutVector *kernelOutVector = Cuda::passToDevice( outVector );
 
-            /* blocks */
+            /* blocks to GPU */
             int *kernelBlocks;
             cudaMalloc((void **)&kernelBlocks, sizeof(int) * inBlock.size());
             cudaMemcpy(kernelBlocks, inBlock.data(), inBlock.size() * sizeof(int), cudaMemcpyHostToDevice);
 
-            /* values */
+            /* values to GPU */
             Real *kernelValues;
             cudaMalloc((void **)&kernelValues, sizeof(Real) * matrix.getValues().getSize());
             cudaMemcpy(kernelValues,
@@ -1450,7 +1450,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                        matrix.getValues().getSize() * sizeof(Real),
                        cudaMemcpyHostToDevice);
 
-            /* columns */
+            /* columns to GPU */
             Index *kernelColumns;
             cudaMalloc((void **)&kernelColumns, sizeof(Index) * matrix.getColumnIndexes().getSize());
             cudaMemcpy(kernelColumns,
@@ -1458,7 +1458,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                        matrix.getColumnIndexes().getSize() * sizeof(Index),
                        cudaMemcpyHostToDevice);
 
-            /* row pointers */
+            /* row pointers to GPU */
             Index *kernelRowPointers;
             cudaMalloc((void **)&kernelRowPointers, sizeof(Index) * matrix.getRowPointers().getSize());
             cudaMemcpy(kernelRowPointers,
@@ -1469,7 +1469,6 @@ class CSRDeviceDependentCode< Devices::Cuda >
             size_t needed_threads = 32 * (inBlock.size() - 1); // number of threads we need
             size_t blocks = needed_threads / THREADS_PER_BLOCK; // warp per block
             blocks = needed_threads % THREADS_PER_BLOCK ? blocks + 1 : blocks;
-            
             SpMVCSRAdaptiveGlobal< Real, Index, InVector, OutVector, 32 ><<<blocks, THREADS_PER_BLOCK>>>(
                     *kernelInVector, 
                     *kernelOutVector,
@@ -1480,7 +1479,8 @@ class CSRDeviceDependentCode< Devices::Cuda >
                     inBlock.size(),
                     matrix.getColumns()
             );
-
+            
+            /* Free memory */
             Cuda::freeFromDevice( kernelInVector );
             Cuda::freeFromDevice( kernelOutVector );
             cudaFree(kernelBlocks);
