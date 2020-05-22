@@ -22,6 +22,23 @@
 namespace TNL {
 namespace Matrices {
 
+/**
+ * \brief Implementation of sparse matrix, i.e. matrix storing only non-zero elements.
+ * 
+ * \tparam Real is a type of matrix elements.
+ * \tparam Device is a device where the matrix is allocated.
+ * \tparam Index is a type for indexing of the matrix elements.
+ * \tparam MatrixType specifies the type of matrix - its symmetry or binarity. See \ref MatrixType.
+ *    Both symmetric and binary matrix types reduces memory consumption. Binary matrix does not store
+ *    the matrix values explicitly since the non-zero elements can have only value equal to one. Symmetric
+ *    matrices store only lower part of the matrix and its diagonal. The upper part is reconstructed on the fly.
+ *    GeneralMatrix with no symmetry is used by default.
+ * \tparam Segments is a structure representing the sparse matrix format. Depending on the pattern of the non-zero elements
+ *    different matrix formats can perform differently especially on GPUs. By default \ref CSR format is used. See also
+ *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
+ * \tparam RealAllocator is allocator for the matrix elements values.
+ * \tparam IndexAllocator is allocator for the matrix elements column indexes.
+ */
 template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
@@ -31,43 +48,102 @@ template< typename Real,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
+   static_assert(
+         ! MatrixType::isSymmetric() ||
+         ! std::is_same< Device, Devices::Cuda >::value ||
+         ( std::is_same< Real, float >::value || std::is_same< Real, double >::value || std::is_same< Real, int >::value || std::is_same< Real, long long int >::value ),
+         "Given Real type is not supported by atomic operations on GPU which are necessary for symmetric operations." );
+
    public:
-      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
-      static constexpr bool isBinary() { return MatrixType::isBinary(); };
 
-      static_assert(
-            ! isSymmetric() ||
-            ! std::is_same< Device, Devices::Cuda >::value ||
-            ( std::is_same< Real, float >::value || std::is_same< Real, double >::value || std::is_same< Real, int >::value || std::is_same< Real, long long int >::value ),
-            "Given Real type is not supported by atomic operations on GPU which are necessary for symmetric operations." );
-
-      using RealType = Real;
-      template< typename Device_, typename Index_, typename IndexAllocator_ >
-      using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
-      using SegmentsType = Segments< Device, Index, IndexAllocator >;
-      template< typename Device_, typename Index_ >
-      using SegmentsViewTemplate = typename SegmentsType::template ViewTemplate< Device_, Index >;
-      using SegmentsViewType = typename SegmentsType::ViewType;
-      using SegmentViewType = typename SegmentsType::SegmentViewType;
-      using DeviceType = Device;
-      using IndexType = Index;
-      using RealAllocatorType = RealAllocator;
-      using IndexAllocatorType = IndexAllocator;
+      // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
-      using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
-      using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
-      using ColumnsIndexesVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using ColumnsIndexesVectorType = Containers::Vector< Index, Device, Index, IndexAllocator >;
       using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
+      using RowsCapacitiesType = Containers::Vector< Index, Device, Index, IndexAllocator >;
+      using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
+      using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
+
+      /**
+       * \brief The type of matrix elements.
+       */
+      using RealType = Real;
+
+      /**
+       * \brief The device where the matrix is allocated.
+       */
+      using DeviceType = Device;
+
+      /**
+       * \brief The type used for matrix elements indexing.
+       */
+      using IndexType = Index;
+
+      /**
+       * \brief Templated type of segments, i.e. sparse matrix format.
+       */
+      template< typename Device_, typename Index_, typename IndexAllocator_ >
+      using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
+
+      /**
+       * \brief Type of segments used by this matrix. It represents the sparse matrix format.
+       */
+      using SegmentsType = Segments< Device, Index, IndexAllocator >;
+
+      /**
+       * \brief Templated view type of segments, i.e. sparse matrix format.
+       */
+      template< typename Device_, typename Index_ >
+      using SegmentsViewTemplate = typename SegmentsType::template ViewTemplate< Device_, Index >;
+
+      /**
+       * \brief Type of segments view used by the related matrix view. It represents the sparse matrix format.
+       */
+      using SegmentsViewType = typename SegmentsType::ViewType;
+
+      /**
+       * \brief The allocator for matrix elements values.
+       */
+      using RealAllocatorType = RealAllocator;
+
+      /**
+       * \brief The allocator for matrix elements column indexes.
+       */
+      using IndexAllocatorType = IndexAllocator;
+
+      /**
+       * \brief Type of related matrix view. 
+       * 
+       * See \ref SparseMatrixView.
+       */
       using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
+
+      /**
+       * \brief Matrix view type for constant instances.
+       * 
+       * See \ref SparseMatrixView.
+       */
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+
+      //using SegmentViewType = typename SegmentsType::SegmentViewType;
+
+      /**
+       * \brief Type for accessing matrix rows.
+       */
+      using RowView = SparseMatrixRowView< typename SegmentsType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, MatrixType::isBinary() >;
+
+      /**
+       * \brief Type for accessing constant matrix rows.
+       */
       using ConstRowView = typename RowView::ConstViewType;
 
+      /**
+       * \brief Helper type for getting self type or its modifications.
+       */
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
@@ -77,39 +153,87 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
       using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _RealAllocator, _IndexAllocator >;
 
-      // TODO: remove this - it is here only for compatibility with original matrix implementation
-      typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
-      typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
-      typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
+      /**
+       * \brief Test of symmetric matrix type.
+       * 
+       * \return \e true if the matrix is stored as symmetric and \e false otherwise.
+       */
+      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
+      /**
+       * \brief Test of binary matrix type.
+       * 
+       * \return \e true if the matrix is stored as binary and \e false otherwise.
+       */
+      static constexpr bool isBinary() { return MatrixType::isBinary(); };
+
+      /**
+       * \brief Constructor only with values and column indexes allocators.
+       * 
+       * \param realAllocator is used for allocation of matrix elements values.
+       * \param indexAllocator is used for allocation of matrix elements column indexes.
+       */
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const SparseMatrix& m ) = default;
+      /**
+       * \brief Copy constructor.
+       * 
+       * \param matrix is the source matrix
+       */
+      SparseMatrix( const SparseMatrix& matrix1 ) = default;
 
-      SparseMatrix( SparseMatrix&& m ) = default;
+      /**
+       * \brief Move constructor.
+       * 
+       * \param matrix is the source matrix
+       */
+      SparseMatrix( SparseMatrix&& matrix ) = default;
 
+      /**
+       * \brief Constructor with matrix dimensions.
+       * 
+       * \param rows is number of matrix rows.
+       * \param columns is number of matrix columns.
+       * \param realAllocator is used for allocation of matrix elements values.
+       * \param indexAllocator is used for allocation of matrix elements column indexes.
+       */
       SparseMatrix( const IndexType rows,
                     const IndexType columns,
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const std::initializer_list< IndexType >& rowCapacities,
-                    const IndexType columns,
-                    const RealAllocatorType& realAllocator = RealAllocatorType(),
-                    const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
+      /**
+       * \brief Constructor with matrix rows capacities and number of columns.
+       * 
+       * The number of matrix rows is given by the size of \e rowCapacities list.
+       * 
+       * \tparam ListIndex is the initializer list values type.
+       * \param rowCapacities is a list telling how many matrix elements must be
+       *    allocated in each row.
+       * \param columns is the number of matrix columns.
+       * \param realAllocator is used for allocation of matrix elements values.
+       * \param indexAllocator is used for allocation of matrix elements column indexes.
+       */
+      template< typename ListIndex >
+      explicit SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
+                             const IndexType columns,
+                             const RealAllocatorType& realAllocator = RealAllocatorType(),
+                             const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const IndexType rows,
-                    const IndexType columns,
-                    const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
-                    const RealAllocatorType& realAllocator = RealAllocatorType(),
-                    const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
+      explicit SparseMatrix( const IndexType rows,
+                             const IndexType columns,
+                             const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
+                             const RealAllocatorType& realAllocator = RealAllocatorType(),
+                             const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
       template< typename MapIndex,
                 typename MapValue >
       explicit SparseMatrix( const IndexType rows,
                              const IndexType columns,
-                             const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
+                             const std::map< std::pair< MapIndex, MapIndex >, MapValue >& map,
+                             const RealAllocatorType& realAllocator = RealAllocatorType(),
+                             const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
       virtual void setDimensions( const IndexType rows,
                                   const IndexType columns ) override;
@@ -266,6 +390,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SegmentsType& getSegments();
 
       const SegmentsType& getSegments() const;
+
 
 // TODO: restore it and also in Matrix
 //   protected:

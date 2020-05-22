@@ -252,7 +252,7 @@ ELSE()
 
 ENDIF()
 
-ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
+ADD_CUSTOM_TARGET( RunDenseMatricesExamples ALL DEPENDS
    DenseMatrixExample_Constructor_init_list.out
    DenseMatrixExample_setElements.out
    DenseMatrixExample_getCompressedRowLengths.out

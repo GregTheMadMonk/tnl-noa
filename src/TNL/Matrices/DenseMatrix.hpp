@@ -22,7 +22,9 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
-DenseMatrix< Real, Device, Index, Organization, RealAllocator >::DenseMatrix()
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+DenseMatrix( const RealAllocatorType& allocator )
+: Matrix< Real, Device, Index, RealAllocator >( allocator )
 {
 }
 
@@ -32,7 +34,9 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator >
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-DenseMatrix( const IndexType rows, const IndexType columns )
+DenseMatrix( const IndexType rows, const IndexType columns,
+             const RealAllocatorType& allocator )
+: Matrix< Real, Device, Index, RealAllocator >( allocator )
 {
    this->setDimensions( rows, columns );
 }
@@ -44,7 +48,9 @@ template< typename Real,
           typename RealAllocator >
    template< typename Value >
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-DenseMatrix( std::initializer_list< std::initializer_list< Value > > data )
+DenseMatrix( std::initializer_list< std::initializer_list< Value > > data,
+             const RealAllocatorType& allocator )
+: Matrix< Real, Device, Index, RealAllocator >( allocator )
 {
    this->setElements( data );
 }

@@ -1,1 +1,5 @@
 ADD_SUBDIRECTORY( DenseMatrix )
+ADD_SUBDIRECTORY( LambdaMatrix )
+ADD_SUBDIRECTORY( MultidiagonalMatrix )
+ADD_SUBDIRECTORY( SparseMatrix )
+ADD_SUBDIRECTORY( TridiagonalMatrix )

@@ -35,7 +35,7 @@ template< typename Real = double,
           typename Index = int,
           ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class DenseMatrix : public Matrix< Real, Device, Index >
+class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
    protected:
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
@@ -88,7 +88,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
 
       /**
-       * \brief Type for accessing matrix row.
+       * \brief Type for accessing matrix rows.
        */
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
@@ -103,17 +103,35 @@ class DenseMatrix : public Matrix< Real, Device, Index >
       using Self = DenseMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       /**
-       * \brief Constructor without parameters.
+       * \brief Constructor only with values allocator.
+       * 
+       * \param allocator is used for allocation of matrix elements values.
        */
-      DenseMatrix();
+      DenseMatrix( const RealAllocatorType& allocator = RealAllocatorType() );
+
+      /**
+       * \brief Copy constructor.
+       * 
+       * \param matrix is the source matrix
+       */
+      DenseMatrix( const DenseMatrix& matrix ) = default;
+
+      /**
+       * \brief Move constructor.
+       * 
+       * \param matrix is the source matrix
+       */
+      DenseMatrix( DenseMatrix&& matrix ) = default;
 
       /**
        * \brief Constructor with matrix dimensions.
        * 
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
+       * \param allocator is used for allocation of matrix elements values.
        */
-      DenseMatrix( const IndexType rows, const IndexType columns );
+      DenseMatrix( const IndexType rows, const IndexType columns,
+                   const RealAllocatorType& allocator = RealAllocatorType() );
 
       /**
        * \brief Constructor with 2D initializer list.
@@ -124,6 +142,7 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * 
        * \param data is a initializer list of initializer lists representing
        * list of matrix rows.
+       * \param allocator is used for allocation of matrix elements values.
        * 
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
@@ -131,7 +150,8 @@ class DenseMatrix : public Matrix< Real, Device, Index >
        * \include DenseMatrixExample_Constructor_init_list.out
        */
       template< typename Value >
-      DenseMatrix( std::initializer_list< std::initializer_list< Value > > data );
+      DenseMatrix( std::initializer_list< std::initializer_list< Value > > data,
+                  const RealAllocatorType& allocator = RealAllocatorType() );
 
       /**
        * \brief Returns a modifiable view of the dense matrix.

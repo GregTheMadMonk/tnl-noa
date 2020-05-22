@@ -40,6 +40,9 @@ DenseMatrixView( const IndexType rows,
                  const ValuesViewType& values )
  : MatrixView< Real, Device, Index >( rows, columns, values )
 {
+   if( values.getSize() != this->getAllocatedElementsCount() )
+      throw( std::logic_error( "Number of matrix elements does not agree with matrix dimensions." ) );
+
    SegmentsType a( rows, columns );
    segments = a.getView();
 }

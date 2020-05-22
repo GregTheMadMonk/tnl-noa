@@ -57,14 +57,15 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename ListIndex >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-SparseMatrix( const std::initializer_list< IndexType >& rowCapacities,
+SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
               const IndexType columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
 : BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator )
 {
-   this->setCompressedRowLengths( RowsCapacitiesType( rowCapacities ) );
+   this->setRowCapacities( RowsCapacitiesType( rowCapacities ) );
 }
 
 template< typename Real,
@@ -97,7 +98,10 @@ template< typename Real,
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 SparseMatrix( const IndexType rows,
               const IndexType columns,
-              const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
+              const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map,
+              const RealAllocatorType& realAllocator,
+              const IndexAllocatorType& indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
 {
    this->setDimensions( rows, columns );
    this->setElements( map );
@@ -445,23 +449,6 @@ getElement( const IndexType row,
 {
    return this->view.getElement( row, column );
 }
-
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename RealAllocator,
-          typename IndexAllocator >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-rowVectorProduct( const IndexType row,
-                  const Vector& vector ) const
-{
-   return this->view.rowVectorProduct( row, vector );
-}*/
 
 template< typename Real,
           typename Device,
