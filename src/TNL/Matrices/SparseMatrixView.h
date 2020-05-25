@@ -44,8 +44,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
       using ColumnsIndexesViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
-      using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = SparseMatrixView< std::remove_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, std::add_const_t< Index >, MatrixType, SegmentsViewTemplate >;
       using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
       using ConstRowView = typename RowView::ConstViewType;
 

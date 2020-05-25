@@ -4,6 +4,16 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_1.out
                        OUTPUT SparseMatrixExample_Constructor_init_list_1.out )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_init_list_2_cuda SparseMatrixExample_Constructor_init_list_2.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_init_list_2_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_2.out
+                       OUTPUT SparseMatrixExample_Constructor_init_list_2.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_std_map_cuda SparseMatrixExample_Constructor_std_map.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_std_map_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_std_map.out
+                       OUTPUT SparseMatrixExample_Constructor_std_map.out )
+
 #   CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElements_cuda SparseMatrixExample_setElements.cu )
 #   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_cuda > 
 #                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements.out
@@ -130,6 +140,16 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_1.out
                        OUTPUT SparseMatrixExample_Constructor_init_list_1.out )
 
+   ADD_EXECUTABLE( SparseMatrixExample_Constructor_init_list_2 SparseMatrixExample_Constructor_init_list_2.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_init_list_2 >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_2.out
+                       OUTPUT SparseMatrixExample_Constructor_init_list_2.out )
+
+   ADD_EXECUTABLE( SparseMatrixExample_Constructor_std_map SparseMatrixExample_Constructor_std_map.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_std_map >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_std_map.out
+                       OUTPUT SparseMatrixExample_Constructor_std_map.out )
+
 #   ADD_EXECUTABLE( SparseMatrixExample_setElements SparseMatrixExample_setElements.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements > 
 #                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements.out
@@ -254,6 +274,8 @@ ENDIF()
 
 ADD_CUSTOM_TARGET( RunSparseMatricesExamples ALL DEPENDS
    SparseMatrixExample_Constructor_init_list_1.out
+   SparseMatrixExample_Constructor_init_list_2.out
+   SparseMatrixExample_Constructor_std_map.out
 #   SparseMatrixExample_setElements.out
 #   SparseMatrixExample_getCompressedRowLengths.out
 #   SparseMatrixExample_getElementsCount.out

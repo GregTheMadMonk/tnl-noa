@@ -127,7 +127,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * See \ref SparseMatrixView.
        */
-      using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       //using SegmentViewType = typename SegmentsType::SegmentViewType;
 
@@ -214,6 +214,11 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param columns is the number of matrix columns.
        * \param realAllocator is used for allocation of matrix elements values.
        * \param indexAllocator is used for allocation of matrix elements column indexes.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_Constructor_init_list_1.cpp
+       * \par Output
+       * \include SparseMatrixExample_Constructor_init_list_1.out
        */
       template< typename ListIndex >
       explicit SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
@@ -221,12 +226,49 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                              const RealAllocatorType& realAllocator = RealAllocatorType(),
                              const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
+      /**
+       * \brief Constructor with matrix dimensions and data in initializer list.
+       * 
+       * The matrix elements values are given as a list \e data of triples:
+       * { { row1, column1, value1 },
+       *   { row2, column2, value2 },
+       * ... }.
+       * 
+       * \param rows is number of matrix rows.
+       * \param columns is number of matrix columns.
+       * \param data is a list of matrix elements values.
+       * \param realAllocator is used for allocation of matrix elements values.
+       * \param indexAllocator is used for allocation of matrix elements column indexes.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_Constructor_init_list_2.cpp
+       * \par Output
+       * \include SparseMatrixExample_Constructor_init_list_2.out
+       */
       explicit SparseMatrix( const IndexType rows,
                              const IndexType columns,
                              const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
                              const RealAllocatorType& realAllocator = RealAllocatorType(),
                              const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
+      /**
+       * \brief Constructor with matrix dimensions and data in std::map.
+       * 
+       * The matrix elements values are given as a map \e data where keys are
+       * std::pair of matrix coordinates ( {row, column} ) and value is the
+       * matrix element value.
+       * 
+       * \param rows is number of matrix rows.
+       * \param columns is number of matrix columns.
+       * \param data is std::map containing matrix elements values.
+       * \param realAllocator is used for allocation of matrix elements values.
+       * \param indexAllocator is used for allocation of matrix elements column indexes.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_Constructor_std_map.cpp
+       * \par Output
+       * \include SparseMatrixExample_Constructor_std_map.out
+       */
       template< typename MapIndex,
                 typename MapValue >
       explicit SparseMatrix( const IndexType rows,
@@ -235,16 +277,17 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                              const RealAllocatorType& realAllocator = RealAllocatorType(),
                              const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      virtual void setDimensions( const IndexType rows,
-                                  const IndexType columns ) override;
 
-      ViewType getView() const; // TODO: remove const
+      ViewType getView(); // TODO: remove const
 
       ConstViewType getConstView() const;
 
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;
+
+      virtual void setDimensions( const IndexType rows,
+                                  const IndexType columns ) override;
 
       template< typename RowsCapacitiesVector >
       void setRowCapacities( const RowsCapacitiesVector& rowCapacities );

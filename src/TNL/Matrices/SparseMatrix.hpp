@@ -133,7 +133,7 @@ template< typename Real,
           typename IndexAllocator >
 auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-getView() const -> ViewType
+getView() -> ViewType
 {
    return ViewType( this->getRows(),
                     this->getColumns(),

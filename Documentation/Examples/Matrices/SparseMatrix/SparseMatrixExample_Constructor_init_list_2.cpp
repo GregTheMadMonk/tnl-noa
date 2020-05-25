@@ -6,12 +6,13 @@
 template< typename Device >
 void initializerListExample()
 {
-   TNL::Matrices::SparseMatrix< double, Device > matrix {
-      {  1,  2,  3,  4,  5 }, 6 };
+   TNL::Matrices::SparseMatrix< double, Device > matrix ( 5, 5, {
+      {  0,  0,  2.0 },
+      {  1,  0, -1.0 }, {  1,  1,  2.0 }, {  1,  2, -1.0 },
+      {  2,  1, -1.0 }, {  2,  2,  2.0 }, {  2,  3, -1.0 },
+      {  3,  2, -1.0 }, {  3,  3,  2.0 }, {  3,  4, -1.0 },
+      {  4,  4,  2.0 } } );
 
-   for( int row = 0; row < matrix.getRows(); row++ )
-      for( int column = 0; column <= row; column++ )
-         matrix.setElement( row, column, row - column + 1 );
    std::cout << "General sparse matrix: " << std::endl << matrix << std::endl;
 }
 
