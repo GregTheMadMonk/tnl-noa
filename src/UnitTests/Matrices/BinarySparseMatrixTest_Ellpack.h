@@ -125,14 +125,6 @@ TYPED_TEST( BinaryMatrixTest_Ellpack, saveAndLoadTest )
 
     test_SaveAndLoad< EllpackMatrixType >( "test_BinarySparseMatrixTest_Ellpack" );
 }
-
-TYPED_TEST( BinaryMatrixTest_Ellpack, printTest )
-{
-    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
-
-    test_Print< EllpackMatrixType >();
-}
-
 #endif
 
 #include "../main.h"

@@ -163,7 +163,7 @@ void test_SetLike()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -204,7 +204,7 @@ void test_GetNumberOfNonzeroMatrixElements()
                                   { 10, 2, 28 },                              { 10, 4, 29 },                                                      { 10, 10, 30 }
    } );
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 49 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 49 );
 }
 
 template< typename Matrix >

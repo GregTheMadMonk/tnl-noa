@@ -7,7 +7,8 @@ template< typename Device >
 void initializerListExample()
 {
    TNL::Matrices::SparseMatrix< double, Device > matrix {
-      {  1,  2,  3,  4,  5 }, 6 };
+      {  1,  2,  3,  4,  5 }, // row capacities
+      6 };                    // number of matrix columns
 
    for( int row = 0; row < matrix.getRows(); row++ )
       for( int column = 0; column <= row; column++ )

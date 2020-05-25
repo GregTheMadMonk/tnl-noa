@@ -108,11 +108,4 @@ TYPED_TEST( MatrixTest, saveAndLoadTest )
 
     test_SaveAndLoad< MatrixType >( saveAndLoadFileName );
 }
-
-TYPED_TEST( MatrixTest, printTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Print< MatrixType >();
-}
 #endif

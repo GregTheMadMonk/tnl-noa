@@ -92,7 +92,8 @@ getSerializationType()
    return String( "Matrices::SparseMatrix< " ) +
              TNL::getSerializationType< RealType >() + ", " +
              TNL::getSerializationType< SegmentsViewType >() + ", [any_device], " +
-             TNL::getSerializationType< IndexType >() + ", [any_allocator] >";
+             TNL::getSerializationType< IndexType >() + ", " +
+             MatrixType::getSerializationType() + ", [any_allocator], [any_allocator] >";
 }
 
 template< typename Real,
@@ -709,7 +710,9 @@ print( std::ostream& str ) const
                value = ( RealType ) 1.0;
             else
                value = this->values.getElement( globalIdx );
-            str << " Col:" << column << "->" << value << "\t";
+            std::stringstream str_;
+            str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+            str << std::setw( 10 ) << str_.str();
          }
          str << std::endl;
       }

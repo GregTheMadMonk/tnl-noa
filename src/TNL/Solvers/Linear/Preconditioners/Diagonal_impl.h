@@ -33,7 +33,7 @@ update( const MatrixPointer& matrixPointer )
 
    VectorViewType diag_view( diagonal );
 
-   const auto kernel_matrix = matrixPointer->getConstView();
+   const auto kernel_matrix = matrixPointer->getView();
 
    // TODO: Rewrite this with SparseMatrix::forAllRows
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable

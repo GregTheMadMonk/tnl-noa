@@ -25,6 +25,18 @@ struct MatrixType
    static constexpr bool isSymmetric() { return Symmetric; }
 
    static constexpr bool isBinary() { return Binary; }
+
+   static String getSerializationType() {
+      String type;
+      if( ! isBinary() && ! isSymmetric() )
+         type = "General";
+      else
+      {
+         if( isSymmetric ) type = "Symmetric";
+         if( isBinary ) type += "Binary";
+      }
+      return type;
+   }
 };
 
 /**

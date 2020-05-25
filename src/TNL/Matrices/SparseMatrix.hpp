@@ -114,26 +114,9 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
-void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-setDimensions( const IndexType rows,
-               const IndexType columns )
-{
-   BaseType::setDimensions( rows, columns );
-   segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( rows, 0 ) );
-   this->view = this->getView();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename RealAllocator,
-          typename IndexAllocator >
 auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-getView() -> ViewType
+getView() const -> ViewType
 {
    return ViewType( this->getRows(),
                     this->getColumns(),
@@ -171,10 +154,7 @@ String
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getSerializationType()
 {
-   return String( "Matrices::SparseMatrix< " ) +
-             TNL::getSerializationType< RealType >() + ", " +
-             TNL::getSerializationType< SegmentsType >() + ", [any_device], " +
-             TNL::getSerializationType< IndexType >() + ", [any_allocator] >";
+   return ViewType::getSerializationType();
 }
 
 template< typename Real,
@@ -189,6 +169,41 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+setDimensions( const IndexType rows,
+               const IndexType columns )
+{
+   BaseType::setDimensions( rows, columns );
+   segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( rows, 0 ) );
+   this->view = this->getView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Matrix_ >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+setLike( const Matrix_& matrix )
+{
+   BaseType::setLike( matrix );
+   this->segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( matrix.getRows(), 0 ) ),
+   this->view = this->getView();
+   TNL_ASSERT_EQ( this->getRows(), segments.getSegmentsCount(), "mismatched segments count" );
 }
 
 template< typename Real,
@@ -331,27 +346,9 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Matrix_ >
-void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-setLike( const Matrix_& matrix )
-{
-   BaseType::setLike( matrix );
-   this->segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( matrix.getRows(), 0 ) ),
-   this->view = this->getView();
-   TNL_ASSERT_EQ( this->getRows(), segments.getSegmentsCount(), "mismatched segments count" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename RealAllocator,
-          typename IndexAllocator >
 Index
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    return this->view.getNumberOfNonzeroMatrixElements();
 }

@@ -210,6 +210,15 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void setLike( const Matrix& matrix );
 
       /**
+       * \brief This method is only for the compatibility with the sparse matrices.
+       * 
+       * This method does nothing. In debug mode it contains assertions checking
+       * that given rowCapacities are compatible with the current matrix dimensions.
+       */
+      template< typename RowCapacitiesVector >
+      void setRowCapacities( const RowCapacitiesVector& rowCapacities );
+
+      /**
        * \brief This method recreates the dense matrix from 2D initializer list.
        * 
        * The number of matrix rows is set to the outer list size and the number
@@ -226,15 +235,6 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Value >
       void setElements( std::initializer_list< std::initializer_list< Value > > data );
-
-      /**
-       * \brief This method is only for the compatibility with the sparse matrices.
-       * 
-       * This method does nothing. In debug mode it contains assertions checking
-       * that given rowCapacities are compatible with the current matrix dimensions.
-       */
-      template< typename RowCapacitiesVector >
-      void setRowCapacities( const RowCapacitiesVector& rowCapacities );
 
       /**
        * \brief Computes number of non-zeros in each row.

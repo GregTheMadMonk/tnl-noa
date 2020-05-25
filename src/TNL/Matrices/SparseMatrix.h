@@ -258,9 +258,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * std::pair of matrix coordinates ( {row, column} ) and value is the
        * matrix element value.
        * 
+       * \tparam MapIndex is a type for indexing rows and columns.
+       * \tparam MapValue is a type for matrix elements values in the map.
+       * 
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
-       * \param data is std::map containing matrix elements values.
+       * \param map is std::map containing matrix elements.
        * \param realAllocator is used for allocation of matrix elements values.
        * \param indexAllocator is used for allocation of matrix elements column indexes.
        * 
@@ -277,43 +280,173 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                              const RealAllocatorType& realAllocator = RealAllocatorType(),
                              const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
+      /**
+       * \brief Returns a modifiable view of the sparse matrix.
+       * 
+       * See \ref SparseMatrixView.
+       * 
+       * \return sparse matrix view.
+       */
+      ViewType getView() const; // TODO: remove const
 
-      ViewType getView(); // TODO: remove const
-
+      /**
+       * \brief Returns a non-modifiable view of the sparse matrix.
+       * 
+       * See \ref SparseMatrixView.
+       * 
+       * \return sparse matrix view.
+       */
       ConstViewType getConstView() const;
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * The string has a form \e `Matrices::SparseMatrix< RealType,  [any_device], IndexType, General/Symmetric, Format, [any_allocator] >`.
+       * 
+       * \return \e String with the serialization type.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getSerializationType.cpp
+       * \par Output
+       * \include SparseMatrixExample_getSerializationType.out
+       */
       static String getSerializationType();
 
+      /**
+       * \brief Returns string with serialization type.
+       * 
+       * See \ref SparseMatrix::getSerializationType.
+       * 
+       * \return \e String with the serialization type.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getSerializationType.cpp
+       * \par Output
+       * \include SparseMatrixExample_getSerializationType.out
+       */
       virtual String getSerializationTypeVirtual() const;
 
+      /**
+       * \brief Set number of rows and columns of this matrix.
+       * 
+       * \param rows is the number of matrix rows.
+       * \param columns is the number of matrix columns.
+       */
       virtual void setDimensions( const IndexType rows,
                                   const IndexType columns ) override;
 
+      /**
+       * \brief Set the number of matrix rows and columns by the given matrix.
+       * 
+       * \tparam Matrix is matrix type. This can be any matrix having methods 
+       *  \ref getRows and \ref getColumns.
+       * 
+       * \param matrix in the input matrix dimensions of which are to be adopted.
+       */
+      template< typename Matrix >
+      void setLike( const Matrix& matrix );
+
+      /**
+       * \brief Allocates memory for non-zero matrix elements.
+       * 
+       * The size of the input vector must be equal to the number of matrix rows.
+       * The number of allocated matrix elements for each matrix row depends on
+       * the sparse matrix format. Some formats may allocate more elements than
+       * required.
+       * 
+       * \tparam RowsCapacitiesVector is a type of vector/array used for row
+       *    capacities setting.
+       * 
+       * \param rowCapacities is a vector telling the number of required non-zero
+       *    matrix elements in each row.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_setRowCapacities.cpp
+       * \par Output
+       * \include SparseMatrixExample_setRowCapacities.out
+       */
       template< typename RowsCapacitiesVector >
       void setRowCapacities( const RowsCapacitiesVector& rowCapacities );
 
       // TODO: Remove this when possible
       template< typename RowsCapacitiesVector >
+      [[deprecated]]
       void setCompressedRowLengths( const RowsCapacitiesVector& rowLengths ) {
          this->setRowCapacities( rowLengths );
       };
 
+      /**
+       * \brief This method sets the sparse matrix elements from initializer list.
+       * 
+       * The number of matrix rows and columns must be set already.
+       * The matrix elements values are given as a list \e data of triples:
+       * { { row1, column1, value1 },
+       *   { row2, column2, value2 },
+       * ... }.
+       * 
+       * \param data is a initializer list of initializer lists representing
+       * list of matrix rows.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_setElements.cpp
+       * \par Output
+       * \include SparseMatrixExample_setElements.out
+       */
       void setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data );
 
+      /**
+       * \brief This method sets the sparse matrix elements from std::map.
+       * 
+       * The matrix elements values are given as a map \e data where keys are
+       * std::pair of matrix coordinates ( {row, column} ) and value is the
+       * matrix element value.
+       * 
+       * \tparam MapIndex is a type for indexing rows and columns.
+       * \tparam MapValue is a type for matrix elements values in the map.
+       * 
+       * \param map is std::map containing matrix elements.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_setElements_map.cpp
+       * \par Output
+       * \include SparseMatrixExample_setElements_map.out
+       */
       template< typename MapIndex,
                 typename MapValue >
       void setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
 
+      /**
+       * \brief Computes number of non-zeros in each row.
+       * 
+       * \param rowLengths is a vector into which the number of non-zeros in each row
+       * will be stored.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getCompressedRowLengths.cpp
+       * \par Output
+       * \include SparseMatrixExample_getCompressedRowLengths.out
+       */
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
+      /**
+       * \brief Returns capacity of given matrix row.
+       * 
+       * \param row index of matrix row.
+       * \return number of matrix elements allocated for the row.
+       */
       __cuda_callable__
       IndexType getRowCapacity( const IndexType row ) const;
 
-      template< typename Matrix >
-      void setLike( const Matrix& matrix );
-
-      IndexType getNumberOfNonzeroMatrixElements() const;
+      /**
+       * \brief Returns number of non-zero matrix elements.
+       * 
+       * This method really counts the non-zero matrix elements and so
+       * it returns zero for matrix having all allocated elements set to zero.
+       * 
+       * \return number of non-zero matrix elements.
+       */
+      IndexType getNonzeroElementsCount() const;
 
       void reset();
 

@@ -320,7 +320,7 @@ void test_SetLike()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -369,7 +369,7 @@ void test_GetNumberOfNonzeroMatrixElements()
       for( IndexType i = 0; i < cols; i++ )
          m.setElement( j, i, value++ );
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 41 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 41 );
 }
 
 template< typename Matrix >
@@ -1555,64 +1555,6 @@ void test_SaveAndLoad( const char* filename )
    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 11 );
 
    EXPECT_EQ( std::remove( filename ), 0 );
-}
-
-template< typename Matrix >
-void test_Print()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-
-   /*
-    * Sets up the following 5x4 sparse matrix:
-    *
-    *    /  1  2  3  0 \
-    *    |  0  0  0  4 |
-    *    |  5  6  7  0 |
-    *    |  0  8  9 10 |
-    *    \  0  0 11 12 /
-    */
-
-   const IndexType m_rows = 5;
-   const IndexType m_cols = 4;
-
-   Matrix m( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
-   m.setCompressedRowLengths( rowLengths );
-
-   RealType value = 1;
-   for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
-      m.setElement( 0, i, value++ );
-
-   m.setElement( 1, 3, value++ );                // 1st row
-
-   for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
-      m.setElement( 2, i, value++ );
-
-   for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
-      m.setElement( 3, i, value++ );
-
-   for( IndexType i = 2; i < m_cols; i++ )       // 4th row
-      m.setElement( 4, i, value++ );
-
-   std::stringstream printed;
-   std::stringstream couted;
-
-   //change the underlying buffer and save the old buffer
-   auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-   m.print( std::cout ); //all the std::cout goes to ss
-
-   std::cout.rdbuf(old_buf); //reset
-
-   couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3\t\n"
-             "Row: 1 ->  Col:3->4\t\n"
-             "Row: 2 ->  Col:0->5	 Col:1->6	 Col:2->7\t\n"
-             "Row: 3 ->  Col:1->8	 Col:2->9	 Col:3->10\t\n"
-             "Row: 4 ->  Col:2->11	 Col:3->12\t\n";
-
-   EXPECT_EQ( printed.str(), couted.str() );
 }
 
 #endif

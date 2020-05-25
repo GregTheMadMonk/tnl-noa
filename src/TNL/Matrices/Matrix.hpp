@@ -79,7 +79,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-Index Matrix< Real, Device, Index, RealAllocator >::getNumberOfNonzeroMatrixElements() const
+Index Matrix< Real, Device, Index, RealAllocator >::getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
