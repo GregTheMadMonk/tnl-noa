@@ -40,8 +40,12 @@ DenseMatrixView( const IndexType rows,
                  const ValuesViewType& values )
  : MatrixView< Real, Device, Index >( rows, columns, values )
 {
+#ifdef __CUDA_ARCH__
+   TNL_ASSERT_EQ( values.getSize(), this->getAllocatedElementsCount(), "Number of matrix elements does not agree with matrix dimensions." );
+#else
    if( values.getSize() != this->getAllocatedElementsCount() )
       throw( std::logic_error( "Number of matrix elements does not agree with matrix dimensions." ) );
+#endif
 
    SegmentsType a( rows, columns );
    segments = a.getView();

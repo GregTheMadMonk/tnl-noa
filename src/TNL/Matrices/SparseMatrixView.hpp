@@ -121,7 +121,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    details::set_size_if_resizable( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
@@ -448,14 +448,14 @@ rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduc
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) ) {
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
       {
          if( isBinary() )
-            return fetch( rowIdx, columnIdx, globalIdx, 1 );
+            return fetch( rowIdx, columnIdx, 1 );
          else
-            return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
+            return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       }
       return zero;
    };

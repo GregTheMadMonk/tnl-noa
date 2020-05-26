@@ -948,7 +948,7 @@ void test_RowsReduction()
    // Compute number of non-zero elements in rows.
    typename Matrix::RowsCapacitiesType rowLengths( rows );
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
@@ -963,7 +963,7 @@ void test_RowsReduction()
    // Compute max norm
    TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
    auto rowSums_view = rowSums.getView();
-   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return abs( value );
    };
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
