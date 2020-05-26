@@ -129,16 +129,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                           IndexType lastRow = 0 ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forRows( IndexType begin, IndexType end, Function& function ) const;
 
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
+      void forRows( IndexType begin, IndexType end, Function& function );
 
       template< typename Function >
       void forAllRows( Function& function ) const;

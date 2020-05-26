@@ -448,33 +448,189 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       IndexType getNonzeroElementsCount() const;
 
+      /**
+       * \brief Resets the matrix to zero dimensions.
+       */
       void reset();
 
+      /**
+       * \brief Constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getConstRow.cpp
+       * \par Output
+       * \include SparseMatrixExample_getConstRow.out
+       * 
+       * See \ref SparseMatrixRowView.
+       */
       __cuda_callable__
       const ConstRowView getRow( const IndexType& rowIdx ) const;
 
+      /**
+       * \brief Non-constant getter of simple structure for accessing given matrix row.
+       * 
+       * \param rowIdx is matrix row index.
+       * 
+       * \return RowView for accessing given matrix row.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getRow.cpp
+       * \par Output
+       * \include SparseMatrixExample_getRow.out
+       * 
+       * See \ref SparseMatrixRowView.
+       */
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      /**
+       * \brief Sets element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref SparseMatrix::getRow
+       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * The call may fail if the matrix row capacity is exhausted.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_setElement.cpp
+       * \par Output
+       * \include SparseMatrixExample_setElement.out
+       */
       __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      /**
+       * \brief Add element at given \e row and \e column to given \e value.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref SparseMatrix::getRow
+       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * The call may fail if the matrix row capacity is exhausted.
+       * 
+       * \param row is row index of the element.
+       * \param column is columns index of the element.
+       * \param value is the value the element will be set to.
+       * \param thisElementMultiplicator is multiplicator the original matrix element
+       *   value is multiplied by before addition of given \e value.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_addElement.cpp
+       * \par Output
+       * \include SparseMatrixExample_addElement.out
+       * 
+       */
       __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator );
 
+      /**
+       * \brief Returns value of matrix element at position given by its row and column index.
+       * 
+       * This method can be called from the host system (CPU) no matter
+       * where the matrix is allocated. If the matrix is allocated on GPU this method
+       * can be called even from device kernels. If the matrix is allocated in GPU device
+       * this method is called from CPU, it transfers values of each matrix element separately and so the
+       * performance is very low. For higher performance see. \ref SparseMatrix::getRow
+       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * 
+       * \param row is a row index of the matrix element.
+       * \param column i a column index of the matrix element.
+       * 
+       * \return value of given matrix element.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_getElement.cpp
+       * \par Output
+       * \include SparseMatrixExample_getElement.out
+       * 
+       */
       __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
-      /*template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;*/
+      /**
+       * \brief Method for performing general reduction on matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType elementValue ) -> FetchValue`.
+       *          Parameter \e globalIdx is position of the matrix element in arrays \e values and \e columnIdexes
+       *          of this matrix. The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_rowsReduction.cpp
+       * \par Output
+       * \include SparseMatrixExample_rowsReduction.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      /**
+       * \brief Method for performing general reduction on all matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType elementValue ) -> FetchValue`.
+       *          Parameter \e globalIdx is position of the matrix element in arrays \e values and \e columnIdexes
+       *          of this matrix. The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_rowsReduction.cpp
+       * \par Output
+       * \include SparseMatrixExample_rowsReduction.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function& function ) const;
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function& function );
+
+      template< typename Function >
+      void forAllRows( Function& function ) const;
+
+      template< typename Function >
+      void forAllRows( Function& function );
 
       /***
        * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
@@ -497,24 +653,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void getTransposition( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
                              const RealType& matrixMultiplicator = 1.0 );
        */
-
-      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
-
-      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
-
-      template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
-
-      template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
-
-      template< typename Function >
-      void forAllRows( Function& function ) const;
-
-      template< typename Function >
-      void forAllRows( Function& function );
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,

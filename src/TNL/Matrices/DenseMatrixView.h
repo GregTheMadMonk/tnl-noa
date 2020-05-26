@@ -375,8 +375,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
        * 
-       * \param first is an index of the first row the reduction will be performed on.
-       * \param last is an index of the row  after the last row the reduction will be performed on.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -388,7 +388,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_rowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -425,8 +425,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
        * 
-       * \param first is index is the first row to be processed.
-       * \param last is index of the row after the last row to be processed.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
@@ -435,7 +435,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forRows( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -447,8 +447,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
        * 
-       * \param first is index is the first row to be processed.
-       * \param last is index of the row after the last row to be processed.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
@@ -457,7 +457,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
+      void forRows( IndexType begin, IndexType end, Function& function );
 
       /**
        * \brief This method calls \e forRows for all matrix rows.

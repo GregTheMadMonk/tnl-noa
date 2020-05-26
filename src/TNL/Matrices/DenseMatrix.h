@@ -251,22 +251,6 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void getCompressedRowLengths( RowLengthsVector& rowLengths ) const;
 
       /**
-       * \brief Returns number of all matrix elements.
-       * 
-       * This method is here mainly for compatibility with sparse matrices since
-       * the number of all matrix elements is just number of rows times number of
-       * columns.
-       * 
-       * \return number of all matrix elements.
-       * 
-       * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixExample_getElementsCount.cpp
-       * \par Output
-       * \include DenseMatrixExample_getElementsCount.out
-       */
-      IndexType getAllocatedElementsCount() const;
-
-      /**
        * \brief Returns number of non-zero matrix elements.
        * 
        * \return number of all non-zero matrix elements.
@@ -369,7 +353,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param value is the value the element will be set to.
        * 
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixViewExample_setElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_setElement.cpp
        * \par Output
        * \include DenseMatrixExample_setElement.out
        */
@@ -395,7 +379,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *   value is multiplied by before addition of given \e value.
        * 
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixViewExample_addElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_addElement.cpp
        * \par Output
        * \include DenseMatrixExample_addElement.out
        * 
@@ -422,7 +406,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return value of given matrix element.
        * 
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixViewExample_getElement.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_getElement.cpp
        * \par Output
        * \include DenseMatrixExample_getElement.out
        * 
@@ -443,8 +427,8 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
        * 
-       * \param first is an index of the first row the reduction will be performed on.
-       * \param last is an index of the row  after the last row the reduction will be performed on.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -456,7 +440,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_rowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -493,8 +477,8 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
        * 
-       * \param first is index is the first row to be processed.
-       * \param last is index of the row after the last row to be processed.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
@@ -503,7 +487,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forRows( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -515,8 +499,8 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
        * 
-       * \param first is index is the first row to be processed.
-       * \param last is index of the row after the last row to be processed.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        * 
        * \par Example
@@ -525,7 +509,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
+      void forRows( IndexType begin, IndexType end, Function& function );
 
       /**
        * \brief This method calls \e forRows for all matrix rows.

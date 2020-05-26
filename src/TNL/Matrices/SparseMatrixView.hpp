@@ -443,7 +443,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
@@ -459,7 +459,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& redu
       }
       return zero;
    };
-   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -483,7 +483,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forRows( IndexType begin, IndexType end, Function& function ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
@@ -495,7 +495,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
       return true;
    };
-   this->segments.forSegments( first, last, f );
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,
@@ -506,7 +506,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-forRows( IndexType first, IndexType last, Function& function )
+forRows( IndexType begin, IndexType end, Function& function )
 {
    auto columns_view = this->columnIndexes.getView();
    auto values_view = this->values.getView();
@@ -520,7 +520,7 @@ forRows( IndexType first, IndexType last, Function& function )
       else
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
-   this->segments.forSegments( first, last, f );
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,

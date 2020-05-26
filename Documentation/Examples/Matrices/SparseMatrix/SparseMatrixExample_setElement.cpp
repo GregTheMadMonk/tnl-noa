@@ -1,6 +1,6 @@
 #include <iostream>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SharedPointer.h>
@@ -9,7 +9,8 @@
 template< typename Device >
 void setElements()
 {
-   TNL::Pointers::SharedPointer< TNL::Matrices::DenseMatrix< double, Device > > matrix( 5, 5 );
+   auto rowCapacities = { 1, 1, 1, 1, 1 };
+   TNL::Pointers::SharedPointer< TNL::Matrices::SparseMatrix< double, Device > > matrix( rowCapacities, 5 );
    for( int i = 0; i < 5; i++ )
       matrix->setElement( i, i, i );
 
@@ -22,8 +23,8 @@ void setElements()
 
    /***
     * For the case when Device is CUDA device we need to synchronize smart
-    * pointers. To avoid this you may use DenseMatrixView. See
-    * DenseMatrixView::getRow example for details.
+    * pointers. To avoid this you may use SparseMatrixView. See
+    * SparseMatrixView::getRow example for details.
     */
    TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
    TNL::Algorithms::ParallelFor< Device >::exec( 0, 5, f );
