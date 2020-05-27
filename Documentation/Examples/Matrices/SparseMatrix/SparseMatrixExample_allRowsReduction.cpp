@@ -1,18 +1,19 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 template< typename Device >
-void rowsReduction()
+void allRowsReduction()
 {
-   TNL::Matrices::DenseMatrix< double, Device > matrix {
-      {  1,  0,  0,  0,  0 },
-      {  1,  2,  0,  0,  0 },
-      {  0,  1,  8,  0,  0 },
-      {  0,  0,  1,  9,  0 },
-      {  0,  0,  0,  0,  1 } };
+   TNL::Matrices::SparseMatrix< double, Device > matrix ( 5, 5, {
+      { 0, 0, 1 },
+      { 1, 1, 1 }, { 1, 2, 8 },
+      { 2, 2, 1 }, { 2, 3, 9 },
+      { 3, 3, 1 }, { 3, 4, 9 },
+      { 4, 4, 1 } } );
 
    /***
     * Find largest element in each row.
@@ -20,7 +21,7 @@ void rowsReduction()
    TNL::Containers::Vector< double, Device > rowMax( matrix.getRows() );
 
    /***
-    * Prepare vector view for lambdas.
+    * Prepare vector view and matrix view for lambdas.
     */
    auto rowMaxView = rowMax.getView();
 
@@ -48,18 +49,19 @@ void rowsReduction()
    /***
     * Compute the largest values in each row.
     */
-   matrix.rowsReduction( 0, matrix.getRows(), fetch, reduce, keep, std::numeric_limits< double >::lowest() );
+   matrix.allRowsReduction( fetch, reduce, keep, std::numeric_limits< double >::lowest() );
 
+   std::cout << "The matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Max. elements in rows are: " << rowMax << std::endl;
 }
 
 int main( int argc, char* argv[] )
 {
-   std::cout << "Rows reduction on host:" << std::endl;
-   rowsReduction< TNL::Devices::Host >();
+   std::cout << "All rows reduction on host:" << std::endl;
+   allRowsReduction< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
-   std::cout << "Rows reduction on CUDA device:" << std::endl;
-   rowsReduction< TNL::Devices::Cuda >();
+   std::cout << "All rows reduction on CUDA device:" << std::endl;
+   allRowsReduction< TNL::Devices::Cuda >();
 #endif
 }

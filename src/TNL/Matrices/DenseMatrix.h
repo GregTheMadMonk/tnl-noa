@@ -472,7 +472,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
        *  The column index repeats twice only for compatibility with sparse matrices. 
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
@@ -494,7 +494,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
        *  The column index repeats twice only for compatibility with sparse matrices. 
        *  If the 'compute' variable is set to false the iteration over the row can 
        *  be interrupted.
@@ -512,7 +512,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void forRows( IndexType begin, IndexType end, Function& function );
 
       /**
-       * \brief This method calls \e forRows for all matrix rows.
+       * \brief This method calls \e forRows for all matrix rows (for constant instances).
        * 
        * See \ref DenseMatrix::forRows.
        * 

@@ -1,18 +1,18 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Devices/Host.h>
 
 template< typename Device >
 void rowsReduction()
 {
-   TNL::Matrices::DenseMatrix< double, Device > matrix {
-      {  1,  0,  0,  0,  0 },
-      {  1,  2,  0,  0,  0 },
-      {  0,  1,  8,  0,  0 },
-      {  0,  0,  1,  9,  0 },
-      {  0,  0,  0,  0,  1 } };
+   TNL::Matrices::SparseMatrix< double, Device > matrix ( 5, 5, {
+      { 0, 0, 1 },
+      { 1, 1, 1 }, { 1, 2, 8 },
+      { 2, 2, 1 }, { 2, 3, 9 },
+      { 3, 3, 1 }, { 3, 4, 9 },
+      { 4, 4, 1 } } );
 
    /***
     * Find largest element in each row.
@@ -50,6 +50,7 @@ void rowsReduction()
     */
    matrix.rowsReduction( 0, matrix.getRows(), fetch, reduce, keep, std::numeric_limits< double >::lowest() );
 
+   std::cout << "The matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Max. elements in rows are: " << rowMax << std::endl;
 }
 
