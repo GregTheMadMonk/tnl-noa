@@ -69,6 +69,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
 
       /**
+       * \brief Test of symmetric matrix type.
+       * 
+       * \return \e true if the matrix is stored as symmetric and \e false otherwise.
+       */
+      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
+
+      /**
+       * \brief Test of binary matrix type.
+       * 
+       * \return \e true if the matrix is stored as binary and \e false otherwise.
+       */
+      static constexpr bool isBinary() { return MatrixType::isBinary(); };
+
+      /**
        * \brief The type of matrix elements.
        */
       using RealType = Real;
@@ -129,12 +143,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
 
-      //using SegmentViewType = typename SegmentsType::SegmentViewType;
-
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = SparseMatrixRowView< typename SegmentsType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, MatrixType::isBinary() >;
+      using RowView = SparseMatrixRowView< typename SegmentsType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
 
       /**
        * \brief Type for accessing constant matrix rows.
@@ -152,20 +164,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real >,
                 typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
       using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _RealAllocator, _IndexAllocator >;
-
-      /**
-       * \brief Test of symmetric matrix type.
-       * 
-       * \return \e true if the matrix is stored as symmetric and \e false otherwise.
-       */
-      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
-
-      /**
-       * \brief Test of binary matrix type.
-       * 
-       * \return \e true if the matrix is stored as binary and \e false otherwise.
-       */
-      static constexpr bool isBinary() { return MatrixType::isBinary(); };
 
       /**
        * \brief Constructor only with values and column indexes allocators.

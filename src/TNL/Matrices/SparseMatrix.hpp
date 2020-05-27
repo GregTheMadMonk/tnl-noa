@@ -350,7 +350,7 @@ Index
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getNonzeroElementsCount() const
 {
-   return this->view.getNumberOfNonzeroMatrixElements();
+   return this->view.getNonzeroElementsCount();
 }
 
 template< typename Real,

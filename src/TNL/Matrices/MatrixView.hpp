@@ -57,7 +57,7 @@ template< typename Real,
           typename Index >
 Index
 MatrixView< Real, Device, Index >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {

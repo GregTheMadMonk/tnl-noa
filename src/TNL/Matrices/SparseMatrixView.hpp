@@ -150,7 +150,7 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
@@ -175,9 +175,6 @@ getNumberOfNonzeroMatrixElements() const
             return 0.0;
          return 1 + ( column != row && column < rows && row < columns ); // the addition is for non-diagonal elements
       };
-      //auto reduction = [] __cuda_callable__ ( IndexType& sum, const IndexType& value ) {
-      //   sum += value;
-      //};
       auto keeper = [=] __cuda_callable__ ( IndexType row, const IndexType& value ) mutable {
          row_sums_view[ row ] = value;
       };
