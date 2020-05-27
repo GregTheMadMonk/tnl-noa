@@ -443,6 +443,33 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+{
+   auto columns_view = this->columnIndexes.getView();
+   auto values_view = this->values.getView();
+   const IndexType paddingIndex_ = this->getPaddingIndex();
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+      IndexType& columnIdx = columns_view[ globalIdx ];
+      if( columnIdx != paddingIndex_ )
+      {
+         if( isBinary() )
+            return fetch( rowIdx, columnIdx, 1 );
+         else
+            return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+      }
+      return zero;
+   };
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
@@ -460,6 +487,19 @@ rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduc
       return zero;
    };
    this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,

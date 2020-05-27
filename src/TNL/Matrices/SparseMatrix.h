@@ -570,7 +570,34 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on matrix rows.
        * 
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_rowsReduction.cpp
+       * \par Output
+       * \include SparseMatrixExample_rowsReduction.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+
+      /**
+       * \brief Method for performing general reduction on matrix rows for constant instances.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
        *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
@@ -595,6 +622,31 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
+       * 
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       * 
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       * 
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_allRowsReduction.cpp
+       * \par Output
+       * \include SparseMatrixExample_allRowsReduction.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+
+      /**
+       * \brief Method for performing general reduction on all matrix rows for constant instances.
        * 
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.

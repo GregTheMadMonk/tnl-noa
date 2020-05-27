@@ -340,9 +340,35 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+{
+   this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,

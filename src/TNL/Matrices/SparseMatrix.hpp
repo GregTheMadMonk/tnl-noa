@@ -478,9 +478,39 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+{
+   this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
