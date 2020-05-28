@@ -544,7 +544,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * 
        * More precisely, it computes:
        * 
-       * \e outVector = \e matrixMultiplicator * ( * \e this ) * \e inVector + \e outVectorMultiplicator * \e outVector.
+       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
        * 
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.

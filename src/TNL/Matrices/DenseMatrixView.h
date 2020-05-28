@@ -548,7 +548,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * 
        * More precisely, it computes:
        * 
-       * outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.
+       * `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector`
        * 
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.

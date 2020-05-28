@@ -345,22 +345,6 @@ getElement( IndexType row,
    return 0.0;
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-rowVectorProduct( const IndexType row,
-                  const Vector& vector ) const
-{
-   TNL_ASSERT_TRUE( false, "TODO: rowVectorProduct is not implemented yet.");
-   return 0;
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -747,9 +731,12 @@ print( std::ostream& str ) const
                value = ( RealType ) 1.0;
             else
                value = this->values.getElement( globalIdx );
-            std::stringstream str_;
-            str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
-            str << std::setw( 10 ) << str_.str();
+            if( value )
+            {
+               std::stringstream str_;
+               str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+               str << std::setw( 10 ) << str_.str();
+            }
          }
          str << std::endl;
       }
