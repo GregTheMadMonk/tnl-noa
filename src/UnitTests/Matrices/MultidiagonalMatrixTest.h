@@ -11,7 +11,7 @@
 #include <sstream>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Containers/Array.h>
 
 #include <TNL/Containers/Vector.h>
@@ -19,11 +19,11 @@
 #include <TNL/Math.h>
 #include <iostream>
 
-using Multidiagonal_host_float = TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int >;
-using Multidiagonal_host_int = TNL::Matrices::Multidiagonal< int, TNL::Devices::Host, int >;
+using Multidiagonal_host_float = TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int >;
+using Multidiagonal_host_int = TNL::Matrices::MultidiagonalMatrix< int, TNL::Devices::Host, int >;
 
-using Multidiagonal_cuda_float = TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int >;
-using Multidiagonal_cuda_int = TNL::Matrices::Multidiagonal< int, TNL::Devices::Cuda, int >;
+using Multidiagonal_cuda_float = TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int >;
+using Multidiagonal_cuda_int = TNL::Matrices::MultidiagonalMatrix< int, TNL::Devices::Cuda, int >;
 
 static const char* TEST_FILE_NAME = "test_MultidiagonalMatrixTest.tnl";
 
@@ -35,14 +35,14 @@ static const char* TEST_FILE_NAME = "test_MultidiagonalMatrixTest.tnl";
 void test_GetSerializationType()
 {
    using namespace TNL::Containers::Segments;
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -1150,8 +1150,8 @@ void test_AssignmentOperator()
    using DiagonalsShiftsType = typename Matrix::DiagonalsShiftsType;
    constexpr TNL::Containers::Segments::ElementsOrganization organization = Matrix::getOrganization();
 
-   using MultidiagonalHost = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Host, IndexType, organization >;
-   using MultidiagonalCuda = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Cuda, IndexType,
+   using MultidiagonalHost = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Host, IndexType, organization >;
+   using MultidiagonalCuda = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType,
       organization == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
@@ -1332,31 +1332,31 @@ protected:
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Multidiagonal< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Multidiagonal< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Multidiagonal< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Host, long >
+    TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Host, short >,
+    TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Host, int >,
+    TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::Multidiagonal< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Multidiagonal< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Multidiagonal< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Multidiagonal< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Multidiagonal< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Multidiagonal< double, TNL::Devices::Cuda, long >
+    ,TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::MultidiagonalMatrix< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::MultidiagonalMatrix< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::MultidiagonalMatrix< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::MultidiagonalMatrix< double, TNL::Devices::Cuda, long >
 #endif
 >;
 

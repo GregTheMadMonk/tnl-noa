@@ -81,7 +81,7 @@ getSerializationType()
    return String( "Matrices::Multidiagonal< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
+          TNL::getSerializationType( Organization ) + ", [any_allocator], [any_allocator] >";
 }
 
 template< typename Real,

@@ -25,6 +25,26 @@ class MultidiagonalMatrixRowView
       using ValuesViewType = ValuesView;
       using IndexerType = Indexer;
       using DiagonalsShiftsView = DiagonalsShiftsView_;
+      
+      /**
+       * \brief Type of constant container view used for storing the matrix elements values.
+       */
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
+
+      /**
+       * \brief Type of constant container view used for storing the column indexes of the matrix elements.
+       */
+      using ConstDiagonalsShiftsViewType = typename DiagonalsShiftsView::ConstViewType;
+
+      /**
+       * \brief Type of constant indexer view.
+       */
+      using ConstIndexerViewType = typename Indexer::ConstType;
+
+      /**
+       * \brief Type of constant sparse matrix row view.
+       */
+      using ConstViewType = MultidiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType, ConstDiagonalsShiftsViewType >;
 
       __cuda_callable__
       MultidiagonalMatrixRowView( const IndexType rowIdx,

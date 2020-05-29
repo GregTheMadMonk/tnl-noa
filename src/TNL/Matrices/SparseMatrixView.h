@@ -188,9 +188,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Returns string with serialization type.
        * 
-       * The string has a form \e `Matrices::SparseMatrix< RealType,  [any_device], IndexType, General/Symmetric, Format, [any_allocator] >`.
+       * The string has a form `Matrices::SparseMatrix< RealType,  [any_device], IndexType, General/Symmetric, Format, [any_allocator] >`.
        * 
-       * \return \e String with the serialization type.
+       * \return \ref String with the serialization type.
        * 
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_getSerializationType.cpp

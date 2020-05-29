@@ -16,7 +16,7 @@
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/Tridiagonal.h>
-#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
@@ -486,8 +486,8 @@ void multidiagonalMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using MultidiagonalHost = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Host, IndexType >;
-   using MultidiagonalCuda = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Cuda, IndexType >;
+   using MultidiagonalHost = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using MultidiagonalCuda = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType >;
    using DiagonalsShiftsType = typename MultidiagonalHost::DiagonalsShiftsType;
    DiagonalsShiftsType diagonals{ -4, -2, 0, 1, 3, 5 };
 

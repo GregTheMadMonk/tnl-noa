@@ -34,6 +34,8 @@ template< typename Matrix >
 struct MatrixInfo
 {};
 
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
 template< typename Real,
           typename Device,
           typename Index,
@@ -151,5 +153,6 @@ struct MatrixInfo< Legacy::SlicedEllpack< Real, Device, Index, SliceSize> >
    static String getFormat() { return "SlicedEllpack Legacy"; };
 };
 
+/// \endcond
 } //namespace Matrices
 } //namespace TNL
