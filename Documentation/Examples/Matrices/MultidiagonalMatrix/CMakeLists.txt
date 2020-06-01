@@ -1,8 +1,18 @@
 IF( BUILD_CUDA )
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list_cuda MultidiagonalMatrixExample_Constructor_init_list.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list.out
-#                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_cuda MultidiagonalMatrixExample_Constructor.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor.out )
+
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list_1_cuda MultidiagonalMatrixExample_Constructor_init_list_1.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list_1_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_1.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list_1.out )
+
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list_2_cuda MultidiagonalMatrixExample_Constructor_init_list_2.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list_2_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_2.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list_2.out )
 
 #   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements_cuda MultidiagonalMatrixExample_setElements.cu )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements_cuda > 
@@ -125,10 +135,20 @@ IF( BUILD_CUDA )
 #                       OUTPUT MultidiagonalMatrixViewExample_forAllRows.out )
 
 ELSE()
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list MultidiagonalMatrixExample_Constructor_init_list.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list.out
-#                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor MultidiagonalMatrixExample_Constructor.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor.out )
+
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list_1 MultidiagonalMatrixExample_Constructor_init_list_1.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list_1 >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_1.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list_1.out )
+
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_Constructor_init_list_2 MultidiagonalMatrixExample_Constructor_init_list_2.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_Constructor_init_list_2 >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_2.out
+                       OUTPUT MultidiagonalMatrixExample_Constructor_init_list_2.out )
 
 #   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements MultidiagonalMatrixExample_setElements.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements > 
@@ -252,8 +272,10 @@ ELSE()
 
 ENDIF()
 
-#ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
-#   MultidiagonalMatrixExample_Constructor_init_list.out
+ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
+   MultidiagonalMatrixExample_Constructor.out
+   MultidiagonalMatrixExample_Constructor_init_list_1.out
+   MultidiagonalMatrixExample_Constructor_init_list_2.out
 #   MultidiagonalMatrixExample_setElements.out
 #   MultidiagonalMatrixExample_getCompressedRowLengths.out
 #   MultidiagonalMatrixExample_getElementsCount.out
@@ -278,5 +300,5 @@ ENDIF()
 #   MultidiagonalMatrixViewExample_allRowsReduction.out
 #   MultidiagonalMatrixViewExample_forRows.out
 #   MultidiagonalMatrixViewExample_forAllRows.out
-#)
+)
 

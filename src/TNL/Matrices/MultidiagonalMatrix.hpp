@@ -61,10 +61,27 @@ MultidiagonalMatrix( const IndexType rows,
                      const std::initializer_list< ListIndex > diagonalsShifts )
 {
    Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsShifts );
-   TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct mutltidiagonal matrix with no diagonals shifts." );
+   TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
    this->setDimensions( rows, columns, shifts );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename ListIndex, typename ListReal >
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+MultidiagonalMatrix( const IndexType columns,
+                     const std::initializer_list< ListIndex > diagonalsShifts,
+                     const std::initializer_list< std::initializer_list< ListReal > >& data )
+{
+   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsShifts );
+   TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
+   this->setDimensions( data.size(), columns, shifts );
+   this->setElements( data );
+}
 
 template< typename Real,
           typename Device,
@@ -176,6 +193,45 @@ setCompressedRowLengths( const RowLengthsVector& rowLengths )
    if( this->getRows() < this->getColumns() )
       if( rowLengths.getElement( this->getRows()-1 ) > 3 )
          throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename ListReal >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+setElements( const std::initializer_list< std::initializer_list< ListReal > >& data )
+{
+   if( std::is_same< DeviceType, Devices::Host >::value )
+   {
+      auto row_it = data.begin();
+      for( size_t rowIdx = 0; rowIdx < data.size(); rowIdx++ )
+      {
+         auto data_it = row_it->begin();
+         for( IndexType i = 0; i < this->diagonalsShifts.getSize(); i++ )
+         {
+            const auto columnIdx = this->diagonalsShifts[ i ] + rowIdx;
+            if( columnIdx >= 0 && columnIdx < this->getColumns() && data_it != row_it->end() )
+               this->getRow( rowIdx ).setElement( i, *data_it++ );
+            else
+               this->getRow( rowIdx ).setElement( i, 0 );
+         }
+         row_it ++;
+      }
+   }
+   else
+   {
+      MultidiagonalMatrix< Real, Devices::Host, Index, Organization > hostMatrix(
+         this->getRows(),
+         this->getColumns(),
+         this->getDiagonalsShifts() );
+      hostMatrix.setElements( data );
+      *this = hostMatrix;
+   }
 }
 
 template< typename Real,

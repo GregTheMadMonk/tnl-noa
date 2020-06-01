@@ -145,7 +145,6 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor.cpp
        * \par Output
        * \include MultidiagonalMatrixExample_Constructor.out
-       * 
        */
       template< typename Vector >
       MultidiagonalMatrix( const IndexType rows,
@@ -155,20 +154,40 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Constructor with matrix dimensions and diagonals shifts.
        * 
-       * \param rows
-       * \param columns
-       * \param diagonalsShifts
+       * \param rows is number of matrix rows.
+       * \param columns is number of matrix columns.
+       * \param diagonalsShifts are shifts of sub-diagonals from the main diagonal.
+       * 
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_1.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_Constructor_init_list_1.out
        */
       template< typename ListIndex >
       MultidiagonalMatrix( const IndexType rows,
                            const IndexType columns,
                            const std::initializer_list< ListIndex > diagonalsShifts );
 
+      /**
+       * \brief Constructor with matrix dimensions, diagonals shifts and matrix elements.
+       * 
+       * The number of matrix rows is given by the size of the initializer list \e data.
+       * 
+       * \param columns is number of matrix columns.
+       * \param diagonalShifts are shifts of sub-diagonals from the main diagonal.
+       * \param data is initializer list holding matrix elements. The size of the outer list
+       *    defines the number of matrix rows. Each inner list defines non-zero elements in each row
+       *    and so its size must be lower or equal to the size of \e diagonalsShifts.
+       * 
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_2.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_Constructor_init_list_2.out
+       */
       template< typename ListIndex, typename ListReal >
       MultidiagonalMatrix( const IndexType columns,
                            const std::initializer_list< ListIndex > diagonalsShifts,
-                           const std::initializer_list< std::initializer_list< ListReal > >& data )
-      
+                           const std::initializer_list< std::initializer_list< ListReal > >& data );
 
       /**
        * \brief Copy constructor.
@@ -238,7 +257,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename RowLengthsVector >
       void setCompressedRowLengths( const RowLengthsVector& rowCapacities );
 
-      void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data )
+      template< typename ListReal >
+      void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data );
 
       const IndexType& getDiagonalsCount() const;
 
