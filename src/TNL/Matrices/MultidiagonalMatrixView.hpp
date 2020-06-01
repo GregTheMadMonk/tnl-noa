@@ -320,9 +320,9 @@ getElement( const IndexType row, const IndexType column ) const
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
-         return this->values.getElement( this->getElementIndex( row, i ) );
+   for( IndexType localIdx = 0; localIdx < hostDiagonalsShifts.getSize(); localIdx++ )
+      if( row + hostDiagonalsShifts[ localIdx ] == column )
+         return this->values.getElement( this->indexer.getGlobalIndex( row, localIdx ) );
    return 0.0;
 }
 

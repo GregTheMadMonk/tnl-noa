@@ -208,18 +208,14 @@ setElements( const std::initializer_list< std::initializer_list< ListReal > >& d
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
+      this->getValues() = 0.0;
       auto row_it = data.begin();
       for( size_t rowIdx = 0; rowIdx < data.size(); rowIdx++ )
       {
          auto data_it = row_it->begin();
-         for( IndexType i = 0; i < this->diagonalsShifts.getSize(); i++ )
-         {
-            const auto columnIdx = this->diagonalsShifts[ i ] + rowIdx;
-            if( columnIdx >= 0 && columnIdx < this->getColumns() && data_it != row_it->end() )
-               this->getRow( rowIdx ).setElement( i, *data_it++ );
-            else
-               this->getRow( rowIdx ).setElement( i, 0 );
-         }
+         IndexType i = 0;
+         while( data_it != row_it->end() )
+            this->getRow( rowIdx ).setElement( i++, *data_it++ );
          row_it ++;
       }
    }

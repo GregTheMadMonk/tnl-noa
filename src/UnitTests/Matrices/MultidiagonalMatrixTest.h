@@ -90,6 +90,68 @@ void test_SetLike()
 }
 
 template< typename Matrix >
+void test_SetElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   const int gridSize( 4 );
+   const int matrixSize( gridSize * gridSize );
+   Matrix matrix( matrixSize, matrixSize, { - gridSize, -1, 0, 1, gridSize } );
+   matrix.setElements( {
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      { -1.0, -1.0, 4.0, -1.0, -1.0 },
+      { -1.0, -1.0, 4.0, -1.0, -1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      { -1.0, -1.0, 4.0, -1.0, -1.0 },
+      { -1.0, -1.0, 4.0, -1.0, -1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 },
+      {  0.0,  0.0, 1.0 }
+   } );
+
+   std::cerr << matrix << std::endl;
+   for( int i = 0; i < gridSize; i++ )
+      for( int j = 0; j < gridSize; j++ )
+      {
+         const int elementIdx = i * gridSize + j;
+         if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 )  // check matrix elements corresponding to boundary grid nodes
+         {
+            for( int k = 0; k < matrixSize; k++ )
+            {
+               if( elementIdx == k )
+                  EXPECT_EQ( matrix.getElement( elementIdx, k ), 1.0 );
+               else
+                  EXPECT_EQ( matrix.getElement( elementIdx, k ), 0.0 );
+            }
+         }
+         else // check matrix elements corresponding to inner grid nodes
+         {
+            for( int k = 0; k < matrixSize; k++ )
+            {
+               if( k == elementIdx - gridSize || 
+                   k == elementIdx - 1 ||
+                   k == elementIdx + 1 ||
+                   k == elementIdx + gridSize )
+                  EXPECT_EQ( matrix.getElement( elementIdx, k ), -1.0 );
+               else if( k == elementIdx )
+                  EXPECT_EQ( matrix.getElement( elementIdx, k ), 4.0 );
+               else
+                  EXPECT_EQ( matrix.getElement( elementIdx, k ), 0.0 );
+            }
+         }
+      }
+}
+
+template< typename Matrix >
 void test_GetNonemptyRowsCount()
 {
    using RealType = typename Matrix::RealType;
@@ -1381,13 +1443,19 @@ TYPED_TEST( MatrixTest, setLikeTest )
     test_SetLike< MatrixType, MatrixType >();
 }
 
+TYPED_TEST( MatrixTest, setElements )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_SetElements< MatrixType >();
+}
+
 TYPED_TEST( MatrixTest, getNonemptyRowsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
     test_GetNonemptyRowsCount< MatrixType >();
 }
-
 
 TYPED_TEST( MatrixTest, getCompressedRowLengthTest )
 {
