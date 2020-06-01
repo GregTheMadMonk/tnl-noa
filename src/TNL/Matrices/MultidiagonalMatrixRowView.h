@@ -15,7 +15,7 @@ namespace Matrices {
 
 template< typename ValuesView,
           typename Indexer,
-          typename DiagonalsShiftsView_ >
+          typename DiagonalsOffsetsView_ >
 class MultidiagonalMatrixRowView
 {
    public:
@@ -24,7 +24,7 @@ class MultidiagonalMatrixRowView
       using IndexType = typename ValuesView::IndexType;
       using ValuesViewType = ValuesView;
       using IndexerType = Indexer;
-      using DiagonalsShiftsView = DiagonalsShiftsView_;
+      using DiagonalsOffsetsView = DiagonalsOffsetsView_;
       
       /**
        * \brief Type of constant container view used for storing the matrix elements values.
@@ -34,7 +34,7 @@ class MultidiagonalMatrixRowView
       /**
        * \brief Type of constant container view used for storing the column indexes of the matrix elements.
        */
-      using ConstDiagonalsShiftsViewType = typename DiagonalsShiftsView::ConstViewType;
+      using ConstDiagonalsOffsetsViewType = typename DiagonalsOffsetsView::ConstViewType;
 
       /**
        * \brief Type of constant indexer view.
@@ -44,11 +44,11 @@ class MultidiagonalMatrixRowView
       /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstViewType = MultidiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType, ConstDiagonalsShiftsViewType >;
+      using ConstViewType = MultidiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType, ConstDiagonalsOffsetsViewType >;
 
       __cuda_callable__
       MultidiagonalMatrixRowView( const IndexType rowIdx,
-                                  const DiagonalsShiftsView& diagonalsShifts,
+                                  const DiagonalsOffsetsView& diagonalsOffsets,
                                   const ValuesViewType& values,
                                   const IndexerType& indexer);
 
@@ -71,7 +71,7 @@ class MultidiagonalMatrixRowView
 
       IndexType rowIdx;
 
-      DiagonalsShiftsView diagonalsShifts;
+      DiagonalsOffsetsView diagonalsOffsets;
 
       ValuesViewType values;
 

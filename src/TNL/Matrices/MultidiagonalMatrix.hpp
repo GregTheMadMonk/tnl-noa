@@ -42,10 +42,10 @@ template< typename Real,
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 MultidiagonalMatrix( const IndexType rows,
                const IndexType columns,
-               const Vector& diagonalsShifts )
+               const Vector& diagonalsOffsets )
 {
-   TNL_ASSERT_GT( diagonalsShifts.getSize(), 0, "Cannot construct mutltidiagonal matrix with no diagonals shifts." );
-   this->setDimensions( rows, columns, diagonalsShifts );
+   TNL_ASSERT_GT( diagonalsOffsets.getSize(), 0, "Cannot construct mutltidiagonal matrix with no diagonals shifts." );
+   this->setDimensions( rows, columns, diagonalsOffsets );
 }
 
 template< typename Real,
@@ -58,9 +58,9 @@ template< typename Real,
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 MultidiagonalMatrix( const IndexType rows,
                      const IndexType columns,
-                     const std::initializer_list< ListIndex > diagonalsShifts )
+                     const std::initializer_list< ListIndex > diagonalsOffsets )
 {
-   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsShifts );
+   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsOffsets );
    TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
    this->setDimensions( rows, columns, shifts );
 }
@@ -74,10 +74,10 @@ template< typename Real,
    template< typename ListIndex, typename ListReal >
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 MultidiagonalMatrix( const IndexType columns,
-                     const std::initializer_list< ListIndex > diagonalsShifts,
+                     const std::initializer_list< ListIndex > diagonalsOffsets,
                      const std::initializer_list< std::initializer_list< ListReal > >& data )
 {
-   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsShifts );
+   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsOffsets );
    TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
    this->setDimensions( data.size(), columns, shifts );
    this->setElements( data );
@@ -95,8 +95,8 @@ getView() const -> ViewType
 {
    // TODO: fix when getConstView works
    return ViewType( const_cast< MultidiagonalMatrix* >( this )->values.getView(),
-                    const_cast< MultidiagonalMatrix* >( this )->diagonalsShifts.getView(),
-                    const_cast< MultidiagonalMatrix* >( this )->hostDiagonalsShifts.getView(),
+                    const_cast< MultidiagonalMatrix* >( this )->diagonalsOffsets.getView(),
+                    const_cast< MultidiagonalMatrix* >( this )->hostDiagonalsOffsets.getView(),
                     indexer );
 }
 
@@ -153,16 +153,16 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns,
-               const Vector& diagonalsShifts )
+               const Vector& diagonalsOffsets )
 {
    Matrix< Real, Device, Index >::setDimensions( rows, columns );
-   this->diagonalsShifts = diagonalsShifts;
-   this->hostDiagonalsShifts = diagonalsShifts;
-   const IndexType minShift = min( diagonalsShifts );
+   this->diagonalsOffsets = diagonalsOffsets;
+   this->hostDiagonalsOffsets = diagonalsOffsets;
+   const IndexType minOffset = min( diagonalsOffsets );
    IndexType nonemptyRows = min( rows, columns );
-   if( rows > columns && minShift < 0 )
-      nonemptyRows = min( rows, nonemptyRows - minShift );
-   this->indexer.set( rows, columns, diagonalsShifts.getSize(), nonemptyRows );
+   if( rows > columns && minOffset < 0 )
+      nonemptyRows = min( rows, nonemptyRows - minOffset );
+   this->indexer.set( rows, columns, diagonalsOffsets.getSize(), nonemptyRows );
    this->values.setSize( this->indexer.getStorageSize() );
    this->values = 0.0;
    this->view = this->getView();
@@ -224,7 +224,7 @@ setElements( const std::initializer_list< std::initializer_list< ListReal > >& d
       MultidiagonalMatrix< Real, Devices::Host, Index, Organization > hostMatrix(
          this->getRows(),
          this->getColumns(),
-         this->getDiagonalsShifts() );
+         this->getDiagonalsOffsets() );
       hostMatrix.setElements( data );
       *this = hostMatrix;
    }
@@ -251,9 +251,9 @@ template< typename Real,
           typename IndexAllocator >
 auto
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-getDiagonalsShifts() const -> const DiagonalsShiftsType&
+getDiagonalsOffsets() const -> const DiagonalsOffsetsType&
 {
-   return this->diagonalsShifts;
+   return this->diagonalsOffsets;
 }
 
 template< typename Real,
@@ -320,7 +320,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 setLike( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& m )
 {
-   this->setDimensions( m.getRows(), m.getColumns(), m.getDiagonalsShifts() );
+   this->setDimensions( m.getRows(), m.getColumns(), m.getDiagonalsOffsets() );
 }
 
 template< typename Real,
@@ -744,7 +744,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
       }
       else
       {
-         const IndexType maxRowLength = this->diagonalsShifts.getSize();
+         const IndexType maxRowLength = this->diagonalsOffsets.getSize();
          const IndexType bufferRowsCount( 128 );
          const size_t bufferSize = bufferRowsCount * maxRowLength;
          Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
@@ -795,7 +795,7 @@ template< typename Real,
 void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
-   file << diagonalsShifts;
+   file << diagonalsOffsets;
 }
 
 template< typename Real,
@@ -807,13 +807,13 @@ template< typename Real,
 void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
-   file >> this->diagonalsShifts;
-   this->hostDiagonalsShifts = this->diagonalsShifts;
-   const IndexType minShift = min( diagonalsShifts );
+   file >> this->diagonalsOffsets;
+   this->hostDiagonalsOffsets = this->diagonalsOffsets;
+   const IndexType minOffset = min( diagonalsOffsets );
    IndexType nonemptyRows = min( this->getRows(), this->getColumns() );
-   if( this->getRows() > this->getColumns() && minShift < 0 )
-      nonemptyRows = min( this->getRows(), nonemptyRows - minShift );
-   this->indexer.set( this->getRows(), this->getColumns(), diagonalsShifts.getSize(), nonemptyRows );
+   if( this->getRows() > this->getColumns() && minOffset < 0 )
+      nonemptyRows = min( this->getRows(), nonemptyRows - minOffset );
+   this->indexer.set( this->getRows(), this->getColumns(), diagonalsOffsets.getSize(), nonemptyRows );
    this->view = this->getView();
 }
 

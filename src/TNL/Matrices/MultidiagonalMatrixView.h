@@ -30,15 +30,15 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using DeviceType = Device;
       using IndexType = Index;
       using BaseType = MatrixView< Real, Device, Index >;
-      //using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using DiagonalsShiftsView = Containers::VectorView< IndexType, DeviceType, IndexType >;
-      //using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
-      using HostDiagonalsShiftsView = Containers::VectorView< IndexType, Devices::Host, IndexType >;
+      //using DiagonalsOffsetsType = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using DiagonalsOffsetsView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      //using HostDiagonalsOffsetsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
+      using HostDiagonalsOffsetsView = Containers::VectorView< IndexType, Devices::Host, IndexType >;
       using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, Organization >;
       using ValuesViewType = typename BaseType::ValuesView;
       using ViewType = MultidiagonalMatrixView< Real, Device, Index, Organization >;
       using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -54,8 +54,8 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       MultidiagonalMatrixView();
 
       MultidiagonalMatrixView( const ValuesViewType& values,
-                               const DiagonalsShiftsView& diagonalsShifts,
-                               const HostDiagonalsShiftsView& hostDiagonalsShifts,
+                               const DiagonalsOffsetsView& diagonalsOffsets,
+                               const HostDiagonalsOffsetsView& hostDiagonalsOffsets,
                                const IndexerType& indexer );
 
       ViewType getView();
@@ -174,9 +174,9 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType localIdx ) const;
 
-      DiagonalsShiftsView diagonalsShifts;
+      DiagonalsOffsetsView diagonalsOffsets;
 
-      HostDiagonalsShiftsView hostDiagonalsShifts;
+      HostDiagonalsOffsetsView hostDiagonalsOffsets;
 
       IndexerType indexer;
 };

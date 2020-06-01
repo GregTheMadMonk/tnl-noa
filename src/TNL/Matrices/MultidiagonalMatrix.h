@@ -50,10 +50,10 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
       using IndexerType = details::MultidiagonalMatrixIndexer< Index, Organization >;
-      using DiagonalsShiftsType = Containers::Vector< Index, Device, Index, IndexAllocator >;
-      using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
-      using HostDiagonalsShiftsType = Containers::Vector< Index, Devices::Host, Index >;
-      using HostDiagonalsShiftsView = typename HostDiagonalsShiftsType::ViewType;
+      using DiagonalsOffsetsType = Containers::Vector< Index, Device, Index, IndexAllocator >;
+      using DiagonalsOffsetsView = typename DiagonalsOffsetsType::ViewType;
+      using HostDiagonalsOffsetsType = Containers::Vector< Index, Devices::Host, Index >;
+      using HostDiagonalsOffsetsView = typename HostDiagonalsOffsetsType::ViewType;
 
       /**
        * \brief The type of matrix elements.
@@ -97,7 +97,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
 
       /**
        * \brief Type for accessing constant matrix rows.
@@ -139,7 +139,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
-       * \param diagonalsShifts are shifts of subdiagonals from the main diagonal.
+       * \param diagonalsOffsets are offsets of subdiagonals from the main diagonal.
        * 
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor.cpp
@@ -149,14 +149,14 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       MultidiagonalMatrix( const IndexType rows,
                            const IndexType columns,
-                           const Vector& diagonalsShifts );
+                           const Vector& diagonalsOffsets );
 
       /**
-       * \brief Constructor with matrix dimensions and diagonals shifts.
+       * \brief Constructor with matrix dimensions and diagonals offsets.
        * 
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
-       * \param diagonalsShifts are shifts of sub-diagonals from the main diagonal.
+       * \param diagonalsOffsets are offsets of sub-diagonals from the main diagonal.
        * 
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_1.cpp
@@ -166,18 +166,19 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename ListIndex >
       MultidiagonalMatrix( const IndexType rows,
                            const IndexType columns,
-                           const std::initializer_list< ListIndex > diagonalsShifts );
+                           const std::initializer_list< ListIndex > diagonalsOffsets );
 
       /**
-       * \brief Constructor with matrix dimensions, diagonals shifts and matrix elements.
+       * \brief Constructor with matrix dimensions, diagonals offsets and matrix elements.
        * 
        * The number of matrix rows is given by the size of the initializer list \e data.
        * 
        * \param columns is number of matrix columns.
-       * \param diagonalShifts are shifts of sub-diagonals from the main diagonal.
+       * \param diagonalOffsets are offsets of sub-diagonals from the main diagonal.
        * \param data is initializer list holding matrix elements. The size of the outer list
-       *    defines the number of matrix rows. Each inner list defines non-zero elements in each row
-       *    and so its size must be lower or equal to the size of \e diagonalsShifts.
+       *    defines the number of matrix rows. Each inner list defines values of each sub-diagonal
+       *    and so its size must be lower or equal to the size of \e diagonalsOffsets. Values
+       *    of sub-diagonals which do not fit to given row are omitted.
        * 
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_2.cpp
@@ -186,7 +187,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename ListIndex, typename ListReal >
       MultidiagonalMatrix( const IndexType columns,
-                           const std::initializer_list< ListIndex > diagonalsShifts,
+                           const std::initializer_list< ListIndex > diagonalsOffsets,
                            const std::initializer_list< std::initializer_list< ListReal > >& data );
 
       /**
@@ -249,10 +250,13 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       virtual String getSerializationTypeVirtual() const;
 
+      /**
+       * \brief Set matrix dimensions and 
+       */
       template< typename Vector >
       void setDimensions( const IndexType rows,
                           const IndexType columns,
-                          const Vector& diagonalsShifts );
+                          const Vector& diagonalsOffsets );
 
       template< typename RowLengthsVector >
       void setCompressedRowLengths( const RowLengthsVector& rowCapacities );
@@ -262,7 +266,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       const IndexType& getDiagonalsCount() const;
 
-      const DiagonalsShiftsType& getDiagonalsShifts() const;
+      const DiagonalsOffsetsType& getDiagonalsOffsets() const;
 
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
@@ -386,9 +390,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType localIdx ) const;
 
-      DiagonalsShiftsType diagonalsShifts;
+      DiagonalsOffsetsType diagonalsOffsets;
 
-      HostDiagonalsShiftsType hostDiagonalsShifts;
+      HostDiagonalsOffsetsType hostDiagonalsOffsets;
 
       IndexerType indexer;
 

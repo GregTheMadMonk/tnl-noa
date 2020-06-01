@@ -488,8 +488,8 @@ void multidiagonalMatrixAssignment()
 
    using MultidiagonalHost = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Host, IndexType >;
    using MultidiagonalCuda = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType >;
-   using DiagonalsShiftsType = typename MultidiagonalHost::DiagonalsShiftsType;
-   DiagonalsShiftsType diagonals{ -4, -2, 0, 1, 3, 5 };
+   using DiagonalsOffsetsType = typename MultidiagonalHost::DiagonalsOffsetsType;
+   DiagonalsOffsetsType diagonals{ -4, -2, 0, 1, 3, 5 };
 
    const IndexType rows( 10 ), columns( 10 );
    MultidiagonalHost hostMatrix( rows, columns, diagonals );

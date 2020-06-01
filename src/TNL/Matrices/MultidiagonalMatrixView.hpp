@@ -32,12 +32,12 @@ template< typename Real,
           ElementsOrganization Organization >
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 MultidiagonalMatrixView( const ValuesViewType& values,
-                         const DiagonalsShiftsView& diagonalsShifts,
-                         const HostDiagonalsShiftsView& hostDiagonalsShifts,
+                         const DiagonalsOffsetsView& diagonalsOffsets,
+                         const HostDiagonalsOffsetsView& hostDiagonalsOffsets,
                          const IndexerType& indexer )
 : MatrixView< Real, Device, Index >( indexer.getRows(), indexer.getColumns(), values ),
-  diagonalsShifts( diagonalsShifts ),
-  hostDiagonalsShifts( hostDiagonalsShifts ),
+  diagonalsOffsets( diagonalsOffsets ),
+  hostDiagonalsOffsets( hostDiagonalsOffsets ),
   indexer( indexer )
 {
 }
@@ -51,8 +51,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getView() -> ViewType
 {
    return ViewType( const_cast< MultidiagonalMatrixView* >( this )->values.getView(),
-                    const_cast< MultidiagonalMatrixView* >( this )->diagonalsShifts.getView(),
-                    const_cast< MultidiagonalMatrixView* >( this )->hostDiagonalsShifts.getView(),
+                    const_cast< MultidiagonalMatrixView* >( this )->diagonalsOffsets.getView(),
+                    const_cast< MultidiagonalMatrixView* >( this )->hostDiagonalsOffsets.getView(),
                     indexer );
 }
 
@@ -65,8 +65,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->values.getConstView(),
-                         this->diagonalsShifts.getConstView(),
-                         this->hostDiagonalsShifts.getConstView(),
+                         this->diagonalsOffsets.getConstView(),
+                         this->hostDiagonalsOffsets.getConstView(),
                          indexer );
 }
 
@@ -104,7 +104,7 @@ const Index&
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getDiagonalsCount() const
 {
-   return this->diagonalsShifts.getSize();
+   return this->diagonalsOffsets.getSize();
 }
 
 template< typename Real,
@@ -150,7 +150,7 @@ Index
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRowLength( const IndexType row ) const
 {
-   return this->diagonalsShifts.getSize();
+   return this->diagonalsOffsets.getSize();
 }
 
 template< typename Real,
@@ -161,7 +161,7 @@ Index
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getMaxRowLength() const
 {
-   return this->diagonalsShifts.getSize();
+   return this->diagonalsOffsets.getSize();
 }
 
 template< typename Real,
@@ -234,7 +234,7 @@ auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
-   return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
+   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -246,7 +246,7 @@ auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
-   return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
+   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -262,8 +262,8 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
+   for( IndexType i = 0; i < hostDiagonalsOffsets.getSize(); i++ )
+      if( row + hostDiagonalsOffsets[ i ] == column )
       {
          this->values.setElement( this->getElementIndex( row, i ), value );
          return;
@@ -292,8 +292,8 @@ addElement( const IndexType row,
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
+   for( IndexType i = 0; i < hostDiagonalsOffsets.getSize(); i++ )
+      if( row + hostDiagonalsOffsets[ i ] == column )
       {
          const Index idx = this->getElementIndex( row, i );
          this->values.setElement( idx, thisElementMultiplicator * this->values.getElement( idx ) + value );
@@ -320,8 +320,8 @@ getElement( const IndexType row, const IndexType column ) const
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType localIdx = 0; localIdx < hostDiagonalsShifts.getSize(); localIdx++ )
-      if( row + hostDiagonalsShifts[ localIdx ] == column )
+   for( IndexType localIdx = 0; localIdx < hostDiagonalsOffsets.getSize(); localIdx++ )
+      if( row + hostDiagonalsOffsets[ localIdx ] == column )
          return this->values.getElement( this->indexer.getGlobalIndex( row, localIdx ) );
    return 0.0;
 }
@@ -335,8 +335,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 operator=( const MultidiagonalMatrixView& view )
 {
    MatrixView< Real, Device, Index >::operator=( view );
-   this->diagonalsShifts.bind( view.diagonalsShifts );
-   this->hostDiagonalsShifts.bind( view.hostDiagonalsShifts );
+   this->diagonalsOffsets.bind( view.diagonalsOffsets );
+   this->hostDiagonalsOffsets.bind( view.hostDiagonalsOffsets );
    this->indexer = view.indexer;
    return *this;
 }
@@ -352,8 +352,8 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    const auto zero = zero_;
@@ -361,7 +361,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       Real_ sum( zero );
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             reduce( sum, fetch( rowIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] ) );
       }
@@ -392,15 +392,15 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
       }
@@ -418,15 +418,15 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       for( IndexType localIdx = 0; localIdx < diagonalsCount && compute; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
       }
@@ -670,9 +670,9 @@ void MultidiagonalMatrixView< Real, Device, Index, Organization >::print( std::o
    for( IndexType rowIdx = 0; rowIdx < this->getRows(); rowIdx++ )
    {
       str <<"Row: " << rowIdx << " -> ";
-      for( IndexType localIdx = 0; localIdx < this->hostDiagonalsShifts.getSize(); localIdx++ )
+      for( IndexType localIdx = 0; localIdx < this->hostDiagonalsOffsets.getSize(); localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + this->hostDiagonalsShifts[ localIdx ];
+         const IndexType columnIdx = rowIdx + this->hostDiagonalsOffsets[ localIdx ];
          if( columnIdx >= 0 && columnIdx < this->columns )
          {
             auto v = this->values.getElement( this->indexer.getGlobalIndex( rowIdx, localIdx ) );
