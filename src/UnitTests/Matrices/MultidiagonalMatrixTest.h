@@ -35,14 +35,14 @@ static const char* TEST_FILE_NAME = "test_MultidiagonalMatrixTest.tnl";
 void test_GetSerializationType()
 {
    using namespace TNL::Containers::Segments;
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, ColumnMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, ColumnMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, ColumnMajorOrder, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, ColumnMajorOrder, [any_allocator], [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -118,7 +118,6 @@ void test_SetElements()
       {  0.0,  0.0, 1.0 }
    } );
 
-   std::cerr << matrix << std::endl;
    for( int i = 0; i < gridSize; i++ )
       for( int j = 0; j < gridSize; j++ )
       {
@@ -149,57 +148,6 @@ void test_SetElements()
             }
          }
       }
-}
-
-template< typename Matrix >
-void test_GetNonemptyRowsCount()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-   using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
-
-   /*
-    * Sets up the following 5x8 matrix:
-    *
-    *    /  1  0  0  1  0  1  0  0 \
-    *    |  0  1  0  0  1  0  1  0 |
-    *    |  1  0  1  0  0  1  0  1 |
-    *    |  0  1  0  1  0  0  1  0 |
-    *    \  0  0  1  0  1  0  0  1 /
-    */
-   Matrix m1( 5, 8, DiagonalsOffsetsType({ -2, 0, 3, 5 }) );
-   m1.setValue( 1.0 );
-   EXPECT_EQ( m1.getNonemptyRowsCount(), 5 );
-
-   /*
-    * Sets up the following 5x5 matrix:
-    *
-    *    /  1  0  0  1  0  \
-    *    |  0  1  0  0  1  |
-    *    |  1  0  1  0  0  |
-    *    |  0  1  0  1  0  |
-    *    \  0  0  1  0  1  /
-    */
-   Matrix m2( 5, 5, DiagonalsOffsetsType({ -2, 0, 3, 5 }) );
-   m2.setValue( 1.0 );
-   EXPECT_EQ( m2.getNonemptyRowsCount(), 5 );
-
-   /*
-    * Sets up the following 8x5 matrix:
-    *
-    *    /  1  0  0  1  0  \
-    *    |  0  1  0  0  1  |
-    *    |  1  0  1  0  0  |
-    *    |  0  1  0  1  0  |
-    *    |  0  0  1  0  1  |
-    *    |  0  0  0  1  0  |
-    *    |  0  0  0  0  1  |
-    *    \  0  0  0  0  0  /
-    */
-   Matrix m3( 8, 5, DiagonalsOffsetsType({ -2, 0, 3, 5 }) );
-   m3.setValue( 1.0 );
-   EXPECT_EQ( m3.getNonemptyRowsCount(), 7 );
 }
 
 template< typename Matrix >
@@ -260,7 +208,7 @@ void test_GetAllocatedElementsCount()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -287,7 +235,7 @@ void test_GetNumberOfNonzeroMatrixElements()
    m.setValue( 1.0 );
    m.setElement( 0, 0, 0.0 );
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 15 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 15 );
 }
 
 template< typename Matrix >
@@ -1333,56 +1281,6 @@ void test_SaveAndLoad()
    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
 }
 
-template< typename Matrix >
-void test_Print()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-   using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
-
-   /*
-    * Sets up the following 5x4 sparse matrix:
-    *
-    *    /  1  2  0  0 \
-    *    |  5  6  7  0 |
-    *    |  0 10 11 12 |
-    *    |  0  0 15 16 |
-    *    \  0  0  0 20 /
-    */
-   const IndexType rows = 5;
-   const IndexType cols = 4;
-   DiagonalsOffsetsType diagonalsOffsets( { -1, 0, 1 } );
-
-   Matrix m( rows, cols, diagonalsOffsets );
-
-   RealType value = 1;
-   for( IndexType i = 0; i < rows; i++)
-      for( IndexType j = 0; j < cols; j++)
-      {
-         if( abs( i - j ) <= 1 )
-            m.setElement( i, j, value );
-         value++;
-      }
-
-   std::stringstream printed;
-   std::stringstream couted;
-
-   //change the underlying buffer and save the old buffer
-   auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-   m.print( std::cout ); //all the std::cout goes to ss
-
-   std::cout.rdbuf(old_buf); //reset
-   couted << "Row: 0 ->  Col:0->1\t Col:1->2\t\n"
-             "Row: 1 ->  Col:0->5\t Col:1->6\t Col:2->7\t\n"
-             "Row: 2 ->  Col:1->10\t Col:2->11\t Col:3->12\t\n"
-             "Row: 3 ->  Col:2->15\t Col:3->16\t\n"
-             "Row: 4 ->  Col:3->20\t\n";
-
-   EXPECT_EQ( printed.str(), couted.str() );
-}
-
 // test fixture for typed tests
 template< typename Matrix >
 class MatrixTest : public ::testing::Test
@@ -1450,13 +1348,6 @@ TYPED_TEST( MatrixTest, setElements )
     test_SetElements< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNonemptyRowsCountTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_GetNonemptyRowsCount< MatrixType >();
-}
-
 TYPED_TEST( MatrixTest, getCompressedRowLengthTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
@@ -1475,7 +1366,7 @@ TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+    test_GetNonzeroElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, resetTest )
@@ -1546,13 +1437,6 @@ TYPED_TEST( MatrixTest, saveAndLoadTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SaveAndLoad< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, printTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Print< MatrixType >();
 }
 
 /*TEST( MultidiagonalMatrixTest, Multidiagonal_getMatrixProductTest_Host )

@@ -95,15 +95,18 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       void setValue( const RealType& v );
 
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
@@ -113,7 +116,13 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       template< typename Function >
       void forRows( IndexType first, IndexType last, Function& function ) const;

@@ -14,10 +14,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_2.out
                        OUTPUT MultidiagonalMatrixExample_Constructor_init_list_2.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements_cuda MultidiagonalMatrixExample_setElements.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements_cuda > 
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElements.out
-#                       OUTPUT MultidiagonalMatrixExample_setElements.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getSerializationType_cuda MultidiagonalMatrixExample_getSerializationType.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getSerializationType_cuda > 
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getSerializationType.out
+                       OUTPUT MultidiagonalMatrixExample_getSerializationType.out )
+
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements_cuda MultidiagonalMatrixExample_setElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements_cuda > 
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElements.out
+                       OUTPUT MultidiagonalMatrixExample_setElements.out )
 
 #   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getCompressedRowLengths_cuda MultidiagonalMatrixExample_getCompressedRowLengths.cu )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getCompressedRowLengths_cuda >
@@ -29,30 +34,30 @@ IF( BUILD_CUDA )
 #                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElementsCount.out
 #                       OUTPUT MultidiagonalMatrixExample_getElementsCount.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getConstRow_cuda MultidiagonalMatrixExample_getConstRow.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getConstRow_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getConstRow.out
-#                       OUTPUT MultidiagonalMatrixExample_getConstRow.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getConstRow_cuda MultidiagonalMatrixExample_getConstRow.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getConstRow_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getConstRow.out
+                       OUTPUT MultidiagonalMatrixExample_getConstRow.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getRow_cuda MultidiagonalMatrixExample_getRow.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getRow_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
-#                       OUTPUT MultidiagonalMatrixExample_getRow.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getRow_cuda MultidiagonalMatrixExample_getRow.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getRow_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
+                       OUTPUT MultidiagonalMatrixExample_getRow.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement_cuda MultidiagonalMatrixExample_setElement.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
-#                       OUTPUT MultidiagonalMatrixExample_setElement.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement_cuda MultidiagonalMatrixExample_setElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
+                       OUTPUT MultidiagonalMatrixExample_setElement.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement_cuda MultidiagonalMatrixExample_addElement.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_addElement.out
-#                       OUTPUT MultidiagonalMatrixExample_addElement.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement_cuda MultidiagonalMatrixExample_addElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_addElement.out
+                       OUTPUT MultidiagonalMatrixExample_addElement.out )
 
-#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getElement_cuda MultidiagonalMatrixExample_getElement.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getElement_cuda >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElement.out
-#                       OUTPUT MultidiagonalMatrixExample_getElement.out )
+   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_getElement_cuda MultidiagonalMatrixExample_getElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElement.out
+                       OUTPUT MultidiagonalMatrixExample_getElement.out )
 
 #   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_rowsReduction_cuda MultidiagonalMatrixExample_rowsReduction.cu )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_rowsReduction_cuda >
@@ -150,10 +155,15 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_Constructor_init_list_2.out
                        OUTPUT MultidiagonalMatrixExample_Constructor_init_list_2.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements MultidiagonalMatrixExample_setElements.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements > 
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElements.out
-#                       OUTPUT MultidiagonalMatrixExample_setElements.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_getSerializationType MultidiagonalMatrixExample_getSerializationType.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getSerializationType > 
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getSerializationType.out
+                       OUTPUT MultidiagonalMatrixExample_getSerializationType.out )
+
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElements MultidiagonalMatrixExample_setElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElements > 
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElements.out
+                       OUTPUT MultidiagonalMatrixExample_setElements.out )
 
 #   ADD_EXECUTABLE( MultidiagonalMatrixExample_getCompressedRowLengths MultidiagonalMatrixExample_getCompressedRowLengths.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getCompressedRowLengths >
@@ -165,30 +175,30 @@ ELSE()
 #                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElementsCount.out
 #                       OUTPUT MultidiagonalMatrixExample_getElementsCount.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_getConstRow MultidiagonalMatrixExample_getConstRow.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getConstRow >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getConstRow.out
-#                       OUTPUT MultidiagonalMatrixExample_getConstRow.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_getConstRow MultidiagonalMatrixExample_getConstRow.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getConstRow >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getConstRow.out
+                       OUTPUT MultidiagonalMatrixExample_getConstRow.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_getRow MultidiagonalMatrixExample_getRow.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getRow >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
-#                       OUTPUT MultidiagonalMatrixExample_getRow.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_getRow MultidiagonalMatrixExample_getRow.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getRow >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
+                       OUTPUT MultidiagonalMatrixExample_getRow.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement MultidiagonalMatrixExample_setElement.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
-#                       OUTPUT MultidiagonalMatrixExample_setElement.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement MultidiagonalMatrixExample_setElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
+                       OUTPUT MultidiagonalMatrixExample_setElement.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement MultidiagonalMatrixExample_addElement.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_addElement.out
-#                       OUTPUT MultidiagonalMatrixExample_addElement.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement MultidiagonalMatrixExample_addElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_addElement.out
+                       OUTPUT MultidiagonalMatrixExample_addElement.out )
 
-#   ADD_EXECUTABLE( MultidiagonalMatrixExample_getElement MultidiagonalMatrixExample_getElement.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getElement >
-#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElement.out
-#                       OUTPUT MultidiagonalMatrixExample_getElement.out )
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_getElement MultidiagonalMatrixExample_getElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_getElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getElement.out
+                       OUTPUT MultidiagonalMatrixExample_getElement.out )
 
 #   ADD_EXECUTABLE( MultidiagonalMatrixExample_rowsReduction MultidiagonalMatrixExample_rowsReduction.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_rowsReduction >
@@ -276,14 +286,15 @@ ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    MultidiagonalMatrixExample_Constructor.out
    MultidiagonalMatrixExample_Constructor_init_list_1.out
    MultidiagonalMatrixExample_Constructor_init_list_2.out
-#   MultidiagonalMatrixExample_setElements.out
+   MultidiagonalMatrixExample_getSerializationType.out
+   MultidiagonalMatrixExample_setElements.out
 #   MultidiagonalMatrixExample_getCompressedRowLengths.out
 #   MultidiagonalMatrixExample_getElementsCount.out
-#   MultidiagonalMatrixExample_getConstRow.out
-#   MultidiagonalMatrixExample_getRow.out
-#   MultidiagonalMatrixExample_setElement.out
-#   MultidiagonalMatrixExample_addElement.out
-#   MultidiagonalMatrixExample_getElement.out
+   MultidiagonalMatrixExample_getConstRow.out
+   MultidiagonalMatrixExample_getRow.out
+   MultidiagonalMatrixExample_setElement.out
+   MultidiagonalMatrixExample_addElement.out
+   MultidiagonalMatrixExample_getElement.out
 #   MultidiagonalMatrixExample_rowsReduction.out
 #   MultidiagonalMatrixExample_allRowsReduction.out
 #   MultidiagonalMatrixExample_forRows.out
