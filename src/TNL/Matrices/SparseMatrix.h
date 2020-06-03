@@ -842,7 +842,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fileName is name of the file.
        */
       void save( const String& fileName ) const;
-     
 
       /**
        * \brief Method for loading the matrix from the file with given filename.

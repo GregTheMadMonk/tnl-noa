@@ -25,7 +25,36 @@ namespace Matrices {
  * 
  * Use this matrix type for storing of matrices where the offsets of non-zero elements
  * from the diagonal are the same in each row. Typically such matrices arise from
- * discretization of partial differential equations on regular numerical grids.
+ * discretization of partial differential equations on regular numerical grids. This is
+ * one example (dots represent zero matrix elements):
+ * 
+ * \f[
+ * \left(
+ * \begin{array}{ccccccc}
+ *  4  & -1  &  .  & -1  &  . & .  \\
+ * -1  &  4  & -1  &  .  & -1 & .  \\ 
+ *  .  & -1  &  4  & -1  &  . & -1 \\
+ * -1  & .   & -1  &  4  & -1 &  . \\
+ *  .  & -1  &  .  & -1  &  4 & -1 \\
+ *  .  &  .  & -1  &  .  & -1 &  4 
+ * \end{array}
+ * \right)
+ * \f]
+ * 
+ * In this matrix, the column indexes in each row \f$i\f$ can be expressed as
+ * \f$\{i-3, i-1, i, i+1, i+3\}\f$ (where the resulting index is non-negative and
+ *  smaller than the number of matrix columns). Therefore the diagonals offsets
+ * are \f$\{-3,-1,0,1,3\}\f$. Advantage is that we do not store the column indexes
+ * explicitly as it is in \ref SparseMatrix. This can reduce significantly the
+ * memory requirements which also means better performance. See the following table
+ * for the storage requirements comparison between \ref MultidiagonalMatrix and \ref SparseMatrix.
+ * 
+ *  Data types         |      SparseMatrix    | MultidiagonalMatrix | Ratio  
+ * --------------------|----------------------|---------------------|--------
+ *  float + 32-bit int | 8 bytes per element  | 4 bytes per element | 50%    
+ *  double + 32-bit int| 12 bytes per element | 8 bytes per element | 75%    
+ *  float + 64-bit int | 12 bytes per element | 4 bytes per element | 30%    
+ *  double + 64-bit int| 16 bytes per element | 8 bytes per element | 50%    
  * 
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
@@ -171,7 +200,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Constructor with matrix dimensions, diagonals offsets and matrix elements.
        * 
-       * The number of matrix rows is given by the size of the initializer list \e data.
+       * The number of matrix rows is deduced from the size of the initializer list \e data.
        * 
        * \param columns is number of matrix columns.
        * \param diagonalOffsets are offsets of sub-diagonals from the main diagonal.
@@ -705,6 +734,28 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Function >
       void forAllRows( Function& function );
 
+      /**
+       * \brief Computes product of matrix and vector.
+       * 
+       * More precisely, it computes:
+       * 
+       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
+       * 
+       * \tparam InVector is type of input vector.  It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * \tparam OutVector is type of output vector. It can be \ref Vector,
+       *     \ref VectorView, \ref Array, \ref ArraView or similar container.
+       * 
+       * \param inVector is input vector.
+       * \param outVector is output vector.
+       * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
+       * \param outVectorMultiplicator is a factor by which the outVector is multiplied before added
+       *    to the result of matrix-vector product. It is zero by default.
+       * \param begin is the beginning of the rows range for which the vector product
+       *    is computed. It is zero by default.
+       * \param end is the end of the rows range for which the vector product
+       *    is computed. It is number if the matrix rows by default.
+       */
       template< typename InVector,
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
@@ -726,10 +777,20 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
-      // copy assignment
+      /**
+       * \brief Assignment of exactly the same matrix type.
+       * 
+       * \param matrix is input matrix for the assignment.
+       * \return reference to this matrix.
+       */
       MultidiagonalMatrix& operator=( const MultidiagonalMatrix& matrix );
 
-      // cross-device copy assignment
+      /**
+       * \brief Assignment of another multidiagonal matrix
+       * 
+       * \param matrix is input matrix for the assignment.
+       * \return reference to this matrix.
+       */
       template< typename Real_,
                 typename Device_,
                 typename Index_,
@@ -738,18 +799,53 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename IndexAllocator_ >
       MultidiagonalMatrix& operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix );
 
+      /**
+       * \brief Method for saving the matrix to a file.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( File& file ) const;
 
+      /**
+       * \brief Method for loading the matrix from a file.
+       * 
+       * \param fileName is name of the file.
+       */
       void load( File& file );
 
+      /**
+       * \brief Method for saving the matrix to the file with given filename.
+       * 
+       * \param fileName is name of the file.
+       */
       void save( const String& fileName ) const;
 
+      /**
+       * \brief Method for loading the matrix from the file with given filename.
+       * 
+       * \param fileName is name of the file.
+       */
       void load( const String& fileName );
 
+      /**
+       * \brief Method for printing the matrix to output stream.
+       * 
+       * \param str is the output stream.
+       */
       void print( std::ostream& str ) const;
 
+      /**
+       * \brief This method returns matrix elements indexer used by this matrix.
+       * 
+       * \return constant reference to the indexer.
+       */
       const IndexerType& getIndexer() const;
 
+      /**
+       * \brief This method returns matrix elements indexer used by this matrix.
+       * 
+       * \return non-constant reference to the indexer.
+       */
       IndexerType& getIndexer();
 
       __cuda_callable__
@@ -757,9 +853,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
    protected:
 
-      __cuda_callable__
-      IndexType getElementIndex( const IndexType row,
-                                 const IndexType localIdx ) const;
+      //__cuda_callable__
+      //IndexType getElementIndex( const IndexType row,
+      //                           const IndexType localIdx ) const;
 
       DiagonalsOffsetsType diagonalsOffsets;
 

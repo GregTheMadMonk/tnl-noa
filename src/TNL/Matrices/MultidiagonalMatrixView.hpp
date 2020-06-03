@@ -404,7 +404,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       {
          const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
-            reduce( sum, fetch( rowIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] ) );
+            sum = reduce( sum, fetch( rowIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] ) );
       }
       keep( rowIdx, sum );
    };

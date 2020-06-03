@@ -865,7 +865,7 @@ getIndexer() -> IndexerType&
    return this->indexer;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization,
@@ -883,7 +883,7 @@ getElementIndex( const IndexType row, const IndexType column ) const
    TNL_ASSERT_LT( localIdx, 3, "" );
 
    return this->indexer.getGlobalIndex( row, localIdx );
-}
+}*/
 
 template< typename Real,
           typename Device,

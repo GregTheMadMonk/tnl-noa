@@ -6,43 +6,57 @@
 
 
 template< typename Device >
-void laplaceOperatorMatrix()
+void createMultidiagonalMatrix()
 {
-   const int gridSize( 4 );
-   const int matrixSize = gridSize * gridSize;
+   const int matrixSize = 6;
+
+   /***
+    * Setup the following matrix (dots represent zeros):
+    * 
+    * /  4 -1 .  -1  .  . \
+    * | -1  4 -1  . -1  . |
+    * |  . -1  4 -1  . -1 |
+    * | -1  . -1  4 -1  . |
+    * |  . -1  . -1  4 -1 |
+    * \  .  .  1  . -1  4 /
+    * 
+    * The diagonals offsets are { -3, -1, 0, 1, 3 }.
+    */
    TNL::Matrices::MultidiagonalMatrix< double, Device > matrix( 
-      matrixSize,                     // number of rows
-      matrixSize,                     // number of columns
-   { - gridSize, -1, 0, 1, gridSize } // diagonals offsets
-   );
+      matrixSize,             // number of matrix rows
+      matrixSize,             // number of matrix columns
+      { -3, -1, 0, 1, 3 } );  // matrix diagonals offsets
    matrix.setElements( {
-         {  0.0,  0.0, 1.0 },  // set matrix elements corresponding to boundary grid nodes
-         {  0.0,  0.0, 1.0 },  // and Dirichlet boundary conditions, i.e. 1 on the main diagonal
-         {  0.0,  0.0, 1.0 },  // which is the third one
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 },
-         { -1.0, -1.0, 4.0, -1.0, -1.0 }, // set matrix elements corresponding to inner grid nodes, i.e.4 on the main diagonal
-         { -1.0, -1.0, 4.0, -1.0, -1.0 }, //  (the third one) and -1 to the other sub-diagonals
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 },
-         { -1.0, -1.0, 4.0, -1.0, -1.0 },
-         { -1.0, -1.0, 4.0, -1.0, -1.0 },
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 },
-         {  0.0,  0.0, 1.0 }
+   /***
+    * To set the matrix elements we first extend the diagonals to their full
+    * lengths even outside the matrix (dots represent zeros and zeros are
+    * artificial zeros used for memory alignment):
+    * 
+    * 0  .  0 /  4 -1 .  -1  .  . \              -> {  0,  0,  4, -1, -1 }
+    * .  0  . | -1  4 -1  . -1  . | .            -> {  0, -1,  4, -1, -1 }
+    * .  .  0 |  . -1  4 -1  . -1 | .  .         -> {  0, -1,  4, -1, -1 }
+    *    .  . | -1  . -1  4 -1  . | 0  .  .      -> { -1, -1,  4, -1,  0 }
+    *       . |  . -1  . -1  4 -1 | .  0  .  .   -> { -1, -1,  4, -1,  0 }
+    *         \  .  .  1  . -1  4 / 0  .  0  . . -> { -1, -1,  4,  0,  0 }
+    * 
+    */
+      {  0,  0,  4, -1, -1 },
+      {  0, -1,  4, -1, -1 },
+      {  0, -1,  4, -1, -1 },
+      { -1, -1,  4, -1,  0 },
+      { -1, -1,  4, -1,  0 },
+      { -1, -1,  4,  0,  0 }
       } );
-   std::cout << "Laplace operator matrix: " << std::endl << matrix << std::endl;
+   std::cout << "The matrix reads as: " << std::endl << matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )
 {
-   std::cout << "Creating Laplace operator matrix on CPU ... " << std::endl;
-   laplaceOperatorMatrix< TNL::Devices::Host >();
+   std::cout << "Create multidiagonal matrix on CPU ... " << std::endl;
+   createMultidiagonalMatrix< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
-   std::cout << "Creating Laplace operator matrix on CUDA GPU ... " << std::endl;
-   laplaceOperatorMatrix< TNL::Devices::Cuda >();
+   std::cout << "Creating multidiagonal matrix on CUDA GPU ... " << std::endl;
+   createMultidiagonalMatrix< TNL::Devices::Cuda >();
 #endif
 }
