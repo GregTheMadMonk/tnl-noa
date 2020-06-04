@@ -62,6 +62,7 @@ df.sort_index(axis=1, inplace=True)
 df.drop(columns=('BiEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('BiEllpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('CSR', 'CPU','speedup'), axis=1, inplace=True )
+
 #df.drop(columns=('CSR Legacy Adaptive', 'CPU','speedup'), axis=1, inplace=True )
 #df.drop(columns=('CSR Legacy Light', 'CPU','speedup'), axis=1, inplace=True )
 #df.drop(columns=('CSR Legacy LightWithoutAtomic', 'CPU','speedup'), axis=1, inplace=True )
@@ -69,6 +70,7 @@ df.drop(columns=('CSR', 'CPU','speedup'), axis=1, inplace=True )
 #df.drop(columns=('CSR Legacy Stream', 'CPU','speedup'), axis=1, inplace=True )
 #df.drop(columns=('CSR Legacy Vector', 'CPU','speedup'), axis=1, inplace=True )
 #df.drop(columns=('CSR Legacy MultiVector', 'CPU','speedup'), axis=1, inplace=True )
+
 df.drop(columns=('ChunkedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
@@ -82,6 +84,7 @@ df.drop(columns=('SlicedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True 
 
 print( "Computing speed-up of formats...")
 # Add speedup compared to CSR and cuSparse
+
 df["BiEllpack Legacy",              "CPU", "CSR speedup"]      = df["BiEllpack Legacy",              "CPU", "time"] / df["CSR",      "CPU", "time"]
 df["BiEllpack Legacy",              "GPU", "cuSparse speedup"] = df["BiEllpack Legacy",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["BiEllpack",                     "CPU", "CSR speedup"]      = df["BiEllpack",                     "CPU", "time"] / df["CSR",      "CPU", "time"]
