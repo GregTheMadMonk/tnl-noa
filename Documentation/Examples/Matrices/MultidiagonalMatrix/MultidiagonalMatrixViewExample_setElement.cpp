@@ -12,31 +12,27 @@ void setElements()
    const int matrixSize( 5 );
    auto diagonalsOffsets = { -1, 0, 1 }; // offsets of tridiagonal matrix
    using Matrix = TNL::Matrices::MultidiagonalMatrix< double, Device >;
-   TNL::Pointers::SharedPointer< Matrix > matrix( matrixSize, matrixSize, diagonalsOffsets );
+   Matrix matrix( matrixSize, matrixSize, diagonalsOffsets );
+   auto view = matrix.getView();
+
    for( int i = 0; i < 5; i++ )
-      matrix->setElement( i, i, i );
+      view.setElement( i, i, i );
 
    std::cout << "Matrix set from the host:" << std::endl;
-   std::cout << *matrix << std::endl;
+   std::cout << matrix << std::endl;
 
    auto f = [=] __cuda_callable__ ( int i ) mutable {
       if( i > 0 )
-         matrix->setElement( i, i - 1, 1.0 );
-      matrix->setElement( i, i, -i );
+         view.setElement( i, i - 1, 1.0 );
+      view.setElement( i, i, -i );
       if( i < matrixSize - 1 )
-         matrix->setElement( i, i + 1, 1.0 );
+         view.setElement( i, i + 1, 1.0 );
    };
 
-   /***
-    * For the case when Device is CUDA device we need to synchronize smart
-    * pointers. To avoid this you may use MultidiagonalMatrixView. See
-    * MultidiagonalMatrixView::getRow example for details.
-    */
-   TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
    TNL::Algorithms::ParallelFor< Device >::exec( 0, matrixSize, f );
 
    std::cout << "Matrix set from its native device:" << std::endl;
-   std::cout << *matrix << std::endl;
+   std::cout << matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )

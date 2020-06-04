@@ -156,18 +156,18 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Copy constructor.
        * 
-       * \param m is an input sparse matrix view.
+       * \param matrix is an input sparse matrix view.
        */
       __cuda_callable__
-      SparseMatrixView( const SparseMatrixView& m ) = default;
+      SparseMatrixView( const SparseMatrixView& matrix ) = default;
 
       /**
        * \brief Move constructor.
        * 
-       * \param m is an input sparse matrix view.
+       * \param matrix is an input sparse matrix view.
        */
       __cuda_callable__
-      SparseMatrixView( SparseMatrixView&& m ) = default;
+      SparseMatrixView( SparseMatrixView&& matrix ) = default;
 
       /**
        * \brief Returns a modifiable view of the sparse matrix.
@@ -567,8 +567,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                           OutVector& outVector,
                           const RealType matrixMultiplicator = 1.0,
                           const RealType outVectorMultiplicator = 0.0,
-                          const IndexType firstRow = 0,
-                          IndexType lastRow = 0 ) const;
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,

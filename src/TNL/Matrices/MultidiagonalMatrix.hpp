@@ -561,9 +561,15 @@ template< typename Real,
              typename OutVector >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType matrixMultiplicator,
+               const RealType outVectorMultiplicator,
+               const IndexType firstRow,
+               IndexType lastRow ) const
 {
-   this->view.vectorProduct( inVector, outVector );
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator,
+                              outVectorMultiplicator, firstRow, lastRow );
 }
 
 template< typename Real,
@@ -617,8 +623,9 @@ template< typename Real,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Real2, typename Index2 >
-void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::getTransposition( const MultidiagonalMatrix< Real2, Device, Index2 >& matrix,
-                                                                    const RealType& matrixMultiplicator )
+void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+getTransposition( const MultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+                  const RealType& matrixMultiplicator )
 {
    TNL_ASSERT( this->getRows() == matrix.getRows(),
                std::cerr << "This matrix rows: " << this->getRows() << std::endl
@@ -668,10 +675,11 @@ template< typename Real,
           typename IndexAllocator >
    template< typename Vector1, typename Vector2 >
 __cuda_callable__
-void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::performSORIteration( const Vector1& b,
-                                                              const IndexType row,
-                                                              Vector2& x,
-                                                              const RealType& omega ) const
+void MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+performSORIteration( const Vector1& b,
+                     const IndexType row,
+                     Vector2& x,
+                     const RealType& omega ) const
 {
    RealType sum( 0.0 );
    if( row > 0 )
@@ -865,26 +873,6 @@ getIndexer() -> IndexerType&
    return this->indexer;
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          typename RealAllocator,
-          typename IndexAllocator >
-__cuda_callable__
-Index MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-getElementIndex( const IndexType row, const IndexType column ) const
-{
-   IndexType localIdx = column - row;
-   if( row > 0 )
-      localIdx++;
-
-   TNL_ASSERT_GE( localIdx, 0, "" );
-   TNL_ASSERT_LT( localIdx, 3, "" );
-
-   return this->indexer.getGlobalIndex( row, localIdx );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -898,110 +886,6 @@ getPaddingIndex() const
 {
    return this->view.getPaddingIndex();
 }
-
-/*
-template<>
-class MultidiagonalMatrixDeviceDependentCode< Devices::Host >
-{
-   public:
-
-      typedef Devices::Host Device;
-
-      template< typename Index >
-      __cuda_callable__
-      static Index getElementIndex( const Index rows,
-                                    const Index row,
-                                    const Index column )
-      {
-         return 2*row + column;
-      }
-
-      template< typename Vector,
-                typename Index,
-                typename ValuesType  >
-      __cuda_callable__
-      static typename Vector::RealType rowVectorProduct( const Index rows,
-                                                         const ValuesType& values,
-                                                         const Index row,
-                                                         const Vector& vector )
-      {
-         if( row == 0 )
-            return vector[ 0 ] * values[ 0 ] +
-                   vector[ 1 ] * values[ 1 ];
-         Index i = 3 * row;
-         if( row == rows - 1 )
-            return vector[ row - 1 ] * values[ i - 1 ] +
-                   vector[ row ] * values[ i ];
-         return vector[ row - 1 ] * values[ i - 1 ] +
-                vector[ row ] * values[ i ] +
-                vector[ row + 1 ] * values[ i + 1 ];
-      }
-
-      template< typename Real,
-                typename Index,
-                typename InVector,
-                typename OutVector >
-      static void vectorProduct( const MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-      {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif
-         for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
-      }
-};
-
-template<>
-class MultidiagonalMatrixDeviceDependentCode< Devices::Cuda >
-{
-   public:
-
-      typedef Devices::Cuda Device;
-
-      template< typename Index >
-      __cuda_callable__
-      static Index getElementIndex( const Index rows,
-                                    const Index row,
-                                    const Index column )
-      {
-         return ( column - row + 1 )*rows + row - 1;
-      }
-
-      template< typename Vector,
-                typename Index,
-                typename ValuesType >
-      __cuda_callable__
-      static typename Vector::RealType rowVectorProduct( const Index rows,
-                                                         const ValuesType& values,
-                                                         const Index row,
-                                                         const Vector& vector )
-      {
-         if( row == 0 )
-            return vector[ 0 ] * values[ 0 ] +
-                   vector[ 1 ] * values[ rows - 1 ];
-         Index i = row - 1;
-         if( row == rows - 1 )
-            return vector[ row - 1 ] * values[ i ] +
-                   vector[ row ] * values[ i + rows ];
-         return vector[ row - 1 ] * values[ i ] +
-                vector[ row ] * values[ i + rows ] +
-                vector[ row + 1 ] * values[ i + 2*rows ];
-      }
-
-      template< typename Real,
-                typename Index,
-                typename InVector,
-                typename OutVector >
-      static void vectorProduct( const MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-      {
-         MatrixVectorProductCuda( matrix, inVector, outVector );
-      }
-};
- */
 
 } // namespace Matrices
 } // namespace TNL

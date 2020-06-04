@@ -759,7 +759,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename InVector,
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType matrixMultiplicator = 1.0,
+                          const RealType outVectorMultiplicator = 0.0,
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
       void addMatrix( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
@@ -802,14 +806,14 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for saving the matrix to a file.
        * 
-       * \param fileName is name of the file.
+       * \param file is the output file.
        */
       void save( File& file ) const;
 
       /**
        * \brief Method for loading the matrix from a file.
        * 
-       * \param fileName is name of the file.
+       * \param file is the input file.
        */
       void load( File& file );
 
@@ -848,14 +852,17 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       IndexerType& getIndexer();
 
+      /**
+       * \brief Returns padding index denoting padding zero elements.
+       * 
+       * These elements are used for efficient data alignment in memory.
+       * 
+       * \return value of the padding index.
+       */
       __cuda_callable__
       IndexType getPaddingIndex() const;
 
    protected:
-
-      //__cuda_callable__
-      //IndexType getElementIndex( const IndexType row,
-      //                           const IndexType localIdx ) const;
 
       DiagonalsOffsetsType diagonalsOffsets;
 

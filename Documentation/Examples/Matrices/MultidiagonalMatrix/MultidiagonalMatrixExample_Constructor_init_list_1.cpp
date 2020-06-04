@@ -44,6 +44,6 @@ int main( int argc, char* argv[] )
 
 #ifdef HAVE_CUDA
    std::cout << "Creating Laplace operator matrix on CUDA GPU ... " << std::endl;
-   initializerListExample< TNL::Devices::Cuda >();
+   laplaceOperatorMatrix< TNL::Devices::Cuda >();
 #endif
 }
