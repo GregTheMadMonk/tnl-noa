@@ -39,10 +39,11 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
                        OUTPUT MultidiagonalMatrixExample_getRow.out )
 
-   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement_cuda MultidiagonalMatrixExample_setElement.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
-                       OUTPUT MultidiagonalMatrixExample_setElement.out )
+# This example does not work with nvcc 10.1. Restore it here when it works.
+#   CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement_cuda MultidiagonalMatrixExample_setElement.cu )
+#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement_cuda >
+#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
+#                       OUTPUT MultidiagonalMatrixExample_setElement.out )
 
    CUDA_ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement_cuda MultidiagonalMatrixExample_addElement.cu )
    ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement_cuda >
@@ -165,10 +166,11 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_getRow.out
                        OUTPUT MultidiagonalMatrixExample_getRow.out )
 
-   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement MultidiagonalMatrixExample_setElement.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
-                       OUTPUT MultidiagonalMatrixExample_setElement.out )
+#  This example does not work with nvcc 10.1. Restore it here when it works.
+#   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement MultidiagonalMatrixExample_setElement.cpp )
+#   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement >
+#                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
+#                       OUTPUT MultidiagonalMatrixExample_setElement.out )
 
    ADD_EXECUTABLE( MultidiagonalMatrixExample_addElement MultidiagonalMatrixExample_addElement.cpp )
    ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_addElement >
@@ -251,6 +253,12 @@ ELSE()
                        OUTPUT MultidiagonalMatrixViewExample_forAllRows.out )
 
 ENDIF()
+
+   ADD_EXECUTABLE( MultidiagonalMatrixExample_setElement MultidiagonalMatrixExample_setElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixExample_setElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixExample_setElement.out
+                       OUTPUT MultidiagonalMatrixExample_setElement.out )
+
 
 ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
    MultidiagonalMatrixExample_Constructor.out

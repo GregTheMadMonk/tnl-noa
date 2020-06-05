@@ -30,7 +30,7 @@ void getRowExample()
     * Set the matrix elements.
     */
    TNL::Algorithms::ParallelFor< Device >::exec( 0, matrix->getRows(), f );
-   std::cout << matrix << std::endl;
+   std::cout << *matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )

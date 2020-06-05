@@ -33,7 +33,7 @@ void laplaceOperatorMatrix()
          row.setElement( 4, -1.0 );
       }
    };
-   TNL::Algorithms::ParallelFor2D< TNL::Devices::Sequential >::exec( 0, 0, gridSize, gridSize, f );
+   TNL::Algorithms::ParallelFor2D< Device >::exec( 0, 0, gridSize, gridSize, f );
 
    std::cout << "Laplace operator matrix: " << std::endl << matrix << std::endl;
 }

@@ -17,7 +17,7 @@ void allRowsReduction()
          value = TNL::max( rowIdx - columnIdx + 1, 0 );
    };
 
-   using MatrixFactory = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::AnyDevice, int >;
+   using MatrixFactory = TNL::Matrices::LambdaMatrixFactory< double, Device, int >;
    auto matrix = MatrixFactory::create( 5, 5, matrixElements, rowLengths );
 
    /***

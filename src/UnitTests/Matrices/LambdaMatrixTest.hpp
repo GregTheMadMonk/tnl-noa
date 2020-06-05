@@ -94,10 +94,10 @@ void test_GetCompressedRowLengths()
 
    MatrixType m( size, size, matrixElements, rowLengths );
    TNL::Containers::Vector< IndexType > correctRowLengths{ 1, 3, 3, 3, 1 };
-   TNL::Containers::Vector< IndexType > rowLengthsVector;
+   TNL::Containers::Vector< IndexType, DeviceType > rowLengthsVector;
    m.getCompressedRowLengths( rowLengthsVector );
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( correctRowLengths[ i ], rowLengthsVector[ i ] );
+      EXPECT_EQ( correctRowLengths.getElement( i ), rowLengthsVector.getElement( i ) );
 }
 
 template< typename Matrix >
