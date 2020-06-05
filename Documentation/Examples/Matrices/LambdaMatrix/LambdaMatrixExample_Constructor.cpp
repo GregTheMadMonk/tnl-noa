@@ -21,13 +21,13 @@ int main( int argc, char* argv[] )
    /***
     * Matrix construction with explicit type definition.
     */
-   using MatrixType = decltype( TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::AnyDevice, int >::create( matrixElements1, rowLengths ) );
+   using MatrixType = decltype( TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::Host, int >::create( matrixElements1, rowLengths ) );
    MatrixType m1( size, size, matrixElements1, rowLengths );
 
    /***
     * Matrix construction using 'auto'.
     */
-   auto m2 = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::AnyDevice, int >::create( matrixElements2, rowLengths );
+   auto m2 = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::Host, int >::create( matrixElements2, rowLengths );
    m2.setDimensions( size, size );
 
    std::cout << "The first lambda matrix: " << std::endl << m1 << std::endl;

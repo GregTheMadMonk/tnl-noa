@@ -13,7 +13,7 @@ int main( int argc, char* argv[] )
    };
 
    const int size = 5;
-   auto matrix = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::AnyDevice, int >::create( size, size, matrixElements, rowLengths );
+   auto matrix = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::Host, int >::create( size, size, matrixElements, rowLengths );
 
    TNL::Containers::Vector< int > rowLengthsVector;
    matrix.getCompressedRowLengths( rowLengthsVector );

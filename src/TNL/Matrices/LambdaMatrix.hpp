@@ -97,7 +97,6 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
    details::set_size_if_resizable( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
@@ -119,7 +118,7 @@ Index
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 getNonzeroElementsCount() const
 {
-   Containers::Vector< IndexType, typename Devices::PickDevice< DeviceType >::DeviceType, IndexType > rowLengthsVector;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowLengthsVector;
    this->getCompressedRowLengths( rowLengthsVector );
    return sum( rowLengthsVector );
 }
@@ -134,8 +133,7 @@ LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, In
 getElement( const IndexType row,
             const IndexType column ) const
 {
-   using Device_ = typename Devices::PickDevice< Devices::Host >::DeviceType;
-   Containers::Array< RealType, Device_ > value( 1 );
+   Containers::Array< RealType, DeviceType > value( 1 );
    auto valueView = value.getView();
    auto rowLengths = this->compressedRowLengthsLambda;
    auto matrixElements = this->matrixElementsLambda;
@@ -156,7 +154,7 @@ getElement( const IndexType row,
          }
       }
    };
-   Algorithms::ParallelFor< Device_ >::exec( row, row + 1, getValue );
+   Algorithms::ParallelFor< DeviceType >::exec( row, row + 1, getValue );
    return valueView.getElement( 0 );
 }
 
@@ -211,7 +209,6 @@ LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, In
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    using FetchType = decltype( fetch( IndexType(), IndexType(), RealType() ) );
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
 
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
@@ -232,7 +229,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& redu
       }
       keep( rowIdx, result );
    };
-   Algorithms::ParallelFor< Device_ >::exec( first, last, processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, processRow );
 }
 
 template< typename MatrixElementsLambda,
@@ -258,8 +255,6 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
-
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
@@ -276,7 +271,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
             function( rowIdx, localIdx, elementColumn, elementValue, compute );
       }
    };
-   Algorithms::ParallelFor< Device_ >::exec( first, last, processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, processRow );
 }
 
 template< typename MatrixElementsLambda,
@@ -289,8 +284,6 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forAllRows( Function& function ) const
 {
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
-
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
@@ -307,9 +300,8 @@ forAllRows( Function& function ) const
             function( rowIdx, localIdx, elementColumn, elementValue, compute );
       }
    };
-   Algorithms::ParallelFor< Device_ >::exec( 0, this->getRows(), processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );
 }
-
 
 template< typename MatrixElementsLambda,
           typename CompressedRowLengthsLambda,

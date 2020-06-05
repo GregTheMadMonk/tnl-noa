@@ -13,7 +13,7 @@ int main( int argc, char* argv[] )
    };
 
    const int size = 5;
-   auto matrix = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::AnyDevice, int >::create( size, size, matrixElements, rowLengths );
+   auto matrix = TNL::Matrices::LambdaMatrixFactory< double, TNL::Devices::Host, int >::create( size, size, matrixElements, rowLengths );
 
    std::cout << "Matrix looks as:" << std::endl << matrix << std::endl;
    std::cout << "Non-zero elements count is: " << matrix.getNonzeroElementsCount() << std::endl;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/Devices/AnyDevice.h>
+#include <TNL/Devices/Host.h>
 
 namespace TNL {
 namespace Matrices {
@@ -40,14 +40,13 @@ namespace Matrices {
  *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns and \e row is an index of the row being queried.
  *
  * \tparam Real is a type of matrix elements values.
- * \tparam Device is a device on which the lambda functions can evaluated. 
- *    Devices::AnyDevice can be used for lambdas with no restriction.
+ * \tparam Device is a device on which the lambda functions will be evaluated. 
  * \ẗparam Index is a type used for indexing.
  */
 template< typename MatrixElementsLambda,
           typename CompressedRowLengthsLambda,
           typename Real = double,
-          typename Device = Devices::AnyDevice,
+          typename Device = Devices::Host,
           typename Index = int >
 class LambdaMatrix
 {
@@ -352,7 +351,7 @@ std::ostream& operator<< ( std::ostream& str, const LambdaMatrix< MatrixElements
  * \param compressedRowLengthsLambda
  */
 template< typename Real = double,
-          typename Device = Devices::AnyDevice,
+          typename Device = Devices::Host,
           typename Index = int >
 struct LambdaMatrixFactory
 {
