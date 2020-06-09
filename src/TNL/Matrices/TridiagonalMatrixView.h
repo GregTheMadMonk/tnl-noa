@@ -121,7 +121,11 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       template< typename InVector,
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
+                          OutVector& outVector,
+                          const RealType matrixMultiplicator = 1.0,
+                          const RealType outVectorMultiplicator = 0.0,
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
       void addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix,

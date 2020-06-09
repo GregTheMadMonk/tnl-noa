@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Multidiagonal.h  -  description
+                          TridiagonalMatrix.h  -  description
                              -------------------
-    begin                : Oct 13, 2011
-    copyright            : (C) 2011 by Tomas Oberhuber
+    begin                : Nov 30, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -12,39 +12,34 @@
 
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/MultidiagonalMatrixRowView.h>
+#include <TNL/Matrices/TridiagonalMatrixRowView.h>
 #include <TNL/Containers/Segments/Ellpack.h>
-#include <TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
-#include <TNL/Matrices/MultidiagonalMatrixView.h>
+#include <TNL/Matrices/details/TridiagonalMatrixIndexer.h>
+#include <TNL/Matrices/TridiagonalMatrixView.h>
 
 namespace TNL {
 namespace Matrices {
 
 /**
- * \brief Implementation of sparse multidiagonal matrix.
+ * \brief Implementation of sparse tridiagonal matrix.
  *
- * Use this matrix type for storing of matrices where the offsets of non-zero elements
- * from the diagonal are the same in each row. Typically such matrices arise from
- * discretization of partial differential equations on regular numerical grids. This is
- * one example (dots represent zero matrix elements):
- *
+ * Use this matrix type for storing of tridiagonal matrices i.e., matrices having
+ * non-zero matrix elements only on its diagonal and immediately above and bellow the diagonal.
+ * This is an example:
  * \f[
  * \left(
  * \begin{array}{ccccccc}
- *  4  & -1  &  .  & -1  &  . & .  \\
- * -1  &  4  & -1  &  .  & -1 & .  \\
- *  .  & -1  &  4  & -1  &  . & -1 \\
- * -1  & .   & -1  &  4  & -1 &  . \\
- *  .  & -1  &  .  & -1  &  4 & -1 \\
- *  .  &  .  & -1  &  .  & -1 &  4
+ *  4  & -1  &  .  & .   &  . & .  \\
+ * -1  &  4  & -1  &  .  &  . & .  \\
+ *  .  & -1  &  4  & -1  &  . & .  \\
+ *  .  &  .  & -1  &  4  & -1 &  . \\
+ *  .  &  .  &  .  & -1  &  4 & -1 \\
+ *  .  &  .  &  .  &  .  & -1 &  4
  * \end{array}
  * \right)
  * \f]
  *
- * In this matrix, the column indexes in each row \f$i\f$ can be expressed as
- * \f$\{i-3, i-1, i, i+1, i+3\}\f$ (where the resulting index is non-negative and
- *  smaller than the number of matrix columns). Therefore the diagonals offsets
- * are \f$\{-3,-1,0,1,3\}\f$. Advantage is that we do not store the column indexes
+ * Advantage is that we do not store the column indexes
  * explicitly as it is in \ref SparseMatrix. This can reduce significantly the
  * memory requirements which also means better performance. See the following table
  * for the storage requirements comparison between \ref MultidiagonalMatrix and \ref SparseMatrix.
@@ -62,27 +57,21 @@ namespace Matrices {
  * \tparam Organization tells the ordering of matrix elements. It is either RowMajorOrder
  *         or ColumnMajorOrder.
  * \tparam RealAllocator is allocator for the matrix elements.
- * \tparam IndexAllocator is allocator for the matrix elements offsets.
  */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
           ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
-          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
+class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
    public:
 
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
+      using IndexerType = details::TridiagonalMatrixIndexer< Index, Organization >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
-      using IndexerType = details::MultidiagonalMatrixIndexer< Index, Organization >;
-      using DiagonalsOffsetsType = Containers::Vector< Index, Device, Index, IndexAllocator >;
-      using DiagonalsOffsetsView = typename DiagonalsOffsetsType::ViewType;
-      using HostDiagonalsOffsetsType = Containers::Vector< Index, Devices::Host, Index >;
-      using HostDiagonalsOffsetsView = typename HostDiagonalsOffsetsType::ViewType;
 
       /**
        * \brief The type of matrix elements.
@@ -105,54 +94,44 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using RealAllocatorType = RealAllocator;
 
       /**
-       * \brief The allocator for matrix elements offsets from the diagonal.
-       */
-      using IndexAllocatorType = IndexAllocator;
-
-      /**
        * \brief Type of related matrix view.
        *
-       * See \ref MultidiagonalMatrixView.
+       * See \ref TridiagonalMatrixView.
        */
-      using ViewType = MultidiagonalMatrixView< Real, Device, Index, Organization >;
+      using ViewType = TridiagonalMatrixView< Real, Device, Index, Organization >;
 
       /**
        * \brief Matrix view type for constant instances.
        *
-       * See \ref MultidiagonalMatrixView.
+       * See \ref TridiagonalMatrixView.
        */
-      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
+      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
 
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
+      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
-      /**
-       * \brief Type for accessing constant matrix rows.
-       */
-      using ConstRowView = typename RowView::ConstViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
        */
       template< typename _Real = Real,
                 typename _Device = Device,
-                typename _Index = Index,
-                ElementsOrganization _Organization = Organization,
-                typename _RealAllocator = RealAllocator,
-                typename _IndexAllocator = IndexAllocator >
-      using Self = MultidiagonalMatrix< _Real, _Device, _Index, _Organization, _RealAllocator, _IndexAllocator >;
+                typename _Index = Index >
+      using Self = TridiagonalMatrix< _Real, _Device, _Index >;
 
-      /**
-       * \brief Elements organization getter.
-       */
+      // TODO: remove this - it is here only for compatibility with original matrix implementation
+      //typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
+      //typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
+      //typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
+
       static constexpr ElementsOrganization getOrganization() { return Organization; };
 
       /**
        * \brief Constructor with no parameters.
        */
-      MultidiagonalMatrix();
+      TridiagonalMatrix();
 
       /**
        * \brief Constructor with matrix dimensions.
@@ -160,141 +139,97 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
        */
-      MultidiagonalMatrix( const IndexType rows,
-                           const IndexType columns );
-
-      /**
-       * \brief Constructor with matrix dimensions and matrix elements offsets.
-       *
-       * \param rows is number of matrix rows.
-       * \param columns is number of matrix columns.
-       * \param diagonalsOffsets are offsets of subdiagonals from the main diagonal.
-       *
-       * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor.cpp
-       * \par Output
-       * \include MultidiagonalMatrixExample_Constructor.out
-       */
-      template< typename Vector >
-      MultidiagonalMatrix( const IndexType rows,
-                           const IndexType columns,
-                           const Vector& diagonalsOffsets );
-
-      /**
-       * \brief Constructor with matrix dimensions and diagonals offsets.
-       *
-       * \param rows is number of matrix rows.
-       * \param columns is number of matrix columns.
-       * \param diagonalsOffsets are offsets of sub-diagonals from the main diagonal.
-       *
-       * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_1.cpp
-       * \par Output
-       * \include MultidiagonalMatrixExample_Constructor_init_list_1.out
-       */
-      template< typename ListIndex >
-      MultidiagonalMatrix( const IndexType rows,
-                           const IndexType columns,
-                           const std::initializer_list< ListIndex > diagonalsOffsets );
+      TridiagonalMatrix( const IndexType rows, const IndexType columns );
 
       /**
        * \brief Constructor with matrix dimensions, diagonals offsets and matrix elements.
        *
        * The number of matrix rows is deduced from the size of the initializer list \e data.
        *
-       * \tparam ListIndex is type used in the initializer list defining matrix diagonals offsets.
        * \tparam ListReal is type used in the initializer list defining matrix elements values.
        *
        * \param columns is number of matrix columns.
-       * \param diagonalOffsets are offsets of sub-diagonals from the main diagonal.
        * \param data is initializer list holding matrix elements. The size of the outer list
        *    defines the number of matrix rows. Each inner list defines values of each sub-diagonal
-       *    and so its size should be lower or equal to the size of \e diagonalsOffsets. Values
+       *    and so its size should be lower or equal to three. Values
        *    of sub-diagonals which do not fit to given row are omitted.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_Constructor_init_list_2.cpp
+       * \include Matrices/TridiagonalMatrix/tridiagonalMatrixExample_Constructor_init_list_1.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_Constructor_init_list_2.out
+       * \include TridiagonalMatrixExample_Constructor_init_list_1.out
        */
-      template< typename ListIndex, typename ListReal >
-      MultidiagonalMatrix( const IndexType columns,
-                           const std::initializer_list< ListIndex > diagonalsOffsets,
-                           const std::initializer_list< std::initializer_list< ListReal > >& data );
-
+      template< typename ListReal >
+      TridiagonalMatrix( const IndexType columns,
+                         const std::initializer_list< std::initializer_list< ListReal > >& data );
       /**
        * \brief Copy constructor.
        *
        * \param matrix is an input matrix.
        */
-      MultidiagonalMatrix( const MultidiagonalMatrix& matrix ) = default;
+      TridiagonalMatrix( const TridiagonalMatrix& matrix ) = default;
 
       /**
        * \brief Move constructor.
        *
        * \param matrix is an input matrix.
        */
-      MultidiagonalMatrix( MultidiagonalMatrix&& matrix ) = default;
+      TridiagonalMatrix( TridiagonalMatrix&& matrix ) = default;
 
       /**
-       * \brief Returns a modifiable view of the mutlidiagonal matrix.
+       * \brief Returns a modifiable view of the tridiagonal matrix.
        *
-       * See \ref MultidiagonalMatrixView.
+       * See \ref TridiagonalMatrixView.
        *
-       * \return multidiagonal matrix view.
+       * \return tridiagonal matrix view.
        */
       ViewType getView() const; // TODO: remove const
 
       /**
-       * \brief Returns a non-modifiable view of the multidiagonal matrix.
+       * \brief Returns a non-modifiable view of the tridiagonal matrix.
        *
-       * See \ref MultidiagonalMatrixView.
+       * See \ref TridiagonalMatrixView.
        *
-       * \return multidiagonal matrix view.
+       * \return tridiagonal matrix view.
        */
       ConstViewType getConstView() const;
 
       /**
        * \brief Returns string with serialization type.
        *
-       * The string has a form `Matrices::MultidiagonalMatrix< RealType,  [any_device], IndexType, ElementsOrganization, [any_allocator], [any_allocator] >`.
+       * The string has a form `Matrices::TridiagonalMatrix< RealType,  [any_device], IndexType, ElementsOrganization, [any_allocator] >`.
        *
        * \return \ref String with the serialization type.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getSerializationType.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getSerializationType.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getSerializationType.out
+       * \include TridiagonalMatrixExample_getSerializationType.out
        */
       static String getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
        *
-       * See \ref MultidiagonalMatrix::getSerializationType.
+       * See \ref TridiagonalMatrix::getSerializationType.
        *
        * \return \e String with the serialization type.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getSerializationType.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getSerializationType.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getSerializationType.out
+       * \include TridiagonalMatrixExample_getSerializationType.out
        */
       virtual String getSerializationTypeVirtual() const;
 
       /**
-       * \brief Set matrix dimensions and diagonals offsets.
-       *
-       * \tparam Vector is type of vector like container holding the diagonals offsets.
+       * \brief Set matrix dimensions.
        *
        * \param rows is number of matrix rows.
        * \param columns is number of matrix columns.
-       * \param diagonalsOffsets is vector with diagonals offsets.
        */
-      template< typename Vector >
       void setDimensions( const IndexType rows,
-                          const IndexType columns,
-                          const Vector& diagonalsOffsets );
+                          const IndexType columns );
 
       /**
        * \brief This method is for compatibility with \ref SparseMatrix.
@@ -318,30 +253,16 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param data is initializer list holding matrix elements. The size of the outer list
        *    defines the number of matrix rows. Each inner list defines values of each sub-diagonal
-       *    and so its size should be lower or equal to the size of \e diagonalsOffsets. Values
+       *    and so its size should be lower or equal to three. Values
        *    of sub-diagonals which do not fit to given row are omitted.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_setElements.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_setElements.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_setElements.out
+       * \include TridiagonalMatrixExample_setElements.out
        */
       template< typename ListReal >
       void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data );
-
-      /**
-       * \brief Returns number of diagonals.
-       *
-       * \return Number of diagonals.
-       */
-      const IndexType& getDiagonalsCount() const;
-
-      /**
-       * \brief Returns vector with diagonals offsets.
-       *
-       * \return vector with diagonals offsets.
-       */
-      const DiagonalsOffsetsType& getDiagonalsOffsets() const;
 
       /**
        * \brief Computes number of non-zeros in each row.
@@ -350,9 +271,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * will be stored.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getCompressedRowLengths.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getCompressedRowLengths.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getCompressedRowLengths.out
+       * \include TridiagonalMatrixExample_getCompressedRowLengths.out
        */
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
@@ -360,15 +281,16 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       [[deprecated]]
       IndexType getRowLength( const IndexType row ) const;
 
+      //IndexType getMaxRowLength() const;
+
       /**
-       * \brief Setup the matrix dimensions and diagonals offsets based on another multidiagonal matrix.
+       * \brief Setup the matrix dimensions and diagonals offsets based on another tridiagonal matrix.
        *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
        * \tparam RealAllocator_ is \e RealAllocator of the source matrix.
-       * \tparam IndexAllocator_ is \e IndexAllocator of the source matrix.
        *
        * \param matrix is the source matrix.
        */
@@ -376,9 +298,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename Device_,
                 typename Index_,
                 ElementsOrganization Organization_,
-                typename RealAllocator_,
-                typename IndexAllocator_ >
-      void setLike( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix );
+                typename RealAllocator_ >
+      void setLike( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix );
 
       /**
        * \brief Returns number of non-zero matrix elements.
@@ -396,14 +317,13 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void reset();
 
       /**
-       * \brief Comparison operator with another multidiagonal matrix.
+       * \brief Comparison operator with another tridiagonal matrix.
        *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
        * \tparam RealAllocator_ is \e RealAllocator of the source matrix.
-       * \tparam IndexAllocator_ is \e IndexAllocator of the source matrix.
        *
        * \return \e true if both matrices are identical and \e false otherwise.
        */
@@ -411,19 +331,17 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename Device_,
                 typename Index_,
                 ElementsOrganization Organization_,
-                typename RealAllocator_,
-                typename IndexAllocator_ >
-      bool operator == ( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix ) const;
+                typename RealAllocator_ >
+      bool operator == ( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
       /**
-       * \brief Comparison operator with another multidiagonal matrix.
+       * \brief Comparison operator with another tridiagonal matrix.
        *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
        * \tparam RealAllocator_ is \e RealAllocator of the source matrix.
-       * \tparam IndexAllocator_ is \e IndexAllocator of the source matrix.
        *
        * \param matrix is the source matrix.
        *
@@ -433,9 +351,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename Device_,
                 typename Index_,
                 ElementsOrganization Organization_,
-                typename RealAllocator_,
-                typename IndexAllocator_ >
-      bool operator != ( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix ) const;
+                typename RealAllocator_ >
+      bool operator != ( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix ) const;
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
@@ -445,11 +362,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return RowView for accessing given matrix row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getRow.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getRow.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getRow.out
+       * \include TridiagonalMatrixExample_getRow.out
        *
-       * See \ref MultidiagonalMatrixRowView.
+       * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
@@ -462,11 +379,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return RowView for accessing given matrix row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getConstRow.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getConstRow.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getConstRow.out
+       * \include TridiagonalMatrixExample_getConstRow.out
        *
-       * See \ref MultidiagonalMatrixRowView.
+       * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
@@ -485,8 +402,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
-       * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forRows and \ref MultidiagonalMatrix::forAllRows.
+       * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
+       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -494,11 +411,10 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param value is the value the element will be set to.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_setElement.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_setElement.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_setElement.out
+       * \include TridiagonalMatrixExample_setElement.out
        */
-      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
@@ -510,8 +426,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
-       * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forRows and \ref MultidiagonalMatrix::forAllRows.
+       * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
+       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -521,12 +437,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *   value is multiplied by before addition of given \e value.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_addElement.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_addElement.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_addElement.out
+       * \include TridiagonalMatrixExample_addElement.out
        *
        */
-      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
@@ -539,8 +454,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
-       * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forRows and \ref MultidiagonalMatrix::forAllRows.
+       * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
+       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -548,12 +463,10 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return value of given matrix element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getElement.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_getElement.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_getElement.out
-       *
+       * \include TridiagonalMatrixExample_getElement.out
        */
-      __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
@@ -577,15 +490,15 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_rowsReduction.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_rowsReduction.out
+       * \include TridiagonalMatrixExample_rowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
-       * \brief Method for performing general reduction on matrix rows for constant instances.
+       * \brief Method for performing general reduction on matrix rows of constant matrix instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
@@ -604,12 +517,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_rowsReduction.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_rowsReduction.out
+       * \include TridiagonalMatrixExample_rowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -623,21 +536,23 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_allRowsReduction.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_allRowsReduction.out
+       * \include TridiagonalMatrixExample_allRowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
-       * \brief Method for performing general reduction on all matrix rows for constant instances.
+       * \brief Method for performing general reduction on all matrix rows of constant matrix instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
@@ -648,15 +563,17 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_allRowsReduction.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_allRowsReduction.out
+       * \include TridiagonalMatrixExample_allRowsReduction.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
@@ -676,9 +593,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_forRows.out
+       * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function& function ) const;
@@ -698,44 +615,61 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_forRows.out
+       * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function& function );
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
+       * \brief Method for iteration over all matrix rows for constant instances.
        *
-       * See \ref MultidiagonalMatrix::forRows.
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
        *
-       * \tparam Function is a type of lambda function that will operate on matrix elements.
-       * \param function  is an instance of the lambda function to be called in each row.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forAllRows.cpp
+       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_forAllRows.out
+       * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
       void forAllRows( Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows.
+       * \brief Method for iteration over all matrix rows for non-constant instances.
        *
-       * See \ref MultidiagonalMatrix::forRows.
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
        *
-       * \tparam Function is a type of lambda function that will operate on matrix elements.
-       * \param function  is an instance of the lambda function to be called in each row.
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forAllRows.cpp
+       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_forAllRows.out
+       * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
       void forAllRows( Function& function );
+
+      /*template< typename Vector >
+      __cuda_callable__
+      typename Vector::RealType rowVectorProduct( const IndexType row,
+                                                  const Vector& vector ) const;*/
 
       /**
        * \brief Computes product of matrix and vector.
@@ -769,12 +703,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                           IndexType end = 0 ) const;
 
       template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
-      void addMatrix( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
+      void addMatrix( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 
       template< typename Real2, typename Index2 >
-      void getTransposition( const MultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+      void getTransposition( const TridiagonalMatrix< Real2, Device, Index2 >& matrix,
                              const RealType& matrixMultiplicator = 1.0 );
 
       template< typename Vector1, typename Vector2 >
@@ -790,10 +724,10 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
        */
-      MultidiagonalMatrix& operator=( const MultidiagonalMatrix& matrix );
+      TridiagonalMatrix& operator=( const TridiagonalMatrix& matrix );
 
       /**
-       * \brief Assignment of another multidiagonal matrix
+       * \brief Assignment of another tridiagonal matrix
        *
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
@@ -802,9 +736,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename Device_,
                 typename Index_,
                 ElementsOrganization Organization_,
-                typename RealAllocator_,
-                typename IndexAllocator_ >
-      MultidiagonalMatrix& operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_, IndexAllocator_ >& matrix );
+                typename RealAllocator_ >
+      TridiagonalMatrix& operator=( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix );
 
       /**
        * \brief Method for saving the matrix to a file.
@@ -867,9 +800,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
    protected:
 
-      DiagonalsOffsetsType diagonalsOffsets;
-
-      HostDiagonalsOffsetsType hostDiagonalsOffsets;
+      __cuda_callable__
+      IndexType getElementIndex( const IndexType row,
+                                 const IndexType localIdx ) const;
 
       IndexerType indexer;
 
@@ -879,4 +812,4 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MultidiagonalMatrix.hpp>
+#include <TNL/Matrices/TridiagonalMatrix.hpp>

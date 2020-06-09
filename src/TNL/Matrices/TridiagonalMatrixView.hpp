@@ -346,7 +346,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
       {
          function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ], compute );
          function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
-      } 
+      }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
          function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
@@ -380,7 +380,7 @@ forRows( IndexType first, IndexType last, Function& function )
       {
          function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ] );
          function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] );
-      } 
+      }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
          function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
@@ -428,7 +428,7 @@ template< typename Real,
           ElementsOrganization Organization >
 template< typename Vector >
 __cuda_callable__
-typename Vector::RealType 
+typename Vector::RealType
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
@@ -440,9 +440,14 @@ template< typename Real,
           ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
-void 
+void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType matrixMultiplicator,
+               const RealType outVectorMultiplicator,
+               const IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
@@ -455,10 +460,18 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
       sum += value;
    };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeper1 = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = value;
    };
-   this->allRowsReduction( fetch, reduction, keeper, ( RealType ) 0.0 );
+   auto keeper2 = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
+   };
+   if( end == 0 )
+      end = this->getRows();
+   if( matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 )
+      this->rowsReduction( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
+   else
+      this->rowsReduction( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
 }
 
 template< typename Real,

@@ -15,7 +15,7 @@
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Matrices/DenseMatrix.h>
-#include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
