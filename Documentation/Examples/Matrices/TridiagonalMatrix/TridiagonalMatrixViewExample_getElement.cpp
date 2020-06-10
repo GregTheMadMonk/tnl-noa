@@ -1,14 +1,15 @@
 #include <iostream>
 #include <iomanip>
-#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 
 template< typename Device >
 void getElements()
 {
    const int matrixSize( 5 );
-   TNL::Matrices::TridiagonalMatrix< double, Device > matrix (
+   TNL::Matrices::MultidiagonalMatrix< double, Device > matrix (
       matrixSize,   // number of matrix columns
+      { -1, 0, 1 }, // matrix diagonals offsets
       {             // matrix elements definition
          {  0.0, 2.0, -1.0 },
          { -1.0, 2.0, -1.0 },
@@ -16,12 +17,12 @@ void getElements()
          { -1.0, 2.0, -1.0 },
          { -1.0, 2.0,  0.0 }
       } );
-
+   auto view = matrix.getView();
 
    for( int i = 0; i < matrixSize; i++ )
    {
       for( int j = 0; j < matrixSize; j++ )
-         std::cout << std::setw( 5 ) << matrix.getElement( i, j );
+         std::cout << std::setw( 5 ) << view.getElement( i, j );
       std::cout << std::endl;
    }
 }

@@ -100,19 +100,6 @@ getView() const -> ViewType
                     indexer );
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          typename RealAllocator,
-          typename IndexAllocator >
-auto
-MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-getConstView() const -> ConstViewType
-{
-   return ConstViewType( this->values.getConstView(), indexer );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,

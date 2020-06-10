@@ -433,8 +433,8 @@ void tridiagonalMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType >;
-   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType >;
+   using TridiagonalHost = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using TridiagonalCuda = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    TridiagonalHost hostMatrix( rows, columns );

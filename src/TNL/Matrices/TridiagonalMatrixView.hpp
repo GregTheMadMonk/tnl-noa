@@ -66,10 +66,10 @@ String
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
-   return String( "Matrices::Tridiagonal< " ) +
+   return String( "Matrices::TridiagonalMatrix< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
+          TNL::getSerializationType( Organization ) + ", [any_allocator] >";
 }
 
 template< typename Real,
@@ -290,8 +290,52 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       Real_ sum( zero );
       if( rowIdx == 0 )
       {
-         reduce( sum, fetch( 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ] ) );
          reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
+         reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
+         keep( 0, sum );
+         return;
+      }
+      if( rowIdx + 1 < indexer.getColumns() )
+      {
+         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         reduce( sum, fetch( rowIdx, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] ) );
+         keep( rowIdx, sum );
+         return;
+      }
+      if( rowIdx < indexer.getColumns() )
+      {
+         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         keep( rowIdx, sum );
+      }
+      else
+      {
+         keep( rowIdx, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+      }
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
+{
+   using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
+   auto values_view = this->values.getConstView();
+   const auto indexer = this->indexer;
+   const auto zero = zero_;
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
+      Real_ sum( zero );
+      if( rowIdx == 0 )
+      {
+         reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
+         reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
          keep( 0, sum );
          return;
       }
@@ -333,6 +377,18 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
@@ -344,8 +400,8 @@ forRows( IndexType first, IndexType last, Function& function ) const
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       if( rowIdx == 0 )
       {
-         function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ], compute );
-         function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
+         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
+         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ], compute );
       }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
@@ -375,25 +431,26 @@ forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
    const auto indexer = this->indexer;
+   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       if( rowIdx == 0 )
       {
-         function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ] );
-         function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] );
+         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
+         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ], compute );
       }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
-         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
+         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ], compute );
       }
       else if( rowIdx < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
       }
       else
-         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
 }
@@ -500,13 +557,13 @@ addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >&
       const auto matrix_view = matrix;
       const auto matrixMult = matrixMultiplicator;
       const auto thisMult = thisMatrixMultiplicator;
-      auto add0 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
+      auto add0 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
          value = matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
-      auto add1 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
+      auto add1 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
          value += matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
-      auto addGen = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
+      auto addGen = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
          value = thisMult * value + matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
       if( thisMult == 0.0 )
@@ -691,9 +748,7 @@ Index
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
-   IndexType localIdx = column - row;
-   if( row > 0 )
-      localIdx++;
+   IndexType localIdx = column - row + 1;
 
    TNL_ASSERT_GE( localIdx, 0, "" );
    TNL_ASSERT_LT( localIdx, 3, "" );

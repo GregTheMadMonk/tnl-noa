@@ -1,47 +1,39 @@
 #include <iostream>
 #include <functional>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SharedPointer.h>
 
 template< typename Device >
 void getRowExample()
 {
    const int matrixSize = 5;
-   using MatrixType = TNL::Matrices::TridiagonalMatrix< double, Device >;
-   TNL::Pointers::SharedPointer< MatrixType > matrix (
-      matrixSize,  // number of matrix rows
-      matrixSize   // number of matrix columns
-    );
-   matrix->setElements(
-      {  { 0.0, 2.0, 1.0 },
+   auto diagonalsOffsets = { -2, -1, 0 };
+   using MatrixType = TNL::Matrices::MultidiagonalMatrix< double, Device >;
+   MatrixType matrix (
+      matrixSize,           // number of matrix columns
+      diagonalsOffsets,    
+      {  { 0.0, 0.0, 1.0 }, // matrix elements
          { 0.0, 2.0, 1.0 },
          { 3.0, 2.0, 1.0 },
          { 3.0, 2.0, 1.0 },
-         { 0.0, 2.0, 1.0 } } );
+         { 3.0, 2.0, 1.0 } } );
+   auto view = matrix.getView();
 
    /***
     * Fetch lambda function returns diagonal element in each row.
     */
    auto fetch = [=] __cuda_callable__ ( int rowIdx ) mutable -> double {
-      auto row = matrix->getRow( rowIdx );
+      auto row = view.getRow( rowIdx );
       return row.getValue( 2 ); // get value from subdiagonal with index 2, i.e. the main diagonal
    };
 
    /***
-    * For the case when Device is CUDA device we need to synchronize smart
-    * pointers. To avoid this you may use TridiagonalMatrixView. See
-    * TridiagonalMatrixView::getConstRow example for details.
-    */
-   TNL::Pointers::synchronizeSmartPointersOnDevice< Device >();
-
-   /***
     * Compute the matrix trace.
     */
-   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix->getRows(), std::plus<>{}, fetch, 0 );
-   std::cout << "Matrix reads as: " << std::endl << *matrix << std::endl;
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix.getRows(), std::plus<>{}, fetch, 0 );
+   std::cout << "Matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Matrix trace is: " << trace << "." << std::endl;
 }
 

@@ -177,7 +177,7 @@ void test_GetAllocatedElementsCount()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -206,7 +206,7 @@ void test_GetNumberOfNonzeroMatrixElements()
 
    m.setElement( 5, 5, 0);
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 15 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 15 );
 }
 
 template< typename Matrix >
@@ -579,14 +579,12 @@ void test_SetRow()
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       RealType values[ 3 ][ 3 ] {
-         {  1,  2,  0 },
+         {  0,  1,  2 },
          {  8,  9, 10 },
          { 16, 17, 18 } };
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 3; i++ )
       {
-         if( rowIdx == 0 && i > 1 )
-            break;
          row.setElement( i, values[ rowIdx ][ i ] );
       }
    };
@@ -700,7 +698,7 @@ void test_AddRow()
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       RealType values[ 6 ][ 3 ] {
-         { 11, 11,  0 },
+         {  0, 11, 11 },
          { 22, 22, 22 },
          { 33, 33, 33 },
          { 44, 44, 44 },
@@ -1417,11 +1415,11 @@ TYPED_TEST( MatrixTest, getAllocatedElementsCountTest )
     test_GetAllocatedElementsCount< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
+TYPED_TEST( MatrixTest, getNonzeroElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+    test_GetNonzeroElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, resetTest )

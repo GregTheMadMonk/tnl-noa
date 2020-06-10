@@ -1,28 +1,58 @@
 #include <iostream>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 
 template< typename Device >
-void initializerListExample()
+void createTridiagonalMatrix()
 {
-   TNL::Matrices::SparseMatrix< double, Device > matrix {
-      {  1,  2,  3,  4,  5 }, // row capacities
-      6 };                    // number of matrix columns
+   const int matrixSize = 6;
 
-   for( int row = 0; row < matrix.getRows(); row++ )
-      for( int column = 0; column <= row; column++ )
-         matrix.setElement( row, column, row - column + 1 );
-   std::cout << "General sparse matrix: " << std::endl << matrix << std::endl;
+   /***
+    * Setup the following matrix (dots represent zeros):
+    * 
+    * /  2 -1 .   .  .  . \
+    * | -1  2 -1  .  .  . |
+    * |  . -1  2 -1  .  . |
+    * |  .  . -1  2 -1  . |
+    * |  .  .  . -1  2 -1 |
+    * \  .  .  .  . -1  2 /
+    * 
+    */
+   TNL::Matrices::TridiagonalMatrix< double, Device > matrix( 
+      matrixSize, {
+   /***
+    * To set the matrix elements we first extend the diagonals to their full
+    * lengths even outside the matrix (dots represent zeros and zeros are
+    * artificial zeros used for memory alignment):
+    * 
+    * 0 /  2 -1 .   .  .  . \    -> {  0,  2, -1 }
+    *   | -1  2 -1  .  .  . |    -> { -1,  2, -1 }
+    *   |  . -1  2 -1  .  . |    -> { -1,  2, -1 }
+    *   |  .  . -1  2 -1  . |    -> { -1,  2, -1 }
+    *   |  .  .  . -1  2 -1 |    -> { -1,  2, -1 }
+    *   \  .  .  .  . -1  2 / 0  -> { -1,  2,  0 }
+    * 
+    */
+      {  0,  2, -1 },
+      { -1,  2, -1 },
+      { -1,  2, -1 },
+      { -1,  2, -1 },
+      { -1,  2, -1 },
+      { -1,  2,  0 }
+      } );
+   std::cout << "The matrix reads as: " << std::endl << matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )
 {
-   std::cout << "Creating matrices on CPU ... " << std::endl;
-   initializerListExample< TNL::Devices::Host >();
+   std::cout << "Creating tridiagonal matrix on CPU ... " << std::endl;
+   createTridiagonalMatrix< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
-   std::cout << "Creating matrices on CUDA GPU ... " << std::endl;
-   initializerListExample< TNL::Devices::Cuda >();
+   std::cout << "Creating tridiagonal matrix on CUDA GPU ... " << std::endl;
+   createTridiagonalMatrix< TNL::Devices::Cuda >();
 #endif
 }

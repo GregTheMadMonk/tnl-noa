@@ -1,18 +1,30 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 
 template< typename Device >
 void rowsReduction()
 {
-   TNL::Matrices::SparseMatrix< double, Device > matrix ( 5, 5, {
-      { 0, 0, 1 },
-      { 1, 1, 1 }, { 1, 2, 8 },
-      { 2, 2, 1 }, { 2, 3, 9 },
-      { 3, 3, 1 }, { 3, 4, 9 },
-      { 4, 4, 1 } } );
+   /***
+    * Set the following matrix (dots represent zero matrix elements and zeros are
+    * padding zeros for memory alignment):
+    * 
+    *  0 / 1  3  .  .  . \   -> { 0, 1, 3 }
+    *    | 2  1  3  .  . |   -> { 2, 1, 3 }
+    *    | .  2  1  3  . |   -> { 2, 1, 3 }
+    *    | .  .  2  1  3 |   -> { 2, 1, 3 }
+    *    \ .  .  .  2  1 / 0 -> { 2, 1, 0 } 
+    * 
+    */
+   TNL::Matrices::TridiagonalMatrix< double, Device > matrix (
+      5,              // number of matrix columns
+      { { 0, 1, 3 },  // matrix elements
+        { 2, 1, 3 }, 
+        { 2, 1, 3 }, 
+        { 2, 1, 3 },
+        { 2, 1, 3 } } );
 
    /***
     * Find largest element in each row.

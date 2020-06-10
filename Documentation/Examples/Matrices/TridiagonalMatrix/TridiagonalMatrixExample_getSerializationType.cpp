@@ -1,12 +1,12 @@
 #include <iostream>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 
 
 template< typename Device >
 void getSerializationTypeExample()
 {
-   TNL::Matrices::SparseMatrix< double, Device > matrix;
+   TNL::Matrices::TridiagonalMatrix< double, Device > matrix;
 
    std::cout << "Matrix type is: " << matrix.getSerializationType();
 }

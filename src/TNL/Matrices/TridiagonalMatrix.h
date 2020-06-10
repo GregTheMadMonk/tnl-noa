@@ -42,9 +42,9 @@ namespace Matrices {
  * Advantage is that we do not store the column indexes
  * explicitly as it is in \ref SparseMatrix. This can reduce significantly the
  * memory requirements which also means better performance. See the following table
- * for the storage requirements comparison between \ref MultidiagonalMatrix and \ref SparseMatrix.
+ * for the storage requirements comparison between \ref TridiagonalMatrix and \ref SparseMatrix.
  *
- *  Data types         |      SparseMatrix    | MultidiagonalMatrix | Ratio
+ *  Data types         |      SparseMatrix    | TridiagonalMatrix | Ratio
  * --------------------|----------------------|---------------------|--------
  *  float + 32-bit int | 8 bytes per element  | 4 bytes per element | 50%
  *  double + 32-bit int| 12 bytes per element | 8 bytes per element | 75%
@@ -121,11 +121,6 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Index = Index >
       using Self = TridiagonalMatrix< _Real, _Device, _Index >;
 
-      // TODO: remove this - it is here only for compatibility with original matrix implementation
-      //typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
-      //typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
-      //typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
-
       static constexpr ElementsOrganization getOrganization() { return Organization; };
 
       /**
@@ -155,13 +150,14 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *    of sub-diagonals which do not fit to given row are omitted.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/tridiagonalMatrixExample_Constructor_init_list_1.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_Constructor_init_list_1.cpp
        * \par Output
        * \include TridiagonalMatrixExample_Constructor_init_list_1.out
        */
       template< typename ListReal >
       TridiagonalMatrix( const IndexType columns,
                          const std::initializer_list< std::initializer_list< ListReal > >& data );
+
       /**
        * \brief Copy constructor.
        *
@@ -433,7 +429,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param row is row index of the element.
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
-       * \param thisElementMultiplicator is multiplicator the original matrix element
+       * \param thisElementTriplicator is multiplicator the original matrix element
        *   value is multiplied by before addition of given \e value.
        *
        * \par Example
@@ -445,7 +441,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
-                       const RealType& thisElementMultiplicator = 1.0 );
+                       const RealType& thisElementTriplicator = 1.0 );
 
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
@@ -593,7 +589,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
        * \par Output
        * \include TridiagonalMatrixExample_forRows.out
        */
@@ -615,7 +611,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
        * \par Output
        * \include TridiagonalMatrixExample_forRows.out
        */
@@ -637,7 +633,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
        * \par Output
        * \include TridiagonalMatrixExample_forAllRows.out
        */
@@ -659,7 +655,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forAllRows.cpp
        * \par Output
        * \include TridiagonalMatrixExample_forAllRows.out
        */
@@ -676,7 +672,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * More precisely, it computes:
        *
-       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
+       * `outVector = matrixTriplicator * ( * this ) * inVector + outVectorTriplicator * outVector`
        *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
@@ -685,8 +681,8 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param inVector is input vector.
        * \param outVector is output vector.
-       * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
-       * \param outVectorMultiplicator is a factor by which the outVector is multiplied before added
+       * \param matrixTriplicator is a factor by which the matrix is multiplied. It is one by default.
+       * \param outVectorTriplicator is a factor by which the outVector is multiplied before added
        *    to the result of matrix-vector product. It is zero by default.
        * \param begin is the beginning of the rows range for which the vector product
        *    is computed. It is zero by default.
@@ -697,19 +693,19 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
-                          const RealType matrixMultiplicator = 1.0,
-                          const RealType outVectorMultiplicator = 0.0,
+                          const RealType matrixTriplicator = 1.0,
+                          const RealType outVectorTriplicator = 0.0,
                           const IndexType begin = 0,
                           IndexType end = 0 ) const;
 
       template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
       void addMatrix( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealAllocator_ >& matrix,
-                      const RealType& matrixMultiplicator = 1.0,
-                      const RealType& thisMatrixMultiplicator = 1.0 );
+                      const RealType& matrixTriplicator = 1.0,
+                      const RealType& thisMatrixTriplicator = 1.0 );
 
       template< typename Real2, typename Index2 >
       void getTransposition( const TridiagonalMatrix< Real2, Device, Index2 >& matrix,
-                             const RealType& matrixMultiplicator = 1.0 );
+                             const RealType& matrixTriplicator = 1.0 );
 
       template< typename Vector1, typename Vector2 >
       __cuda_callable__

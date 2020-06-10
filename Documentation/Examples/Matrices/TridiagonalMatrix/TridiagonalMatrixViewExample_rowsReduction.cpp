@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <functional>
-#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 
 template< typename Device >
@@ -11,20 +11,23 @@ void rowsReduction()
     * Set the following matrix (dots represent zero matrix elements and zeros are
     * padding zeros for memory alignment):
     * 
-    *  0 / 1  3  .  .  . \   -> { 0, 1, 3 }
-    *    | 2  1  3  .  . |   -> { 2, 1, 3 }
-    *    | .  2  1  3  . |   -> { 2, 1, 3 }
-    *    | .  .  2  1  3 |   -> { 2, 1, 3 }
-    *    \ .  .  .  2  1 / 0 -> { 2, 1, 0 } 
+    * 0  0 / 1  .  .  .  . \  -> { 0, 0, 1 }
+    *    0 | 2  1  .  .  . |  -> { 0, 2, 1 }
+    *      | 3  2  1  .  . |  -> { 3, 2, 1 }
+    *      | .  3  2  1  . |  -> { 3, 2, 1 }
+    *      \ .  .  3  2  1 /  -> { 3, 2, 1 } 
     * 
+    * The diagonals offsets are { -2, -1, 0 }.
     */
-   TNL::Matrices::TridiagonalMatrix< double, Device > matrix (
+   TNL::Matrices::MultidiagonalMatrix< double, Device > matrix (
       5,              // number of matrix columns
-      { { 0, 1, 3 },  // matrix elements
-        { 2, 1, 3 }, 
-        { 2, 1, 3 }, 
-        { 2, 1, 3 },
-        { 2, 1, 3 } } );
+      { -2, -1, 0 },  // diagonals offsets
+      { { 0, 0, 1 },  // matrix elements
+        { 0, 2, 1 }, 
+        { 3, 2, 1 }, 
+        { 3, 2, 1 },
+        { 3, 2, 1 } } );
+   auto view = matrix.getView();
 
    /***
     * Find largest element in each row.
@@ -60,7 +63,7 @@ void rowsReduction()
    /***
     * Compute the largest values in each row.
     */
-   matrix.allRowsReduction( fetch, reduce, keep, std::numeric_limits< double >::lowest() );
+   view.rowsReduction( 0, matrix.getRows(), fetch, reduce, keep, std::numeric_limits< double >::lowest() );
 
    std::cout << "The matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Max. elements in rows are: " << rowMax << std::endl;

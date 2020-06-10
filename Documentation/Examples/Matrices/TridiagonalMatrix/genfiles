@@ -1,0 +1,53 @@
+#!/bin/bash
+
+mv MultidiagonalMatrixExample_addElement.cpp                               TridiagonalMatrixExample_addElement.cpp                   
+mv MultidiagonalMatrixExample_allRowsReduction.cpp                         TridiagonalMatrixExample_allRowsReduction.cpp
+mv MultidiagonalMatrixExample_Constructor.cpp                              TridiagonalMatrixExample_Constructor.cpp
+mv MultidiagonalMatrixExample_Constructor_init_list_1.cpp                  TridiagonalMatrixExample_Constructor_init_list_1.cpp
+mv MultidiagonalMatrixExample_Constructor_init_list_2.cpp                  TridiagonalMatrixExample_Constructor_init_list_2.cpp
+mv MultidiagonalMatrixExample_forAllRows.cpp                               TridiagonalMatrixExample_forAllRows.cpp
+mv MultidiagonalMatrixExample_forRows.cpp                                  TridiagonalMatrixExample_forRows.cpp
+mv MultidiagonalMatrixExample_getCompressedRowLengths.cpp                  TridiagonalMatrixExample_getCompressedRowLengths.cpp
+mv MultidiagonalMatrixExample_getConstRow.cpp                              TridiagonalMatrixExample_getConstRow.cpp
+mv MultidiagonalMatrixExample_getElement.cpp                               TridiagonalMatrixExample_getElement.cpp
+mv MultidiagonalMatrixExample_getRow.cpp                                   TridiagonalMatrixExample_getRow.cpp
+mv MultidiagonalMatrixExample_getSerializationType.cpp                     TridiagonalMatrixExample_getSerializationType.cpp
+mv MultidiagonalMatrixExample_rowsReduction.cpp                            TridiagonalMatrixExample_rowsReduction.cpp
+mv MultidiagonalMatrixExample_setElement.cpp                               TridiagonalMatrixExample_setElement.cpp
+mv MultidiagonalMatrixExample_setElements.cpp                              TridiagonalMatrixExample_setElements.cpp
+mv MultidiagonalMatrixViewExample_addElement.cpp                           TridiagonalMatrixViewExample_addElement.cpp
+mv MultidiagonalMatrixViewExample_allRowsReduction.cpp                     TridiagonalMatrixViewExample_allRowsReduction.cpp
+mv MultidiagonalMatrixViewExample_forAllRows.cpp                           TridiagonalMatrixViewExample_forAllRows.cpp
+mv MultidiagonalMatrixViewExample_forRows.cpp                              TridiagonalMatrixViewExample_forRows.cpp
+mv MultidiagonalMatrixViewExample_getCompressedRowLengths.cpp              TridiagonalMatrixViewExample_getCompressedRowLengths.cpp
+mv MultidiagonalMatrixViewExample_getConstRow.cpp                          TridiagonalMatrixViewExample_getConstRow.cpp
+mv MultidiagonalMatrixViewExample_getElement.cpp                           TridiagonalMatrixViewExample_getElement.cpp
+mv MultidiagonalMatrixViewExample_getRow.cpp                               TridiagonalMatrixViewExample_getRow.cpp
+mv MultidiagonalMatrixViewExample_rowsReduction.cpp                        TridiagonalMatrixViewExample_rowsReduction.cpp
+mv MultidiagonalMatrixViewExample_setElement.cpp                           TridiagonalMatrixViewExample_setElement.cpp               
+
+ln -s TridiagonalMatrixExample_addElement.cpp                   TridiagonalMatrixExample_addElement.cu
+ln -s TridiagonalMatrixExample_allRowsReduction.cpp             TridiagonalMatrixExample_allRowsReduction.cu
+ln -s TridiagonalMatrixExample_Constructor.cpp                  TridiagonalMatrixExample_Constructor.cu
+ln -s TridiagonalMatrixExample_Constructor_init_list_1.cpp      TridiagonalMatrixExample_Constructor_init_list_1.cu
+ln -s TridiagonalMatrixExample_Constructor_init_list_2.cpp      TridiagonalMatrixExample_Constructor_init_list_2.cu
+ln -s TridiagonalMatrixExample_forAllRows.cpp                   TridiagonalMatrixExample_forAllRows.cu
+ln -s TridiagonalMatrixExample_forRows.cpp                      TridiagonalMatrixExample_forRows.cu
+ln -s TridiagonalMatrixExample_getCompressedRowLengths.cpp      TridiagonalMatrixExample_getCompressedRowLengths.cu
+ln -s TridiagonalMatrixExample_getConstRow.cpp                  TridiagonalMatrixExample_getConstRow.cu
+ln -s TridiagonalMatrixExample_getElement.cpp                   TridiagonalMatrixExample_getElement.cu
+ln -s TridiagonalMatrixExample_getRow.cpp                       TridiagonalMatrixExample_getRow.cu
+ln -s TridiagonalMatrixExample_getSerializationType.cpp         TridiagonalMatrixExample_getSerializationType.cu
+ln -s TridiagonalMatrixExample_rowsReduction.cpp                TridiagonalMatrixExample_rowsReduction.cu
+ln -s TridiagonalMatrixExample_setElement.cpp                   TridiagonalMatrixExample_setElement.cu
+ln -s TridiagonalMatrixExample_setElements.cpp                  TridiagonalMatrixExample_setElements.cu
+ln -s TridiagonalMatrixViewExample_addElement.cpp               TridiagonalMatrixViewExample_addElement.cu
+ln -s TridiagonalMatrixViewExample_allRowsReduction.cpp         TridiagonalMatrixViewExample_allRowsReduction.cu
+ln -s TridiagonalMatrixViewExample_forAllRows.cpp               TridiagonalMatrixViewExample_forAllRows.cu
+ln -s TridiagonalMatrixViewExample_forRows.cpp                  TridiagonalMatrixViewExample_forRows.cu
+ln -s TridiagonalMatrixViewExample_getCompressedRowLengths.cpp  TridiagonalMatrixViewExample_getCompressedRowLengths.cu
+ln -s TridiagonalMatrixViewExample_getConstRow.cpp              TridiagonalMatrixViewExample_getConstRow.cu
+ln -s TridiagonalMatrixViewExample_getElement.cpp               TridiagonalMatrixViewExample_getElement.cu
+ln -s TridiagonalMatrixViewExample_getRow.cpp                   TridiagonalMatrixViewExample_getRow.cu
+ln -s TridiagonalMatrixViewExample_rowsReduction.cpp            TridiagonalMatrixViewExample_rowsReduction.cu
+ln -s TridiagonalMatrixViewExample_setElement.cpp               TridiagonalMatrixViewExample_setElement.cu             

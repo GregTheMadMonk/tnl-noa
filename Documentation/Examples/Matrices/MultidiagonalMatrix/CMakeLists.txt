@@ -260,7 +260,7 @@ ENDIF()
                        OUTPUT MultidiagonalMatrixExample_setElement.out )
 
 
-ADD_CUSTOM_TARGET( RunMatricesExamples ALL DEPENDS
+ADD_CUSTOM_TARGET( RunMultidiagonalMatricesExamples ALL DEPENDS
    MultidiagonalMatrixExample_Constructor.out
    MultidiagonalMatrixExample_Constructor_init_list_1.out
    MultidiagonalMatrixExample_Constructor_init_list_2.out
