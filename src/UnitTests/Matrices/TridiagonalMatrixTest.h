@@ -11,7 +11,7 @@
 #include <sstream>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Containers/Array.h>
 
 #include <TNL/Containers/Vector.h>
@@ -20,11 +20,11 @@
 #include <TNL/Math.h>
 #include <iostream>
 
-using Tridiagonal_host_float = TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int >;
-using Tridiagonal_host_int = TNL::Matrices::Tridiagonal< int, TNL::Devices::Host, int >;
+using Tridiagonal_host_float = TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Host, int >;
+using Tridiagonal_host_int = TNL::Matrices::TridiagonalMatrix< int, TNL::Devices::Host, int >;
 
-using Tridiagonal_cuda_float = TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int >;
-using Tridiagonal_cuda_int = TNL::Matrices::Tridiagonal< int, TNL::Devices::Cuda, int >;
+using Tridiagonal_cuda_float = TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Cuda, int >;
+using Tridiagonal_cuda_int = TNL::Matrices::TridiagonalMatrix< int, TNL::Devices::Cuda, int >;
 
 static const char* TEST_FILE_NAME = "test_TridiagonalMatrixTest.tnl";
 
@@ -36,14 +36,14 @@ static const char* TEST_FILE_NAME = "test_TridiagonalMatrixTest.tnl";
 void test_GetSerializationType()
 {
    using namespace TNL::Containers::Segments;
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< int,   TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< int,   TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< int,   TNL::Devices::Cuda, int, ColumnMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -140,28 +140,6 @@ void test_GetCompressedRowLengths()
 }
 
 template< typename Matrix >
-void test_GetRowLength()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-
-   const IndexType rows = 8;
-   const IndexType cols = 7;
-
-   Matrix m( rows, cols );
-
-   EXPECT_EQ( m.getRowLength( 0 ), 2 );
-   EXPECT_EQ( m.getRowLength( 1 ), 3 );
-   EXPECT_EQ( m.getRowLength( 2 ), 3 );
-   EXPECT_EQ( m.getRowLength( 3 ), 3 );
-   EXPECT_EQ( m.getRowLength( 4 ), 3 );
-   EXPECT_EQ( m.getRowLength( 5 ), 3 );
-   EXPECT_EQ( m.getRowLength( 6 ), 2 );
-   EXPECT_EQ( m.getRowLength( 7 ), 1 );
-}
-
-template< typename Matrix >
 void test_GetAllocatedElementsCount()
 {
    using RealType = typename Matrix::RealType;
@@ -177,7 +155,7 @@ void test_GetAllocatedElementsCount()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -206,7 +184,7 @@ void test_GetNumberOfNonzeroMatrixElements()
 
    m.setElement( 5, 5, 0);
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 15 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 15 );
 }
 
 template< typename Matrix >
@@ -579,14 +557,12 @@ void test_SetRow()
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       RealType values[ 3 ][ 3 ] {
-         {  1,  2,  0 },
+         {  0,  1,  2 },
          {  8,  9, 10 },
          { 16, 17, 18 } };
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 3; i++ )
       {
-         if( rowIdx == 0 && i > 1 )
-            break;
          row.setElement( i, values[ rowIdx ][ i ] );
       }
    };
@@ -700,7 +676,7 @@ void test_AddRow()
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       RealType values[ 6 ][ 3 ] {
-         { 11, 11,  0 },
+         {  0, 11, 11 },
          { 22, 22, 22 },
          { 33, 33, 33 },
          { 44, 44, 44 },
@@ -1170,8 +1146,8 @@ void test_AssignmentOperator()
    using IndexType = typename Matrix::IndexType;
    constexpr TNL::Containers::Segments::ElementsOrganization organization = Matrix::getOrganization();
 
-   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType, organization >;
-   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType,
+   using TridiagonalHost = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Host, IndexType, organization >;
+   using TridiagonalCuda = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType,
       organization == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
@@ -1347,31 +1323,31 @@ protected:
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, long >
+    TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Host, short >,
+    TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Host, int >,
+    TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, long >
+    ,TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::TridiagonalMatrix< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::TridiagonalMatrix< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::TridiagonalMatrix< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::TridiagonalMatrix< double, TNL::Devices::Cuda, long >
 #endif
 >;
 
@@ -1403,13 +1379,6 @@ TYPED_TEST( MatrixTest, getCompressedRowLengthTest )
     test_GetCompressedRowLengths< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getRowLengthTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_GetRowLength< MatrixType >();
-}
-
 TYPED_TEST( MatrixTest, getAllocatedElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
@@ -1417,11 +1386,11 @@ TYPED_TEST( MatrixTest, getAllocatedElementsCountTest )
     test_GetAllocatedElementsCount< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
+TYPED_TEST( MatrixTest, getNonzeroElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+    test_GetNonzeroElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, resetTest )
@@ -1488,7 +1457,7 @@ TYPED_TEST( MatrixTest, addMatrixTest_differentOrdering )
     using DeviceType = typename MatrixType::DeviceType;
     using IndexType = typename MatrixType::IndexType;
     using RealAllocatorType = typename MatrixType::RealAllocatorType;
-    using MatrixType2 = TNL::Matrices::Tridiagonal< RealType, DeviceType, IndexType,
+    using MatrixType2 = TNL::Matrices::TridiagonalMatrix< RealType, DeviceType, IndexType,
      MatrixType::getOrganization() == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder,
       RealAllocatorType >;
 

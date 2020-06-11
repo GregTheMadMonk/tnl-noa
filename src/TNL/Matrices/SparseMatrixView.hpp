@@ -92,7 +92,8 @@ getSerializationType()
    return String( "Matrices::SparseMatrix< " ) +
              TNL::getSerializationType< RealType >() + ", " +
              TNL::getSerializationType< SegmentsViewType >() + ", [any_device], " +
-             TNL::getSerializationType< IndexType >() + ", [any_allocator] >";
+             TNL::getSerializationType< IndexType >() + ", " +
+             MatrixType::getSerializationType() + ", [any_allocator], [any_allocator] >";
 }
 
 template< typename Real,
@@ -120,7 +121,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    details::set_size_if_resizable( rowLengths, this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
@@ -149,7 +150,7 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
@@ -174,9 +175,6 @@ getNumberOfNonzeroMatrixElements() const
             return 0.0;
          return 1 + ( column != row && column < rows && row < columns ); // the addition is for non-diagonal elements
       };
-      //auto reduction = [] __cuda_callable__ ( IndexType& sum, const IndexType& value ) {
-      //   sum += value;
-      //};
       auto keeper = [=] __cuda_callable__ ( IndexType row, const IndexType& value ) mutable {
          row_sums_view[ row ] = value;
       };
@@ -347,22 +345,6 @@ getElement( IndexType row,
    return 0.0;
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-   template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-rowVectorProduct( const IndexType row,
-                  const Vector& vector ) const
-{
-   TNL_ASSERT_TRUE( false, "TODO: rowVectorProduct is not implemented yet.");
-   return 0;
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -442,23 +424,63 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+{
+   auto columns_view = this->columnIndexes.getView();
+   auto values_view = this->values.getView();
+   const IndexType paddingIndex_ = this->getPaddingIndex();
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+      IndexType& columnIdx = columns_view[ globalIdx ];
+      if( columnIdx != paddingIndex_ )
+      {
+         if( isBinary() )
+            return fetch( rowIdx, columnIdx, 1 );
+         else
+            return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+      }
+      return zero;
+   };
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) ) {
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
       {
          if( isBinary() )
-            return fetch( rowIdx, columnIdx, globalIdx, 1 );
+            return fetch( rowIdx, columnIdx, 1 );
          else
-            return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
+            return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       }
       return zero;
    };
-   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -482,7 +504,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forRows( IndexType begin, IndexType end, Function& function ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
@@ -494,7 +516,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
       return true;
    };
-   this->segments.forSegments( first, last, f );
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,
@@ -505,7 +527,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-forRows( IndexType first, IndexType last, Function& function )
+forRows( IndexType begin, IndexType end, Function& function )
 {
    auto columns_view = this->columnIndexes.getView();
    auto values_view = this->values.getView();
@@ -519,7 +541,7 @@ forRows( IndexType first, IndexType last, Function& function )
       else
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
-   this->segments.forSegments( first, last, f );
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,
@@ -709,7 +731,12 @@ print( std::ostream& str ) const
                value = ( RealType ) 1.0;
             else
                value = this->values.getElement( globalIdx );
-            str << " Col:" << column << "->" << value << "\t";
+            if( value )
+            {
+               std::stringstream str_;
+               str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+               str << std::setw( 10 ) << str_.str();
+            }
          }
          str << std::endl;
       }

@@ -21,6 +21,7 @@ class MultidiagonalMatrixIndexer
    public:
 
       using IndexType = Index;
+      using ConstType = MultidiagonalMatrixIndexer< std::add_const_t< Index >, RowMajorOrder >;
 
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; };
 

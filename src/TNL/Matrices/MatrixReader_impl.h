@@ -357,6 +357,8 @@ void MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
    value = ( RealType ) atof( parsedLine[ 2 ].getString() );
 }
 
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
 template<>
 class MatrixReaderDeviceDependentCode< Devices::Host >
 {
@@ -392,6 +394,7 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
       MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
    }
 };
+/// \endcond
 
 } // namespace Matrices
 } // namespace TNL

@@ -94,10 +94,10 @@ void test_GetCompressedRowLengths()
 
    MatrixType m( size, size, matrixElements, rowLengths );
    TNL::Containers::Vector< IndexType > correctRowLengths{ 1, 3, 3, 3, 1 };
-   TNL::Containers::Vector< IndexType > rowLengthsVector;
+   TNL::Containers::Vector< IndexType, DeviceType > rowLengthsVector;
    m.getCompressedRowLengths( rowLengthsVector );
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( correctRowLengths[ i ], rowLengthsVector[ i ] );
+      EXPECT_EQ( correctRowLengths.getElement( i ), rowLengthsVector.getElement( i ) );
 }
 
 template< typename Matrix >
@@ -233,11 +233,11 @@ void test_RowsReduction()
    TNL::Containers::Vector< RealType, DeviceType, IndexType > v( size, -1.0 );
    auto vView = v.getView();
 
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType columnIdx, const RealType& value ) mutable -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType columnIdx, const RealType& value ) mutable -> RealType {
       return value;
    };
-   auto reduce = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
+   auto reduce = [] __cuda_callable__ ( RealType& sum, const RealType& value ) -> RealType {
+      return sum + value;
    };
    auto keep = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       vView[ row ] = value;
@@ -250,57 +250,5 @@ void test_RowsReduction()
    EXPECT_EQ( v.getElement( 3 ),  0.0 );
    EXPECT_EQ( v.getElement( 4 ),  1.0 );
 }
-
-template< typename Matrix >
-void test_Print()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-
-   IndexType size = 5;
-   auto rowLengths = [=] __cuda_callable__ ( const IndexType rows, const IndexType columns, const IndexType rowIdx ) -> IndexType {
-      if( rowIdx == 0 || rowIdx == size - 1 )
-         return 1;
-      return 3;
-   };
-
-   auto matrixElements = [=] __cuda_callable__ ( const IndexType rows, const IndexType columns, const IndexType rowIdx, const IndexType localIdx, IndexType& columnIdx, RealType& value ) {
-      if( rowIdx == 0 || rowIdx == size -1 )
-      {
-         columnIdx = rowIdx;
-         value =  1.0;
-      }
-      else
-      {
-         columnIdx = rowIdx + localIdx - 1;
-         value = ( columnIdx == rowIdx ) ? -2.0 : 1.0;
-      }
-   };
-
-   using MatrixType = decltype( TNL::Matrices::LambdaMatrixFactory< RealType, DeviceType, IndexType >::create( matrixElements, rowLengths ) );
-
-   MatrixType m( size, size, matrixElements, rowLengths );
-
-   std::stringstream printed;
-   std::stringstream couted;
-
-   //change the underlying buffer and save the old buffer
-   auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-   
-   m.print( std::cout ); //all the std::cout goes to ss
-
-   std::cout.rdbuf(old_buf); //reset
-
-   couted << "Row: 0 ->  Col:0->1\t\n"
-             "Row: 1 ->  Col:0->1	 Col:1->-2	 Col:2->1\t\n"
-             "Row: 2 ->  Col:1->1	 Col:2->-2	 Col:3->1\t\n"
-             "Row: 3 ->  Col:2->1	 Col:3->-2	 Col:4->1\t\n"
-             "Row: 4 ->  Col:4->1\t\n";
-
-   EXPECT_EQ( printed.str(), couted.str() );
-}
-
 
 #endif // HAVE_GTEST

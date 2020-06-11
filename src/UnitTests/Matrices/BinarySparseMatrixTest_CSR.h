@@ -114,14 +114,6 @@ TYPED_TEST( BinaryMatrixTest_CSR, saveAndLoadTest )
 
     test_SaveAndLoad< CSRMatrixType >( "test_BinarySparseMatrixTest_CSR" );
 }
-
-TYPED_TEST( BinaryMatrixTest_CSR, printTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_Print< CSRMatrixType >();
-}
-
 #endif
 
 #include "../main.h"

@@ -948,7 +948,7 @@ void test_RowsReduction()
    // Compute number of non-zero elements in rows.
    typename Matrix::RowsCapacitiesType rowLengths( rows );
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
@@ -963,7 +963,7 @@ void test_RowsReduction()
    // Compute max norm
    TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
    auto rowSums_view = rowSums.getView();
-   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
+   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return abs( value );
    };
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
@@ -1134,64 +1134,6 @@ void test_SaveAndLoad( const char* filename )
    EXPECT_EQ( savedMatrix.getElement( 3, 3 ),  1 );
 
    EXPECT_EQ( std::remove( filename ), 0 );
-}
-
-template< typename Matrix >
-void test_Print()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-
-   /*
-    * Sets up the following 5x4 sparse matrix:
-    *
-    *    /  1  1  1  0 \
-    *    |  0  0  0  1 |
-    *    |  1  1  1  0 |
-    *    |  0  1  1  1 |
-    *    \  0  0  1  1 /
-    */
-
-   const IndexType m_rows = 5;
-   const IndexType m_cols = 4;
-
-   Matrix m( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
-   m.setCompressedRowLengths( rowLengths );
-
-   RealType value = 1;
-   for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
-       m.setElement( 0, i, 1 );
-
-   m.setElement( 1, 3, 1 );      // 1st row
-
-   for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
-       m.setElement( 2, i, 1 );
-
-   for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
-       m.setElement( 3, i, 1 );
-
-   for( IndexType i = 2; i < m_cols; i++ )       // 4th row
-       m.setElement( 4, i, 1 );
-
-   std::stringstream printed;
-   std::stringstream couted;
-
-   //change the underlying buffer and save the old buffer
-   auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-   m.print( std::cout ); //all the std::cout goes to ss
-
-   std::cout.rdbuf(old_buf); //reset
-
-   couted << "Row: 0 ->  Col:0->1	 Col:1->1	 Col:2->1\t\n"
-              "Row: 1 ->  Col:3->1\t\n"
-              "Row: 2 ->  Col:0->1	 Col:1->1	 Col:2->1\t\n"
-              "Row: 3 ->  Col:1->1	 Col:2->1	 Col:3->1\t\n"
-              "Row: 4 ->  Col:2->1	 Col:3->1\t\n";
-
-   EXPECT_EQ( printed.str(), couted.str() );
 }
 
 #endif

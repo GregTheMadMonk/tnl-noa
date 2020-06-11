@@ -163,7 +163,7 @@ void test_SetLike()
 }
 
 template< typename Matrix >
-void test_GetNumberOfNonzeroMatrixElements()
+void test_GetNonzeroElementsCount()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -204,7 +204,7 @@ void test_GetNumberOfNonzeroMatrixElements()
                                   { 10, 2, 28 },                              { 10, 4, 29 },                                                      { 10, 10, 30 }
    } );
 
-   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 49 );
+   EXPECT_EQ( m.getNonzeroElementsCount(), 49 );
 }
 
 template< typename Matrix >
@@ -898,7 +898,7 @@ void test_RowsReduction()
    typename Matrix::RowsCapacitiesType rowLengths_true( { 1, 1, 4, 4, 4, 4, 1, 1 } );
    auto rowLengths_view = rowLengths.getView();
    rowLengths_view = 0;
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) mutable -> IndexType {
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) mutable -> IndexType {
       if( value != 0.0 && row != column)
          TNL::Algorithms::AtomicOperations< DeviceType >::add( rowLengths_view[ column ], ( IndexType ) 1 );
       return ( value != 0.0 );

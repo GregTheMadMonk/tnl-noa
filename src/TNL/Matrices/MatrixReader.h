@@ -17,9 +17,12 @@
 namespace TNL {
 namespace Matrices {
 
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
 template< typename Device >
 class MatrixReaderDeviceDependentCode
 {};
+/// \endcond
 
 template< typename Matrix >
 class MatrixReader

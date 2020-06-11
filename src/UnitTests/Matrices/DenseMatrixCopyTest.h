@@ -15,8 +15,8 @@
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Matrices/DenseMatrix.h>
-#include <TNL/Matrices/Tridiagonal.h>
-#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
@@ -400,8 +400,8 @@ void tridiagonalMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType >;
-   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType >;
+   using TridiagonalHost = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using TridiagonalCuda = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
    TridiagonalHost hostMatrix( rows, columns );
@@ -449,10 +449,10 @@ void multidiagonalMatrixAssignment()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using MultidiagonalHost = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Host, IndexType >;
-   using MultidiagonalCuda = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Cuda, IndexType >;
-   using DiagonalsShiftsType = typename MultidiagonalHost::DiagonalsShiftsType;
-   DiagonalsShiftsType diagonals{ -4, -2, 0, 1, 3, 5 };
+   using MultidiagonalHost = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Host, IndexType >;
+   using MultidiagonalCuda = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType >;
+   using DiagonalsOffsetsType = typename MultidiagonalHost::DiagonalsOffsetsType;
+   DiagonalsOffsetsType diagonals{ -4, -2, 0, 1, 3, 5 };
 
    const IndexType rows( 10 ), columns( 10 );
    MultidiagonalHost hostMatrix( rows, columns, diagonals );

@@ -58,7 +58,7 @@ public:
 
    IndexType getAllocatedElementsCount() const;
 
-   IndexType getNumberOfNonzeroMatrixElements() const;
+   IndexType getNonzeroElementsCount() const;
 
    void reset();
 

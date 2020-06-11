@@ -140,7 +140,7 @@ operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexe
    while( i < getSize() && i < other.getSize() ) {
       if( getColumnIndex( i ) != other.getColumnIndex( i ) )
          return false;
-      if( getValue( i ) != other.getValue( i ) )
+      if( ! _isBinary && getValue( i ) != other.getValue( i ) )
          return false;
       ++i;
    }
@@ -163,7 +163,11 @@ std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentV
 {
    using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::IndexType >;
    for( NonConstIndex i = 0; i < row.getSize(); i++ )
-      str << " [ " << row.getColumnIndex( i ) << " ] = " << row.getValue( i ) << ", ";
+      if( isBinary_ )
+         // TODO: check getPaddingIndex(), print only the column indices of non-zeros but not the values
+         str << " [ " << row.getColumnIndex( i ) << " ] = " << (row.getColumnIndex( i ) >= 0) << ", ";
+      else
+         str << " [ " << row.getColumnIndex( i ) << " ] = " << row.getValue( i ) << ", ";
    return str;
 }
 

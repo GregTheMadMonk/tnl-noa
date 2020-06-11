@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Matrices/MultidiagonalMatrixView.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -32,12 +33,12 @@ template< typename Real,
           ElementsOrganization Organization >
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 MultidiagonalMatrixView( const ValuesViewType& values,
-                         const DiagonalsShiftsView& diagonalsShifts,
-                         const HostDiagonalsShiftsView& hostDiagonalsShifts,
+                         const DiagonalsOffsetsView& diagonalsOffsets,
+                         const HostDiagonalsOffsetsView& hostDiagonalsOffsets,
                          const IndexerType& indexer )
 : MatrixView< Real, Device, Index >( indexer.getRows(), indexer.getColumns(), values ),
-  diagonalsShifts( diagonalsShifts ),
-  hostDiagonalsShifts( hostDiagonalsShifts ),
+  diagonalsOffsets( diagonalsOffsets ),
+  hostDiagonalsOffsets( hostDiagonalsOffsets ),
   indexer( indexer )
 {
 }
@@ -51,8 +52,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getView() -> ViewType
 {
    return ViewType( const_cast< MultidiagonalMatrixView* >( this )->values.getView(),
-                    const_cast< MultidiagonalMatrixView* >( this )->diagonalsShifts.getView(),
-                    const_cast< MultidiagonalMatrixView* >( this )->hostDiagonalsShifts.getView(),
+                    const_cast< MultidiagonalMatrixView* >( this )->diagonalsOffsets.getView(),
+                    const_cast< MultidiagonalMatrixView* >( this )->hostDiagonalsOffsets.getView(),
                     indexer );
 }
 
@@ -65,8 +66,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->values.getConstView(),
-                         this->diagonalsShifts.getConstView(),
-                         this->hostDiagonalsShifts.getConstView(),
+                         this->diagonalsOffsets.getConstView(),
+                         this->hostDiagonalsOffsets.getConstView(),
                          indexer );
 }
 
@@ -78,10 +79,10 @@ String
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
-   return String( "Matrices::Multidiagonal< " ) +
+   return String( "Matrices::MultidiagonalMatrix< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
-          ( Organization ? "true" : "false" ) + ", [any_allocator] >";
+          TNL::getSerializationType( Organization ) + ", [any_allocator], [any_allocator] >";
 }
 
 template< typename Real,
@@ -104,7 +105,7 @@ const Index&
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getDiagonalsCount() const
 {
-   return this->diagonalsShifts.getSize();
+   return this->diagonalsOffsets.getSize();
 }
 
 template< typename Real,
@@ -137,20 +138,9 @@ template< typename Real,
           ElementsOrganization Organization >
 Index
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getNonemptyRowsCount() const
-{
-   return this->indexer.getNonemptyRowsCount();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRowLength( const IndexType row ) const
 {
-   return this->diagonalsShifts.getSize();
+   return this->diagonalsOffsets.getSize();
 }
 
 template< typename Real,
@@ -159,18 +149,7 @@ template< typename Real,
           ElementsOrganization Organization >
 Index
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getMaxRowLength() const
-{
-   return this->diagonalsShifts.getSize();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -192,7 +171,7 @@ operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organizatio
       return this->values == matrix.values;
    else
    {
-      TNL_ASSERT( false, "TODO" );
+      TNL_ASSERT_TRUE( false, "TODO" );
    }
 }
 
@@ -217,7 +196,7 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 setValue( const RealType& v )
 {
    // we dont do this->values = v here because it would set even elements 'outside' the matrix
-   // method getNumberOfNonzeroElements would not well
+   // method getNumberOfNonzeroElements would not work well then
    const RealType newValue = v;
    auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value, bool& compute ) mutable {
       value = newValue;
@@ -234,7 +213,7 @@ auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
-   return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
+   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -246,13 +225,14 @@ auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
-   return RowView( rowIdx, this->diagonalsShifts.getView(), this->values.getView(), this->indexer );
+   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+__cuda_callable__
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
@@ -262,17 +242,21 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
+   for( IndexType i = 0; i < diagonalsOffsets.getSize(); i++ )
+      if( row + diagonalsOffsets.getElement( i ) == column )
       {
-         this->values.setElement( this->getElementIndex( row, i ), value );
+         this->values.setElement( this->indexer.getGlobalIndex( row, i ), value );
          return;
       }
    if( value != 0.0 )
    {
+#ifdef __CUDA_ARCH__
+      TNL_ASSERT_TRUE( false, "" );
+#else
       std::stringstream msg;
       msg << "Wrong matrix element coordinates ( "  << row << ", " << column << " ) in multidiagonal matrix.";
       throw std::logic_error( msg.str() );
+#endif
    }
 }
 
@@ -280,6 +264,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+__cuda_callable__
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 addElement( const IndexType row,
@@ -292,18 +277,22 @@ addElement( const IndexType row,
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
+   for( IndexType i = 0; i < diagonalsOffsets.getSize(); i++ )
+      if( row + diagonalsOffsets.getElement( i ) == column )
       {
-         const Index idx = this->getElementIndex( row, i );
+         const Index idx = this->indexer.getGlobalIndex( row, i );
          this->values.setElement( idx, thisElementMultiplicator * this->values.getElement( idx ) + value );
          return;
       }
    if( value != 0.0 )
    {
+#ifdef __CUDA_ARCH__
+      TNL_ASSERT_TRUE( false, "" );
+#else
       std::stringstream msg;
       msg << "Wrong matrix element coordinates ( "  << row << ", " << column << " ) in multidiagonal matrix.";
       throw std::logic_error( msg.str() );
+#endif
    }
 }
 
@@ -311,6 +300,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+__cuda_callable__
 Real
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getElement( const IndexType row, const IndexType column ) const
@@ -320,9 +310,9 @@ getElement( const IndexType row, const IndexType column ) const
    TNL_ASSERT_GE( column, 0, "" );
    TNL_ASSERT_LT( column, this->getColumns(), "" );
 
-   for( IndexType i = 0; i < hostDiagonalsShifts.getSize(); i++ )
-      if( row + hostDiagonalsShifts[ i ] == column )
-         return this->values.getElement( this->getElementIndex( row, i ) );
+   for( IndexType localIdx = 0; localIdx < diagonalsOffsets.getSize(); localIdx++ )
+      if( row + diagonalsOffsets.getElement( localIdx ) == column )
+         return this->values.getElement( this->indexer.getGlobalIndex( row, localIdx ) );
    return 0.0;
 }
 
@@ -335,8 +325,8 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 operator=( const MultidiagonalMatrixView& view )
 {
    MatrixView< Real, Device, Index >::operator=( view );
-   this->diagonalsShifts.bind( view.diagonalsShifts );
-   this->hostDiagonalsShifts.bind( view.hostDiagonalsShifts );
+   this->diagonalsOffsets.bind( view.diagonalsOffsets );
+   this->hostDiagonalsOffsets.bind( view.hostDiagonalsOffsets );
    this->indexer = view.indexer;
    return *this;
 }
@@ -352,8 +342,8 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    const auto zero = zero_;
@@ -361,9 +351,38 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       Real_ sum( zero );
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             reduce( sum, fetch( rowIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] ) );
+      }
+      keep( rowIdx, sum );
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
+{
+   using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
+   const auto values_view = this->values.getConstView();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
+   const IndexType columns = this->getColumns();
+   const auto indexer = this->indexer;
+   const auto zero = zero_;
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
+      Real_ sum( zero );
+      for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
+      {
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
+         if( columnIdx >= 0 && columnIdx < columns )
+            sum = reduce( sum, fetch( rowIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] ) );
       }
       keep( rowIdx, sum );
    };
@@ -386,21 +405,33 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+{
+   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
    template< typename Function >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
       }
@@ -418,15 +449,15 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
-   const auto diagonalsShifts_view = this->diagonalsShifts.getConstView();
-   const IndexType diagonalsCount = this->diagonalsShifts.getSize();
+   const auto diagonalsOffsets_view = this->diagonalsOffsets.getConstView();
+   const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
    bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       for( IndexType localIdx = 0; localIdx < diagonalsCount && compute; localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
+         const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
             function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
       }
@@ -462,23 +493,16 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-template< typename Vector >
-__cuda_callable__
-typename Vector::RealType 
-MultidiagonalMatrixView< Real, Device, Index, Organization >::
-rowVectorProduct( const IndexType row, const Vector& vector ) const
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
 void 
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-vectorProduct( const InVector& inVector, OutVector& outVector ) const
+vectorProduct( const InVector& inVector,
+               OutVector& outVector,
+               const RealType matrixMultiplicator,
+               const RealType outVectorMultiplicator,
+               const IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
@@ -491,10 +515,19 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
       sum += value;
    };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
+   auto keeper1 = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = matrixMultiplicator * value;
    };
-   this->allRowsReduction( fetch, reduction, keeper, ( RealType ) 0.0 );
+   auto keeper2 = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
+   };
+
+   if( end == 0 )
+      end = this->getRows();
+   if( outVectorMultiplicator == ( RealType ) 0.0 )
+      this->rowsReduction( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
+   else
+      this->rowsReduction( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
 }
 
 template< typename Real,
@@ -670,14 +703,18 @@ void MultidiagonalMatrixView< Real, Device, Index, Organization >::print( std::o
    for( IndexType rowIdx = 0; rowIdx < this->getRows(); rowIdx++ )
    {
       str <<"Row: " << rowIdx << " -> ";
-      for( IndexType localIdx = 0; localIdx < this->hostDiagonalsShifts.getSize(); localIdx++ )
+      for( IndexType localIdx = 0; localIdx < this->hostDiagonalsOffsets.getSize(); localIdx++ )
       {
-         const IndexType columnIdx = rowIdx + this->hostDiagonalsShifts[ localIdx ];
+         const IndexType columnIdx = rowIdx + this->hostDiagonalsOffsets[ localIdx ];
          if( columnIdx >= 0 && columnIdx < this->columns )
          {
-            auto v = this->values.getElement( this->indexer.getGlobalIndex( rowIdx, localIdx ) );
-            if( v )
-               str << " Col:" << columnIdx << "->" << v  << "\t";
+            auto value = this->values.getElement( this->indexer.getGlobalIndex( rowIdx, localIdx ) );
+            if( value )
+            {
+               std::stringstream str_;
+               str_ << std::setw( 4 ) << std::right << columnIdx << ":" << std::setw( 4 ) << std::left << value;
+               str << std::setw( 10 ) << str_.str();
+            }
          }
       }
       str << std::endl;
@@ -708,7 +745,7 @@ getIndexer() -> IndexerType&
    return this->indexer;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
@@ -718,7 +755,7 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getElementIndex( const IndexType row, const IndexType localIdx ) const
 {
    return this->indexer.getGlobalIndex( row, localIdx );
-}
+}*/
 
 template< typename Real,
           typename Device,

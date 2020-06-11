@@ -49,9 +49,12 @@ public:
    __cuda_callable__
    MatrixView( const MatrixView& view ) = default;
 
+   __cuda_callable__
+   MatrixView( MatrixView&& view ) = default;
+
    IndexType getAllocatedElementsCount() const;
 
-   virtual IndexType getNumberOfNonzeroMatrixElements() const;
+   virtual IndexType getNonzeroElementsCount() const;
 
    __cuda_callable__
    IndexType getRows() const;

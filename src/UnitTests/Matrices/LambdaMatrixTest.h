@@ -102,14 +102,6 @@ TYPED_TEST( LambdaMatrixTest, rowsReduction )
 
     test_RowsReduction< LambdaMatrixParametersType >();
 }
-
-TYPED_TEST( LambdaMatrixTest, printTest )
-{
-    using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
-
-    test_Print< LambdaMatrixParametersType >();
-}
-
 #endif
 
 #include "../main.h"

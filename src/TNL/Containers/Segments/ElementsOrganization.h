@@ -26,7 +26,15 @@ struct DefaultElementsOrganization
          return ColumnMajorOrder;
    };
 };
-
       } // namespace Segments
    }  // namespace Containers
+
+String getSerializationType( Containers::Segments::ElementsOrganization Organization )
+{
+   if( Organization == Containers::Segments::RowMajorOrder )
+      return String( "RowMajorOrder" );
+   else
+      return String( "ColumnMajorOrder" );
+}
+
 } // namespace TNL

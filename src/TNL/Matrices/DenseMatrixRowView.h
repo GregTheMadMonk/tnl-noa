@@ -25,6 +25,11 @@ namespace TNL {
  * \include Matrices/DenseMatrixExample_getRow.cpp
  * \par Output
  * \include DenseMatrixExample_getRow.out
+ * 
+ * \par Example
+ * \include Matrices/DenseMatrixViewExample_getRow.cpp
+ * \par Output
+ * \include DenseMatrixViewExample_getRow.out
  */
 template< typename SegmentView,
           typename ValuesView >

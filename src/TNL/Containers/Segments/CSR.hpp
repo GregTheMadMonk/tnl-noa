@@ -174,16 +174,6 @@ template< typename Device,
           typename Index,
           typename IndexAllocator >
 __cuda_callable__
-void
-CSR< Device, Index, IndexAllocator >::
-getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator >
-__cuda_callable__
 auto
 CSR< Device, Index, IndexAllocator >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType

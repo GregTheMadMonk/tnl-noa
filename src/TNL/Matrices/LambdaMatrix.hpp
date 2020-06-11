@@ -10,10 +10,13 @@
 
 #pragma once
 
+#include <iomanip>
+#include <functional>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/LambdaMatrix.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Matrices/LambdaMatrix.h>
+#include <TNL/Matrices/details/SparseMatrix.h>
 
 namespace TNL {
 namespace Matrices {
@@ -94,33 +97,16 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
-   
-   rowLengths.setSize( this->getRows() );
-   const IndexType rows = this->getRows();
-   const IndexType columns = this->getColumns();
-   auto rowLengthsView = rowLengths.getView();
-   auto compressedRowLengths = this->compressedRowLengthsLambda;
-
-   if( std::is_same< typename Vector::DeviceType, Device_ >::value )
-      Algorithms::ParallelFor< Device_ >::exec(
-         ( IndexType ) 0,
-         this->getRows(),
-         [=] __cuda_callable__ ( const IndexType row ) mutable {
-            rowLengthsView[ row ] = compressedRowLengths( rows, columns, row );
-         } );
-   else
-   {
-      Containers::Vector< IndexType, Device_, IndexType > aux( this->getRows() );
-      auto auxView = aux.getView();
-      Algorithms::ParallelFor< Device_ >::exec(
-         ( IndexType ) 0,
-         this->getRows(),
-         [=] __cuda_callable__ ( const IndexType row ) mutable {
-            auxView[ row ] = compressedRowLengths( rows, columns, row );
-         } );
-      rowLengths = aux;
-   }
+   details::set_size_if_resizable( rowLengths, this->getRows() );
+   rowLengths = 0;
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return ( value != 0.0 );
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
 }
 
 template< typename MatrixElementsLambda,
@@ -130,9 +116,9 @@ template< typename MatrixElementsLambda,
           typename Index >
 Index
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
-   Containers::Vector< IndexType, typename Devices::PickDevice< DeviceType >::DeviceType, IndexType > rowLengthsVector;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowLengthsVector;
    this->getCompressedRowLengths( rowLengthsVector );
    return sum( rowLengthsVector );
 }
@@ -147,8 +133,7 @@ LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, In
 getElement( const IndexType row,
             const IndexType column ) const
 {
-   using Device_ = typename Devices::PickDevice< Devices::Host >::DeviceType;
-   Containers::Array< RealType, Device_ > value( 1 );
+   Containers::Array< RealType, DeviceType > value( 1 );
    auto valueView = value.getView();
    auto rowLengths = this->compressedRowLengthsLambda;
    auto matrixElements = this->matrixElementsLambda;
@@ -169,23 +154,8 @@ getElement( const IndexType row,
          }
       }
    };
-   Algorithms::ParallelFor< Device_ >::exec( row, row + 1, getValue );
+   Algorithms::ParallelFor< DeviceType >::exec( row, row + 1, getValue );
    return valueView.getElement( 0 );
-}
-
-template< typename MatrixElementsLambda,
-          typename CompressedRowLengthsLambda,
-          typename Real,
-          typename Device,
-          typename Index >
-      template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-rowVectorProduct( const IndexType row,
-                  const Vector& vector ) const
-{
-   
 }
 
 template< typename MatrixElementsLambda,
@@ -200,20 +170,22 @@ LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, In
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType& matrixMultiplicator,
-               const RealType& outVectorMultiplicator ) const
+               const RealType& outVectorMultiplicator,
+               const IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
 
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType columnIdx, const RealType& value ) mutable -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType columnIdx, const RealType& value ) mutable -> RealType {
       if( value == 0.0 )
          return 0.0;
       return value * inVectorView[ columnIdx ];
    };
-   auto reduce = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
+   auto reduce = [] __cuda_callable__ ( RealType& sum, const RealType& value ) -> RealType {
+      return sum + value;
    };
    auto keep = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       if( outVectorMultiplicator == 0.0 )
@@ -221,7 +193,9 @@ vectorProduct( const InVector& inVector,
       else
          outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
    };
-   this->allRowsReduction( fetch, reduce, keep, 0.0 );
+   if( ! end )
+      end = this->getRows();
+   this->rowsReduction( begin, end, fetch, reduce, keep, 0.0 );
 }
 
 template< typename MatrixElementsLambda,
@@ -232,10 +206,9 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   using FetchType = decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) );
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
+   using FetchType = decltype( fetch( IndexType(), IndexType(), RealType() ) );
 
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
@@ -251,12 +224,12 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
         matrixElements( rows, columns, rowIdx, localIdx, elementColumn, elementValue );
         FetchType fetchValue( zero );
         if( elementValue != 0.0 )
-            fetchValue = fetch( rowIdx, localIdx, elementColumn, elementValue );
-        reduce( result, fetchValue );
+            fetchValue = fetch( rowIdx, elementColumn, elementValue );
+        result = reduce( result, fetchValue );
       }
       keep( rowIdx, result );
    };
-   Algorithms::ParallelFor< Device_ >::exec( first, last, processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, processRow );
 }
 
 template< typename MatrixElementsLambda,
@@ -267,7 +240,7 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
@@ -282,9 +255,6 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
-   using FetchType = decltype( fetch( IndexType(), IndexType(), RealType(), IndexType() ) );
-   using Device_ = typename Devices::PickDevice< DeviceType >::DeviceType;
-
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
@@ -301,7 +271,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
             function( rowIdx, localIdx, elementColumn, elementValue, compute );
       }
    };
-   Algorithms::ParallelFor< Device_ >::exec( first, last, processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, processRow );
 }
 
 template< typename MatrixElementsLambda,
@@ -312,9 +282,25 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forRows( IndexType first, IndexType last, Function& function )
+forAllRows( Function& function ) const
 {
-   this->forRows( 0, this->getRows(), function );
+   const IndexType rows = this->getRows();
+   const IndexType columns = this->getColumns();
+   auto rowLengths = this->compressedRowLengthsLambda;
+   auto matrixElements = this->matrixElementsLambda;
+   auto processRow = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
+      const IndexType rowLength = rowLengths( rows, columns, rowIdx );
+      bool compute( true );
+      for( IndexType localIdx = 0; localIdx < rowLength && compute; localIdx++ )
+      {
+        IndexType elementColumn( 0 );
+        RealType elementValue( 0.0 );
+        matrixElements( rows, columns, rowIdx, localIdx, elementColumn, elementValue );
+        if( elementValue != 0.0 )
+            function( rowIdx, localIdx, elementColumn, elementValue, compute );
+      }
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );
 }
 
 template< typename MatrixElementsLambda,
@@ -347,12 +333,34 @@ print( std::ostream& str ) const
       str <<"Row: " << row << " -> ";
       for( IndexType column = 0; column < this->getColumns(); column++ )
       {
-         auto value = this->getElement( row, column );
-         if( value != ( RealType ) 0 )
-            str << " Col:" << column << "->" << value << "\t";
+         RealType value = this->getElement( row, column );
+         if( value )
+         {
+            std::stringstream str_;
+            str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+            str << std::setw( 10 ) << str_.str();
+         }
       }
       str << std::endl;
    }
+}
+
+/**
+ * \brief Insertion operator for dense matrix and output stream.
+ * 
+ * \param str is the output stream.
+ * \param matrix is the lambda matrix.
+ * \return reference to the stream.
+ */
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+std::ostream& operator<< ( std::ostream& str, const LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >& matrix )
+{
+   matrix.print( str );
+   return str;
 }
 
 } //namespace Matrices
