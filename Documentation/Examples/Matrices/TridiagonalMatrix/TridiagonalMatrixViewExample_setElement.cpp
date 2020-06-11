@@ -1,20 +1,16 @@
 #include <iostream>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Pointers/SmartPointersRegister.h>
 
 template< typename Device >
 void setElements()
 {
    const int matrixSize( 5 );
-   auto diagonalsOffsets = { -1, 0, 1 }; // offsets of tridiagonal matrix
-   using Matrix = TNL::Matrices::MultidiagonalMatrix< double, Device >;
-   Matrix matrix( matrixSize, matrixSize, diagonalsOffsets );
+   using Matrix = TNL::Matrices::TridiagonalMatrix< double, Device >;
+   Matrix matrix( matrixSize, matrixSize );
    auto view = matrix.getView();
-
    for( int i = 0; i < 5; i++ )
       view.setElement( i, i, i );
 
@@ -41,6 +37,9 @@ int main( int argc, char* argv[] )
    setElements< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
+   // It seems that nvcc 10.1 does not handle lambda functions properly. 
+   // It is hard to make nvcc to compile this example and it does not work
+   // properly. We will try it with later version of CUDA.
    std::cout << "Set elements on CUDA device:" << std::endl;
    setElements< TNL::Devices::Cuda >();
 #endif

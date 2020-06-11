@@ -107,36 +107,13 @@ getCompressedRowLengths( Vector& rowLengths ) const
    this->allRowsReduction( fetch, reduce, keep, 0 );
 }
 
-
 template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
 Index
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-getRowLength( const IndexType row ) const
-{
-   return this->indexer.getRowSize( row );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-TridiagonalMatrixView< Real, Device, Index, Organization >::
-getMaxRowLength() const
-{
-   return 3;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-Index
-TridiagonalMatrixView< Real, Device, Index, Organization >::
-getNumberOfNonzeroMatrixElements() const
+getNonzeroElementsCount() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -483,18 +460,6 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-template< typename Vector >
-__cuda_callable__
-typename Vector::RealType
-TridiagonalMatrixView< Real, Device, Index, Organization >::
-rowVectorProduct( const IndexType row, const Vector& vector ) const
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
 void
@@ -529,6 +494,19 @@ vectorProduct( const InVector& inVector,
       this->rowsReduction( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
    else
       this->rowsReduction( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+TridiagonalMatrixView< Real, Device, Index, Organization >&
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+operator=( const TridiagonalMatrixView& view )
+{
+   MatrixView< Real, Device, Index >::operator=( view );
+   this->indexer = view.indexer;
+   return *this;
 }
 
 template< typename Real,

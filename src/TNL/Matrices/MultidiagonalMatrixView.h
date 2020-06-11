@@ -20,7 +20,7 @@ namespace TNL {
 namespace Matrices {
 
 /**
- * \brief Implementation of sparse multi-diagonal matrix.
+ * \brief Implementation of sparse multidiagonal matrix.
  *
  * It serves as an accessor to \ref SparseMatrix for example when passing the
  * matrix to lambda functions. SparseMatrix view can be also created in CUDA kernels.
@@ -182,6 +182,14 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       [[deprecated]]
       IndexType getRowLength( const IndexType row ) const;
 
+      /**
+       * \brief Returns number of non-zero matrix elements.
+       *
+       * This method really counts the non-zero matrix elements and so
+       * it returns zero for matrix having all allocated elements set to zero.
+       *
+       * \return number of non-zero matrix elements.
+       */
       IndexType getNonzeroElementsCount() const;
 
       /**
@@ -191,12 +199,13 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * \tparam RealAllocator_ is \e RealAllocator of the source matrix.
-       * \tparam IndexAllocator_ is \e IndexAllocator of the source matrix.
        * 
        * \return \e true if both matrices are identical and \e false otherwise.
        */
-      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      template< typename Real_,
+                typename Device_,
+                typename Index_,
+                ElementsOrganization Organization_ >
       bool operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
       /**
@@ -206,14 +215,15 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * \tparam RealAllocator_ is \e RealAllocator of the source matrix.
-       * \tparam IndexAllocator_ is \e IndexAllocator of the source matrix.
        * 
        * \param matrix is the source matrix.
        * 
        * \return \e true if both matrices are NOT identical and \e false otherwise.
        */
-      template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
+      template< typename Real_,
+                typename Device_,
+                typename Index_,
+                ElementsOrganization Organization_ >
       bool operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix ) const;
 
       /**
@@ -619,10 +629,6 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       IndexType getPaddingIndex() const;
 
    protected:
-
-      //__cuda_callable__
-      //IndexType getElementIndex( const IndexType row,
-      //                           const IndexType localIdx ) const;
 
       DiagonalsOffsetsView diagonalsOffsets;
 

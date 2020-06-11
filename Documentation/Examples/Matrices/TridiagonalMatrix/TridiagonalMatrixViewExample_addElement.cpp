@@ -1,16 +1,17 @@
 #include <iostream>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 
 template< typename Device >
 void addElements()
 {
    const int matrixSize( 5 );
-   TNL::Matrices::MultidiagonalMatrix< double, Device > matrix(
-      matrixSize,     // number of rows
-      matrixSize,     // number of columns
-      { -1, 0, 1 } ); // diagonals offsets
+   TNL::Matrices::TridiagonalMatrix< double, Device > matrix(
+      matrixSize,    // number of rows
+      matrixSize     // number of columns
+   );
    auto view = matrix.getView();
+
    for( int i = 0; i < matrixSize; i++ )
       view.setElement( i, i, i );
 

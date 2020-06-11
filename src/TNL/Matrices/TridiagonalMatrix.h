@@ -274,8 +274,8 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      [[deprecated]]
-      IndexType getRowLength( const IndexType row ) const;
+      //[[deprecated]]
+      //IndexType getRowLength( const IndexType row ) const;
 
       //IndexType getMaxRowLength() const;
 

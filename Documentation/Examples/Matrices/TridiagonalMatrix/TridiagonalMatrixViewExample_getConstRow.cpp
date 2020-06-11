@@ -1,7 +1,7 @@
 #include <iostream>
 #include <functional>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -9,16 +9,14 @@ template< typename Device >
 void getRowExample()
 {
    const int matrixSize = 5;
-   auto diagonalsOffsets = { -2, -1, 0 };
-   using MatrixType = TNL::Matrices::MultidiagonalMatrix< double, Device >;
+   using MatrixType = TNL::Matrices::TridiagonalMatrix< double, Device >;
    MatrixType matrix (
       matrixSize,           // number of matrix columns
-      diagonalsOffsets,    
-      {  { 0.0, 0.0, 1.0 }, // matrix elements
+      {  { 0.0, 2.0, 1.0 }, // matrix elements
          { 0.0, 2.0, 1.0 },
          { 3.0, 2.0, 1.0 },
          { 3.0, 2.0, 1.0 },
-         { 3.0, 2.0, 1.0 } } );
+         { 0.0, 2.0, 1.0 } } );
    auto view = matrix.getView();
 
    /***
@@ -32,7 +30,7 @@ void getRowExample()
    /***
     * Compute the matrix trace.
     */
-   int trace = TNL::Algorithms::Reduction< Device >::reduce( matrix.getRows(), std::plus<>{}, fetch, 0 );
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( view.getRows(), std::plus<>{}, fetch, 0 );
    std::cout << "Matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Matrix trace is: " << trace << "." << std::endl;
 }

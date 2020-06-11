@@ -187,18 +187,6 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
-Index
-TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-getRowLength( const IndexType row ) const
-{
-   return this->view.getRowLength( row );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          typename RealAllocator >
    template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
@@ -216,7 +204,7 @@ Index
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 getNonzeroElementsCount() const
 {
-   return this->view.getNumberOfNonzeroMatrixElements();
+   return this->view.getNonzeroElementsCount();
 }
 
 template< typename Real,
@@ -720,8 +708,6 @@ TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    IndexType localIdx = column - row + 1;
-   //if( row > 0 )
-   //   localIdx++;
 
    TNL_ASSERT_GE( localIdx, 0, "" );
    TNL_ASSERT_LT( localIdx, 3, "" );
