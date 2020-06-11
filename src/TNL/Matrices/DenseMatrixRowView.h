@@ -22,12 +22,12 @@ namespace TNL {
  * See \ref DenseMatrix and \ref DenseMatrixView.
  * 
  * \par Example
- * \include Matrices/DenseMatrixExample_getRow.cpp
+ * \include Matrices/DenseMatrix/DenseMatrixExample_getRow.cpp
  * \par Output
  * \include DenseMatrixExample_getRow.out
  * 
  * \par Example
- * \include Matrices/DenseMatrixViewExample_getRow.cpp
+ * \include Matrices/DenseMatrix/DenseMatrixViewExample_getRow.cpp
  * \par Output
  * \include DenseMatrixViewExample_getRow.out
  */

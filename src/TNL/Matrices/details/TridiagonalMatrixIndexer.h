@@ -46,7 +46,7 @@ class TridiagonalMatrixIndexer
       __cuda_callable__
       IndexType getRowSize( const IndexType rowIdx ) const
       {
-         if( rowIdx == 0 )
+         /*if( rowIdx == 0 )
             return 2;
          if( columns <= rows )
          {
@@ -54,7 +54,7 @@ class TridiagonalMatrixIndexer
                return 2;
             if( rowIdx == columns )
                return 1;
-         }
+         }*/
          return 3;
       };
 
