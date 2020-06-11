@@ -190,7 +190,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-void
+__cuda_callable__ void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
@@ -200,9 +200,13 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
    TNL_ASSERT_LT( column, this->getColumns(), "" );
    if( abs( row - column ) > 1 )
    {
+#ifdef __CUDA_ARCH__
+      TNL_ASSERT_TRUE( false, "Wrong matrix element coordinates tridiagonal matrix." );
+#else
       std::stringstream msg;
       msg << "Wrong matrix element coordinates ( "  << row << ", " << column << " ) in tridiagonal matrix.";
       throw std::logic_error( msg.str() );
+#endif
    }
    this->values.setElement( this->getElementIndex( row, column ), value );
 }
@@ -211,7 +215,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-void
+__cuda_callable__ void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 addElement( const IndexType row,
             const IndexType column,
@@ -224,9 +228,13 @@ addElement( const IndexType row,
    TNL_ASSERT_LT( column, this->getColumns(), "" );
    if( abs( row - column ) > 1 )
    {
+#ifdef __CUDA_ARCH__
+      TNL_ASSERT_TRUE( false, "Wrong matrix element coordinates tridiagonal matrix." );
+#else
       std::stringstream msg;
       msg << "Wrong matrix element coordinates ( "  << row << ", " << column << " ) in tridiagonal matrix.";
       throw std::logic_error( msg.str() );
+#endif
    }
    const Index i = this->getElementIndex( row, column );
    this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value );
@@ -236,7 +244,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-Real
+__cuda_callable__ Real
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 getElement( const IndexType row, const IndexType column ) const
 {

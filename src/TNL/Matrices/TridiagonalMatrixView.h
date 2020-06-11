@@ -275,6 +275,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \par Output
        * \include TridiagonalMatrixViewExample_setElement.out
        */
+      __cuda_callable__
       void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
@@ -302,6 +303,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_addElement.out
        * 
        */
+      __cuda_callable__
       void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
@@ -328,6 +330,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_getElement.out
        * 
        */
+      __cuda_callable__
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 

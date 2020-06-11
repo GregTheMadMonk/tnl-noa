@@ -37,9 +37,6 @@ int main( int argc, char* argv[] )
    setElements< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
-   // It seems that nvcc 10.1 does not handle lambda functions properly. 
-   // It is hard to make nvcc to compile this example and it does not work
-   // properly. We will try it with later version of CUDA.
    std::cout << "Set elements on CUDA device:" << std::endl;
    setElements< TNL::Devices::Cuda >();
 #endif
