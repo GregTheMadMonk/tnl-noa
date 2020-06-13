@@ -43,7 +43,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
    deviceArray2.setSize( size );
 #endif
 
-   Real resultHost, resultDevice;
+   Real resultHost;
 
 
    // reset functions
@@ -104,6 +104,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
    benchmark.setOperation( "comparison (operator==)", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", compareHost );
 #ifdef HAVE_CUDA
+   Real resultDevice;
    auto compareCuda = [&]() {
       resultDevice = (int) ( deviceArray == deviceArray2 );
    };
@@ -118,6 +119,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
    // copyBasetime is used later inside HAVE_CUDA guard, so the compiler will
    // complain when compiling without CUDA
    const double copyBasetime = benchmark.time< Devices::Host >( reset1, "CPU", copyAssignHostHost );
+   (void)copyBasetime;  // ignore unused variable
 #ifdef HAVE_CUDA
    auto copyAssignCudaCuda = [&]() {
       deviceArray = deviceArray2;

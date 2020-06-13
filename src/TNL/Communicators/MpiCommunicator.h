@@ -144,6 +144,14 @@ class MpiCommunicator
          MPI_Init( &argc, &argv );
          selectGPU();
 #endif
+
+         // silence warnings about (potentially) unused variables
+         (void) NullGroup;
+         (void) NullRequest;
+         (void) backup;
+         (void) psbuf;
+         (void) filestr;
+         (void) redirect;
       }
 
       static void setRedirection( bool redirect_ )
