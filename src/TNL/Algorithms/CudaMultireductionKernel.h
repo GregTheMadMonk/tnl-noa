@@ -32,10 +32,11 @@ static constexpr int Multireduction_maxThreadsPerBlock = 256;  // must be a powe
 static constexpr int Multireduction_registersPerThread = 32;   // empirically determined optimal value
 
 // __CUDA_ARCH__ is defined only in device code!
-#if (__CUDA_ARCH__ >= 300 )
-   static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
-#else
+#if (__CUDA_ARCH__ == 750 )
+   // Turing has a limit of 1024 threads per multiprocessor
    static constexpr int Multireduction_minBlocksPerMultiprocessor = 4;
+#else
+   static constexpr int Multireduction_minBlocksPerMultiprocessor = 8;
 #endif
 
 template< int blockSizeX,

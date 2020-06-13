@@ -33,10 +33,11 @@ static constexpr int Reduction_registersPerThread = 32;   // empirically determi
 
 #ifdef HAVE_CUDA
 // __CUDA_ARCH__ is defined only in device code!
-#if (__CUDA_ARCH__ >= 300 )
-   static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
-#else
+#if (__CUDA_ARCH__ == 750 )
+   // Turing has a limit of 1024 threads per multiprocessor
    static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
+#else
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
 #endif
 
 template< int blockSize,
