@@ -10,9 +10,11 @@
 
 #pragma once
 
+#include <TNL/Devices/Host.h>
+
 namespace TNL {
-   namespace Containers {
-      namespace Segments {
+namespace Containers {
+namespace Segments {
 
 enum ElementsOrganization { ColumnMajorOrder = 0, RowMajorOrder };
 
@@ -26,10 +28,11 @@ struct DefaultElementsOrganization
          return ColumnMajorOrder;
    };
 };
-      } // namespace Segments
-   }  // namespace Containers
 
-String getSerializationType( Containers::Segments::ElementsOrganization Organization )
+} // namespace Segments
+} // namespace Containers
+
+inline String getSerializationType( Containers::Segments::ElementsOrganization Organization )
 {
    if( Organization == Containers::Segments::RowMajorOrder )
       return String( "RowMajorOrder" );
