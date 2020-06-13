@@ -189,7 +189,7 @@ setupLinearSystem( MatrixPointer& matrixPointer )
       boundaryConditionPointer,
       rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   matrixPointer->setCompressedRowLengths( *rowLengthsPointer );
+   matrixPointer->setRowCapacities( *rowLengthsPointer );
    return true;
 }
 

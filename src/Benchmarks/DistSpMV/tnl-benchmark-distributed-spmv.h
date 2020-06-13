@@ -241,7 +241,7 @@ struct SpmvBenchmark
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrix.getRowCapacity( gi );
       }
-      distributedMatrix.setCompressedRowLengths( distributedRowLengths );
+      distributedMatrix.setRowCapacities( distributedRowLengths );
 
       // copy data from the global matrix/vector into the distributed matrix/vector
       for( IndexType i = 0; i < distributedMatrix.getLocalMatrix().getRows(); i++ ) {

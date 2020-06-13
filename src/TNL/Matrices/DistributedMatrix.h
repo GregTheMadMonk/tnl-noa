@@ -102,7 +102,7 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setRowCapacities( const CompressedRowLengthsVector& rowLengths );
 
    template< typename Vector >
    void getCompressedRowLengths( Vector& rowLengths ) const;

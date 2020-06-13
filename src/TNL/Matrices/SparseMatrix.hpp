@@ -218,7 +218,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 setRowCapacities( const RowsCapacitiesVector& rowsCapacities )
 {
-   TNL_ASSERT_EQ( rowsCapacities.getSize(), this->getRows(), "Number of matrix rows does not fit with rowLengths vector size." );
+   TNL_ASSERT_EQ( rowsCapacities.getSize(), this->getRows(), "Number of matrix rows does not fit with rowCapacities vector size." );
    using RowsCapacitiesVectorDevice = typename RowsCapacitiesVector::DeviceType;
    if( std::is_same< DeviceType, RowsCapacitiesVectorDevice >::value )
       this->segments.setSegmentsSizes( rowsCapacities );
@@ -263,7 +263,7 @@ setElements( const std::initializer_list< std::tuple< IndexType, IndexType, Real
       rowCapacities[ std::get< 0 >( i ) ]++;
    }
    SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
-   hostMatrix.setCompressedRowLengths( rowCapacities );
+   hostMatrix.setRowCapacities( rowCapacities );
    for( const auto& i : data )
    {
       if( std::get< 1 >( i ) >= columns )
@@ -296,14 +296,14 @@ setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
    if( !std::is_same< DeviceType, Devices::Host >::value )
    {
       SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( this->getRows(), this->getColumns() );
-      hostMatrix.setCompressedRowLengths( rowsCapacities );
+      hostMatrix.setRowCapacities( rowsCapacities );
       for( auto element : map )
          hostMatrix.setElement( element.first.first, element.first.second, element.second );
       *this = hostMatrix;
    }
    else
    {
-      this->setCompressedRowLengths( rowsCapacities );
+      this->setRowCapacities( rowsCapacities );
       for( auto element : map )
          this->setElement( element.first.first, element.first.second, element.second );
    }
@@ -677,7 +677,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
    Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rowLengths;
    matrix.getCompressedRowLengths( rowLengths );
    this->setLike( matrix );
-   this->setCompressedRowLengths( rowLengths );
+   this->setRowCapacities( rowLengths );
    Containers::Vector< IndexType, DeviceType, IndexType > rowLocalIndexes( matrix.getRows() );
    rowLocalIndexes = 0;
 
@@ -787,7 +787,7 @@ operator=( const RHSMatrix& matrix )
    Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rowLengths;
    matrix.getCompressedRowLengths( rowLengths );
    this->setDimensions( matrix.getRows(), matrix.getColumns() );
-   this->setCompressedRowLengths( rowLengths );
+   this->setRowCapacities( rowLengths );
    Containers::Vector< IndexType, DeviceType, IndexType > rowLocalIndexes( matrix.getRows() );
    rowLocalIndexes = 0;
 

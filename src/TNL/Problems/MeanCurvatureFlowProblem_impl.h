@@ -138,7 +138,7 @@ setupLinearSystem( const MeshType& mesh,
       rowLengths
    );
    matrix.setDimensions( dofs, dofs );
-   matrix.setCompressedRowLengths( rowLengths );
+   matrix.setRowCapacities( rowLengths );
    return true;
 }
 

@@ -59,8 +59,8 @@ update( const MatrixPointer& matrixPointer )
       L_rowLengths[ i ] = L_entries;
       U_rowLengths[ N - 1 - i ] = U_entries;
    }
-   L.setCompressedRowLengths( L_rowLengths );
-   U.setCompressedRowLengths( U_rowLengths );
+   L.setRowCapacities( L_rowLengths );
+   U.setRowCapacities( U_rowLengths );
 
    // Incomplete LU factorization
    // The factors L and U are stored separately and the rows of U are reversed.

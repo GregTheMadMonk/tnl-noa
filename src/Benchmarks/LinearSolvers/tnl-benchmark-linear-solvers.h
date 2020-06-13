@@ -457,13 +457,13 @@ struct LinearSolversBenchmark
       DistributedVector dist_x0( localRange, matrixPointer->getRows(), group );
       DistributedVector dist_b( localRange, matrixPointer->getRows(), group );
 
-      // copy the row lengths from the global matrix to the distributed matrix
+      // copy the row capacities from the global matrix to the distributed matrix
       DistributedRowLengths distributedRowLengths( localRange, matrixPointer->getRows(), group );
       for( IndexType i = 0; i < distMatrixPointer->getLocalMatrix().getRows(); i++ ) {
          const auto gi = distMatrixPointer->getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrixPointer->getRowCapacity( gi );
       }
-      distMatrixPointer->setCompressedRowLengths( distributedRowLengths );
+      distMatrixPointer->setRowCapacities( distributedRowLengths );
 
       // copy data from the global matrix/vector into the distributed matrix/vector
       for( IndexType i = 0; i < distMatrixPointer->getLocalMatrix().getRows(); i++ ) {
