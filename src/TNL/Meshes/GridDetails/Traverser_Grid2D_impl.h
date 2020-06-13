@@ -181,7 +181,7 @@ processAllEntities( const GridPointer& gridPointer,
    }
    else
    {
-       const int* neighbors=distributedGrid->getNeighbors(); 
+       //const int* neighbors=distributedGrid->getNeighbors(); 
        CoordinatesType begin( distributedGrid->getLowerOverlap() );
        CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1) );
        

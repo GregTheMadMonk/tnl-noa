@@ -508,7 +508,7 @@ forRows( IndexType begin, IndexType end, Function& function ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
-   const IndexType paddingIndex_ = this->getPaddingIndex();
+   //const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> bool {
       if( isBinary() )
          function( rowIdx, localIdx, columns_view[ globalIdx ], 1, compute );

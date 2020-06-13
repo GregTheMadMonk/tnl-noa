@@ -80,9 +80,6 @@ protected:
       using LocalRangeType = typename VectorOrView::LocalRangeType;
       const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group );
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
-
       _V1.setDistribution( localRange, size, group );
    #else
       _V1.setSize( size );

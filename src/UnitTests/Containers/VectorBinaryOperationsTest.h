@@ -94,9 +94,6 @@ protected:
       using LocalRangeType = typename LeftVector::LocalRangeType;
       const LocalRangeType localRange = Partitioner< typename Left::IndexType, CommunicatorType >::splitRange( size, group );
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
-
       _L1.setDistribution( localRange, size, group );
       _L2.setDistribution( localRange, size, group );
       _R1.setDistribution( localRange, size, group );

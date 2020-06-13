@@ -83,7 +83,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
        
          const CoordinatesType& localBegin = this->distributedGrid->getLocalBegin(); 
          const CoordinatesType& localSize = this->distributedGrid->getLocalSize(); 
-         const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();
 
          const int *neighbors = distributedGrid->getNeighbors();
 

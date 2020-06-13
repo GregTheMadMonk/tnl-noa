@@ -176,9 +176,6 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
       const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
                                                                \
-      const int rank = CommunicatorType::GetRank(group);       \
-      const int nproc = CommunicatorType::GetSize(group);      \
-                                                               \
       VectorType _V1, _V2;                                     \
       _V1.setDistribution( localRange, size, group );          \
       _V2.setDistribution( localRange, size, group );          \

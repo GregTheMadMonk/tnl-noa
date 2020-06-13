@@ -354,7 +354,7 @@ bool Ellpack< Real, Device, Index > :: setRow( const IndexType row,
 {
    typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPointer = DDCType::getRowBegin( *this, row );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, row );
+   //const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
 
    if( elements > this->rowLengths )
@@ -574,7 +574,7 @@ bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector1& b,
 
    IndexType i = DeviceDependentCode::getRowBegin( *this, row );
    const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
-   const IndexType step = DeviceDependentCode::getElementStep( *this );
+   //const IndexType step = DeviceDependentCode::getElementStep( *this );
 
    IndexType column;
    while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
@@ -614,7 +614,7 @@ performJacobiIteration( const Vector& b,
 
    IndexType i = DeviceDependentCode::getRowBegin( *this, row );
    const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
-   const IndexType step = DeviceDependentCode::getElementStep( *this );
+   //const IndexType step = DeviceDependentCode::getElementStep( *this );
 
    IndexType column;
    while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
@@ -779,7 +779,7 @@ template< typename Real,
           typename Index >
 void Ellpack< Real, Device, Index >::allocateElements()
 {
-   IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
+   const IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
 
    if( this->alignedRows != 0 )
    {
@@ -787,7 +787,7 @@ void Ellpack< Real, Device, Index >::allocateElements()
                       "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
    }
 
-   Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
+   Sparse< Real, Device, Index >::allocateMatrixElements( numMtxElmnts );
 }
 
 template<>

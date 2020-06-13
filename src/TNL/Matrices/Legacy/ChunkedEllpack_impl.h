@@ -1324,9 +1324,9 @@ void ChunkedEllpack< Real, Device, Index >::print( std::ostream& str ) const
    {
       str <<"Row: " << row << " -> ";
 
-      const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
+      //const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
       //TNL_ASSERT( sliceIndex < this->rows, );
-      const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
+      //const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
       IndexType elementPtr = rowPointers.getElement( row );
       const IndexType rowEnd = rowPointers.getElement( row + 1 );
 

@@ -253,7 +253,7 @@ writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
     */
    //png_set_compression_level( this->png_ptr, Z_BEST_COMPRESSION );
  
-   const int bitDepth( 8 );
+   //const int bitDepth( 8 );
    png_set_IHDR( this->png_ptr,
                  this->info_ptr,
                  grid.getDimensions().x(),

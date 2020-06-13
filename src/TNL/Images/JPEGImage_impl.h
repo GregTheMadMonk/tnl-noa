@@ -143,7 +143,7 @@ read( const RegionOfInterest< Index > roi,
          //                                     roi.getBottom() - 1 - i ) );
          cell.refresh();
          unsigned char char_color[ 4 ];
-         unsigned int int_color[ 4 ];
+         //unsigned int int_color[ 4 ];
          Real value, r, g, b;
          switch( this->components )
          {

@@ -861,7 +861,7 @@ operator=( const RHSMatrix& matrix )
          ////
          // Copy matrix elements from the buffer to the matrix and ignoring
          // zero matrix elements
-         const IndexType matrix_columns = this->getColumns();
+         //const IndexType matrix_columns = this->getColumns();
          const auto thisRowLengths_view = thisRowLengths.getConstView();
          auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value, bool& compute ) mutable {
             RealType inValue( 0.0 );

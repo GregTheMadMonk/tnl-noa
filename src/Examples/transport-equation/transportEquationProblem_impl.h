@@ -188,7 +188,7 @@ getExplicitUpdate( const RealType& time,
     */
    const MeshPointer& mesh = this->getMesh();
    typedef typename MeshType::Cell Cell;
-   int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
+   //int count = ::sqrt(mesh->template getEntitiesCount< Cell >());
    this->bindDofs( _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    Pointers::SharedPointer<  MeshFunctionType > u( mesh, _u ); 
