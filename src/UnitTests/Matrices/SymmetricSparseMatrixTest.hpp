@@ -261,7 +261,6 @@ void test_GetRow()
    auto matrixView = m.getView();
    auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
       auto row = matrixView.getRow( rowIdx );
-      RealType val;
       switch( rowIdx )
       {
          case  0: row.setElement( 0, 0,  1 ); break;
@@ -1011,8 +1010,8 @@ void test_SaveAndLoad( const char* filename )
     *    \  0  0  0  0 10 /
     */
 
-   const IndexType rows = 6;
-   const IndexType cols = 5;
+   //const IndexType rows = 6;
+   //const IndexType cols = 5;
 
    Matrix savedMatrix( 6, 5, {
       { 0, 0, 1 },

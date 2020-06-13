@@ -151,14 +151,14 @@ template< typename Matrix,
           typename Communicator >
 void
 DistributedMatrix< Matrix, Communicator >::
-setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+setRowCapacities( const CompressedRowLengthsVector& rowLengths )
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), getRows(), "row lengths vector has wrong size" );
    TNL_ASSERT_EQ( rowLengths.getLocalRange(), getLocalRowRange(), "row lengths vector has wrong distribution" );
    TNL_ASSERT_EQ( rowLengths.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
 
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      localMatrix.setCompressedRowLengths( rowLengths.getConstLocalView() );
+      localMatrix.setRowCapacities( rowLengths.getConstLocalView() );
 
       spmv.reset();
    }

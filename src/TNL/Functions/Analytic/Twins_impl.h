@@ -46,7 +46,7 @@ Real
 Twins< 1, Real >::getPartialDerivative( const Point& v,
                                                    const Real& time ) const
 {
-   const RealType& x = v.x();
+   //const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
@@ -123,9 +123,9 @@ Twins< 3, Real >::
 getPartialDerivative( const Point& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   const RealType& y = v.y();
-   const RealType& z = v.z();
+   //const RealType& x = v.x();
+   //const RealType& y = v.y();
+   //const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
       return 0.0;
    return 0.0;

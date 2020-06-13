@@ -244,7 +244,7 @@ void Merson< Problem, SolverMonitor >::computeKFunctions( DofVectorPointer& u,
    RealType* _k2 = k2->getData();
    RealType* _k3 = k3->getData();
    RealType* _k4 = k4->getData();
-   RealType* _k5 = k5->getData();
+   //RealType* _k5 = k5->getData();
    RealType* _kAux = kAux->getData();
    RealType* _u = u->getData();
 
@@ -353,7 +353,6 @@ typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( con
    const RealType* _k3 = k3->getData();
    const RealType* _k4 = k4->getData();
    const RealType* _k5 = k5->getData();
-   RealType* _kAux = kAux->getData();
 
    RealType eps( 0.0 ), maxEps( 0.0 );
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -383,6 +382,7 @@ typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( con
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
+      RealType* _kAux = kAux->getData();
       dim3 cudaBlockSize( 512 );
       const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
       const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );

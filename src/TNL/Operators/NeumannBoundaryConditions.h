@@ -119,9 +119,9 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
                               const EntityType& entity,   
                               const RealType& time = 0 ) const
    {
-      const MeshType& mesh = entity.getMesh();
+      //const MeshType& mesh = entity.getMesh();
       const auto& neighborEntities = entity.getNeighborEntities();
-      const IndexType& index = entity.getIndex();
+      //const IndexType& index = entity.getIndex();
       if( entity.getCoordinates().x() == 0 )
          return u[ neighborEntities.template getEntityIndex< 1 >() ] + entity.getMesh().getSpaceSteps().x() * 
             Functions::FunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
@@ -212,9 +212,9 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
                                  const EntityType& entity,                            
                                  const RealType& time = 0 ) const
       {
-         const MeshType& mesh = entity.getMesh();
+         //const MeshType& mesh = entity.getMesh();
          const auto& neighborEntities = entity.getNeighborEntities();
-         const IndexType& index = entity.getIndex();
+         //const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
             return u[ neighborEntities.template getEntityIndex< 1, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
@@ -330,9 +330,9 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
                                  const EntityType& entity,
                                  const RealType& time = 0 ) const
       {
-         const MeshType& mesh = entity.getMesh();
+         //const MeshType& mesh = entity.getMesh();
          const auto& neighborEntities = entity.getNeighborEntities();
-         const IndexType& index = entity.getIndex();
+         //const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
             return u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] + entity.getMesh().getSpaceSteps().x() *

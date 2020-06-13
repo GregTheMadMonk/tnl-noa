@@ -285,7 +285,7 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
             length++;
       rowLengths[ i ] = length;
    }
-   matrix2.setCompressedRowLengths( rowLengths );
+   matrix2.setRowCapacities( rowLengths );
 
    // set row elements
    for( IndexType i = 0; i < matrix2.getRows(); i++ ) {

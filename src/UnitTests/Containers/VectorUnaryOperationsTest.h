@@ -142,7 +142,6 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
 #ifdef STATIC_VECTOR
    #define SETUP_UNARY_VECTOR_TEST( _ ) \
       using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = VectorOrView::getSize();            \
                                                                \
       VectorOrView V1, V2;                                     \
                                                                \
@@ -153,13 +152,13 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorOrView::RealType;        \
       using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
-      constexpr int size = VectorOrView::getSize();            \
+      constexpr int _size = VectorOrView::getSize();            \
                                                                \
       VectorOrView V1;                                         \
       ExpectedVector expected;                                 \
                                                                \
-      const double h = (double) (end - begin) / size;          \
-      for( int i = 0; i < size; i++ )                          \
+      const double h = (double) (end - begin) / _size;         \
+      for( int i = 0; i < _size; i++ )                         \
       {                                                        \
          const RealType x = begin + i * h;                     \
          V1[ i ] = x;                                          \
@@ -167,17 +166,13 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       }                                                        \
 
 #elif defined(DISTRIBUTED_VECTOR)
-   #define SETUP_UNARY_VECTOR_TEST( _size ) \
+   #define SETUP_UNARY_VECTOR_TEST( size ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = _size;                              \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
       const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
       const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
-                                                               \
-      const int rank = CommunicatorType::GetRank(group);       \
-      const int nproc = CommunicatorType::GetSize(group);      \
                                                                \
       VectorType _V1, _V2;                                     \
       _V1.setDistribution( localRange, size, group );          \
@@ -188,14 +183,13 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
                                                                \
       VectorOrView V1( _V1 ), V2( _V2 );                       \
 
-   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _size, begin, end, function ) \
+   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( size, begin, end, function ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
       using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
       using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
-      constexpr int size = _size;                              \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
       const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
@@ -219,10 +213,9 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       ExpectedVector expected; expected = expected_h;          \
 
 #else
-   #define SETUP_UNARY_VECTOR_TEST( _size ) \
+   #define SETUP_UNARY_VECTOR_TEST( size ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = _size;                              \
                                                                \
       VectorType _V1( size ), _V2( size );                     \
                                                                \
@@ -231,14 +224,13 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
                                                                \
       VectorOrView V1( _V1 ), V2( _V2 );                       \
 
-   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _size, begin, end, function ) \
+   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( size, begin, end, function ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
       using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
       using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
-      constexpr int size = _size;                              \
                                                                \
       HostVector _V1h( size );                                 \
       HostExpectedVector expected_h( size );                   \

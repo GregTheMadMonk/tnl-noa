@@ -119,11 +119,12 @@ class ChunkedEllpack
          if( segmentIdx != slices[ sliceIndex ].firstSegment )
             firstChunkOfSegment = segmentsToChunksMapping[ segmentIdx - 1 ];
 
-         const IndexType lastChunkOfSegment = segmentsToChunksMapping[ segmentIdx ];
-         const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
+         //const IndexType lastChunkOfSegment = segmentsToChunksMapping[ segmentIdx ];
+         //const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
          const IndexType sliceOffset = slices[ sliceIndex ].pointer;
          const IndexType chunkSize = slices[ sliceIndex ].chunkSize;
-         TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
+         //TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
+         TNL_ASSERT_LE( localIdx, ( segmentsToChunksMapping[ segmentIdx ] - firstChunkOfSegment ) * chunkSize, "" );
 
          if( Organization == RowMajorOrder )
             return sliceOffset + firstChunkOfSegment * chunkSize + localIdx;
@@ -148,11 +149,12 @@ class ChunkedEllpack
          if( segmentIdx != slices.getElement( sliceIndex ).firstSegment )
             firstChunkOfSegment = segmentsToChunksMapping.getElement( segmentIdx - 1 );
 
-         const IndexType lastChunkOfSegment = segmentsToChunksMapping.getElement( segmentIdx );
-         const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
+         //const IndexType lastChunkOfSegment = segmentsToChunksMapping.getElement( segmentIdx );
+         //const IndexType segmentChunksCount = lastChunkOfSegment - firstChunkOfSegment;
          const IndexType sliceOffset = slices.getElement( sliceIndex ).pointer;
          const IndexType chunkSize = slices.getElement( sliceIndex ).chunkSize;
-         TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
+         //TNL_ASSERT_LE( localIdx, segmentChunksCount * chunkSize, "" );
+         TNL_ASSERT_LE( localIdx, ( segmentsToChunksMapping.getElement( segmentIdx ) - firstChunkOfSegment ) * chunkSize, "" );
 
          if( Organization == RowMajorOrder )
             return sliceOffset + firstChunkOfSegment * chunkSize + localIdx;

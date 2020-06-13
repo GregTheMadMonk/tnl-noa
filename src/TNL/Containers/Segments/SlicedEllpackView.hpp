@@ -253,7 +253,7 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
+         //const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          IndexType localIdx( 0 );
@@ -312,7 +312,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-         const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
+         //const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          RealType aux( zero );

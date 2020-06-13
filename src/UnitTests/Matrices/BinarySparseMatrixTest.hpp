@@ -827,7 +827,6 @@ void test_VectorProduct()
    rowLengths_5.setElement(7, 8);
    m_5.setCompressedRowLengths( rowLengths_5 );
 
-   RealType value_5 = 1;
    for( IndexType i = 0; i < 3; i++ )   // 0th row
       m_5.setElement( 0, i, 1 );
 

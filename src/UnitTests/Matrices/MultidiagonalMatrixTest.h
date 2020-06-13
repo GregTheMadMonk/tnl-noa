@@ -194,8 +194,8 @@ void test_GetAllocatedElementsCount()
    using IndexType = typename Matrix::IndexType;
    using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
 
-   const IndexType rows = 7;
-   const IndexType cols = 6;
+   //const IndexType rows = 7;
+   //const IndexType cols = 6;
 
    Matrix m1( 7, 6, DiagonalsOffsetsType( { -2, 0, 3, 5 } ) );
    EXPECT_EQ( m1.getAllocatedElementsCount(), 28 );

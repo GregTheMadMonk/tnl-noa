@@ -20,8 +20,6 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-static const char* TEST_FILE_NAME = "test_MeshTest.tnl";
-
 // FIXME: Traverser does not work with Id = void
 //class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
 class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral, 2, double, int, int, int >

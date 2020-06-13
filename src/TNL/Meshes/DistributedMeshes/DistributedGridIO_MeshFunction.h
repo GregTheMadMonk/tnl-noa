@@ -166,7 +166,8 @@ class DistributedGridIO_MPIIOBase
                       MPI_MODE_CREATE | MPI_MODE_WRONLY,
                       MPI_INFO_NULL,
                       &file);
-      TNL_ASSERT_EQ(ok,0,"Open file falied");
+      if( ok != 0 )
+         throw std::runtime_error("Open file falied");
       
 		int written=save(file,meshFunction, data,0);
 

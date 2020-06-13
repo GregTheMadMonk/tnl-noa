@@ -646,7 +646,6 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 applyBoundaryConditions( const RealType& time,
                             DofVectorPointer& uDofs )
 {
-   const MeshPointer& mesh = this->getMesh();
    if( this->cudaKernelType == "templated" )
    {
       this->bindDofs( uDofs );
@@ -698,6 +697,7 @@ applyBoundaryConditions( const RealType& time,
 #endif
       userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
       Meshes::Traverser< MeshType, Cell > meshTraverser;
+      const MeshPointer& mesh = this->getMesh();
       // */
       /*meshTraverser.template processBoundaryEntities< BoundaryEntitiesProcessor >
                                                     ( mesh,

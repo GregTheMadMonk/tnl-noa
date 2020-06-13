@@ -94,9 +94,6 @@ protected:
       using LocalRangeType = typename LeftVector::LocalRangeType;
       const LocalRangeType localRange = Partitioner< typename Left::IndexType, CommunicatorType >::splitRange( size, group );
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
-
       _L1.setDistribution( localRange, size, group );
       _L2.setDistribution( localRange, size, group );
       _R1.setDistribution( localRange, size, group );
@@ -130,6 +127,8 @@ protected:
    #pragma diag_suppress = declared_but_not_referenced
 #endif
 
+#define MAYBE_UNUSED(expr) (void)(expr)
+
 #define SETUP_BINARY_TEST_ALIASES \
    using Left = typename TestFixture::Left;                 \
    using Right = typename TestFixture::Right;               \
@@ -137,6 +136,10 @@ protected:
    Left& L2 = this->L2;                                     \
    Right& R1 = this->R1;                                    \
    Right& R2 = this->R2;                                    \
+   MAYBE_UNUSED(L1);                                        \
+   MAYBE_UNUSED(L2);                                        \
+   MAYBE_UNUSED(R1);                                        \
+   MAYBE_UNUSED(R2);                                        \
 
 // types for which VectorBinaryOperationsTest is instantiated
 #if defined(DISTRIBUTED_VECTOR)

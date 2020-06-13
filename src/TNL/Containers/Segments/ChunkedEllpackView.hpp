@@ -622,7 +622,7 @@ segmentsReductionKernel( IndexType gridIdx,
 
    const IndexType sliceOffset = sliceInfo.pointer;
    const IndexType chunkSize = sliceInfo.chunkSize;
-   const IndexType chunkIdx = sliceIdx * chunksInSlice + threadIdx.x;
+   //const IndexType chunkIdx = sliceIdx * chunksInSlice + threadIdx.x;
    bool compute( true );
 
    if( Organization == RowMajorOrder )

@@ -825,9 +825,9 @@ void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& in
    constexpr size_t SHARED = 49152/sizeof(float);
    constexpr size_t SHARED_PER_WARP = SHARED / warpSize;
    constexpr size_t MAX_PER_WARP = 65536;
-   constexpr size_t ELEMENTS_PER_WARP = 1024;
-   constexpr size_t THREADS_PER_BLOCK = 1024;
-   constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
+   //constexpr size_t ELEMENTS_PER_WARP = 1024;
+   //constexpr size_t THREADS_PER_BLOCK = 1024;
+   //constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
    //--------------------------------------------------------------------
    const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
    const IndexType laneID = index % warpSize;
@@ -881,9 +881,9 @@ void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& in
       if (laneID == 0) outVector[minRow] = result; // Write result
    } else {
       /////////////////////////////////////* CSR VECTOR LONG *//////////////
-      const size_t warps = (elements - ELEMENTS_PER_WARP) / ELEMENTS_PER_WARP + 1;
-      const size_t blocks = warps <= WARPS_PER_BLOCK ? 1 : warps / WARPS_PER_BLOCK + 1;
-      const size_t threads_per_block = blocks == 1 ? warps * warpSize : WARPS_PER_BLOCK * warpSize;
+      //const size_t warps = (elements - ELEMENTS_PER_WARP) / ELEMENTS_PER_WARP + 1;
+      //const size_t blocks = warps <= WARPS_PER_BLOCK ? 1 : warps / WARPS_PER_BLOCK + 1;
+      //const size_t threads_per_block = blocks == 1 ? warps * warpSize : WARPS_PER_BLOCK * warpSize;
       // spmvCSRVectorHelper<InVector, warpSize> <<<blocks, threads_per_block>>>(
       //             inVector,
       //             &outVector[minRow],
@@ -1088,15 +1088,16 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& 
    cudaMemcpy(kernelBlocks, blocks, size * sizeof(int), cudaMemcpyHostToDevice);
 
    TNL_CHECK_CUDA_DEVICE;
-   dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
+   dim3 cudaBlockSize( 256 );
+   //dim3 cudaGridSize( Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
    const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
    {
-      if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-      const int sharedMemory = cudaBlockSize.x * sizeof( Real );
-      // const int threads = cudaBlockSize.x;
+      //if( gridIdx == cudaGrids - 1 )
+      //   cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
+      //const int sharedMemory = cudaBlockSize.x * sizeof( Real );
+      //const int threads = cudaBlockSize.x;
       if( matrix.getCudaWarpSize() == 32 ) {
          // printf("BL %d BLSIZE %d\n", (int)cudaBlocks, (int)threads);
          CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 32 >

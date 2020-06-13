@@ -78,8 +78,8 @@ update( const MatrixPointer& matrixPointer )
       L_rowLengths[ i ] = L_entries + p;
       U_rowLengths[ N - 1 - i ] = U_entries + p;
    }
-   L.setCompressedRowLengths( L_rowLengths );
-   U.setCompressedRowLengths( U_rowLengths );
+   L.setRowCapacities( L_rowLengths );
+   U.setRowCapacities( U_rowLengths );
 //   timer_rowlengths.stop();
 
    // intermediate full vector for the i-th row of A

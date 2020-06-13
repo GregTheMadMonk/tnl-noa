@@ -104,8 +104,8 @@ class BiEllpack
                                       const IndexType segmentIdx )
       {
          const IndexType strip = segmentIdx / getWarpSize();
-         const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
-         const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
+         //const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
+         //const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
          const IndexType groupsCount = getActiveGroupsCountDirect( rowPermArray, segmentIdx );
          IndexType groupHeight = getWarpSize();
          IndexType segmentSize = 0;
@@ -125,8 +125,8 @@ class BiEllpack
                                 const IndexType segmentIdx )
       {
          const IndexType strip = segmentIdx / getWarpSize();
-         const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
-         const IndexType rowStripPerm = rowPermArray.getElement( segmentIdx ) - strip * getWarpSize();
+         //const IndexType groupIdx = strip * ( getLogWarpSize() + 1 );
+         //const IndexType rowStripPerm = rowPermArray.getElement( segmentIdx ) - strip * getWarpSize();
          const IndexType groupsCount = getActiveGroupsCount( rowPermArray, segmentIdx );
          IndexType groupHeight = getWarpSize();
          IndexType segmentSize = 0;

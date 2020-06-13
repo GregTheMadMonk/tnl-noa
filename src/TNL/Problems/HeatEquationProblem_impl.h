@@ -123,7 +123,7 @@ void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 bindDofs( const DofVectorPointer& dofVector )
 {
-   const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
+   //const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
    this->uPointer->bind( this->getMesh(), dofVector );
 }
 
@@ -189,7 +189,7 @@ setupLinearSystem( MatrixPointer& matrixPointer )
       boundaryConditionPointer,
       rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   matrixPointer->setCompressedRowLengths( *rowLengthsPointer );
+   matrixPointer->setRowCapacities( *rowLengthsPointer );
    return true;
 }
 
