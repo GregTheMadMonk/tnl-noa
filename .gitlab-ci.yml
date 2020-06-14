@@ -91,6 +91,7 @@ stages:
             - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
             - .gitlab-ci.yml
+    interruptible: true
 
 # Dummy build job to ensure that a pipeline is created for a merge request, even
 # when there were no changes.
