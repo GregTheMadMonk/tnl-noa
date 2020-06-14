@@ -178,7 +178,8 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & elementsPerRow )
 {
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   benchmarkSpMV< Real, SparseMatrixLegacy_CSR_Scalar >( benchmark, size, elementsPerRow );
+   // NOTE: CSR is disabled because it is very slow on GPU
+   //benchmarkSpMV< Real, SparseMatrixLegacy_CSR_Scalar >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, Matrices::Legacy::Ellpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, Matrices::Legacy::ChunkedEllpack >( benchmark, size, elementsPerRow );
