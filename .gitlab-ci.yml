@@ -32,6 +32,23 @@ stages:
     WITH_TOOLS: "no"
     WITH_PYTHON: "no"
 
+# base for OpenMP+MPI builds
+.openmp_mpi:
+    tags:
+        - openmp
+        - mpi
+    variables:
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+
+.cuda_openmp_mpi:
+    extends: .openmp_mpi
+    # tags are overridden, not merged...
+    tags:
+        - gpu
+        - openmp
+        - mpi
+
 # base for Clang builds
 .clang:
     variables:
@@ -40,6 +57,13 @@ stages:
         CUDA_HOST_COMPILER: clang++
     tags:
         - clang
+
+.clang_mpi:
+    extends: .clang
+    # tags are overridden, not merged...
+    tags:
+        - clang
+        - mpi
 
 # template for build jobs
 .build_template_def: &build_template
@@ -116,11 +140,9 @@ dummy build job:
 cuda_tests_Debug:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_TESTS: "yes"
@@ -128,11 +150,9 @@ cuda_tests_Debug:
 cuda_tests_Release:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
         WITH_TESTS: "yes"
@@ -141,11 +161,9 @@ cuda_tests_Release:
 cuda_matrix_tests_Debug:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_MATRIX_TESTS: "yes"
@@ -153,11 +171,9 @@ cuda_matrix_tests_Debug:
 cuda_matrix_tests_Release:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
         WITH_MATRIX_TESTS: "yes"
@@ -166,11 +182,9 @@ cuda_matrix_tests_Release:
 cuda_examples_Debug:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_EXAMPLES: "yes"
@@ -184,11 +198,9 @@ cuda_examples_Debug:
 cuda_examples_Release:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
         WITH_EXAMPLES: "yes"
@@ -197,11 +209,9 @@ cuda_examples_Release:
 cuda_benchmarks_tools_python_Debug:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_BENCHMARKS: "yes"
@@ -211,11 +221,9 @@ cuda_benchmarks_tools_python_Debug:
 cuda_benchmarks_tools_python_Release:
     <<: *build_template
     tags:
-        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
         WITH_BENCHMARKS: "yes"
@@ -224,123 +232,44 @@ cuda_benchmarks_tools_python_Release:
 
 
 cuda_mpi_tests_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_TESTS: "yes"
+    extends:
+        - cuda_tests_Debug
+        - .cuda_openmp_mpi
 
 cuda_mpi_tests_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_TESTS: "yes"
-
+    extends:
+        - cuda_tests_Release
+        - .cuda_openmp_mpi
 
 cuda_mpi_matrix_tests_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_MATRIX_TESTS: "yes"
+    extends:
+        - cuda_matrix_tests_Debug
+        - .cuda_openmp_mpi
 
 cuda_mpi_matrix_tests_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_MATRIX_TESTS: "yes"
-
+    extends:
+        - cuda_matrix_tests_Release
+        - .cuda_openmp_mpi
 
 cuda_mpi_examples_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_EXAMPLES: "yes"
+    extends:
+        - cuda_examples_Debug
+        - .cuda_openmp_mpi
 
 cuda_mpi_examples_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_EXAMPLES: "yes"
-
+    extends:
+        - cuda_examples_Release
+        - .cuda_openmp_mpi
 
 cuda_mpi_benchmarks_tools_python_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+    extends:
+        - cuda_benchmarks_tools_python_Debug
+        - .cuda_openmp_mpi
 
 cuda_mpi_benchmarks_tools_python_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+    extends:
+        - cuda_benchmarks_tools_python_Release
+        - .cuda_openmp_mpi
 
 
 
@@ -408,104 +337,44 @@ default_benchmarks_tools_python_Release:
 
 
 mpi_tests_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_TESTS: "yes"
+    extends:
+        - default_tests_Debug
+        - .openmp_mpi
 
 mpi_tests_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_TESTS: "yes"
+    extends:
+        - default_tests_Release
+        - .openmp_mpi
 
 mpi_matrix_tests_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_MATRIX_TESTS: "yes"
+    extends:
+        - default_matrix_tests_Debug
+        - .openmp_mpi
 
 mpi_matrix_tests_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_MATRIX_TESTS: "yes"
+    extends:
+        - default_matrix_tests_Release
+        - .openmp_mpi
 
 mpi_examples_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_EXAMPLES: "yes"
+    extends:
+        - default_examples_Debug
+        - .openmp_mpi
 
 mpi_examples_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_EXAMPLES: "yes"
+    extends:
+        - default_examples_Release
+        - .openmp_mpi
 
 mpi_benchmarks_tools_python_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+    extends:
+        - default_benchmarks_tools_python_Debug
+        - .openmp_mpi
 
 mpi_benchmarks_tools_python_Release:
-    <<: *build_template
-    tags:
-        - openmp
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Release
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+    extends:
+        - default_benchmarks_tools_python_Release
+        - .openmp_mpi
 
 
 clang_tests_Debug:
@@ -552,42 +421,42 @@ clang_benchmarks_tools_python_Release:
 clang_mpi_tests_Debug:
     extends:
         - mpi_tests_Debug
-        - .clang
+        - .clang_mpi
 
 clang_mpi_tests_Release:
     extends:
         - mpi_tests_Release
-        - .clang
+        - .clang_mpi
 
 clang_mpi_matrix_tests_Debug:
     extends:
         - mpi_matrix_tests_Debug
-        - .clang
+        - .clang_mpi
 
 clang_mpi_matrix_tests_Release:
     extends:
         - mpi_matrix_tests_Release
-        - .clang
+        - .clang_mpi
 
 clang_mpi_examples_Debug:
     extends:
         - mpi_examples_Debug
-        - .clang
+        - .clang_mpi
 
 clang_mpi_examples_Release:
     extends:
         - mpi_examples_Release
-        - .clang
+        - .clang_mpi
 
 clang_mpi_benchmarks_tools_python_Debug:
     extends:
         - mpi_benchmarks_tools_python_Debug
-        - .clang
+        - .clang_mpi
 
 clang_mpi_benchmarks_tools_python_Release:
     extends:
         - mpi_benchmarks_tools_python_Release
-        - .clang
+        - .clang_mpi
 
 
 
