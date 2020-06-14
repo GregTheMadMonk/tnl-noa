@@ -322,7 +322,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include SparseMatrixExample_getSerializationType.out
        */
-      virtual String getSerializationTypeVirtual() const;
+      virtual String getSerializationTypeVirtual() const override;
 
       /**
        * \brief Set number of rows and columns of this matrix.
@@ -855,21 +855,21 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * \param fileName is name of the file.
        */
-      void save( File& file ) const;
+      virtual void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        * 
        * \param fileName is name of the file.
        */
-      void load( File& file );
+      virtual void load( File& file ) override;
 
       /**
        * \brief Method for printing the matrix to output stream.
        * 
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      virtual void print( std::ostream& str ) const override;
 
       /**
        * \brief Returns a padding index value.

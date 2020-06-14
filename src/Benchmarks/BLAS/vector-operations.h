@@ -56,7 +56,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
 
    HostView hostView( hostVector ), hostView2( hostVector2 ), hostView3( hostVector3 ), hostView4( hostVector4 );
+#ifdef HAVE_CUDA
    CudaView deviceView( deviceVector ), deviceView2( deviceVector2 ), deviceView3( deviceVector3 ), deviceView4( deviceVector4 );
+#endif
 
    Real resultHost, resultDevice;
 

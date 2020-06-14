@@ -185,7 +185,7 @@ orthogonalize_CGS( const int m, const RealType normb, const RealType beta )
    // initial binding to _M_tmp sets the correct local range, global size and
    // communication group for distributed views
    VectorViewType v_i( _M_tmp.getView() );
-   VectorViewType v_k( _M_tmp.getView() );
+//   VectorViewType v_k( _M_tmp.getView() );
 
    /***
     * v_0 = r / | r | =  1.0 / beta * r
