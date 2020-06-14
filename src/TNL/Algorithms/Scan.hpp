@@ -108,8 +108,12 @@ perform( Vector& v,
          const typename Vector::RealType zero )
 {
 #ifdef HAVE_OPENMP
-   const auto blockShifts = performFirstPhase( v, begin, end, reduction, zero );
-   performSecondPhase( v, blockShifts, begin, end, reduction, zero );
+   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() >= 2 ) {
+      const auto blockShifts = performFirstPhase( v, begin, end, reduction, zero );
+      performSecondPhase( v, blockShifts, begin, end, reduction, zero );
+   }
+   else
+      Scan< Devices::Sequential, Type >::perform( v, begin, end, reduction, zero );
 #else
    Scan< Devices::Sequential, Type >::perform( v, begin, end, reduction, zero );
 #endif
