@@ -598,9 +598,11 @@ build documentation:
             - Documentation/**/*
             - src/TNL/**/*.{h,hpp}
             - .gitlab-ci.yml
-    dependencies:
+    # use "needs" instead of "dependencies" to allow out-of-order start of this job
+    needs:
         # the job which builds Documentation/output_snippets/
-        - cuda_examples_Debug
+        - job: cuda_examples_Debug
+          artifacts: true
     script:
         - ./Documentation/build
     artifacts:
@@ -622,6 +624,7 @@ deploy documentation:
             - develop
             - schedules
             - triggers
+    # use "dependencies" instead of "needs" to deploy only when the entire pipeline succeeds
     dependencies:
         - build documentation
     script:
