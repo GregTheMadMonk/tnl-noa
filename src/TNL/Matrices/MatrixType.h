@@ -32,8 +32,8 @@ struct MatrixType
          type = "General";
       else
       {
-         if( isSymmetric ) type = "Symmetric";
-         if( isBinary ) type += "Binary";
+         if( isSymmetric() ) type = "Symmetric";
+         if( isBinary() ) type += "Binary";
       }
       return type;
    }
