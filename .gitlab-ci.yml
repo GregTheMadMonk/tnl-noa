@@ -5,14 +5,12 @@ before_script:
     - which cmake
     - which ninja
 
-# Stages are useful only to enforce some ordering of the jobs. Every job is run
-# in its own directory and only very few data can be shared between the jobs in
-# different stages. It has to be zipped and uploaded to the server, so we can't
-# do it with the build directory. Hence, we must build, test and install in the
-# same job.
 stages:
     - build
-    - doc_build
+    - build:cuda
+    - build:gcc
+    - build:clang
+    - build:doc
     - deploy
 
 # default flags for cmake
@@ -51,6 +49,7 @@ stages:
 
 # base for Clang builds
 .clang:
+    stage: build:clang
     variables:
         CXX: clang++
         CC: clang
@@ -66,8 +65,10 @@ stages:
         - mpi
 
 # template for build jobs
-.build_template_def: &build_template
-    stage: build
+.build_template:
+    stage: build:gcc
+    # don't wait for jobs in previous stages to complete before starting this job
+    needs: []
     script:
         # all cores including hyperthreading
 #        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
@@ -138,7 +139,8 @@ dummy build job:
 # significantly more time than debug builds).
 
 cuda_tests_Debug:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -148,7 +150,8 @@ cuda_tests_Debug:
         WITH_TESTS: "yes"
 
 cuda_tests_Release:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -159,7 +162,8 @@ cuda_tests_Release:
 
 
 cuda_matrix_tests_Debug:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -169,7 +173,8 @@ cuda_matrix_tests_Debug:
         WITH_MATRIX_TESTS: "yes"
 
 cuda_matrix_tests_Release:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -180,7 +185,8 @@ cuda_matrix_tests_Release:
 
 
 cuda_examples_Debug:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -196,7 +202,8 @@ cuda_examples_Debug:
             - Documentation/output_snippets/
 
 cuda_examples_Release:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -207,7 +214,8 @@ cuda_examples_Release:
 
 
 cuda_benchmarks_tools_python_Debug:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -219,7 +227,8 @@ cuda_benchmarks_tools_python_Debug:
         WITH_PYTHON: "yes"
 
 cuda_benchmarks_tools_python_Release:
-    <<: *build_template
+    extends: .build_template
+    stage: build:cuda
     tags:
         - gpu
     variables:
@@ -276,49 +285,49 @@ cuda_mpi_benchmarks_tools_python_Release:
 
 
 default_tests_Debug:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
         WITH_TESTS: "yes"
 
 default_tests_Release:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
         WITH_TESTS: "yes"
 
 default_matrix_tests_Debug:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
         WITH_MATRIX_TESTS: "yes"
 
 default_matrix_tests_Release:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
         WITH_MATRIX_TESTS: "yes"
 
 default_examples_Debug:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
         WITH_EXAMPLES: "yes"
 
 default_examples_Release:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
         WITH_EXAMPLES: "yes"
 
 default_benchmarks_tools_python_Debug:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
@@ -327,7 +336,7 @@ default_benchmarks_tools_python_Debug:
         WITH_PYTHON: "yes"
 
 default_benchmarks_tools_python_Release:
-    <<: *build_template
+    extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
@@ -462,7 +471,7 @@ clang_mpi_benchmarks_tools_python_Release:
 
 
 build documentation:
-    stage: doc_build
+    stage: build:doc
     only:
         changes:
             - Documentation/**/*
