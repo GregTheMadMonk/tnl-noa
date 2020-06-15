@@ -27,12 +27,12 @@ using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, Index
 template< typename Device, typename Index, typename IndexAllocator >
 using SlicedEllpackSegments = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
 
-using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::BinaryMatrix, TNL::Containers::Segments::CSR >;
-using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::BinaryMatrix, TNL::Containers::Segments::CSR >;
-using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::BinaryMatrix, EllpackSegments >;
-using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::BinaryMatrix, EllpackSegments >;
-using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::BinaryMatrix, SlicedEllpackSegments >;
-using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::BinaryMatrix, SlicedEllpackSegments >;
+using CSR_host = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using CSR_cuda = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using E_host   = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
+using E_cuda   = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
+using SE_host  = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
+using SE_cuda  = TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
 
 
 #ifdef HAVE_GTEST

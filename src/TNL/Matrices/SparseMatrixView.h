@@ -19,29 +19,45 @@
 namespace TNL {
 namespace Matrices {
 
+template< typename Real, typename Index = int >
+struct ChooseSparseMatrixComputeReal
+{
+   using type = Real;
+};
+
+template< typename Index>
+struct ChooseSparseMatrixComputeReal< bool, Index >
+{
+   using type = Index;
+};
+
 /**
  * \brief Implementation of sparse matrix view.
  *
  * It serves as an accessor to \ref SparseMatrix for example when passing the
  * matrix to lambda functions. SparseMatrix view can be also created in CUDA kernels.
  * 
- * \tparam Real is a type of matrix elements.
+ * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated 
+ *    as binary and so the matrix elements values are not stored in the memory since we need
+ *    to remember only coordinates of non-zero elements( which equal one). 
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam MatrixType specifies the type of matrix - its symmetry or binarity. See \ref MatrixType.
- *    Both symmetric and binary matrix types reduces memory consumption. Binary matrix does not store
- *    the matrix values explicitly since the non-zero elements can have only value equal to one. Symmetric
+ * \tparam MatrixType specifies a symmetry of matrix. See \ref MatrixType. Symmetric
  *    matrices store only lower part of the matrix and its diagonal. The upper part is reconstructed on the fly.
  *    GeneralMatrix with no symmetry is used by default.
  * \tparam Segments is a structure representing the sparse matrix format. Depending on the pattern of the non-zero elements
  *    different matrix formats can perform differently especially on GPUs. By default \ref CSR format is used. See also
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
+ * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
+ *    bu the user, of course.
+ * 
  */
 template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_ > class SegmentsView = Containers::Segments::CSRView >
+          template< typename Device_, typename Index_ > class SegmentsView = Containers::Segments::CSRView,
+          typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type >
 class SparseMatrixView : public MatrixView< Real, Device, Index >
 {
    static_assert(
@@ -73,12 +89,14 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * 
        * \return \e true if the matrix is stored as binary and \e false otherwise.
        */
-      static constexpr bool isBinary() { return MatrixType::isBinary(); };
+      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
 
       /**
        * \brief The type of matrix elements.
        */
       using RealType = Real;
+
+      using ComputeRealType = ComputeReal;
 
       /**
        * \brief The device where the matrix is allocated.
@@ -128,8 +146,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                 typename _Device = Device,
                 typename _Index = Index,
                 typename _MatrixType = MatrixType,
-                template< typename, typename > class _SegmentsView = SegmentsView >
-      using Self = SparseMatrixView< _Real, _Device, _Index, _MatrixType, _SegmentsView >;
+                template< typename, typename > class _SegmentsView = SegmentsView,
+                typename _ComputeReal = ComputeReal >
+      using Self = SparseMatrixView< _Real, _Device, _Index, _MatrixType, _SegmentsView, _ComputeReal >;
 
       /**
        * \brief Constructor with no parameters.
@@ -565,8 +584,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
-                          const RealType matrixMultiplicator = 1.0,
-                          const RealType outVectorMultiplicator = 0.0,
+                          const ComputeRealType matrixMultiplicator = 1.0,
+                          const ComputeRealType outVectorMultiplicator = 0.0,
                           const IndexType begin = 0,
                           IndexType end = 0 ) const;
 
