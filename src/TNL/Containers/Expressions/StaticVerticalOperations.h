@@ -47,7 +47,7 @@ auto StaticExpressionArgMin( const Expression& expression )
          arg = i;
       }
    }
-   return std::make_pair( arg, value );
+   return std::make_pair( value, arg );
 }
 
 template< typename Expression >
@@ -76,7 +76,7 @@ auto StaticExpressionArgMax( const Expression& expression )
          arg = i;
       }
    }
-   return std::make_pair( arg, value );
+   return std::make_pair( value, arg );
 }
 
 template< typename Expression >

@@ -54,7 +54,7 @@ struct Reduction< Devices::Sequential >
              typename Result,
              typename ReductionOperation,
              typename DataFetcher >
-   static constexpr std::pair< Index, Result >
+   static constexpr std::pair< Result, Index >
    reduceWithArgument( const Index size,
                        const ReductionOperation& reduction,
                        DataFetcher& dataFetcher,
@@ -138,7 +138,7 @@ struct Reduction< Devices::Host >
     * The reduction lambda function takes two variables which are supposed to be reduced:
     * 
     * ```
-    * auto reduction = [] __cuda_callable__ ( Index& aIdx, const Index& bIdx, const Result& a, const Result& b ) { return ... };
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
     * ```
     * 
     * \par Example
@@ -153,7 +153,7 @@ struct Reduction< Devices::Host >
              typename Result,
              typename ReductionOperation,
              typename DataFetcher >
-   static std::pair< Index, Result >
+   static std::pair< Result, Index >
    reduceWithArgument( const Index size,
                        const ReductionOperation& reduction,
                        DataFetcher& dataFetcher,
@@ -237,7 +237,7 @@ struct Reduction< Devices::Cuda >
     * The reduction lambda function takes two variables which are supposed to be reduced:
     *
     * ```
-    * auto reduction = [] __cuda_callable__ ( Index& aIdx, const Index& bIdx, const Result& a, const Result& b ) { return ... };
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
     * ```
     *
     * \par Example
@@ -252,7 +252,7 @@ struct Reduction< Devices::Cuda >
              typename Result,
              typename ReductionOperation,
              typename DataFetcher >
-   static std::pair< Index, Result >
+   static std::pair< Result, Index >
    reduceWithArgument( const Index size,
                        const ReductionOperation& reduction,
                        DataFetcher& dataFetcher,

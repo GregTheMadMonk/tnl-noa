@@ -35,7 +35,7 @@ auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< d
 
 template< typename Expression >
 auto DistributedExpressionArgMin( const Expression& expression )
--> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
+-> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
 {
    using RealType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
@@ -92,7 +92,7 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::decay_t< d
 
 template< typename Expression >
 auto DistributedExpressionArgMax( const Expression& expression )
--> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
+-> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
 {
    using RealType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;

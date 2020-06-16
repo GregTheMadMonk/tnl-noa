@@ -86,7 +86,7 @@ template< typename Index,
           typename Result,
           typename ReductionOperation,
           typename DataFetcher >
-constexpr std::pair< Index, Result >
+constexpr std::pair< Result, Index >
 Reduction< Devices::Sequential >::
 reduceWithArgument( const Index size,
                     const ReductionOperation& reduction,
@@ -119,27 +119,27 @@ reduceWithArgument( const Index size,
                initialized = true;
                continue;
             }
-            reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
-            reduction( arg[ 1 ], offset + i + 1, r[ 1 ], dataFetcher( offset + i + 1 ) );
-            reduction( arg[ 2 ], offset + i + 2, r[ 2 ], dataFetcher( offset + i + 2 ) );
-            reduction( arg[ 3 ], offset + i + 3, r[ 3 ], dataFetcher( offset + i + 3 ) );
+            reduction( r[ 0 ], dataFetcher( offset + i ),     arg[ 0 ], offset + i );
+            reduction( r[ 1 ], dataFetcher( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
+            reduction( r[ 2 ], dataFetcher( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
+            reduction( r[ 3 ], dataFetcher( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
          }
       }
 
       // reduction of the last, incomplete block (not unrolled)
       for( Index i = blocks * block_size; i < size; i++ )
-         reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
+         reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
 
       // reduction of unrolled results
-      reduction( arg[ 0 ], arg[ 2 ], r[ 0 ], r[ 2 ] );
-      reduction( arg[ 1 ], arg[ 3 ], r[ 1 ], r[ 3 ] );
-      reduction( arg[ 0 ], arg[ 1 ], r[ 0 ], r[ 1 ] );
-      return std::make_pair( arg[ 0 ], r[ 0 ] );
+      reduction( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
+      reduction( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
+      reduction( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
+      return std::make_pair( r[ 0 ], arg[ 0 ] );
    }
    else {
-      std::pair< Index, Result > result( 0, dataFetcher( 0 ) );
+      std::pair< Result, Index > result( dataFetcher( 0 ), 0 );
       for( Index i = 1; i < size; i++ )
-         reduction( result.first, i, result.second, dataFetcher( i ) );
+         reduction( result.first, dataFetcher( i ), result.second, i );
       return result;
    }
 }
@@ -208,7 +208,7 @@ template< typename Index,
           typename Result,
           typename ReductionOperation,
           typename DataFetcher >
-std::pair< Index, Result >
+std::pair< Result, Index >
 Reduction< Devices::Host >::
 reduceWithArgument( const Index size,
                     const ReductionOperation& reduction,
@@ -221,7 +221,7 @@ reduceWithArgument( const Index size,
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
-      std::pair< Index, Result > result( -1, zero );
+      std::pair< Result, Index > result( zero, -1 );
       const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
 #pragma omp parallel num_threads(threads)
       {
@@ -246,10 +246,10 @@ reduceWithArgument( const Index size,
                   initialized = true;
                   continue;
                }
-               reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
-               reduction( arg[ 1 ], offset + i + 1, r[ 1 ], dataFetcher( offset + i + 1 ) );
-               reduction( arg[ 2 ], offset + i + 2, r[ 2 ], dataFetcher( offset + i + 2 ) );
-               reduction( arg[ 3 ], offset + i + 3, r[ 3 ], dataFetcher( offset + i + 3 ) );
+               reduction( r[ 0 ], dataFetcher( offset + i ),     arg[ 0 ], offset + i );
+               reduction( r[ 1 ], dataFetcher( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
+               reduction( r[ 2 ], dataFetcher( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
+               reduction( r[ 3 ], dataFetcher( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
             }
          }
 
@@ -257,20 +257,20 @@ reduceWithArgument( const Index size,
          #pragma omp single nowait
          {
             for( Index i = blocks * block_size; i < size; i++ )
-               reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
+               reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
          }
 
          // local reduction of unrolled results
-         reduction( arg[ 0 ], arg[ 2 ], r[ 0 ], r[ 2 ] );
-         reduction( arg[ 1 ], arg[ 3 ], r[ 1 ], r[ 3 ] );
-         reduction( arg[ 0 ], arg[ 1 ], r[ 0 ], r[ 1 ] );
+         reduction( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
+         reduction( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
+         reduction( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
 
          // inter-thread reduction of local results
          #pragma omp critical
          {
-            if( result.first == -1 )
-               result.first = arg[ 0 ];
-            reduction( result.first, arg[ 0 ], result.second, r[ 0 ] );
+            if( result.second == -1 )
+               result.second = arg[ 0 ];
+            reduction( result.first, r[ 0 ], result.second, arg[ 0 ] );
          }
       }
       return result;
@@ -373,7 +373,7 @@ template< typename Index,
           typename Result,
           typename ReductionOperation,
           typename DataFetcher >
-std::pair< Index, Result >
+std::pair< Result, Index >
 Reduction< Devices::Cuda >::
 reduceWithArgument( const Index size,
                     const ReductionOperation& reduction,
@@ -454,13 +454,13 @@ reduceWithArgument( const Index size,
 //      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
 //      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduction, fetch, zero );
       for( Index i = 1; i < reducedSize; i++ )
-         reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
+         reduction( resultArray[ 0 ], resultArray[ i ], indexArray[ 0 ], indexArray[ i ]  );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-      return std::make_pair( indexArray[ 0 ], resultArray[ 0 ] );
+      return std::make_pair( resultArray[ 0 ], indexArray[ 0 ] );
    }
    else {
       // data can't be safely reduced on host, so continue with the reduction on the GPU

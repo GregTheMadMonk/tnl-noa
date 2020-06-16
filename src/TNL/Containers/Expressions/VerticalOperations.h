@@ -39,14 +39,14 @@ auto ExpressionMin( const Expression& expression ) -> std::decay_t< decltype( ex
 
 template< typename Expression >
 auto ExpressionArgMin( const Expression& expression )
--> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
+-> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   auto reduction = [] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
+   auto reduction = [] __cuda_callable__ ( ResultType& a, const ResultType& b, IndexType& aIdx, const IndexType& bIdx ) {
       if( a > b ) {
          a = b;
          aIdx = bIdx;
@@ -71,14 +71,14 @@ auto ExpressionMax( const Expression& expression ) -> std::decay_t< decltype( ex
 
 template< typename Expression >
 auto ExpressionArgMax( const Expression& expression )
--> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
+-> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   auto reduction = [] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
+   auto reduction = [] __cuda_callable__ ( ResultType& a, const ResultType& b, IndexType& aIdx, const IndexType& bIdx ) {
       if( a < b ) {
          a = b;
          aIdx = bIdx;

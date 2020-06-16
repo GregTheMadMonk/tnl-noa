@@ -166,19 +166,19 @@ CudaReductionWithArgumentKernel( const Result zero,
          sdata[ tid ] = zero;
       }
       while( gid + 4 * gridSize < size ) {
-         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
-         reduction( sidx[ tid ], idxInput[ gid + gridSize ], sdata[ tid ], dataFetcher( gid + gridSize ) );
-         reduction( sidx[ tid ], idxInput[ gid + 2 * gridSize ], sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
-         reduction( sidx[ tid ], idxInput[ gid + 3 * gridSize ], sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
+         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
+         reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], idxInput[ gid + 2 * gridSize ] );
+         reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], idxInput[ gid + 3 * gridSize ] );
          gid += 4 * gridSize;
       }
       while( gid + 2 * gridSize < size ) {
-         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
-         reduction( sidx[ tid ], idxInput[ gid + gridSize ], sdata[ tid ], dataFetcher( gid + gridSize ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
+         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
          gid += 2 * gridSize;
       }
       while( gid < size ) {
-         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
          gid += gridSize;
       }
    }
@@ -191,19 +191,19 @@ CudaReductionWithArgumentKernel( const Result zero,
          sdata[ tid ] = zero;
       }
       while( gid + 4 * gridSize < size ) {
-         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
-         reduction( sidx[ tid ], gid + gridSize, sdata[ tid ], dataFetcher( gid + gridSize ) );
-         reduction( sidx[ tid ], gid + 2 * gridSize, sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
-         reduction( sidx[ tid ], gid + 3 * gridSize, sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
+         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
+         reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], gid + 2 * gridSize );
+         reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], gid + 3 * gridSize );
          gid += 4 * gridSize;
       }
       while( gid + 2 * gridSize < size ) {
-         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
-         reduction( sidx[ tid ], gid + gridSize, sdata[ tid ], dataFetcher( gid + gridSize ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
+         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
          gid += 2 * gridSize;
       }
       while( gid < size ) {
-         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
+         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
          gid += gridSize;
       }
    }
@@ -212,48 +212,48 @@ CudaReductionWithArgumentKernel( const Result zero,
    // Perform the parallel reduction.
    if( blockSize >= 1024 ) {
       if( tid < 512 )
-         reduction( sidx[ tid ], sidx[ tid + 512 ], sdata[ tid ], sdata[ tid + 512 ] );
+         reduction( sdata[ tid ], sdata[ tid + 512 ], sidx[ tid ], sidx[ tid + 512 ] );
       __syncthreads();
    }
    if( blockSize >= 512 ) {
       if( tid < 256 )
-         reduction( sidx[ tid ], sidx[ tid + 256 ], sdata[ tid ], sdata[ tid + 256 ] );
+         reduction( sdata[ tid ], sdata[ tid + 256 ], sidx[ tid ], sidx[ tid + 256 ] );
       __syncthreads();
    }
    if( blockSize >= 256 ) {
       if( tid < 128 )
-         reduction( sidx[ tid ], sidx[ tid + 128 ], sdata[ tid ], sdata[ tid + 128 ] );
+         reduction( sdata[ tid ], sdata[ tid + 128 ], sidx[ tid ], sidx[ tid + 128 ] );
       __syncthreads();
    }
    if( blockSize >= 128 ) {
       if( tid <  64 )
-         reduction( sidx[ tid ], sidx[ tid + 64 ], sdata[ tid ], sdata[ tid + 64 ] );
+         reduction( sdata[ tid ], sdata[ tid + 64 ], sidx[ tid ], sidx[ tid + 64 ] );
       __syncthreads();
    }
 
    // This runs in one warp so we use __syncwarp() instead of __syncthreads().
    if( tid < 32 ) {
       if( blockSize >= 64 )
-         reduction( sidx[ tid ], sidx[ tid + 32 ], sdata[ tid ], sdata[ tid + 32 ] );
+         reduction( sdata[ tid ], sdata[ tid + 32 ], sidx[ tid ], sidx[ tid + 32 ] );
       __syncwarp();
       // Note that here we do not have to check if tid < 16 etc, because we have
       // 2 * blockSize.x elements of shared memory per block, so we do not
       // access out of bounds. The results for the upper half will be undefined,
       // but unused anyway.
       if( blockSize >= 32 )
-         reduction( sidx[ tid ], sidx[ tid + 16 ], sdata[ tid ], sdata[ tid + 16 ] );
+         reduction( sdata[ tid ], sdata[ tid + 16 ], sidx[ tid ], sidx[ tid + 16 ] );
       __syncwarp();
       if( blockSize >= 16 )
-         reduction( sidx[ tid ], sidx[ tid + 8 ], sdata[ tid ], sdata[ tid + 8 ] );
+         reduction( sdata[ tid ], sdata[ tid + 8 ], sidx[ tid ], sidx[ tid + 8 ] );
       __syncwarp();
       if( blockSize >=  8 )
-         reduction( sidx[ tid ], sidx[ tid + 4 ], sdata[ tid ], sdata[ tid + 4 ] );
+         reduction( sdata[ tid ], sdata[ tid + 4 ], sidx[ tid ], sidx[ tid + 4 ] );
       __syncwarp();
       if( blockSize >=  4 )
-         reduction( sidx[ tid ], sidx[ tid + 2 ], sdata[ tid ], sdata[ tid + 2 ] );
+         reduction( sdata[ tid ], sdata[ tid + 2 ], sidx[ tid ], sidx[ tid + 2 ] );
       __syncwarp();
       if( blockSize >=  2 )
-         reduction( sidx[ tid ], sidx[ tid + 1 ], sdata[ tid ], sdata[ tid + 1 ] );
+         reduction( sdata[ tid ], sdata[ tid + 1 ], sidx[ tid ], sidx[ tid + 1 ] );
    }
 
    // Store the result back in the global memory.
@@ -357,7 +357,7 @@ struct CudaReductionKernelLauncher
    }
 
    template< typename Reduction >
-   std::pair< Index, Result >
+   std::pair< Result, Index >
    finishWithArgument( const Reduction& reduction,
                        const Result& zero )
    {
@@ -384,9 +384,9 @@ struct CudaReductionKernelLauncher
 
       ////
       // Copy result on CPU
-      std::pair< Index, Result > result;
-      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
-      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.second, output, 1 );
+      std::pair< Result, Index > result;
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.first, output, 1 );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.second, idxOutput, 1 );
       return result;
    }
 
