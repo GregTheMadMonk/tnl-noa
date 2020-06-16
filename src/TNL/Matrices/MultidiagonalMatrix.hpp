@@ -18,9 +18,6 @@
 namespace TNL {
 namespace Matrices {
 
-template< typename Device >
-class MultidiagonalMatrixDeviceDependentCode;
-
 template< typename Real,
           typename Device,
           typename Index,

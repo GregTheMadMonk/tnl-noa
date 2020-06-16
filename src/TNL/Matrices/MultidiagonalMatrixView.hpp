@@ -745,18 +745,6 @@ getIndexer() -> IndexerType&
    return this->indexer;
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__
-Index
-MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getElementIndex( const IndexType row, const IndexType localIdx ) const
-{
-   return this->indexer.getGlobalIndex( row, localIdx );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
