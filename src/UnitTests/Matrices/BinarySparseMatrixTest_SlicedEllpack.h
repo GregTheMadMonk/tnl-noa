@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
 
@@ -29,13 +29,13 @@ protected:
 ////
 // Row-major format is used for the host system
 template< typename Device, typename Index, typename IndexAllocator >
-using RowMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, TNL::Containers::Segments::RowMajorOrder, 32 >;
+using RowMajorSlicedEllpack = TNL::Algorithms::Segments::SlicedEllpack< Device, Index, IndexAllocator, TNL::Algorithms::Segments::RowMajorOrder, 32 >;
 
 
 ////
 // Column-major format is used for GPUs
 template< typename Device, typename Index, typename IndexAllocator >
-using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, TNL::Containers::Segments::ColumnMajorOrder, 32 >;
+using ColumnMajorSlicedEllpack = TNL::Algorithms::Segments::SlicedEllpack< Device, Index, IndexAllocator, TNL::Algorithms::Segments::ColumnMajorOrder, 32 >;
 
 // types for which MatrixTest is instantiated
 using SlicedEllpackMatrixTypes = ::testing::Types

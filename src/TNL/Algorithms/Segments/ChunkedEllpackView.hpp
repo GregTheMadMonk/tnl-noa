@@ -12,12 +12,12 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/ChunkedEllpackView.h>
-#include <TNL/Containers/Segments/details/LambdaAdapter.h>
-//#include <TNL/Containers/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
+#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+//#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
@@ -658,5 +658,5 @@ segmentsReductionKernel( IndexType gridIdx,
 #endif
 
       } // namespace Segments
-   }  // namespace Containers
+   }  // namespace Algorithms
 } // namespace TNL

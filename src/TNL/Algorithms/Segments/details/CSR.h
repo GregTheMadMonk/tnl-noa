@@ -12,7 +12,7 @@
 
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
          namespace details {
 
@@ -110,6 +110,6 @@ class CSR
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 };
          } // namespace details
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL

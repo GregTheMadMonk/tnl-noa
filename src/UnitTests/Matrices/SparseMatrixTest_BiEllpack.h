@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <iostream>
-#include <TNL/Containers/Segments/BiEllpack.h>
+#include <TNL/Algorithms/Segments/BiEllpack.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
 #ifdef HAVE_GTEST
@@ -20,12 +20,12 @@ const char* saveAndLoadFileName = "test_SparseMatrixTest_BiEllpack_segments";
 ////
 // Row-major format is used for the host system
 template< typename Device, typename Index, typename IndexAllocator >
-using RowMajorBiEllpack = TNL::Containers::Segments::BiEllpack< Device, Index, IndexAllocator, TNL::Containers::Segments::RowMajorOrder >;
+using RowMajorBiEllpack = TNL::Algorithms::Segments::BiEllpack< Device, Index, IndexAllocator, TNL::Algorithms::Segments::RowMajorOrder >;
 
 ////
 // Column-major format is used for GPUs
 template< typename Device, typename Index, typename IndexAllocator >
-using ColumnMajorBiEllpack = TNL::Containers::Segments::BiEllpack< Device, Index, IndexAllocator, TNL::Containers::Segments::ColumnMajorOrder >;
+using ColumnMajorBiEllpack = TNL::Algorithms::Segments::BiEllpack< Device, Index, IndexAllocator, TNL::Algorithms::Segments::ColumnMajorOrder >;
 
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types

@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Index,
@@ -87,5 +87,5 @@ class SegmentView< Index, RowMajorOrder >
 };
 
       } //namespace Segments
-   } //namespace Containers
+   } //namespace Algorithms
 } //namespace TNL

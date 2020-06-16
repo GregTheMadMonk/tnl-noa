@@ -13,7 +13,7 @@
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 
 namespace TNL {
@@ -56,7 +56,7 @@ template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_ > class SegmentsView = Containers::Segments::CSRView,
+          template< typename Device_, typename Index_ > class SegmentsView = Algorithms::Segments::CSRView,
           typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type >
 class SparseMatrixView : public MatrixView< Real, Device, Index >
 {

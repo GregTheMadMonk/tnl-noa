@@ -56,11 +56,11 @@
 #endif
 
 #include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 template< typename _Device, typename _Index, typename _IndexAlocator >
-using SegmentsType = TNL::Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
+using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
@@ -502,7 +502,7 @@ struct LinearSolversBenchmark
                                                   DeviceType,
                                                   IndexType,
                                                   TNL::Matrices::GeneralMatrix,
-                                                  Containers::Segments::CSR
+                                                  Algorithms::Segments::CSR
                                                 >;
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
@@ -530,7 +530,7 @@ struct LinearSolversBenchmark
                                                   DeviceType,
                                                   IndexType,
                                                   TNL::Matrices::GeneralMatrix,
-                                                  Containers::Segments::CSR
+                                                  Algorithms::Segments::CSR
                                                 >;
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
@@ -539,7 +539,7 @@ struct LinearSolversBenchmark
                                                       Devices::Cuda,
                                                       IndexType,
                                                       TNL::Matrices::GeneralMatrix,
-                                                      Containers::Segments::CSR
+                                                      Algorithms::Segments::CSR
                                                     >;
          using CudaVector = typename VectorType::template Self< RealType, Devices::Cuda >;
          SharedPointer< CudaCSR > cuda_matrixCopy;

@@ -14,7 +14,7 @@
 #include <TNL/Problems/CommonData.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {
@@ -41,7 +41,7 @@ class PDEProblem : public Problem< Real, Device, Index >
       using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       template< typename _Device, typename _Index, typename _IndexAlocator >
-      using SegmentsType = Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
+      using SegmentsType = Algorithms::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
       using MatrixType = TNL::Matrices::SparseMatrix< Real,
                                                       Device,
                                                       Index,

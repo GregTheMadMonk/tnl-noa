@@ -13,7 +13,7 @@
 #include "CheckLambdas.h"
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
          namespace details {
 
@@ -51,6 +51,6 @@ struct FetchLambdaAdapter< Index, Lambda, false >
 };
 
          } // namespace details
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL

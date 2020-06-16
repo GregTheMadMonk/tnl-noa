@@ -13,18 +13,18 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/ElementsOrganization.h>
-#include <TNL/Containers/Segments/BiEllpackSegmentView.h>
-#include <TNL/Containers/Segments/details/BiEllpack.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
+#include <TNL/Algorithms/Segments/details/BiEllpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
 template< typename Device,
           typename Index,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpackView
 {
@@ -203,8 +203,8 @@ class BiEllpackView
       friend struct details::BiEllpackSegmentsReductionDispatcher;
 #endif
 };
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/BiEllpackView.hpp>
+#include <TNL/Algorithms/Segments/BiEllpackView.hpp>

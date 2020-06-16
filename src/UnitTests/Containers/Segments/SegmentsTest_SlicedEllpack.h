@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 #include "SegmentsTest.hpp"
 #include <iostream>
@@ -27,11 +27,11 @@ protected:
 // types for which MatrixTest is instantiated
 using SlicedEllpackSegmentsTypes = ::testing::Types
 <
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, long   >
+    TNL::Algorithms::Segments::SlicedEllpack< TNL::Devices::Host, int    >,
+    TNL::Algorithms::Segments::SlicedEllpack< TNL::Devices::Host, long   >
 #ifdef HAVE_CUDA
-   ,TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >
+   ,TNL::Algorithms::Segments::SlicedEllpack< TNL::Devices::Cuda, int    >,
+    TNL::Algorithms::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >
 #endif
 >;
 

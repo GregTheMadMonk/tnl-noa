@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/CSR.h>
 
 #include "SegmentsTest.hpp"
 #include <iostream>
@@ -27,11 +27,11 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRSegmentsTypes = ::testing::Types
 <
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, long   >
+    TNL::Algorithms::Segments::CSR< TNL::Devices::Host, int    >,
+    TNL::Algorithms::Segments::CSR< TNL::Devices::Host, long   >
 #ifdef HAVE_CUDA
-   ,TNL::Containers::Segments::CSR< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, long   >
+   ,TNL::Algorithms::Segments::CSR< TNL::Devices::Cuda, int    >,
+    TNL::Algorithms::Segments::CSR< TNL::Devices::Cuda, long   >
 #endif
 >;
 

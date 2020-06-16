@@ -15,14 +15,14 @@ void createMatrixView()
    /***
     * Create dense matrix view with row major order
     */
-   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Containers::Segments::RowMajorOrder > rowMajorMatrix( 3, 4, values.getView() );
+   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Algorithms::Segments::RowMajorOrder > rowMajorMatrix( 3, 4, values.getView() );
    std::cout << "Row major order matrix:" << std::endl;
    std::cout << rowMajorMatrix << std::endl;
 
    /***
     * Create dense matrix view with column major order
     */
-   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Containers::Segments::RowMajorOrder > columnMajorMatrix( 4, 3, values.getView() );
+   TNL::Matrices::DenseMatrixView< double, Device, int, TNL::Algorithms::Segments::RowMajorOrder > columnMajorMatrix( 4, 3, values.getView() );
    std::cout << "Column major order matrix:" << std::endl;
    std::cout << columnMajorMatrix << std::endl;
 }

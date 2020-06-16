@@ -1,8 +1,8 @@
 /***************************************************************************
-                          ChunkedEllpack.h -  description
+                          SlicedEllpack.h -  description
                              -------------------
-    begin                : Mar 21, 2020
-    copyright            : (C) 2020 by Tomas Oberhuber
+    begin                : Dec 4, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -12,42 +12,40 @@
 
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/ChunkedEllpackView.h>
-#include <TNL/Containers/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/SlicedEllpackView.h>
+#include <TNL/Algorithms/Segments/SegmentView.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
-class ChunkedEllpack
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          int SliceSize = 32 >
+class SlicedEllpack
 {
    public:
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+      static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getOrganization() { return Organization; }
-      using ViewType = ChunkedEllpackView< Device, Index, Organization >;
+      using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
-      //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
+      using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
+      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
-      ChunkedEllpack() = default;
+      SlicedEllpack();
 
-      ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );
 
-      ChunkedEllpack( const ChunkedEllpack& segments );
+      SlicedEllpack( const SlicedEllpack& segments );
 
-      ChunkedEllpack( const ChunkedEllpack&& segments );
+      SlicedEllpack( const SlicedEllpack&& segments );
 
       static String getSerializationType();
 
@@ -58,12 +56,6 @@ class ChunkedEllpack
       const ConstViewType getConstView() const;
 
       /**
-       * \brief Number of segments.
-       */
-      __cuda_callable__
-      IndexType getSegmentsCount() const;
-
-      /**
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
@@ -71,6 +63,10 @@ class ChunkedEllpack
 
       void reset();
 
+      __cuda_callable__
+      IndexType getSegmentsCount() const;
+
+      __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /**
@@ -78,6 +74,7 @@ class ChunkedEllpack
        */
       __cuda_callable__
       IndexType getSize() const;
+
 
       __cuda_callable__
       IndexType getStorageSize() const;
@@ -110,59 +107,24 @@ class ChunkedEllpack
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
-      ChunkedEllpack& operator=( const ChunkedEllpack& source ) = default;
+      SlicedEllpack& operator=( const SlicedEllpack& source ) = default;
 
       template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
-      ChunkedEllpack& operator=( const ChunkedEllpack< Device_, Index_, IndexAllocator_, Organization_ >& source );
+      SlicedEllpack& operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, Organization_, SliceSize >& source );
 
       void save( File& file ) const;
 
       void load( File& file );
 
-      void printStructure( std::ostream& str ); // TODO const;
-
    protected:
 
-      template< typename SegmentsSizes >
-      void resolveSliceSizes( SegmentsSizes& rowLengths );
+      IndexType size, alignedSize, segmentsCount;
 
-      template< typename SegmentsSizes >
-      bool setSlice( SegmentsSizes& rowLengths,
-                     const IndexType sliceIdx,
-                     IndexType& elementsToAllocation );
-
-      IndexType size = 0, storageSize = 0;
-
-      IndexType chunksInSlice = 256, desiredChunkSize = 16;
-
-      /**
-       * For each segment, this keeps index of the slice which contains the
-       * segment.
-       */
-      OffsetsHolder rowToSliceMapping;
-
-      /**
-       * For each row, this keeps index of the first chunk within a slice.
-       */
-      OffsetsHolder rowToChunkMapping;
-
-      OffsetsHolder chunksToSegmentsMapping;
-
-      /**
-       * Keeps index of the first segment index.
-       */
-      OffsetsHolder rowPointers;
-
-      ChunkedEllpackSliceInfoContainer slices;
-
-      IndexType numberOfSlices = 0;
-
-      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
-      friend class ChunkedEllpack;
+      OffsetsHolder sliceOffsets, sliceSegmentSizes;
 };
 
       } // namespace Segements
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/ChunkedEllpack.hpp>
+#include <TNL/Algorithms/Segments/SlicedEllpack.hpp>

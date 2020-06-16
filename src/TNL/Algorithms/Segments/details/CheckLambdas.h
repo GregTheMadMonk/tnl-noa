@@ -12,7 +12,7 @@
 
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
          namespace details {
 
@@ -35,6 +35,6 @@ class CheckFetchLambda
 };
 
          } // namespace details
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL

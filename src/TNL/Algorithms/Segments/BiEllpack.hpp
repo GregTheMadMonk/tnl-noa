@@ -13,11 +13,11 @@
 #include <math.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/BiEllpack.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/BiEllpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
@@ -26,7 +26,7 @@ template< typename Device,
           ElementsOrganization Organization,
           int WarpSize >
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-BiEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
+BiEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
 {
    this->setSegmentsSizes( sizes );
 }
@@ -577,5 +577,5 @@ getGroupLength( const IndexType strip, const IndexType group ) const -> IndexTyp
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL

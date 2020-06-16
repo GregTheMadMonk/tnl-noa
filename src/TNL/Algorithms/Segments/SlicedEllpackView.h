@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSR.h -  description
+                          SlicedEllpackView.h -  description
                              -------------------
-    begin                : Nov 29, 2019
+    begin                : Dec 12, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -13,75 +13,70 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/CSRView.h>
-#include <TNL/Containers/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/SegmentView.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
           typename Index,
-          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-class CSR
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          int SliceSize = 32 >
+class SlicedEllpackView
 {
    public:
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      using SegmentsSizes = OffsetsHolder;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
+      static constexpr int getSliceSize() { return SliceSize; }
+      static constexpr bool getOrganization() { return Organization; }
       template< typename Device_, typename Index_ >
-      using ViewTemplate = CSRView< Device_, Index_ >;
-      using ViewType = CSRView< Device, Index >;
-      using ConstViewType = CSRView< Device, std::add_const_t< IndexType > >;
-      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
+      using ViewType = SlicedEllpackView;
+      using ConstViewType = ViewType;
+      using SegmentViewType = SegmentView< IndexType, Organization >;
 
-      CSR();
+      __cuda_callable__
+      SlicedEllpackView();
 
-      CSR( const SegmentsSizes& sizes );
+      __cuda_callable__
+      SlicedEllpackView( IndexType size,
+                         IndexType alignedSize,
+                         IndexType segmentsCount,
+                         OffsetsView&& sliceOffsets,
+                         OffsetsView&& sliceSegmentSizes );
 
-      CSR( const CSR& segments );
+      __cuda_callable__
+      SlicedEllpackView( const SlicedEllpackView& slicedEllpackView );
 
-      CSR( const CSR&& segments );
+      __cuda_callable__
+      SlicedEllpackView( const SlicedEllpackView&& slicedEllpackView );
 
       static String getSerializationType();
 
       static String getSegmentsType();
 
-      /**
-       * \brief Set sizes of particular segments.
-       */
-      template< typename SizesHolder = OffsetsHolder >
-      void setSegmentsSizes( const SizesHolder& sizes );
-
-      void reset();
-
+      __cuda_callable__
       ViewType getView();
 
+      __cuda_callable__
       const ConstViewType getConstView() const;
 
-      /**
-       * \brief Number of segments.
-       */
       __cuda_callable__
       IndexType getSegmentsCount() const;
 
-      /***
-       * \brief Returns size of the segment number \r segmentIdx
-       */
       __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
-      /***
-       * \brief Returns number of elements managed by all segments.
+      /**
+       * \brief Number segments.
        */
       __cuda_callable__
       IndexType getSize() const;
 
-      /***
-       * \brief Returns number of elements that needs to be allocated.
-       */
       __cuda_callable__
       IndexType getStorageSize() const;
 
@@ -103,6 +98,7 @@ class CSR
       template< typename Function, typename... Args >
       void forAll( Function& f, Args... args ) const;
 
+
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
@@ -112,10 +108,7 @@ class CSR
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
-      CSR& operator=( const CSR& rhsSegments ) = default;
-
-      template< typename Device_, typename Index_, typename IndexAllocator_ >
-      CSR& operator=( const CSR< Device_, Index_, IndexAllocator_ >& source );
+      SlicedEllpackView& operator=( const SlicedEllpackView& view );
 
       void save( File& file ) const;
 
@@ -123,10 +116,13 @@ class CSR
 
    protected:
 
-      OffsetsHolder offsets;
+      IndexType size, alignedSize, segmentsCount;
+
+      OffsetsView sliceOffsets, sliceSegmentSizes;
 };
+
       } // namespace Segements
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSR.hpp>
+#include <TNL/Algorithms/Segments/SlicedEllpackView.hpp>

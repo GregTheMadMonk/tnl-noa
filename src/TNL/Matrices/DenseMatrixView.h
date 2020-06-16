@@ -15,7 +15,7 @@
 #include <TNL/Matrices/DenseMatrixRowView.h>
 #include <TNL/Matrices/MatrixView.h>
 #include <TNL/Matrices/MatrixType.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 
 namespace TNL {
 namespace Matrices {
@@ -37,13 +37,13 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class DenseMatrixView : public MatrixView< Real, Device, Index >
 {
    protected:
       using BaseType = Matrix< Real, Device, Index >;
       using ValuesVectorType = typename BaseType::ValuesVectorType;
-      using SegmentsType = Containers::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
+      using SegmentsType = Algorithms::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
 

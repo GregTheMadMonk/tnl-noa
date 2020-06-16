@@ -12,13 +12,13 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/SlicedEllpackView.h>
-#include <TNL/Containers/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/SlicedEllpackView.h>
+#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 
 #include "SlicedEllpackView.h"
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
@@ -385,5 +385,5 @@ load( File& file )
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL

@@ -14,7 +14,7 @@
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Matrices/DenseMatrix.h>
@@ -45,7 +45,7 @@ template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Containers::Segments::CSR,
+          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Algorithms::Segments::CSR,
           typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          Ellpack.h -  description
+                          EllpackView.h -  description
                              -------------------
-    begin                : Dec 3, 2019
+    begin                : Dec 12, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -10,20 +10,22 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/EllpackView.h>
-#include <TNL/Containers/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
+
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
           typename Index,
-          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
           ElementsOrganization Organization = Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int Alignment = 32 >
-class Ellpack
+class EllpackView
 {
    public:
 
@@ -35,37 +37,31 @@ class Ellpack
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
-      using ViewType = EllpackView< Device, Index, Organization, Alignment >;
-      using ConstViewType = typename ViewType::ConstViewType;
+      using ViewType = EllpackView;
+      using ConstViewType = ViewType;
       using SegmentViewType = SegmentView< IndexType, Organization >;
 
-      Ellpack();
+      __cuda_callable__
+      EllpackView();
 
-      Ellpack( const SegmentsSizes& sizes );
+      __cuda_callable__
+      EllpackView( IndexType segmentSize, IndexType size, IndexType alignedSize );
 
-      Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
+      __cuda_callable__
+      EllpackView( const EllpackView& ellpackView );
 
-      Ellpack( const Ellpack& segments );
-
-      Ellpack( const Ellpack&& segments );
+      __cuda_callable__
+      EllpackView( const EllpackView&& ellpackView );
 
       static String getSerializationType();
 
       static String getSegmentsType();
 
+      __cuda_callable__
       ViewType getView();
 
+      __cuda_callable__
       const ConstViewType getConstView() const;
-
-      /**
-       * \brief Set sizes of particular segments.
-       */
-      template< typename SizesHolder = OffsetsHolder >
-      void setSegmentsSizes( const SizesHolder& sizes );
-
-      void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
-
-      void reset();
 
       /**
        * \brief Number segments.
@@ -110,10 +106,7 @@ class Ellpack
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
-      Ellpack& operator=( const Ellpack& source ) = default;
-
-      template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int Alignment_ >
-      Ellpack& operator=( const Ellpack< Device_, Index_, IndexAllocator_, Organization_, Alignment_ >& source );
+      EllpackView& operator=( const EllpackView& view );
 
       void save( File& file ) const;
 
@@ -124,8 +117,8 @@ class Ellpack
       IndexType segmentSize, size, alignedSize;
 };
 
-      } // namespace Segements
-   }  // namespace Containers
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/Ellpack.hpp>
+#include <TNL/Algorithms/Segments/EllpackView.hpp>

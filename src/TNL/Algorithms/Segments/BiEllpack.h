@@ -12,17 +12,17 @@
 
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/BiEllpackView.h>
-#include <TNL/Containers/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/BiEllpackView.h>
+#include <TNL/Algorithms/Segments/SegmentView.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpack
 {
@@ -40,7 +40,7 @@ class BiEllpack
 
       BiEllpack() = default;
 
-      BiEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      BiEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );
 
       BiEllpack( const BiEllpack& segments );
 
@@ -167,8 +167,8 @@ class BiEllpack
       friend class BiEllpack;
 };
 
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/BiEllpack.hpp>
+#include <TNL/Algorithms/Segments/BiEllpack.hpp>
