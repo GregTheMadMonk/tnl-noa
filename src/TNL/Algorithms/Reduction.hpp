@@ -49,14 +49,14 @@ reduce( const Index begin,
 {
    constexpr int block_size = 128;
    const Index size = end - begin;
-   const size_t blocks = size / block_size;
+   const Index blocks = size / block_size;
 
    if( blocks > 1 ) {
       // initialize array for unrolled results
       Result r[ 4 ] = { zero, zero, zero, zero };
 
       // main reduction (explicitly unrolled loop)
-      for( size_t b = 0; b < blocks; b++ ) {
+      for( Index b = 0; b < blocks; b++ ) {
          const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
             r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
@@ -98,7 +98,7 @@ reduceWithArgument( const Index begin,
 {
    constexpr int block_size = 128;
    const Index size = end - begin;
-   const size_t blocks = size / block_size;
+   const Index blocks = size / block_size;
 
    if( blocks > 1 ) {
       // initialize array for unrolled results
@@ -107,7 +107,7 @@ reduceWithArgument( const Index begin,
       bool initialized( false );
 
       // main reduction (explicitly unrolled loop)
-      for( size_t b = 0; b < blocks; b++ ) {
+      for( Index b = 0; b < blocks; b++ ) {
          const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
             if( ! initialized )
@@ -163,7 +163,7 @@ reduce( const Index begin,
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
    const Index size = end - begin;
-   const size_t blocks = size / block_size;
+   const Index blocks = size / block_size;
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
@@ -175,7 +175,7 @@ reduce( const Index begin,
          Result r[ 4 ] = { zero, zero, zero, zero  };
 
          #pragma omp for nowait
-         for( size_t b = 0; b < blocks; b++ ) {
+         for( Index b = 0; b < blocks; b++ ) {
             const Index offset = begin + b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
@@ -225,7 +225,7 @@ reduceWithArgument( const Index begin,
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
    const Index size = end - begin;
-   const size_t blocks = size / block_size;
+   const Index blocks = size / block_size;
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
@@ -239,7 +239,7 @@ reduceWithArgument( const Index begin,
          bool initialized( false );
 
          #pragma omp for nowait
-         for( size_t b = 0; b < blocks; b++ ) {
+         for( Index b = 0; b < blocks; b++ ) {
             const Index offset = begin + b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                if( ! initialized ) {
