@@ -41,13 +41,15 @@ template< typename Index,
           typename DataFetcher >
 constexpr Result
 Reduction< Devices::Sequential >::
-reduce( const Index size,
+reduce( const Index begin,
+        const Index end,
         const ReductionOperation& reduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
    constexpr int block_size = 128;
-   const int blocks = size / block_size;
+   const Index size = end - begin;
+   const Index blocks = size / block_size;
 
    if( blocks > 1 ) {
       // initialize array for unrolled results
@@ -55,7 +57,7 @@ reduce( const Index size,
 
       // main reduction (explicitly unrolled loop)
       for( int b = 0; b < blocks; b++ ) {
-         const Index offset = b * block_size;
+         const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
             r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
             r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
@@ -65,7 +67,7 @@ reduce( const Index size,
       }
 
       // reduction of the last, incomplete block (not unrolled)
-      for( Index i = blocks * block_size; i < size; i++ )
+      for( Index i = begin + blocks * block_size; i < end; i++ )
          r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
 
       // reduction of unrolled results
@@ -76,7 +78,7 @@ reduce( const Index size,
    }
    else {
       Result result = zero;
-      for( Index i = 0; i < size; i++ )
+      for( Index i = begin; i < end; i++ )
          result = reduction( result, dataFetcher( i ) );
       return result;
    }
@@ -88,13 +90,15 @@ template< typename Index,
           typename DataFetcher >
 constexpr std::pair< Result, Index >
 Reduction< Devices::Sequential >::
-reduceWithArgument( const Index size,
+reduceWithArgument( const Index begin,
+                    const Index end,
                     const ReductionOperation& reduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
    constexpr int block_size = 128;
-   const int blocks = size / block_size;
+   const Index size = end - begin;
+   const Index blocks = size / block_size;
 
    if( blocks > 1 ) {
       // initialize array for unrolled results
@@ -104,7 +108,7 @@ reduceWithArgument( const Index size,
 
       // main reduction (explicitly unrolled loop)
       for( int b = 0; b < blocks; b++ ) {
-         const Index offset = b * block_size;
+         const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
             if( ! initialized )
             {
@@ -127,7 +131,7 @@ reduceWithArgument( const Index size,
       }
 
       // reduction of the last, incomplete block (not unrolled)
-      for( Index i = blocks * block_size; i < size; i++ )
+      for( Index i = begin + blocks * block_size; i < size; i++ )
          reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
 
       // reduction of unrolled results
@@ -137,8 +141,8 @@ reduceWithArgument( const Index size,
       return std::make_pair( r[ 0 ], arg[ 0 ] );
    }
    else {
-      std::pair< Result, Index > result( dataFetcher( 0 ), 0 );
-      for( Index i = 1; i < size; i++ )
+      std::pair< Result, Index > result( dataFetcher( begin ), begin );
+      for( Index i = begin + 1; i < end; i++ )
          reduction( result.first, dataFetcher( i ), result.second, i );
       return result;
    }
@@ -150,14 +154,16 @@ template< typename Index,
           typename DataFetcher >
 Result
 Reduction< Devices::Host >::
-reduce( const Index size,
+reduce( const Index begin,
+        const Index end,
         const ReductionOperation& reduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
-   const int blocks = size / block_size;
+   const Index size = end - begin;
+   const Index blocks = size / block_size;
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
@@ -170,7 +176,7 @@ reduce( const Index size,
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
-            const Index offset = b * block_size;
+            const Index offset = begin + b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
                r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
@@ -182,7 +188,7 @@ reduce( const Index size,
          // the first thread that reaches here processes the last, incomplete block
          #pragma omp single nowait
          {
-            for( Index i = blocks * block_size; i < size; i++ )
+            for( Index i = begin + blocks * block_size; i < end; i++ )
                r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
          }
 
@@ -201,7 +207,7 @@ reduce( const Index size,
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduce( size, reduction, dataFetcher, zero );
+      return Reduction< Devices::Sequential >::reduce( begin, end, reduction, dataFetcher, zero );
 }
 
 template< typename Index,
@@ -210,14 +216,16 @@ template< typename Index,
           typename DataFetcher >
 std::pair< Result, Index >
 Reduction< Devices::Host >::
-reduceWithArgument( const Index size,
+reduceWithArgument( const Index begin,
+                    const Index end,
                     const ReductionOperation& reduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
-   const int blocks = size / block_size;
+   const Index size = end - begin;
+   const Index blocks = size / block_size;
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
@@ -232,7 +240,7 @@ reduceWithArgument( const Index size,
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
-            const Index offset = b * block_size;
+            const Index offset = begin + b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                if( ! initialized ) {
                   arg[ 0 ] = offset + i;
@@ -256,7 +264,7 @@ reduceWithArgument( const Index size,
          // the first thread that reaches here processes the last, incomplete block
          #pragma omp single nowait
          {
-            for( Index i = blocks * block_size; i < size; i++ )
+            for( Index i = begin + blocks * block_size; i < end; i++ )
                reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
          }
 
@@ -277,7 +285,7 @@ reduceWithArgument( const Index size,
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduceWithArgument( size, reduction, dataFetcher, zero );
+      return Reduction< Devices::Sequential >::reduceWithArgument( begin, end, reduction, dataFetcher, zero );
 }
 
 template< typename Index,
@@ -286,7 +294,8 @@ template< typename Index,
           typename DataFetcher >
 Result
 Reduction< Devices::Cuda >::
-reduce( const Index size,
+reduce( const Index begin,
+        const Index end,
         const ReductionOperation& reduction,
         DataFetcher& dataFetcher,
         const Result& zero )
@@ -302,7 +311,7 @@ reduce( const Index size,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< Index, Result > reductionLauncher( size );
+   CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduction on the GPU
    Result* deviceAux1( 0 );
@@ -346,7 +355,7 @@ reduce( const Index size,
 
       // finish the reduction on the host
       auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-      const Result result = Reduction< Devices::Sequential >::reduce( reducedSize, reduction, fetch, zero );
+      const Result result = Reduction< Devices::Sequential >::reduce( 0, reducedSize, reduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -375,7 +384,8 @@ template< typename Index,
           typename DataFetcher >
 std::pair< Result, Index >
 Reduction< Devices::Cuda >::
-reduceWithArgument( const Index size,
+reduceWithArgument( const Index begin,
+                    const Index end,
                     const ReductionOperation& reduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
@@ -391,7 +401,7 @@ reduceWithArgument( const Index size,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< Index, Result > reductionLauncher( size );
+   CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduction on the GPU
    Result* deviceAux1( nullptr );

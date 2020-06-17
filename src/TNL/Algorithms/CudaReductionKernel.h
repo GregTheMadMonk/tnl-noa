@@ -50,32 +50,33 @@ __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiproc
 CudaReductionKernel( const Result zero,
                      DataFetcher dataFetcher,
                      const Reduction reduction,
-                     const Index size,
+                     const Index begin,
+                     const Index end,
                      Result* output )
 {
    Result* sdata = Cuda::getSharedMemory< Result >();
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
    const Index tid = threadIdx.x;
-         Index gid = blockIdx.x * blockDim. x + threadIdx.x;
+         Index gid = begin + blockIdx.x * blockDim. x + threadIdx.x;
    const Index gridSize = blockDim.x * gridDim.x;
 
    sdata[ tid ] = zero;
 
    // Start with the sequential reduction and push the result into the shared memory.
-   while( gid + 4 * gridSize < size ) {
+   while( gid + 4 * gridSize < end ) {
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
       gid += 4 * gridSize;
    }
-   while( gid + 2 * gridSize < size ) {
+   while( gid + 2 * gridSize < end ) {
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
       gid += 2 * gridSize;
    }
-   while( gid < size ) {
+   while( gid < end ) {
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       gid += gridSize;
    }
@@ -143,7 +144,8 @@ __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiproc
 CudaReductionWithArgumentKernel( const Result zero,
                                  DataFetcher dataFetcher,
                                  const Reduction reduction,
-                                 const Index size,
+                                 const Index begin,
+                                 const Index end,
                                  Result* output,
                                  Index* idxOutput,
                                  const Index* idxInput = nullptr )
@@ -153,56 +155,56 @@ CudaReductionWithArgumentKernel( const Result zero,
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
    const Index tid = threadIdx.x;
-         Index gid = blockIdx.x * blockDim. x + threadIdx.x;
+         Index gid = begin + blockIdx.x * blockDim. x + threadIdx.x;
    const Index gridSize = blockDim.x * gridDim.x;
 
    // Start with the sequential reduction and push the result into the shared memory.
    if( idxInput ) {
-      if( gid < size ) {
+      if( gid < end ) {
          sdata[ tid ] = dataFetcher( gid );
          sidx[ tid ] = idxInput[ gid ];
          gid += gridSize;
       } else {
          sdata[ tid ] = zero;
       }
-      while( gid + 4 * gridSize < size ) {
+      while( gid + 4 * gridSize < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
          reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
          reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], idxInput[ gid + 2 * gridSize ] );
          reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], idxInput[ gid + 3 * gridSize ] );
          gid += 4 * gridSize;
       }
-      while( gid + 2 * gridSize < size ) {
+      while( gid + 2 * gridSize < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
          reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
          gid += 2 * gridSize;
       }
-      while( gid < size ) {
+      while( gid < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
          gid += gridSize;
       }
    }
    else {
-      if( gid < size ) {
+      if( gid < end ) {
          sdata[ tid ] = dataFetcher( gid );
          sidx[ tid ] = gid;
          gid += gridSize;
       } else {
          sdata[ tid ] = zero;
       }
-      while( gid + 4 * gridSize < size ) {
+      while( gid + 4 * gridSize < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
          reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
          reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], gid + 2 * gridSize );
          reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], gid + 3 * gridSize );
          gid += 4 * gridSize;
       }
-      while( gid + 2 * gridSize < size ) {
+      while( gid + 2 * gridSize < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
          reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
          gid += 2 * gridSize;
       }
-      while( gid < size ) {
+      while( gid < end ) {
          reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
          gid += gridSize;
       }
@@ -282,13 +284,13 @@ struct CudaReductionKernelLauncher
    // Update:
    // It seems to be better to map only one CUDA block per one multiprocessor or maybe
    // just slightly more. Therefore we omit blocksdPerMultiprocessor in the following.
-   CudaReductionKernelLauncher( const Index size )
+   CudaReductionKernelLauncher( const Index begin, const Index end )
    : activeDevice( Cuda::DeviceInfo::getActiveDevice() ),
      blocksdPerMultiprocessor( Cuda::DeviceInfo::getRegistersPerMultiprocessor( activeDevice )
                                / ( Reduction_maxThreadsPerBlock * Reduction_registersPerThread ) ),
      //desGridSize( blocksdPerMultiprocessor * Cuda::DeviceInfo::getCudaMultiprocessors( activeDevice ) ),
      desGridSize( Cuda::DeviceInfo::getCudaMultiprocessors( activeDevice ) ),
-     originalSize( size )
+     begin( begin ), end( end )
    {
    }
 
@@ -305,7 +307,7 @@ struct CudaReductionKernelLauncher
       cudaReductionBuffer.setSize( buf_size );
       output = cudaReductionBuffer.template getData< Result >();
 
-      this->reducedSize = this->launch( originalSize, reduction, dataFetcher, zero, output );
+      this->reducedSize = this->launch( begin, end, reduction, dataFetcher, zero, output );
       return this->reducedSize;
    }
 
@@ -324,7 +326,7 @@ struct CudaReductionKernelLauncher
       output = cudaReductionBuffer.template getData< Result >();
       idxOutput = reinterpret_cast< Index* >( &output[ 2 * desGridSize ] );
 
-      this->reducedSize = this->launchWithArgument( originalSize, reduction, dataFetcher, zero, output, idxOutput, nullptr );
+      this->reducedSize = this->launchWithArgument( begin, end, reduction, dataFetcher, zero, output, idxOutput, nullptr );
       return this->reducedSize;
    }
 
@@ -342,7 +344,7 @@ struct CudaReductionKernelLauncher
       {
          // this lambda has to be defined inside the loop, because the captured variable changes
          auto copyFetch = [input] __cuda_callable__ ( Index i ) { return input[ i ]; };
-         this->reducedSize = this->launch( this->reducedSize, reduction, copyFetch, zero, output );
+         this->reducedSize = this->launch( 0, this->reducedSize, reduction, copyFetch, zero, output );
          std::swap( input, output );
       }
 
@@ -372,7 +374,7 @@ struct CudaReductionKernelLauncher
       {
          // this lambda has to be defined inside the loop, because the captured variable changes
          auto copyFetch = [input] __cuda_callable__ ( Index i ) { return input[ i ]; };
-         this->reducedSize = this->launchWithArgument( this->reducedSize, reduction, copyFetch, zero, output, idxOutput, idxInput );
+         this->reducedSize = this->launchWithArgument( ( Index ) 0, this->reducedSize, reduction, copyFetch, zero, output, idxOutput, idxInput );
          std::swap( input, output );
          std::swap( idxInput, idxOutput );
       }
@@ -394,13 +396,15 @@ struct CudaReductionKernelLauncher
    protected:
       template< typename DataFetcher,
                 typename Reduction >
-      int launch( const Index size,
+      int launch( const Index begin,
+                  const Index end,
                   const Reduction& reduction,
                   DataFetcher& dataFetcher,
                   const Result& zero,
                   Result* output )
       {
 #ifdef HAVE_CUDA
+         const Index size = end - begin;
          dim3 blockSize, gridSize;
          blockSize.x = Reduction_maxThreadsPerBlock;
          gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
@@ -483,7 +487,7 @@ struct CudaReductionKernelLauncher
             cudaFuncSetCacheConfig(CudaReductionKernel< Reduction_maxThreadsPerBlock, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared);
 
             CudaReductionKernel< Reduction_maxThreadsPerBlock >
-            <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, size, output);
+            <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, begin, end, output);
             cudaStreamSynchronize(0);
             TNL_CHECK_CUDA_DEVICE;
          }
@@ -500,7 +504,8 @@ struct CudaReductionKernelLauncher
 
       template< typename DataFetcher,
                 typename Reduction >
-      int launchWithArgument( const Index size,
+      int launchWithArgument( const Index begin,
+                              const Index end,
                               const Reduction& reduction,
                               DataFetcher& dataFetcher,
                               const Result& zero,
@@ -510,6 +515,7 @@ struct CudaReductionKernelLauncher
       {
 #ifdef HAVE_CUDA
          dim3 blockSize, gridSize;
+         const Index size = end - begin;
          blockSize.x = Reduction_maxThreadsPerBlock;
          gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
@@ -591,7 +597,7 @@ struct CudaReductionKernelLauncher
             cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock, Result, DataFetcher, Reduction, Index >, cudaFuncCachePreferShared);
 
             CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock >
-            <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, size, output, idxOutput, idxInput );
+            <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, begin, end, output, idxOutput, idxInput );
             cudaStreamSynchronize(0);
             TNL_CHECK_CUDA_DEVICE;
          }
@@ -610,7 +616,8 @@ struct CudaReductionKernelLauncher
       const int activeDevice;
       const int blocksdPerMultiprocessor;
       const int desGridSize;
-      const Index originalSize;
+      //const Index originalSize;
+      const Index begin, end;
       Index reducedSize;
 };
 
