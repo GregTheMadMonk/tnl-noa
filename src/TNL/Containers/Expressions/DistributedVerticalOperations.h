@@ -62,7 +62,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
       auto fetch = [_data] ( IndexType i ) { return _data[ i ].second; };
-      auto reduction = [] ( IndexType& aIdx, const IndexType& bIdx, RealType& a, const RealType& b ) {
+      auto reduction = [] ( RealType& a, const RealType& b, IndexType& aIdx, const IndexType& bIdx ) {
          if( a > b ) {
             a = b;
             aIdx = bIdx;
@@ -70,7 +70,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::max() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) 0, (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::max() );
       result.first = gatheredResults[ result.first ].first;
    }
    return result;
@@ -119,7 +119,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
       auto fetch = [_data] ( IndexType i ) { return _data[ i ].second; };
-      auto reduction = [] ( IndexType& aIdx, const IndexType& bIdx, RealType& a, const RealType& b ) {
+      auto reduction = [] ( RealType& a, const RealType& b, IndexType& aIdx, const IndexType& bIdx ) {
          if( a < b ) {
             a = b;
             aIdx = bIdx;
@@ -127,7 +127,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::lowest() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( ( IndexType ) 0, (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::lowest() );
       result.first = gatheredResults[ result.first ].first;
    }
    return result;
