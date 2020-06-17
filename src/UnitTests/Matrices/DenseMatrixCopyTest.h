@@ -17,26 +17,26 @@
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
-#include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Containers/Segments/Ellpack.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 template< typename Device, typename Index, typename IndexAllocator >
-using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator >;
+using EllpackSegments = TNL::Algorithms::Segments::Ellpack< Device, Index, IndexAllocator >;
 
 template< typename Device, typename Index, typename IndexAllocator >
-using SlicedEllpackSegments = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
+using SlicedEllpackSegments = TNL::Algorithms::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
 
-using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
-using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR >;
+using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR >;
 using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
 using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
-using Dense_host               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Containers::Segments::ColumnMajorOrder >;
-using Dense_host_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Containers::Segments::RowMajorOrder >;
-using Dense_cuda               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Containers::Segments::ColumnMajorOrder >;
-using Dense_cuda_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Containers::Segments::RowMajorOrder >;
+using Dense_host               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Algorithms::Segments::ColumnMajorOrder >;
+using Dense_host_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Host, int, TNL::Algorithms::Segments::RowMajorOrder >;
+using Dense_cuda               = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Algorithms::Segments::ColumnMajorOrder >;
+using Dense_cuda_RowMajorOrder = TNL::Matrices::DenseMatrix< int, TNL::Devices::Cuda, int, TNL::Algorithms::Segments::RowMajorOrder >;
 
 
 #ifdef HAVE_GTEST

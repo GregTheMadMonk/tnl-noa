@@ -193,11 +193,11 @@ TYPED_TEST( VectorVerticalOperationsTest, argMax )
    using RealType = typename TestFixture::VectorOrView::RealType;
 
    // vector or view
-   EXPECT_EQ( argMax(V1), std::make_pair(size - 1, (RealType) size - 1) );
+   EXPECT_EQ( argMax(V1), std::make_pair( (RealType) size - 1 , size - 1 ) );
    // unary expression
-   EXPECT_EQ( argMax(-V1), std::make_pair(0, (RealType) 0) );
+   EXPECT_EQ( argMax(-V1), std::make_pair( (RealType) 0, 0 ) );
    // expression
-   EXPECT_EQ( argMax(V1 + 2), std::make_pair(size - 1, (RealType) size - 1 + 2) );
+   EXPECT_EQ( argMax(V1 + 2), std::make_pair( (RealType) size - 1 + 2, size - 1 ) );
 }
 
 TYPED_TEST( VectorVerticalOperationsTest, min )
@@ -218,11 +218,11 @@ TYPED_TEST( VectorVerticalOperationsTest, argMin )
    using RealType = typename TestFixture::VectorOrView::RealType;
 
    // vector or view
-   EXPECT_EQ( argMin(V1), std::make_pair(0, (RealType) 0) );
+   EXPECT_EQ( argMin(V1), std::make_pair( (RealType) 0, 0 ) );
    // unary expression
-   EXPECT_EQ( argMin(-V1), std::make_pair(size - 1, (RealType) 1 - size) );
+   EXPECT_EQ( argMin(-V1), std::make_pair( (RealType) 1 - size, size - 1 ) );
    // binary expression
-   EXPECT_EQ( argMin(V1 + 2), std::make_pair(0, (RealType) 2) );
+   EXPECT_EQ( argMin(V1 + 2), std::make_pair( (RealType) 2 , 0 ) );
 }
 
 TYPED_TEST( VectorVerticalOperationsTest, sum )

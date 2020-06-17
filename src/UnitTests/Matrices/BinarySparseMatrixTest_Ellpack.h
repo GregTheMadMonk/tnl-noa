@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
 
@@ -29,34 +29,22 @@ protected:
 ////
 // Row-major format is used for the host system
 template< typename Device, typename Index, typename IndexAlocator >
-using RowMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, IndexAlocator, TNL::Containers::Segments::RowMajorOrder, 32 >;
+using RowMajorEllpack = TNL::Algorithms::Segments::Ellpack< Device, Index, IndexAlocator, TNL::Algorithms::Segments::RowMajorOrder, 32 >;
 
 
 ////
 // Column-major format is used for GPUs
 template< typename Device, typename Index, typename IndexAllocator >
-using ColumnMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator, TNL::Containers::Segments::ColumnMajorOrder, 32 >;
+using ColumnMajorEllpack = TNL::Algorithms::Segments::Ellpack< Device, Index, IndexAllocator, TNL::Algorithms::Segments::ColumnMajorOrder, 32 >;
 
 // types for which MatrixTest is instantiated
 using EllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack, int >,
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack, int >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >
+   ,TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack, int >,
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack, int >
 #endif
 >;
 

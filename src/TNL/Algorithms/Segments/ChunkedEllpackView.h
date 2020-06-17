@@ -13,18 +13,18 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/ElementsOrganization.h>
-#include <TNL/Containers/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Containers/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
+#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
 template< typename Device,
           typename Index,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class ChunkedEllpackView
 {
    public:
@@ -225,8 +225,8 @@ class ChunkedEllpackView
       friend struct details::ChunkedEllpackSegmentsReductionDispatcher;
 #endif
 };
-      } // namespace Segements
-   }  // namespace Conatiners
+      } // namespace Segments
+   }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Containers/Segments/ChunkedEllpackView.hpp>
+#include <TNL/Algorithms/Segments/ChunkedEllpackView.hpp>

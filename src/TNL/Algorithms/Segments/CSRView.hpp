@@ -12,12 +12,12 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/CSRView.h>
-#include <TNL/Containers/Segments/details/CSR.h>
-#include <TNL/Containers/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/CSRView.h>
+#include <TNL/Algorithms/Segments/details/CSR.h>
+#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
@@ -251,5 +251,5 @@ load( File& file )
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Containers
 } // namespace TNL

@@ -12,17 +12,17 @@
 
 #include <type_traits>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/BiEllpackSegmentView.h>
-#include <TNL/Containers/Segments/details/CheckLambdas.h>
+#include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
+#include <TNL/Algorithms/Segments/details/CheckLambdas.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
          namespace details {
 
 template< typename Index,
           typename Device,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int WarpSize = 32 >
 class BiEllpack
 {
@@ -365,5 +365,5 @@ void BiEllpackSegmentsReductionKernel( View biEllpack,
 
          } //namespace details
       } //namespace Segments
-   } //namespace Containers
+   } //namespace Algorithms
 } //namepsace TNL

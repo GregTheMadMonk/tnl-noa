@@ -13,7 +13,7 @@
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/MultidiagonalMatrixRowView.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 #include <TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
 #include <TNL/Matrices/MultidiagonalMatrixView.h>
 
@@ -67,7 +67,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization(),
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >

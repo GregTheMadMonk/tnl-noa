@@ -14,7 +14,7 @@
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Matrices/DenseMatrix.h>
@@ -25,17 +25,19 @@ namespace Matrices {
 /**
  * \brief Implementation of sparse matrix, i.e. matrix storing only non-zero elements.
  * 
- * \tparam Real is a type of matrix elements.
+ * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated 
+ *    as binary and so the matrix elements values are not stored in the memory since we need
+ *    to remember only coordinates of non-zero elements( which equal one). 
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam MatrixType specifies the type of matrix - its symmetry or binarity. See \ref MatrixType.
- *    Both symmetric and binary matrix types reduces memory consumption. Binary matrix does not store
- *    the matrix values explicitly since the non-zero elements can have only value equal to one. Symmetric
+ * \tparam MatrixType specifies a symmetry of matrix. See \ref MatrixType. Symmetric
  *    matrices store only lower part of the matrix and its diagonal. The upper part is reconstructed on the fly.
  *    GeneralMatrix with no symmetry is used by default.
  * \tparam Segments is a structure representing the sparse matrix format. Depending on the pattern of the non-zero elements
  *    different matrix formats can perform differently especially on GPUs. By default \ref CSR format is used. See also
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
+ * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
+ *    bu the user, of course.
  * \tparam RealAllocator is allocator for the matrix elements values.
  * \tparam IndexAllocator is allocator for the matrix elements column indexes.
  */
@@ -43,7 +45,8 @@ template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Containers::Segments::CSR,
+          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Algorithms::Segments::CSR,
+          typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
@@ -80,12 +83,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * 
        * \return \e true if the matrix is stored as binary and \e false otherwise.
        */
-      static constexpr bool isBinary() { return MatrixType::isBinary(); };
+      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
 
       /**
        * \brief The type of matrix elements.
        */
       using RealType = Real;
+
+      using ComputeRealType = ComputeReal;
 
       /**
        * \brief The device where the matrix is allocated.
@@ -161,9 +166,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Index = Index,
                 typename _MatrixType = MatrixType,
                 template< typename, typename, typename > class _Segments = Segments,
+                typename _ComputeReal = ComputeReal,
                 typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real >,
                 typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
-      using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _RealAllocator, _IndexAllocator >;
+      using Self = SparseMatrix< _Real, _Device, _Index, _MatrixType, _Segments, _ComputeReal, _RealAllocator, _IndexAllocator >;
 
       /**
        * \brief Constructor only with values and column indexes allocators.
@@ -770,8 +776,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector,
-                          const RealType& matrixMultiplicator = 1.0,
-                          const RealType& outVectorMultiplicator = 0.0,
+                          const ComputeRealType& matrixMultiplicator = 1.0,
+                          const ComputeRealType& outVectorMultiplicator = 0.0,
                           const IndexType firstRow = 0,
                           const IndexType lastRow = 0 ) const;
 

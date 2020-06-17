@@ -13,7 +13,7 @@
 #include <TNL/Matrices/MatrixView.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/TridiagonalMatrixRowView.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 #include <TNL/Matrices/details/TridiagonalMatrixIndexer.h>
 
 namespace TNL {
@@ -36,7 +36,7 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
@@ -83,7 +83,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                ElementsOrganization Organization_ = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+                ElementsOrganization Organization_ = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
       using Self = TridiagonalMatrixView< _Real, _Device, _Index, Organization_ >;
 
       /**

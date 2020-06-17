@@ -16,7 +16,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Math.h>
 #include <iostream>
 
@@ -35,7 +35,7 @@ static const char* TEST_FILE_NAME = "test_TridiagonalMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   using namespace TNL::Containers::Segments;
+   using namespace TNL::Algorithms::Segments;
    EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, true, [any_allocator] >" ) );
    EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< int, [any_device], int, true, [any_allocator] >" ) );
    EXPECT_EQ( ( TNL::Matrices::TridiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::TridiagonalMatrix< float, [any_device], int, true, [any_allocator] >" ) );
@@ -1144,11 +1144,11 @@ void test_AssignmentOperator()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   constexpr TNL::Containers::Segments::ElementsOrganization organization = Matrix::getOrganization();
+   constexpr TNL::Algorithms::Segments::ElementsOrganization organization = Matrix::getOrganization();
 
    using TridiagonalHost = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Host, IndexType, organization >;
    using TridiagonalCuda = TNL::Matrices::TridiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType,
-      organization == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder >;
+      organization == TNL::Algorithms::Segments::RowMajorOrder ? TNL::Algorithms::Segments::ColumnMajorOrder : TNL::Algorithms::Segments::RowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
    TridiagonalHost hostMatrix( rows, columns );
@@ -1458,7 +1458,7 @@ TYPED_TEST( MatrixTest, addMatrixTest_differentOrdering )
     using IndexType = typename MatrixType::IndexType;
     using RealAllocatorType = typename MatrixType::RealAllocatorType;
     using MatrixType2 = TNL::Matrices::TridiagonalMatrix< RealType, DeviceType, IndexType,
-     MatrixType::getOrganization() == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder,
+     MatrixType::getOrganization() == TNL::Algorithms::Segments::RowMajorOrder ? TNL::Algorithms::Segments::ColumnMajorOrder : TNL::Algorithms::Segments::RowMajorOrder,
       RealAllocatorType >;
 
     test_AddMatrix< MatrixType, MatrixType2 >();

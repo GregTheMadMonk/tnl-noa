@@ -14,9 +14,9 @@
 
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
-#include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Containers/Segments/Ellpack.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
 using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
@@ -26,13 +26,13 @@ using SE_host = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Host, int, 2 >;
 using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
 
 /*template< typename Device, typename Index, typename IndexAllocator >
-using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator >;
+using EllpackSegments = TNL::Algorithms::Segments::Ellpack< Device, Index, IndexAllocator >;
 
 template< typename Device, typename Index, typename IndexAllocator >
-using SlicedEllpackSegments = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
+using SlicedEllpackSegments = TNL::Algorithms::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
 
-using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
-using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR >;
+using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR >;
 using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;

@@ -31,10 +31,10 @@
 #include "ordering.h"
 
 #include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 
 template< typename _Device, typename _Index, typename _IndexAlocator >
-using SegmentsType = TNL::Containers::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
+using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, _IndexAlocator >;
 
 using namespace TNL;
 using namespace TNL::Benchmarks;

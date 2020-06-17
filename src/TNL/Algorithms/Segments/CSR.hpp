@@ -12,11 +12,11 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Containers/Segments/details/CSR.h>
+#include <TNL/Algorithms/Segments/CSR.h>
+#include <TNL/Algorithms/Segments/details/CSR.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
@@ -258,5 +258,5 @@ load( File& file )
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL

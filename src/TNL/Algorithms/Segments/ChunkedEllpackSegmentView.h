@@ -11,7 +11,7 @@
 #pragma once
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Index,
@@ -90,5 +90,5 @@ class ChunkedEllpackSegmentView< Index, RowMajorOrder >
 };
 
       } //namespace Segments
-   } //namespace Containers
+   } //namespace Algorithms
 } //namespace TNL

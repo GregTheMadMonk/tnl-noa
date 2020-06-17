@@ -18,23 +18,17 @@ namespace Matrices {
  * 
  * It is used for specification of \ref SparseMatrix type.
  */
-template< bool Symmetric,
-          bool Binary >
+template< bool Symmetric >
 struct MatrixType
 {
    static constexpr bool isSymmetric() { return Symmetric; }
 
-   static constexpr bool isBinary() { return Binary; }
-
    static String getSerializationType() {
       String type;
-      if( ! isBinary() && ! isSymmetric() )
+      if( ! isSymmetric() )
          type = "General";
       else
-      {
-         if( isSymmetric() ) type = "Symmetric";
-         if( isBinary() ) type += "Binary";
-      }
+         type = "Symmetric";
       return type;
    }
 };
@@ -44,7 +38,7 @@ struct MatrixType
  * 
  * It is used for specification of \ref SparseMatrix type.
  */
-struct GeneralMatrix : MatrixType< false, false > {};
+struct GeneralMatrix : MatrixType< false > {};
 
 /**
  * \brief Symmetric matrix type.
@@ -53,38 +47,7 @@ struct GeneralMatrix : MatrixType< false, false > {};
  * upper part is reconstructed on the fly.
  * It is used for specification of \ref SparseMatrix type.
  */
-struct SymmetricMatrix : MatrixType< true, false > {};
-
-/**
- * \brief Binary matrix type.
- * 
- * Binary matrix does not store explictly values of matrix elements and thus
- * it reduces memory consumption.
- * It is used for specification of \ref SparseMatrix type. 
- */
-struct BinaryMatrix : MatrixType< false, true > {};
-
-/**
- * \brief Symmetric and binary matrix type.
- * 
- * Symmetric matrix stores only lower part of the matrix and its diagonal. The
- * upper part is reconstructed on the fly.
- * Binary matrix does not store explictly values of matrix elements and thus
- * it reduces memory consumption.
- * It is used for specification of \ref SparseMatrix type.
- */
-struct BinarySymmetricMatrix : MatrixType< true, true > {};
-
-/**
- * \brief Symmetric and binary matrix type.
- * 
- * Symmetric matrix stores only lower part of the matrix and its diagonal. The
- * upper part is reconstructed on the fly.
- * Binary matrix does not store explictly values of matrix elements and thus
- * it reduces memory consumption.
- * It is used for specification of \ref SparseMatrix type.
- */
-struct SymmetricBinaryMatrix : MatrixType< true, true > {};
+struct SymmetricMatrix : MatrixType< true > {};
 
 } // namespace Matrices
 } // namespace TNL

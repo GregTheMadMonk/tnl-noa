@@ -594,9 +594,10 @@ template< typename Matrix >
 void test_VectorProduct()
 {
    using RealType = typename Matrix::RealType;
+   using ComputeRealType = typename Matrix::ComputeRealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+   using VectorType = TNL::Containers::Vector< ComputeRealType, DeviceType, IndexType >;
 
    /*
     * Sets up the following 4x4 sparse matrix:
@@ -880,6 +881,7 @@ template< typename Matrix >
 void test_RowsReduction()
 {
    using RealType = typename Matrix::RealType;
+   using ComputeRealType = typename Matrix::ComputeRealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
@@ -960,16 +962,16 @@ void test_RowsReduction()
 
    ////
    // Compute max norm
-   TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
+   TNL::Containers::Vector< ComputeRealType, DeviceType, IndexType > rowSums( rows );
    auto rowSums_view = rowSums.getView();
    auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
-      return abs( value );
+      return TNL::abs( value );
    };
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
    };
    m.allRowsReduction( max_fetch, std::plus<>{}, max_keep, 0 );
-   const RealType maxNorm = TNL::max( rowSums );
+   const auto maxNorm = TNL::max( rowSums );
    EXPECT_EQ( maxNorm, 8 ) ; // 29+30+31+32+33+34+35+36
 }
 

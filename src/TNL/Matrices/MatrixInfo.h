@@ -15,9 +15,9 @@
 #include <TNL/Matrices/DenseMatrixView.h>
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Containers/Segments/CSRView.h>
-#include <TNL/Containers/Segments/EllpackView.h>
-#include <TNL/Containers/Segments/SlicedEllpackView.h>
+#include <TNL/Algorithms/Segments/CSRView.h>
+#include <TNL/Algorithms/Segments/EllpackView.h>
+#include <TNL/Algorithms/Segments/SlicedEllpackView.h>
 #include <TNL/Matrices/Legacy/CSR.h>
 #include <TNL/Matrices/Legacy/Ellpack.h>
 #include <TNL/Matrices/Legacy/SlicedEllpack.h>

@@ -57,21 +57,6 @@ class MultidiagonalMatrixIndexer
          this->nonemptyRows = nonemptyRows;
       };
 
-      /*__cuda_callable__
-      IndexType getRowSize( const IndexType rowIdx ) const
-      {
-         if( rowIdx == 0 )
-            return 2;
-         if( columns <= rows )
-         {
-            if( rowIdx == columns - 1 )
-               return 2;
-            if( rowIdx == columns )
-               return 1;
-         }
-         return 3;
-      };*/
-
       __cuda_callable__
       const IndexType& getRows() const { return this->rows; };
 
@@ -106,5 +91,5 @@ class MultidiagonalMatrixIndexer
          IndexType rows, columns, diagonals, nonemptyRows;
 };
       } //namespace details
-   } // namespace Materices
+   } // namespace Matrices
 } // namespace TNL

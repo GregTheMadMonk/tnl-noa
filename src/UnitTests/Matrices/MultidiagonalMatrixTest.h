@@ -34,7 +34,7 @@ static const char* TEST_FILE_NAME = "test_MultidiagonalMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   using namespace TNL::Containers::Segments;
+   using namespace TNL::Algorithms::Segments;
    EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
    EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< int, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
    EXPECT_EQ( ( TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::MultidiagonalMatrix< float, [any_device], int, RowMajorOrder, [any_allocator], [any_allocator] >" ) );
@@ -1158,11 +1158,11 @@ void test_AssignmentOperator()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
    using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
-   constexpr TNL::Containers::Segments::ElementsOrganization organization = Matrix::getOrganization();
+   constexpr TNL::Algorithms::Segments::ElementsOrganization organization = Matrix::getOrganization();
 
    using MultidiagonalHost = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Host, IndexType, organization >;
    using MultidiagonalCuda = TNL::Matrices::MultidiagonalMatrix< RealType, TNL::Devices::Cuda, IndexType,
-      organization == TNL::Containers::Segments::RowMajorOrder ? TNL::Containers::Segments::ColumnMajorOrder : TNL::Containers::Segments::RowMajorOrder >;
+      organization == TNL::Algorithms::Segments::RowMajorOrder ? TNL::Algorithms::Segments::ColumnMajorOrder : TNL::Algorithms::Segments::RowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
    DiagonalsOffsetsType diagonalsOffsets( { -4, -2, 0, 2, 3, 5 } );

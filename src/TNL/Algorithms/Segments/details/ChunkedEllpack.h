@@ -12,11 +12,11 @@
 
 #include <type_traits>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Containers/Segments/details/CheckLambdas.h>
+#include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
+#include <TNL/Algorithms/Segments/details/CheckLambdas.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
          namespace details {
 
@@ -55,7 +55,7 @@ struct ChunkedEllpackSliceInfo
          
 template< typename Index,
           typename Device,
-          ElementsOrganization Organization = Containers::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
 class ChunkedEllpack
 {
    public:
@@ -303,5 +303,5 @@ void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
 
          } //namespace details
       } //namespace Segments
-   } //namespace Containers
+   } //namespace Algorithms
 } //namepsace TNL

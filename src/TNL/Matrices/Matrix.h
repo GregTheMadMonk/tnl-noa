@@ -16,7 +16,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Matrices/MatrixView.h>
-#include <TNL/Containers/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace TNL {
 /**
@@ -24,7 +24,7 @@ namespace TNL {
  */
 namespace Matrices {
 
-using Containers::Segments::ElementsOrganization;
+using Algorithms::Segments::ElementsOrganization;
 
 template< typename Real = double,
           typename Device = Devices::Host,

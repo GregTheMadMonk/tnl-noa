@@ -155,7 +155,7 @@ getNonzeroElementsCount() const
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( this->values.getSize(), std::plus<>{}, fetch, 0 );
+   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->values.getSize(), std::plus<>{}, fetch, 0 );
 }
 
 template< typename Real,
@@ -744,18 +744,6 @@ getIndexer() -> IndexerType&
 {
    return this->indexer;
 }
-
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__
-Index
-MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getElementIndex( const IndexType row, const IndexType localIdx ) const
-{
-   return this->indexer.getGlobalIndex( row, localIdx );
-}*/
 
 template< typename Real,
           typename Device,

@@ -12,11 +12,11 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/ChunkedEllpack.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
@@ -24,7 +24,7 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization >
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-ChunkedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
+ChunkedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
 {
    this->setSegmentsSizes( sizes );
 }
@@ -509,5 +509,5 @@ printStructure( std::ostream& str )
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL

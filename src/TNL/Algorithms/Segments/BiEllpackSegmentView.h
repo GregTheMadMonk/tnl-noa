@@ -11,11 +11,11 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/Containers/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 template< typename Index,
@@ -87,5 +87,5 @@ class BiEllpackSegmentView
 };
 
       } //namespace Segments
-   } //namespace Containers
+   } //namespace Algorithms
 } //namespace TNL

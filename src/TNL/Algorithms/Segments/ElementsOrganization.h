@@ -13,8 +13,8 @@
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
-namespace Containers {
-namespace Segments {
+   namespace Algorithms {
+      namespace Segments {
 
 enum ElementsOrganization { ColumnMajorOrder = 0, RowMajorOrder };
 
@@ -30,11 +30,11 @@ struct DefaultElementsOrganization
 };
 
 } // namespace Segments
-} // namespace Containers
+} // namespace Algorithms
 
-inline String getSerializationType( Containers::Segments::ElementsOrganization Organization )
+inline String getSerializationType( Algorithms::Segments::ElementsOrganization Organization )
 {
-   if( Organization == Containers::Segments::RowMajorOrder )
+   if( Organization == Algorithms::Segments::RowMajorOrder )
       return String( "RowMajorOrder" );
    else
       return String( "ColumnMajorOrder" );

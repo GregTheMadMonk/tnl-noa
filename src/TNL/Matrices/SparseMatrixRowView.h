@@ -28,12 +28,12 @@ namespace Matrices {
  * See \ref SparseMatrix and \ref SparseMatrixView.
  * 
  * \par Example
- * \include Matrices/SparseMatrixExample_getRow.cpp
+ * \include Matrices/SparseMatrix/SparseMatrixExample_getRow.cpp
  * \par Output
  * \include SparseMatrixExample_getRow.out
  * 
  * \par Example
- * \include Matrices/SparseMatrixViewExample_getRow.cpp
+ * \include Matrices/SparseMatrix/SparseMatrixViewExample_getRow.cpp
  * \par Output
  * \include SparseMatrixViewExample_getRow.out
  */

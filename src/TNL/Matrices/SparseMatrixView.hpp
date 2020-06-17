@@ -23,9 +23,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 SparseMatrixView()
 {
 }
@@ -34,9 +35,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 SparseMatrixView( const IndexType rows,
                   const IndexType columns,
                   const ValuesViewType& values,
@@ -50,10 +52,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
 auto
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getView() -> ViewType
 {
    return ViewType( this->getRows(),
@@ -67,10 +70,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
 auto
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
@@ -84,9 +88,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 String
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getSerializationType()
 {
    return String( "Matrices::SparseMatrix< " ) +
@@ -100,9 +105,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 String
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -112,10 +118,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Vector >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    details::set_size_if_resizable( rowLengths, this->getRows() );
@@ -134,10 +141,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
 Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getRowCapacity( const IndexType row ) const
 {
    return this->segments.getSegmentSize( row );
@@ -147,9 +155,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getNonzeroElementsCount() const
 {
    const auto columns_view = this->columnIndexes.getConstView();
@@ -159,7 +168,7 @@ getNonzeroElementsCount() const
       auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
          return ( columns_view[ i ] != paddingIndex );
       };
-      return Algorithms::Reduction< DeviceType >::reduce( this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
+      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
    }
    else
    {
@@ -187,9 +196,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__ auto
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getRow( const IndexType& rowIdx ) const -> ConstRowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
@@ -200,9 +210,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__ auto
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
@@ -213,9 +224,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__ void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
@@ -227,9 +239,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__ void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 addElement( IndexType row,
             IndexType column,
             const RealType& value,
@@ -309,10 +322,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__ 
 Real
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getElement( IndexType row,
             IndexType column ) const
 {
@@ -349,20 +363,31 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 template< typename InVector,
        typename OutVector >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
-               const RealType matrixMultiplicator,
-               const RealType outVectorMultiplicator,
+               const ComputeRealType matrixMultiplicator,
+               const ComputeRealType outVectorMultiplicator,
                const IndexType firstRow,
                IndexType lastRow ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
+   
+   using OutVectorReal = typename OutVector::RealType;
+   static_assert(
+         ! MatrixType::isSymmetric() ||
+         ! std::is_same< Device, Devices::Cuda >::value ||
+         ( std::is_same< OutVectorReal, float >::value || 
+           std::is_same< OutVectorReal, double >::value || 
+           std::is_same< OutVectorReal, int >::value ||
+           std::is_same< OutVectorReal, long long int >::value ),
+         "Given Real type is not supported by atomic operations on GPU which are necessary for symmetric operations." );
 
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
@@ -371,7 +396,7 @@ vectorProduct( const InVector& inVector,
    const IndexType paddingIndex = this->getPaddingIndex();
    if( isSymmetric() )
       outVector *= outVectorMultiplicator;
-   auto symmetricFetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
+   auto symmetricFetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> ComputeRealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
@@ -379,15 +404,15 @@ vectorProduct( const InVector& inVector,
       if( isSymmetric() && column < row )
       {
          if( isBinary() )
-            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * inVectorView[ row ] );
+            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], ( OutVectorReal ) matrixMultiplicator * inVectorView[ row ] );
          else
-            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ] );
+            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], ( OutVectorReal ) matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ] );
       }
       if( isBinary() )
          return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
-   auto fetch = [=] __cuda_callable__ ( IndexType globalIdx, bool& compute ) mutable -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType globalIdx, bool& compute ) mutable -> ComputeRealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
@@ -397,7 +422,7 @@ vectorProduct( const InVector& inVector,
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
 
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeper = [=] __cuda_callable__ ( IndexType row, const ComputeRealType& value ) mutable {
       if( isSymmetric() )
          outVectorView[ row ] += matrixMultiplicator * value;
       else
@@ -411,19 +436,20 @@ vectorProduct( const InVector& inVector,
    if( lastRow == 0 )
       lastRow = this->getRows();
    if( isSymmetric() )
-      this->segments.segmentsReduction( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+      this->segments.segmentsReduction( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeper, ( ComputeRealType ) 0.0 );
    else
-      this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+      this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeper, ( ComputeRealType ) 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
 {
    auto columns_view = this->columnIndexes.getView();
@@ -447,10 +473,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
@@ -474,10 +501,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -487,10 +515,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
@@ -500,10 +529,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Function >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 forRows( IndexType begin, IndexType end, Function& function ) const
 {
    const auto columns_view = this->columnIndexes.getConstView();
@@ -523,10 +553,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Function >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 forRows( IndexType begin, IndexType end, Function& function )
 {
    auto columns_view = this->columnIndexes.getView();
@@ -548,10 +579,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Function >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 forAllRows( Function& function ) const
 {
    this->forRows( 0, this->getRows(), function );
@@ -561,10 +593,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Function >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 forAllRows( Function& function )
 {
    this->forRows( 0, this->getRows(), function );
@@ -578,7 +611,7 @@ forAllRows( Function& function )
           typename IndexAllocator >
 template< typename Real2, template< typename, typename > class Segments2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 addMatrix( const SparseMatrixView< Real2, Segments2, Device, Index2, RealAllocator2, IndexAllocator2 >& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
@@ -594,7 +627,7 @@ template< typename Real,
           typename IndexAllocator >
 template< typename Real2, typename Index2 >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getTransposition( const SparseMatrixView< Real2, Device, Index2 >& matrix,
                   const RealType& matrixMultiplicator )
 {
@@ -605,10 +638,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 template< typename Vector1, typename Vector2 >
 bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
@@ -621,10 +655,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >&
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >& matrix )
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >&
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >& matrix )
 {
    MatrixView< Real, Device, Index >::operator=( matrix );
    this->columnIndexes.bind( matrix.columnIndexes );
@@ -636,10 +671,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Matrix >
 bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 operator==( const Matrix& m ) const
 {
    const auto& view1 = *this;
@@ -650,17 +686,18 @@ operator==( const Matrix& m ) const
    {
       return view1.getRow( i ) == view2.getRow( i );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( this->getRows(), std::logical_and<>{}, fetch, true );
+   return Algorithms::Reduction< DeviceType >::reduce( 0, this->getRows(), std::logical_and<>{}, fetch, true );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
    template< typename Matrix >
 bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 operator!=( const Matrix& m ) const
 {
    return ! operator==( m );
@@ -670,9 +707,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 save( File& file ) const
 {
    MatrixView< RealType, DeviceType, IndexType >::save( file );
@@ -684,9 +722,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 save( const String& fileName ) const
 {
    Object::save( fileName );
@@ -696,9 +735,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 print( std::ostream& str ) const
 {
    if( isSymmetric() )
@@ -746,10 +786,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename > class SegmentsView >
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
 Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getPaddingIndex() const
 {
    return -1;

@@ -25,12 +25,12 @@ namespace Matrices {
  * See \ref MultidiagonalMatrix and \ref MultidiagonalMatrixView.
  * 
  * \par Example
- * \include Matrices/MultidiagonalMatrixExample_getRow.cpp
+ * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getRow.cpp
  * \par Output
  * \include MultidiagonalatrixExample_getRow.out
  * 
  * \par Example
- * \include Matrices/MultidiagonalMatrixViewExample_getRow.cpp
+ * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getRow.cpp
  * \par Output
  * \include MultidiagonalMatrixViewExample_getRow.out
  */

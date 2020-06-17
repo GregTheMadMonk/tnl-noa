@@ -12,11 +12,11 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/SlicedEllpack.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
 
 namespace TNL {
-   namespace Containers {
+   namespace Algorithms {
       namespace Segments {
 
 
@@ -37,7 +37,7 @@ template< typename Device,
           ElementsOrganization Organization,
           int SliceSize >
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-SlicedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes )
+SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
    : size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
 {
    this->setSegmentsSizes( sizes );
@@ -383,5 +383,5 @@ load( File& file )
 }
 
       } // namespace Segments
-   }  // namespace Conatiners
+   }  // namespace Algorithms
 } // namespace TNL
