@@ -20,9 +20,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-// FIXME: Traverser does not work with Id = void
-//class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
-class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral, 2, double, int, int >
+class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -31,9 +29,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-// FIXME: Traverser does not work with Id = void
-//class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
-class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron, 3, double, int, int >
+class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
