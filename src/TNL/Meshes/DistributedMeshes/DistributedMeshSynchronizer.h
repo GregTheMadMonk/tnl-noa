@@ -38,10 +38,15 @@ public:
 
    DistributedMeshSynchronizer() = default;
 
-   void initialize( const Mesh& mesh )
+   template< typename DistributedMesh >
+   void initialize( const DistributedMesh& mesh )
    {
-      static_assert( std::is_same< typename Mesh::CommunicatorType, CommunicatorType >::value,
-                     "Mesh::CommunnicatorType does not match" );
+      static_assert( std::is_same< typename DistributedMesh::MeshType, typename MeshFunction::MeshType >::value,
+                     "The type of the local mesh does not match the type of the mesh function's mesh." );
+      static_assert( std::is_same< typename DistributedMesh::CommunicatorType, CommunicatorType >::value,
+                     "DistributedMesh::CommunnicatorType does not match" );
+      if( mesh.getGhostLevels() <= 0 )
+         throw std::logic_error( "There are no ghost levels on the distributed mesh." );
       localEntitiesCount = mesh.getLocalMesh().template getEntitiesCount< EntityDimension >();
 
       // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
@@ -56,10 +61,10 @@ public:
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
-      const IndexType ownStart = mesh.template getGlobalIndices< EntityDimension >()[ 0 ];
-      Containers::Array< IndexType, DeviceType > offsets( nproc );
+      const IndexType ownStart = mesh.template getGlobalIndices< EntityDimension >().getElement( 0 );
+      Containers::Array< IndexType, Devices::Host, int > offsets( nproc );
       {
-         Containers::Array< IndexType, DeviceType > sendbuf( nproc );
+         Containers::Array< IndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( ownStart );
          CommunicatorType::Alltoall( sendbuf.getData(), 1,
                                      offsets.getData(), 1,
@@ -75,31 +80,27 @@ public:
          return nproc - 1;
       };
 
-      // TODO: initialization of the distributed mesh should set the ranges for
-      //       local and ghost entities so we can iterate just over the ghost
-      //       entities
-      // FIXME: the local vertices are not contiguous !!!
       // count local ghost entities for each rank
-      Containers::Array< IndexType, DeviceType > localGhostCounts( nproc );
+      Containers::Array< IndexType, Devices::Host, int > localGhostCounts( nproc );
       localGhostCounts.setValue( 0 );
-      IndexType firstGhost = 0;
-      bool ghost_found = false;
-      for( IndexType local_idx = 0; local_idx < localEntitiesCount; local_idx++ ) {
-         const IndexType global_idx = mesh.template getGlobalIndices< EntityDimension >()[ local_idx ];
-         const bool isNeighbor = mesh.getLocalMesh().template isGhostEntity< EntityDimension >( local_idx );
-         if( ! isNeighbor ) {
-            // TODO: this is just for testing/debugging
-            if( ghost_found )
-               std::cerr << "ERROR: global indices of local entities are not contiguous (local index " << local_idx << " is after a ghost entity has been found)" << std::endl;
-            ++firstGhost;
-         }
-         else {
-            const int owner = getOwner( global_idx );
-            if( owner != rank ) {
-               ++localGhostCounts[ owner ];
-               ghost_found = true;
-            }
-         }
+      Containers::Array< IndexType, Devices::Host, IndexType > hostGlobalIndices;
+      hostGlobalIndices = mesh.template getGlobalIndices< EntityDimension >();
+      IndexType prev_global_idx = 0;
+      for( IndexType local_idx = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
+           local_idx < localEntitiesCount;
+           local_idx++ )
+      {
+         if( ! std::is_same< DeviceType, Devices::Cuda >::value )
+         if( ! mesh.getLocalMesh().template isGhostEntity< EntityDimension >( local_idx ) )
+            throw std::runtime_error( "encountered local entity while iterating over ghost entities - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+         const IndexType global_idx = hostGlobalIndices[ local_idx ];
+         if( global_idx < prev_global_idx )
+            throw std::runtime_error( "ghost indices are not sorted - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+         prev_global_idx = global_idx;
+         const int owner = getOwner( global_idx );
+         if( owner == rank )
+            throw std::runtime_error( "the owner of a ghost entity cannot be the local rank - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+         ++localGhostCounts[ owner ];
       }
 
       // exchange the ghost counts
@@ -135,6 +136,7 @@ public:
          std::vector< typename CommunicatorType::Request > requests;
 
          // send our ghost indices to the neighboring ranks
+         IndexType firstGhost = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
          for( int i = 0; i < nproc; i++ ) {
             if( ghostEntitiesCounts( rank, i ) > 0 ) {
                requests.push_back( CommunicatorType::ISend(
@@ -211,12 +213,19 @@ public:
          }
       }
 
+      auto sendBuffersView = sendBuffers.getView();
+      const auto ghostNeighborsView = ghostNeighbors.getConstView();
+      const auto functionDataView = function.getData().getConstView();
+      auto copy_kernel = [sendBuffersView, functionDataView, ghostNeighborsView] __cuda_callable__ ( IndexType k, IndexType offset ) mutable
+      {
+         sendBuffersView[ offset + k ] = functionDataView[ ghostNeighborsView[ offset + k ] ];
+      };
+
       for( int i = 0; i < nproc; i++ ) {
          if( ghostEntitiesCounts( i, rank ) > 0 ) {
             const IndexType offset = ghostNeighborOffsets[ i ];
             // copy data to send buffers
-            for( IndexType k = 0; k < ghostEntitiesCounts( i, rank ); k++ )
-               sendBuffers[ offset + k ] = function.getData()[ ghostNeighbors[ offset + k ] ];
+            Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, ghostEntitiesCounts( i, rank ), copy_kernel, offset );
 
             // issue async send operation
             requests.push_back( CommunicatorType::ISend(
@@ -258,7 +267,7 @@ protected:
     * entity owned by the i-th rank. All ghost entities owned by the i-th
     * rank are assumed to be indexed contiguously in the local mesh.
     */
-   Containers::Array< IndexType, DeviceType, IndexType > ghostOffsets;
+   Containers::Array< IndexType, Devices::Host, int > ghostOffsets;
 
    /**
     * Ghost neighbor offsets: array of size nproc + 1 where the i-th value is

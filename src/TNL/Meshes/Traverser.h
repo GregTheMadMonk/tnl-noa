@@ -42,6 +42,16 @@ public:
              typename UserData >
    void processAllEntities( const MeshPointer& meshPointer,
                             UserData userData ) const;
+
+   template< typename EntitiesProcessor,
+             typename UserData >
+   void processGhostEntities( const MeshPointer& meshPointer,
+                              UserData userData ) const;
+
+   template< typename EntitiesProcessor,
+             typename UserData >
+   void processLocalEntities( const MeshPointer& meshPointer,
+                              UserData userData ) const;
 };
 
 } // namespace Meshes

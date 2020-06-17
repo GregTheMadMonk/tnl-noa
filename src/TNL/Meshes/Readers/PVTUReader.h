@@ -178,6 +178,10 @@ public:
                localMesh.template addEntityTag< MeshType::getMeshDimension() >( i, EntityTags::GhostEntity );
          }
 
+         // update the entity tags layers after setting ghost indices
+         mesh.getLocalMesh().template updateEntityTagsLayer< 0 >();
+         mesh.getLocalMesh().template updateEntityTagsLayer< MeshType::getMeshDimension() >();
+
          // assign global indices
          auto& points_indices = mesh.template getGlobalIndices< 0 >();
          auto& cells_indices = mesh.template getGlobalIndices< MeshType::getMeshDimension() >();

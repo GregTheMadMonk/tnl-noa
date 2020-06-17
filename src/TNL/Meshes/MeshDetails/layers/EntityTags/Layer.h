@@ -57,6 +57,7 @@ public:
       tags = other.tags;
       boundaryIndices = other.boundaryIndices;
       interiorIndices = other.interiorIndices;
+      ghostsOffset = other.ghostsOffset;
       return *this;
    }
 
@@ -69,6 +70,7 @@ public:
       tags = other.tags;
       boundaryIndices = other.boundaryIndices;
       interiorIndices = other.interiorIndices;
+      ghostsOffset = other.ghostsOffset;
       return *this;
    }
 
@@ -76,6 +78,7 @@ public:
    void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       tags.setSize( entitiesCount );
+      ghostsOffset = entitiesCount;
    }
 
    void resetEntityTags( DimensionTag )
@@ -113,41 +116,36 @@ public:
       return tags[ entityIndex ] & EntityTags::GhostEntity;
    }
 
-   void updateBoundaryIndices( DimensionTag )
+   void updateEntityTagsLayer( DimensionTag )
    {
       // count boundary entities - custom reduction because expression templates don't support filtering bits this way:
       //    const GlobalIndexType boundaryEntities = sum(cast< GlobalIndexType >( _tagsVector & EntityTags::BoundaryEntity ));
-      // NOTE: boundary and ghost entities may overlap for vertices, so we count all categories separately
+      // NOTE: boundary/interior entities may overlap with ghost entities, so we count all categories separately
       const auto tags_view = tags.getConstView();
-      auto is_interior = [=] __cuda_callable__ ( GlobalIndexType entityIndex ) -> GlobalIndexType
-      {
-         return ! (tags_view[ entityIndex ] & ( EntityTags::BoundaryEntity | EntityTags::GhostEntity ));
-      };
       auto is_boundary = [=] __cuda_callable__ ( GlobalIndexType entityIndex ) -> GlobalIndexType
       {
-         return tags_view[ entityIndex ] & EntityTags::BoundaryEntity;
+         return bool(tags_view[ entityIndex ] & EntityTags::BoundaryEntity);
       };
       auto is_ghost = [=] __cuda_callable__ ( GlobalIndexType entityIndex ) -> GlobalIndexType
       {
-         return tags_view[ entityIndex ] & EntityTags::GhostEntity;
+         return bool(tags_view[ entityIndex ] & EntityTags::GhostEntity);
       };
-      const GlobalIndexType interiorEntities = Algorithms::Reduction< Device >::reduce( (GlobalIndexType) 0, tags.getSize(), std::plus<>{}, is_interior, (GlobalIndexType) 0 );
       const GlobalIndexType boundaryEntities = Algorithms::Reduction< Device >::reduce( (GlobalIndexType) 0, tags.getSize(), std::plus<>{}, is_boundary, (GlobalIndexType) 0 );
       const GlobalIndexType ghostEntities = Algorithms::Reduction< Device >::reduce( (GlobalIndexType) 0, tags.getSize(), std::plus<>{}, is_ghost, (GlobalIndexType) 0 );
 
-      interiorIndices.setSize( interiorEntities );
+      interiorIndices.setSize( tags.getSize() - boundaryEntities );
       boundaryIndices.setSize( boundaryEntities );
-      ghostIndices.setSize( ghostEntities );
+      ghostsOffset = tags.getSize() - ghostEntities;
 
       if( ! std::is_same< Device, Devices::Cuda >::value ) {
-         GlobalIndexType i = 0, b = 0, g = 0;
+         GlobalIndexType i = 0, b = 0;
          for( GlobalIndexType e = 0; e < tags.getSize(); e++ ) {
-            if( ! (tags[ e ] & ( EntityTags::BoundaryEntity | EntityTags::GhostEntity )) )
-               interiorIndices[ i++ ] = e;
             if( tags[ e ] & EntityTags::BoundaryEntity )
                boundaryIndices[ b++ ] = e;
-            if( tags[ e ] & EntityTags::GhostEntity )
-               ghostIndices[ g++ ] = e;
+            else
+               interiorIndices[ i++ ] = e;
+            if( tags[ e ] & EntityTags::GhostEntity && ghostEntities > 0 && e < ghostsOffset )
+               throw std::runtime_error( "The mesh is inconsistent - ghost entities of dimension " + std::to_string(DimensionTag::value) + " are not ordered after local entities." );
          }
       }
       // TODO: parallelize directly on the device
@@ -156,28 +154,26 @@ public:
          using OrderingHostArray   = typename OrderingArray::template Self< typename OrderingArray::ValueType, Devices::Host >;
 
          EntityTagsHostArray hostTags;
-         OrderingHostArray hostBoundaryIndices, hostInteriorIndices, hostGhostIndices;
+         OrderingHostArray hostBoundaryIndices, hostInteriorIndices;
 
          hostTags.setLike( tags );
          hostInteriorIndices.setLike( interiorIndices );
          hostBoundaryIndices.setLike( boundaryIndices );
-         hostGhostIndices.setLike( ghostIndices );
 
          hostTags = tags;
 
-         GlobalIndexType i = 0, b = 0, g = 0;
+         GlobalIndexType i = 0, b = 0;
          for( GlobalIndexType e = 0; e < tags.getSize(); e++ ) {
-            if( ! (hostTags[ e ] & ( EntityTags::BoundaryEntity | EntityTags::GhostEntity )) )
-               hostInteriorIndices[ i++ ] = e;
             if( hostTags[ e ] & EntityTags::BoundaryEntity )
                hostBoundaryIndices[ b++ ] = e;
-            if( hostTags[ e ] & EntityTags::GhostEntity )
-               hostGhostIndices[ g++ ] = e;
+            else
+               hostInteriorIndices[ i++ ] = e;
+            if( hostTags[ e ] & EntityTags::GhostEntity && ghostEntities > 0 && e < ghostsOffset )
+               throw std::runtime_error( "The mesh is inconsistent - ghost entities of dimension " + std::to_string(DimensionTag::value) + " are not ordered after local entities." );
          }
 
          interiorIndices = hostInteriorIndices;
          boundaryIndices = hostBoundaryIndices;
-         ghostIndices = hostGhostIndices;
       }
    }
 
@@ -205,6 +201,18 @@ public:
       return interiorIndices[ i ];
    }
 
+   __cuda_callable__
+   GlobalIndexType getGhostEntitiesCount( DimensionTag ) const
+   {
+      return tags.getSize() - ghostsOffset;
+   }
+
+   __cuda_callable__
+   GlobalIndexType getGhostEntitiesOffset( DimensionTag ) const
+   {
+      return ghostsOffset;
+   }
+
    void save( File& file ) const
    {
       file << tags;
@@ -213,7 +221,7 @@ public:
    void load( File& file )
    {
       file >> tags;
-      updateBoundaryIndices( DimensionTag() );
+      updateEntityTagsLayer( DimensionTag() );
    }
 
    void print( std::ostream& str ) const
@@ -224,14 +232,14 @@ public:
       str << interiorIndices << std::endl;
       str << "Indices of the boundary entities of dimension " << DimensionTag::value << " are: ";
       str << boundaryIndices << std::endl;
-      str << "Indices of the ghost entities of dimension " << DimensionTag::value << " are: ";
-      str << ghostIndices << std::endl;
+      str << "Index of the first ghost entity of dimension " << DimensionTag::value << " is: ";
+      str << ghostsOffset << std::endl;
    }
 
    bool operator==( const Layer& layer ) const
    {
-      TNL_ASSERT( ( tags == layer.tags && interiorIndices == layer.interiorIndices && boundaryIndices == layer.boundaryIndices && ghostIndices == layer.ghostIndices ) ||
-                  ( tags != layer.tags && interiorIndices != layer.interiorIndices && boundaryIndices != layer.boundaryIndices && ghostIndices != layer.ghostIndices ),
+      TNL_ASSERT( ( tags == layer.tags && interiorIndices == layer.interiorIndices && boundaryIndices == layer.boundaryIndices && ghostsOffset == layer.ghostsOffset ) ||
+                  ( tags != layer.tags && interiorIndices != layer.interiorIndices && boundaryIndices != layer.boundaryIndices && ghostsOffset != layer.ghostsOffset ),
                   std::cerr << "The EntityTags layer is in inconsistent state - this is probably a bug in the boundary tags initializer." << std::endl
                             << "tags                  = " << tags << std::endl
                             << "layer.tags            = " << layer.tags << std::endl
@@ -239,14 +247,15 @@ public:
                             << "layer.interiorIndices = " << layer.interiorIndices << std::endl
                             << "boundaryIndices       = " << boundaryIndices << std::endl
                             << "layer.boundaryIndices = " << layer.boundaryIndices << std::endl
-                            << "ghostIndices          = " << ghostIndices << std::endl
-                            << "layer.ghostIndices    = " << layer.ghostIndices << std::endl; );
+                            << "ghostsOffset          = " << ghostsOffset << std::endl
+                            << "layer.ghostsOffset    = " << layer.ghostsOffset << std::endl; );
       return tags == layer.tags;
    }
 
 private:
    EntityTagsArrayType tags;
-   OrderingArray interiorIndices, boundaryIndices, ghostIndices;
+   OrderingArray interiorIndices, boundaryIndices;
+   GlobalIndexType ghostsOffset = 0;
 
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename DimensionTag_, bool TagStorage_ >
@@ -277,11 +286,13 @@ protected:
    void removeEntityTag( DimensionTag, const GlobalIndexType&, TagType ) const {}
    void isBoundaryEntity( DimensionTag, const GlobalIndexType& ) const {}
    void isGhostEntity( DimensionTag, const GlobalIndexType& ) const {}
-   void updateBoundaryIndices( DimensionTag ) {}
+   void updateEntityTagsLayer( DimensionTag ) {}
    void getBoundaryEntitiesCount( DimensionTag ) const {}
    void getBoundaryEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
    void getInteriorEntitiesCount( DimensionTag ) const {}
    void getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
+   void getGhostEntitiesCount() const;
+   void getGhostEntitiesOffset() const;
 
    void save( File& file ) const {}
    void load( File& file ) {}

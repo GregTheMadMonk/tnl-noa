@@ -55,9 +55,30 @@ public:
    template< typename Mesh_ >
    DistributedMesh& operator=( const Mesh_& other )
    {
+      getGlobalIndices< 0 >() = other.template getGlobalIndices< 0 >();
+      getGlobalIndices< Mesh::getMeshDimension() >() = other.template getGlobalIndices< Mesh::getMeshDimension() >();
       localMesh = other.getLocalMesh();
       group = other.getCommunicationGroup();
+      ghostLevels = other.getGhostLevels();
+      vtkPointGhostTypesArray = other.vtkPointGhostTypes();
+      vtkCellGhostTypesArray = other.vtkCellGhostTypes();
       return *this;
+   }
+
+   bool operator==( const DistributedMesh& other ) const
+   {
+      return ( getGlobalIndices< 0 >() == other.template getGlobalIndices< 0 >() &&
+               getGlobalIndices< Mesh::getMeshDimension() >() == other.template getGlobalIndices< Mesh::getMeshDimension() >() &&
+               localMesh == other.getLocalMesh() &&
+               group == other.getCommunicationGroup() &&
+               ghostLevels == other.getGhostLevels() &&
+               vtkPointGhostTypesArray == other.vtkPointGhostTypes() &&
+               vtkCellGhostTypesArray == other.vtkCellGhostTypes() );
+   }
+
+   bool operator!=( const DistributedMesh& other ) const
+   {
+      return ! operator==( other );
    }
 
    /**
@@ -160,16 +181,6 @@ public:
       const GlobalIndexType pointsCount = localMesh.template getEntitiesCount< 0 >();
       const GlobalIndexType cellsCount = localMesh.template getEntitiesCount< Mesh::getMeshDimension() >();
 
-      // TODO: the mesh should explicitly store ghost counts (or offsets) - useful for efficient iteration
-      GlobalIndexType ghostPoints = 0;
-      for( GlobalIndexType i = 0; i < pointsCount; i++ )
-         if( localMesh.template isGhostEntity< 0 >( i ) )
-            ghostPoints++;
-      GlobalIndexType ghostCells = 0;
-      for( GlobalIndexType i = 0; i < cellsCount; i++ )
-         if( localMesh.template isGhostEntity< Mesh::getMeshDimension() >( i ) )
-            ghostCells++;
-
       CommunicatorType::Barrier();
       for( int i = 0; i < CommunicatorType::GetSize(); i++ ) {
          if( i == CommunicatorType::GetRank() ) {
@@ -179,8 +190,10 @@ public:
                 << "\tCells count:\t" << cellsCount << "\n"
                 << "\tPoints count:\t" << pointsCount << "\n"
                 << "\tGhost levels:\t" << getGhostLevels() << "\n"
-                << "\tGhost cells:\t" << ghostCells << "\n"
-                << "\tGhost points:\t" << ghostPoints << "\n";
+                << "\tGhost cells count:\t" << localMesh.template getGhostEntitiesCount< Mesh::getMeshDimension() >() << "\n"
+                << "\tGhost points count:\t" << localMesh.template getGhostEntitiesCount< 0 >() << "\n"
+                << "\tBoundary cells count:\t" << localMesh.template getBoundaryEntitiesCount< Mesh::getMeshDimension() >() << "\n"
+                << "\tBoundary points count:\t" << localMesh.template getBoundaryEntitiesCount< 0 >() << "\n";
             const GlobalIndexType globalPointIndices = getGlobalIndices< 0 >().getSize();
             const GlobalIndexType globalCellIndices = getGlobalIndices< Mesh::getMeshDimension() >().getSize();
             if( getGhostLevels() > 0 ) {

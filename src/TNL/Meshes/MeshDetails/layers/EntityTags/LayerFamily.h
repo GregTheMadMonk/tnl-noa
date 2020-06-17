@@ -34,11 +34,13 @@ protected:
    using LayerType::removeEntityTag;
    using LayerType::isBoundaryEntity;
    using LayerType::isGhostEntity;
-   using LayerType::updateBoundaryIndices;
+   using LayerType::updateEntityTagsLayer;
    using LayerType::getBoundaryEntitiesCount;
    using LayerType::getBoundaryEntityIndex;
    using LayerType::getInteriorEntitiesCount;
    using LayerType::getInteriorEntityIndex;
+   using LayerType::getGhostEntitiesCount;
+   using LayerType::getGhostEntitiesOffset;
 
    using BaseType::setEntitiesCount;
    using BaseType::resetEntityTags;
@@ -47,11 +49,13 @@ protected:
    using BaseType::removeEntityTag;
    using BaseType::isBoundaryEntity;
    using BaseType::isGhostEntity;
-   using BaseType::updateBoundaryIndices;
+   using BaseType::updateEntityTagsLayer;
    using BaseType::getBoundaryEntitiesCount;
    using BaseType::getBoundaryEntityIndex;
    using BaseType::getInteriorEntitiesCount;
    using BaseType::getInteriorEntityIndex;
+   using BaseType::getGhostEntitiesCount;
+   using BaseType::getGhostEntitiesOffset;
 
 
    LayerInheritor() = default;
@@ -114,16 +118,18 @@ class LayerInheritor< MeshConfig, Device, DimensionTag< MeshConfig::meshDimensio
 protected:
    void setEntitiesCount();
    void resetEntityTags();
-   void getEntityTag();
+   void getEntityTag() const;
    void addEntityTag();
    void removeEntityTag();
-   void isBoundaryEntity();
-   void isGhostEntity();
-   void updateBoundaryIndices();
-   void getBoundaryEntitiesCount();
-   void getBoundaryEntityIndex();
-   void getInteriorEntitiesCount();
-   void getInteriorEntityIndex();
+   void isBoundaryEntity() const;
+   void isGhostEntity() const;
+   void updateEntityTagsLayer();
+   void getBoundaryEntitiesCount() const;
+   void getBoundaryEntityIndex() const;
+   void getInteriorEntitiesCount() const;
+   void getInteriorEntityIndex() const;
+   void getGhostEntitiesCount() const;
+   void getGhostEntitiesOffset() const;
 
    LayerInheritor() = default;
    explicit LayerInheritor( const LayerInheritor& other ) {}
@@ -240,6 +246,28 @@ public:
       return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
    }
 
+   template< int Dimension >
+   __cuda_callable__
+   GlobalIndexType getGhostEntitiesCount() const
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::getGhostEntitiesCount( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   GlobalIndexType getGhostEntitiesOffset() const
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::getGhostEntitiesOffset( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   void updateEntityTagsLayer()
+   {
+      BaseType::updateEntityTagsLayer( DimensionTag< Dimension >() );
+   }
+
 protected:
    template< int Dimension >
    void entityTagsSetEntitiesCount( const GlobalIndexType& entitiesCount )
@@ -251,12 +279,6 @@ protected:
    void resetEntityTags()
    {
       BaseType::resetEntityTags( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   void updateBoundaryIndices()
-   {
-      BaseType::updateBoundaryIndices( DimensionTag< Dimension >() );
    }
 };
 

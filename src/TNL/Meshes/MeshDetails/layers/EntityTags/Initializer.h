@@ -103,11 +103,11 @@ protected:
    };
 
    template< int Dimension >
-   struct UpdateBoundaryIndices
+   struct UpdateEntityTagsLayer
    {
       static void exec( Mesh& mesh )
       {
-         mesh.template updateBoundaryIndices< Dimension >();
+         mesh.template updateEntityTagsLayer< Dimension >();
       }
    };
 
@@ -148,7 +148,7 @@ public:
                                                       kernel,
                                                       &meshPointer.template modifyData< DeviceType >() );
 
-         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateEntityTagsLayer >::execHost( mesh );
       }
    };
 

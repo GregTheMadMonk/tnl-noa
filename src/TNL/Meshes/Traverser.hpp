@@ -99,5 +99,60 @@ processAllEntities( const MeshPointer& meshPointer,
          userData );
 }
 
+template< typename Mesh,
+          typename MeshEntity,
+          int EntitiesDimension >
+   template< typename EntitiesProcessor,
+             typename UserData >
+void
+Traverser< Mesh, MeshEntity, EntitiesDimension >::
+processGhostEntities( const MeshPointer& meshPointer,
+                       UserData userData ) const
+{
+   const auto ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
+   const auto entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
+   auto kernel = [] __cuda_callable__
+      ( const GlobalIndexType entityIndex,
+        const Mesh* mesh,
+        UserData userData )
+   {
+      const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
+   };
+   Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Algorithms::ParallelFor< DeviceType >::exec(
+         ghostsOffset, entitiesCount,
+         kernel,
+         &meshPointer.template getData< DeviceType >(),
+         userData );
+}
+
+template< typename Mesh,
+          typename MeshEntity,
+          int EntitiesDimension >
+   template< typename EntitiesProcessor,
+             typename UserData >
+void
+Traverser< Mesh, MeshEntity, EntitiesDimension >::
+processLocalEntities( const MeshPointer& meshPointer,
+                      UserData userData ) const
+{
+   const auto ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
+   auto kernel = [] __cuda_callable__
+      ( const GlobalIndexType entityIndex,
+        const Mesh* mesh,
+        UserData userData )
+   {
+      const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
+   };
+   Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Algorithms::ParallelFor< DeviceType >::exec(
+         (GlobalIndexType) 0, ghostsOffset,
+         kernel,
+         &meshPointer.template getData< DeviceType >(),
+         userData );
+}
+
 } // namespace Meshes
 } // namespace TNL
