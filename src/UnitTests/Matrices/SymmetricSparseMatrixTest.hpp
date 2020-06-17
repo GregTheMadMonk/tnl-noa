@@ -917,7 +917,7 @@ void test_RowsReduction()
    /*TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( m_5.getRows() );
    auto rowSums_view = rowSums.getView();
    auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
-      return abs( value );
+      return TNL::abs( value );
    };
    auto max_reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
       aux += a;

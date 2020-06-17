@@ -1390,7 +1390,7 @@ void test_RowsReduction()
    TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
    auto rowSums_view = rowSums.getView();
    auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
-      return abs( value );
+      return TNL::abs( value );
    };
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
