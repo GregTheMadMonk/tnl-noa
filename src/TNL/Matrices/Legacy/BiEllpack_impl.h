@@ -1070,7 +1070,6 @@ public:
 						if( matrix.rowPermArray.getElement( k ) == j + 1 )
 							permIndex2 = k;
 					}
-               std::cerr << "permIndex2 = " << permIndex2 << std::endl;
 					if( rowLengths.getElement( permIndex1 ) < rowLengths.getElement( permIndex2 ) )
 					{
 						Index temp = matrix.rowPermArray.getElement( permIndex1 );
