@@ -271,9 +271,9 @@ __cuda_callable__ void sortMinims( T1 pom[] )
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
-__global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+__global__ void CudaInitCaller( const Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index > >& input, 
+        Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index > >& output,
+        Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Containers::StaticVector< 2, Index > vecLowerOverlaps, 
         const Containers::StaticVector< 2, Index > vecUpperOverlaps ) 
 {
@@ -386,9 +386,9 @@ __global__ void GetNeighbours( const TNL::Containers::ArrayView< int, Devices::C
 
 template < int sizeSArray, typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
-        const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-        const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
+        const Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+        const Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index > >& aux,
+        Functions::MeshFunctionView< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
         TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicator,
         const Containers::StaticVector< 2, Index > vecLowerOverlaps, 
         const Containers::StaticVector< 2, Index > vecUpperOverlaps, int oddEvenBlock )

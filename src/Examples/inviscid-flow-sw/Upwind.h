@@ -33,7 +33,7 @@ class Upwind
       typedef Real RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       static const int Dimensions = Mesh::getMeshDimension();
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VectorFieldType;
  

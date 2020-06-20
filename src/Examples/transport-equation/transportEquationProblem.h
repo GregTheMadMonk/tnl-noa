@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Pointers/SharedPointer.h>
 
 using namespace TNL::Problems;
@@ -35,7 +35,7 @@ public PDEProblem< Mesh,
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;

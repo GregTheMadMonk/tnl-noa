@@ -1,1 +1,0 @@
-ArrayBinding-2.cpp

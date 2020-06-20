@@ -6,7 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
@@ -32,7 +32,7 @@ class TestSaveAndLoadMeshfunction
         {
 
             typedef Grid<dim,double,Host,int> MeshType;
-            typedef MeshFunction<MeshType> MeshFunctionType;
+            typedef MeshFunctionView<MeshType> MeshFunctionType;
             typedef Vector<double,Host,int> DofType;
             typedef typename MeshType::Cell Cell;
             typedef typename MeshType::IndexType IndexType;
@@ -58,7 +58,7 @@ class TestSaveAndLoadMeshfunction
 
             Pointers::SharedPointer<MeshFunctionType> localMeshFunctionptr;
             localMeshFunctionptr->bind(localGridptr,localDof);
-            linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
+            linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr, linearFunctionPtr);
 
             File file;
             ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );

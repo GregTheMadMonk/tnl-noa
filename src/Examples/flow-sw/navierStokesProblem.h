@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 #include "CompressibleConservativeVariables.h"
 
@@ -45,7 +45,7 @@ class navierStokesProblem:
       using typename BaseType::DofVectorPointer;
       static const int Dimensions = Mesh::getMeshDimension();      
 
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;

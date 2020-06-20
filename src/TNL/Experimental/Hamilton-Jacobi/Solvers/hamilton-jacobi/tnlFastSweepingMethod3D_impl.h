@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunction.h>
 
 template< typename Real,
         typename Device,
@@ -80,7 +81,8 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   MeshFunctionType aux = *auxPtr;
   InterfaceMapType interfaceMap = * interfaceMapPtr;
-  aux.template synchronize< Communicator >(); //synchronization of intial conditions
+  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.template synchronize< Communicator >( aux ); //synchronization of intial conditions
   
   while( iteration < this->maxIterations )
   {
@@ -293,7 +295,10 @@ solve( const MeshPointer& mesh,
         
         
         //MeshFunctionPointer helpFunc1( mesh );      
-        MeshFunctionPointer helpFunc( mesh );
+        Containers::Vector< RealType, DeviceType, IndexType > helpVec;
+        helpVec.setLike( auxPtr.template getData().getData() );
+        MeshFunctionPointer helpFunc;
+        helpFunc->bind( mesh, helpVec );
         helpFunc.template modifyData() = auxPtr.template getData();
         Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
                 
@@ -355,7 +360,7 @@ solve( const MeshPointer& mesh,
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
 
         // synchronizate the overlaps 
-        aux.template synchronize< Communicator >();
+        synchronizer.template synchronize< Communicator >( aux );
 
       }
 #endif

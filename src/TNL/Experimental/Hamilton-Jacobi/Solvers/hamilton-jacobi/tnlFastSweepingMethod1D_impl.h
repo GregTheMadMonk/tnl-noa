@@ -153,8 +153,8 @@ solve( const MeshPointer& mesh,
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > ptr,
-                                      const Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index >, 1, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& aux,
+                                      const Functions::MeshFunctionView< Meshes::Grid< 1, Real, Device, Index >, 1, bool >& interfaceMap,
+                                      Functions::MeshFunctionView< Meshes::Grid< 1, Real, Device, Index > >& aux,
                                       bool *BlockIterDevice )
 {
     int thri = threadIdx.x;

@@ -1,11 +1,12 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 
 #ifdef HAVE_MPI
     #define MPIIO
 #endif
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
@@ -28,7 +29,7 @@ class TestDistributedVectorFieldMPIIO{
     public:
 
     typedef Grid<dim,double,Device,int> MeshType;
-    typedef MeshFunction<MeshType> MeshFunctionType;
+    typedef MeshFunctionView<MeshType> MeshFunctionType;
 	typedef VectorField<vctdim,MeshFunctionType> VectorFieldType;
     typedef Vector<double,Device,int> DofType;
     typedef typename MeshType::Cell Cell;
@@ -78,7 +79,7 @@ class TestDistributedVectorFieldMPIIO{
 	        linearFunctionEvaluator.evaluateAllEntities(vectorField [ i ], linearFunctionPtr);
  
         String FileName=String("/tmp/test-file.tnl");
-        DistributedGridIO<VectorFieldType,MpiIO> ::save(FileName, vectorField );
+        DistributedGridIO_VectorField<VectorFieldType,MpiIO> ::save(FileName, vectorField );
         /*File file;
         file.open( FileName, std::ios_base::out );
 		vectorField.save(file);
@@ -162,10 +163,13 @@ class TestDistributedVectorFieldMPIIO{
         loadDof.setValue(0);
         loadVectorField.bind(loadGridptr,loadDof);
 
-        DistributedGridIO<VectorFieldType,MpiIO> ::load(FileName, loadVectorField );
+        DistributedGridIO_VectorField<VectorFieldType,MpiIO> ::load(FileName, loadVectorField );
+
+        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        synchronizer.setDistributedGrid( &distributedGrid );
 
         for(int i=0;i<vctdim;i++)
-            (loadVectorField[i])->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
+            synchronizer.template synchronize<CommunicatorType>(*loadVectorField[i]); //need synchronization for overlaps to be filled corectly in loadDof
 
         Pointers::SharedPointer<MeshType> evalGridPtr;
         VectorFieldType evalVectorField;
@@ -178,7 +182,7 @@ class TestDistributedVectorFieldMPIIO{
         for(int i=0;i<vctdim;i++)
         {
             linearFunctionEvaluator.evaluateAllEntities(evalVectorField[i] , linearFunctionPtr);        
-            (evalVectorField[i])->template synchronize<CommunicatorType>();
+            synchronizer.template synchronize<CommunicatorType>(*evalVectorField[i]);
         }
 
         for(int i=0;i<evalDof.getSize();i++)

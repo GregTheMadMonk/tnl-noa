@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunction.h>
+
 template< typename Real,
         typename Device,
         typename Index,
@@ -80,7 +82,8 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   InterfaceMapType interfaceMap = *interfaceMapPtr;
   MeshFunctionType aux = *auxPtr;
-  aux.template synchronize< Communicator >(); //synchronize initialized overlaps
+  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.template synchronize< Communicator >( aux ); //synchronize initialized overlaps
   
   std::cout << "Calculating the values ..." << std::endl; 
   while( iteration < this->maxIterations )
@@ -276,7 +279,10 @@ solve( const MeshPointer& mesh,
         int nBlocksNeigh = ( numBlocksX * numBlocksY )/1024 + ((( numBlocksX * numBlocksY )%1024 != 0) ? 1:0);
         
         // Helping meshFunction that switches with AuxPtr in every calculation of CudaUpdateCellCaller<<<>>>()
-        MeshFunctionPointer helpFunc( mesh );
+        Containers::Vector< RealType, DeviceType, IndexType > helpVec;
+        helpVec.setLike( auxPtr.template getData().getData() );
+        MeshFunctionPointer helpFunc;
+        helpFunc->bind( mesh, helpVec );
         helpFunc.template modifyData() = auxPtr.template getData(); 
         
         // number of iterations of while calculateCudaBlocksAgain
@@ -364,7 +370,7 @@ solve( const MeshPointer& mesh,
       if( CommunicatorType::isDistributed() ){
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
        
-        aux.template synchronize< Communicator >();
+        synchronizer.template synchronize< Communicator >( aux );
       }
 #endif
       if( !CommunicatorType::isDistributed() ) // If we start the solver without MPI, we need calculated 0!

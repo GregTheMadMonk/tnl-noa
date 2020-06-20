@@ -6,14 +6,13 @@ This tutorial introduces arrays in TNL. There are three types - common arrays wi
 
 ## Table of Contents
 1. [Arrays](#arrays)
-   1. [Arrays binding](#arrays_binding)
-   2. [Array views](#array_views)
-   3. [Accessing the array elements](#accessing_the_array_elements)
+   1. [Array views](#array_views)
+   2. [Accessing the array elements](#accessing_the_array_elements)
       1. [Accessing the array elements with `operator[]`](#accessing_the_array_elements_with_operator)
       2. [Accessing the array elements with `setElement` and `getElement`](#accessing_the_array_elements_with_set_get_element)
-   4. [Arrays initiation with lambdas](#arrays_initiation_with_lambdas)
-   5. [Checking the array contents](#checking_the_array_contents)
-   6. [IO operations with arrays](#io_operations_with-arrays)
+   3. [Arrays initiation with lambdas](#arrays_initiation_with_lambdas)
+   4. [Checking the array contents](#checking_the_array_contents)
+   5. [IO operations with arrays](#io_operations_with-arrays)
 2. [Static arrays](#static_arrays)
 3. [Distributed arrays](#distributed_arrays)
 
@@ -34,36 +33,11 @@ The result looks as follows:
 \include ArrayAllocation.out
 
 
-### Arrays binding <a name="arrays_binding"></a>
-
-Arrays can share data with each other or data allocated elsewhere. It is called binding and it can be done using method `bind`. The following example shows how to bind data allocated on host using the `new` operator. In this case, the TNL array do not free this data at the and of its life cycle.
-
-\include ArrayBinding-1.cpp
-
-It generates output like this:
-
-\include ArrayBinding-1.out
-
-One may also bind TNL array with another TNL array. In this case, the data is shared and can be shared between multiple arrays. Reference counter ensures that the data is freed after the last array sharing the data ends its life cycle. 
-
-\include ArrayBinding-2.cpp
-
-The result is:
-
-\include ArrayBinding-2.out
-
-Binding may also serve for data partitioning. Both CPU and GPU prefer data allocated in large contiguous blocks instead of many fragmented pieces of allocated memory. Another reason why one might want to partition the allocated data is demonstrated in the following example. Consider a situation of solving incompressible flow in 2D. The degrees of freedom consist of density and two components of velocity. Mostly, we want to manipulate either density or velocity. But some numerical solvers may need to have all degrees of freedom in one array. It can be managed like this:
-
-\include ArrayBinding-3.cpp
-
-The result is:
-
-\include ArrayBinding-3.out
-
-
 ### Array views <a name="array_views"></a>
 
-Because of the data sharing, TNL Array is relatively complicated structure. In many situations, we prefer lightweight structure which only encapsulates the data pointer and keeps information about the data size. Passing array structure to GPU kernel can be one example. For this purpose there is `ArrayView` in TNL. It is templated structure having the same template parameters as `Array` (it means `Value`, `Device` and `Index`). The following code snippet shows how to create an array view.
+Arrays cannot share data with each other or data allocated elsewhere. This can be achieved with the `ArrayView` structure which has similar semantics to `Array`, but it does not handle allocation and deallocation of the data. Hence, array view cannot be resized, but it can be used to wrap data allocated elsewhere (e.g. using an `Array` or an operator `new`) and to partition large arrays into subarrays. The process of wrapping external data with a view is called _binding_.
+
+The following code snippet shows how to create an array view.
 
 \include ArrayView-1.cpp
 
@@ -71,7 +45,7 @@ The output is:
 
 \include ArrayView-1.out
 
-Of course, one may bind his own data into array view:
+You can also bind external data into array view:
 
 \include ArrayView-2.cpp
 
@@ -79,7 +53,7 @@ Output:
 
 \include ArrayView-2.out
 
-Array view never allocated or deallocate the memory managed by it. Therefore it can be created even in CUDA kernels which is not true for `Array`.
+Since array views do not allocate or deallocate memory, they can be created even in CUDA kernels, which is not possible with `Array`. `ArrayView` can also be passed-by-value into CUDA kernels or captured-by-value by device lambda functions, because the `ArrayView`'s copy-constructor makes only a shallow copy (i.e., it copies only the data pointer and size).
 
 ### Accessing the array elements <a name="accessing_the_array_elements"></a>
 

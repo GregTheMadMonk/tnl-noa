@@ -23,8 +23,7 @@ class VectorFieldGnuplotWriter
 {
 public:
    static bool write( const VectorField& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -43,8 +42,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 1, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -63,8 +61,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 
@@ -84,8 +81,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 2, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -104,8 +100,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 1, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -124,8 +119,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 
@@ -145,8 +139,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 3, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -165,8 +158,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 2, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 /***
@@ -185,8 +177,7 @@ public:
    using VectorFieldType = Functions::VectorField< VectorFieldSize, MeshFunction< MeshType, 0, RealType > >;
 
    static bool write( const VectorFieldType& function,
-                      std::ostream& str,
-                      const double& scale );
+                      std::ostream& str );
 };
 
 } // namespace Functions

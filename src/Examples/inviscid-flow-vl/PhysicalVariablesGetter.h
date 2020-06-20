@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include "CompressibleConservativeVariables.h"
@@ -29,7 +29,7 @@ class PhysicalVariablesGetter
       typedef typename MeshType::IndexType IndexType;
       static const int Dimensions = MeshType::getMeshDimension();
       
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
       typedef Pointers::SharedPointer< ConservativeVariablesType > ConservativeVariablesPointer;

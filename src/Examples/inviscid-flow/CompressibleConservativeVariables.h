@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 #include <TNL/Pointers/SharedPointer.h>
 
@@ -26,7 +26,7 @@ class CompressibleConservativeVariables
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
-      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef Functions::VectorField< Dimensions, MeshFunctionType > VelocityFieldType;
       typedef Pointers::SharedPointer<  MeshType > MeshPointer;      
       typedef Pointers::SharedPointer<  MeshFunctionType > MeshFunctionPointer;
@@ -50,7 +50,7 @@ class CompressibleConservativeVariables
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
-                 const Vector& data,
+                 Vector& data,
                  IndexType offset = 0 )
       {
          IndexType currentOffset( offset );

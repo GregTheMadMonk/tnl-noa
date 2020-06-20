@@ -5,7 +5,9 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Functions/CutMeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
@@ -62,21 +64,23 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<1,int>(0),
@@ -84,8 +88,8 @@ TEST(CutDistributedMeshFunction, 2D_Data)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
         for(int i=0;i<originalGrid->getDimensions().y();i++)
         {
@@ -141,21 +145,23 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(2),
             StaticVector<2,int>(1,0),
@@ -163,8 +169,8 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
         for(int i=0;i<originalGrid->getDimensions().z();i++)
         {
@@ -220,21 +226,23 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   meshFunctionptr->template synchronize<CommunicatorType>();
+   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   synchronizer.setDistributedGrid( &distributedGrid );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -242,8 +250,8 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
         for(int i=0;i<originalGrid->getDimensions().z();i++)
         {
@@ -305,10 +313,10 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
@@ -317,7 +325,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<1,int>(0),
@@ -325,10 +333,12 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -388,10 +398,10 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
@@ -400,7 +410,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<2,int>(0,2),
@@ -408,10 +418,12 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -475,10 +487,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
@@ -487,7 +499,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -495,10 +507,12 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
-        cutMeshFunction.template synchronize<CommunicatorType>();
+        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        synchronizer.setDistributedGrid( &cutDistributedGrid );
+        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -560,10 +574,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
 
-   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshFunctionView<MeshType>> meshFunctionptr;
    meshFunctionptr->bind(originalGrid,dof);
 
-   MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
+   MeshFunctionEvaluator< MeshFunctionView<MeshType>, LinearFunctionType > linearFunctionEvaluator;
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
@@ -572,7 +586,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -580,10 +594,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
 
    if(inCut)
    {
-       MeshFunction<CutMeshType> cutMeshFunction;
-            cutMeshFunction.bind(cutGrid,cutDof);
+       MeshFunctionView<CutMeshType> cutMeshFunction;
+       cutMeshFunction.bind(cutGrid,cutDof);
 
-        DistributedGridIO<MeshFunction<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
+        DistributedGridIO<MeshFunctionView<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
 
         //save globalgrid for debug render
         typename CommunicatorType::CommunicationGroup *group;
@@ -601,7 +615,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
    {
        Pointers::SharedPointer<CutMeshType> globalCutGrid;
-       MeshFunction<CutMeshType> loadMeshFunctionptr;
+       MeshFunctionView<CutMeshType> loadMeshFunctionptr;
 
        globalCutGrid->setDimensions(typename CutMeshType::CoordinatesType(10));
        globalCutGrid->setDomain(typename CutMeshType::PointType(-0.5),typename CutMeshType::CoordinatesType(10));

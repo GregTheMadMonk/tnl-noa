@@ -13,9 +13,10 @@
 #ifdef HAVE_MPI    
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 #include "../../Functions/Functions.h"
 
@@ -88,8 +89,8 @@ void check_Inner_1D(int rank, int nproc, const DofType& dof, typename DofType::R
 
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<1,double,Host,int> GridType;
-typedef MeshFunction< GridType > MeshFunctionType;
-typedef MeshFunction< GridType, GridType::getMeshDimension(), bool > MaskType;
+typedef MeshFunctionView< GridType > MeshFunctionType;
+typedef MeshFunctionView< GridType, GridType::getMeshDimension(), bool > MaskType;
 typedef Vector< double,Host,int> DofType;
 typedef Vector< bool, Host, int > MaskDofType;
 typedef typename GridType::Cell Cell;
@@ -214,7 +215,9 @@ TEST_F(DistributedGridTest_1D, SynchronizerNeighborsTest )
 {
    setDof_1D(dof,-1);
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   meshFunctionPtr->template synchronize<CommunicatorType>();
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr );
 
    if(rank!=0) {
       EXPECT_EQ((dof)[0],rank-1)<< "Left Overlap was filled by wrong process.";
@@ -229,7 +232,9 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    //fill mesh function with linear function (physical center of cell corresponds with its coordinates in grid) 
    setDof_1D(dof,-1);
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
-   meshFunctionPtr->template synchronize<CommunicatorType>();
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr );
 
    auto entity = gridptr->template getEntity< Cell >(0);
    entity.refresh();
@@ -257,7 +262,9 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
    //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
-   meshFunctionPtr->template synchronize<CommunicatorType>( true );
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr, true );
 
    if( rank == 0 ) {
       EXPECT_EQ( dof[ 0 ], -nproc ) << "Left Overlap was filled by wrong process.";
@@ -285,7 +292,9 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
    maskDofs.setValue( true );
    //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
-   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr, true, maskPointer );
    if( rank == 0 ) {
       EXPECT_EQ( dof[ 0 ], -nproc ) << "Left Overlap was filled by wrong process.";
    }
@@ -371,7 +380,9 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
    setDof_1D(dof, -rank-1 );
    linearFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , linearFunctionPtr );
 
-   meshFunctionPtr->template synchronize<CommunicatorType>( true );
+   Synchronizer synchronizer;
+   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.template synchronize<CommunicatorType>( *meshFunctionPtr, true );
 
    auto entity = gridptr->template getEntity< Cell >( 0 );
    auto entity2= gridptr->template getEntity< Cell >( (dof).getSize() - 1 );

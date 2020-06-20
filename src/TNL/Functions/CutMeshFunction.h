@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
 #include <TNL/Algorithms/StaticVectorFor.h>
 #include <TNL/Containers/StaticVector.h>
 
@@ -110,5 +109,3 @@ class CutMeshFunction
 
 } // namespace Functions
 } // namespace TNL
-
-

@@ -26,7 +26,7 @@ class LaxFridrichsMomentumX< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       Real tau;
@@ -97,7 +97,7 @@ class LaxFridrichsMomentumX< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       Real tau;
@@ -168,7 +168,7 @@ class LaxFridrichsMomentumX< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       Real tau;

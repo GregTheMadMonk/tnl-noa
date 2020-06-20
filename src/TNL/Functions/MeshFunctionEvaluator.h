@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Functions/MeshFunction.h>
-#include <TNL/Functions/OperatorFunction.h>
 #include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {

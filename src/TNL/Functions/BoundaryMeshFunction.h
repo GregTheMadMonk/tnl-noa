@@ -36,10 +36,6 @@ class BoundaryMeshFunction :
       using typename BaseType::MeshPointer;
       using typename BaseType::RealType;
       using typename BaseType::VectorType;
-      using typename BaseType::DistributedMeshType;
-      using typename BaseType::DistributedMeshSynchronizerType;
-   
-   
 };
 
 } // namespace Functions

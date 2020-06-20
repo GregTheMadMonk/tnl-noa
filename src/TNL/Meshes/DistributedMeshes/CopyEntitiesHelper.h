@@ -29,7 +29,8 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
     typedef typename MeshFunctionType::MeshType::Cell Cell;
     typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
+    template< typename FromFunction >
+    static void Copy(FromFunction &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
@@ -46,9 +47,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
         Algorithms::ParallelFor< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0, (Index)size.x(), kernel );
-
     }
-
 };
 
 
@@ -61,7 +60,8 @@ class CopyEntitiesHelper<MeshFunctionType,2>
     typedef typename MeshFunctionType::MeshType::Cell Cell;
     typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
+    template< typename FromFunction >
+    static void Copy(FromFunction &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
@@ -81,7 +81,6 @@ class CopyEntitiesHelper<MeshFunctionType,2>
         };
         Algorithms::ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.x(), (Index)size.y(), kernel );
     }
-
 };
 
 
@@ -93,7 +92,8 @@ class CopyEntitiesHelper<MeshFunctionType,3>
     typedef typename MeshFunctionType::MeshType::Cell Cell;
     typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
+    template< typename FromFunction >
+    static void Copy(FromFunction &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();

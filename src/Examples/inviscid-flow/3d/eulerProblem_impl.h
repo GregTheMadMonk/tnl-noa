@@ -511,7 +511,7 @@ assemblyLinearSystem( const RealType& time,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   MeshFunction< Mesh > u( mesh, _u );
+   MeshFunctionView< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,

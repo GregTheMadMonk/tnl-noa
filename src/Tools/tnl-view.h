@@ -18,6 +18,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 
 #include <TNL/Communicators/NoDistrCommunicator.h>
@@ -65,7 +66,6 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 
    int verbose = parameters. getParameter< int >( "verbose");
    String outputFormat = parameters. getParameter< String >( "output-format" );
-   double scale = parameters. getParameter< double >( "scale" );
    String outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -74,7 +74,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
-   return function.write( outputFileName, outputFormat, scale );
+   return function.write( outputFileName, outputFormat );
 }
 
 template< typename VectorField >
@@ -97,7 +97,6 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
 
    int verbose = parameters. getParameter< int >( "verbose");
    String outputFormat = parameters. getParameter< String >( "output-format" );
-   double scale = parameters. getParameter< double >( "scale" );
    String outputFileName;
    if( ! getOutputFileName( inputFileName,
                             outputFormat,
@@ -106,7 +105,7 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
-   return field.write( outputFileName, outputFormat, scale );
+   return field.write( outputFileName, outputFormat );
 }
 
 
@@ -258,7 +257,7 @@ bool convertObject( const MeshPointer& meshPointer,
 //      Containers::Vector< Value, Devices::Host, Index > vector;
       Containers::Vector< Value, Devices::Host, typename MeshType::GlobalIndexType > vector;
       File( inputFileName, std::ios_base::in ) >> vector;
-      Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Value > mf;
+      Functions::MeshFunctionView< MeshType, MeshType::getMeshDimension(), Value > mf;
       mf.bind( meshPointer, vector );
       mf.write( outputFileName, outputFormat );
    }

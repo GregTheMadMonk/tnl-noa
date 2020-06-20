@@ -121,10 +121,9 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
-bindDofs( const DofVectorPointer& dofVector )
+bindDofs( DofVectorPointer& dofVector )
 {
-   //const IndexType dofs = this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
-   this->uPointer->bind( this->getMesh(), dofVector );
+   this->uPointer->bind( this->getMesh(), *dofVector );
 }
 
 template< typename Mesh,
@@ -146,7 +145,8 @@ setInitialCondition( const Config::ParameterContainer& parameters,
             Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
         if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
             Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
-        uPointer->template synchronize<CommunicatorType>();
+        synchronizer.setDistributedGrid( uPointer->getMesh().getDistributedMesh() );
+        synchronizer.template synchronize<CommunicatorType>( *uPointer );
     }
     else
     {
@@ -277,7 +277,7 @@ void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const DofVectorPointer& dofsPointer,
+                      DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
                       DofVectorPointer& bPointer )
 {

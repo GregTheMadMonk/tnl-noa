@@ -23,7 +23,7 @@
 #include <TNL/Containers/Vector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <functions/tnlMeshFunction.h>
+#include <functions/tnlMeshFunctionView.h>
 
 template< typename Mesh,
 		    typename DifferentialOperator,
@@ -41,7 +41,7 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
 
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef tnlMeshFunctionView< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
 
       using typename BaseType::MeshType;
