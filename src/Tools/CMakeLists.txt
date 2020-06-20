@@ -6,6 +6,7 @@ CONFIGURE_FILE( "tnl-bindir.in" "${PROJECT_TOOLS_PATH}/tnl-bindir" @ONLY )
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
 ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
 ADD_EXECUTABLE(tnl-mesh-converter tnl-mesh-converter.cpp )
+ADD_EXECUTABLE(tnl-game-of-life tnl-game-of-life.cpp )
 ADD_EXECUTABLE(tnl-init tnl-init.cpp )
 ADD_EXECUTABLE(tnl-view tnl-view.cpp )
 ADD_EXECUTABLE(tnl-diff tnl-diff.cpp )
@@ -33,12 +34,19 @@ if( ZLIB_FOUND )
    target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_ZLIB")
    target_include_directories(tnl-mesh-converter PUBLIC ${ZLIB_INCLUDE_DIRS})
    target_link_libraries(tnl-mesh-converter ${ZLIB_LIBRARIES})
+
+   target_compile_definitions(tnl-game-of-life PUBLIC "-DHAVE_ZLIB")
+   target_include_directories(tnl-game-of-life PUBLIC ${ZLIB_INCLUDE_DIRS})
+   target_link_libraries(tnl-game-of-life ${ZLIB_LIBRARIES})
 endif()
 
 find_package( tinyxml2 QUIET )
 if( tinyxml2_FOUND )
    target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_TINYXML2")
    target_link_libraries(tnl-mesh-converter tinyxml2::tinyxml2)
+
+   target_compile_definitions(tnl-game-of-life PUBLIC "-DHAVE_TINYXML2")
+   target_link_libraries(tnl-game-of-life tinyxml2::tinyxml2)
 endif()
 
 find_package( METIS QUIET )
@@ -71,6 +79,7 @@ INSTALL( TARGETS tnl-init
                  tnl-grid-setup
                  tnl-grid-to-mesh
                  tnl-mesh-converter
+                 tnl-game-of-life
                  tnl-dicom-reader
                  tnl-image-converter
                  tnl-lattice-init
@@ -82,4 +91,3 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                tnl-log-to-html.py
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-
