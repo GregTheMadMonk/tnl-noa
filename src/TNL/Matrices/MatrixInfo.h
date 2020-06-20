@@ -122,11 +122,19 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRAdaptive > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRStream > >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRMultiVector > >
 {
    static String getDensity() { return String( "sparse" ); };
 
-   static String getFormat() { return "CSR Legacy Stream"; };
+   static String getFormat() { return "CSR Legacy MultiVector"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLightWithoutAtomic > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy LightWithoutAtomic"; };
 };
 
 template< typename Real, typename Device, typename Index >

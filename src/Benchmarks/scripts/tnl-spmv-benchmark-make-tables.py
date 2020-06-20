@@ -62,15 +62,12 @@ df.sort_index(axis=1, inplace=True)
 df.drop(columns=('BiEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('BiEllpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('CSR', 'CPU','speedup'), axis=1, inplace=True )
-
-#df.drop(columns=('CSR Legacy Adaptive', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy Light', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy LightWithoutAtomic', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy Scalar', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy Stream', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy Vector', 'CPU','speedup'), axis=1, inplace=True )
-#df.drop(columns=('CSR Legacy MultiVector', 'CPU','speedup'), axis=1, inplace=True )
-
+df.drop(columns=('CSR Legacy Adaptive', 'CPU','speedup'), axis=1, inplace=True )
+df.drop(columns=('CSR Legacy Light', 'CPU','speedup'), axis=1, inplace=True )
+df.drop(columns=('CSR Legacy Scalar', 'CPU','speedup'), axis=1, inplace=True )
+df.drop(columns=('CSR Legacy LightWithoutAtomic', 'CPU','speedup'), axis=1, inplace=True )
+df.drop(columns=('CSR Legacy MultiVector', 'CPU','speedup'), axis=1, inplace=True )
+df.drop(columns=('CSR Legacy Vector', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('ChunkedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
@@ -84,28 +81,27 @@ df.drop(columns=('SlicedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True 
 
 print( "Computing speed-up of formats...")
 # Add speedup compared to CSR and cuSparse
-
-df["BiEllpack Legacy",              "CPU", "CSR speedup"]      = df["BiEllpack Legacy",              "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["BiEllpack Legacy",              "GPU", "cuSparse speedup"] = df["BiEllpack Legacy",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["BiEllpack",                     "CPU", "CSR speedup"]      = df["BiEllpack",                     "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["BiEllpacky",                    "GPU", "cuSparse speedup"] = df["BiEllpack",                     "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR",                           "GPU", "cuSparse speedup"] = df["CSR",                           "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy Adaptive",           "GPU", "cuSparse speedup"] = df["CSR Legacy Adaptive",           "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy Light",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy LightWithoutAtomic", "GPU", "cuSparse speedup"] = df["CSR Legacy LightWithoutAtomic", "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy Scalar",             "GPU", "cuSparse speedup"] = df["CSR Legacy Scalar",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy Vector",             "GPU", "cuSparse speedup"] = df["CSR Legacy Vector",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
-#df["CSR Legacy MultiVector",        "GPU", "cuSparse speedup"] = df["CSR Legacy MultiVector",        "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["ChunkedEllpack Legacy",         "CPU", "CSR speedup"]      = df["ChunkedEllpack Legacy",         "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["ChunkedEllpack Legacy",         "GPU", "cuSparse speedup"] = df["ChunkedEllpack Legacy",         "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["Ellpack Legacy",                "CPU", "CSR speedup"]      = df["Ellpack Legacy",                "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["Ellpack Legacy",                "GPU", "cuSparse speedup"] = df["Ellpack Legacy",                "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["Ellpack",                       "CPU", "CSR speedup"]      = df["Ellpack",                       "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["Ellpack",                       "GPU", "cuSparse speedup"] = df["Ellpack",                       "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["SlicedEllpack Legacy",          "CPU", "CSR speedup"]      = df["SlicedEllpack Legacy",          "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["SlicedEllpack Legacy",          "GPU", "cuSparse speedup"] = df["SlicedEllpack Legacy",          "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["SlicedEllpack",                 "CPU", "CSR speedup"]      = df["SlicedEllpack",                 "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["SlicedEllpack",                 "GPU", "cuSparse speedup"] = df["SlicedEllpack",                 "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["BiEllpack Legacy",      "CPU", "CSR speedup"]      = df["BiEllpack Legacy",      "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["BiEllpack Legacy",      "GPU", "cuSparse speedup"] = df["BiEllpack Legacy",      "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["BiEllpack",             "CPU", "CSR speedup"]      = df["BiEllpack",             "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["BiEllpacky",            "GPU", "cuSparse speedup"] = df["BiEllpack",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR",                   "GPU", "cuSparse speedup"] = df["CSR",                   "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Adaptive",   "GPU", "cuSparse speedup"] = df["CSR Legacy Adaptive",   "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light",      "GPU", "cuSparse speedup"] = df["CSR Legacy Light",      "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Scalar",     "GPU", "cuSparse speedup"] = df["CSR Legacy Scalar",     "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy LightWithoutAtomic","GPU", "cuSparse speedup"] = df["CSR Legacy LightWithoutAtomic","GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy MultiVector","GPU", "cuSparse speedup"] = df["CSR Legacy MultiVector","GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Vector",     "GPU", "cuSparse speedup"] = df["CSR Legacy Vector",     "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["ChunkedEllpack Legacy", "CPU", "CSR speedup"]      = df["ChunkedEllpack Legacy", "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["ChunkedEllpack Legacy", "GPU", "cuSparse speedup"] = df["ChunkedEllpack Legacy", "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["Ellpack Legacy",        "CPU", "CSR speedup"]      = df["Ellpack Legacy",        "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["Ellpack Legacy",        "GPU", "cuSparse speedup"] = df["Ellpack Legacy",        "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["Ellpack",               "CPU", "CSR speedup"]      = df["Ellpack",               "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["Ellpack",               "GPU", "cuSparse speedup"] = df["Ellpack",               "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["SlicedEllpack Legacy",  "CPU", "CSR speedup"]      = df["SlicedEllpack Legacy",  "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["SlicedEllpack Legacy",  "GPU", "cuSparse speedup"] = df["SlicedEllpack Legacy",  "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["SlicedEllpack",         "CPU", "CSR speedup"]      = df["SlicedEllpack",         "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["SlicedEllpack",         "GPU", "cuSparse speedup"] = df["SlicedEllpack",         "GPU", "time"] / df["cuSparse", "GPU", "time"]
 
 # Add speedup compared to legacy formats
 df["CSR",                   "GPU", "Legacy speedup"]   = df["CSR",                   "GPU", "time"] / df["CSR Legacy Scalar",    "GPU", "time"]
