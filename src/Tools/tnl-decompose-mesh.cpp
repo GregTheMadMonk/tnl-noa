@@ -584,7 +584,7 @@ struct DecomposeMesh
             if( cell_global_indices.count( cell.getIndex() ) != 0 )
                return false;
             CellSeed seed;
-            for( Index v = 0; v < seed.getCornerIds().getSize(); v++ ) {
+            for( Index v = 0; v < cell.template getSubentitiesCount< 0 >(); v++ ) {
                const Index global_idx = cell.template getSubentityIndex< 0 >( v );
                if( vertex_global_to_local.count(global_idx) == 0 )
                   vertex_global_to_local.insert( {global_idx, vertex_global_to_local.size()} );
@@ -596,6 +596,22 @@ struct DecomposeMesh
             return true;
          };
 
+         // iterate over local cells, add only local points (to ensure that ghost points are ordered after all local points)
+         for( Index local_idx = 0; local_idx < cells_counts[ p ]; local_idx++ ) {
+            const Index global_idx = seed_to_cell_index[ cells_offsets[ p ] + local_idx ];
+            const auto& cell = mesh.template getEntity< typename Mesh::Cell >( global_idx );
+            for( Index v = 0; v < cell.template getSubentitiesCount< 0 >(); v++ ) {
+               const Index global_vert_idx = cell.template getSubentityIndex< 0 >( v );
+               if( point_old_to_new_global_index[global_vert_idx] >= points_offsets[p] &&
+                   point_old_to_new_global_index[global_vert_idx] < points_offsets[p] + points_counts[p] )
+               {
+                  if( vertex_global_to_local.count(global_vert_idx) == 0 )
+                     vertex_global_to_local.insert( {global_vert_idx, vertex_global_to_local.size()} );
+               }
+            }
+         }
+         TNL_ASSERT_EQ( (Index) vertex_global_to_local.size(), points_counts[p],
+                        "some local points were not added in the first pass" );
          // iterate over local cells, create seeds and record ghost neighbor indices
          std::vector< Index > ghost_neighbors;
          for( Index local_idx = 0; local_idx < cells_counts[ p ]; local_idx++ ) {
