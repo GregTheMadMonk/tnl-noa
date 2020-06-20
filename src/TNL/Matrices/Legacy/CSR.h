@@ -31,7 +31,8 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRAdaptive, CSRStream, CSRMultiVector };
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight,
+                 CSRAdaptive, CSRMultiVector, CSRLightWithoutAtomic };
 
 template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >
 class CSR : public Sparse< Real, Device, Index >
@@ -226,24 +227,6 @@ public:
    void spmvCudaVectorized( const InVector& inVector,
                             OutVector& outVector,
                             const IndexType gridIdx ) const;
-   
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCudaLightSpmv( const InVector& inVector,
-                            OutVector& outVector,
-                            int gridIdx) const;
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCSRAdaptive( const InVector& inVector,
-                           OutVector& outVector,
-                           int gridIdx,
-                           int *blocks,
-                           size_t blocks_size) const;
 #endif
 
    // The following getters allow us to interface TNL with external C-like
