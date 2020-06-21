@@ -345,11 +345,13 @@ Mesh< MeshConfig, Device >::
 writeProlog( Logger& logger ) const
 {
    logger.writeParameter( "Dimension:", getMeshDimension() );
-   logger.writeParameter( "Number of cells:", getEntitiesCount< getMeshDimension() >() );
+   logger.writeParameter( "Cell topology:", getType( typename Cell::EntityTopology{} ) );
+   logger.writeParameter( "Cells count:", getEntitiesCount< getMeshDimension() >() );
    if( getMeshDimension() > 1 )
-      logger.writeParameter( "Number of faces:", getEntitiesCount< getMeshDimension() - 1 >() );
-   logger.writeParameter( "Number of vertices:", getEntitiesCount< 0 >() );
-   // TODO: more parameters?
+      logger.writeParameter( "Faces count:", getEntitiesCount< getMeshDimension() - 1 >() );
+   logger.writeParameter( "Vertices count:", getEntitiesCount< 0 >() );
+   logger.writeParameter( "Boundary cells count:", this->template getBoundaryEntitiesCount< Mesh::getMeshDimension() >() );
+   logger.writeParameter( "Boundary vertices count:", this->template getBoundaryEntitiesCount< 0 >() );
 }
 
 

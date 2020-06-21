@@ -178,7 +178,7 @@ public:
    void
    printInfo( std::ostream& str ) const
    {
-      const GlobalIndexType pointsCount = localMesh.template getEntitiesCount< 0 >();
+      const GlobalIndexType verticesCount = localMesh.template getEntitiesCount< 0 >();
       const GlobalIndexType cellsCount = localMesh.template getEntitiesCount< Mesh::getMeshDimension() >();
 
       CommunicatorType::Barrier();
@@ -188,20 +188,20 @@ public:
                 << "\tMesh dimension:\t" << getMeshDimension() << "\n"
                 << "\tCell topology:\t" << getType( typename Cell::EntityTopology{} ) << "\n"
                 << "\tCells count:\t" << cellsCount << "\n"
-                << "\tPoints count:\t" << pointsCount << "\n"
+                << "\tvertices count:\t" << verticesCount << "\n"
                 << "\tGhost levels:\t" << getGhostLevels() << "\n"
                 << "\tGhost cells count:\t" << localMesh.template getGhostEntitiesCount< Mesh::getMeshDimension() >() << "\n"
-                << "\tGhost points count:\t" << localMesh.template getGhostEntitiesCount< 0 >() << "\n"
+                << "\tGhost vertices count:\t" << localMesh.template getGhostEntitiesCount< 0 >() << "\n"
                 << "\tBoundary cells count:\t" << localMesh.template getBoundaryEntitiesCount< Mesh::getMeshDimension() >() << "\n"
-                << "\tBoundary points count:\t" << localMesh.template getBoundaryEntitiesCount< 0 >() << "\n";
+                << "\tBoundary vertices count:\t" << localMesh.template getBoundaryEntitiesCount< 0 >() << "\n";
             const GlobalIndexType globalPointIndices = getGlobalIndices< 0 >().getSize();
             const GlobalIndexType globalCellIndices = getGlobalIndices< Mesh::getMeshDimension() >().getSize();
             if( getGhostLevels() > 0 ) {
-               if( globalPointIndices != pointsCount )
+               if( globalPointIndices != verticesCount )
                   str << "ERROR: array of global point indices has wrong size: " << globalPointIndices << "\n";
                if( globalCellIndices != cellsCount )
                   str << "ERROR: array of global cell indices has wrong size: " << globalCellIndices << "\n";
-               if( vtkPointGhostTypesArray.getSize() != pointsCount )
+               if( vtkPointGhostTypesArray.getSize() != verticesCount )
                   str << "ERROR: array of VTK point ghost types has wrong size: " << vtkPointGhostTypesArray.getSize() << "\n";
                if( vtkCellGhostTypesArray.getSize() != cellsCount )
                   str << "ERROR: array of VTK cell ghost types has wrong size: " << vtkCellGhostTypesArray.getSize() << "\n";
