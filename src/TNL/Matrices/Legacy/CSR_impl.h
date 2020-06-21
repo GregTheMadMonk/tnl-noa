@@ -900,15 +900,15 @@ template< typename Real,
           typename Index,
           int warpSize >
 __global__
-void SpMVCSRAdaptiveGlobal( const Real *inVector,
-                            Real *outVector,
-                            const Index* rowPointers,
-                            const Index* columnIndexes,
-                            const Real* values,
-                            Index *blocks,
-                            Index blocks_size,
-                            Index getColumns,
-                            Index gridID)
+void SpMVCSRAdaptive( const Real *inVector,
+                      Real *outVector,
+                      const Index* rowPointers,
+                      const Index* columnIndexes,
+                      const Real* values,
+                      Index *blocks,
+                      Index blocks_size,
+                      Index getColumns,
+                      Index gridID)
 {
    /* Configuration ---------------------------------------------------*/
    constexpr Index SHARED = 49152/sizeof(Real); // number of elements in shared memory for block
@@ -1126,22 +1126,19 @@ void SpMVCSRLight( const Real *inVector,
                    const Index rows,
                    const Index getColumns,
                    const Index groupSize,
-                   const Index gridID) {
+                   const Index gridID,
+                   unsigned *rowCnt) {
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index laneID = index % warpSize;
    const Index groupID = laneID / groupSize;
    const Index inGroupID = laneID % groupSize;
 
-   Index row, minID, column, maxID, idxMtx;
-   __shared__ unsigned rowCnt;
-
-   if (index == 0) rowCnt = 0;  // Init shared variable
-   __syncthreads();
+   Index row, minID, maxID, i;
 
    while (true) {
 
       /* Get row number */
-      if (inGroupID == 0) row = atomicAdd(&rowCnt, 1);
+      if (inGroupID == 0) row = atomicAdd(rowCnt, 1);
 
       /* Propagate row number in group */
       row = __shfl_sync((unsigned)(warpSize - 1), row, groupID * groupSize);
@@ -1153,14 +1150,11 @@ void SpMVCSRLight( const Real *inVector,
 
       Real result = 0.0;
 
-      idxMtx = minID + inGroupID;
-      while (idxMtx < maxID) {
-         column = columnIndexes[idxMtx];
-         if (column >= getColumns)
+      for (i = minID + inGroupID; i < maxID; i += groupSize) {
+         if (columnIndexes[i] >= getColumns)
             break;
 
-         result += values[idxMtx] * inVector[column];
-         idxMtx += groupSize;
+         result += values[i] * inVector[columnIndexes[i]];
       }
 
       /* Parallel reduction */
@@ -1198,11 +1192,10 @@ void SpMVCSRLightWithoutAtomic( const Real *inVector,
 
    Real result = 0.0;
    for (i = minID + inGroupID; i < maxID; i += groupSize) {
-      Index column = columnIndexes[i];
-      if (column >= getColumns)
+      if (columnIndexes[i] >= getColumns)
          break;
 
-      result += values[i] * inVector[column];
+      result += values[i] * inVector[columnIndexes[i]];
    }
 
    /* Parallel reduction */
@@ -1299,6 +1292,12 @@ void SpMVCSRLightPrepare( const Real *inVector,
    const Index threads = 64;
    size_t neededThreads = rows * warpSize;
    Index blocks, groupSize;
+   /* Copy rowCnt to GPU */
+   unsigned rowCnt = 0;
+   unsigned *kernelRowCnt;
+   cudaMalloc((void **)&kernelRowCnt, sizeof(*kernelRowCnt));
+   cudaMemcpy(kernelRowCnt, &rowCnt, sizeof(*kernelRowCnt), cudaMemcpyHostToDevice);
+
    
    const Index nnz = roundUpDivision(valuesSize, rows); // non zeroes per row
    if (nnz <= 2)
@@ -1332,9 +1331,12 @@ void SpMVCSRLightPrepare( const Real *inVector,
                rows,
                getColumns,
                groupSize,
-               grid
+               grid,
+               kernelRowCnt
       );
    }
+
+   cudaFree(kernelRowCnt);
 }
 
 template< typename Real,
@@ -1505,7 +1507,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
          blocks = MAX_X_DIM;
          neededThreads -= MAX_X_DIM * threads;
       }
-      SpMVCSRAdaptiveGlobal<Real, Index, warpSize><<<blocks, threads>>>(
+      SpMVCSRAdaptive<Real, Index, warpSize><<<blocks, threads>>>(
                inVector,
                outVector,
                rowPointers,
@@ -1517,6 +1519,8 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
                grid
       );
    }
+
+   cudaFree(blocksAdaptive);
 }
 
 #endif
@@ -1881,7 +1885,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                );
                break;
             case CSRLightWithoutAtomic:
-               SpMVCSRLightPrepare<Real, Index, 32>(
+               SpMVCSRLightWithoutAtomicPrepare<Real, Index, 32>(
                   kernelInVector,
                   kernelOutVector,
                   kernelRowPointers,
