@@ -318,14 +318,8 @@ void
 Mesh< MeshConfig, Device >::
 print( std::ostream& str ) const
 {
-   // FIXME: there is a problem with multimaps and accessors holding pointers into the device memory
-   if( std::is_same< Device, Devices::Cuda >::value ) {
-      str << "Textual representation of meshes stored on the CUDA device is not supported." << std::endl;
-   }
-   else {
-      StorageBaseType::print( str );
-      EntityTagsLayerFamily::print( str );
-   }
+   StorageBaseType::print( str );
+   EntityTagsLayerFamily::print( str );
 }
 
 template< typename MeshConfig, typename Device >

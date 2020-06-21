@@ -97,6 +97,7 @@ void testMeshOnCuda( const Mesh& mesh )
    DeviceMesh dmesh2;
    dmesh2 = mesh;
    EXPECT_EQ( dmesh2, mesh );
+   compareStringRepresentation( dmesh2, mesh );
 
    // test CUDA->CUDA copy
    testCopyAssignment( dmesh1 );
