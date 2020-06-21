@@ -108,7 +108,6 @@ ADD_TEST( StaticVectorOperationsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOpera
 ADD_TEST( StaticVectorOfStaticVectorsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOfStaticVectorsTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 
-ADD_SUBDIRECTORY( Multimaps )
 ADD_SUBDIRECTORY( ndarray )
 
 
