@@ -904,7 +904,9 @@ void SpMVCSRAdaptive( const Real *inVector,
                       const Index sharedPerWarp,
                       const Index maxPerWarp)
 {
-   extern __shared__ Real shared_res[];
+   // extern __shared__ Real shared_res[];
+   constexpr Index SHARED = 49152/sizeof(Real);
+   __shared__ Real shared_res[SHARED];
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index blockIdx = index / warpSize;
    Real result = 0;
@@ -1509,7 +1511,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      SpMVCSRAdaptive<Real, Index, warpSize><<<blocks, threads, 49152>>>(
+      SpMVCSRAdaptive<Real, Index, warpSize><<<blocks, threads>>>(
                inVector,
                outVector,
                rowPointers,
