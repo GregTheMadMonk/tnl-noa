@@ -26,13 +26,14 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
                          UserData userData ) const
 {
-   const GlobalIndexType entitiesCount = meshPointer->template getBoundaryEntitiesCount< MeshEntity::getEntityDimension() >();
-   auto kernel = [] __cuda_callable__
+   const auto boundaryIndices = meshPointer->template getBoundaryIndices< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType entitiesCount = boundaryIndices.getSize();
+   auto kernel = [boundaryIndices] __cuda_callable__
       ( const GlobalIndexType i,
         const Mesh* mesh,
         UserData userData )
    {
-      const GlobalIndexType entityIndex = mesh->template getBoundaryEntityIndex< MeshEntity::getEntityDimension() >( i );
+      const GlobalIndexType entityIndex = boundaryIndices[ i ];
       const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
@@ -54,13 +55,14 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
                          UserData userData ) const
 {
-   const auto entitiesCount = meshPointer->template getInteriorEntitiesCount< MeshEntity::getEntityDimension() >();
-   auto kernel = [] __cuda_callable__
+   const auto interiorIndices = meshPointer->template getInteriorIndices< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType entitiesCount = interiorIndices.getSize();
+   auto kernel = [interiorIndices] __cuda_callable__
       ( const GlobalIndexType i,
         const Mesh* mesh,
         UserData userData )
    {
-      const GlobalIndexType entityIndex = mesh->template getInteriorEntityIndex< MeshEntity::getEntityDimension() >( i );
+      const GlobalIndexType entityIndex = interiorIndices[ i ];
       const auto entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
@@ -82,7 +84,7 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
                     UserData userData ) const
 {
-   const auto entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
    auto kernel = [] __cuda_callable__
       ( const GlobalIndexType entityIndex,
         const Mesh* mesh,
@@ -109,8 +111,8 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processGhostEntities( const MeshPointer& meshPointer,
                        UserData userData ) const
 {
-   const auto ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
-   const auto entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
    auto kernel = [] __cuda_callable__
       ( const GlobalIndexType entityIndex,
         const Mesh* mesh,
@@ -137,7 +139,7 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processLocalEntities( const MeshPointer& meshPointer,
                       UserData userData ) const
 {
-   const auto ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
+   const GlobalIndexType ghostsOffset = meshPointer->template getGhostEntitiesOffset< MeshEntity::getEntityDimension() >();
    auto kernel = [] __cuda_callable__
       ( const GlobalIndexType entityIndex,
         const Mesh* mesh,

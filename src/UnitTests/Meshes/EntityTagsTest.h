@@ -84,16 +84,16 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    std::vector< IndexType > interiorCells = {4, 7};
 
    // Test boundary cells
-   EXPECT_EQ( mesh.template getBoundaryEntitiesCount< 2 >(), (int) boundaryCells.size() );
+   EXPECT_EQ( mesh.template getBoundaryIndices< 2 >().getSize(), (int) boundaryCells.size() );
    for( size_t i = 0; i < boundaryCells.size(); i++ ) {
       EXPECT_TRUE( mesh.template isBoundaryEntity< 2 >( boundaryCells[ i ] ) );
-      EXPECT_EQ( mesh.template getBoundaryEntityIndex< 2 >( i ), boundaryCells[ i ] );
+      EXPECT_EQ( mesh.template getBoundaryIndices< 2 >()[ i ], boundaryCells[ i ] );
    }
    // Test interior cells
-   EXPECT_EQ( mesh.template getInteriorEntitiesCount< 2 >(), (int) interiorCells.size() );
+   EXPECT_EQ( mesh.template getInteriorIndices< 2 >().getSize(), (int) interiorCells.size() );
    for( size_t i = 0; i < interiorCells.size(); i++ ) {
       EXPECT_FALSE( mesh.template isBoundaryEntity< 2 >( interiorCells[ i ] ) );
-      EXPECT_EQ( mesh.template getInteriorEntityIndex< 2 >( i ), interiorCells[ i ] );
+      EXPECT_EQ( mesh.template getInteriorIndices< 2 >()[ i ], interiorCells[ i ] );
    }
 
    // Test setting other tags
@@ -116,16 +116,16 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    std::vector< IndexType > interiorFaces = {1, 2, 5, 6, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 23, 24, 27};
 
    // Test boundary faces
-   EXPECT_EQ( mesh.template getBoundaryEntitiesCount< 1 >(), (int) boundaryFaces.size() );
+   EXPECT_EQ( mesh.template getBoundaryIndices< 1 >().getSize(), (int) boundaryFaces.size() );
    for( size_t i = 0; i < boundaryFaces.size(); i++ ) {
       EXPECT_TRUE( mesh.template isBoundaryEntity< 1 >( boundaryFaces[ i ] ) );
-      EXPECT_EQ( mesh.template getBoundaryEntityIndex< 1 >( i ), boundaryFaces[ i ] );
+      EXPECT_EQ( mesh.template getBoundaryIndices< 1 >()[ i ], boundaryFaces[ i ] );
    }
    // Test interior faces
-   EXPECT_EQ( mesh.template getInteriorEntitiesCount< 1 >(), (int) interiorFaces.size() );
+   EXPECT_EQ( mesh.template getInteriorIndices< 1 >().getSize(), (int) interiorFaces.size() );
    for( size_t i = 0; i < interiorFaces.size(); i++ ) {
       EXPECT_FALSE( mesh.template isBoundaryEntity< 1 >( interiorFaces[ i ] ) );
-      EXPECT_EQ( mesh.template getInteriorEntityIndex< 1 >( i ), interiorFaces[ i ] );
+      EXPECT_EQ( mesh.template getInteriorIndices< 1 >()[ i ], interiorFaces[ i ] );
    }
 
    // Test setting other tags

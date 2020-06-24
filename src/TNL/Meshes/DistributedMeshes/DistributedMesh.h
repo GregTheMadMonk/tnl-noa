@@ -192,8 +192,8 @@ public:
                 << "\tGhost levels:\t" << getGhostLevels() << "\n"
                 << "\tGhost cells count:\t" << localMesh.template getGhostEntitiesCount< Mesh::getMeshDimension() >() << "\n"
                 << "\tGhost vertices count:\t" << localMesh.template getGhostEntitiesCount< 0 >() << "\n"
-                << "\tBoundary cells count:\t" << localMesh.template getBoundaryEntitiesCount< Mesh::getMeshDimension() >() << "\n"
-                << "\tBoundary vertices count:\t" << localMesh.template getBoundaryEntitiesCount< 0 >() << "\n";
+                << "\tBoundary cells count:\t" << localMesh.template getBoundaryIndices< Mesh::getMeshDimension() >().getSize() << "\n"
+                << "\tBoundary vertices count:\t" << localMesh.template getBoundaryIndices< 0 >().getSize() << "\n";
             const GlobalIndexType globalPointIndices = getGlobalIndices< 0 >().getSize();
             const GlobalIndexType globalCellIndices = getGlobalIndices< Mesh::getMeshDimension() >().getSize();
             if( getGhostLevels() > 0 ) {

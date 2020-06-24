@@ -175,6 +175,62 @@ class Mesh
       GlobalIndexType getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const;
 
 
+      /**
+       * \brief Execute function \e f in parallel for all mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forAll( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all boundary mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forBoundary( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all interior mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forInterior( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all local mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forLocal( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all ghost mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forGhost( Func f ) const;
+
+
       /*
        * The permutations follow the definition used in the Metis library: Let M
        * be the original mesh and M' the permuted mesh. Then entity with index i

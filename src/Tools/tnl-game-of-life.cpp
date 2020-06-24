@@ -176,7 +176,6 @@ bool runGameOfLife( const Mesh& mesh )
    MyMeshFunction f_in( localMesh ), f_out( localMesh );
    f_in.getData().setValue( 0 );
 
-   const Index entitiesCount = localMesh.template getEntitiesCount< MyMeshFunction::getEntitiesDimension() >();
    const Index pointsCount = localMesh.template getEntitiesCount< 0 >();
    const Index cellsCount = localMesh.template getEntitiesCount< Mesh::getMeshDimension() >();
 
@@ -284,6 +283,12 @@ bool runGameOfLife( const Mesh& mesh )
    // write initial state
    make_snapshot( 0 );
 
+   // captures for the iteration kernel
+   const auto f_in_view = f_in.getData().getConstView();
+   auto f_out_view = f_out.getData().getView();
+   Pointers::DevicePointer< const LocalMesh > localMeshDevicePointer( localMesh );
+   const LocalMesh* localMeshPointer = &localMeshDevicePointer.template getData< typename LocalMesh::DeviceType >();
+
    bool all_done = false;
    Index iteration = 0;
    do {
@@ -291,41 +296,39 @@ bool runGameOfLife( const Mesh& mesh )
       if( CommunicatorType::GetRank() == 0 )
          std::cout << "Computing iteration " << iteration << "..." << std::endl;
 
-      // traverse the mesh
-      for( Index i = 0; i < entitiesCount; i++ ) {
-         // end on the first ghost entity
-         // TODO: the mesh should allow iteration over local entities only
-         if( localMesh.template isGhostEntity< MyMeshFunction::getEntitiesDimension() >( i ) )
-            break;
+      // iterate over all local entities
+      auto kernel = [f_in_view, f_out_view, localMeshPointer] __cuda_callable__ ( Index i ) mutable
+      {
          // sum values of the function on the neighbor entities
          Real sum = 0;
-         for( Index n = 0; n < localMesh.getCellNeighborsCount( i ); n++ ) {
-            const Index neighbor = localMesh.getCellNeighborIndex( i, n );
-            sum += f_in.getData()[ neighbor ];
+         for( Index n = 0; n < localMeshPointer->getCellNeighborsCount( i ); n++ ) {
+            const Index neighbor = localMeshPointer->getCellNeighborIndex( i, n );
+            sum += f_in_view[ neighbor ];
          }
-         const bool live = f_in.getData()[ i ];
+         const bool live = f_in_view[ i ];
 
          // Conway's rules for square grid
          if( live ) {
             // any live cell with less than two live neighbors dies
             if( sum < 2 )
-               f_out.getData()[ i ] = 0;
+               f_out_view[ i ] = 0;
             // any live cell with two or three live neighbors survives
             else if( sum < 4 )
-               f_out.getData()[ i ] = 1;
+               f_out_view[ i ] = 1;
             // any live cell with more than three live neighbors dies
             else
-               f_out.getData()[ i ] = 0;
+               f_out_view[ i ] = 0;
          }
          else {
             // any dead cell with exactly three live neighbors becomes a live cell
             if( sum == 3 )
-               f_out.getData()[ i ] = 1;
+               f_out_view[ i ] = 1;
             // any other dead cell remains dead
             else
-               f_out.getData()[ i ] = 0;
+               f_out_view[ i ] = 0;
          }
-      }
+      };
+      localMesh.template forLocal< MyMeshFunction::getEntitiesDimension() >( kernel );
 
       // synchronize
       sync.synchronize( f_out );

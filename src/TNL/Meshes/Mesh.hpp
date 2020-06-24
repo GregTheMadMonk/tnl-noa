@@ -240,6 +240,68 @@ getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neig
 
 
 template< typename MeshConfig, typename Device >
+   template< int EntityDimension, typename Device2, typename Func >
+void
+Mesh< MeshConfig, Device >::
+forAll( Func f ) const
+{
+   const GlobalIndexType entitiesCount = getEntitiesCount< EntityDimension >();
+   Algorithms::ParallelFor< Device2 >::exec( (GlobalIndexType) 0, entitiesCount, f );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, typename Device2, typename Func >
+void
+Mesh< MeshConfig, Device >::
+forBoundary( Func f ) const
+{
+   const auto boundaryIndices = this->template getBoundaryIndices< EntityDimension >();
+   const GlobalIndexType entitiesCount = boundaryIndices.getSize();
+   auto wrapper = [f, boundaryIndices] __cuda_callable__ ( const GlobalIndexType i ) mutable
+   {
+      f( boundaryIndices[ i ] );
+   };
+   Algorithms::ParallelFor< Device2 >::exec( (GlobalIndexType) 0, entitiesCount, wrapper );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, typename Device2, typename Func >
+void
+Mesh< MeshConfig, Device >::
+forInterior( Func f ) const
+{
+   const auto interiorIndices = this->template getInteriorIndices< EntityDimension >();
+   const GlobalIndexType entitiesCount = interiorIndices.getSize();
+   auto wrapper = [f, interiorIndices] __cuda_callable__ ( const GlobalIndexType i ) mutable
+   {
+      f( interiorIndices[ i ] );
+   };
+   Algorithms::ParallelFor< Device2 >::exec( (GlobalIndexType) 0, entitiesCount, wrapper );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, typename Device2, typename Func >
+void
+Mesh< MeshConfig, Device >::
+forLocal( Func f ) const
+{
+   const GlobalIndexType ghostsOffset = this->template getGhostEntitiesOffset< EntityDimension >();
+   Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, ghostsOffset, f );
+}
+
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, typename Device2, typename Func >
+void
+Mesh< MeshConfig, Device >::
+forGhost( Func f ) const
+{
+   const GlobalIndexType ghostsOffset = this->template getGhostEntitiesOffset< EntityDimension >();
+   const GlobalIndexType entitiesCount = this->template getEntitiesCount< EntityDimension >();
+   Algorithms::ParallelFor< Device2 >::exec( ghostsOffset, entitiesCount, f );
+}
+
+
+template< typename MeshConfig, typename Device >
    template< int Dimension >
 void
 Mesh< MeshConfig, Device >::

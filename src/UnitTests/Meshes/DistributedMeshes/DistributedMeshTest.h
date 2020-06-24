@@ -470,6 +470,37 @@ void testTraverserOnDevice( const MeshType& mesh,
    EXPECT_EQ( array_all,      expected_array_all      );
    EXPECT_EQ( array_ghost,    expected_array_ghost    );
    EXPECT_EQ( array_local,    expected_array_local    );
+
+   // test iteration methods: forAll, forBoundary, forInterior
+   array_boundary.setValue( 0 );
+   array_interior.setValue( 0 );
+   array_all     .setValue( 0 );
+   array_ghost   .setValue( 0 );
+   array_local   .setValue( 0 );
+
+   auto view_boundary = array_boundary.getView();
+   auto view_interior = array_interior.getView();
+   auto view_all      = array_all.getView();
+   auto view_ghost    = array_ghost.getView();
+   auto view_local    = array_local.getView();
+
+   auto f_boundary = [view_boundary] __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_boundary[i] += 1; };
+   auto f_interior = [view_interior] __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_interior[i] += 1; };
+   auto f_all      = [view_all]      __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_all[i] += 1; };
+   auto f_ghost    = [view_ghost]    __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_ghost[i] += 1; };
+   auto f_local    = [view_local]    __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_local[i] += 1; };
+
+   meshPointer->template forBoundary< EntityType::getEntityDimension() >( f_boundary );
+   meshPointer->template forInterior< EntityType::getEntityDimension() >( f_interior );
+   meshPointer->template forAll     < EntityType::getEntityDimension() >( f_all );
+   meshPointer->template forGhost   < EntityType::getEntityDimension() >( f_ghost );
+   meshPointer->template forLocal   < EntityType::getEntityDimension() >( f_local );
+
+   EXPECT_EQ( array_boundary, expected_array_boundary );
+   EXPECT_EQ( array_interior, expected_array_interior );
+   EXPECT_EQ( array_all,      expected_array_all      );
+   EXPECT_EQ( array_ghost,    expected_array_ghost    );
+   EXPECT_EQ( array_local,    expected_array_local    );
 }
 
 template< typename Mesh >

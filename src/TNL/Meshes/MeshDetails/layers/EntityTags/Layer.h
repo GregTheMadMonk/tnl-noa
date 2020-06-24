@@ -178,27 +178,15 @@ public:
    }
 
    __cuda_callable__
-   GlobalIndexType getBoundaryEntitiesCount( DimensionTag ) const
+   auto getBoundaryIndices( DimensionTag ) const
    {
-      return boundaryIndices.getSize();
+      return boundaryIndices.getConstView();
    }
 
    __cuda_callable__
-   GlobalIndexType getBoundaryEntityIndex( DimensionTag, const GlobalIndexType& i ) const
+   auto getInteriorIndices( DimensionTag ) const
    {
-      return boundaryIndices[ i ];
-   }
-
-   __cuda_callable__
-   GlobalIndexType getInteriorEntitiesCount( DimensionTag ) const
-   {
-      return interiorIndices.getSize();
-   }
-
-   __cuda_callable__
-   GlobalIndexType getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const
-   {
-      return interiorIndices[ i ];
+      return interiorIndices.getConstView();
    }
 
    __cuda_callable__
@@ -287,10 +275,8 @@ protected:
    void isBoundaryEntity( DimensionTag, const GlobalIndexType& ) const {}
    void isGhostEntity( DimensionTag, const GlobalIndexType& ) const {}
    void updateEntityTagsLayer( DimensionTag ) {}
-   void getBoundaryEntitiesCount( DimensionTag ) const {}
-   void getBoundaryEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
-   void getInteriorEntitiesCount( DimensionTag ) const {}
-   void getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
+   void getBoundaryIndices( DimensionTag ) const {}
+   void getInteriorIndices( DimensionTag ) const {}
    void getGhostEntitiesCount() const;
    void getGhostEntitiesOffset() const;
 

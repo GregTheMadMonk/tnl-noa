@@ -74,6 +74,27 @@ void testTraverser( const DeviceMeshPointer& deviceMeshPointer,
    EXPECT_EQ( array_boundary, host_array_boundary );
    EXPECT_EQ( array_interior, host_array_interior );
    EXPECT_EQ( array_all,      host_array_all      );
+
+   // test iteration methods: forAll, forBoundary, forInterior
+   array_boundary.setValue( 0 );
+   array_interior.setValue( 0 );
+   array_all     .setValue( 0 );
+
+   auto view_boundary = array_boundary.getView();
+   auto view_interior = array_interior.getView();
+   auto view_all      = array_all.getView();
+
+   auto f_boundary = [view_boundary] __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_boundary[i] += 1; };
+   auto f_interior = [view_interior] __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_interior[i] += 1; };
+   auto f_all      = [view_all]      __cuda_callable__ ( typename MeshType::GlobalIndexType i ) mutable { view_all[i] += 1; };
+
+   deviceMeshPointer->template forBoundary< EntityType::getEntityDimension() >( f_boundary );
+   deviceMeshPointer->template forInterior< EntityType::getEntityDimension() >( f_interior );
+   deviceMeshPointer->template forAll     < EntityType::getEntityDimension() >( f_all );
+
+   EXPECT_EQ( array_boundary, host_array_boundary );
+   EXPECT_EQ( array_interior, host_array_interior );
+   EXPECT_EQ( array_all,      host_array_all      );
 }
 
 TEST( MeshTest, RegularMeshOfQuadrilateralsTest )

@@ -35,10 +35,8 @@ protected:
    using LayerType::isBoundaryEntity;
    using LayerType::isGhostEntity;
    using LayerType::updateEntityTagsLayer;
-   using LayerType::getBoundaryEntitiesCount;
-   using LayerType::getBoundaryEntityIndex;
-   using LayerType::getInteriorEntitiesCount;
-   using LayerType::getInteriorEntityIndex;
+   using LayerType::getBoundaryIndices;
+   using LayerType::getInteriorIndices;
    using LayerType::getGhostEntitiesCount;
    using LayerType::getGhostEntitiesOffset;
 
@@ -50,10 +48,8 @@ protected:
    using BaseType::isBoundaryEntity;
    using BaseType::isGhostEntity;
    using BaseType::updateEntityTagsLayer;
-   using BaseType::getBoundaryEntitiesCount;
-   using BaseType::getBoundaryEntityIndex;
-   using BaseType::getInteriorEntitiesCount;
-   using BaseType::getInteriorEntityIndex;
+   using BaseType::getBoundaryIndices;
+   using BaseType::getInteriorIndices;
    using BaseType::getGhostEntitiesCount;
    using BaseType::getGhostEntitiesOffset;
 
@@ -124,10 +120,8 @@ protected:
    void isBoundaryEntity() const;
    void isGhostEntity() const;
    void updateEntityTagsLayer();
-   void getBoundaryEntitiesCount() const;
-   void getBoundaryEntityIndex() const;
-   void getInteriorEntitiesCount() const;
-   void getInteriorEntityIndex() const;
+   void getBoundaryIndices() const;
+   void getInteriorIndices() const;
    void getGhostEntitiesCount() const;
    void getGhostEntitiesOffset() const;
 
@@ -216,34 +210,18 @@ public:
 
    template< int Dimension >
    __cuda_callable__
-   GlobalIndexType getBoundaryEntitiesCount() const
+   auto getBoundaryIndices() const
    {
       static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
-      return BaseType::getBoundaryEntitiesCount( DimensionTag< Dimension >() );
+      return BaseType::getBoundaryIndices( DimensionTag< Dimension >() );
    }
 
    template< int Dimension >
    __cuda_callable__
-   GlobalIndexType getBoundaryEntityIndex( const GlobalIndexType& i ) const
+   auto getInteriorIndices() const
    {
       static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
-      return BaseType::getBoundaryEntityIndex( DimensionTag< Dimension >(), i );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   GlobalIndexType getInteriorEntitiesCount() const
-   {
-      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
-      return BaseType::getInteriorEntitiesCount( DimensionTag< Dimension >() );
-   }
-
-   template< int Dimension >
-   __cuda_callable__
-   GlobalIndexType getInteriorEntityIndex( const GlobalIndexType& i ) const
-   {
-      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
-      return BaseType::getInteriorEntityIndex( DimensionTag< Dimension >(), i );
+      return BaseType::getInteriorIndices( DimensionTag< Dimension >() );
    }
 
    template< int Dimension >
