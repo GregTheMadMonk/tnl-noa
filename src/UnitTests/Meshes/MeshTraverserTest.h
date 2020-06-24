@@ -49,17 +49,19 @@ struct TestEntitiesProcessor
 };
 
 template< typename EntityType, typename DeviceMeshPointer, typename HostArray >
-void testCudaTraverser( const DeviceMeshPointer& deviceMeshPointer,
-                        const HostArray& host_array_boundary,
-                        const HostArray& host_array_interior,
-                        const HostArray& host_array_all )
+void testTraverser( const DeviceMeshPointer& deviceMeshPointer,
+                    const HostArray& host_array_boundary,
+                    const HostArray& host_array_interior,
+                    const HostArray& host_array_all )
 {
    using MeshType = typename DeviceMeshPointer::ObjectType;
+   using DeviceType = typename MeshType::DeviceType;
+   static_assert( std::is_same< DeviceType, typename DeviceMeshPointer::DeviceType >::value, "devices must be the same" );
    Traverser< MeshType, EntityType > traverser;
 
-   Containers::Array< int, Devices::Cuda > array_boundary( deviceMeshPointer->template getEntitiesCount< EntityType >() );
-   Containers::Array< int, Devices::Cuda > array_interior( deviceMeshPointer->template getEntitiesCount< EntityType >() );
-   Containers::Array< int, Devices::Cuda > array_all     ( deviceMeshPointer->template getEntitiesCount< EntityType >() );
+   Containers::Array< int, DeviceType > array_boundary( deviceMeshPointer->template getEntitiesCount< EntityType >() );
+   Containers::Array< int, DeviceType > array_interior( deviceMeshPointer->template getEntitiesCount< EntityType >() );
+   Containers::Array< int, DeviceType > array_all     ( deviceMeshPointer->template getEntitiesCount< EntityType >() );
 
    array_boundary.setValue( 0 );
    array_interior.setValue( 0 );
@@ -124,11 +126,6 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 
    ASSERT_TRUE( meshBuilder.build( *meshPointer ) );
 
-   // traversers for all test cases
-   Traverser< TestQuadrilateralMesh, QuadrilateralMeshEntityType > traverser_cells;
-   Traverser< TestQuadrilateralMesh, EdgeMeshEntityType > traverser_edges;
-   Traverser< TestQuadrilateralMesh, VertexMeshEntityType > traverser_vertices;
-
    // arrays for all test cases
    Containers::Array< int > array_cells_boundary( meshPointer->template getEntitiesCount< 2 >() );
    Containers::Array< int > array_cells_interior( meshPointer->template getEntitiesCount< 2 >() );
@@ -155,65 +152,53 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    array_vertices_interior.setValue( 0 );
    array_vertices_all     .setValue( 0 );
 
-   // traverse for all test cases
-   traverser_cells.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_cells_boundary.getView() );
-   traverser_cells.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_cells_interior.getView() );
-   traverser_cells.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_cells_all.getView() );
-
-   traverser_edges.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_edges_boundary.getView() );
-   traverser_edges.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_edges_interior.getView() );
-   traverser_edges.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_edges_all.getView() );
-
-   traverser_vertices.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_vertices_boundary.getView() );
-   traverser_vertices.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_vertices_interior.getView() );
-   traverser_vertices.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_vertices_all.getView() );
-
-   // test traversing cells
+   // set expected values
    for( IndexType j = 0; j < ySize; j++ )
    for( IndexType i = 0; i < xSize; i++ )
    {
       const IndexType idx = j * xSize + i;
       if( j == 0 || j == ySize - 1 || i == 0 || i == xSize - 1 ) {
-         EXPECT_EQ( array_cells_boundary[ idx ], 1 );
-         EXPECT_EQ( array_cells_interior[ idx ], 0 );
+         array_cells_boundary[ idx ] = 1;
+         array_cells_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_cells_boundary[ idx ], 0 );
-         EXPECT_EQ( array_cells_interior[ idx ], 1 );
+         array_cells_boundary[ idx ] = 0;
+         array_cells_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_cells_all[ idx ], 1 );
+      array_cells_all[ idx ] = 1;
    }
-
-   // test traversing edges
    // (edges are not numbered systematically, so we just compare with isBoundaryEntity)
    for( IndexType idx = 0; idx < meshPointer->template getEntitiesCount< 1 >(); idx++ )
    {
       if( meshPointer->template isBoundaryEntity< 1 >( idx ) ) {
-         EXPECT_EQ( array_edges_boundary[ idx ], 1 );
-         EXPECT_EQ( array_edges_interior[ idx ], 0 );
+         array_edges_boundary[ idx ] = 1;
+         array_edges_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_edges_boundary[ idx ], 0 );
-         EXPECT_EQ( array_edges_interior[ idx ], 1 );
+         array_edges_boundary[ idx ] = 0;
+         array_edges_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_edges_all[ idx ], 1 );
+      array_edges_all[ idx ] = 1;
    }
-
-   // test traversing vertices
    for( IndexType j = 0; j <= ySize; j++ )
    for( IndexType i = 0; i <= xSize; i++ )
    {
       const IndexType idx = j * (xSize + 1) + i;
       if( j == 0 || j == ySize || i == 0 || i == xSize ) {
-         EXPECT_EQ( array_vertices_boundary[ idx ], 1 );
-         EXPECT_EQ( array_vertices_interior[ idx ], 0 );
+         array_vertices_boundary[ idx ] = 1;
+         array_vertices_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_vertices_boundary[ idx ], 0 );
-         EXPECT_EQ( array_vertices_interior[ idx ], 1 );
+         array_vertices_boundary[ idx ] = 0;
+         array_vertices_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_vertices_all[ idx ], 1 );
+      array_vertices_all[ idx ] = 1;
    }
+
+   // test traverser with host
+   testTraverser< QuadrilateralMeshEntityType >( meshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< EdgeMeshEntityType          >( meshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
+   testTraverser< VertexMeshEntityType        >( meshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 
    // test traverser with CUDA
 #ifdef HAVE_CUDA
@@ -221,9 +206,9 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    Pointers::SharedPointer< DeviceMesh > deviceMeshPointer;
    *deviceMeshPointer = *meshPointer;
 
-   testCudaTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
-   testCudaTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
-   testCudaTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
+   testTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
+   testTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 #endif
 }
 
@@ -289,12 +274,6 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
 
    ASSERT_TRUE( meshBuilder.build( *meshPointer ) );
 
-   // traversers for all test cases
-   Traverser< TestHexahedronMesh, HexahedronMeshEntityType > traverser_cells;
-   Traverser< TestHexahedronMesh, QuadrilateralMeshEntityType > traverser_faces;
-   Traverser< TestHexahedronMesh, EdgeMeshEntityType > traverser_edges;
-   Traverser< TestHexahedronMesh, VertexMeshEntityType > traverser_vertices;
-
    // arrays for all test cases
    Containers::Array< int > array_cells_boundary( meshPointer->template getEntitiesCount< 3 >() );
    Containers::Array< int > array_cells_interior( meshPointer->template getEntitiesCount< 3 >() );
@@ -329,86 +308,69 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    array_vertices_interior.setValue( 0 );
    array_vertices_all     .setValue( 0 );
 
-   // traverse for all test cases
-   traverser_cells.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_cells_boundary.getView() );
-   traverser_cells.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_cells_interior.getView() );
-   traverser_cells.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_cells_all.getView() );
-
-   traverser_faces.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_faces_boundary.getView() );
-   traverser_faces.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_faces_interior.getView() );
-   traverser_faces.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_faces_all.getView() );
-
-   traverser_edges.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_edges_boundary.getView() );
-   traverser_edges.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_edges_interior.getView() );
-   traverser_edges.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_edges_all.getView() );
-
-   traverser_vertices.template processBoundaryEntities< TestEntitiesProcessor >( meshPointer, array_vertices_boundary.getView() );
-   traverser_vertices.template processInteriorEntities< TestEntitiesProcessor >( meshPointer, array_vertices_interior.getView() );
-   traverser_vertices.template processAllEntities     < TestEntitiesProcessor >( meshPointer, array_vertices_all.getView() );
-
-   // test traversing cells
+   // set expected values
    for( IndexType k = 0; k < zSize; k++ )
    for( IndexType j = 0; j < ySize; j++ )
    for( IndexType i = 0; i < xSize; i++ )
    {
       const IndexType idx = k * xSize * ySize + j * xSize + i;
       if( k == 0 || k == zSize - 1 || j == 0 || j == ySize - 1 || i == 0 || i == xSize - 1 ) {
-         EXPECT_EQ( array_cells_boundary[ idx ], 1 );
-         EXPECT_EQ( array_cells_interior[ idx ], 0 );
+         array_cells_boundary[ idx ] = 1;
+         array_cells_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_cells_boundary[ idx ], 0 );
-         EXPECT_EQ( array_cells_interior[ idx ], 1 );
+         array_cells_boundary[ idx ] = 0;
+         array_cells_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_cells_all[ idx ], 1 );
+      array_cells_all[ idx ] = 1;
    }
-
-   // test traversing faces
    // (faces are not numbered systematically, so we just compare with isBoundaryEntity)
    for( IndexType idx = 0; idx < meshPointer->template getEntitiesCount< 2 >(); idx++ )
    {
       if( meshPointer->template isBoundaryEntity< 2 >( idx ) ) {
-         EXPECT_EQ( array_faces_boundary[ idx ], 1 );
-         EXPECT_EQ( array_faces_interior[ idx ], 0 );
+         array_faces_boundary[ idx ] = 1;
+         array_faces_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_faces_boundary[ idx ], 0 );
-         EXPECT_EQ( array_faces_interior[ idx ], 1 );
+         array_faces_boundary[ idx ] = 0;
+         array_faces_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_faces_all[ idx ], 1 );
+      array_faces_all[ idx ] = 1;
    }
-
-   // test traversing edges
    // (edges are not numbered systematically, so we just compare with isBoundaryEntity)
    for( IndexType idx = 0; idx < meshPointer->template getEntitiesCount< 1 >(); idx++ )
    {
       if( meshPointer->template isBoundaryEntity< 1 >( idx ) ) {
-         EXPECT_EQ( array_edges_boundary[ idx ], 1 );
-         EXPECT_EQ( array_edges_interior[ idx ], 0 );
+         array_edges_boundary[ idx ] = 1;
+         array_edges_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_edges_boundary[ idx ], 0 );
-         EXPECT_EQ( array_edges_interior[ idx ], 1 );
+         array_edges_boundary[ idx ] = 0;
+         array_edges_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_edges_all[ idx ], 1 );
+      array_edges_all[ idx ] = 1;
    }
-
-   // test traversing vertices
    for( IndexType k = 0; k <= zSize; k++ )
    for( IndexType j = 0; j <= ySize; j++ )
    for( IndexType i = 0; i <= xSize; i++ )
    {
       const IndexType idx = k * (xSize + 1) * (ySize + 1) + j * (xSize + 1) + i;
       if( k == 0 || k == zSize || j == 0 || j == ySize || i == 0 || i == xSize ) {
-         EXPECT_EQ( array_vertices_boundary[ idx ], 1 );
-         EXPECT_EQ( array_vertices_interior[ idx ], 0 );
+         array_vertices_boundary[ idx ] = 1;
+         array_vertices_interior[ idx ] = 0;
       }
       else {
-         EXPECT_EQ( array_vertices_boundary[ idx ], 0 );
-         EXPECT_EQ( array_vertices_interior[ idx ], 1 );
+         array_vertices_boundary[ idx ] = 0;
+         array_vertices_interior[ idx ] = 1;
       }
-      EXPECT_EQ( array_vertices_all[ idx ], 1 );
+      array_vertices_all[ idx ] = 1;
    }
+
+   // test traverser with host
+   testTraverser< HexahedronMeshEntityType    >( meshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< QuadrilateralMeshEntityType >( meshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
+   testTraverser< EdgeMeshEntityType          >( meshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
+   testTraverser< VertexMeshEntityType        >( meshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 
    // test traverser with CUDA
 #ifdef HAVE_CUDA
@@ -416,10 +378,10 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    Pointers::SharedPointer< DeviceMesh > deviceMeshPointer;
    *deviceMeshPointer = *meshPointer;
 
-   testCudaTraverser< HexahedronMeshEntityType    >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
-   testCudaTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
-   testCudaTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
-   testCudaTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
+   testTraverser< HexahedronMeshEntityType    >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
+   testTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
+   testTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 #endif
 }
 
