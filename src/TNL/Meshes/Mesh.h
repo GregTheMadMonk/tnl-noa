@@ -257,11 +257,6 @@ class Mesh
 
       void writeProlog( Logger& logger ) const;
 
-      DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* getDistributedMesh(void) const
-      {
-         return nullptr;
-      }
-
    protected:
       // Methods for the mesh initializer
       using StorageBaseType::getPoints;
