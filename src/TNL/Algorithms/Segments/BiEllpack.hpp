@@ -211,7 +211,7 @@ computeColumnSizes( const SizesHolder& segmentsSizes )
       if( strip == numberOfStrips - 1 )
       {
          IndexType segmentsCount = size - firstSegment;
-         while( !( segmentsCount > TNL::pow( 2, getLogWarpSize() - 1 - emptyGroups ) ) )
+         while( segmentsCount <= TNL::pow( 2, getLogWarpSize() - 1 - emptyGroups ) - 1 )
             emptyGroups++;
          for( IndexType group = groupBegin; group < groupBegin + emptyGroups; group++ )
             groupPointersView[ group ] = 0;
@@ -290,7 +290,7 @@ template< typename Device,
 void BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 verifyRowLengths( const SizesHolder& segmentsSizes )
 {
-   bool ok = true;
+   std::cerr << "segmentsSizes = " << segmentsSizes << std::endl;
    for( IndexType segmentIdx = 0; segmentIdx < this->getSize(); segmentIdx++ )
    {
       const IndexType strip = segmentIdx / getWarpSize();
@@ -303,6 +303,7 @@ verifyRowLengths( const SizesHolder& segmentsSizes )
       const IndexType groupsCount = details::BiEllpack< Index, Device, Organization, WarpSize >::getActiveGroupsCount( this->rowPermArray.getConstView(), segmentIdx );
       for( IndexType group = 0; group < groupsCount; group++ )
       {
+         std::cerr << "groupIdx = " << group << " groupLength = " << this->getGroupLength( strip, group ) << std::endl;
          for( IndexType i = 0; i < this->getGroupLength( strip, group ); i++ )
          {
             IndexType biElementPtr = elementPtr;
@@ -315,10 +316,8 @@ verifyRowLengths( const SizesHolder& segmentsSizes )
          }
       }
       if( segmentsSizes.getElement( segmentIdx ) > rowLength )
-         ok = false;
+         throw( std::logic_error( "Segments capacities verification failed." ) );
    }
-   if( ! ok )
-      throw( std::logic_error( "Segments capacities verification failed." ) );
 }
 
 template< typename Device,
@@ -349,7 +348,7 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
       this->groupPointers.template scan< Algorithms::ScanType::Exclusive >();
 
       this->verifyRowPerm( segmentsSizes );
-      this->verifyRowLengths( segmentsSizes );
+      //this->verifyRowLengths( segmentsSizes ); // TODO: I am not sure what this test is doing.
       this->storageSize =  getWarpSize() * this->groupPointers.getElement( strips * ( getLogWarpSize() + 1 ) );
    }
    else

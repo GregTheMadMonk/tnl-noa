@@ -53,4 +53,5 @@ using MatrixTypes = ::testing::Types
 
 #endif
 
+#include "SparseMatrixTest.h"
 #include "../main.h"

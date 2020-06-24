@@ -323,6 +323,8 @@ BiEllpackView< Device, Index, Organization, WarpSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   if( this->getStorageSize() == 0 )
+      return;
    if( std::is_same< DeviceType, Devices::Host >::value )
       for( IndexType segmentIdx = 0; segmentIdx < this->getSize(); segmentIdx++ )
       {
@@ -335,18 +337,27 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          IndexType localIdx( 0 );
          RealType aux( zero );
          bool compute( true );
+         //std::cerr << "segmentIdx = " << segmentIdx
+         //          << " stripIdx = " << stripIdx
+         //          << " inStripIdx = " << inStripIdx
+         //          << " groupIdx = " << groupIdx
+         //         << " groupsCount = " << groupsCount
+         //          << std::endl;
          for( IndexType group = 0; group < groupsCount && compute; group++ )
          {
             const IndexType groupSize = details::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getGroupSize( groupPointers, stripIdx, group );
             IndexType groupWidth = groupSize / groupHeight;
             const IndexType globalIdxBack = globalIdx;
+            //std::cerr << "  groupSize = " << groupSize
+            //          << " groupWidth = " << groupWidth
+            //          << std::endl;
             if( Organization == RowMajorOrder )
                globalIdx += inStripIdx * groupWidth;
             else
                globalIdx += inStripIdx;
             for( IndexType j = 0; j < groupWidth && compute; j++ )
             {
-               //std::cerr << "segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx 
+               //std::cerr << "    segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx 
                //         << " groupWidth = " << groupWidth << " groupHeight = " << groupHeight
                //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx 
                //          << " fetch = " << details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
@@ -364,22 +375,23 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      constexpr int BlockDim = 256;//getWarpSize();
+      constexpr int BlockDim = 256;
       dim3 cudaBlockSize = BlockDim;
       const IndexType stripsCount = roundUpDivision( last - first, getWarpSize() );
       const IndexType cudaBlocks = roundUpDivision( stripsCount * getWarpSize(), cudaBlockSize.x );
       const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
       IndexType sharedMemory = 0;
-      if( ! Organization )
+      if( Organization == ColumnMajorOrder )
          sharedMemory = cudaBlockSize.x * sizeof( RealType );
 
+      //printStructure( std::cerr );
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
       {
          dim3 cudaGridSize = Cuda::getMaxGridSize();
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
          details::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
-            <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
+            <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
          cudaThreadSynchronize();
          TNL_CHECK_CUDA_DEVICE;
@@ -450,7 +462,8 @@ printStructure( std::ostream& str ) const
       {
          const IndexType groupSize = groupPointers.getElement( groupIdx + 1 ) - groupPointers.getElement( groupIdx );
          const IndexType groupWidth = groupSize / groupHeight;
-         str << "\tGroup: " << groupIdx << " size = " << groupSize << " width = " << groupWidth << " height = " << groupHeight << std::endl;
+         str << "\tGroup: " << groupIdx << " size = " << groupSize << " width = " << groupWidth << " height = " << groupHeight 
+             << " offset = " << groupPointers.getElement( groupIdx ) << std::endl;
          groupHeight /= 2;
       }
    }
@@ -545,34 +558,69 @@ segmentsReductionKernel( IndexType gridIdx,
    if( warpStart >= last )
       return;
 
+   const int warpIdx = threadIdx.x / WarpSize;
+   const int warpsCount = BlockDim / WarpSize;
+   constexpr int groupsInStrip = 6; //getLogWarpSize() + 1;
+   IndexType firstGroupIdx = strip * groupsInStrip;
+   IndexType firstGroupInBlock = 8 * ( strip / 8 ) * groupsInStrip;
    IndexType groupHeight = getWarpSize();
-   IndexType firstGroupIdx = strip * ( getLogWarpSize() + 1 );
 
+   /////
+   // Allocate shared memory
    __shared__ RealType results[ BlockDim ];
    results[ threadIdx.x ] = zero;
-   __shared__ IndexType sharedGroupPointers[ 7 ]; // TODO: getLogWarpSize() + 1 ];
+   __shared__ IndexType sharedGroupPointers[ groupsInStrip * warpsCount + 1 ];
 
-   if( threadIdx.x <= getLogWarpSize() + 1 )
-      sharedGroupPointers[ threadIdx.x ] = this->groupPointers[ firstGroupIdx + threadIdx.x ];
+   /////
+   // Fetch group pointers to shared memory
+   //bool b1 = ( threadIdx.x <= warpsCount * groupsInStrip ); 
+   //bool b2 = ( firstGroupIdx + threadIdx.x % groupsInStrip < this->groupPointers.getSize() );
+   //printf( "tid = %d warpsCount * groupsInStrip = %d firstGroupIdx + threadIdx.x = %d this->groupPointers.getSize() = %d read = %d %d\n",
+   //   threadIdx.x, warpsCount * groupsInStrip,
+   //   firstGroupIdx + threadIdx.x,
+   //   this->groupPointers.getSize(), ( int ) b1, ( int ) b2 );
+   if( threadIdx.x <= warpsCount * groupsInStrip && 
+      firstGroupInBlock + threadIdx.x < this->groupPointers.getSize() )
+   {
+      sharedGroupPointers[ threadIdx.x ] = this->groupPointers[ firstGroupInBlock + threadIdx.x ];
+      //printf( " sharedGroupPointers[ %d ] = %d \n",
+      //   threadIdx.x, sharedGroupPointers[ threadIdx.x ] );
+   }
+   const IndexType sharedGroupOffset = warpIdx * groupsInStrip;
    __syncthreads();
 
+   /////
+   // Perform the reduction
    bool compute( true );
    if( Organization == RowMajorOrder )
    {
       for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
       {
-         IndexType groupBegin = sharedGroupPointers[ group ];
-         IndexType groupEnd = sharedGroupPointers[ group + 1 ];
+         IndexType groupBegin = sharedGroupPointers[ sharedGroupOffset + group ];
+         IndexType groupEnd = sharedGroupPointers[ sharedGroupOffset + group + 1 ];
+         TNL_ASSERT_LT( groupBegin, this->getStorageSize(), "" );
+         //if( groupBegin >= this->getStorageSize() )
+         //   printf( "tid = %d sharedGroupOffset + group + 1 = %d strip = %d group = %d groupBegin = %d groupEnd = %d this->getStorageSize() = %d\n", 
+         //      threadIdx.x, sharedGroupOffset + group + 1, strip, group, groupBegin, groupEnd, this->getStorageSize() );
+         TNL_ASSERT_LT( groupEnd, this->getStorageSize(), "" );
          if( groupEnd - groupBegin > 0 )
          {
-               if( inWarpIdx < groupHeight )
+            if( inWarpIdx < groupHeight )
+            {
+               const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
+               IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
+               for( IndexType i = 0; i < groupWidth && compute; i++ )
                {
-                  const IndexType groupWidth = ( groupEnd - groupBegin ) / groupHeight;
-                  IndexType globalIdx = groupBegin + inWarpIdx * groupWidth;
-                  for( IndexType i = 0; i < groupWidth && compute; i++ )
-                     results[ threadIdx.x ] = reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+                  TNL_ASSERT_LT( globalIdx, this->getStorageSize(), "" );
+                  results[ threadIdx.x ] = reduction( results[ threadIdx.x ], fetch( globalIdx++, compute ) );
+                  //if( strip == 1 )
+                  //  printf( "tid = %d i = %d groupHeight = %d groupWidth = %d globalIdx = %d fetch = %f results = %f \n",
+                  //      threadIdx.x, i,
+                  //      groupHeight, groupWidth,
+                  //      globalIdx, fetch( globalIdx, compute ), results[ threadIdx.x ] );
                }
             }
+         }
          groupHeight >>= 1;
       }
    }
@@ -581,8 +629,10 @@ segmentsReductionKernel( IndexType gridIdx,
       RealType* temp = Cuda::getSharedMemory< RealType >();
       for( IndexType group = 0; group < getLogWarpSize() + 1; group++ )
       {
-         IndexType groupBegin = sharedGroupPointers[ group ];
-         IndexType groupEnd = sharedGroupPointers[ group + 1 ];
+         IndexType groupBegin = sharedGroupPointers[ sharedGroupOffset + group ];
+         IndexType groupEnd = sharedGroupPointers[ sharedGroupOffset + group + 1 ];
+         //if( threadIdx.x < 36 && strip == 1 )
+         //   printf( " tid = %d strip = %d group = %d groupBegin = %d groupEnd = %d \n", threadIdx.x, strip, group, groupBegin, groupEnd );
          if( groupEnd - groupBegin > 0 )
          {
             temp[ threadIdx.x ] = zero;
@@ -590,6 +640,8 @@ segmentsReductionKernel( IndexType gridIdx,
             while( globalIdx < groupEnd )
             {
                temp[ threadIdx.x ] = reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
+               //if( strip == 1 )
+               //   printf( "tid %d fetch %f temp %f \n", threadIdx.x, fetch( globalIdx, compute ), temp[ threadIdx.x ] );               
                globalIdx += getWarpSize();
             }
             // TODO: reduction via templates
@@ -628,6 +680,10 @@ segmentsReductionKernel( IndexType gridIdx,
    if( warpStart + inWarpIdx >= last )
       return;
 
+   /////
+   // Store the results
+   //if( strip == 1 )
+   //   printf( "Adding %f at %d \n", results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( blockDim.x - 1 ) ], warpStart + inWarpIdx );
    keeper( warpStart + inWarpIdx, results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( blockDim.x - 1 ) ] );
 }
 #endif
