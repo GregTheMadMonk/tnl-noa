@@ -83,7 +83,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 # set default build options
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wno-unused-local-typedefs -Wno-unknown-pragmas" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" )
 # pass -rdynamic only in Debug mode
@@ -109,13 +109,21 @@ add_compile_options(
    "$<$<CONFIG:RELEASE>:-march=native;-mtune=native>"
 )
 
+if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+   # disable some unimportant warnings
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs -Wno-unknown-pragmas" )
+elseif( CMAKE_CXX_COMPILER_ID STREQUAL "Intel" )
+   # Intel's -Wall is very minimalistic, so add -w3 and disable some specific warnings
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w3 -diag-disable:remark" )
+endif()
+
 # disable GCC's infamous "maybe-uninitialized" warning (it produces mostly false positives)
 if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized" )
 endif()
 
 # disable false Clang warning: https://stackoverflow.com/q/57645872
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-self-assign-overloaded" )
 endif()
 
@@ -135,9 +143,9 @@ endif()
 # force colorized output in continuous integration
 if( DEFINED ENV{CI_JOB_NAME} OR ${CMAKE_GENERATOR} STREQUAL "Ninja" )
    message(STATUS "Continuous integration or Ninja detected -- forcing compilers to produce colorized output.")
-   if( CXX_COMPILER_NAME MATCHES "clang" )
+   if( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics" )
-   else()
+   elseif( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color" )
    endif()
 endif()
