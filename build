@@ -14,9 +14,9 @@ INSTALL="no"
 PREFIX=${HOME}/.local
 CMAKE="cmake"
 CMAKE_ONLY="no"
+COMPILER="gcc"
 DCMTK_DIR="/usr/include/dcmtk"
 
-WITH_CLANG="no"
 WITH_MPI="yes"
 WITH_CUDA="yes"
 WITH_CUDA_ARCH="auto"
@@ -48,6 +48,7 @@ for option in "$@"; do
       echo "   --prefix=PATH                         Prefix for the installation directory. '$HOME/local' by default."
       echo "   --cmake=CMAKE                         Path to the cmake command. '$CMAKE' by default."
       echo "   --cmake-only=yes/no                   Run only the cmake command, don't actually build anything. '$CMAKE_ONLY' by default."
+      echo "   --compiler=gcc/clang/icc              Selects the compiler to use. '$COMPILER' by default."
       echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir. '$DCMTK_DIR' by default."
       echo "   --with-mpi=yes/no                     Enables MPI. '$WITH_MPI' by default (OpenMPI required)."
       echo "   --with-cuda=yes/no                    Enables CUDA. '$WITH_CUDA' by default (CUDA Toolkit is required)."
@@ -78,8 +79,8 @@ for option in "$@"; do
       --prefix=*                       ) PREFIX="${option#*=}" ;;
       --cmake=*                        ) CMAKE="${option#*=}" ;;
       --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
+      --compiler=*                     ) COMPILER="${option#*=}" ;;
       --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
-      --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
       --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
       --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
       --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
@@ -103,13 +104,21 @@ for option in "$@"; do
    esac
 done
 
-if [[ ${WITH_CLANG} == "yes" ]]; then
+if [[ "$COMPILER" == "gcc" ]]; then
+   export CXX=g++
+   export CC=gcc
+   export CUDA_HOST_COMPILER=g++
+elif [[ "$COMPILER" == "clang" ]]; then
    export CXX=clang++
    export CC=clang
    export CUDA_HOST_COMPILER=clang++
+elif [[ "$COMPILER" == "icc" ]]; then
+   export CXX=icpc
+   export CC=icc
+   export CUDA_HOST_COMPILER=icpc
 else
-   export CXX=g++
-   export CC=gcc
+   echo "Error: the compiler '$COMPILER' is not supported. The only options are 'gcc', 'clang' and 'icc'." >&2
+   exit 1
 fi
 
 if [[ ! $(command -v cmake) ]]; then
