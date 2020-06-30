@@ -6,16 +6,15 @@ set -e
 # get the root directory (i.e. the directory where this script is located)
 ROOT_DIR="$( builtin cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-PREFIX=${HOME}/.local
-INSTALL="no"
-DCMTK_DIR="/usr/include/dcmtk"
 BUILD=""
 BUILD_JOBS=""
-CMAKE="cmake"
-CMAKE_ONLY="no"
-HELP="no"
 VERBOSE=""
 OFFLINE_BUILD="no"
+INSTALL="no"
+PREFIX=${HOME}/.local
+CMAKE="cmake"
+CMAKE_ONLY="no"
+DCMTK_DIR="/usr/include/dcmtk"
 
 WITH_CLANG="no"
 WITH_MPI="yes"
@@ -36,72 +35,73 @@ WITH_TOOLS="yes"
 WITH_BENCHMARKS="yes"
 WITH_CI_FLAGS="no"
 
-for option in "$@"
-do
-    case $option in
-        --prefix=*                       ) PREFIX="${option#*=}" ;;
-        --install=*                      ) INSTALL="${option#*=}" ;;
-        --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
-        --build=*                        ) BUILD="${option#*=}" ;;
-        --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
-        --cmake=*                        ) CMAKE="${option#*=}" ;;
-        --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
-        --verbose                        ) VERBOSE="VERBOSE=1" ;;
-        --help                           ) HELP="yes" ;;
-        --offline-build                  ) OFFLINE_BUILD="yes" ;;
-        --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
-        --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
-        --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
-        --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
-        --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
-        --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
-        --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
-        --with-matrix-tests=*            ) WITH_MATRIX_TESTS="${option#*=}" ;;
-        --run-tests=*                    ) RUN_TESTS="${option#*=}" ;;
-        --tests-jobs=*                   ) TESTS_JOBS="${option#*=}" ;;
-        --with-profiling=*               ) WITH_PROFILING="${option#*=}" ;;
-        --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
-        --with-doc=*                     ) WITH_DOC="${option#*=}" ;;
-        --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
-        --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
-        --with-benchmarks=*              ) WITH_BENCHMARKS="${option#*=}" ;;
-        --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
-        --with-ci-flags=*                ) WITH_CI_FLAGS="${option#*=}" ;;
-        *                                )
-           echo "Unknown option ${option}. Use --help for more information."
-           exit 1 ;;
-    esac
+for option in "$@"; do
+   if [[ "$option" == "--help" ]]; then
+      echo "TNL build options:"
+      echo ""
+      echo "   --help                                Write this help list and exit."
+      echo "   --build=Debug/Release                 Build type."
+      echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
+      echo "   --verbose                             Enables verbose build."
+      echo "   --offline-build=yes/no                Disables online updates during the build. '$OFFLINE_BUILD' by default."
+      echo "   --install=yes/no                      Enables the installation of TNL files. '$INSTALL' by default."
+      echo "   --prefix=PATH                         Prefix for the installation directory. '$HOME/local' by default."
+      echo "   --cmake=CMAKE                         Path to the cmake command. '$CMAKE' by default."
+      echo "   --cmake-only=yes/no                   Run only the cmake command, don't actually build anything. '$CMAKE_ONLY' by default."
+      echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir. '$DCMTK_DIR' by default."
+      echo "   --with-mpi=yes/no                     Enables MPI. '$WITH_MPI' by default (OpenMPI required)."
+      echo "   --with-cuda=yes/no                    Enables CUDA. '$WITH_CUDA' by default (CUDA Toolkit is required)."
+      echo "   --with-cuda-arch=all/auto/3.0/3.5/... Chooses CUDA architecture. '$WITH_CUDA_ARCH' by default."
+      echo "   --with-openmp=yes/no                  Enables OpenMP. '$WITH_OPENMP' by default."
+      echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. '$WITH_GMP' by default."
+      echo "   --with-tests=yes/no                   Enables compilation of unit tests. '$WITH_TESTS' by default."
+      echo "   --run-tests=yes/no                    Runs unit tests if they were compiled. '$RUN_TESTS' by default."
+      echo "   --tests-jobs=NUM                      Number of processes to be used for the unit tests. It is $TEST_JOBS by default."
+      echo "   --with-profiling=yes/no               Enables code profiling compiler flags. '$WITH_PROFILING' by default."
+      echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests (lcov is required). '$WITH_COVERAGE' by default."
+      echo "   --with-doc=yes/no                     Generate the documentation. '$WITH_DOC' by default."
+      echo "   --with-examples=yes/no                Compile the 'src/Examples' directory. '$WITH_EXAMPLES' by default."
+      echo "   --with-python=yes/no                  Compile the Python bindings. '$WITH_PYTHON' by default."
+      echo "   --with-tools=yes/no                   Compile the 'src/Tools' directory. '$WITH_TOOLS' by default."
+      echo "   --with-benchmarks=yes/no              Compile the 'src/Benchmarks' directory. '$WITH_BENCHMARKS' by default."
+      exit 1
+   fi
 done
 
-if [[ ${HELP} == "yes" ]]; then
-    echo "TNL build options:"
-    echo ""
-    echo "   --build=Debug/Release                 Build type."
-    echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to the number of available CPU cores by default."
-    echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
-    echo "   --install=yes/no                      Enables the installation of TNL files."
-    echo "   --offline-build=yes/no                Disables online updates during the build. 'no' by default."
-    echo "   --with-mpi=yes/no                     Enables MPI. 'yes' by default (OpenMPI required)."
-    echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
-    echo "   --with-cuda-arch=all/auto/3.0/3.5/... Chooses CUDA architecture. 'auto' by default."
-    echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
-    echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. 'no' by default."
-    echo "   --with-tests=yes/no                   Enables compilation of unit tests. 'yes' by default."
-    echo "   --run-tests=yes/no                    Runs unit tests if they were compiled. 'yes' by default."
-    echo "   --tests-jobs=NUM                      Number of processes to be used for the unit tests. It is 4 by default."
-    echo "   --with-profiling=yes/no               Enables code profiling compiler falgs. 'no' by default."
-    echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests. 'no' by default (lcov is required)."
-    echo "   --with-doc=yes/no                     Generate the documentation. 'yes' by default."
-    echo "   --with-examples=yes/no                Compile the 'src/Examples' directory. 'yes' by default."
-    echo "   --with-tools=yes/no                   Compile the 'src/Tools' directory. 'yes' by default."
-    echo "   --with-python=yes/no                  Compile the Python bindings. 'yes' by default."
-    echo "   --with-benchmarks=yes/no              Compile the 'src/Benchmarks' directory. 'yes' by default."
-    echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
-    echo "   --verbose                             It enables verbose build."
-    echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir."
-    echo "   --help                                Write this help."
-    exit 1
-fi
+for option in "$@"; do
+   case "$option" in
+      --build=*                        ) BUILD="${option#*=}" ;;
+      --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
+      --verbose                        ) VERBOSE="VERBOSE=1" ;;
+      --offline-build                  ) OFFLINE_BUILD="yes" ;;
+      --install=*                      ) INSTALL="${option#*=}" ;;
+      --prefix=*                       ) PREFIX="${option#*=}" ;;
+      --cmake=*                        ) CMAKE="${option#*=}" ;;
+      --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
+      --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
+      --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
+      --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
+      --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
+      --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
+      --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
+      --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
+      --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
+      --with-matrix-tests=*            ) WITH_MATRIX_TESTS="${option#*=}" ;;
+      --run-tests=*                    ) RUN_TESTS="${option#*=}" ;;
+      --tests-jobs=*                   ) TESTS_JOBS="${option#*=}" ;;
+      --with-profiling=*               ) WITH_PROFILING="${option#*=}" ;;
+      --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
+      --with-doc=*                     ) WITH_DOC="${option#*=}" ;;
+      --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
+      --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
+      --with-benchmarks=*              ) WITH_BENCHMARKS="${option#*=}" ;;
+      --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
+      --with-ci-flags=*                ) WITH_CI_FLAGS="${option#*=}" ;;
+      *                                )
+         echo "Unknown option ${option}. Use --help for more information." >&2
+         exit 1
+   esac
+done
 
 if [[ ${WITH_CLANG} == "yes" ]]; then
    export CXX=clang++
