@@ -6,7 +6,6 @@ set -e
 # get the root directory (i.e. the directory where this script is located)
 ROOT_DIR="$( builtin cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-TARGET=TNL
 PREFIX=${HOME}/.local
 INSTALL="no"
 DCMTK_DIR="/usr/include/dcmtk"
@@ -161,7 +160,7 @@ else
    last_cmake_command=""
 fi
 if [[ ! -f "$check_file" ]] || [[ "$last_cmake_command" != "${cmake_command[@]}" ]]; then
-   echo "Configuring ${BUILD} $TARGET ..."
+   echo "Configuring ${BUILD} TNL ..."
    "${cmake_command[@]}"
    echo -n "${cmake_command[@]}" > ".cmake_command"
 fi
@@ -191,10 +190,10 @@ else
 fi
 
 if [[ -n ${BUILD_JOBS} ]]; then
-   echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+   echo "Building ${BUILD} TNL using $BUILD_JOBS processors ..."
 else
    # number of processors is unknown - it is encoded in $MAKEFLAGS from parent environment
-   echo "Building ${BUILD} $TARGET ..."
+   echo "Building ${BUILD} TNL ..."
 fi
 
 if [[ "$INSTALL" == "yes" ]]; then
