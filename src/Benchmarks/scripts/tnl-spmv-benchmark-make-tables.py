@@ -62,12 +62,11 @@ df.sort_index(axis=1, inplace=True)
 df.drop(columns=('BiEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('BiEllpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('CSR', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy Adaptive', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy Light', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy Scalar', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy LightWithoutAtomic', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy MultiVector', 'CPU','speedup'), axis=1, inplace=True )
-df.drop(columns=('CSR Legacy Vector', 'CPU','speedup'), axis=1, inplace=True )
+#df.drop(columns=('CSR Legacy Adaptive', 'CPU','speedup'), axis=1, inplace=True )
+#df.drop(columns=('CSR Legacy Light', 'CPU','speedup'), axis=1, inplace=True )
+#df.drop(columns=('CSR Legacy Scalar', 'CPU','speedup'), axis=1, inplace=True )
+#df.drop(columns=('CSR Legacy Stream', 'CPU','speedup'), axis=1, inplace=True )
+#df.drop(columns=('CSR Legacy Vector', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('ChunkedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack', 'CPU','speedup'), axis=1, inplace=True )
 df.drop(columns=('Ellpack Legacy', 'CPU','speedup'), axis=1, inplace=True )
@@ -81,27 +80,27 @@ df.drop(columns=('SlicedEllpack Legacy', 'CPU','speedup'), axis=1, inplace=True 
 
 print( "Computing speed-up of formats...")
 # Add speedup compared to CSR and cuSparse
-df["BiEllpack Legacy",      "CPU", "CSR speedup"]      = df["BiEllpack Legacy",      "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["BiEllpack Legacy",      "GPU", "cuSparse speedup"] = df["BiEllpack Legacy",      "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["BiEllpack",             "CPU", "CSR speedup"]      = df["BiEllpack",             "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["BiEllpacky",            "GPU", "cuSparse speedup"] = df["BiEllpack",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR",                   "GPU", "cuSparse speedup"] = df["CSR",                   "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy Adaptive",   "GPU", "cuSparse speedup"] = df["CSR Legacy Adaptive",   "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy Light",      "GPU", "cuSparse speedup"] = df["CSR Legacy Light",      "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy Scalar",     "GPU", "cuSparse speedup"] = df["CSR Legacy Scalar",     "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy LightWithoutAtomic","GPU", "cuSparse speedup"] = df["CSR Legacy LightWithoutAtomic","GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy MultiVector","GPU", "cuSparse speedup"] = df["CSR Legacy MultiVector","GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["CSR Legacy Vector",     "GPU", "cuSparse speedup"] = df["CSR Legacy Vector",     "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["ChunkedEllpack Legacy", "CPU", "CSR speedup"]      = df["ChunkedEllpack Legacy", "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["ChunkedEllpack Legacy", "GPU", "cuSparse speedup"] = df["ChunkedEllpack Legacy", "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["Ellpack Legacy",        "CPU", "CSR speedup"]      = df["Ellpack Legacy",        "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["Ellpack Legacy",        "GPU", "cuSparse speedup"] = df["Ellpack Legacy",        "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["Ellpack",               "CPU", "CSR speedup"]      = df["Ellpack",               "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["Ellpack",               "GPU", "cuSparse speedup"] = df["Ellpack",               "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["SlicedEllpack Legacy",  "CPU", "CSR speedup"]      = df["SlicedEllpack Legacy",  "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["SlicedEllpack Legacy",  "GPU", "cuSparse speedup"] = df["SlicedEllpack Legacy",  "GPU", "time"] / df["cuSparse", "GPU", "time"]
-df["SlicedEllpack",         "CPU", "CSR speedup"]      = df["SlicedEllpack",         "CPU", "time"] / df["CSR",      "CPU", "time"]
-df["SlicedEllpack",         "GPU", "cuSparse speedup"] = df["SlicedEllpack",         "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["BiEllpack Legacy",              "CPU", "CSR speedup"]      = df["BiEllpack Legacy",              "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["BiEllpack Legacy",              "GPU", "cuSparse speedup"] = df["BiEllpack Legacy",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["BiEllpack",                     "CPU", "CSR speedup"]      = df["BiEllpack",                     "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["BiEllpacky",                    "GPU", "cuSparse speedup"] = df["BiEllpack",                     "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR",                           "GPU", "cuSparse speedup"] = df["CSR",                           "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Adaptive",           "GPU", "cuSparse speedup"] = df["CSR Legacy Adaptive",           "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy LightWithoutAtomic", "GPU", "cuSparse speedup"] = df["CSR Legacy LightWithoutAtomic", "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Scalar",             "GPU", "cuSparse speedup"] = df["CSR Legacy Scalar",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Vector",             "GPU", "cuSparse speedup"] = df["CSR Legacy Vector",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy MultiVector",        "GPU", "cuSparse speedup"] = df["CSR Legacy MultiVector",        "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["ChunkedEllpack Legacy",         "CPU", "CSR speedup"]      = df["ChunkedEllpack Legacy",         "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["ChunkedEllpack Legacy",         "GPU", "cuSparse speedup"] = df["ChunkedEllpack Legacy",         "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["Ellpack Legacy",                "CPU", "CSR speedup"]      = df["Ellpack Legacy",                "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["Ellpack Legacy",                "GPU", "cuSparse speedup"] = df["Ellpack Legacy",                "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["Ellpack",                       "CPU", "CSR speedup"]      = df["Ellpack",                       "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["Ellpack",                       "GPU", "cuSparse speedup"] = df["Ellpack",                       "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["SlicedEllpack Legacy",          "CPU", "CSR speedup"]      = df["SlicedEllpack Legacy",          "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["SlicedEllpack Legacy",          "GPU", "cuSparse speedup"] = df["SlicedEllpack Legacy",          "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["SlicedEllpack",                 "CPU", "CSR speedup"]      = df["SlicedEllpack",                 "CPU", "time"] / df["CSR",      "CPU", "time"]
+df["SlicedEllpack",                 "GPU", "cuSparse speedup"] = df["SlicedEllpack",                 "GPU", "time"] / df["cuSparse", "GPU", "time"]
 
 # Add speedup compared to legacy formats
 df["CSR",                   "GPU", "Legacy speedup"]   = df["CSR",                   "GPU", "time"] / df["CSR Legacy Scalar",    "GPU", "time"]
@@ -120,12 +119,12 @@ df.to_html("log.html")
 # extract columns of reference formats on GPU
 print( "Preparing data for graph analysis..." )
 df['cuSparse-bandwidth'                        ] = df[ 'cuSparse','GPU','bandwidth']
-#df['csr-legacy-adaptive-bandwidth'             ] = df[ 'CSR Legacy Adaptive','GPU','bandwidth']
-#df['csr-legacy-light-bandwidth'                ] = df[ 'CSR Legacy Light','GPU','bandwidth']
-#df['csr-legacy-light-without-atomic-bandwidth' ] = df[ 'CSR Legacy LightWithoutAtomic','GPU','bandwidth']
-#df['csr-legacy-scalar-bandwidth'               ] = df[ 'CSR Legacy Scalar','GPU','bandwidth']
-#df['csr-legacy-vector-bandwidth'               ] = df[ 'CSR Legacy Vector','GPU','bandwidth']
-#df['csr-legacy-multi-vector-bandwidth'         ] = df[ 'CSR Legacy MultiVector','GPU','bandwidth']
+df['csr-legacy-adaptive-bandwidth'             ] = df[ 'CSR Legacy Adaptive','GPU','bandwidth']
+df['csr-legacy-light-bandwidth'                ] = df[ 'CSR Legacy Light','GPU','bandwidth']
+df['csr-legacy-light-without-atomic-bandwidth' ] = df[ 'CSR Legacy LightWithoutAtomic','GPU','bandwidth']
+df['csr-legacy-scalar-bandwidth'               ] = df[ 'CSR Legacy Scalar','GPU','bandwidth']
+df['csr-legacy-vector-bandwidth'               ] = df[ 'CSR Legacy Vector','GPU','bandwidth']
+df['csr-legacy-multi-vector-bandwidth'         ] = df[ 'CSR Legacy MultiVector','GPU','bandwidth']
 df['ellpack-bandwidth'                         ] = df[ 'Ellpack','GPU','bandwidth']
 df['sliced-ellpack-bandwidth'                  ] = df[ 'SlicedEllpack','GPU','bandwidth']
 df['chunked-ellpack-bandwidth'                 ] = df[ 'ChunkedEllpack','GPU','bandwidth']
@@ -134,12 +133,12 @@ df['bi-ellpack-bandwidth'                      ] = df[ 'BiEllpack','GPU','bandwi
 # sort by cuSparse
 df.sort_values(by=["cuSparse-bandwidth"],inplace=True,ascending=False)
 cuSparse_list = df['cuSparse-bandwidth'].tolist()
-#cuSparse_csr_legacy_adaptive_gpu_list               = df[ "CSR Legacy Adaptive", "GPU", "bandwidth"].tolist();
-#cuSparse_csr_legacy_light_gpu_list                  = df[ "CSR Legacy Light", "GPU", "bandwidth"].tolist();
-#cuSparse_csr_legacy_light_without_atomic_gpu_list   = df[ "CSR Legacy LightWithoutAtomic", "GPU", "bandwidth"].tolist();
-#cuSparse_csr_legacy_scalar_gpu_list                 = df[ "CSR Legacy Scalar", "GPU", "bandwidth"].tolist();
-#cuSparse_csr_legacy_vector_gpu_list                 = df[ "CSR Legacy Vector", "GPU", "bandwidth"].tolist();
-#cuSparse_csr_legacy_multivector_gpu_list            = df[ "CSR Legacy MultiVector", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_adaptive_gpu_list               = df[ "CSR Legacy Adaptive", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light_gpu_list                  = df[ "CSR Legacy Light", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light_without_atomic_gpu_list   = df[ "CSR Legacy LightWithoutAtomic", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_scalar_gpu_list                 = df[ "CSR Legacy Scalar", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_vector_gpu_list                 = df[ "CSR Legacy Vector", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_multivector_gpu_list            = df[ "CSR Legacy MultiVector", "GPU", "bandwidth"].tolist();
 cuSparse_ellpack_gpu_list                           = df[ "Ellpack", "GPU", "bandwidth"].tolist();
 cuSparse_ellpack_legacy_gpu_list                    = df[ "Ellpack Legacy", "GPU", "bandwidth"].tolist();
 cuSparse_sliced_ellpack_gpu_list                    = df[ "SlicedEllpack", "GPU", "bandwidth"].tolist();
@@ -178,12 +177,12 @@ cuSparse_file = open( "cusparse.gplt", "w" )
 i = 0
 for x in cuSparse_list:
    if str( x ) != "nan":
-      if ( #str( cuSparse_csr_legacy_adaptive_gpu_list[ i ] ) != "nan" and
-         #str( cuSparse_csr_legacy_light_gpu_list[ i ] ) != "nan" and 
-         #str( cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ] ) != "nan" and 
-         #str( cuSparse_csr_legacy_scalar_gpu_list[ i ] ) != "nan" and 
-         #str( cuSparse_csr_legacy_vector_gpu_list[ i ] ) != "nan" and 
-         #str( cuSparse_csr_legacy_multivector_gpu_list[ i ] ) != "nan" and 
+      if ( str( cuSparse_csr_legacy_adaptive_gpu_list[ i ] ) != "nan" and
+         str( cuSparse_csr_legacy_light_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_scalar_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_vector_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_multivector_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_ellpack_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_ellpack_legacy_gpu_list[ i ] ) != "nan" and
          str( cuSparse_sliced_ellpack_gpu_list[ i ] ) != "nan" and 
@@ -193,12 +192,12 @@ for x in cuSparse_list:
          str( cuSparse_bi_ellpack_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_bi_ellpack_legacy_gpu_list[ i ] ) != "nan" ):
             cuSparse_file.write( f"{i+1} {x} " )                                                                                        # 1 2
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_adaptive_gpu_list[ i ]} " )                                                     # 3
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_light_gpu_list[ i ]} " )                                                        # 4
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ]} " )                                         # 5
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_scalar_gpu_list[ i ]} " )                                                       # 6
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_vector_gpu_list[ i ]} " )                                                       # 7
-            cuSparse_file.write( f"0 " ) #{cuSparse_csr_legacy_multivector_gpu_list[ i ]} " )                                                  # 8
+            cuSparse_file.write( f"{cuSparse_csr_legacy_adaptive_gpu_list[ i ]} " )                                                     # 3
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ]} " )                                         # 5
+            cuSparse_file.write( f"{cuSparse_csr_legacy_scalar_gpu_list[ i ]} " )                                                       # 6
+            cuSparse_file.write( f"{cuSparse_csr_legacy_vector_gpu_list[ i ]} " )                                                       # 7
+            cuSparse_file.write( f"{cuSparse_csr_legacy_multivector_gpu_list[ i ]} " )                                                  # 8
             cuSparse_file.write( f"{cuSparse_ellpack_gpu_list[ i ]} {cuSparse_ellpack_legacy_gpu_list[ i ]} " )                         # 9 10
             cuSparse_file.write( f"{cuSparse_sliced_ellpack_gpu_list[ i ]} {cuSparse_sliced_ellpack_legacy_gpu_list[ i ]} " )           # 11 12
             cuSparse_file.write( f"{cuSparse_chunked_ellpack_gpu_list[ i ]} {cuSparse_chunked_ellpack_legacy_gpu_list[ i ]} " )          # 13 14
@@ -252,36 +251,36 @@ set grid
 set xlabel 'Matrix'
 set xtics 250
 set ylabel 'Bandwidth GB/sec'
-#set output 'csr-legacy-adaptive-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:3 title 'CSR Legacy Adaptive' with lines linewidth 0.5 lt rgb 'green',                    
-#set output 'csr-legacy-light-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:4 title 'CSR Legacy Light' with lines linewidth 0.5 lt rgb 'green',                    
-#set output 'csr-legacy-light-without-atomic-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:5 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:5 title 'CSR Legacy LightWithoutAtomic' with lines linewidth 0.5 lt rgb 'green',                    
-#set output 'csr-legacy-scalar-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:6 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:6 title 'CSR Legacy Scalar' with lines linewidth 0.5 lt rgb 'green',                    
-#set output 'csr-legacy-vector-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:7 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:7 title 'CSR Legacy Vector' with lines linewidth 0.5 lt rgb 'green',                    
-#set output 'csr-legacy-multivector-vs-cusparse.eps'
-#plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
-#     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
-#     'cusparse.gplt' using 1:8 title '' with dots linewidth 2 lt rgb 'green',                                   \
-#     'cusparse.gplt' using 1:8 title 'CSR Legacy MultiVector' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-adaptive-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:3 title 'CSR Legacy Adaptive' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light-without-atomic-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:5 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:5 title 'CSR Legacy LightWithoutAtomic' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-scalar-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:6 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:6 title 'CSR Legacy Scalar' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-vector-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:7 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:7 title 'CSR Legacy Vector' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-multivector-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:8 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:8 title 'CSR Legacy MultiVector' with lines linewidth 0.5 lt rgb 'green',                    
 set output 'ellpack-vs-cusparse.eps'
 plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
      'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
@@ -337,12 +336,12 @@ print( "Executing Gnuplot ..." )
 os.system( "gnuplot gnuplot.gplt" )
 
 print( "Converting files to PDF ..." )
-#os.system( "epstopdf --autorotate All csr-legacy-adaptive-vs-cusparse.eps" )
-#os.system( "epstopdf --autorotate All csr-legacy-light-vs-cusparse.eps" )
-#os.system( "epstopdf --autorotate All csr-legacy-light-without-atomic-vs-cusparse.eps" )
-#os.system( "epstopdf --autorotate All csr-legacy-scalar-vs-cusparse.eps" )
-#os.system( "epstopdf --autorotate All csr-legacy-vector-vs-cusparse.eps" )
-#os.system( "epstopdf --autorotate All csr-legacy-multivector-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-adaptive-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light-without-atomic-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-scalar-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-vector-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-multivector-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All ellpack-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All sliced-ellpack-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All chunked-ellpack-vs-cusparse.eps" )
