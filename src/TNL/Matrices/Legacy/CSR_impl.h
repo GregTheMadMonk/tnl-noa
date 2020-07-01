@@ -817,9 +817,7 @@ void SpMVCSRAdaptive( const Real *inVector,
                       const Index sharedPerWarp,
                       const Index maxPerWarp)
 {
-   // extern __shared__ Real shared_res[];
-   constexpr Index SHARED = 49152/sizeof(Real);
-   __shared__ Real shared_res[SHARED];
+   __shared__ Real shared_res[49152/sizeof(Real)];
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index blockIdx = index / warpSize;
    Real result = 0;
@@ -878,7 +876,6 @@ void SpMVCSRAdaptive( const Real *inVector,
    }
    else { // too long row
       /////////////////////////////////////* CSR DYNAMIC VECTOR *//////////////
-      constexpr Index THREADS_PER_BLOCK = 1024;
       constexpr Index ELEMENTS_PER_WARP = 1024;
       constexpr Index WARPS_PER_BLOCK = ELEMENTS_PER_WARP / warpSize;
       /* Number of warps we need.
@@ -888,7 +885,7 @@ void SpMVCSRAdaptive( const Real *inVector,
 
       /* Execute a lot of CSR Vector */
       if (laneID == 0) {
-         spmvCSRVectorHelper<Real, Index, warpSize> <<<blocks, THREADS_PER_BLOCK>>>(
+         spmvCSRVectorHelper<Real, Index, warpSize> <<<blocks, 1024>>>(
                      inVector,
                      columnIndexes,
                      values,
@@ -1127,10 +1124,10 @@ void SpMVCSRScalarPrepare( const Real *inVector,
                            const Real* values,
                            const Index rows,
                            const Index getColumns) {
-   const Index threads = 256;
+   const Index threads = 1024; // block size
    size_t neededThreads = rows;
    Index blocks;
-
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1163,10 +1160,10 @@ void SpMVCSRVectorPrepare( const Real *inVector,
                            const Real* values,
                            const Index rows,
                            const Index getColumns) {
-   const Index threads = 256;
+   const Index threads = 1024; // block size
    size_t neededThreads = rows * warpSize;
    Index blocks;
-
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1200,7 +1197,7 @@ void SpMVCSRLightPrepare( const Real *inVector,
                           const Index valuesSize,
                           const Index rows,
                           const Index getColumns) {
-   const Index threads = 256;
+   const Index threads = 1024; // block size
    Index blocks, groupSize;
    /* Copy rowCnt to GPU */
    unsigned rowCnt = 0;
@@ -1222,7 +1219,7 @@ void SpMVCSRLightPrepare( const Real *inVector,
       groupSize = 32;
 
    size_t neededThreads = groupSize * rows;
-
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1232,7 +1229,19 @@ void SpMVCSRLightPrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      SpMVCSRLight<Real, Index, warpSize><<<blocks, threads>>>(
+      if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
+         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+               inVector,
+               outVector,
+               rowPointers,
+               columnIndexes,
+               values,
+               rows,
+               getColumns,
+               grid
+         );
+      } else {
+         SpMVCSRLight<Real, Index, warpSize><<<blocks, threads>>>(
                inVector,
                outVector,
                rowPointers,
@@ -1243,7 +1252,8 @@ void SpMVCSRLightPrepare( const Real *inVector,
                groupSize,
                grid,
                kernelRowCnt
-      );
+         );
+      }
    }
 
    cudaFree(kernelRowCnt);
@@ -1260,7 +1270,7 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
                                        const Index valuesSize,
                                        const Index rows,
                                        const Index getColumns) {
-   const Index threads = 256;
+   const Index threads = 1024; // block size
    size_t neededThreads = rows * warpSize;
    Index blocks, groupSize;
    
@@ -1277,7 +1287,7 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
       groupSize = 32;
 
    neededThreads = groupSize * rows;
-
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1287,7 +1297,8 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      SpMVCSRLightWithoutAtomic<Real, Index, warpSize><<<blocks, threads>>>(
+      if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
+         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
                inVector,
                outVector,
                rowPointers,
@@ -1295,9 +1306,21 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
                values,
                rows,
                getColumns,
-               groupSize,
                grid
-      );
+         );
+      } else {
+         SpMVCSRLightWithoutAtomic<Real, Index, warpSize><<<blocks, threads>>>(
+                  inVector,
+                  outVector,
+                  rowPointers,
+                  columnIndexes,
+                  values,
+                  rows,
+                  getColumns,
+                  groupSize,
+                  grid
+         );
+      }
    }
 }
 
@@ -1315,13 +1338,14 @@ void SpMVCSRMultiVectorPrepare( const Real *inVector,
    /* Configuration */
    constexpr int ELEMENTS_PER_WARP = 1024; // how many elements should process every warp
    //----------------------------------------------------------------------------------
-   const Index threads = 256;
+   const Index threads = 1024; // block size
    Index blocks;
 
    const Index nnz = roundUpDivision(valuesSize, rows); // non zeroes per row
    const size_t neededWarps = roundUpDivision(nnz, ELEMENTS_PER_WARP); // warps per row
    const Index offset = neededWarps * ELEMENTS_PER_WARP;
    size_t neededThreads = offset * rows;
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1370,15 +1394,22 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
                              const Index* rowPointers,
                              const Index* columnIndexes,
                              const Real* values,
+                             const Index valuesSize,
                              const Index rows,
                              const Index getColumns) {
    /* Configuration ---------------------------------------------------*/
-   constexpr size_t THREADS_PER_BLOCK = 1024;
+   /* Execute 1024 threads per block for float, (12 elements per thread) for 48KB cache
+              512  threads per block for double (12 elements per thread) */
+   constexpr size_t THREADS_PER_BLOCK = sizeof(Real) == 4 ? 1024 : 512;
    constexpr Index WARPS_PER_BLOCK = THREADS_PER_BLOCK / 32;
-   constexpr Index SHARED = 49152/sizeof(Real);
+   constexpr Index SHARED = 49152/sizeof(Real); 
    constexpr Index SHARED_PER_WARP = SHARED / WARPS_PER_BLOCK;
-   constexpr Index MAX_PER_WARP = 2048; // max elements per warp to start CSR Vector Dynamic
    //--------------------------------------------------------------------
+   /* max elements per warp to start CSR Vector Dynamic (using of dynamic parallelism) */
+   Index maxPerWarp = roundUpDivision(valuesSize, rows);
+   if (maxPerWarp < 4096)
+      maxPerWarp = 4096;
+
    Index blocks;
    const Index threads = THREADS_PER_BLOCK;
    std::vector<Index> inBlock;
@@ -1414,7 +1445,8 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
    cudaMalloc((void **)&blocksAdaptive, sizeof(Index) * inBlock.size());
    cudaMemcpy(blocksAdaptive, inBlock.data(), inBlock.size() * sizeof(Index), cudaMemcpyHostToDevice);
 
-   size_t neededThreads = inBlock.size() * 32;
+   size_t neededThreads = inBlock.size() * 32; // one warp per block
+   /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++i) {
       if (MAX_X_DIM * threads >= neededThreads) {
          blocks = roundUpDivision(neededThreads, threads);
@@ -1435,7 +1467,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
                getColumns,
                grid,
                SHARED_PER_WARP,
-               MAX_PER_WARP
+               maxPerWarp
       );
    }
 
@@ -1676,6 +1708,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                   kernelRowPointers,
                   kernelColumns,
                   kernelValues,
+                  matrix.getValues().getSize(),
                   matrix.getRowPointers().getSize() - 1,
                   matrix.getColumns()
                );
