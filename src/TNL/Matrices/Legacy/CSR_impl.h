@@ -1058,6 +1058,7 @@ void SpMVCSRLightWithoutAtomic( const Real *inVector,
                                 const Index gridID) {
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index row = index / groupSize;
+   Index i;
 
    if (row >= rows)
       return;
@@ -1067,7 +1068,7 @@ void SpMVCSRLightWithoutAtomic( const Real *inVector,
    const Index maxID = rowPointers[row + 1];
 
    Real result = 0.0;
-   for (Index i = minID + inGroupID; i < maxID; i += groupSize) {
+   for (i = minID + inGroupID; i < maxID; i += groupSize) {
       const Index column = columnIndexes[i];
       if (column >= getColumns)
          break;
