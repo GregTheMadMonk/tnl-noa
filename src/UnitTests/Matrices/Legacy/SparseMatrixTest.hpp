@@ -1391,13 +1391,14 @@ void test_VectorProductCSRAdaptive()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
-   //----------------- Test CSR Stream part ------------------
-   IndexType m_rows = 100;
-   IndexType m_cols = 100;
 
    Matrix m;
    m.reset();
+   IndexType m_rows = 100;
+   IndexType m_cols = 100;
+   //----------------- Test CSR Stream part ------------------
    m.setDimensions( m_rows, m_cols );
    typename Matrix::CompressedRowLengthsVector rowLengths(
       {
@@ -1420,7 +1421,6 @@ void test_VectorProductCSRAdaptive()
       for (int j = 0; j < m_cols; ++j) 
          m.setElement( i, j, i + 1 );
 
-   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    VectorType inVector;
    inVector.setSize( m_rows );
@@ -1437,7 +1437,7 @@ void test_VectorProductCSRAdaptive()
    for (int i = 0; i < m_rows; ++i)
    EXPECT_EQ( outVector.getElement( i ), (i + 1) * 100 );
 
-   //----------------- Test CSR Dynamic Vector part ------------------
+   //----------------- Test CSR Vector L part ------------------
 
    m_rows = 1;
    // if less than 'max elements per block to start CSR Dynamic Vector' tests CSR Vector part
@@ -1450,20 +1450,20 @@ void test_VectorProductCSRAdaptive()
    m.setCompressedRowLengths( rowLengths2 );
 
    for (int i = 0; i < m_cols; ++i) 
-      m.setElement( 0, i, 2 );
+      m.setElement( 0, i, i );
 
    VectorType inVector2;
    inVector2.setSize( m_cols );
    for( IndexType i = 0; i < inVector2.getSize(); i++ )
-      inVector2.setElement( i, 1 );
+      inVector2.setElement( i, 2 );
 
-   VectorType outVector2;  
+   VectorType outVector2;
    outVector2.setSize( m_rows );
    for( IndexType i = 0; i < outVector2.getSize(); ++i )
       outVector2.setElement( i, 0 );
 
    m.vectorProduct(inVector2, outVector2);
-   EXPECT_EQ( outVector2.getElement( 0 ), 6000 );
+   EXPECT_EQ( outVector2.getElement( 0 ), 8997000 );
 }
 
 template< typename Matrix >
