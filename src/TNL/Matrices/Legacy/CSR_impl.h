@@ -1627,43 +1627,43 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         // switch(KernelType)
-         // {
-         //    case CSRScalar:
-         //       SpMVCSRScalarPrepare<Real, Index, 32>(
-         //          inVector.getData(),
-         //          outVector.getData(),
-         //          matrix.getRowPointers().getData(),
-         //          matrix.getColumnIndexes().getData(),
-         //          matrix.getValues().getData(),
-         //          matrix.getRowPointers().getSize() - 1,
-         //          matrix.getColumns()
-         //       );
-         //       break;
-         //    case CSRVector:
-         //       SpMVCSRVectorPrepare<Real, Index, 32>(
-         //          inVector.getData(),
-         //          outVector.getData(),
-         //          matrix.getRowPointers().getData(),
-         //          matrix.getColumnIndexes().getData(),
-         //          matrix.getValues().getData(),
-         //          matrix.getRowPointers().getSize() - 1,
-         //          matrix.getColumns()
-         //       );
-         //       break;
-         //    case CSRLight:
-         //       SpMVCSRLightPrepare<Real, Index, 32>(
-         //          inVector.getData(),
-         //          outVector.getData(),
-         //          matrix.getRowPointers().getData(),
-         //          matrix.getColumnIndexes().getData(),
-         //          matrix.getValues().getData(),
-         //          matrix.getValues().getSize(),
-         //          matrix.getRowPointers().getSize() - 1,
-         //          matrix.getColumns()
-         //       );
-         //       break;
-         //    case CSRAdaptive:
+         switch(KernelType)
+         {
+            case CSRScalar:
+               SpMVCSRScalarPrepare<Real, Index, 32>(
+                  inVector.getData(),
+                  outVector.getData(),
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  matrix.getRowPointers().getSize() - 1,
+                  matrix.getColumns()
+               );
+               break;
+            case CSRVector:
+               SpMVCSRVectorPrepare<Real, Index, 32>(
+                  inVector.getData(),
+                  outVector.getData(),
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  matrix.getRowPointers().getSize() - 1,
+                  matrix.getColumns()
+               );
+               break;
+            case CSRLight:
+               SpMVCSRLightPrepare<Real, Index, 32>(
+                  inVector.getData(),
+                  outVector.getData(),
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  matrix.getValues().getSize(),
+                  matrix.getRowPointers().getSize() - 1,
+                  matrix.getColumns()
+               );
+               break;
+            case CSRAdaptive:
                SpMVCSRAdaptivePrepare<Real, Index, Device, KernelType, 32>(
                   inVector.getData(),
                   outVector.getData(),
@@ -1675,32 +1675,32 @@ class CSRDeviceDependentCode< Devices::Cuda >
                   matrix.getRowPointers().getSize(),
                   matrix.getColumns()
                );
-            //    break;
-            // case CSRMultiVector:
-            //    SpMVCSRMultiVectorPrepare<Real, Index, 32>(
-            //       inVector.getData(),
-            //       outVector.getData(),
-            //       matrix.getRowPointers().getData(),
-            //       matrix.getColumnIndexes().getData(),
-            //       matrix.getValues().getData(),
-            //       matrix.getValues().getSize(),
-            //       matrix.getRowPointers().getSize() - 1,
-            //       matrix.getColumns()
-            //    );
-            //    break;
-            // case CSRLightWithoutAtomic:
-            //    SpMVCSRLightWithoutAtomicPrepare<Real, Index, 32>(
-            //       inVector.getData(),
-            //       outVector.getData(),
-            //       matrix.getRowPointers().getData(),
-            //       matrix.getColumnIndexes().getData(),
-            //       matrix.getValues().getData(),
-            //       matrix.getValues().getSize(),
-            //       matrix.getRowPointers().getSize() - 1,
-            //       matrix.getColumns()
-            //    );
-            //    break;
-         // }
+               break;
+            case CSRMultiVector:
+               SpMVCSRMultiVectorPrepare<Real, Index, 32>(
+                  inVector.getData(),
+                  outVector.getData(),
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  matrix.getValues().getSize(),
+                  matrix.getRowPointers().getSize() - 1,
+                  matrix.getColumns()
+               );
+               break;
+            case CSRLightWithoutAtomic:
+               SpMVCSRLightWithoutAtomicPrepare<Real, Index, 32>(
+                  inVector.getData(),
+                  outVector.getData(),
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  matrix.getValues().getSize(),
+                  matrix.getRowPointers().getSize() - 1,
+                  matrix.getColumns()
+               );
+               break;
+         }
 #endif /* HAVE_CUDA */
 #endif
       }
