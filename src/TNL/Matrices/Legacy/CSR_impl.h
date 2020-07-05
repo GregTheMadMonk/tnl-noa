@@ -23,16 +23,33 @@
 #include <cusparse.h>
 #endif
 
-template<typename Index>
-struct Block {
-   Block(Index row, Index index = 0) noexcept {
-      this->index = index;
-      this->row = row;
+enum Type {
+   STREAM = 0,
+   VECTOR = 1,
+   LONG = 2
+};
+
+union Block {
+   Block(uint32_t row, Type type = VECTOR, uint32_t index = 0) noexcept {
+      this->index[0] = row;
+      this->index[1] = index;
+      this->byte[7] = (uint8_t)type;
    }
 
-   Index index;
-   Index row;
+   uint32_t index[2]; // index[0] is row pointer, index[1] is index in warp
+   uint8_t byte[8]; // byte[7] is type specificator
 };
+
+// template<typename Index>
+// struct Block_old {
+//    Block(Index row, Index index = 0) noexcept {
+//       this->index = index;
+//       this->row = row;
+//    }
+
+//    Index index;
+//    Index row;
+// };
 
 /* Configuration */
 constexpr size_t MAX_X_DIM = 2147483647;
@@ -784,42 +801,79 @@ void CSR< Real, Device, Index, KernelType >::spmvCudaVectorized( const InVector&
 
 template< typename Real,
           typename Index,
-          int warpSize >
+          int warpSize,
+          int sharedPerWarp >
 __global__
 void SpMVCSRAdaptive( const Real *inVector,
                       Real *outVector,
                       const Index* rowPointers,
                       const Index* columnIndexes,
                       const Real* values,
-                      Block<Index> *blocks,
+                      const Block *blocks,
                       Index blocks_size,
                       Index getColumns,
-                      Index gridID,
-                      const Index sharedPerWarp) {
+                      Index gridID) {
    __shared__ Real shared_res[49152/sizeof(Real)];
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index blockIdx = index / warpSize;
    if (blockIdx >= blocks_size)
       return;
 
+   Block block = blocks[blockIdx];
    Real result = 0.0;
    const Index laneID = index % warpSize;
-   const Index minRow = blocks[blockIdx].row;
-   const Index maxRow = blocks[blockIdx + 1].row;
-   const Index minID = rowPointers[minRow];
-   Index maxID = rowPointers[maxRow];
-   Index i, to, column, offset;
-   Index elements = maxID - minID;
-   /* rows per block more than 1 */
-   if (elements == 0 || elements > ELEMENTS_PER_WARP) {
-      /////////////////////////////////////* CSR VECTOR L */////////////
-      const Index warpInRow = blocks[blockIdx].index;
-      if (elements == 0) maxID = rowPointers[minRow + 1];
+   const Index minID = rowPointers[block.index[0]/* minRow */];
+   Index i, to, column, offset, maxID;
+   if (block.byte[7] == 0) {
+      /////////////////////////////////////* CSR STREAM *//////////////
+      const Index maxRow = blocks[blockIdx + 1].index[0];
+      maxID = rowPointers[maxRow];
+      /* offset between shared and global addresses */
+      offset = minID - (threadIdx.x / warpSize * sharedPerWarp);
+      /* Copy and calculate elements from global to shared memory, coalesced */
+      for (i = laneID + minID; i < maxID; i += warpSize) {
+         column = columnIndexes[i];
+         if (column >= getColumns)
+            continue; // can't be break
+         shared_res[i - offset] = values[i] * inVector[column];
+      }
 
-      offset = warpInRow * ELEMENTS_PER_WARP;
-      to = minID + (warpInRow + 1) * ELEMENTS_PER_WARP;
+      /* Calculate result */
+      for (i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize) {
+         to = rowPointers[i + 1] - offset; // end of preprocessed data
+         result = 0;
+         /* Scalar reduction */
+         for (Index sharedID = rowPointers[i] - offset; sharedID < to; ++sharedID)
+            result += shared_res[sharedID];
+
+         outVector[i] = result; // Write result
+      }
+   } else if (block.byte[7] == 1) {
+      /////////////////////////////////////* CSR VECTOR *//////////////
+      maxID = rowPointers[block.index[0]/* minRow */ + 1];
+
+      for (i = minID + laneID; i < maxID; i += warpSize) {
+         column = columnIndexes[i];
+         if (column >= getColumns)
+            break;
+
+         result += values[i] * inVector[column];
+      }
+      /* Parallel reduction */
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 16);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 8);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 4);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 2);
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 1);
+      if (laneID == 0) outVector[block.index[0]/* minRow */] = result; // Write result
+   } else {
+      /////////////////////////////////////* CSR VECTOR L */////////////
+      maxID = rowPointers[block.index[0]/* minRow */ + 1];
+
+      offset = block.index[1]/* warpInRow */ * ELEMENTS_PER_WARP;
+      to = minID + (block.index[1]/* warpInRow */ + 1) * ELEMENTS_PER_WARP;
       if (to > maxID) to = maxID;
-      
+
       for (i = minID + offset + laneID; i < to; i += warpSize) {
          column = columnIndexes[i];
          if (column >= getColumns)
@@ -834,46 +888,7 @@ void SpMVCSRAdaptive( const Real *inVector,
       result += __shfl_down_sync((unsigned)(warpSize - 1), result, 4);
       result += __shfl_down_sync((unsigned)(warpSize - 1), result, 2);
       result += __shfl_down_sync((unsigned)(warpSize - 1), result, 1);
-      if (laneID == 0) atomicAdd(&outVector[minRow], result);
-   } else if (elements <= sharedPerWarp) {
-      /////////////////////////////////////* CSR STREAM *//////////////
-      /* Copy and calculate elements from global to shared memory, coalesced */
-      offset = threadIdx.x / warpSize * sharedPerWarp;
-      Index elementID = laneID + minID;
-      Index sharedID = laneID + offset; // index for shared memory
-      for (; elementID < maxID; elementID += warpSize, sharedID += warpSize) {
-         column = columnIndexes[elementID];
-         if (column >= getColumns)
-            continue; // can't be break
-         shared_res[sharedID] = values[elementID] * inVector[column];
-      }
-
-      /* Calculate result */
-      for (Index row = minRow + laneID; row < maxRow; row += warpSize) {
-         to = rowPointers[row + 1] - minID + offset; // end of preprocessed data
-         result = 0;
-         /* Scalar reduction */
-         for (sharedID = rowPointers[row] - minID + offset; sharedID < to; ++sharedID)
-            result += shared_res[sharedID];
-
-         outVector[row] = result; // Write result
-      }
-   } else {
-      /////////////////////////////////////* CSR VECTOR *//////////////
-      for (i = minID + laneID; i < maxID; i += warpSize) {
-         column = columnIndexes[i];
-         if (column >= getColumns)
-            break;
-
-         result += values[i] * inVector[column];
-      }
-      /* Parallel reduction */
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 16);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 8);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 4);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 2);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 1);
-      if (laneID == 0) outVector[minRow] = result; // Write result
+      if (laneID == 0) atomicAdd(&outVector[block.index[0]/* minRow */], result);
    }
 }
 
@@ -1359,20 +1374,29 @@ template< typename Real,
           CSRKernel KernelType>
 Index findLimit(const Index start, const Index max,
                const CSR< Real, Device, Index, KernelType >& matrix,
-               const Index size) {
-   Index sum = 0;
+               const Index size,
+               Type &type,
+               Index &sum) {
+   sum = 0;
    for (Index current = start; current < size - 1; ++current) {
       Index elements = matrix.getRowPointers().getElement(current + 1) -
                        matrix.getRowPointers().getElement(current);
       sum += elements;
       if (sum > max) {
-         if (current - start > 1) // extra row
+         if (current - start > 1) { // extra row
+            type = STREAM;
             return current;
-         else                     // one long row
+         } else {                  // one long row
+            if (sum <= ELEMENTS_PER_WARP)
+               type = VECTOR;
+            else
+               type = LONG;
             return current + 1;
+         }
       }
    }
 
+   type = STREAM;
    return size - 1; // return last row pointer
 }
 
@@ -1398,29 +1422,31 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
    constexpr Index SHARED = 49152/sizeof(Real); 
    constexpr Index SHARED_PER_WARP = SHARED / WARPS_PER_BLOCK;
    //--------------------------------------------------------------------
-   Index blocks;
+   Index blocks, sum, start = 0, nextStart = 0;
    const Index threads = THREADS_PER_BLOCK;
 
    /* Fill blocks */
-   std::vector<Block<Index>> inBlock;
-   Index start = 0;
-   inBlock.emplace_back(0); // push start
-   while (start != rows - 1) {
-      Index startNext = findLimit(start, SHARED_PER_WARP, matrix, rows);
-      Index sum = matrix.getRowPointers().getElement(startNext) -
-            matrix.getRowPointers().getElement(start);
-      
-      /* block start is already inserted, +1 */
-      Index parts = roundUpDivision(sum, ELEMENTS_PER_WARP);
-      for (Index warpIndex = 1; warpIndex < parts; ++warpIndex)
-         inBlock.emplace_back(start, warpIndex);
+   std::vector<Block> inBlock;
+   inBlock.reserve(rows); // resere space to avoid reallocation
 
-      inBlock.emplace_back(startNext);
-      start = startNext;
+   while (nextStart != rows - 1) {
+      Type type;
+      nextStart = findLimit(start, SHARED_PER_WARP, matrix, rows, type, sum);
+      if (type == LONG) {
+         uint32_t parts = roundUpDivision(sum, ELEMENTS_PER_WARP);
+         for (uint32_t index = 0; index < parts; ++index) {
+            inBlock.emplace_back(start, LONG, index);
+         }
+      } else {
+         inBlock.emplace_back(start, type);
+      }
+
+      start = nextStart;
    }
+   inBlock.emplace_back(nextStart);
 
    /* blocks to GPU */
-   Block<Index> *blocksAdaptive = nullptr;
+   Block *blocksAdaptive = nullptr;
    cudaMalloc((void **)&blocksAdaptive, sizeof(*blocksAdaptive) * inBlock.size());
    cudaMemcpy(blocksAdaptive, inBlock.data(), inBlock.size() * sizeof(*blocksAdaptive), cudaMemcpyHostToDevice);
 
@@ -1435,7 +1461,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      SpMVCSRAdaptive<Real, Index, warpSize><<<blocks, threads>>>(
+      SpMVCSRAdaptive<Real, Index, warpSize, SHARED_PER_WARP><<<blocks, threads>>>(
                inVector,
                outVector,
                rowPointers,
@@ -1444,8 +1470,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
                blocksAdaptive,
                inBlock.size() - 1, // last block shouldn't be used
                getColumns,
-               grid,
-               SHARED_PER_WARP
+               grid
       );
    }
 
@@ -1602,43 +1627,43 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         switch(KernelType)
-         {
-            case CSRScalar:
-               SpMVCSRScalarPrepare<Real, Index, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  matrix.getRowPointers().getSize() - 1,
-                  matrix.getColumns()
-               );
-               break;
-            case CSRVector:
-               SpMVCSRVectorPrepare<Real, Index, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  matrix.getRowPointers().getSize() - 1,
-                  matrix.getColumns()
-               );
-               break;
-            case CSRLight:
-               SpMVCSRLightPrepare<Real, Index, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  matrix.getValues().getSize(),
-                  matrix.getRowPointers().getSize() - 1,
-                  matrix.getColumns()
-               );
-               break;
-            case CSRAdaptive:
+         // switch(KernelType)
+         // {
+         //    case CSRScalar:
+         //       SpMVCSRScalarPrepare<Real, Index, 32>(
+         //          inVector.getData(),
+         //          outVector.getData(),
+         //          matrix.getRowPointers().getData(),
+         //          matrix.getColumnIndexes().getData(),
+         //          matrix.getValues().getData(),
+         //          matrix.getRowPointers().getSize() - 1,
+         //          matrix.getColumns()
+         //       );
+         //       break;
+         //    case CSRVector:
+         //       SpMVCSRVectorPrepare<Real, Index, 32>(
+         //          inVector.getData(),
+         //          outVector.getData(),
+         //          matrix.getRowPointers().getData(),
+         //          matrix.getColumnIndexes().getData(),
+         //          matrix.getValues().getData(),
+         //          matrix.getRowPointers().getSize() - 1,
+         //          matrix.getColumns()
+         //       );
+         //       break;
+         //    case CSRLight:
+         //       SpMVCSRLightPrepare<Real, Index, 32>(
+         //          inVector.getData(),
+         //          outVector.getData(),
+         //          matrix.getRowPointers().getData(),
+         //          matrix.getColumnIndexes().getData(),
+         //          matrix.getValues().getData(),
+         //          matrix.getValues().getSize(),
+         //          matrix.getRowPointers().getSize() - 1,
+         //          matrix.getColumns()
+         //       );
+         //       break;
+         //    case CSRAdaptive:
                SpMVCSRAdaptivePrepare<Real, Index, Device, KernelType, 32>(
                   inVector.getData(),
                   outVector.getData(),
@@ -1650,32 +1675,32 @@ class CSRDeviceDependentCode< Devices::Cuda >
                   matrix.getRowPointers().getSize(),
                   matrix.getColumns()
                );
-               break;
-            case CSRMultiVector:
-               SpMVCSRMultiVectorPrepare<Real, Index, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  matrix.getValues().getSize(),
-                  matrix.getRowPointers().getSize() - 1,
-                  matrix.getColumns()
-               );
-               break;
-            case CSRLightWithoutAtomic:
-               SpMVCSRLightWithoutAtomicPrepare<Real, Index, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  matrix.getValues().getSize(),
-                  matrix.getRowPointers().getSize() - 1,
-                  matrix.getColumns()
-               );
-               break;
-         }
+            //    break;
+            // case CSRMultiVector:
+            //    SpMVCSRMultiVectorPrepare<Real, Index, 32>(
+            //       inVector.getData(),
+            //       outVector.getData(),
+            //       matrix.getRowPointers().getData(),
+            //       matrix.getColumnIndexes().getData(),
+            //       matrix.getValues().getData(),
+            //       matrix.getValues().getSize(),
+            //       matrix.getRowPointers().getSize() - 1,
+            //       matrix.getColumns()
+            //    );
+            //    break;
+            // case CSRLightWithoutAtomic:
+            //    SpMVCSRLightWithoutAtomicPrepare<Real, Index, 32>(
+            //       inVector.getData(),
+            //       outVector.getData(),
+            //       matrix.getRowPointers().getData(),
+            //       matrix.getColumnIndexes().getData(),
+            //       matrix.getValues().getData(),
+            //       matrix.getValues().getSize(),
+            //       matrix.getRowPointers().getSize() - 1,
+            //       matrix.getColumns()
+            //    );
+            //    break;
+         // }
 #endif /* HAVE_CUDA */
 #endif
       }
