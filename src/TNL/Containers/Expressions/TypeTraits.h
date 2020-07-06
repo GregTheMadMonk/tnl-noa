@@ -103,21 +103,46 @@ struct IsArithmeticSubtype< T, V, false >
 
 
 // helper trait class (used in unit tests)
-template< typename R, bool enabled = ! HasEnabledStaticExpressionTemplates< R >::value >
+template<class T, class R = void>
+struct enable_if_type { typedef R type; };
+
+template< typename R, typename Enable = void >
 struct RemoveExpressionTemplate
 {
    using type = R;
 };
 
 template< typename R >
-struct RemoveExpressionTemplate< R, false >
+struct RemoveExpressionTemplate< R, typename enable_if_type< typename R::VectorOperandType >::type >
 {
-//   using type = StaticVector< R::getSize(), typename RemoveExpressionTemplate< typename R::RealType >::type >;
    using type = typename RemoveExpressionTemplate< typename R::VectorOperandType >::type;
 };
 
 template< typename R >
 using RemoveET = typename RemoveExpressionTemplate< R >::type;
+
+// helper trait class for Static*ExpressionTemplates classes
+template< typename R, typename Enable = void >
+struct OperandMemberType
+{
+   using type = std::conditional_t< std::is_fundamental< R >::value,
+                     // non-reference for fundamental types
+                     std::add_const_t< std::remove_reference_t< R > >,
+                     // lvalue-reference for other types (especially StaticVector)
+                     std::add_lvalue_reference_t< std::add_const_t< R > >
+                  >;
+//   using type = std::add_const_t< std::remove_reference_t< R > >;
+};
+
+// assuming that only the StaticBinaryExpressionTemplate and StaticUnaryTemplate classes have a VectorOperandType type member
+template< typename R >
+struct OperandMemberType< R, typename enable_if_type< typename R::VectorOperandType >::type >
+{
+   // non-reference for StaticBinaryExpressionTemplate and StaticUnaryExpressionTemplate
+   // (otherwise we would get segfaults - binding const-reference to temporary Static*ExpressionTemplate
+   // objects does not work as expected...)
+   using type = std::add_const_t< std::remove_reference_t< R > >;
+};
 
 } // namespace Expressions
 } // namespace Containers

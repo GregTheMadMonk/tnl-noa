@@ -60,7 +60,7 @@ struct Min
 {
    template< typename T1, typename T2 >
    __cuda_callable__
-   static auto evaluate( const T1& a, const T2& b ) -> decltype( min( a , b ) )
+   static auto evaluate( const T1& a, const T2& b ) -> decltype( min( a, b ) )
    {
       return min( a, b );
    }
