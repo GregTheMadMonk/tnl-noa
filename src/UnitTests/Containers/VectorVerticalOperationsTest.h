@@ -175,6 +175,8 @@ protected:
 
 TYPED_TEST_SUITE( VectorVerticalOperationsTest, VectorTypes );
 
+// FIXME: function does not work for nested vectors - std::numeric_limits does not make sense for vector types
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, max )
 {
    SETUP_VERTICAL_TEST_ALIASES;
@@ -186,7 +188,10 @@ TYPED_TEST( VectorVerticalOperationsTest, max )
    // binary expression
    EXPECT_EQ( max(V1 + 2), size - 1 + 2 );
 }
+#endif
 
+// FIXME: function does not work for nested vectors - the reduction operation expects a scalar type
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, argMax )
 {
    SETUP_VERTICAL_TEST_ALIASES;
@@ -199,7 +204,10 @@ TYPED_TEST( VectorVerticalOperationsTest, argMax )
    // expression
    EXPECT_EQ( argMax(V1 + 2), std::make_pair( (RealType) size - 1 + 2, size - 1 ) );
 }
+#endif
 
+// FIXME: function does not work for nested vectors - std::numeric_limits does not make sense for vector types
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, min )
 {
    SETUP_VERTICAL_TEST_ALIASES;
@@ -211,7 +219,10 @@ TYPED_TEST( VectorVerticalOperationsTest, min )
    // binary expression
    EXPECT_EQ( min(V1 + 2), 2 );
 }
+#endif
 
+// FIXME: function does not work for nested vectors - the reduction operation expects a scalar type
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, argMin )
 {
    SETUP_VERTICAL_TEST_ALIASES;
@@ -224,6 +235,7 @@ TYPED_TEST( VectorVerticalOperationsTest, argMin )
    // binary expression
    EXPECT_EQ( argMin(V1 + 2), std::make_pair( (RealType) 2 , 0 ) );
 }
+#endif
 
 TYPED_TEST( VectorVerticalOperationsTest, sum )
 {
@@ -237,6 +249,8 @@ TYPED_TEST( VectorVerticalOperationsTest, sum )
    EXPECT_EQ( sum(V1 - 1), 0.5 * size * (size - 1) - size );
 }
 
+// FIXME: function does not work for nested vectors - max does not work for nested vectors
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, maxNorm )
 {
    SETUP_VERTICAL_TEST_ALIASES;
@@ -248,6 +262,7 @@ TYPED_TEST( VectorVerticalOperationsTest, maxNorm )
    // binary expression
    EXPECT_EQ( maxNorm(V1 - size), size );
 }
+#endif
 
 TYPED_TEST( VectorVerticalOperationsTest, l1Norm )
 {
@@ -269,9 +284,11 @@ TYPED_TEST( VectorVerticalOperationsTest, l1Norm )
    EXPECT_EQ( l1Norm(2 * V1 - V1), size );
 }
 
+// FIXME: l2Norm does not work for nested vectors - dangling references due to Static*ExpressionTemplate
+//        classes binding to temporary objects which get destroyed before l2Norm returns
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, l2Norm )
 {
-   using RealType = typename TestFixture::VectorOrView::RealType;
 #ifdef STATIC_VECTOR
    setConstantSequence( this->V1, 1 );
    const typename TestFixture::VectorOrView& V1( this->V1 );
@@ -282,7 +299,7 @@ TYPED_TEST( VectorVerticalOperationsTest, l2Norm )
 #endif
    const int size = V1.getSize();
 
-   const auto expected = std::sqrt( (RealType) size );
+   const auto expected = std::sqrt( size );
 
    // vector or vector view
    EXPECT_EQ( l2Norm(V1), expected );
@@ -291,10 +308,12 @@ TYPED_TEST( VectorVerticalOperationsTest, l2Norm )
    // binary expression
    EXPECT_EQ( l2Norm(2 * V1 - V1), expected );
 }
+#endif
 
+// FIXME function does not work for nested vectors - compilation error
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorVerticalOperationsTest, lpNorm )
 {
-   using RealType = typename TestFixture::VectorOrView::RealType;
 #ifdef STATIC_VECTOR
    setConstantSequence( this->V1, 1 );
    const typename TestFixture::VectorOrView& V1( this->V1 );
@@ -306,24 +325,25 @@ TYPED_TEST( VectorVerticalOperationsTest, lpNorm )
    const int size = V1.getSize();
 
    const auto expectedL1norm = size;
-   const auto expectedL2norm = std::sqrt( (RealType) size );
-   const auto expectedL3norm = std::cbrt( (RealType) size );
+   const auto expectedL2norm = std::sqrt( size );
+   const auto expectedL3norm = std::cbrt( size );
 
    const auto epsilon = 64 * std::numeric_limits< decltype(expectedL3norm) >::epsilon();
 
    // vector or vector view
    EXPECT_EQ( lpNorm(V1, 1.0), expectedL1norm );
    EXPECT_EQ( lpNorm(V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(V1, 3.0), expectedL3norm, epsilon );
+   expect_near( lpNorm(V1, 3.0), expectedL3norm, epsilon );
    // unary expression
    EXPECT_EQ( lpNorm(-V1, 1.0), expectedL1norm );
    EXPECT_EQ( lpNorm(-V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(-V1, 3.0), expectedL3norm, epsilon );
+   expect_near( lpNorm(-V1, 3.0), expectedL3norm, epsilon );
    // binary expression
    EXPECT_EQ( lpNorm(2 * V1 - V1, 1.0), expectedL1norm );
    EXPECT_EQ( lpNorm(2 * V1 - V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(2 * V1 - V1, 3.0), expectedL3norm, epsilon );
+   expect_near( lpNorm(2 * V1 - V1, 3.0), expectedL3norm, epsilon );
 }
+#endif
 
 TYPED_TEST( VectorVerticalOperationsTest, product )
 {
@@ -353,7 +373,3 @@ TYPED_TEST( VectorVerticalOperationsTest, product )
 } // namespace vertical_tests
 
 #endif // HAVE_GTEST
-
-#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
-#include "../main.h"
-#endif

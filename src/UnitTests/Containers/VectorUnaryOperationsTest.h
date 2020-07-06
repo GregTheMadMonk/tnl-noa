@@ -139,6 +139,10 @@ protected:
 
 TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
 
+
+#define EXPECTED_VECTOR( TestFixture, function ) \
+   using ExpectedVector = typename TestFixture::template Vector< Expressions::RemoveET< decltype(function(typename VectorOrView::RealType{})) > >;
+
 #ifdef STATIC_VECTOR
    #define SETUP_UNARY_VECTOR_TEST( _ ) \
       using VectorOrView = typename TestFixture::VectorOrView; \
@@ -151,8 +155,8 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _, begin, end, function ) \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorOrView::RealType;        \
-      using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
-      constexpr int _size = VectorOrView::getSize();            \
+      EXPECTED_VECTOR( TestFixture, function );                \
+      constexpr int _size = VectorOrView::getSize();           \
                                                                \
       VectorOrView V1;                                         \
       ExpectedVector expected;                                 \
@@ -187,9 +191,9 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
-      using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
+      EXPECTED_VECTOR( TestFixture, function );                \
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
-      using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
+      using HostExpectedVector = typename ExpectedVector::template Self< typename ExpectedVector::RealType, Devices::Host >; \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
       const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
@@ -228,9 +232,9 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
-      using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
+      EXPECTED_VECTOR( TestFixture, function );                \
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
-      using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
+      using HostExpectedVector = typename ExpectedVector::template Self< typename ExpectedVector::RealType, Devices::Host >; \
                                                                \
       HostVector _V1h( size );                                 \
       HostExpectedVector expected_h( size );                   \
@@ -261,10 +265,10 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    ASSERT_EQ( _v1.getSize(), _v2.getSize() );
 #ifdef STATIC_VECTOR
    for( int i = 0; i < _v1.getSize(); i++ )
-      EXPECT_NEAR( _v1[i], _v2[i], 1e-6 ) << "i = " << i;
+      expect_near( _v1[i], _v2[i], 1e-6 );
 #else
-   using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
-   using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
+   using LeftNonConstReal = Expressions::RemoveET< std::remove_const_t< typename Left::RealType > >;
+   using RightNonConstReal = Expressions::RemoveET< std::remove_const_t< typename Right::RealType > >;
 #ifdef DISTRIBUTED_VECTOR
    using CommunicatorType = typename Left::CommunicatorType;
    static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
@@ -290,7 +294,7 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
 #else
    for( int i = 0; i < v1.getSize(); i++ )
 #endif
-      EXPECT_NEAR( v1_h[i], v2_h[i], 1e-6 ) << "i = " << i;
+      expect_near( v1_h[i], v2_h[i], 1e-6 );
 #endif
 }
 
@@ -465,8 +469,8 @@ TYPED_TEST( VectorUnaryOperationsTest, atanh )
 TYPED_TEST( VectorUnaryOperationsTest, pow )
 {
    // FIXME: for integer exponent, the test fails with CUDA
-//   auto pow3 = [](double i) { return TNL::pow(i, 3); };
-   auto pow3 = [](double i) { return TNL::pow(i, 3.0); };
+//   auto pow3 = [](auto i) { return TNL::pow(i, 3); };
+   auto pow3 = [](auto i) { return TNL::pow(i, 3.0); };
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, pow3 );
 
    // vector or view
@@ -585,9 +589,11 @@ TYPED_TEST( VectorUnaryOperationsTest, sign )
    expect_vectors_near( sign(-(-V1)), expected );
 }
 
+// This test is not suitable for vector-of-static-vectors where the RealType cannot be cast to bool.
+#ifndef VECTOR_OF_STATIC_VECTORS
 TYPED_TEST( VectorUnaryOperationsTest, cast )
 {
-   auto identity = [](int i) { return i; };
+   auto identity = [](auto i) { return i; };
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, identity );
 
    // vector or vector view
@@ -612,11 +618,8 @@ TYPED_TEST( VectorUnaryOperationsTest, cast )
 //   EXPECT_EQ( expression3, true );
    EXPECT_EQ( cast<bool>(-V1), true );
 }
+#endif
 
 } // namespace unary_tests
 
 #endif // HAVE_GTEST
-
-#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
-#include "../main.h"
-#endif

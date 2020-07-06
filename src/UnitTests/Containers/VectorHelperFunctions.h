@@ -112,3 +112,35 @@ void bindOrAssign( V1& v1, V2& v2 )
 {
    v1 = v2;
 }
+
+
+#ifdef HAVE_GTEST
+#include "gtest/gtest.h"
+
+template< typename T1, typename T2,
+          std::enable_if_t< ! TNL::HasSubscriptOperator< T1 >::value &&
+                            ! TNL::HasSubscriptOperator< T2 >::value, bool > = true >
+void expect_near( const T1& arg, const T2& expected, double epsilon )
+{
+   EXPECT_NEAR( arg, expected, epsilon );
+}
+
+template< typename T1, typename T2,
+          std::enable_if_t< TNL::HasSubscriptOperator< T1 >::value &&
+                            ! TNL::HasSubscriptOperator< T2 >::value, bool > = true >
+void expect_near( const T1& arg, const T2& expected, double epsilon )
+{
+   for( int i = 0; i < arg.getSize(); i++ )
+      expect_near( arg[ i ], expected, epsilon );
+}
+
+template< typename T1, typename T2,
+          std::enable_if_t< TNL::HasSubscriptOperator< T1 >::value &&
+                            TNL::HasSubscriptOperator< T2 >::value, bool > = true >
+void expect_near( const T1& arg, const T2& expected, double epsilon )
+{
+   ASSERT_EQ( arg.getSize(), expected.getSize() );
+   for( int i = 0; i < arg.getSize(); i++ )
+      expect_near( arg[ i ], expected[ i ], epsilon );
+}
+#endif

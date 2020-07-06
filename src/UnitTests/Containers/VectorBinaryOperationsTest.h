@@ -627,8 +627,8 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 {
    SETUP_BINARY_TEST_ALIASES;
 
-   using RightHostVector = typename TestFixture::RightVector::Self< typename TestFixture::RightVector::RealType, Devices::Sequential >;
-   using RightHost = typename TestFixture::Right::Self< typename TestFixture::Right::RealType, Devices::Sequential >;
+   using RightHostVector = typename TestFixture::RightVector::template Self< typename TestFixture::RightVector::RealType, Devices::Sequential >;
+   using RightHost = typename TestFixture::Right::template Self< typename TestFixture::Right::RealType, Devices::Sequential >;
 
    RightHostVector _R1_h; _R1_h = this->_R1;
    RightHost R1_h( _R1_h );
@@ -646,7 +646,3 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 } // namespace binary_tests
 
 #endif // HAVE_GTEST
-
-#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
-#include "../main.h"
-#endif
