@@ -149,11 +149,6 @@ template< typename Device,
 __cuda_callable__ auto BiEllpackView< Device, Index, Organization, WarpSize >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
-         rowPermArray,
-         groupPointers,
-         segmentIdx );
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
@@ -168,6 +163,11 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
          segmentIdx );
 #endif
    }
+   else
+      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
+         rowPermArray,
+         groupPointers,
+         segmentIdx );
 }
 
 template< typename Device,
@@ -197,12 +197,6 @@ template< typename Device,
 __cuda_callable__ auto BiEllpackView< Device, Index, Organization, WarpSize >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
-         rowPermArray,
-         groupPointers,
-         segmentIdx,
-         localIdx );
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
@@ -219,6 +213,12 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
          localIdx );
 #endif
    }
+   else
+      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
+         rowPermArray,
+         groupPointers,
+         segmentIdx,
+         localIdx );
 }
 
 template< typename Device,
@@ -230,11 +230,6 @@ auto
 BiEllpackView< Device, Index, Organization, WarpSize >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
-         rowPermArray,
-         groupPointers,
-         segmentIdx );
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
@@ -249,6 +244,11 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
          segmentIdx );
 #endif
    }
+   else
+      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
+         rowPermArray,
+         groupPointers,
+         segmentIdx );
 }
 
 template< typename Device,

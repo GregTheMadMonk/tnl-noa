@@ -35,7 +35,10 @@ struct MPITypeResolver
          case sizeof( long int ):
             return MPI_LONG;
       }
-   };
+      // this will never happen thanks to the static_assert above, but icpc is not that smart
+      // and complains about missing return statement at the end of non-void function
+      throw 0;
+   }
 };
 
 template<> struct MPITypeResolver< char >

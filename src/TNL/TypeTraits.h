@@ -172,11 +172,17 @@ private:
       #ifdef __NVCC__
          #pragma push
          #pragma diag_suppress 2361
+      #elif defined(__INTEL_COMPILER)
+         #pragma warning(push)
+         #pragma warning(disable:3291)
       #endif
       template< typename M, M method >
       static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
       #ifdef __NVCC__
          #pragma pop
+      #elif defined(__INTEL_COMPILER)
+         // FIXME: this does not work - warning would be shown again...
+         //#pragma warning(pop)
       #endif
 
       template< typename M, M method >

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <cfloat>
+#include <limits>
 
 namespace TNL {
 namespace Solvers {
@@ -22,7 +22,7 @@ ExplicitSolver()
 :  time( 0.0 ),
    stopTime( 0.0 ),
    tau( 0.0 ),
-   maxTau( DBL_MAX ),
+   maxTau( std::numeric_limits< RealType >::max() ),
    verbosity( 0 ),
    testingMode( false ),
    problem( 0 )//,
