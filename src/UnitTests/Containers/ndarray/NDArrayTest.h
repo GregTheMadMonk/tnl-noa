@@ -1,3 +1,4 @@
+#ifdef HAVE_GTEST
 #include "gtest/gtest.h"
 
 #include <TNL/Containers/NDArray.h>
@@ -1325,14 +1326,7 @@ TEST( NDArrayTest, forBoundary_static_6D )
                << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m << ", n = " << n;
     }
 }
+#endif // HAVE_GTEST
 
-//#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-//#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-//#else
-//   throw GtestMissingError();
-//#endif
-}
+
+#include "../../main.h"
