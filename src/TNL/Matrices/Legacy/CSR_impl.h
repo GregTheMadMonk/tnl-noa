@@ -933,12 +933,11 @@ void SpMVCSRMultiVector( const Real *inVector,
    const Index inRowID = index % offset;
 
    Real result = 0.0;
-   Index column;
    Index endID = rowPointers[rowID + 1];
 
    /* Calculate result */
    for (Index i = rowPointers[rowID] + inRowID; i < endID; i += offset) {
-      column = columnIndexes[i];
+      Index column = columnIndexes[i];
       if (column >= getColumns)
          break;
 
@@ -974,13 +973,12 @@ void SpMVCSRVector( const Real *inVector,
       return;
 
    Real result = 0.0;
-   Index column;
    const Index laneID = index % warpSize;
    Index endID = rowPointers[warpID + 1];
 
    /* Calculate result */
    for (Index i = rowPointers[warpID] + laneID; i < endID; i += warpSize) {
-      column = columnIndexes[i];
+      Index column = columnIndexes[i];
       if (column >= getColumns)
          break;
 
@@ -1047,27 +1045,99 @@ void SpMVCSRLight( const Real *inVector,
 template< typename Real,
           typename Index>
 __global__
-void SpMVCSRLightWithoutAtomic( const Real *inVector,
-                                Real* outVector,
-                                const Index* rowPointers,
-                                const Index* columnIndexes,
-                                const Real* values,
-                                const Index rows,
-                                const Index getColumns,
-                                const Index groupSize,
-                                const Index gridID) {
+void SpMVCSRLightWithoutAtomic2( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index getColumns,
+                                 const Index gridID) {
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
-   const Index row = index / groupSize;
+   const Index row = index / 2;
+
+   if (row >= rows)
+      return;
+
+   const Index inGroupID = index % 2;
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (Index i = rowPointers[row] + inGroupID; i < maxID; i += 2) {
+      Index column = columnIndexes[i];
+      if (column >= getColumns)
+         break;
+
+      result += values[i] * inVector[column];
+   }
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic4( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index getColumns,
+                                 const Index gridID) {
+   const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
+   const Index row = index / 4;
+
+   if (row >= rows)
+      return;
+
+   const Index inGroupID = index % 4;
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (Index i = rowPointers[row] + inGroupID; i < maxID; i += 4) {
+      Index column = columnIndexes[i];
+      if (column >= getColumns)
+         break;
+
+      result += values[i] * inVector[column];
+   }
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic8( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index getColumns,
+                                 const Index gridID) {
+   const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
+   const Index row = index / 8;
    Index i, column;
 
    if (row >= rows)
       return;
 
-   const Index inGroupID = index % groupSize;
+   const Index inGroupID = index % 8;
    const Index maxID = rowPointers[row + 1];
 
    Real result = 0.0;
-   for (i = rowPointers[row] + inGroupID; i < maxID; i += groupSize) {
+   for (i = rowPointers[row] + inGroupID; i < maxID; i += 8) {
       column = columnIndexes[i];
       if (column >= getColumns)
          break;
@@ -1076,8 +1146,49 @@ void SpMVCSRLightWithoutAtomic( const Real *inVector,
    }
 
    /* Parallel reduction */
-   for (i = groupSize >> 1; i > 0; i >>= 1)
-      result += __shfl_down_sync(0xFFFFFFFF, result, i);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic16( const Real *inVector,
+                                  Real* outVector,
+                                  const Index* rowPointers,
+                                  const Index* columnIndexes,
+                                  const Real* values,
+                                  const Index rows,
+                                  const Index getColumns,
+                                  const Index gridID) {
+   const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
+   const Index row = index / 16;
+   Index i, column;
+
+   if (row >= rows)
+      return;
+
+   const Index inGroupID = index % 16;
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (i = rowPointers[row] + inGroupID; i < maxID; i += 16) {
+      column = columnIndexes[i];
+      if (column >= getColumns)
+         break;
+
+      result += values[i] * inVector[column];
+   }
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
 
    /* Write result */
    if (inGroupID == 0) outVector[row] = result;
@@ -1241,28 +1352,30 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
-         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
-               inVector,
-               outVector,
-               rowPointers,
-               columnIndexes,
-               values,
-               rows,
-               getColumns,
-               grid
+      if (groupSize == 2) {
+         SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
+                  inVector, outVector, rowPointers, columnIndexes, values,
+                  rows, getColumns, grid
          );
-      } else {
-         SpMVCSRLightWithoutAtomic<Real, Index><<<blocks, threads>>>(
-                  inVector,
-                  outVector,
-                  rowPointers,
-                  columnIndexes,
-                  values,
-                  rows,
-                  getColumns,
-                  groupSize,
-                  grid
+      } else if (groupSize == 4) {
+         SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
+                  inVector, outVector, rowPointers, columnIndexes, values,
+                  rows, getColumns, grid
+         );
+      } else if (groupSize == 8) {
+         SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
+                  inVector, outVector, rowPointers, columnIndexes, values,
+                  rows, getColumns, grid
+         );
+      } else if (groupSize == 16) {
+         SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
+                  inVector, outVector, rowPointers, columnIndexes, values,
+                  rows, getColumns, grid
+         );
+      } else { // CSR SpMV Light with groupsize = 32 is CSR Vector
+         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                  inVector, outVector, rowPointers, columnIndexes, values,
+                  rows, getColumns, grid
          );
       }
    }
@@ -1630,7 +1743,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                   matrix.getColumnIndexes().getData(),
                   matrix.getValues().getData(),
                   matrix.getValues().getSize(),
-                  matrix.getRowPointers().getSize(),
+                  matrix.getRowPointers().getSize(), // don't add -1 !
                   matrix.getColumns()
                );
                break;
