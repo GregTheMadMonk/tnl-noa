@@ -1,5 +1,6 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
+#include "GtestPrintToOverrides.h"
 #else
 #include "GtestMissingError.h"
 #endif
