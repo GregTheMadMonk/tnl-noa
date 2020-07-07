@@ -29,7 +29,7 @@ private:
     template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
+    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
 /**
@@ -46,7 +46,7 @@ private:
     template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
+    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
 /**
@@ -70,7 +70,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<T>(0));
+   using type = decltype(check<std::decay_t<T>>(0));
 
 public:
     static constexpr bool value = type::value;
@@ -97,7 +97,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<T>(0));
+   using type = decltype(check<std::decay_t<T>>(0));
 
 public:
     static constexpr bool value = type::value;
@@ -124,7 +124,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<T>(0));
+   using type = decltype(check<std::decay_t<T>>(0));
 
 public:
     static constexpr bool value = type::value;
@@ -188,7 +188,7 @@ private:
       template< typename M, M method >
       static constexpr std::false_type is_constexpr_impl(...);
 
-      using type = decltype(is_constexpr_impl< decltype(&T::getSize), &T::getSize >(0));
+      using type = decltype(is_constexpr_impl< decltype(&std::decay_t<T>::getSize), &std::decay_t<T>::getSize >(0));
    };
 
    // specialization for types which don't have getSize() method at all
@@ -223,7 +223,7 @@ struct IsStaticArrayType
 template< typename T >
 struct IsViewType
 : public std::integral_constant< bool,
-            std::is_same< typename T::ViewType, T >::value >
+            std::is_same< typename std::decay_t<T>::ViewType, T >::value >
 {};
 
 /**
@@ -247,7 +247,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<T>(0));
+   using type = decltype(check<std::decay_t<T>>(0));
 
 public:
     static constexpr bool value = type::value;

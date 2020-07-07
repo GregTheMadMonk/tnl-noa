@@ -33,47 +33,55 @@ struct HasEnabledDistributedExpressionTemplates : std::false_type
 // type aliases for enabling specific operators and functions using SFINAE
 template< typename ET1 >
 using EnableIfStaticUnaryExpression_t = std::enable_if_t<
-      HasEnabledStaticExpressionTemplates< ET1 >::value >;
+      HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfStaticBinaryExpression_t = std::enable_if_t<
-      HasEnabledStaticExpressionTemplates< ET1 >::value ||
-      HasEnabledStaticExpressionTemplates< ET2 >::value >;
+      (
+         HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value ||
+         HasEnabledStaticExpressionTemplates< std::decay_t< ET2 > >::value
+      ) && !
+      (
+         HasEnabledExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
+      ) >;
 
 template< typename ET1 >
 using EnableIfUnaryExpression_t = std::enable_if_t<
-      HasEnabledExpressionTemplates< ET1 >::value >;
+      HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
       (
-         HasAddAssignmentOperator< ET1 >::value ||
-         HasEnabledExpressionTemplates< ET1 >::value ||
-         std::is_arithmetic< ET1 >::value
+         HasAddAssignmentOperator< std::decay_t< ET1 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value ||
+         std::is_arithmetic< std::decay_t< ET1 > >::value
       ) &&
       (
-         HasEnabledExpressionTemplates< ET2 >::value ||
-         HasEnabledExpressionTemplates< ET1 >::value
+         HasEnabledExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value
       ) >;
 
 template< typename ET1 >
 using EnableIfDistributedUnaryExpression_t = std::enable_if_t<
-      HasEnabledDistributedExpressionTemplates< ET1 >::value >;
+      HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
       (
-         HasAddAssignmentOperator< ET1 >::value ||
-         HasEnabledDistributedExpressionTemplates< ET1 >::value ||
-         std::is_arithmetic< ET1 >::value
+         HasAddAssignmentOperator< std::decay_t< ET1 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value ||
+         std::is_arithmetic< std::decay_t< ET1 > >::value
       ) &&
       (
-         HasEnabledDistributedExpressionTemplates< ET2 >::value ||
-         HasEnabledDistributedExpressionTemplates< ET1 >::value
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
       ) >;
 
 
@@ -83,7 +91,7 @@ template< typename T, typename V,
 struct IsArithmeticSubtype
 : public std::integral_constant< bool,
             // TODO: use std::is_assignable?
-            std::is_same< T, typename V::RealType >::value >
+            std::is_same< T, typename std::decay_t< V >::RealType >::value >
 {};
 
 template< typename T >
@@ -109,13 +117,13 @@ struct enable_if_type { typedef R type; };
 template< typename R, typename Enable = void >
 struct RemoveExpressionTemplate
 {
-   using type = R;
+   using type = std::decay_t< R >;
 };
 
 template< typename R >
-struct RemoveExpressionTemplate< R, typename enable_if_type< typename R::VectorOperandType >::type >
+struct RemoveExpressionTemplate< R, typename enable_if_type< typename std::decay_t< R >::VectorOperandType >::type >
 {
-   using type = typename RemoveExpressionTemplate< typename R::VectorOperandType >::type;
+   using type = typename RemoveExpressionTemplate< typename std::decay_t< R >::VectorOperandType >::type;
 };
 
 template< typename R >
