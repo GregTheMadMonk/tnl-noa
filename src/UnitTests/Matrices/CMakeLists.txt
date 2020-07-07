@@ -137,7 +137,7 @@ if( ${BUILD_MPI} )
    if( BUILD_CUDA )
       CUDA_ADD_EXECUTABLE( DistributedMatrixTest DistributedMatrixTest.cu
                            OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedMatrixTest ${GTEST_BOTH_LIBRARIES} ${CUDA_TOOLKIT_ROOT_DIR}/lib64/libcudadevrt.a )
+      TARGET_LINK_LIBRARIES( DistributedMatrixTest ${GTEST_BOTH_LIBRARIES} ${CUDA_cudadevrt_LIBRARY} )
    else()
       ADD_EXECUTABLE( DistributedMatrixTest DistributedMatrixTest.cpp )
       TARGET_COMPILE_OPTIONS( DistributedMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
