@@ -25,6 +25,8 @@ auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< d
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const ResultType localResult = ExpressionMin( expression.getConstLocalView() );
@@ -42,6 +44,8 @@ auto DistributedExpressionArgMin( const Expression& expression )
    using ResultType = std::pair< RealType, IndexType >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< RealType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::max() );
    const auto group = expression.getCommunicationGroup();
    if( group != CommunicatorType::NullGroup ) {
@@ -82,6 +86,8 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::decay_t< d
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::lowest();
    if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const ResultType localResult = ExpressionMax( expression.getConstLocalView() );
@@ -99,6 +105,8 @@ auto DistributedExpressionArgMax( const Expression& expression )
    using ResultType = std::pair< RealType, IndexType >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< RealType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::lowest() );
    const auto group = expression.getCommunicationGroup();
    if( group != CommunicatorType::NullGroup ) {
@@ -168,6 +176,8 @@ auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::dec
    using ResultType = std::decay_t< decltype( expression[0] && expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const ResultType localResult = ExpressionLogicalAnd( expression.getConstLocalView() );
@@ -196,6 +206,8 @@ auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::deca
    using ResultType = std::decay_t< decltype( expression[0] & expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const ResultType localResult = ExpressionLogicalBinaryAnd( expression.getConstLocalView() );
