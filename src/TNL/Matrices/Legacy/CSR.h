@@ -15,10 +15,29 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
+#include <vector> // vector for blocks
 
 namespace TNL {
 namespace Matrices {
    namespace Legacy {
+
+enum class Type {
+   /* LONG = 0!!! Non zero value rewrites index[1] */
+   LONG = 0,
+   STREAM = 1,
+   VECTOR = 2
+};
+
+union Block {
+   void set(uint32_t row, Type type = Type::VECTOR, uint32_t index = 0) noexcept {
+      this->index[0] = row;
+      this->index[1] = index;
+      this->byte[7] = (uint8_t)type;
+   }
+
+   unsigned index[2]; // index[0] is row pointer, index[1] is index in warp
+   uint8_t byte[8]; // byte[7] is type specificator
+};
 
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
@@ -65,6 +84,10 @@ public:
 
    constexpr CSRKernel getSpMVKernelType() { return KernelType; };
    //enum SPMVCudaKernel { scalar, vector, hybrid };
+
+
+   Containers::Vector< Block, Device, Index > blocks;
+   Index maxElementsPerWarp = 1024;
 
    using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
@@ -228,6 +251,9 @@ public:
                             OutVector& outVector,
                             const IndexType gridIdx ) const;
 #endif
+
+   /* Analyze rowPointers, columnIndecies and values to create block for CSR Adaptive */
+   void setBlocks();
 
    // The following getters allow us to interface TNL with external C-like
    // libraries such as UMFPACK or SuperLU, which need the raw data.
