@@ -85,32 +85,7 @@ using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
       ) >;
 
 
-// helper trait class for proper classification of expression operands using getExpressionVariableType
-template< typename T, typename V,
-          bool enabled = IsVectorType< V >::value >
-struct IsArithmeticSubtype
-: public std::integral_constant< bool,
-            // TODO: use std::is_assignable?
-            std::is_same< T, typename std::decay_t< V >::RealType >::value >
-{};
-
-template< typename T >
-struct IsArithmeticSubtype< T, T, true >
-: public std::false_type
-{};
-
-template< typename T >
-struct IsArithmeticSubtype< T, T, false >
-: public std::false_type
-{};
-
-template< typename T, typename V >
-struct IsArithmeticSubtype< T, V, false >
-: public std::is_arithmetic< T >
-{};
-
-
-// helper trait class (used in unit tests)
+// helper trait class for recursively turning expression template classes into compatible vectors
 template<class T, class R = void>
 struct enable_if_type { typedef R type; };
 
@@ -128,6 +103,69 @@ struct RemoveExpressionTemplate< R, typename enable_if_type< typename std::decay
 
 template< typename R >
 using RemoveET = typename RemoveExpressionTemplate< R >::type;
+
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t<
+      ! ( std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value ) &&
+      ! ( IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value ) &&
+      ! ( IsArrayType< T1 >::value && IsArrayType< T2 >::value )
+, bool >
+compatibleForVectorAssignment()
+{
+   return false;
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return true;
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return T1::getSize() == T2::getSize() &&
+          compatibleForVectorAssignment< typename RemoveET< T1 >::ValueType, typename RemoveET< T2 >::ValueType >();
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< IsArrayType< T1 >::value && IsArrayType< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return compatibleForVectorAssignment< typename RemoveET< T1 >::ValueType, typename RemoveET< T2 >::ValueType >();
+}
+
+
+// helper trait class for proper classification of expression operands using getExpressionVariableType
+template< typename T, typename V,
+          bool enabled = HasEnabledExpressionTemplates< V >::value ||
+                         HasEnabledStaticExpressionTemplates< V >::value ||
+                         HasEnabledDistributedExpressionTemplates< V >::value >
+struct IsArithmeticSubtype
+: public std::integral_constant< bool,
+            // Note that using std::is_same would not be general enough, because e.g.
+            // StaticVector<3, int> may be assigned to StaticVector<3, double>
+            compatibleForVectorAssignment< typename V::RealType, T >() >
+{};
+
+template< typename T >
+struct IsArithmeticSubtype< T, T, true >
+: public std::false_type
+{};
+
+template< typename T >
+struct IsArithmeticSubtype< T, T, false >
+: public std::false_type
+{};
+
+template< typename T, typename V >
+struct IsArithmeticSubtype< T, V, false >
+: public std::is_arithmetic< T >
+{};
+
 
 // helper trait class for Static*ExpressionTemplates classes
 template< typename R, typename Enable = void >
