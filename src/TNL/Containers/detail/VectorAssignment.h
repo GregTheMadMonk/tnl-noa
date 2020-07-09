@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
@@ -22,7 +23,7 @@ namespace detail {
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
+          bool vectorVectorAssignment = HasSubscriptOperator< T >::value && ! Expressions::IsArithmeticSubtype< T, Vector >::value >
 struct VectorAssignment;
 
 /**
@@ -30,12 +31,12 @@ struct VectorAssignment;
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value,
+          bool vectorVectorAssignment = HasSubscriptOperator< T >::value && ! Expressions::IsArithmeticSubtype< T, Vector >::value,
           bool hasSetSizeMethod = HasSetSizeMethod< T >::value >
 struct VectorAssignmentWithOperation;
 
 /**
- * \brief Specialization of ASSIGNEMENT with subscript operator
+ * \brief Specialization for vector-vector assignment.
  */
 template< typename Vector,
           typename T >
@@ -73,8 +74,7 @@ struct VectorAssignment< Vector, T, true >
 };
 
 /**
- * \brief Specialization of ASSIGNEMENT for array-value assignment for other types. We assume
- * that T is convertible to Vector::ValueType.
+ * \brief Specialization for vector-value assignment. We assume that T is assignable to Vector::RealType.
  */
 template< typename Vector,
           typename T >
