@@ -116,6 +116,8 @@ struct SharedMemory< T, 64 >
 template< typename T >
 __device__ inline T* getSharedMemory()
 {
+   static_assert( sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
+                  "Requested type has unsupported size." );
    return SharedMemory< T >{};
 }
 
