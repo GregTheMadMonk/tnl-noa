@@ -50,7 +50,8 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRLight2,
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid,
+                 CSRLight, CSRLight2, CSRLight3, CSRLight4, CSRLight5, CSRLight6,
                  CSRAdaptive, CSRMultiVector, CSRLightWithoutAtomic };
 
 template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >

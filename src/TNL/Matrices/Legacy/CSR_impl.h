@@ -987,10 +987,8 @@ void SpMVCSRLight( const Real *inVector,
                    const Real* values,
                    const Index rows,
                    unsigned *rowCnt) {
-   Index i;
    Real sum;
-   Index row;
-   Index rowStart, rowEnd;
+   Index row, i, rowStart, rowEnd;
    const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
    const Index vectorId = threadIdx.x / groupSize; /*vector index in the thread block*/
    const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
@@ -1009,9 +1007,9 @@ void SpMVCSRLight( const Real *inVector,
    while (row < rows) {
 
       /*use two threads to fetch the row offset*/
-      if (laneId < 2) {
+      if (laneId < 2)
          space[vectorId][laneId] = rowPointers[row + laneId];
-      }
+      
       rowStart = space[vectorId][0];
       rowEnd = space[vectorId][1];
 
@@ -1024,40 +1022,187 @@ void SpMVCSRLight( const Real *inVector,
          i = rowStart - (rowStart & (groupSize - 1)) + laneId;
 
          /*process the unaligned part*/
-         if (i >= rowStart && i < rowEnd) {
+         if (i >= rowStart && i < rowEnd)
             sum += values[i] * inVector[columnIndexes[i]];
-         }
 
-            /*process the aligned part*/
-         for (i += groupSize; i < rowEnd; i += groupSize) {
+         /*process the aligned part*/
+         for (i += groupSize; i < rowEnd; i += groupSize)
             sum += values[i] * inVector[columnIndexes[i]];
-         }
       } else {
          /*regardless of the global memory access alignment*/
-         for (i = rowStart + laneId; i < rowEnd; i +=
-               groupSize) {
+         for (i = rowStart + laneId; i < rowEnd; i += groupSize)
             sum += values[i] * inVector[columnIndexes[i]];
-         }
       }
       /*intra-vector reduction*/
-      for (i = groupSize >> 1; i > 0; i >>= 1) {
+      for (i = groupSize >> 1; i > 0; i >>= 1)
          sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
-      }
 
       /*save the results and get a new row*/
-      if (laneId == 0) {
-         /*save the results*/
+      if (laneId == 0)
          outVector[row] = sum;
-      }
 
       /*get a new row index*/
-      if(warpLaneId == 0){
+      if(warpLaneId == 0)
          row = atomicAdd(rowCnt, 32 / groupSize);
-      }
+      
       /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
       row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
 	}/*while*/
+}
+
+/* Original CSR Light without shared memory */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight2( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   unsigned *rowCnt) {
+   Real sum;
+   Index i, rowStart, rowEnd, row;
+   const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
+   const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
+   const Index warpVectorId = warpLaneId / groupSize;	/*vector index in the warp*/
+
+   /*get the row index*/
+   if (warpLaneId == 0)
+      row = atomicAdd(rowCnt, 32 / groupSize);
+   
+   /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
+   row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+   /*check the row range*/
+   while (row < rows) {
+
+      rowStart = rowPointers[row];
+      rowEnd = rowPointers[row + 1];
+
+      /*there are non-zero elements in the current row*/
+      sum = 0;
+      /*compute dot product*/
+      if (groupSize == 32) {
+
+         /*ensure aligned memory access*/
+         i = rowStart - (rowStart & (groupSize - 1)) + laneId;
+
+         /*process the unaligned part*/
+         if (i >= rowStart && i < rowEnd)
+            sum += values[i] * inVector[columnIndexes[i]];
+
+         /*process the aligned part*/
+         for (i += groupSize; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      } else {
+         /*regardless of the global memory access alignment*/
+         for (i = rowStart + laneId; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      }
+      /*intra-vector reduction*/
+      for (i = groupSize >> 1; i > 0; i >>= 1)
+         sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+      /*save the results and get a new row*/
+      if (laneId == 0)
+         outVector[row] = sum;
+
+      /*get a new row index*/
+      if(warpLaneId == 0)
+         row = atomicAdd(rowCnt, 32 / groupSize);
+      
+      /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
+      row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+	}/*while*/
+}
+
+/* Original CSR Light without shared memory and allign memory access */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight3( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   unsigned *rowCnt) {
+   Real sum;
+   Index i, rowEnd, row;
+   const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
+   const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
+   const Index warpVectorId = warpLaneId / groupSize;	/*vector index in the warp*/
+
+   /*get the row index*/
+   if (warpLaneId == 0)
+      row = atomicAdd(rowCnt, 32 / groupSize);
+   
+   /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
+   row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+   /*check the row range*/
+   while (row < rows) {
+      sum = 0;
+      
+      /*compute dot product*/
+      rowEnd = rowPointers[row + 1];
+      for (i = rowPointers[row] + laneId; i < rowEnd; i += groupSize)
+         sum += values[i] * inVector[columnIndexes[i]];
+
+      /*intra-vector reduction*/
+      for (i = groupSize >> 1; i > 0; i >>= 1)
+         sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+      /*save the results and get a new row*/
+      if (laneId == 0)
+         outVector[row] = sum;
+
+      /*get a new row index*/
+      if(warpLaneId == 0)
+         row = atomicAdd(rowCnt, 32 / groupSize);
+
+      /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
+      row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+	}/*while*/
+}
+
+/* Original CSR Light without shared memory, allign memory access and atomic instructions */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight4( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   const Index gridID) {
+   const Index row = ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / groupSize;
+   if (row >= rows)
+      return;
+
+   Real sum = 0;
+   Index i;
+   const Index laneId = threadIdx.x & (groupSize - 1);	/*lane index in the group*/
+
+   /*compute dot product*/
+   const Index rowEnd = rowPointers[row + 1];
+   for (i = rowPointers[row] + laneId; i < rowEnd; i += groupSize)
+      sum += values[i] * inVector[columnIndexes[i]];
+
+   /*intra-vector reduction*/
+   for (i = groupSize >> 1; i > 0; i >>= 1)
+      sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+   /*save the results and get a new row*/
+   if (laneId == 0) outVector[row] = sum;
 }
 
 template< typename Real,
@@ -1272,46 +1417,113 @@ void SpMVCSRLightPrepare( const Real *inVector,
       properties.multiProcessorCount * properties.maxThreadsPerMultiProcessor / threads;
 
    const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
-   if (nnz <= 2)
-      SpMVCSRLight<Real, Index, 2, 1024 / 2><<<blocks, threads>>>(
-         inVector,
-         outVector,
-         matrix.getRowPointers().getData(),
-         matrix.getColumnIndexes().getData(),
-         matrix.getValues().getData(),
-         rows,
-         kernelRowCnt
-      );
-   else if (nnz <= 4)
-      SpMVCSRLight<Real, Index, 4, 1024 / 4><<<blocks, threads>>>(
-         inVector,
-         outVector,
-         matrix.getRowPointers().getData(),
-         matrix.getColumnIndexes().getData(),
-         matrix.getValues().getData(),
-         rows,
-         kernelRowCnt
-      );
-   else if (nnz <= 64)
-      SpMVCSRLight<Real, Index, 8, 1024 / 8><<<blocks, threads>>>(
-            inVector,
-            outVector,
-            matrix.getRowPointers().getData(),
-            matrix.getColumnIndexes().getData(),
-            matrix.getValues().getData(),
-            rows,
-            kernelRowCnt
-      );
-   else
-      SpMVCSRLight<Real, Index, 32, 1024 / 32><<<blocks, threads>>>(
-            inVector,
-            outVector,
-            matrix.getRowPointers().getData(),
-            matrix.getColumnIndexes().getData(),
-            matrix.getValues().getData(),
-            rows,
-            kernelRowCnt
-      );
+   if (KernelType == CSRLight) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight<Real, Index, 2, 1024 / 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight<Real, Index, 4, 1024 / 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight<Real, Index, 8, 1024 / 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight<Real, Index, 32, 1024 / 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight2) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight2<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight2<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight2<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight2<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight3) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight3<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight3<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight3<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight3<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight6) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight3<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight3<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 8)
+         SpMVCSRLight3<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 16)
+         SpMVCSRLight3<Real, Index, 16><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight3<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   }
 
    cudaFree(kernelRowCnt);
 }
@@ -1355,54 +1567,108 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      if (groupSize == 2) {
-         SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, grid
-         );
-      } else if (groupSize == 4) {
-         SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, grid
-         );
-      } else if (groupSize == 8) {
-         SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, grid
-         );
-      } else if (groupSize == 16) {
-         SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, grid
-         );
-      } else if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
-         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, grid
-         );
-      } else { // Execute CSR MultiVector
-         SpMVCSRMultiVector<Real, Index, warpSize><<<blocks, threads>>>(
-                  inVector, outVector,
-                  matrix.getRowPointers().getData(),
-                  matrix.getColumnIndexes().getData(),
-                  matrix.getValues().getData(),
-                  rows, groupSize / 32, grid
-         );
+      if (KernelType == CSRLightWithoutAtomic) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // Execute CSR MultiVector
+            SpMVCSRMultiVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, groupSize / 32, grid
+            );
+         }
+      } else if (KernelType == CSRLight5) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         }
+      } else if (KernelType == CSRLight4) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLight4<Real, Index, 2><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLight4<Real, Index, 4><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLight4<Real, Index, 8><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLight4<Real, Index, 16><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } //-----------------------------------------
       }
    }
 }
@@ -1656,44 +1922,37 @@ class CSRDeviceDependentCode< Devices::Cuda >
          {
             case CSRScalar:
                SpMVCSRScalarPrepare<Real, Index, Device, KernelType>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
             case CSRVector:
                SpMVCSRVectorPrepare<Real, Index, Device, KernelType, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
             case CSRLight:
+            case CSRLight2:
+            case CSRLight3:
+            case CSRLight6:
                SpMVCSRLightPrepare<Real, Index, Device, KernelType, 32>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
             case CSRAdaptive:
                SpMVCSRAdaptivePrepare<Real, Index, Device, KernelType, 32, 1024>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
             case CSRMultiVector:
                SpMVCSRMultiVectorPrepare<Real, Index, Device, KernelType, 32, 1024>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
+            case CSRLight4:
+            case CSRLight5:
             case CSRLightWithoutAtomic:
                SpMVCSRLightWithoutAtomicPrepare<Real, Index, Device, KernelType, 32, 1024>(
-                  inVector.getData(),
-                  outVector.getData(),
-                  matrix
+                  inVector.getData(), outVector.getData(), matrix
                );
                break;
          }
