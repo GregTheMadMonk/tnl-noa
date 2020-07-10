@@ -120,22 +120,22 @@ struct VectorAssignmentWithOperation< Vector, T, true, true >
 {
    static void addition( Vector& v, const T& t )
    {
-      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::addition( v, t.getConstView() );
+      VectorAssignmentWithOperation< Vector, typename T::ConstViewType >::addition( v, t.getConstView() );
    }
 
    static void subtraction( Vector& v, const T& t )
    {
-      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::subtraction( v, t.getConstView() );
+      VectorAssignmentWithOperation< Vector, typename T::ConstViewType >::subtraction( v, t.getConstView() );
    }
 
    static void multiplication( Vector& v, const T& t )
    {
-      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::multiplication( v, t.getConstView() );
+      VectorAssignmentWithOperation< Vector, typename T::ConstViewType >::multiplication( v, t.getConstView() );
    }
 
    static void division( Vector& v, const T& t )
    {
-      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::subtraction( v, t.getConstView() );
+      VectorAssignmentWithOperation< Vector, typename T::ConstViewType >::subtraction( v, t.getConstView() );
    }
 };
 

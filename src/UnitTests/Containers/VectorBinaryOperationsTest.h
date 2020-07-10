@@ -147,62 +147,62 @@ protected:
 #if defined(DISTRIBUTED_VECTOR)
    using VectorPairs = ::testing::Types<
    #ifndef HAVE_CUDA
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
 
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >
    #else
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
    #ifdef VECTOR_OF_STATIC_VECTORS
       using VectorPairs = ::testing::Types<
-         Pair< StaticVector< 1, StaticVector< 3, double > >,  StaticVector< 1, StaticVector< 3, double > > >,
-         Pair< StaticVector< 2, StaticVector< 3, double > >,  StaticVector< 2, StaticVector< 3, double > > >,
-         Pair< StaticVector< 3, StaticVector< 3, double > >,  StaticVector< 3, StaticVector< 3, double > > >,
-         Pair< StaticVector< 4, StaticVector< 3, double > >,  StaticVector< 4, StaticVector< 3, double > > >,
-         Pair< StaticVector< 5, StaticVector< 3, double > >,  StaticVector< 5, StaticVector< 3, double > > >
+         Pair< StaticVector< 1, StaticVector< 3, int > >,  StaticVector< 1, StaticVector< 3, short > > >,
+         Pair< StaticVector< 2, StaticVector< 3, int > >,  StaticVector< 2, StaticVector< 3, short > > >,
+         Pair< StaticVector< 3, StaticVector< 3, int > >,  StaticVector< 3, StaticVector< 3, short > > >,
+         Pair< StaticVector< 4, StaticVector< 3, int > >,  StaticVector< 4, StaticVector< 3, short > > >,
+         Pair< StaticVector< 5, StaticVector< 3, int > >,  StaticVector< 5, StaticVector< 3, short > > >
       >;
    #else
       using VectorPairs = ::testing::Types<
-         Pair< StaticVector< 1, int >,     StaticVector< 1, int >    >,
+         Pair< StaticVector< 1, int >,     StaticVector< 1, short >    >,
          Pair< StaticVector< 1, double >,  StaticVector< 1, double > >,
-         Pair< StaticVector< 2, int >,     StaticVector< 2, int >    >,
+         Pair< StaticVector< 2, int >,     StaticVector< 2, short >    >,
          Pair< StaticVector< 2, double >,  StaticVector< 2, double > >,
-         Pair< StaticVector< 3, int >,     StaticVector< 3, int >    >,
+         Pair< StaticVector< 3, int >,     StaticVector< 3, short >    >,
          Pair< StaticVector< 3, double >,  StaticVector< 3, double > >,
-         Pair< StaticVector< 4, int >,     StaticVector< 4, int >    >,
+         Pair< StaticVector< 4, int >,     StaticVector< 4, short >    >,
          Pair< StaticVector< 4, double >,  StaticVector< 4, double > >,
-         Pair< StaticVector< 5, int >,     StaticVector< 5, int >    >,
+         Pair< StaticVector< 5, int >,     StaticVector< 5, short >    >,
          Pair< StaticVector< 5, double >,  StaticVector< 5, double > >
       >;
    #endif
@@ -210,15 +210,15 @@ protected:
    #ifdef VECTOR_OF_STATIC_VECTORS
       using VectorPairs = ::testing::Types<
       #ifndef HAVE_CUDA
-         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
-         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >
+         Pair< Vector<     StaticVector< 3, int >, Devices::Host >, Vector<     StaticVector< 3, short >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Host >, Vector<     StaticVector< 3, short >, Devices::Host > >,
+         Pair< Vector<     StaticVector< 3, int >, Devices::Host >, VectorView< StaticVector< 3, short >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Host >, VectorView< StaticVector< 3, short >, Devices::Host > >
       #else
-         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >
+         Pair< Vector<     StaticVector< 3, int >, Devices::Cuda >, Vector<     StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Cuda >, Vector<     StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< Vector<     StaticVector< 3, int >, Devices::Cuda >, VectorView< StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Cuda >, VectorView< StaticVector< 3, short >, Devices::Cuda > >
       #endif
       >;
    #else
