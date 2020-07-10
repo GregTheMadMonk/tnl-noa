@@ -35,7 +35,12 @@ auto ExpressionMin( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b )
+   {
+      // use argument-dependent lookup and make TNL::min available for unqualified calls
+      using TNL::min;
+      return min( a, b );
+   };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
@@ -72,7 +77,12 @@ auto ExpressionMax( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b )
+   {
+      // use argument-dependent lookup and make TNL::max available for unqualified calls
+      using TNL::max;
+      return max( a, b );
+   };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
