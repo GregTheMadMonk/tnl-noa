@@ -166,7 +166,7 @@ void CSR< Real, Device, Index, KernelType >::setBlocks()
 
    while (nextStart != rows - 1) {
       Type type;
-      nextStart = findLimit(
+      nextStart = findLimit<Real, Index, Device, KernelType>(
          start, 384, *this, rows, this->maxElementsPerWarp, type, sum
       );
       if (type == Type::LONG) {
