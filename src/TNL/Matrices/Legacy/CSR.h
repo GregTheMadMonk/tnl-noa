@@ -242,17 +242,6 @@ public:
    __cuda_callable__
    IndexType getHybridModeSplit() const;
 
-#ifdef HAVE_CUDA
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCudaVectorized( const InVector& inVector,
-                            OutVector& outVector,
-                            const IndexType gridIdx ) const;
-#endif
-
    /* Analyze rowPointers, columnIndecies and values to create block for CSR Adaptive */
    void setBlocks();
 
