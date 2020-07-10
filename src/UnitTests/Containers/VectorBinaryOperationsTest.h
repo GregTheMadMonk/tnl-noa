@@ -655,46 +655,50 @@ TYPED_TEST( VectorBinaryOperationsTest, min )
 {
    SETUP_BINARY_TEST_ALIASES;
 
-// FIXME: does not work without TNL::, because std::min conflicts (why?!)
+   // make sure we are testing TNL::min and not std::min (which might take precedence when
+   // both arguments have the same type, see https://stackoverflow.com/q/62847698/4180822
+   using TNL::min;
 
    // with vector or vector view
-   EXPECT_EQ( TNL::min(L1, R2), L1 );
+   EXPECT_EQ( min(L1, R2), L1 );
    // with scalar
-   EXPECT_EQ( TNL::min(L1, 2), L1 );
-   EXPECT_EQ( TNL::min(1, R2), L1 );
+   EXPECT_EQ( min(L1, 2), L1 );
+   EXPECT_EQ( min(1, R2), L1 );
    // with expression
-   EXPECT_EQ( TNL::min(L1, R1 + R1), L1 );
-   EXPECT_EQ( TNL::min(L1 + L1, R1), R1 );
+   EXPECT_EQ( min(L1, R1 + R1), L1 );
+   EXPECT_EQ( min(L1 + L1, R1), R1 );
    // with two expressions
-   EXPECT_EQ( TNL::min(L1 + L1, R1 + R2), L2 );
+   EXPECT_EQ( min(L1 + L1, R1 + R2), L2 );
    // with expression and scalar
-   EXPECT_EQ( TNL::min(L1 + L1, 1), L1 );
-   EXPECT_EQ( TNL::min(L1 + L1, RightReal(1)), L1 );
-   EXPECT_EQ( TNL::min(1, R1 + R1), L1 );
-   EXPECT_EQ( TNL::min(LeftReal(1), R1 + R1), L1 );
+   EXPECT_EQ( min(L1 + L1, 1), L1 );
+   EXPECT_EQ( min(L1 + L1, RightReal(1)), L1 );
+   EXPECT_EQ( min(1, R1 + R1), L1 );
+   EXPECT_EQ( min(LeftReal(1), R1 + R1), L1 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, max )
 {
    SETUP_BINARY_TEST_ALIASES;
 
-// FIXME: does not work without TNL::, because std::min conflicts (why?!)
+   // make sure we are testing TNL::max and not std::max (which might take precedence when
+   // both arguments have the same type, see https://stackoverflow.com/q/62847698/4180822
+   using TNL::max;
 
    // with vector or vector view
-   EXPECT_EQ( TNL::max(L1, R2), R2 );
+   EXPECT_EQ( max(L1, R2), R2 );
    // with scalar
-   EXPECT_EQ( TNL::max(L1, 2), L2 );
-   EXPECT_EQ( TNL::max(1, R2), L2 );
+   EXPECT_EQ( max(L1, 2), L2 );
+   EXPECT_EQ( max(1, R2), L2 );
    // with expression
-   EXPECT_EQ( TNL::max(L1, R1 + R1), L2 );
-   EXPECT_EQ( TNL::max(L1 + L1, R1), R2 );
+   EXPECT_EQ( max(L1, R1 + R1), L2 );
+   EXPECT_EQ( max(L1 + L1, R1), R2 );
    // with two expressions
-   EXPECT_EQ( TNL::max(L1 - L1, R1 + R1), L2 );
+   EXPECT_EQ( max(L1 - L1, R1 + R1), L2 );
    // with expression and scalar
-   EXPECT_EQ( TNL::max(L1 + L1, 1), L2 );
-   EXPECT_EQ( TNL::max(L1 + L1, RightReal(1)), L2 );
-   EXPECT_EQ( TNL::max(1, R1 + R1), L2 );
-   EXPECT_EQ( TNL::max(LeftReal(1), R1 + R1), L2 );
+   EXPECT_EQ( max(L1 + L1, 1), L2 );
+   EXPECT_EQ( max(L1 + L1, RightReal(1)), L2 );
+   EXPECT_EQ( max(1, R1 + R1), L2 );
+   EXPECT_EQ( max(LeftReal(1), R1 + R1), L2 );
 }
 
 #if defined(HAVE_CUDA) && !defined(STATIC_VECTOR)
