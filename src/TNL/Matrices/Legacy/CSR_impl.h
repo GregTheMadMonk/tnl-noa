@@ -113,7 +113,7 @@ void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstCompr
    this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) );
    this->columnIndexes.setValue( this->columns );
 
-   if (KernelType == CSRAdaptive)
+   if (KernelType == CSRAdaptive && this->blocks.empty())
       this->setBlocks();
 }
 
@@ -665,6 +665,7 @@ CSR< Real, Device, Index, KernelType >::operator=( const CSR& matrix )
    this->values = matrix.values;
    this->columnIndexes = matrix.columnIndexes;
    this->rowPointers = matrix.rowPointers;
+   this->blocks = matrix.blocks;
    return *this;
 }
 
@@ -681,6 +682,7 @@ CSR< Real, Device, Index, KernelType >::operator=( const CSR< Real2, Device2, In
    this->values = matrix.values;
    this->columnIndexes = matrix.columnIndexes;
    this->rowPointers = matrix.rowPointers;
+   this->blocks = matrix.blocks;
    return *this;
 }
 
