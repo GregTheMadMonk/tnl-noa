@@ -39,6 +39,25 @@ static constexpr int Reduction_registersPerThread = 32;   // empirically determi
    static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
 #endif
 
+/*
+ * nvcc (as of 10.2) is totally fucked up, in some cases it does not recognize the
+ * std::plus<void>::operator() function to be constexpr and hence __host__ __device__
+ * (for example, when the arguments are StaticVector<3, double> etc). Hence, we use
+ * this wrapper which triggers only a warning and not an error as is the case when
+ * the reduction functor is called from a __global__ or __device__ function. Let's
+ * hope it works otherwise...
+ */
+template< typename Reduction, typename Arg1, typename Arg2 >
+__host__ __device__
+auto CudaReductionFunctorWrapper( Reduction&& reduction, Arg1&& arg1, Arg2&& arg2 )
+{
+// let's suppress the aforementioned warning...
+#pragma push
+#pragma diag_suppress 2979
+   return std::forward<Reduction>(reduction)( std::forward<Arg1>(arg1), std::forward<Arg2>(arg2) );
+#pragma pop
+}
+
 template< int blockSize,
           typename Result,
           typename DataFetcher,
@@ -68,19 +87,19 @@ CudaReductionKernel( const Result zero,
 
    // Start with the sequential reduction and push the result into the shared memory.
    while( gid + 4 * gridSize < end ) {
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + gridSize ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
       gid += 4 * gridSize;
    }
    while( gid + 2 * gridSize < end ) {
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + gridSize ) );
       gid += 2 * gridSize;
    }
    while( gid < end ) {
-      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
+      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
       gid += gridSize;
    }
    __syncthreads();
@@ -88,48 +107,48 @@ CudaReductionKernel( const Result zero,
    // Perform the parallel reduction.
    if( blockSize >= 1024 ) {
       if( tid < 512 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 512 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 512 ] );
       __syncthreads();
    }
    if( blockSize >= 512 ) {
       if( tid < 256 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 256 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 256 ] );
       __syncthreads();
    }
    if( blockSize >= 256 ) {
       if( tid < 128 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 128 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 128 ] );
       __syncthreads();
    }
    if( blockSize >= 128 ) {
       if( tid <  64 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 64 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 64 ] );
       __syncthreads();
    }
 
    // This runs in one warp so we use __syncwarp() instead of __syncthreads().
    if( tid < 32 ) {
       if( blockSize >= 64 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 32 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 32 ] );
       __syncwarp();
       // Note that here we do not have to check if tid < 16 etc, because we have
       // 2 * blockSize.x elements of shared memory per block, so we do not
       // access out of bounds. The results for the upper half will be undefined,
       // but unused anyway.
       if( blockSize >= 32 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 16 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 16 ] );
       __syncwarp();
       if( blockSize >= 16 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 8 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 8 ] );
       __syncwarp();
       if( blockSize >=  8 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 4 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 4 ] );
       __syncwarp();
       if( blockSize >=  4 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 2 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 2 ] );
       __syncwarp();
       if( blockSize >=  2 )
-         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 1 ] );
+         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 1 ] );
    }
 
    // Store the result back in the global memory.
