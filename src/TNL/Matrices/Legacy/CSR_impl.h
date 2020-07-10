@@ -1556,7 +1556,11 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
    else
       groupSize = roundUpDivision(nnz, maxElemPerWarp) * 32; // CSR MultiVector
 
-   neededThreads = groupSize * rows;
+   if (KernelType == CSRLightWithoutAtomic)
+      neededThreads = groupSize * rows;
+   else
+      neededThreads = rows * (groupSize > 32 ? 32 : groupSize);
+   
    /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {

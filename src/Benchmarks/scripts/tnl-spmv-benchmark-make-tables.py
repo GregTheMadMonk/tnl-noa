@@ -87,6 +87,11 @@ df["BiEllpacky",                    "GPU", "cuSparse speedup"] = df["BiEllpack",
 df["CSR",                           "GPU", "cuSparse speedup"] = df["CSR",                           "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["CSR Legacy Adaptive",           "GPU", "cuSparse speedup"] = df["CSR Legacy Adaptive",           "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["CSR Legacy Light",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light2",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light2",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light3",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light3",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light4",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light4",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light5",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light5",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
+df["CSR Legacy Light6",              "GPU", "cuSparse speedup"] = df["CSR Legacy Light6",              "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["CSR Legacy LightWithoutAtomic", "GPU", "cuSparse speedup"] = df["CSR Legacy LightWithoutAtomic", "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["CSR Legacy Scalar",             "GPU", "cuSparse speedup"] = df["CSR Legacy Scalar",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
 df["CSR Legacy Vector",             "GPU", "cuSparse speedup"] = df["CSR Legacy Vector",             "GPU", "time"] / df["cuSparse", "GPU", "time"]
@@ -121,6 +126,11 @@ print( "Preparing data for graph analysis..." )
 df['cuSparse-bandwidth'                        ] = df[ 'cuSparse','GPU','bandwidth']
 df['csr-legacy-adaptive-bandwidth'             ] = df[ 'CSR Legacy Adaptive','GPU','bandwidth']
 df['csr-legacy-light-bandwidth'                ] = df[ 'CSR Legacy Light','GPU','bandwidth']
+df['csr-legacy-light2-bandwidth'                ] = df[ 'CSR Legacy Light2','GPU','bandwidth']
+df['csr-legacy-light3-bandwidth'                ] = df[ 'CSR Legacy Light3','GPU','bandwidth']
+df['csr-legacy-light4-bandwidth'                ] = df[ 'CSR Legacy Light4','GPU','bandwidth']
+df['csr-legacy-light5-bandwidth'                ] = df[ 'CSR Legacy Light5','GPU','bandwidth']
+df['csr-legacy-light6-bandwidth'                ] = df[ 'CSR Legacy Light6','GPU','bandwidth']
 df['csr-legacy-light-without-atomic-bandwidth' ] = df[ 'CSR Legacy LightWithoutAtomic','GPU','bandwidth']
 df['csr-legacy-scalar-bandwidth'               ] = df[ 'CSR Legacy Scalar','GPU','bandwidth']
 df['csr-legacy-vector-bandwidth'               ] = df[ 'CSR Legacy Vector','GPU','bandwidth']
@@ -135,6 +145,11 @@ df.sort_values(by=["cuSparse-bandwidth"],inplace=True,ascending=False)
 cuSparse_list = df['cuSparse-bandwidth'].tolist()
 cuSparse_csr_legacy_adaptive_gpu_list               = df[ "CSR Legacy Adaptive", "GPU", "bandwidth"].tolist();
 cuSparse_csr_legacy_light_gpu_list                  = df[ "CSR Legacy Light", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light2_gpu_list                  = df[ "CSR Legacy Light2", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light3_gpu_list                  = df[ "CSR Legacy Light3", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light4_gpu_list                  = df[ "CSR Legacy Light4", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light5_gpu_list                  = df[ "CSR Legacy Light5", "GPU", "bandwidth"].tolist();
+cuSparse_csr_legacy_light6_gpu_list                  = df[ "CSR Legacy Light6", "GPU", "bandwidth"].tolist();
 cuSparse_csr_legacy_light_without_atomic_gpu_list   = df[ "CSR Legacy LightWithoutAtomic", "GPU", "bandwidth"].tolist();
 cuSparse_csr_legacy_scalar_gpu_list                 = df[ "CSR Legacy Scalar", "GPU", "bandwidth"].tolist();
 cuSparse_csr_legacy_vector_gpu_list                 = df[ "CSR Legacy Vector", "GPU", "bandwidth"].tolist();
@@ -179,6 +194,11 @@ for x in cuSparse_list:
    if str( x ) != "nan":
       if ( str( cuSparse_csr_legacy_adaptive_gpu_list[ i ] ) != "nan" and
          str( cuSparse_csr_legacy_light_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light2_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light3_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light4_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light5_gpu_list[ i ] ) != "nan" and 
+         str( cuSparse_csr_legacy_light6_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_csr_legacy_scalar_gpu_list[ i ] ) != "nan" and 
          str( cuSparse_csr_legacy_vector_gpu_list[ i ] ) != "nan" and 
@@ -194,6 +214,11 @@ for x in cuSparse_list:
             cuSparse_file.write( f"{i+1} {x} " )                                                                                        # 1 2
             cuSparse_file.write( f"{cuSparse_csr_legacy_adaptive_gpu_list[ i ]} " )                                                     # 3
             cuSparse_file.write( f"{cuSparse_csr_legacy_light_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light2_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light3_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light4_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light5_gpu_list[ i ]} " )                                                        # 4
+            cuSparse_file.write( f"{cuSparse_csr_legacy_light6_gpu_list[ i ]} " )                                                        # 4
             cuSparse_file.write( f"{cuSparse_csr_legacy_light_without_atomic_gpu_list[ i ]} " )                                         # 5
             cuSparse_file.write( f"{cuSparse_csr_legacy_scalar_gpu_list[ i ]} " )                                                       # 6
             cuSparse_file.write( f"{cuSparse_csr_legacy_vector_gpu_list[ i ]} " )                                                       # 7
@@ -261,6 +286,31 @@ plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',     
      'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
      'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
      'cusparse.gplt' using 1:4 title 'CSR Legacy Light' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light2-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light2' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light3-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light3' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light4-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light4' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light5-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light5' with lines linewidth 0.5 lt rgb 'green',                    
+set output 'csr-legacy-light6-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
+     'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
+     'cusparse.gplt' using 1:4 title '' with dots linewidth 2 lt rgb 'green',                                   \
+     'cusparse.gplt' using 1:4 title 'CSR Legacy Light6' with lines linewidth 0.5 lt rgb 'green',                    
 set output 'csr-legacy-light-without-atomic-vs-cusparse.eps'
 plot 'cusparse.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                     \
      'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 0.5 lt rgb 'red',                          \
@@ -338,6 +388,11 @@ os.system( "gnuplot gnuplot.gplt" )
 print( "Converting files to PDF ..." )
 os.system( "epstopdf --autorotate All csr-legacy-adaptive-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All csr-legacy-light-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light2-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light3-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light4-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light5-vs-cusparse.eps" )
+os.system( "epstopdf --autorotate All csr-legacy-light6-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All csr-legacy-light-without-atomic-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All csr-legacy-scalar-vs-cusparse.eps" )
 os.system( "epstopdf --autorotate All csr-legacy-vector-vs-cusparse.eps" )
