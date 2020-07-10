@@ -29,7 +29,7 @@ enum class Type {
 };
 
 union Block {
-   void set(uint32_t row, Type type = Type::VECTOR, uint32_t index = 0) noexcept {
+   Block(uint32_t row, Type type = Type::VECTOR, uint32_t index = 0) noexcept {
       this->index[0] = row;
       this->index[1] = index;
       this->byte[7] = (uint8_t)type;
@@ -87,6 +87,7 @@ public:
 
 
    Containers::Vector< Block, Device, Index > blocks;
+   
    Index maxElementsPerWarp = 1024;
 
    using Sparse< Real, Device, Index >::getAllocatedElementsCount;
