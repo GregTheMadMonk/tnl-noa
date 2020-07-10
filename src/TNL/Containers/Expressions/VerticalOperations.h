@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include <TNL/Algorithms/Reduction.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 
 ////
 // By vertical operations we mean those applied across vector elements or
@@ -26,22 +27,25 @@ namespace Expressions {
 ////
 // Vertical operations
 template< typename Expression >
-auto ExpressionMin( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
+auto ExpressionMin( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
 auto ExpressionArgMin( const Expression& expression )
--> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
+-> RemoveET< std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
@@ -54,26 +58,31 @@ auto ExpressionArgMin( const Expression& expression )
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
    };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
-auto ExpressionMax( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
+auto ExpressionMax( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
 auto ExpressionArgMax( const Expression& expression )
--> std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType >
+-> RemoveET< std::pair< std::decay_t< decltype( expression[0] ) >, typename Expression::IndexType > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
@@ -86,13 +95,16 @@ auto ExpressionArgMax( const Expression& expression )
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
    };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
-auto ExpressionSum( const Expression& expression ) -> std::decay_t< decltype( expression[0] + expression[0] ) >
+auto ExpressionSum( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] + expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] + expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] + expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
@@ -101,9 +113,10 @@ auto ExpressionSum( const Expression& expression ) -> std::decay_t< decltype( ex
 }
 
 template< typename Expression >
-auto ExpressionProduct( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
+auto ExpressionProduct( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] * expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] * expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
@@ -112,20 +125,24 @@ auto ExpressionProduct( const Expression& expression ) -> std::decay_t< decltype
 }
 
 template< typename Expression >
-auto ExpressionLogicalAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] && expression[0] ) >
+auto ExpressionLogicalAnd( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] && expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] && expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] && expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::logical_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
-auto ExpressionLogicalOr( const Expression& expression ) -> std::decay_t< decltype( expression[0] || expression[0] ) >
+auto ExpressionLogicalOr( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] || expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] || expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] || expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
@@ -134,20 +151,24 @@ auto ExpressionLogicalOr( const Expression& expression ) -> std::decay_t< declty
 }
 
 template< typename Expression >
-auto ExpressionBinaryAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] & expression[0] ) >
+auto ExpressionBinaryAnd( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] & expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] & expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] & expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
+   static_assert( std::numeric_limits< ResultType >::is_specialized,
+                  "std::numeric_limits is not specialized for the reduction's result type" );
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::bit_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
-auto ExpressionBinaryOr( const Expression& expression ) -> std::decay_t< decltype( expression[0] | expression[0] ) >
+auto ExpressionBinaryOr( const Expression& expression )
+-> RemoveET< std::decay_t< decltype( expression[0] | expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] | expression[0] ) >;
+   using ResultType = RemoveET< std::decay_t< decltype( expression[0] | expression[0] ) > >;
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();

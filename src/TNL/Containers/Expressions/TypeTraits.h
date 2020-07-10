@@ -33,57 +33,122 @@ struct HasEnabledDistributedExpressionTemplates : std::false_type
 // type aliases for enabling specific operators and functions using SFINAE
 template< typename ET1 >
 using EnableIfStaticUnaryExpression_t = std::enable_if_t<
-      HasEnabledStaticExpressionTemplates< ET1 >::value >;
+      HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfStaticBinaryExpression_t = std::enable_if_t<
-      HasEnabledStaticExpressionTemplates< ET1 >::value ||
-      HasEnabledStaticExpressionTemplates< ET2 >::value >;
+      (
+         HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value ||
+         HasEnabledStaticExpressionTemplates< std::decay_t< ET2 > >::value
+      ) && !
+      (
+         HasEnabledExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
+      ) >;
 
 template< typename ET1 >
 using EnableIfUnaryExpression_t = std::enable_if_t<
-      HasEnabledExpressionTemplates< ET1 >::value >;
+      HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
       (
-         HasAddAssignmentOperator< ET1 >::value ||
-         HasEnabledExpressionTemplates< ET1 >::value ||
-         std::is_arithmetic< ET1 >::value
+         HasAddAssignmentOperator< std::decay_t< ET1 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value ||
+         std::is_arithmetic< std::decay_t< ET1 > >::value
       ) &&
       (
-         HasEnabledExpressionTemplates< ET2 >::value ||
-         HasEnabledExpressionTemplates< ET1 >::value
+         HasEnabledExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value
       ) >;
 
 template< typename ET1 >
 using EnableIfDistributedUnaryExpression_t = std::enable_if_t<
-      HasEnabledDistributedExpressionTemplates< ET1 >::value >;
+      HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value >;
 
 template< typename ET1, typename ET2 >
 using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
       (
-         HasAddAssignmentOperator< ET1 >::value ||
-         HasEnabledDistributedExpressionTemplates< ET1 >::value ||
-         std::is_arithmetic< ET1 >::value
+         HasAddAssignmentOperator< std::decay_t< ET1 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value ||
+         std::is_arithmetic< std::decay_t< ET1 > >::value
       ) &&
       (
-         HasEnabledDistributedExpressionTemplates< ET2 >::value ||
-         HasEnabledDistributedExpressionTemplates< ET1 >::value
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
       ) >;
+
+
+// helper trait class for recursively turning expression template classes into compatible vectors
+template<class T, class R = void>
+struct enable_if_type { typedef R type; };
+
+template< typename R, typename Enable = void >
+struct RemoveExpressionTemplate
+{
+   using type = std::decay_t< R >;
+};
+
+template< typename R >
+struct RemoveExpressionTemplate< R, typename enable_if_type< typename std::decay_t< R >::VectorOperandType >::type >
+{
+   using type = typename RemoveExpressionTemplate< typename std::decay_t< R >::VectorOperandType >::type;
+};
+
+template< typename R >
+using RemoveET = typename RemoveExpressionTemplate< R >::type;
+
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t<
+      ! ( std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value ) &&
+      ! ( IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value ) &&
+      ! ( IsArrayType< T1 >::value && IsArrayType< T2 >::value )
+, bool >
+compatibleForVectorAssignment()
+{
+   return false;
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return true;
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return T1::getSize() == T2::getSize() &&
+          compatibleForVectorAssignment< typename RemoveET< T1 >::ValueType, typename RemoveET< T2 >::ValueType >();
+}
+
+template< typename T1, typename T2 >
+constexpr std::enable_if_t< IsArrayType< T1 >::value && IsArrayType< T2 >::value, bool >
+compatibleForVectorAssignment()
+{
+   return compatibleForVectorAssignment< typename RemoveET< T1 >::ValueType, typename RemoveET< T2 >::ValueType >();
+}
 
 
 // helper trait class for proper classification of expression operands using getExpressionVariableType
 template< typename T, typename V,
-          bool enabled = IsVectorType< V >::value >
+          bool enabled = HasEnabledExpressionTemplates< V >::value ||
+                         HasEnabledStaticExpressionTemplates< V >::value ||
+                         HasEnabledDistributedExpressionTemplates< V >::value >
 struct IsArithmeticSubtype
 : public std::integral_constant< bool,
-            // TODO: use std::is_assignable?
-            std::is_same< T, typename V::RealType >::value >
+            // Note that using std::is_same would not be general enough, because e.g.
+            // StaticVector<3, int> may be assigned to StaticVector<3, double>
+            compatibleForVectorAssignment< typename V::RealType, T >() >
 {};
 
 template< typename T >
@@ -102,22 +167,28 @@ struct IsArithmeticSubtype< T, V, false >
 {};
 
 
-// helper trait class (used in unit tests)
-template< typename R, bool enabled = ! HasEnabledStaticExpressionTemplates< R >::value >
-struct RemoveExpressionTemplate
+// helper trait class for Static*ExpressionTemplates classes
+template< typename R, typename Enable = void >
+struct OperandMemberType
 {
-   using type = R;
+   using type = std::conditional_t< std::is_fundamental< R >::value,
+                     // non-reference for fundamental types
+                     std::add_const_t< std::remove_reference_t< R > >,
+                     // lvalue-reference for other types (especially StaticVector)
+                     std::add_lvalue_reference_t< std::add_const_t< R > >
+                  >;
+//   using type = std::add_const_t< std::remove_reference_t< R > >;
 };
 
+// assuming that only the StaticBinaryExpressionTemplate and StaticUnaryTemplate classes have a VectorOperandType type member
 template< typename R >
-struct RemoveExpressionTemplate< R, false >
+struct OperandMemberType< R, typename enable_if_type< typename R::VectorOperandType >::type >
 {
-//   using type = StaticVector< R::getSize(), typename RemoveExpressionTemplate< typename R::RealType >::type >;
-   using type = typename RemoveExpressionTemplate< typename R::VectorOperandType >::type;
+   // non-reference for StaticBinaryExpressionTemplate and StaticUnaryExpressionTemplate
+   // (otherwise we would get segfaults - binding const-reference to temporary Static*ExpressionTemplate
+   // objects does not work as expected...)
+   using type = std::add_const_t< std::remove_reference_t< R > >;
 };
-
-template< typename R >
-using RemoveET = typename RemoveExpressionTemplate< R >::type;
 
 } // namespace Expressions
 } // namespace Containers

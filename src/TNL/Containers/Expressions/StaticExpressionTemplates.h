@@ -103,8 +103,8 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    }
 
 protected:
-   const T1& op1;
-   const T2& op2;
+   typename OperandMemberType< T1 >::type op1;
+   typename OperandMemberType< T2 >::type op2;
 };
 
 template< typename T1,
@@ -151,8 +151,8 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    }
 
 protected:
-   const T1& op1;
-   const T2 op2;
+   typename OperandMemberType< T1 >::type op1;
+   typename OperandMemberType< T2 >::type op2;
 };
 
 template< typename T1,
@@ -199,8 +199,8 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    }
 
 protected:
-   const T1 op1;
-   const T2& op2;
+   typename OperandMemberType< T1 >::type op1;
+   typename OperandMemberType< T2 >::type op2;
 };
 
 ////
@@ -248,7 +248,7 @@ struct StaticUnaryExpressionTemplate
    }
 
 protected:
-   const T1& operand;
+   typename OperandMemberType< T1 >::type operand;
 };
 
 #ifndef DOXYGEN_ONLY

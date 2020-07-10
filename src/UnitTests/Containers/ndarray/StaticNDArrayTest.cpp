@@ -1,3 +1,4 @@
+#ifdef HAVE_GTEST
 #include "gtest/gtest.h"
 
 #include <TNL/Containers/NDArray.h>
@@ -92,14 +93,7 @@ TEST( StaticNDArrayTest, CopySemantics )
     EXPECT_EQ( a.getConstView(), c.getConstView() );
     EXPECT_EQ( a.getConstView(), c_view.getConstView() );
 }
+#endif // HAVE_GTEST
 
-//#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-//#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-//#else
-//   throw GtestMissingError();
-//#endif
-}
+
+#include "../../main.h"

@@ -58,18 +58,18 @@ class VectorBinaryOperationsTest : public ::testing::Test
 protected:
    using Left = typename Pair::Left;
    using Right = typename Pair::Right;
+   using LeftReal = std::remove_const_t< typename Left::RealType >;
+   using RightReal = std::remove_const_t< typename Right::RealType >;
 #ifndef STATIC_VECTOR
-   using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
-   using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
    #ifdef DISTRIBUTED_VECTOR
       using CommunicatorType = typename Left::CommunicatorType;
       static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
                      "CommunicatorType must be the same for both Left and Right vectors." );
-      using LeftVector = DistributedVector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
-      using RightVector = DistributedVector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+      using LeftVector = DistributedVector< LeftReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
+      using RightVector = DistributedVector< RightReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
    #else
-      using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
-      using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
+      using LeftVector = Vector< LeftReal, typename Left::DeviceType, typename Left::IndexType >;
+      using RightVector = Vector< RightReal, typename Right::DeviceType, typename Right::IndexType >;
    #endif
 #endif
 
@@ -132,6 +132,8 @@ protected:
 #define SETUP_BINARY_TEST_ALIASES \
    using Left = typename TestFixture::Left;                 \
    using Right = typename TestFixture::Right;               \
+   using LeftReal = typename TestFixture::LeftReal;         \
+   using RightReal = typename TestFixture::RightReal;       \
    Left& L1 = this->L1;                                     \
    Left& L2 = this->L2;                                     \
    Right& R1 = this->R1;                                    \
@@ -145,62 +147,62 @@ protected:
 #if defined(DISTRIBUTED_VECTOR)
    using VectorPairs = ::testing::Types<
    #ifndef HAVE_CUDA
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
 
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >
    #else
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
    #ifdef VECTOR_OF_STATIC_VECTORS
       using VectorPairs = ::testing::Types<
-         Pair< StaticVector< 1, StaticVector< 3, double > >,  StaticVector< 1, StaticVector< 3, double > > >,
-         Pair< StaticVector< 2, StaticVector< 3, double > >,  StaticVector< 2, StaticVector< 3, double > > >,
-         Pair< StaticVector< 3, StaticVector< 3, double > >,  StaticVector< 3, StaticVector< 3, double > > >,
-         Pair< StaticVector< 4, StaticVector< 3, double > >,  StaticVector< 4, StaticVector< 3, double > > >,
-         Pair< StaticVector< 5, StaticVector< 3, double > >,  StaticVector< 5, StaticVector< 3, double > > >
+         Pair< StaticVector< 1, StaticVector< 3, int > >,  StaticVector< 1, StaticVector< 3, short > > >,
+         Pair< StaticVector< 2, StaticVector< 3, int > >,  StaticVector< 2, StaticVector< 3, short > > >,
+         Pair< StaticVector< 3, StaticVector< 3, int > >,  StaticVector< 3, StaticVector< 3, short > > >,
+         Pair< StaticVector< 4, StaticVector< 3, int > >,  StaticVector< 4, StaticVector< 3, short > > >,
+         Pair< StaticVector< 5, StaticVector< 3, int > >,  StaticVector< 5, StaticVector< 3, short > > >
       >;
    #else
       using VectorPairs = ::testing::Types<
-         Pair< StaticVector< 1, int >,     StaticVector< 1, int >    >,
+         Pair< StaticVector< 1, int >,     StaticVector< 1, short >    >,
          Pair< StaticVector< 1, double >,  StaticVector< 1, double > >,
-         Pair< StaticVector< 2, int >,     StaticVector< 2, int >    >,
+         Pair< StaticVector< 2, int >,     StaticVector< 2, short >    >,
          Pair< StaticVector< 2, double >,  StaticVector< 2, double > >,
-         Pair< StaticVector< 3, int >,     StaticVector< 3, int >    >,
+         Pair< StaticVector< 3, int >,     StaticVector< 3, short >    >,
          Pair< StaticVector< 3, double >,  StaticVector< 3, double > >,
-         Pair< StaticVector< 4, int >,     StaticVector< 4, int >    >,
+         Pair< StaticVector< 4, int >,     StaticVector< 4, short >    >,
          Pair< StaticVector< 4, double >,  StaticVector< 4, double > >,
-         Pair< StaticVector< 5, int >,     StaticVector< 5, int >    >,
+         Pair< StaticVector< 5, int >,     StaticVector< 5, short >    >,
          Pair< StaticVector< 5, double >,  StaticVector< 5, double > >
       >;
    #endif
@@ -208,15 +210,15 @@ protected:
    #ifdef VECTOR_OF_STATIC_VECTORS
       using VectorPairs = ::testing::Types<
       #ifndef HAVE_CUDA
-         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
-         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >
+         Pair< Vector<     StaticVector< 3, int >, Devices::Host >, Vector<     StaticVector< 3, short >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Host >, Vector<     StaticVector< 3, short >, Devices::Host > >,
+         Pair< Vector<     StaticVector< 3, int >, Devices::Host >, VectorView< StaticVector< 3, short >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Host >, VectorView< StaticVector< 3, short >, Devices::Host > >
       #else
-         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >,
-         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >
+         Pair< Vector<     StaticVector< 3, int >, Devices::Cuda >, Vector<     StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Cuda >, Vector<     StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< Vector<     StaticVector< 3, int >, Devices::Cuda >, VectorView< StaticVector< 3, short >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, int >, Devices::Cuda >, VectorView< StaticVector< 3, short >, Devices::Cuda > >
       #endif
       >;
    #else
@@ -263,6 +265,8 @@ TYPED_TEST( VectorBinaryOperationsTest, EQ )
    EXPECT_EQ( L1, R1 );       // vector or vector view
    EXPECT_EQ( L1, 1 );        // right scalar
    EXPECT_EQ( 1, R1 );        // left scalar
+   EXPECT_EQ( L1, RightReal(1) );   // right scalar
+   EXPECT_EQ( LeftReal(1), R1 );    // left scalar
    EXPECT_EQ( L2, R1 + R1 );  // right expression
    EXPECT_EQ( L1 + L1, R2 );  // left expression
    EXPECT_EQ( L1 + L1, R1 + R1 );  // two expressions
@@ -282,6 +286,8 @@ TYPED_TEST( VectorBinaryOperationsTest, NE )
    EXPECT_NE( L1, R2 );       // vector or vector view
    EXPECT_NE( L1, 2 );        // right scalar
    EXPECT_NE( 2, R1 );        // left scalar
+   EXPECT_NE( L1, RightReal(2) );   // right scalar
+   EXPECT_NE( LeftReal(2), R1 );    // left scalar
    EXPECT_NE( L1, R1 + R1 );  // right expression
    EXPECT_NE( L1 + L1, R1 );  // left expression
    EXPECT_NE( L1 + L1, R2 + R2 );  // two expressions
@@ -301,6 +307,8 @@ TYPED_TEST( VectorBinaryOperationsTest, LT )
    EXPECT_LT( L1, R2 );       // vector or vector view
    EXPECT_LT( L1, 2 );        // right scalar
    EXPECT_LT( 1, R2 );        // left scalar
+   EXPECT_LT( L1, RightReal(2) );   // right scalar
+   EXPECT_LT( LeftReal(1), R2 );    // left scalar
    EXPECT_LT( L1, R1 + R1 );  // right expression
    EXPECT_LT( L1 - L1, R1 );  // left expression
    EXPECT_LT( L1 - L1, R1 + R1 );  // two expressions
@@ -313,6 +321,8 @@ TYPED_TEST( VectorBinaryOperationsTest, GT )
    EXPECT_GT( L2, R1 );       // vector or vector view
    EXPECT_GT( L2, 1 );        // right scalar
    EXPECT_GT( 2, R1 );        // left scalar
+   EXPECT_GT( L2, RightReal(1) );   // right scalar
+   EXPECT_GT( LeftReal(2), R1 );    // left scalar
    EXPECT_GT( L1, R1 - R1 );  // right expression
    EXPECT_GT( L1 + L1, R1 );  // left expression
    EXPECT_GT( L1 + L1, R1 - R1 );  // two expressions
@@ -326,6 +336,8 @@ TYPED_TEST( VectorBinaryOperationsTest, LE )
    EXPECT_LE( L1, R2 );       // vector or vector view
    EXPECT_LE( L1, 2 );        // right scalar
    EXPECT_LE( 1, R2 );        // left scalar
+   EXPECT_LE( L1, RightReal(2) );   // right scalar
+   EXPECT_LE( LeftReal(1), R2 );    // left scalar
    EXPECT_LE( L1, R1 + R1 );  // right expression
    EXPECT_LE( L1 - L1, R1 );  // left expression
    EXPECT_LE( L1 - L1, R1 + R1 );  // two expressions
@@ -334,6 +346,8 @@ TYPED_TEST( VectorBinaryOperationsTest, LE )
    EXPECT_LE( L1, R1 );       // vector or vector view
    EXPECT_LE( L1, 1 );        // right scalar
    EXPECT_LE( 1, R1 );        // left scalar
+   EXPECT_LE( L1, RightReal(1) );   // right scalar
+   EXPECT_LE( LeftReal(1), R1 );    // left scalar
    EXPECT_LE( L2, R1 + R1 );  // right expression
    EXPECT_LE( L1 + L1, R2 );  // left expression
    EXPECT_LE( L1 + L1, R1 + R2 );  // two expressions
@@ -347,6 +361,8 @@ TYPED_TEST( VectorBinaryOperationsTest, GE )
    EXPECT_GE( L2, R1 );       // vector or vector view
    EXPECT_GE( L2, 1 );        // right scalar
    EXPECT_GE( 2, R1 );        // left scalar
+   EXPECT_GE( L2, RightReal(1) );   // right scalar
+   EXPECT_GE( LeftReal(2), R1 );    // left scalar
    EXPECT_GE( L1, R1 - R1 );  // right expression
    EXPECT_GE( L1 + L1, R1 );  // left expression
    EXPECT_GE( L1 + L1, R1 - R1 );  // two expressions
@@ -355,6 +371,8 @@ TYPED_TEST( VectorBinaryOperationsTest, GE )
    EXPECT_LE( L1, R1 );       // vector or vector view
    EXPECT_LE( L1, 1 );        // right scalar
    EXPECT_LE( 1, R1 );        // left scalar
+   EXPECT_LE( L1, RightReal(1) );   // right scalar
+   EXPECT_LE( LeftReal(1), R1 );    // left scalar
    EXPECT_LE( L2, R1 + R1 );  // right expression
    EXPECT_LE( L1 + L1, R2 );  // left expression
    EXPECT_LE( L1 + L1, R1 + R2 );  // two expressions
@@ -369,6 +387,8 @@ TYPED_TEST( VectorBinaryOperationsTest, addition )
    // with scalar
    EXPECT_EQ( L1 + 1, 2 );
    EXPECT_EQ( 1 + L1, 2 );
+   EXPECT_EQ( L1 + LeftReal(1), 2 );
+   EXPECT_EQ( LeftReal(1) + L1, 2 );
    // with expression
    EXPECT_EQ( L1 + (L1 + L1), 3 );
    EXPECT_EQ( (L1 + L1) + L1, 3 );
@@ -376,6 +396,11 @@ TYPED_TEST( VectorBinaryOperationsTest, addition )
    EXPECT_EQ( (L1 + L1) + R1, 3 );
    // with two expressions
    EXPECT_EQ( (L1 + L1) + (L1 + L1), 4 );
+   // with expression and scalar
+   EXPECT_EQ( (L1 + L1) + 1, 3 );
+   EXPECT_EQ( (L1 + L1) + RightReal(1), 3 );
+   EXPECT_EQ( 1 + (R1 + R1), 3 );
+   EXPECT_EQ( LeftReal(1) + (R1 + R1), 3 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, subtraction )
@@ -387,6 +412,8 @@ TYPED_TEST( VectorBinaryOperationsTest, subtraction )
    // with scalar
    EXPECT_EQ( L1 - 1, 0 );
    EXPECT_EQ( 1 - L1, 0 );
+   EXPECT_EQ( L1 - LeftReal(1), 0 );
+   EXPECT_EQ( LeftReal(1) - L1, 0 );
    // with expression
    EXPECT_EQ( L2 - (L1 + L1), 0 );
    EXPECT_EQ( (L1 + L1) - L2, 0 );
@@ -394,6 +421,11 @@ TYPED_TEST( VectorBinaryOperationsTest, subtraction )
    EXPECT_EQ( (L1 + L1) - R2, 0 );
    // with two expressions
    EXPECT_EQ( (L1 + L1) - (L1 + L1), 0 );
+   // with expression and scalar
+   EXPECT_EQ( (L1 + L1) - 1, 1 );
+   EXPECT_EQ( (L1 + L1) - RightReal(1), 1 );
+   EXPECT_EQ( 1 - (R1 + R1), -1 );
+   EXPECT_EQ( LeftReal(1) - (R1 + R1), -1 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, multiplication )
@@ -405,6 +437,8 @@ TYPED_TEST( VectorBinaryOperationsTest, multiplication )
    // with scalar
    EXPECT_EQ( L1 * 2, L2 );
    EXPECT_EQ( 2 * L1, L2 );
+   EXPECT_EQ( L1 * LeftReal(2), L2 );
+   EXPECT_EQ( LeftReal(2) * L1, L2 );
    // with expression
    EXPECT_EQ( L1 * (L1 + L1), L2 );
    EXPECT_EQ( (L1 + L1) * L1, L2 );
@@ -412,6 +446,11 @@ TYPED_TEST( VectorBinaryOperationsTest, multiplication )
    EXPECT_EQ( (L1 + L1) * R1, L2 );
    // with two expressions
    EXPECT_EQ( (L1 + L1) * (L1 + L1), 4 );
+   // with expression and scalar
+   EXPECT_EQ( (L1 + L1) * 1, 2 );
+   EXPECT_EQ( (L1 + L1) * RightReal(1), 2 );
+   EXPECT_EQ( 1 * (R1 + R1), 2 );
+   EXPECT_EQ( LeftReal(1) * (R1 + R1), 2 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, division )
@@ -423,6 +462,8 @@ TYPED_TEST( VectorBinaryOperationsTest, division )
    // with scalar
    EXPECT_EQ( L2 / 2, L1 );
    EXPECT_EQ( 2 / L2, L1 );
+   EXPECT_EQ( L2 / LeftReal(2), L1 );
+   EXPECT_EQ( LeftReal(2) / L2, L1 );
    // with expression
    EXPECT_EQ( L2 / (L1 + L1), L1 );
    EXPECT_EQ( (L1 + L1) / L2, L1 );
@@ -430,6 +471,11 @@ TYPED_TEST( VectorBinaryOperationsTest, division )
    EXPECT_EQ( (L1 + L1) / R2, L1 );
    // with two expressions
    EXPECT_EQ( (L1 + L1) / (L1 + L1), L1 );
+   // with expression and scalar
+   EXPECT_EQ( (L1 + L1) / 1, 2 );
+   EXPECT_EQ( (L1 + L1) / RightReal(1), 2 );
+   EXPECT_EQ( 2 / (R1 + R1), 1 );
+   EXPECT_EQ( LeftReal(2) / (R1 + R1), 1 );
 }
 
 template< typename Left, typename Right, std::enable_if_t< std::is_const<typename Left::RealType>::value, bool > = true >
@@ -438,11 +484,14 @@ void test_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 template< typename Left, typename Right, std::enable_if_t< ! std::is_const<typename Left::RealType>::value, bool > = true >
 void test_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 {
+   using RightReal = std::remove_const_t< typename Right::RealType >;
    // with vector or vector view
    L1 = R2;
    EXPECT_EQ( L1, R2 );
    // with scalar
    L1 = 1;
+   EXPECT_EQ( L1, 1 );
+   L1 = RightReal(1);
    EXPECT_EQ( L1, 1 );
    // with expression
    L1 = R1 + R1;
@@ -460,12 +509,16 @@ void test_add_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 template< typename Left, typename Right, std::enable_if_t< ! std::is_const<typename Left::RealType>::value, bool > = true >
 void test_add_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 {
+   using RightReal = std::remove_const_t< typename Right::RealType >;
    // with vector or vector view
    L1 += R2;
    EXPECT_EQ( L1, R1 + R2 );
    // with scalar
    L1 = 1;
    L1 += 2;
+   EXPECT_EQ( L1, 3 );
+   L1 = 1;
+   L1 += RightReal(2);
    EXPECT_EQ( L1, 3 );
    // with expression
    L1 = 1;
@@ -484,12 +537,16 @@ void test_subtract_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 template< typename Left, typename Right, std::enable_if_t< ! std::is_const<typename Left::RealType>::value, bool > = true >
 void test_subtract_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 {
+   using RightReal = std::remove_const_t< typename Right::RealType >;
    // with vector or vector view
    L1 -= R2;
    EXPECT_EQ( L1, R1 - R2 );
    // with scalar
    L1 = 1;
    L1 -= 2;
+   EXPECT_EQ( L1, -1 );
+   L1 = 1;
+   L1 -= RightReal(2);
    EXPECT_EQ( L1, -1 );
    // with expression
    L1 = 1;
@@ -508,12 +565,16 @@ void test_multiply_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 template< typename Left, typename Right, std::enable_if_t< ! std::is_const<typename Left::RealType>::value, bool > = true >
 void test_multiply_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 {
+   using RightReal = std::remove_const_t< typename Right::RealType >;
    // with vector or vector view
    L1 *= R2;
    EXPECT_EQ( L1, R2 );
    // with scalar
    L1 = 1;
    L1 *= 2;
+   EXPECT_EQ( L1, 2 );
+   L1 = 1;
+   L1 *= RightReal(2);
    EXPECT_EQ( L1, 2 );
    // with expression
    L1 = 1;
@@ -532,12 +593,16 @@ void test_divide_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 template< typename Left, typename Right, std::enable_if_t< ! std::is_const<typename Left::RealType>::value, bool > = true >
 void test_divide_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 {
+   using RightReal = std::remove_const_t< typename Right::RealType >;
    // with vector or vector view
    L2 /= R2;
    EXPECT_EQ( L1, R1 );
    // with scalar
    L2 = 2;
    L2 /= 2;
+   EXPECT_EQ( L1, 1 );
+   L1 = 2;
+   L1 /= RightReal(2);
    EXPECT_EQ( L1, 1 );
    // with expression
    L2 = 2;
@@ -602,6 +667,11 @@ TYPED_TEST( VectorBinaryOperationsTest, min )
    EXPECT_EQ( TNL::min(L1 + L1, R1), R1 );
    // with two expressions
    EXPECT_EQ( TNL::min(L1 + L1, R1 + R2), L2 );
+   // with expression and scalar
+   EXPECT_EQ( TNL::min(L1 + L1, 1), L1 );
+   EXPECT_EQ( TNL::min(L1 + L1, RightReal(1)), L1 );
+   EXPECT_EQ( TNL::min(1, R1 + R1), L1 );
+   EXPECT_EQ( TNL::min(LeftReal(1), R1 + R1), L1 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, max )
@@ -620,6 +690,11 @@ TYPED_TEST( VectorBinaryOperationsTest, max )
    EXPECT_EQ( TNL::max(L1 + L1, R1), R2 );
    // with two expressions
    EXPECT_EQ( TNL::max(L1 - L1, R1 + R1), L2 );
+   // with expression and scalar
+   EXPECT_EQ( TNL::max(L1 + L1, 1), L2 );
+   EXPECT_EQ( TNL::max(L1 + L1, RightReal(1)), L2 );
+   EXPECT_EQ( TNL::max(1, R1 + R1), L2 );
+   EXPECT_EQ( TNL::max(LeftReal(1), R1 + R1), L2 );
 }
 
 #if defined(HAVE_CUDA) && !defined(STATIC_VECTOR)
@@ -627,8 +702,8 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 {
    SETUP_BINARY_TEST_ALIASES;
 
-   using RightHostVector = typename TestFixture::RightVector::Self< typename TestFixture::RightVector::RealType, Devices::Sequential >;
-   using RightHost = typename TestFixture::Right::Self< typename TestFixture::Right::RealType, Devices::Sequential >;
+   using RightHostVector = typename TestFixture::RightVector::template Self< typename TestFixture::RightVector::RealType, Devices::Sequential >;
+   using RightHost = typename TestFixture::Right::template Self< typename TestFixture::Right::RealType, Devices::Sequential >;
 
    RightHostVector _R1_h; _R1_h = this->_R1;
    RightHost R1_h( _R1_h );
@@ -646,7 +721,3 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 } // namespace binary_tests
 
 #endif // HAVE_GTEST
-
-#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
-#include "../main.h"
-#endif
