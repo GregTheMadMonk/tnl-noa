@@ -15,7 +15,6 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
-#include <vector> // vector for blocks
 
 namespace TNL {
 namespace Matrices {
@@ -28,15 +27,16 @@ enum class Type {
    VECTOR = 2
 };
 
+template<typename Index>
 union Block {
-   Block(uint32_t row, Type type = Type::VECTOR, uint32_t index = 0) noexcept {
+   Block(Index row, Type type = Type::VECTOR, Index index = 0) noexcept {
       this->index[0] = row;
       this->index[1] = index;
-      this->byte[7] = (uint8_t)type;
+      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
    }
 
-   unsigned index[2]; // index[0] is row pointer, index[1] is index in warp
-   uint8_t byte[8]; // byte[7] is type specificator
+   Index index[2]; // index[0] is row pointer, index[1] is index in warp
+   uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
 };
 
 #ifdef HAVE_UMFPACK
@@ -50,7 +50,7 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight,
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRLight2,
                  CSRAdaptive, CSRMultiVector, CSRLightWithoutAtomic };
 
 template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >
@@ -86,7 +86,7 @@ public:
    //enum SPMVCudaKernel { scalar, vector, hybrid };
 
 
-   Containers::Vector< Block, Device, Index > blocks;
+   Containers::Vector< Block<Index>, Device, Index > blocks;
    
    Index maxElementsPerWarp = 1024;
 
