@@ -35,6 +35,8 @@ union Block {
       this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
    }
 
+   Block() = default;
+
    Index index[2]; // index[0] is row pointer, index[1] is index in warp
    uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
 };
