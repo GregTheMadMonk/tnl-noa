@@ -150,7 +150,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight6 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
-   static String getFormat() { return "CSR Legacy Light5"; };
+   static String getFormat() { return "CSR Legacy Light6"; };
 };
 
 template< typename Real, typename Device, typename Index >
