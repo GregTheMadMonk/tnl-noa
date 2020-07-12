@@ -63,6 +63,7 @@ public:
    // this copy-constructor and copy-assignment operator are not atomic as they
    // synchronize only with respect to one or the other object.
    Atomic( const Atomic& desired ) noexcept
+   : std::atomic< T >()
    {
       this->store(desired.load());
    }
