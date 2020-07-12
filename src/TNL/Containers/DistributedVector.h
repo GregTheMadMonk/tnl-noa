@@ -51,6 +51,26 @@ public:
    using BaseType::DistributedArray;
    using BaseType::operator=;
 
+   /**
+    * \brief Copy constructor (makes a deep copy).
+    */
+   explicit DistributedVector( const DistributedVector& ) = default;
+
+   /**
+    * \brief Default move constructor.
+    */
+   DistributedVector( DistributedVector&& ) = default;
+
+   /**
+    * \brief Copy-assignment operator for copying data from another vector.
+    */
+   DistributedVector& operator=( const DistributedVector& ) = default;
+
+   /**
+    * \brief Move-assignment operator for acquiring data from \e rvalues.
+    */
+   DistributedVector& operator=( DistributedVector&& ) = default;
+
    // we return only the view so that the user cannot resize it
    LocalViewType getLocalView();
 
