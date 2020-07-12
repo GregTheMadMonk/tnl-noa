@@ -22,8 +22,7 @@ namespace DistributedMeshes {
 
 template< typename Mesh >
 class DistributedMesh
-: protected GlobalIndexStorage< Mesh, 0 >,
-  protected GlobalIndexStorage< Mesh, Mesh::getMeshDimension() >
+: protected GlobalIndexStorageFamily< Mesh >
 {
 public:
    using MeshType           = Mesh;
@@ -55,8 +54,7 @@ public:
    template< typename Mesh_ >
    DistributedMesh& operator=( const Mesh_& other )
    {
-      getGlobalIndices< 0 >() = other.template getGlobalIndices< 0 >();
-      getGlobalIndices< Mesh::getMeshDimension() >() = other.template getGlobalIndices< Mesh::getMeshDimension() >();
+      GlobalIndexStorageFamily< Mesh >::operator=( other );
       localMesh = other.getLocalMesh();
       group = other.getCommunicationGroup();
       ghostLevels = other.getGhostLevels();
@@ -67,8 +65,7 @@ public:
 
    bool operator==( const DistributedMesh& other ) const
    {
-      return ( getGlobalIndices< 0 >() == other.template getGlobalIndices< 0 >() &&
-               getGlobalIndices< Mesh::getMeshDimension() >() == other.template getGlobalIndices< Mesh::getMeshDimension() >() &&
+      return ( GlobalIndexStorageFamily< Mesh, DeviceType >::operator==( other ) &&
                localMesh == other.getLocalMesh() &&
                group == other.getCommunicationGroup() &&
                ghostLevels == other.getGhostLevels() &&
@@ -137,18 +134,14 @@ public:
    const GlobalIndexArray&
    getGlobalIndices() const
    {
-      static_assert( Dimension == 0 || Dimension == MeshType::getMeshDimension(),
-                     "Global index array for this dimension is not implemented yet." );
-      return GlobalIndexStorage< MeshType, Dimension >::getGlobalIndices();
+      return GlobalIndexStorage< MeshType, DeviceType, Dimension >::getGlobalIndices();
    }
 
    template< int Dimension >
    GlobalIndexArray&
    getGlobalIndices()
    {
-      static_assert( Dimension == 0 || Dimension == MeshType::getMeshDimension(),
-                     "Global index array for this dimension is not implemented yet." );
-      return GlobalIndexStorage< MeshType, Dimension >::getGlobalIndices();
+      return GlobalIndexStorage< MeshType, DeviceType, Dimension >::getGlobalIndices();
    }
 
    VTKTypesArrayType&
