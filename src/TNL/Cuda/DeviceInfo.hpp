@@ -186,6 +186,8 @@ getCudaCoresPerMultiprocessors( int deviceNum )
                return 32;
             case 1:  // GF10x class
                return 48;
+            default:
+               return -1;
          }
       case 3: // Kepler generation -- GK10x, GK11x classes
          return 192;
@@ -199,6 +201,8 @@ getCudaCoresPerMultiprocessors( int deviceNum )
             case 1:  // GP10x classes
             case 2:
                return 128;
+            default:
+               return -1;
          }
       default:
          return -1;
