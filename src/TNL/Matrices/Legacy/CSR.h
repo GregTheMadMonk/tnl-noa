@@ -35,10 +35,25 @@ union Block {
       this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
    }
 
+   Block(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept {
+      this->index[0] = row;
+      this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
+
+      if (type == Type::STREAM)
+         this->twobytes[sizeof(Index) == 4 ? 3 : 5] = nextRow - row;
+
+      if (type == Type::STREAM)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000;
+      else if (type == Type::VECTOR)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b100000;
+   }
+
    Block() = default;
 
    Index index[2]; // index[0] is row pointer, index[1] is index in warp
    uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
+   uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
+                                                //twobytes[3/5] is nextRow - row
 };
 
 #ifdef HAVE_UMFPACK
@@ -91,7 +106,30 @@ public:
 
    Containers::Vector< Block<Index>, Device, Index > blocks;
    
-   Index maxElementsPerWarp = 1024;
+   /* Configuration of SpMV kernels ------------------------------------------- */
+
+   /* Block sizes */
+
+   // Execute 1024 threads per block for float, (12 elements per thread) for 48KB cache
+   //          512 threads per block for double (12 elements per thread)
+   static constexpr Index THREADS_ADAPTIVE = sizeof(Real) == 4 ? 1024 : 512;
+   static constexpr Index THREADS_SCALAR = 1024;
+   static constexpr Index THREADS_VECTOR = 1024;
+   static constexpr Index THREADS_LIGHT = 1024;
+   
+   /* Max length of row to process one warp */
+   static constexpr Index MAX_ELEMENTS_PER_WARP = 1024;
+
+   /* How many shared memory use per block in CSR Adaptive kernel */
+   static constexpr Index SHARED_PER_BLOCK = 49152;
+   
+   /* Number of elements in shared memory */
+   static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
+   
+   /* Number of elements in shared memory per one warp */
+   static constexpr Index SHARED_PER_WARP = SHARED / (THREADS_ADAPTIVE / 32);
+   /* -------------------------------------------------------------------------- */
+   
 
    using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
