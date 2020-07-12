@@ -50,7 +50,7 @@ public:
 
    DistributedArray() = default;
 
-   DistributedArray( DistributedArray& ) = default;
+   DistributedArray( const DistributedArray& ) = default;
 
    DistributedArray( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
 
