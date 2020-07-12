@@ -561,7 +561,7 @@ segmentsReductionKernel( IndexType gridIdx,
    const int warpIdx = threadIdx.x / WarpSize;
    const int warpsCount = BlockDim / WarpSize;
    constexpr int groupsInStrip = 6; //getLogWarpSize() + 1;
-   IndexType firstGroupIdx = strip * groupsInStrip;
+   //IndexType firstGroupIdx = strip * groupsInStrip;
    IndexType firstGroupInBlock = 8 * ( strip / 8 ) * groupsInStrip;
    IndexType groupHeight = getWarpSize();
 
