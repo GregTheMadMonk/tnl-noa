@@ -37,6 +37,7 @@ union Block {
 
    Block(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept {
       this->index[0] = row;
+      this->index[1] = 0;
       this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
 
       if (type == Type::STREAM)
