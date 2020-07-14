@@ -166,7 +166,7 @@ void CSR< Real, Device, Index, KernelType >::setBlocks()
          start, *this, rows, type, sum
       );
       if (type == Type::LONG) {
-         Index parts = roundUpDivision(sum, 384);
+         Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
          for (Index index = 0; index < parts; ++index) {
             inBlock.emplace_back(start, Type::LONG, index);
          }
