@@ -12,39 +12,26 @@
 
 #pragma once
 
+#include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/DenseMatrix.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
-template< typename MeshFunction,
-          // Mesh is used only for DistributedGrid specializations
-          typename Mesh = typename MeshFunction::MeshType >
+template< typename DistributedMesh,
+          int EntityDimension = DistributedMesh::getMeshDimension() >
 class DistributedMeshSynchronizer
 {
 public:
-   // TODO: generalize
-   static constexpr int EntityDimension = MeshFunction::getEntitiesDimension();
-   static_assert( EntityDimension == 0 || EntityDimension == MeshFunction::getMeshDimension(),
-                  "Synchronization for entities of the specified dimension is not implemented yet." );
-
-   using RealType = typename MeshFunction::RealType;
-   using DeviceType = typename MeshFunction::DeviceType;
-   using IndexType = typename MeshFunction::IndexType;
-   using CommunicatorType = Communicators::MpiCommunicator;
+   using DeviceType = typename DistributedMesh::DeviceType;
+   using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
+   using CommunicatorType = typename DistributedMesh::CommunicatorType;
 
    DistributedMeshSynchronizer() = default;
 
-   template< typename DistributedMesh >
    void initialize( const DistributedMesh& mesh )
    {
-      static_assert( std::is_same< typename DistributedMesh::MeshType, typename MeshFunction::MeshType >::value,
-                     "The type of the local mesh does not match the type of the mesh function's mesh." );
-      static_assert( std::is_same< typename DistributedMesh::CommunicatorType, CommunicatorType >::value,
-                     "DistributedMesh::CommunnicatorType does not match" );
       if( mesh.getGhostLevels() <= 0 )
          throw std::logic_error( "There are no ghost levels on the distributed mesh." );
       localEntitiesCount = mesh.getLocalMesh().template getEntitiesCount< EntityDimension >();
@@ -61,19 +48,18 @@ public:
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
-      const IndexType ownStart = mesh.template getGlobalIndices< EntityDimension >().getElement( 0 );
-      Containers::Array< IndexType, Devices::Host, int > offsets( nproc );
+      const GlobalIndexType ownStart = mesh.template getGlobalIndices< EntityDimension >().getElement( 0 );
+      Containers::Array< GlobalIndexType, Devices::Host, int > offsets( nproc );
       {
-         Containers::Array< IndexType, Devices::Host, int > sendbuf( nproc );
+         Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( ownStart );
          CommunicatorType::Alltoall( sendbuf.getData(), 1,
                                      offsets.getData(), 1,
                                      group );
       }
 
-      auto getOwner = [&] ( IndexType idx )
+      auto getOwner = [&] ( GlobalIndexType idx )
       {
-         // TODO: is there a more efficient way?
          for( int i = 0; i < nproc - 1; i++ )
             if( offsets[ i ] <= idx && idx < offsets[ i + 1 ] )
                return i;
@@ -81,32 +67,34 @@ public:
       };
 
       // count local ghost entities for each rank
-      Containers::Array< IndexType, Devices::Host, int > localGhostCounts( nproc );
-      localGhostCounts.setValue( 0 );
-      Containers::Array< IndexType, Devices::Host, IndexType > hostGlobalIndices;
-      hostGlobalIndices = mesh.template getGlobalIndices< EntityDimension >();
-      IndexType prev_global_idx = 0;
-      for( IndexType local_idx = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
-           local_idx < localEntitiesCount;
-           local_idx++ )
+      Containers::Array< GlobalIndexType, Devices::Host, int > localGhostCounts( nproc );
       {
-         if( ! std::is_same< DeviceType, Devices::Cuda >::value )
-         if( ! mesh.getLocalMesh().template isGhostEntity< EntityDimension >( local_idx ) )
-            throw std::runtime_error( "encountered local entity while iterating over ghost entities - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
-         const IndexType global_idx = hostGlobalIndices[ local_idx ];
-         if( global_idx < prev_global_idx )
-            throw std::runtime_error( "ghost indices are not sorted - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
-         prev_global_idx = global_idx;
-         const int owner = getOwner( global_idx );
-         if( owner == rank )
-            throw std::runtime_error( "the owner of a ghost entity cannot be the local rank - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
-         ++localGhostCounts[ owner ];
+         localGhostCounts.setValue( 0 );
+         Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > hostGlobalIndices;
+         hostGlobalIndices = mesh.template getGlobalIndices< EntityDimension >();
+         GlobalIndexType prev_global_idx = 0;
+         mesh.getLocalMesh().template forGhost< EntityDimension, Devices::Sequential >(
+            [&] ( GlobalIndexType local_idx )
+            {
+               if( ! std::is_same< DeviceType, Devices::Cuda >::value )
+               if( ! mesh.getLocalMesh().template isGhostEntity< EntityDimension >( local_idx ) )
+                  throw std::runtime_error( "encountered local entity while iterating over ghost entities - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+               const GlobalIndexType global_idx = hostGlobalIndices[ local_idx ];
+               if( global_idx < prev_global_idx )
+                  throw std::runtime_error( "ghost indices are not sorted - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+               prev_global_idx = global_idx;
+               const int owner = getOwner( global_idx );
+               if( owner == rank )
+                  throw std::runtime_error( "the owner of a ghost entity cannot be the local rank - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
+               ++localGhostCounts[ owner ];
+            }
+         );
       }
 
       // exchange the ghost counts
       ghostEntitiesCounts.setDimensions( nproc, nproc );
       {
-         Matrices::DenseMatrix< IndexType, Devices::Host, int > sendbuf;
+         Matrices::DenseMatrix< GlobalIndexType, Devices::Host, int > sendbuf;
          sendbuf.setDimensions( nproc, nproc );
          // copy the local ghost counts into all rows of the sendbuf
          for( int j = 0; j < nproc; j++ )
@@ -126,17 +114,15 @@ public:
       for( int i = 0; i < nproc; i++ )
          ghostNeighborOffsets[ i + 1 ] = ghostNeighborOffsets[ i ] + ghostEntitiesCounts( i, rank );
 
-      // allocate ghost neighbors and send buffers
+      // allocate ghost neighbors
       ghostNeighbors.setSize( ghostNeighborOffsets[ nproc ] );
-      sendBuffers.setSize( ghostNeighborOffsets[ nproc ] );
 
-      // send indices of ghost entities - set them as ghost neighbors on the
-      // target rank
+      // send indices of ghost entities - set them as ghost neighbors on the target rank
       {
          std::vector< typename CommunicatorType::Request > requests;
 
          // send our ghost indices to the neighboring ranks
-         IndexType firstGhost = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
+         GlobalIndexType firstGhost = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
          for( int i = 0; i < nproc; i++ ) {
             if( ghostEntitiesCounts( rank, i ) > 0 ) {
                requests.push_back( CommunicatorType::ISend(
@@ -167,29 +153,18 @@ public:
          // convert received ghost indices from global to local
          ghostNeighbors -= ownStart;
       }
-
-#if 0
-      CommunicatorType::Barrier();
-      for( int i = 0; i < nproc; i++ ) {
-         if( i == rank ) {
-            std::cout << "rank = " << rank << "\n";
-//            std::cout << "offsets = " << offsets << std::endl;
-            std::cout << "local ghost counts = " << localGhostCounts << "\n";
-            std::cout << "ghost entities counts matrix:\n" << ghostEntitiesCounts;
-            std::cout << "global indices = " << mesh.template getGlobalIndices< EntityDimension >() << "\n";
-            std::cout << "ghost offsets = " << ghostOffsets << "\n";
-            std::cout << "ghost neighbors = " << ghostNeighbors << "\n";
-            std::cout.flush();
-         }
-         CommunicatorType::Barrier();
-      }
-#endif
    }
 
+   template< typename MeshFunction >
    void synchronize( MeshFunction& function )
    {
+      static_assert( MeshFunction::getEntitiesDimension() == EntityDimension,
+                     "the mesh function's entity dimension does not match" );
+      static_assert( std::is_same< typename MeshFunction::MeshType, typename DistributedMesh::MeshType >::value,
+                     "The type of the mesh function's mesh does not match the local mesh." );
       TNL_ASSERT_EQ( function.getData().getSize(), localEntitiesCount,
                      "The mesh function does not have the expected size." );
+      using RealType = typename MeshFunction::RealType;
 
       // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
       #ifdef HAVE_CUDA
@@ -199,6 +174,9 @@ public:
 
       const int rank = CommunicatorType::GetRank( group );
       const int nproc = CommunicatorType::GetSize( group );
+
+      // allocate send buffers (setSize does nothing if the array size is already correct)
+      sendBuffers.setSize( ghostNeighborOffsets[ nproc ] * sizeof(RealType) );
 
       // buffer for asynchronous communication requests
       std::vector< typename CommunicatorType::Request > requests;
@@ -213,23 +191,24 @@ public:
          }
       }
 
-      auto sendBuffersView = sendBuffers.getView();
+      Containers::ArrayView< RealType, DeviceType, GlobalIndexType > sendBuffersView;
+      sendBuffersView.bind( reinterpret_cast<RealType*>( sendBuffers.getData() ), ghostNeighborOffsets[ nproc ] );
       const auto ghostNeighborsView = ghostNeighbors.getConstView();
       const auto functionDataView = function.getData().getConstView();
-      auto copy_kernel = [sendBuffersView, functionDataView, ghostNeighborsView] __cuda_callable__ ( IndexType k, IndexType offset ) mutable
+      auto copy_kernel = [sendBuffersView, functionDataView, ghostNeighborsView] __cuda_callable__ ( GlobalIndexType k, GlobalIndexType offset ) mutable
       {
          sendBuffersView[ offset + k ] = functionDataView[ ghostNeighborsView[ offset + k ] ];
       };
 
       for( int i = 0; i < nproc; i++ ) {
          if( ghostEntitiesCounts( i, rank ) > 0 ) {
-            const IndexType offset = ghostNeighborOffsets[ i ];
+            const GlobalIndexType offset = ghostNeighborOffsets[ i ];
             // copy data to send buffers
-            Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, ghostEntitiesCounts( i, rank ), copy_kernel, offset );
+            Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, ghostEntitiesCounts( i, rank ), copy_kernel, offset );
 
             // issue async send operation
             requests.push_back( CommunicatorType::ISend(
-                     sendBuffers.getData() + ghostNeighborOffsets[ i ],
+                     sendBuffersView.getData() + ghostNeighborOffsets[ i ],
                      ghostEntitiesCounts( i, rank ),
                      i, 0, group ) );
          }
@@ -242,7 +221,7 @@ public:
 protected:
    // count of local entities (including ghosts) - used only for asserts in the
    // synchronize method
-   IndexType localEntitiesCount = 0;
+   GlobalIndexType localEntitiesCount = 0;
 
    // GOTCHA (see above)
    int gpu_id = 0;
@@ -260,14 +239,14 @@ protected:
     * - for the i-th rank, the i-th row determines the receive buffer sizes and
     *   the i-th column determines the send buffer sizes
     */
-   Matrices::DenseMatrix< IndexType, Devices::Host, int > ghostEntitiesCounts;
+   Matrices::DenseMatrix< GlobalIndexType, Devices::Host, int > ghostEntitiesCounts;
 
    /**
     * Ghost offsets: the i-th value is the local index of the first ghost
     * entity owned by the i-th rank. All ghost entities owned by the i-th
     * rank are assumed to be indexed contiguously in the local mesh.
     */
-   Containers::Array< IndexType, Devices::Host, int > ghostOffsets;
+   Containers::Array< GlobalIndexType, Devices::Host, int > ghostOffsets;
 
    /**
     * Ghost neighbor offsets: array of size nproc + 1 where the i-th value is
@@ -275,7 +254,7 @@ protected:
     * value is the size of the ghostNeighbors and sendBuffers arrays (see
     * below).
     */
-   Containers::Array< IndexType, Devices::Host, int > ghostNeighborOffsets;
+   Containers::Array< GlobalIndexType, Devices::Host, int > ghostNeighborOffsets;
 
    /**
     * Ghost neighbor indices: array containing local indices of the entities
@@ -286,15 +265,17 @@ protected:
     * ghost neighbor indices cannot be made contiguous in general so we need the
     * send buffers.
     */
-   Containers::Vector< IndexType, DeviceType, IndexType > ghostNeighbors;
+   Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType > ghostNeighbors;
 
    /**
     * Send buffers: array for buffering the mesh function values which will be
-    * sent to other ranks. The send buffer for the i-th rank is the part of the
-    * array starting at index ghostNeighborOffsets[i] (inclusive) and ending at
-    * index ghostNeighborOffsets[i+1] (exclusive).
+    * sent to other ranks. We use std::uint8_t as the value type to make this
+    * class independent of the mesh function's real type. When cast to the real
+    * type values, the send buffer for the i-th rank is the part of the array
+    * starting at index ghostNeighborOffsets[i] (inclusive) and ending at index
+    * ghostNeighborOffsets[i+1] (exclusive).
     */
-   Containers::Array< RealType, DeviceType, IndexType > sendBuffers;
+   Containers::Array< std::uint8_t, DeviceType, GlobalIndexType > sendBuffers;
 };
 
 } // namespace DistributedMeshes

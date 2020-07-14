@@ -80,7 +80,7 @@ class tnlDirectEikonalProblem
 
       protected:
          
-         using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+         using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
          DistributedMeshSynchronizerType synchronizer;
 
          MeshFunctionPointer u;

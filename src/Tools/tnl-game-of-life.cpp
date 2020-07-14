@@ -133,6 +133,11 @@ bool runGameOfLife( const Mesh& mesh )
    // print basic mesh info
    mesh.printInfo( std::cout );
 
+   // test synchronizer
+   using Synchronizer = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Mesh >;
+   Synchronizer sync;
+   sync.initialize( mesh );
+
    // TODO
    // simple mesh function without SharedPointer for the mesh
    using Real = std::uint8_t;
@@ -166,12 +171,6 @@ bool runGameOfLife( const Mesh& mesh )
       private:
          VectorType data;
    };
-
-   // test synchronizer
-//   using MeshFunction = Functions::MeshFunction< LocalMesh, Mesh::getMeshDimension(), Real >;
-   using Synchronizer = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MyMeshFunction, Mesh >;
-   Synchronizer sync;
-   sync.initialize( mesh );
 
    MyMeshFunction f_in( localMesh ), f_out( localMesh );
    f_in.getData().setValue( 0 );

@@ -165,7 +165,7 @@ class TestDistributedVectorFieldMPIIO{
 
         DistributedGridIO_VectorField<VectorFieldType,MpiIO> ::load(FileName, loadVectorField );
 
-        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        DistributedMeshSynchronizer< DistributedGridType > synchronizer;
         synchronizer.setDistributedGrid( &distributedGrid );
 
         for(int i=0;i<vctdim;i++)

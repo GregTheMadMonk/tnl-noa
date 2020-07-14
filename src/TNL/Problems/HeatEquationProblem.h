@@ -104,7 +104,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 
    protected:
 
-      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
       DistributedMeshSynchronizerType synchronizer;
 
       MeshFunctionPointer uPointer;

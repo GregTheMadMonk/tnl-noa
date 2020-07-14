@@ -353,7 +353,7 @@ class TestDistributedGridIO
 
         DistributedGridIO<MeshFunctionType> ::load(fileName, *loadMeshFunctionptr );
 
-        DistributedMeshSynchronizer< MeshFunctionType > synchronizer;
+        DistributedMeshSynchronizer< DistributedGridType > synchronizer;
         synchronizer.setDistributedGrid( &distributedGrid );
         synchronizer.template synchronize<CommunicatorType>( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
 

@@ -323,7 +323,7 @@ typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
-using Synchronizer = DistributedMeshSynchronizer< MeshFunctionType >;
+using Synchronizer = DistributedMeshSynchronizer< DistributedGridType >;
 
 class DistributedGridTest_2D : public ::testing::Test
 {

@@ -578,7 +578,7 @@ void testSynchronizerOnDevice( const MeshType& mesh )
    using DeviceMesh = DistributedMesh< LocalMesh >;
    using IndexType = typename MeshType::GlobalIndexType;
    using MeshFunction = Functions::MeshFunction< LocalMesh, EntityType::getEntityDimension(), IndexType >;
-   using Synchronizer = DistributedMeshes::DistributedMeshSynchronizer< MeshFunction >;
+   using Synchronizer = DistributedMeshes::DistributedMeshSynchronizer< DeviceMesh, EntityType::getEntityDimension() >;
 
    // initialize
    DeviceMesh deviceMesh;
