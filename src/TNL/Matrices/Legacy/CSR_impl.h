@@ -827,10 +827,10 @@ void SpMVCSRAdaptive( const Real *inVector,
    Block<Index> block = blocks[blockIdx];
    const Index minID = rowPointers[block.index[0]/* minRow */];
    Index i, to, offset, maxID;
-   if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b10000) {
+   if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b1000000) {
       /////////////////////////////////////* CSR STREAM *//////////////
       const Index maxRow = block.index[0]/* minRow */ +
-         /* maxRow - minRow */(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FF);
+         /* maxRow - minRow */(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FFF);
       maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
       /* offset between shared and global addresses */
       offset = minID - (threadIdx.x / warpSize * SHARED_PER_WARP);
@@ -848,7 +848,7 @@ void SpMVCSRAdaptive( const Real *inVector,
 
          outVector[i] = result; // Write result
       }
-   } else if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b100000) {
+   } else if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b10000000) {
       /////////////////////////////////////* CSR VECTOR *//////////////
       maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
 

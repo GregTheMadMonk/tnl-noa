@@ -43,9 +43,9 @@ union Block {
          this->twobytes[sizeof(Index) == 4 ? 3 : 5] = nextRow - row;
 
       if (type == Type::STREAM)
-         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000;
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b1000000;
       else if (type == Type::VECTOR)
-         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b100000;
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;
    }
 
    Block() = default;
