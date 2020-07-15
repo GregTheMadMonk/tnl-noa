@@ -34,7 +34,8 @@ public:
    {
       if( mesh.getGhostLevels() <= 0 )
          throw std::logic_error( "There are no ghost levels on the distributed mesh." );
-      localEntitiesCount = mesh.getLocalMesh().template getEntitiesCount< EntityDimension >();
+      TNL_ASSERT_EQ( mesh.template getGlobalIndices< EntityDimension >().getSize(), mesh.getLocalMesh().template getEntitiesCount< EntityDimension >(),
+                     "Global indices are not allocated properly." );
 
       // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
       #ifdef HAVE_CUDA
@@ -99,14 +100,14 @@ public:
          // copy the local ghost counts into all rows of the sendbuf
          for( int j = 0; j < nproc; j++ )
          for( int i = 0; i < nproc; i++ )
-            sendbuf.setElement( j, i, localGhostCounts.getElement( i ) );
+            sendbuf.setElement( j, i, localGhostCounts[ i ] );
          CommunicatorType::Alltoall( &sendbuf(0, 0), nproc,
                                      &ghostEntitiesCounts(0, 0), nproc,
                                      group );
       }
 
       // allocate ghost offsets
-      ghostOffsets.setSize( nproc );
+      ghostOffsets.setSize( nproc + 1 );
 
       // set ghost neighbor offsets
       ghostNeighborOffsets.setSize( nproc + 1 );
@@ -122,20 +123,21 @@ public:
          std::vector< typename CommunicatorType::Request > requests;
 
          // send our ghost indices to the neighboring ranks
-         GlobalIndexType firstGhost = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
+         GlobalIndexType ghostOffset = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
+         ghostOffsets[ 0 ] = ghostOffset;
          for( int i = 0; i < nproc; i++ ) {
             if( ghostEntitiesCounts( rank, i ) > 0 ) {
                requests.push_back( CommunicatorType::ISend(
-                        mesh.template getGlobalIndices< EntityDimension >().getData() + firstGhost,
+                        mesh.template getGlobalIndices< EntityDimension >().getData() + ghostOffset,
                         ghostEntitiesCounts( rank, i ),
                         i, 0, group ) );
-               // update ghost offsets
-               ghostOffsets[ i ] = firstGhost;
-               firstGhost += ghostEntitiesCounts( rank, i );
+               ghostOffset += ghostEntitiesCounts( rank, i );
             }
-            else
-               ghostOffsets[ i ] = 0;
+            // update ghost offsets
+            ghostOffsets[ i + 1 ] = ghostOffset;
          }
+         TNL_ASSERT_EQ( ghostOffsets[ nproc ], mesh.getLocalMesh().template getEntitiesCount< EntityDimension >(),
+                        "bug in setting ghost offsets" );
 
          // receive ghost indices from the neighboring ranks
          for( int j = 0; j < nproc; j++ ) {
@@ -162,7 +164,7 @@ public:
                      "the mesh function's entity dimension does not match" );
       static_assert( std::is_same< typename MeshFunction::MeshType, typename DistributedMesh::MeshType >::value,
                      "The type of the mesh function's mesh does not match the local mesh." );
-      TNL_ASSERT_EQ( function.getData().getSize(), localEntitiesCount,
+      TNL_ASSERT_EQ( function.getData().getSize(), ghostOffsets[ ghostOffsets.getSize() - 1 ],
                      "The mesh function does not have the expected size." );
       using RealType = typename MeshFunction::RealType;
 
@@ -219,10 +221,6 @@ public:
    }
 
 protected:
-   // count of local entities (including ghosts) - used only for asserts in the
-   // synchronize method
-   GlobalIndexType localEntitiesCount = 0;
-
    // GOTCHA (see above)
    int gpu_id = 0;
 
@@ -242,9 +240,10 @@ protected:
    Matrices::DenseMatrix< GlobalIndexType, Devices::Host, int > ghostEntitiesCounts;
 
    /**
-    * Ghost offsets: the i-th value is the local index of the first ghost
-    * entity owned by the i-th rank. All ghost entities owned by the i-th
-    * rank are assumed to be indexed contiguously in the local mesh.
+    * Ghost offsets: array of size nproc + 1 where the i-th value is the local
+    * index of the first ghost entity owned by the i-th rank. The last value is
+    * equal to the entities count on the local mesh. All ghost entities owned by
+    * the i-th rank are assumed to be indexed contiguously in the local mesh.
     */
    Containers::Array< GlobalIndexType, Devices::Host, int > ghostOffsets;
 
