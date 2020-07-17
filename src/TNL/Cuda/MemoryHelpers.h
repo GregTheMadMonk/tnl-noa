@@ -20,7 +20,7 @@ namespace TNL {
 namespace Cuda {
 
 template< typename ObjectType >
-[[deprecated("Allocators and MemoryOperations hould be used instead.")]]
+[[deprecated("Allocators::Cuda and MultiDeviceMemoryOperations should be used instead.")]]
 ObjectType* passToDevice( const ObjectType& object )
 {
 #ifdef HAVE_CUDA
@@ -45,40 +45,7 @@ ObjectType* passToDevice( const ObjectType& object )
 }
 
 template< typename ObjectType >
-[[deprecated("Allocators and MemoryOperations hould be used instead.")]]
-ObjectType passFromDevice( const ObjectType* object )
-{
-#ifdef HAVE_CUDA
-   ObjectType aux;
-   cudaMemcpy( ( void* ) aux,
-               ( void* ) &object,
-               sizeof( ObjectType ),
-               cudaMemcpyDeviceToHost );
-   TNL_CHECK_CUDA_DEVICE;
-   return aux;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename ObjectType >
-[[deprecated("Allocators and MemoryOperations hould be used instead.")]]
-void passFromDevice( const ObjectType* deviceObject,
-                     ObjectType& hostObject )
-{
-#ifdef HAVE_CUDA
-   cudaMemcpy( ( void* ) &hostObject,
-               ( void* ) deviceObject,
-               sizeof( ObjectType ),
-               cudaMemcpyDeviceToHost );
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename ObjectType >
-[[deprecated("Allocators and MemoryOperations hould be used instead.")]]
+[[deprecated("Allocators::Cuda should be used instead.")]]
 void freeFromDevice( ObjectType* deviceObject )
 {
 #ifdef HAVE_CUDA
@@ -86,16 +53,6 @@ void freeFromDevice( ObjectType* deviceObject )
    TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename ObjectType >
-void print( const ObjectType* deviceObject, std::ostream& str = std::cout )
-{
-#ifdef HAVE_CUDA
-   ObjectType hostObject;
-   passFromDevice( deviceObject, hostObject );
-   str << hostObject;
 #endif
 }
 
