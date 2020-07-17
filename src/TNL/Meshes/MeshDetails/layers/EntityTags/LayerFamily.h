@@ -28,7 +28,7 @@ class LayerInheritor
    using BaseType = LayerInheritor< MeshConfig, Device, typename Dimension::Increment >;
 protected:
    using LayerType::setEntitiesCount;
-   using LayerType::resetEntityTags;
+   using LayerType::getEntityTagsView;
    using LayerType::getEntityTag;
    using LayerType::addEntityTag;
    using LayerType::removeEntityTag;
@@ -41,7 +41,7 @@ protected:
    using LayerType::getGhostEntitiesOffset;
 
    using BaseType::setEntitiesCount;
-   using BaseType::resetEntityTags;
+   using BaseType::getEntityTagsView;
    using BaseType::getEntityTag;
    using BaseType::addEntityTag;
    using BaseType::removeEntityTag;
@@ -113,7 +113,7 @@ class LayerInheritor< MeshConfig, Device, DimensionTag< MeshConfig::meshDimensio
 {
 protected:
    void setEntitiesCount();
-   void resetEntityTags();
+   void getEntityTagsView();
    void getEntityTag() const;
    void addEntityTag();
    void removeEntityTag();
@@ -154,6 +154,7 @@ class LayerFamily
 {
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
    using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+   using EntityTagsArrayType = typename MeshTraitsType::EntityTagsArrayType;
    using TagType = typename MeshTraitsType::EntityTagType;
    using BaseType = LayerInheritor< MeshConfig, Device, DimensionTag< 0 > >;
    template< int Dimension >
@@ -167,6 +168,24 @@ public:
    // inherit constructors and assignment operators (including templated versions)
    using BaseType::BaseType;
    using BaseType::operator=;
+
+   template< int Dimension >
+   __cuda_callable__
+   typename EntityTagsArrayType::ViewType
+   getEntityTagsView()
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::getEntityTagsView( DimensionTag< Dimension >() );
+   }
+
+   template< int Dimension >
+   __cuda_callable__
+   typename EntityTagsArrayType::ConstViewType
+   getEntityTagsView() const
+   {
+      static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
+      return BaseType::getEntityTagsView( DimensionTag< Dimension >() );
+   }
 
    template< int Dimension >
    __cuda_callable__
@@ -251,12 +270,6 @@ protected:
    void entityTagsSetEntitiesCount( const GlobalIndexType& entitiesCount )
    {
       BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
-   }
-
-   template< int Dimension >
-   void resetEntityTags()
-   {
-      BaseType::resetEntityTags( DimensionTag< Dimension >() );
    }
 };
 

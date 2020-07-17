@@ -81,9 +81,18 @@ public:
       ghostsOffset = entitiesCount;
    }
 
-   void resetEntityTags( DimensionTag )
+   __cuda_callable__
+   typename EntityTagsArrayType::ViewType
+   getEntityTagsView( DimensionTag )
    {
-      tags.setValue( 0 );
+      return tags.getView();
+   }
+
+   __cuda_callable__
+   typename EntityTagsArrayType::ConstViewType
+   getEntityTagsView( DimensionTag ) const
+   {
+      return tags.getConstView();
    }
 
    __cuda_callable__
@@ -268,7 +277,7 @@ protected:
    Layer& operator=( const Layer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 
    void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount ) {}
-   void resetEntityTags( DimensionTag ) {}
+   void getEntityTagsView( DimensionTag ) {}
    void getEntityTag( DimensionTag, const GlobalIndexType& ) const {}
    void addEntityTag( DimensionTag, const GlobalIndexType&, TagType ) const {}
    void removeEntityTag( DimensionTag, const GlobalIndexType&, TagType ) const {}

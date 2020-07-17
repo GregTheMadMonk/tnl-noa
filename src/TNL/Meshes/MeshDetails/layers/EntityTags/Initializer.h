@@ -57,11 +57,32 @@ protected:
    };
 
    template< int Dimension >
-   struct ResetEntityTags
+   class ResetEntityTags
    {
+      using WeakTrait = WeakStorageTrait< MeshConfig, Device, DimensionTag< Dimension > >;
+      static constexpr bool enabled = WeakTrait::entityTagsEnabled;
+
+      // _T is necessary to force *partial* specialization, since explicit specializations
+      // at class scope are forbidden
+      template< bool enabled = true, typename _T = void >
+      struct Worker
+      {
+         static void exec( Mesh& mesh )
+         {
+            mesh.template getEntityTagsView< Dimension >().setValue( 0 );
+         }
+      };
+
+      template< typename _T >
+      struct Worker< false, _T >
+      {
+         static void exec( Mesh& mesh ) {}
+      };
+
+   public:
       static void exec( Mesh& mesh )
       {
-         mesh.template resetEntityTags< Dimension >();
+         Worker< enabled >::exec( mesh );
       }
    };
 

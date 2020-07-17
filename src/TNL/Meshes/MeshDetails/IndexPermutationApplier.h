@@ -134,29 +134,30 @@ private:
    static void permuteDualGraph( Mesh_& mesh, const GlobalIndexArray& perm, const GlobalIndexArray& iperm ) {}
 
 public:
-   template< typename Array >
-   static void permuteArray( Array& array, const GlobalIndexArray& perm )
+   template< typename ArrayOrView >
+   static void permuteArray( ArrayOrView& array, const GlobalIndexArray& perm )
    {
-      using IndexType = typename Array::IndexType;
-      using DeviceType = typename Array::DeviceType;
+      using ValueType = typename ArrayOrView::ValueType;
+      using IndexType = typename ArrayOrView::IndexType;
+      using DeviceType = typename ArrayOrView::DeviceType;
 
-      Array buffer( array.getSize() );
+      Containers::Array< ValueType, DeviceType, IndexType > buffer( array.getSize() );
 
-      // kernel to copy entities to new array, applying the permutation
+      // kernel to copy values to new array, applying the permutation
       auto kernel1 = [] __cuda_callable__
          ( IndexType i,
-           const typename Array::ValueType* array,
-           typename Array::ValueType* buffer,
+           const ValueType* array,
+           ValueType* buffer,
            const IndexType* perm )
       {
          buffer[ i ] = array[ perm[ i ] ];
       };
 
-      // kernel to copy permuted entities back to the mesh
+      // kernel to copy permuted values back to the mesh
       auto kernel2 = [] __cuda_callable__
          ( IndexType i,
-           typename Array::ValueType* array,
-           const typename Array::ValueType* buffer )
+           ValueType* array,
+           const ValueType* buffer )
       {
          array[ i ] = buffer[ i ];
       };

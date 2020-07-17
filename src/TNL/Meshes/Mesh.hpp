@@ -333,8 +333,11 @@ reorderEntities( const GlobalIndexArray& perm,
 #endif
 
    IndexPermutationApplier< Mesh, Dimension >::exec( *this, perm, iperm );
-   // update boundary tags
-   static_cast< EntityTagsLayerFamily* >( this )->initLayer();
+   // permute entity tags
+   auto tags = this->template getEntityTagsView< Dimension >();
+   IndexPermutationApplier< Mesh, Dimension >::permuteArray( tags, perm );
+   // update the entity tags layer
+   this->template updateEntityTagsLayer< Dimension >();
 }
 
 
