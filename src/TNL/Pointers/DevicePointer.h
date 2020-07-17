@@ -18,7 +18,6 @@
 #include <TNL/Pointers/SmartPointer.h>
 #include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/TypeInfo.h>
-#include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
 
@@ -398,6 +397,11 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       using DeviceType = Devices::Cuda;
 
       /**
+       * \typedef AllocatorType is the type of the allocator for \e DeviceType.
+       */
+      using AllocatorType = typename Allocators::Default< DeviceType >::Allocator< ObjectType >;
+
+      /**
        * \brief Constructor of empty pointer.
        */
       DevicePointer( std::nullptr_t )
@@ -772,17 +776,17 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       {
          char data_image[ sizeof(Object) ];
          int counter = 1;
-         bool maybe_modified = false;
+         bool maybe_modified = true;
       };
 
       bool allocate( ObjectType& obj )
       {
          this->pointer = &obj;
          this->pd = new PointerData();
-         // pass to device
-         this->cuda_pointer = Cuda::passToDevice( *this->pointer );
-         // set last-sync state
-         this->set_last_sync_state();
+         // allocate on device
+         this->cuda_pointer = AllocatorType{}.allocate(1);
+         // synchronize
+         this->synchronize();
          getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
@@ -814,7 +818,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
                delete this->pd;
                this->pd = nullptr;
                if( this->cuda_pointer )
-                  Cuda::freeFromDevice( this->cuda_pointer );
+                  AllocatorType{}.deallocate( this->cuda_pointer, 1 );
             }
          }
       }
