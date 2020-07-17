@@ -15,6 +15,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/GlobalIndexStorage.h>
+#include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
 namespace TNL {
 namespace Meshes {
@@ -166,6 +167,21 @@ public:
    vtkPointGhostTypes() const
    {
       return vtkPointGhostTypesArray;
+   }
+
+   // wrapper for MeshType::reorderEntities - reorders the local mesh, global indices and,
+   // if applicable, the vtkCellGhostTypes/vtkPointGhostTypes arrays
+   template< int Dimension >
+   void reorderEntities( const GlobalIndexArray& perm,
+                         const GlobalIndexArray& iperm )
+   {
+      localMesh.template reorderEntities< Dimension >( perm, iperm );
+      if( getGlobalIndices< Dimension >().getSize() > 0 )
+         IndexPermutationApplier< MeshType, Dimension >::permuteArray( getGlobalIndices< Dimension >(), perm );
+      if( Dimension == 0 && vtkPointGhostTypes().getSize() > 0 )
+         IndexPermutationApplier< MeshType, Dimension >::permuteArray( vtkPointGhostTypes(), perm );
+      if( Dimension == getMeshDimension() && vtkCellGhostTypes().getSize() > 0 )
+         IndexPermutationApplier< MeshType, Dimension >::permuteArray( vtkCellGhostTypes(), perm );
    }
 
    void
