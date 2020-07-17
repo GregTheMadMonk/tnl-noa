@@ -11,7 +11,8 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Cuda/MemoryHelpers.h>
+#include <TNL/Allocators/Cuda.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/Analytic/ExpBump.h>
@@ -44,7 +45,7 @@
 #include "TestFunction.h"
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
 template< int FunctionDimension,
           typename Real,
@@ -139,7 +140,8 @@ setupFunction( const Config::ParameterContainer& parameters,
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      this->function = Cuda::passToDevice( *auxFunction );
+      this->function = Allocators::Cuda< FunctionType >{}.allocate( 1 );
+      Algorithms::MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy( (FunctionType*) this->function, (FunctionType*) auxFunction, 1 );
       delete auxFunction;
       TNL_CHECK_CUDA_DEVICE;
    }
@@ -168,7 +170,8 @@ setupOperator( const Config::ParameterContainer& parameters,
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      this->operator_ = Cuda::passToDevice( *auxOperator );
+      this->operator_ = Allocators::Cuda< OperatorType >{}.allocate( 1 );
+      Algorithms::MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy( (OperatorType*) this->operator_, (OperatorType*) auxOperator, 1 );
       delete auxOperator;
       TNL_CHECK_CUDA_DEVICE;
    }
@@ -738,7 +741,7 @@ deleteFunction()
    if( std::is_same< Device, Devices::Cuda >::value )
    {
       if( function )
-         Cuda::freeFromDevice( ( FunctionType * ) function );
+         Allocators::Cuda< FunctionType >{}.deallocate( (FunctionType*) function, 1 );
    }
 }
 
@@ -758,7 +761,7 @@ deleteOperator()
    if( std::is_same< Device, Devices::Cuda >::value )
    {
       if( operator_ )
-         Cuda::freeFromDevice( ( OperatorType * ) operator_ );
+         Allocators::Cuda< OperatorType >{}.deallocate( (OperatorType*) operator_, 1 );
    }
 }
 
@@ -906,15 +909,17 @@ std::ostream&
 TestFunction< FunctionDimension, Real, Device >::
 printFunction( std::ostream& str ) const
 {
-   FunctionType* f = ( FunctionType* ) this->function;
    if( std::is_same< Device, Devices::Host >::value )
    {
+      FunctionType* f = ( FunctionType* ) this->function;
       str << *f;
       return str;
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      Cuda::print( f, str );
+      FunctionType f;
+      Algorithms::MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &f, (FunctionType*) this->function, 1 );
+      str << f;
       return str;
    }
 }

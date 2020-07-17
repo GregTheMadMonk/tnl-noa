@@ -17,7 +17,7 @@
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
 template< int FunctionDimension,
           typename Real = double,
