@@ -84,7 +84,7 @@ struct CudaHost
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
-      cudaFreeHost( ptr );
+      cudaFreeHost( (void*) ptr );
       TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
