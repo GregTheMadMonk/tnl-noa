@@ -28,7 +28,7 @@ template< typename Cell,
           int WorldDimension = Cell::dimension,
           typename Real = double,
           typename GlobalIndex = int,
-          typename LocalIndex = GlobalIndex >
+          typename LocalIndex = short int >
 struct DefaultConfig
 {
    using CellTopology = Cell;
