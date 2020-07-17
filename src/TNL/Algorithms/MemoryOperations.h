@@ -81,13 +81,17 @@ struct MemoryOperations< Devices::Sequential >
 template<>
 struct MemoryOperations< Devices::Host >
 {
+   // this is __cuda_callable__ only to silence nvcc warnings
+   TNL_NVCC_HD_WARNING_DISABLE
    template< typename Element >
-   __cuda_callable__ // only to avoid nvcc warning
+   __cuda_callable__
    static void setElement( Element* data,
                            const Element& value );
 
+   // this is __cuda_callable__ only to silence nvcc warnings
+   TNL_NVCC_HD_WARNING_DISABLE
    template< typename Element >
-   __cuda_callable__ // only to avoid nvcc warning
+   __cuda_callable__
    static Element getElement( const Element* data );
 
    template< typename Element, typename Index >

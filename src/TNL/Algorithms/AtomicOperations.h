@@ -28,7 +28,12 @@ struct AtomicOperations{};
 template<>
 struct AtomicOperations< Devices::Host >
 {
+   // this is __cuda_callable__ only to silence nvcc warnings (all methods inside class
+   // template specializations must have the same execution space specifier, otherwise
+   // nvcc complains)
+   TNL_NVCC_HD_WARNING_DISABLE
    template< typename Value >
+   __cuda_callable__
    static void add( Value& v, const Value& a )
    {
 #pragma omp atomic update
