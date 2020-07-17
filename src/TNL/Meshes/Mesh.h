@@ -261,8 +261,6 @@ class Mesh
       // Methods for the mesh initializer
       using StorageBaseType::getPoints;
       using StorageBaseType::setEntitiesCount;
-      using StorageBaseType::getSubentitiesMatrix;
-      using StorageBaseType::getSuperentitiesMatrix;
 
       friend Initializer< MeshConfig >;
 

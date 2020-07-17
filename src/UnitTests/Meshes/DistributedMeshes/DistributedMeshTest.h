@@ -14,6 +14,7 @@
 #include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/VTKTraits.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/DistributedMeshes/distributeSubentities.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/MPIPrint.h>
@@ -263,6 +264,11 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 
       // set the communication group
       mesh.setCommunicationGroup( group );
+
+      if( overlap > 0 ) {
+         // distribute faces
+         distributeSubentities< 1 >( mesh );
+      }
    }
 
    static std::map< Index, Index > renumberVertices( const GridType& grid, CoordinatesType rank_sizes )
@@ -607,9 +613,13 @@ void testSynchronizer( const Mesh& mesh )
 {
    testSynchronizerOnDevice< Devices::Host, typename Mesh::Cell >( mesh );
    testSynchronizerOnDevice< Devices::Host, typename Mesh::Vertex >( mesh );
+   if( mesh.template getGlobalIndices< 1 >().getSize() > 0 )
+      testSynchronizerOnDevice< Devices::Host, typename Mesh::Face >( mesh );
 #ifdef HAVE_CUDA
    testSynchronizerOnDevice< Devices::Cuda, typename Mesh::Cell >( mesh );
    testSynchronizerOnDevice< Devices::Cuda, typename Mesh::Vertex >( mesh );
+   if( mesh.template getGlobalIndices< 1 >().getSize() > 0 )
+      testSynchronizerOnDevice< Devices::Cuda, typename Mesh::Face >( mesh );
 #endif
 }
 
@@ -721,6 +731,10 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    EXPECT_EQ( reader.getMeshType(), "Meshes::DistributedMesh" );
    Mesh loadedMesh;
    reader.loadMesh( loadedMesh );
+   // decomposition of faces is not stored in the VTK files
+   if( mesh.getGhostLevels() > 0 ) {
+      distributeSubentities< 1 >( loadedMesh );
+   }
    EXPECT_EQ( loadedMesh, mesh );
 
    // cleanup

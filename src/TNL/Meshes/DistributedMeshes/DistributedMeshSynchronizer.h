@@ -220,6 +220,143 @@ public:
       CommunicatorType::WaitAll( requests.data(), requests.size() );
    }
 
+   // performs a synchronization of a sparse matrix
+   //    - row indices -- ghost indices (recv), ghost neighbors (send)
+   //    - column indices -- values to be synchronized (in a CSR-like format)
+   // returns: a tuple of the received rankOffsets, rowPointers and columnIndices arrays
+   template< typename SparsePattern >
+   auto
+   synchronizeSparse( const SparsePattern& pattern )
+   {
+      TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
+
+      const int rank = CommunicatorType::GetRank( group );
+      const int nproc = CommunicatorType::GetSize( group );
+
+      // buffer for asynchronous communication requests
+      std::vector< typename CommunicatorType::Request > requests;
+
+      Containers::Array< GlobalIndexType, Devices::Host, int > send_rankOffsets( nproc + 1 ), recv_rankOffsets( nproc + 1 );
+      Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > send_rowPointers, send_columnIndices, recv_rowPointers, recv_columnIndices;
+
+      // sending part
+      {
+         // set rank offsets
+         send_rankOffsets[ 0 ] = 0;
+         for( int i = 0; i < nproc; i++ )
+            send_rankOffsets[ i + 1 ] = send_rankOffsets[ i ] + ghostNeighborOffsets[ i + 1 ] - ghostNeighborOffsets[ i ];
+
+         // allocate row pointers
+         send_rowPointers.setSize( send_rankOffsets[ nproc ] + 1 );
+
+         // set row pointers
+         GlobalIndexType rowPtr = 0;
+         send_rowPointers[ rowPtr ] = 0;
+         for( int i = 0; i < nproc; i++ ) {
+            if( i == rank )
+               continue;
+            for( GlobalIndexType r = ghostNeighborOffsets[ i ]; r < ghostNeighborOffsets[ i + 1 ]; r++ ) {
+               const GlobalIndexType rowIdx = ghostNeighbors[ r ];
+               const auto row = pattern.getRow( rowIdx );
+               send_rowPointers[ rowPtr + 1 ] = send_rowPointers[ rowPtr ] + row.getSize();
+               rowPtr++;
+            }
+         }
+
+         // allocate column indices
+         send_columnIndices.setSize( send_rowPointers[ send_rowPointers.getSize() - 1 ] );
+
+         // set column indices
+         for( int i = 0; i < nproc; i++ ) {
+            if( i == rank )
+               continue;
+            const GlobalIndexType rankOffset = send_rankOffsets[ i ];
+            GlobalIndexType rowBegin = send_rowPointers[ rankOffset ];
+            for( GlobalIndexType r = ghostNeighborOffsets[ i ]; r < ghostNeighborOffsets[ i + 1 ]; r++ ) {
+               const GlobalIndexType rowIdx = ghostNeighbors[ r ];
+               const auto row = pattern.getRow( rowIdx );
+               for( GlobalIndexType c = 0; c < row.getSize(); c++ )
+                  send_columnIndices[ rowBegin + c ] = row.getColumnIndex( c );
+               rowBegin += row.getSize();
+            }
+         }
+
+         for( int i = 0; i < nproc; i++ ) {
+            if( send_rankOffsets[ i + 1 ] == send_rankOffsets[ i ] )
+               continue;
+            // issue async send operation
+            requests.push_back( CommunicatorType::ISend(
+                     send_columnIndices.getData() + send_rowPointers[ send_rankOffsets[ i ] ],
+                     send_rowPointers[ send_rankOffsets[ i + 1 ] ] - send_rowPointers[ send_rankOffsets[ i ] ],
+                     i, 0, group ) );
+         }
+      }
+
+      // receiving part
+      {
+         // set rank offsets
+         recv_rankOffsets[ 0 ] = 0;
+         for( int i = 0; i < nproc; i++ )
+            recv_rankOffsets[ i + 1 ] = recv_rankOffsets[ i ] + ghostOffsets[ i + 1 ] - ghostOffsets[ i ];
+
+         // allocate row pointers
+         recv_rowPointers.setSize( recv_rankOffsets[ nproc ] + 1 );
+
+         // set row pointers
+         GlobalIndexType rowPtr = 0;
+         recv_rowPointers[ rowPtr ] = 0;
+         for( int i = 0; i < nproc; i++ ) {
+            if( i == rank )
+               continue;
+            for( GlobalIndexType rowIdx = ghostOffsets[ i ]; rowIdx < ghostOffsets[ i + 1 ]; rowIdx++ ) {
+               const auto row = pattern.getRow( rowIdx );
+               recv_rowPointers[ rowPtr + 1 ] = recv_rowPointers[ rowPtr ] + row.getSize();
+               rowPtr++;
+            }
+         }
+
+         // allocate column indices
+         recv_columnIndices.setSize( recv_rowPointers[ recv_rowPointers.getSize() - 1 ] );
+
+         for( int i = 0; i < nproc; i++ ) {
+            if( recv_rankOffsets[ i + 1 ] == recv_rankOffsets[ i ] )
+               continue;
+            // issue async send operation
+            requests.push_back( CommunicatorType::IRecv(
+                     recv_columnIndices.getData() + recv_rowPointers[ recv_rankOffsets[ i ] ],
+                     recv_rowPointers[ recv_rankOffsets[ i + 1 ] ] - recv_rowPointers[ recv_rankOffsets[ i ] ],
+                     i, 0, group ) );
+         }
+      }
+
+      // wait for all communications to finish
+      CommunicatorType::WaitAll( requests.data(), requests.size() );
+
+      return std::make_tuple( recv_rankOffsets, recv_rowPointers, recv_columnIndices );
+   }
+
+   // public const accessors for the communication pattern matrix and index arrays which were
+   // created in the `initialize` method
+   const auto& getGhostEntitiesCounts() const
+   {
+      return ghostEntitiesCounts;
+   }
+
+   const auto& getGhostOffsets() const
+   {
+      return ghostOffsets;
+   }
+
+   const auto& getGhostNeighborOffsets() const
+   {
+      return ghostNeighborOffsets;
+   }
+
+   const auto& getGhostNeighbors() const
+   {
+      return ghostNeighbors;
+   }
+
 protected:
    // GOTCHA (see above)
    int gpu_id = 0;
