@@ -17,7 +17,6 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
 #include <TNL/Pointers/SmartPointersRegister.h>
-#include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
 #include <cstddef>  // std::nullptr_t
@@ -303,6 +302,11 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       using DeviceType = Devices::Cuda;
 
       /**
+       * \typedef AllocatorType is the type of the allocator for \e DeviceType.
+       */
+      using AllocatorType = typename Allocators::Default< DeviceType >::Allocator< ObjectType >;
+
+      /**
        * \brief Constructor of empty pointer.
        */
       UniquePointer( std::nullptr_t )
@@ -548,7 +552,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          template< typename... Args >
          explicit PointerData( Args... args )
          : data( args... ),
-           maybe_modified( false )
+           maybe_modified( true )
          {}
       };
 
@@ -556,10 +560,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       bool allocate( Args... args )
       {
          this->pd = new PointerData( args... );
-         // pass to device
-         this->cuda_pointer = Cuda::passToDevice( this->pd->data );
-         // set last-sync state
-         this->set_last_sync_state();
+         // allocate on device
+         this->cuda_pointer = AllocatorType{}.allocate(1);
+         // synchronize
+         this->synchronize();
          getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
@@ -585,7 +589,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          if( this->pd )
             delete this->pd;
          if( this->cuda_pointer )
-            Cuda::freeFromDevice( this->cuda_pointer );
+            AllocatorType{}.deallocate( this->cuda_pointer, 1 );
       }
 
       PointerData* pd;

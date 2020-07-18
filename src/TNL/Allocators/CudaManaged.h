@@ -79,7 +79,7 @@ struct CudaManaged
    {
 #ifdef HAVE_CUDA
       TNL_CHECK_CUDA_DEVICE;
-      cudaFree( ptr );
+      cudaFree( (void*) ptr );
       TNL_CHECK_CUDA_DEVICE;
 #else
       throw Exceptions::CudaSupportMissing();
