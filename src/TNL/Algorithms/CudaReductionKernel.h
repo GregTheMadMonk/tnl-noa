@@ -52,10 +52,14 @@ __host__ __device__
 auto CudaReductionFunctorWrapper( Reduction&& reduction, Arg1&& arg1, Arg2&& arg2 )
 {
 // let's suppress the aforementioned warning...
+#ifdef __NVCC__
 #pragma push
 #pragma diag_suppress 2979
+#endif
    return std::forward<Reduction>(reduction)( std::forward<Arg1>(arg1), std::forward<Arg2>(arg2) );
+#ifdef __NVCC__
 #pragma pop
+#endif
 }
 
 template< int blockSize,
