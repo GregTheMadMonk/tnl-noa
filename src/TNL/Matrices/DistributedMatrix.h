@@ -81,6 +81,9 @@ public:
    __cuda_callable__
    const Matrix& getLocalMatrix() const;
 
+   __cuda_callable__
+   Matrix& getLocalMatrix();
+
 
    /*
     * Some common Matrix methods follow below.
@@ -102,7 +105,8 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   void setRowCapacities( const CompressedRowLengthsVector& rowLengths );
+   template< typename RowCapacitiesVector >
+   void setRowCapacities( const RowCapacitiesVector& rowCapacities );
 
    template< typename Vector >
    void getCompressedRowLengths( Vector& rowLengths ) const;
@@ -143,6 +147,13 @@ public:
    typename std::enable_if< has_communicator< InVector >::value >::type
    vectorProduct( const InVector& inVector,
                   OutVector& outVector ) const;
+
+   // FIXME: does not work for distributed matrices, here only due to common interface
+   template< typename Vector1, typename Vector2 >
+   bool performSORIteration( const Vector1& b,
+                             const IndexType row,
+                             Vector2& x,
+                             const RealType& omega = 1.0 ) const;
 
 protected:
    LocalRangeType localRowRange;

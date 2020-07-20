@@ -70,6 +70,16 @@ getLocalMatrix() const
    return localMatrix;
 }
 
+template< typename Matrix,
+          typename Communicator >
+__cuda_callable__
+Matrix&
+DistributedMatrix< Matrix, Communicator >::
+getLocalMatrix()
+{
+   return localMatrix;
+}
+
 
 /*
  * Some common Matrix methods follow below.
@@ -149,16 +159,17 @@ getColumns() const
 
 template< typename Matrix,
           typename Communicator >
+   template< typename RowCapacitiesVector >
 void
 DistributedMatrix< Matrix, Communicator >::
-setRowCapacities( const CompressedRowLengthsVector& rowLengths )
+setRowCapacities( const RowCapacitiesVector& rowCapacities )
 {
-   TNL_ASSERT_EQ( rowLengths.getSize(), getRows(), "row lengths vector has wrong size" );
-   TNL_ASSERT_EQ( rowLengths.getLocalRange(), getLocalRowRange(), "row lengths vector has wrong distribution" );
-   TNL_ASSERT_EQ( rowLengths.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
+   TNL_ASSERT_EQ( rowCapacities.getSize(), getRows(), "row lengths vector has wrong size" );
+   TNL_ASSERT_EQ( rowCapacities.getLocalRange(), getLocalRowRange(), "row lengths vector has wrong distribution" );
+   TNL_ASSERT_EQ( rowCapacities.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
 
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      localMatrix.setRowCapacities( rowLengths.getConstLocalView() );
+      localMatrix.setRowCapacities( rowCapacities.getConstLocalView() );
 
       spmv.reset();
    }
@@ -294,6 +305,19 @@ vectorProduct( const InVector& inVector,
       return;
 
    const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, inVector, getCommunicationGroup() );
+}
+
+template< typename Matrix,
+          typename Communicator >
+   template< typename Vector1, typename Vector2 >
+bool
+DistributedMatrix< Matrix, Communicator >::
+performSORIteration( const Vector1& b,
+                     const IndexType row,
+                     Vector2& x,
+                     const RealType& omega ) const
+{
+   return getLocalMatrix().performSORIteration( b, row, x, omega );
 }
 
 } // namespace Matrices
