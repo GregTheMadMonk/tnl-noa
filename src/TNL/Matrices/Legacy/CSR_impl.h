@@ -130,7 +130,7 @@ Index findLimit(const Index start,
                        matrix.getRowPointers().getElement(current);
       sum += elements;
       if (sum > matrix.SHARED_PER_WARP) {
-         if (current - start > 1) { // extra row
+         if (current - start > 0) { // extra row
             type = Type::STREAM;
             return current;
          } else {                  // one long row
@@ -804,7 +804,7 @@ Index CSR< Real, Device, Index, KernelType >::getHybridModeSplit() const
 template< typename Real,
           typename Index,
           int warpSize,
-          int SHARED,
+          int WARPS,
           int SHARED_PER_WARP,
           int MAX_ELEM_PER_WARP >
 __global__
@@ -816,7 +816,7 @@ void SpMVCSRAdaptive( const Real *inVector,
                       const Block<Index> *blocks,
                       Index blocksSize,
                       Index gridID) {
-   __shared__ Real shared[SHARED];
+   __shared__ Real shared[WARPS][SHARED_PER_WARP];
    const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
    const Index blockIdx = index / warpSize;
    if (blockIdx >= blocksSize)
@@ -826,25 +826,25 @@ void SpMVCSRAdaptive( const Real *inVector,
    const Index laneID = threadIdx.x & 31; // & is cheaper than %
    Block<Index> block = blocks[blockIdx];
    const Index minID = rowPointers[block.index[0]/* minRow */];
-   Index i, to, offset, maxID;
+   Index i, to, maxID;
    if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b1000000) {
       /////////////////////////////////////* CSR STREAM *//////////////
+      const Index warpID = threadIdx.x / 32;
+      maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
+
+      /* Stream data to shared memory */
+      for (i = laneID + minID; i < maxID; i += warpSize)
+         shared[warpID][i - minID] = values[i] * inVector[columnIndexes[i]];
+
       const Index maxRow = block.index[0]/* minRow */ +
          /* maxRow - minRow */(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FFF);
-      maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
-      /* offset between shared and global addresses */
-      offset = minID - (threadIdx.x / warpSize * SHARED_PER_WARP);
-      /* Copy and calculate elements from global to shared memory, coalesced */
-      for (i = laneID + minID; i < maxID; i += warpSize)
-         shared[i - offset] = values[i] * inVector[columnIndexes[i]];
-
       /* Calculate result */
       for (i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize) {
-         to = rowPointers[i + 1] - offset; // end of preprocessed data
+         to = rowPointers[i + 1] - minID; // end of preprocessed data
          result = 0;
          /* Scalar reduction */
-         for (Index sharedID = rowPointers[i] - offset; sharedID < to; ++sharedID)
-            result += shared[sharedID];
+         for (Index sharedID = rowPointers[i] - minID; sharedID < to; ++sharedID)
+            result += shared[warpID][sharedID];
 
          outVector[i] = result; // Write result
       }
@@ -864,10 +864,10 @@ void SpMVCSRAdaptive( const Real *inVector,
       if (laneID == 0) outVector[block.index[0]/* minRow */] = result; // Write result
    } else {
       /////////////////////////////////////* CSR VECTOR L */////////////
-      maxID = rowPointers[block.index[0]/* minRow */ + 1];
-
-      offset = block.index[1]/* warpInRow */ * MAX_ELEM_PER_WARP;
+      /* Number of elements processed by previous warps */
+      const Index offset = block.index[1]/* warpInRow */ * MAX_ELEM_PER_WARP;
       to = minID + (block.index[1]/* warpInRow */ + 1) * MAX_ELEM_PER_WARP;
+      maxID = rowPointers[block.index[0]/* minRow */ + 1];
       if (to > maxID) to = maxID;
       for (i = minID + offset + laneID; i < to; i += warpSize)
          result += values[i] * inVector[columnIndexes[i]];
@@ -1754,7 +1754,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
       }
 
       SpMVCSRAdaptive< Real, Index, warpSize, 
-            matrix.SHARED, 
+            matrix.WARPS,
             matrix.SHARED_PER_WARP, 
             matrix.MAX_ELEMENTS_PER_WARP >
          <<<blocks, threads>>>(
