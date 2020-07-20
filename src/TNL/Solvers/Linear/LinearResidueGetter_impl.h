@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include <TNL/Solvers/Linear/Traits.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -28,10 +29,12 @@ getResidue( const Matrix& matrix,
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
+   using VectorType = typename Traits< Matrix >::VectorType;
 
    if( bNorm == 0.0 )
       bNorm = lpNorm( b, 2.0 );
-   Containers::Vector< RealType, DeviceType, IndexType > v( b.getSize() );
+   VectorType v;
+   v.setLike( b );
    matrix.vectorProduct( x, v );
    return l2Norm( v - b ) / bNorm;
 }

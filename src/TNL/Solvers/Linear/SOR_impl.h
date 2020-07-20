@@ -66,7 +66,6 @@ bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
    {
       for( IndexType row = 0; row < size; row ++ )
          this->matrix->performSORIteration( b, row, x, this->getOmega() );
-      // FIXME: the LinearResidueGetter works only on the host
       this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }

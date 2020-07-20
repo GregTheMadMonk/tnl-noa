@@ -29,13 +29,14 @@ public:
    using IndexType = typename Base::IndexType;
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
+   using VectorType = typename Traits< Matrix >::VectorType;
 
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
-   void setSize( IndexType size );
+   void setSize( const VectorViewType& x );
 
-   Containers::Vector< RealType, DeviceType, IndexType >  r, p, Ap, z;
+   VectorType r, p, Ap, z;
 };
 
 } // namespace Linear

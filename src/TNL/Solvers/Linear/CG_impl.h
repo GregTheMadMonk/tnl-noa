@@ -21,7 +21,7 @@ bool
 CG< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
-   this->setSize( this->matrix->getRows() );
+   this->setSize( x );
    this->resetIterations();
 
    RealType alpha, beta, s1, s2;
@@ -113,12 +113,12 @@ solve( ConstVectorViewType b, VectorViewType x )
 
 template< typename Matrix >
 void CG< Matrix >::
-setSize( IndexType size )
+setSize( const VectorViewType& x )
 {
-   r.setSize( size );
-   p.setSize( size );
-   Ap.setSize( size );
-   z.setSize( size );
+   r.setLike( x );
+   p.setLike( x );
+   Ap.setLike( x );
+   z.setLike( x );
 }
 
 } // namespace Linear
