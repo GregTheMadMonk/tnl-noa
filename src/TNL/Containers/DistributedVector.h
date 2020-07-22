@@ -51,6 +51,8 @@ public:
    using BaseType::DistributedArray;
    using BaseType::operator=;
 
+   DistributedVector() = default;
+
    /**
     * \brief Copy constructor (makes a deep copy).
     */
