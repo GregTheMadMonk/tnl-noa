@@ -126,7 +126,7 @@ class MpiCommunicator
                      {
                         std::cout << "  For MPI process " << i << ": gdb -q -ex \"attach " << recvPid << "\""
                                   << " -ex \"set variable tnlMPIDebugAttached=1\""
-                                  << " -ex \"finish\"" << std::endl;
+                                  << " -ex \"continue\"" << std::endl;
                      }
                   }
                   std::cout << std::flush;
