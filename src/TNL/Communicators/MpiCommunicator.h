@@ -35,6 +35,7 @@
 
 #include <TNL/String.h>
 #include <TNL/Logger.h>
+#include <TNL/Debugging/OutputRedirection.h>
 #include <TNL/Communicators/MpiDefs.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Exceptions/MPISupportMissing.h>
@@ -83,8 +84,9 @@ class MpiCommunicator
 #ifdef HAVE_MPI
          if(IsInitialized())//i.e. - isUsed
          {
-            redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
-            setupRedirection();
+            const bool redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
+            if( redirect )
+               setupRedirection();
 #ifdef HAVE_CUDA
             int size;
             MPI_Comm_size( MPI_COMM_WORLD, &size );
@@ -148,33 +150,19 @@ class MpiCommunicator
          // silence warnings about (potentially) unused variables
          (void) NullGroup;
          (void) NullRequest;
-         (void) backup;
-         (void) psbuf;
-         (void) filestr;
-         (void) redirect;
-      }
-
-      static void setRedirection( bool redirect_ )
-      {
-         redirect = redirect_;
       }
 
       static void setupRedirection()
       {
 #ifdef HAVE_MPI
-         if(isDistributed() && redirect )
+         if(isDistributed() )
          {
-            //redirect all stdout to files, only 0 take to go to console
-            backup=std::cout.rdbuf();
-
-            //redirect output to files...
             if(GetRank(AllGroup)!=0)
             {
-               std::cout << GetRank(AllGroup) << ": Redirecting std::cout to file" << std::endl;
-               const String stdoutFile = String("./stdout-") + convertToString(GetRank(AllGroup)) + String(".txt");
-               filestr.open(stdoutFile.getString());
-               psbuf = filestr.rdbuf();
-               std::cout.rdbuf(psbuf);
+               const std::string stdoutFile = std::string("./stdout_") + std::to_string(GetRank(AllGroup)) + ".txt";
+               const std::string stderrFile = std::string("./stderr_") + std::to_string(GetRank(AllGroup)) + ".txt";
+               std::cout << GetRank(AllGroup) << ": Redirecting stdout and stderr to files " << stdoutFile << " and " << stderrFile << std::endl;
+               Debugging::redirect_stdout_stderr( stdoutFile, stderrFile );
             }
          }
 #else
@@ -189,8 +177,8 @@ class MpiCommunicator
          {
             if(GetRank(AllGroup)!=0)
             {
-               std::cout.rdbuf(backup);
-               filestr.close();
+               // restore redirection (not necessary, it uses RAII internally...)
+               Debugging::redirect_stdout_stderr( "", "", true );
             }
          }
          MPI_Finalize();
@@ -484,10 +472,6 @@ class MpiCommunicator
       static constexpr int NullGroup = 0;
 #endif
    private:
-      static std::streambuf* psbuf;
-      static std::streambuf* backup;
-      static std::ofstream filestr;
-      static bool redirect;
 
       static void selectGPU(void)
       {
@@ -534,10 +518,6 @@ MPI_Request MpiCommunicator::NullRequest = MPI_REQUEST_NULL;
 MPI_Comm MpiCommunicator::AllGroup = MPI_COMM_WORLD;
 MPI_Comm MpiCommunicator::NullGroup = MPI_COMM_NULL;
 #endif
-std::streambuf* MpiCommunicator::psbuf = nullptr;
-std::streambuf* MpiCommunicator::backup = nullptr;
-std::ofstream MpiCommunicator::filestr;
-bool MpiCommunicator::redirect = true;
 
 } // namespace <unnamed>
 } // namespace Communicators

@@ -37,8 +37,6 @@ class NoDistrCommunicator
 
       static void Init(int& argc, char**& argv) {}
 
-      static void setRedirection( bool redirect_ ) {}
-
       static void setupRedirection(){}
 
       static void Finalize(){}
