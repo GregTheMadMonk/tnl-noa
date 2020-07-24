@@ -50,22 +50,14 @@ public:
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
       const GlobalIndexType ownStart = mesh.template getGlobalIndices< EntityDimension >().getElement( 0 );
-      Containers::Array< GlobalIndexType, Devices::Host, int > offsets( nproc );
+      globalOffsets.setSize( nproc );
       {
          Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( ownStart );
          CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                     offsets.getData(), 1,
+                                     globalOffsets.getData(), 1,
                                      group );
       }
-
-      auto getOwner = [&] ( GlobalIndexType idx )
-      {
-         for( int i = 0; i < nproc - 1; i++ )
-            if( offsets[ i ] <= idx && idx < offsets[ i + 1 ] )
-               return i;
-         return nproc - 1;
-      };
 
       // count local ghost entities for each rank
       Containers::Array< GlobalIndexType, Devices::Host, int > localGhostCounts( nproc );
@@ -84,7 +76,7 @@ public:
                if( global_idx < prev_global_idx )
                   throw std::runtime_error( "ghost indices are not sorted - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
                prev_global_idx = global_idx;
-               const int owner = getOwner( global_idx );
+               const int owner = getEntityOwner( global_idx );
                if( owner == rank )
                   throw std::runtime_error( "the owner of a ghost entity cannot be the local rank - the mesh is probably inconsistent or there is a bug in the DistributedMeshSynchronizer" );
                ++localGhostCounts[ owner ];
@@ -371,8 +363,23 @@ public:
       return std::make_tuple( recv_rankOffsets, recv_rowPointers, recv_columnIndices );
    }
 
+   // get entity owner based on its global index - can be used only after running initialize()
+   int getEntityOwner( GlobalIndexType global_idx ) const
+   {
+      const int nproc = globalOffsets.getSize();
+      for( int i = 0; i < nproc - 1; i++ )
+         if( globalOffsets[ i ] <= global_idx && global_idx < globalOffsets[ i + 1 ] )
+            return i;
+      return nproc - 1;
+   };
+
    // public const accessors for the communication pattern matrix and index arrays which were
    // created in the `initialize` method
+   const auto& getGlobalOffsets() const
+   {
+      return globalOffsets;
+   }
+
    const auto& getGhostEntitiesCounts() const
    {
       return ghostEntitiesCounts;
@@ -399,6 +406,13 @@ protected:
 
    // communication group taken from the distributed mesh
    typename CommunicatorType::CommunicationGroup group;
+
+   /**
+    * Global offsets: array of size nproc where the i-th value is the lowest
+    * global index of the entities owned by the i-th rank. This can be used
+    * to determine the owner of every entity based on its global index.
+    */
+   Containers::Array< GlobalIndexType, Devices::Host, int > globalOffsets;
 
    /**
     * Communication pattern:
