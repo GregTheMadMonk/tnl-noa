@@ -223,10 +223,13 @@ public:
    // performs a synchronization of a sparse matrix
    //    - row indices -- ghost indices (recv), ghost neighbors (send)
    //    - column indices -- values to be synchronized (in a CSR-like format)
+   // NOTE: if all shared rows have the same capacity on all ranks that send/receive data
+   //       from these rows (e.g. if all row capacities in the matrix are constant),
+   //       set assumeConsistentRowCapacities to true
    // returns: a tuple of the received rankOffsets, rowPointers and columnIndices arrays
    template< typename SparsePattern >
    auto
-   synchronizeSparse( const SparsePattern& pattern )
+   synchronizeSparse( const SparsePattern& pattern, bool assumeConsistentRowCapacities = false )
    {
       TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
 
@@ -237,7 +240,7 @@ public:
       std::vector< typename CommunicatorType::Request > requests;
 
       Containers::Array< GlobalIndexType, Devices::Host, int > send_rankOffsets( nproc + 1 ), recv_rankOffsets( nproc + 1 );
-      Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > send_rowPointers, send_columnIndices, recv_rowPointers, recv_columnIndices;
+      Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > send_rowCapacities, send_rowPointers, send_columnIndices, recv_rowPointers, recv_columnIndices;
 
       // sending part
       {
@@ -248,6 +251,8 @@ public:
 
          // allocate row pointers
          send_rowPointers.setSize( send_rankOffsets[ nproc ] + 1 );
+         if( ! assumeConsistentRowCapacities )
+            send_rowCapacities.setSize( send_rankOffsets[ nproc ] + 1 );
 
          // set row pointers
          GlobalIndexType rowPtr = 0;
@@ -259,8 +264,17 @@ public:
                const GlobalIndexType rowIdx = ghostNeighbors[ r ];
                const auto row = pattern.getRow( rowIdx );
                send_rowPointers[ rowPtr + 1 ] = send_rowPointers[ rowPtr ] + row.getSize();
+               if( ! assumeConsistentRowCapacities )
+                  send_rowCapacities[ rowPtr ] = row.getSize();
                rowPtr++;
             }
+            // send our row sizes to the target rank
+            if( ! assumeConsistentRowCapacities )
+               // issue async send operation
+               requests.push_back( CommunicatorType::ISend(
+                        send_rowCapacities.getData() + send_rankOffsets[ i ],
+                        ghostNeighborOffsets[ i + 1 ] - ghostNeighborOffsets[ i ],
+                        i, 1, group ) );
          }
 
          // allocate column indices
@@ -302,17 +316,39 @@ public:
          // allocate row pointers
          recv_rowPointers.setSize( recv_rankOffsets[ nproc ] + 1 );
 
+         std::vector< typename CommunicatorType::Request > row_lengths_requests;
+
          // set row pointers
          GlobalIndexType rowPtr = 0;
          recv_rowPointers[ rowPtr ] = 0;
          for( int i = 0; i < nproc; i++ ) {
             if( i == rank )
                continue;
-            for( GlobalIndexType rowIdx = ghostOffsets[ i ]; rowIdx < ghostOffsets[ i + 1 ]; rowIdx++ ) {
-               const auto row = pattern.getRow( rowIdx );
-               recv_rowPointers[ rowPtr + 1 ] = recv_rowPointers[ rowPtr ] + row.getSize();
-               rowPtr++;
+            if( assumeConsistentRowCapacities ) {
+               for( GlobalIndexType rowIdx = ghostOffsets[ i ]; rowIdx < ghostOffsets[ i + 1 ]; rowIdx++ ) {
+                  const auto row = pattern.getRow( rowIdx );
+                  recv_rowPointers[ rowPtr + 1 ] = recv_rowPointers[ rowPtr ] + row.getSize();
+                  rowPtr++;
+               }
             }
+            else {
+               // receive row sizes from the sender
+               // issue async recv operation
+               row_lengths_requests.push_back( CommunicatorType::IRecv(
+                        recv_rowPointers.getData() + recv_rankOffsets[ i ],
+                        ghostOffsets[ i + 1 ] - ghostOffsets[ i ],
+                        i, 1, group ) );
+            }
+         }
+
+         if( ! assumeConsistentRowCapacities ) {
+            // wait for all row lengths
+            CommunicatorType::WaitAll( row_lengths_requests.data(), row_lengths_requests.size() );
+
+            // scan the rowPointers array to convert
+            Containers::VectorView< GlobalIndexType, Devices::Host, GlobalIndexType > rowPointersView;
+            rowPointersView.bind( recv_rowPointers );
+            rowPointersView.template scan< Algorithms::ScanType::Exclusive >();
          }
 
          // allocate column indices
@@ -321,7 +357,7 @@ public:
          for( int i = 0; i < nproc; i++ ) {
             if( recv_rankOffsets[ i + 1 ] == recv_rankOffsets[ i ] )
                continue;
-            // issue async send operation
+            // issue async recv operation
             requests.push_back( CommunicatorType::IRecv(
                      recv_columnIndices.getData() + recv_rowPointers[ recv_rankOffsets[ i ] ],
                      recv_rowPointers[ recv_rankOffsets[ i + 1 ] ] - recv_rowPointers[ recv_rankOffsets[ i ] ],
