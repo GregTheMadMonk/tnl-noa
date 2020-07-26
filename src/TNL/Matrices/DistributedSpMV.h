@@ -87,6 +87,8 @@ public:
          bool comm_right = false;
          for( IndexType c = 0; c < row.getSize(); c++ ) {
             const IndexType j = row.getColumnIndex( c );
+            if( j == localMatrix->getPaddingIndex() )
+               continue;
             if( j < columns ) {
                const int owner = Partitioner::getOwner( j, columns, nproc );
                // atomic assignment
@@ -186,7 +188,7 @@ public:
       // general variant
       if( localOnlySpan.first >= localOnlySpan.second ) {
          // wait for all communications to finish
-         CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
+         CommunicatorType::WaitAll( commRequests.data(), commRequests.size() );
 
          // perform matrix-vector multiplication
          auto outVectorView = outVector.getLocalView();
@@ -200,7 +202,7 @@ public:
          localMatrix.vectorProduct( inVector, outVectorView, 1.0, 0.0, localOnlySpan.first, localOnlySpan.second );
 
          // wait for all communications to finish
-         CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
+         CommunicatorType::WaitAll( commRequests.data(), commRequests.size() );
 
          // finish the multiplication by adding the non-local entries
          localMatrix.vectorProduct( globalBufferView, outVectorView, 1.0, 0.0, 0, localOnlySpan.first );
