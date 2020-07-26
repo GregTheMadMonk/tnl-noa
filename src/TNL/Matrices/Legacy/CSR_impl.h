@@ -134,7 +134,7 @@ Index findLimit(const Index start,
             type = Type::STREAM;
             return current;
          } else {                  // one long row
-            if (sum <= matrix.MAX_ELEMENTS_PER_WARP)
+            if (sum <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
                type = Type::VECTOR;
             else
                type = Type::LONG;
@@ -1407,7 +1407,7 @@ template< typename Real,
 void SpMVCSRLightPrepare( const Real *inVector,
                           Real* outVector,
                           const CSR< Real, Device, Index, KernelType >& matrix) {
-   const Index threads = matrix.THREADS_LIGHT; // max block size
+   const Index threads = 1024; // max block size
    const Index rows = matrix.getRowPointers().getSize() - 1;
    /* Copy rowCnt to GPU */
    unsigned rowCnt = 0;
@@ -1544,7 +1544,7 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
    const Index threads = matrix.THREADS_LIGHT; // block size
    size_t neededThreads = rows * warpSize;
    Index blocks, groupSize;
-   
+
    const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
    if (nnz <= 2)
       groupSize = 2;
@@ -1554,7 +1554,7 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
       groupSize = 8;
    else if (nnz <= 16)
       groupSize = 16;
-   else if (nnz <= matrix.MAX_ELEMENTS_PER_WARP)
+   else if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
       groupSize = 32; // CSR Vector
    else
       groupSize = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector

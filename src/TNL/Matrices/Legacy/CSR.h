@@ -110,16 +110,16 @@ public:
    /* Configuration of CSR SpMV kernels ----------------------------------------- */
 
    /* Block sizes */
-   static constexpr Index THREADS_ADAPTIVE = 1024;
-   static constexpr Index THREADS_SCALAR = 1024;
-   static constexpr Index THREADS_VECTOR = 1024;
-   static constexpr Index THREADS_LIGHT = 1024;
+   static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
+   static constexpr Index THREADS_SCALAR = 128;
+   static constexpr Index THREADS_VECTOR = 128;
+   static constexpr Index THREADS_LIGHT = 128;
 
    /* Max length of row to process one warp */
-   static constexpr Index MAX_ELEMENTS_PER_WARP = 1024;
+   static constexpr Index MAX_ELEMENTS_PER_WARP = 512;
 
    /* How many shared memory use per block in CSR Adaptive kernel */
-   static constexpr Index SHARED_PER_BLOCK = 49152;
+   static constexpr Index SHARED_PER_BLOCK = 24576;
 
    /* Number of elements in shared memory */
    static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
