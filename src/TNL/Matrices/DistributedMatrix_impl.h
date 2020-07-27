@@ -304,7 +304,7 @@ vectorProduct( const InVector& inVector,
    if( getCommunicationGroup() == CommunicatorType::NullGroup )
       return;
 
-   const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, inVector, getCommunicationGroup() );
+   const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicationGroup() );
 }
 
 template< typename Matrix,
