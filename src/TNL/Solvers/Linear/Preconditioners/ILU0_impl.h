@@ -137,6 +137,9 @@ solve( ConstVectorViewType _b, VectorViewType _x ) const
    const auto b = Traits< Matrix >::getConstLocalView( _b );
    auto x = Traits< Matrix >::getLocalView( _x );
 
+   TNL_ASSERT_EQ( b.getSize(), L.getRows(), "The size of the vector b does not match the size of the decomposed matrix." );
+   TNL_ASSERT_EQ( x.getSize(), U.getRows(), "The size of the vector x does not match the size of the decomposed matrix." );
+
    // Step 1: solve y from Ly = b
    triangularSolveLower< true >( L, x, b );
 

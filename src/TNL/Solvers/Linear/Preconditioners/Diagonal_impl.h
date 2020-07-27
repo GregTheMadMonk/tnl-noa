@@ -91,6 +91,9 @@ solve( ConstVectorViewType b, VectorViewType x ) const
    const auto b_view = b.getConstLocalView();
    auto x_view = x.getLocalView();
 
+   TNL_ASSERT_EQ( b_view.getSize(), diagonal.getSize(), "The size of the vector b does not match the size of the extracted diagonal." );
+   TNL_ASSERT_EQ( x_view.getSize(), diagonal.getSize(), "The size of the vector x does not match the size of the extracted diagonal." );
+
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       x_view[ i ] = b_view[ i ] / diag_view[ i ];

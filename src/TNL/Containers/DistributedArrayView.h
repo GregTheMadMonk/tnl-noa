@@ -51,7 +51,10 @@ public:
    __cuda_callable__
    DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
    : localRange(localRange), globalSize(globalSize), group(group), localData(localData)
-   {}
+   {
+      TNL_ASSERT_EQ( localData.getSize(), localRange.getSize(),
+                     "The local array size does not match the local range of the distributed array." );
+   }
 
    __cuda_callable__
    DistributedArrayView() = default;
