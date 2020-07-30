@@ -51,7 +51,9 @@ public:
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;
+#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
    using BaseType::operator=;
+#endif
 
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.

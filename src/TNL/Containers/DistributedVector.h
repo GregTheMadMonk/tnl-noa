@@ -49,7 +49,9 @@ public:
 
    // inherit all constructors and assignment operators from Array
    using BaseType::DistributedArray;
+#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
    using BaseType::operator=;
+#endif
 
    DistributedVector() = default;
 

@@ -1171,6 +1171,9 @@ class tnlCusparseCSRWrapper< float, int >
                                  const Real* x,
                                  Real* y )
       {
+#if CUDART_VERSION >= 11000
+         throw std::runtime_error("cusparseScsrmv was removed in CUDA 11.");
+#else
          cusparseHandle_t   cusparseHandle;
          cusparseMatDescr_t cusparseMatDescr;
          cusparseCreate( &cusparseHandle );
@@ -1191,6 +1194,7 @@ class tnlCusparseCSRWrapper< float, int >
                          x,
                          &beta,
                          y );
+#endif
       };
 };
 
@@ -1211,6 +1215,9 @@ class tnlCusparseCSRWrapper< double, int >
                                  const Real* x,
                                  Real* y )
       {
+#if CUDART_VERSION >= 11000
+         throw std::runtime_error("cusparseDcsrmv was removed in CUDA 11.");
+#else
          cusparseHandle_t   cusparseHandle;
          cusparseMatDescr_t cusparseMatDescr;
          cusparseCreate( &cusparseHandle );
@@ -1231,6 +1238,7 @@ class tnlCusparseCSRWrapper< double, int >
                          x,
                          &beta,
                          y );
+#endif
       };
 };
 
