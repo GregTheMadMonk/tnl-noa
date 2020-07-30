@@ -194,6 +194,7 @@ public:
     */
    // operator= from the base class should be hidden according to the C++14 standard,
    // although GCC does not do that - see https://stackoverflow.com/q/57322624
+#if !defined(__CUDACC_VER_MAJOR__) || __CUDACC_VER_MAJOR__ < 11
    template< typename T,
              typename...,
              typename = std::enable_if_t< std::is_convertible< T, Real >::value || IsArrayType< T >::value > >
@@ -202,6 +203,7 @@ public:
    {
       return Array< Real, Device, Index, Allocator >::operator=(data);
    }
+#endif
 
    /**
     * \brief Adds elements of this vector and a vector expression and
