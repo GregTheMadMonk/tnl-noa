@@ -10,21 +10,20 @@
 
 #pragma once
 
-#include <limits>
-
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Writers {
 
-namespace __impl {
+namespace details {
 
 template< typename Mesh, int EntityDimension > struct MeshEntitiesVTKWriter;
 template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
 
-} // namespace __impl
+} // namespace details
 
 template< typename Mesh >
 class VTKWriter
@@ -34,27 +33,73 @@ class VTKWriter
 //   static_assert( Mesh::getWorldDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
 
    template< int EntityDimension >
-   using EntitiesWriter = __impl::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
+   using EntitiesWriter = details::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
 
    template< int EntityDimension >
-   using EntityTypesWriter = __impl::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
+   using EntityTypesWriter = details::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
 
 public:
-   using Index = typename Mesh::GlobalIndexType;
+   using IndexType = typename Mesh::GlobalIndexType;
 
-   static void writeAllEntities( const Mesh& mesh, std::ostream& str );
+   VTKWriter() = delete;
+
+   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::binary )
+   : str(str), format(format)
+   {
+      if( format != VTK::FileFormat::ascii && format != VTK::FileFormat::binary )
+         throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
+   }
+
+   // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
+   // http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
+   void writeMetadata( std::int32_t cycle = -1, double time = -1 );
 
    template< int EntityDimension = Mesh::getMeshDimension() >
-   static void writeEntities( const Mesh& mesh, std::ostream& str );
+   void writeEntities( const Mesh& mesh );
+
+   template< typename Array >
+   void writePointData( const Array& array,
+                        const String& name,
+                        const int numberOfComponents = 1 );
+
+   template< typename Array >
+   void writeCellData( const Array& array,
+                       const String& name,
+                       const int numberOfComponents = 1 );
+
+   template< typename Array >
+   void writeDataArray( const Array& array,
+                        const String& name,
+                        const int numberOfComponents = 1 );
 
 protected:
-   static void writeHeader( const Mesh& mesh, std::ostream& str );
+   void writePoints( const Mesh& mesh );
 
-   static void writePoints( const Mesh& mesh, std::ostream& str );
+   void writeHeader();
+
+   std::ostream& str;
+
+   VTK::FileFormat format;
+
+   // number of cells (in the VTK sense) written to the file
+   IndexType cellsCount = 0;
+
+   // number of points written to the file
+   IndexType pointsCount = 0;
+
+   // indicator if the header has been written
+   bool headerWritten = false;
+
+   // number of data arrays written in each section
+   int cellDataArrays = 0;
+   int pointDataArrays = 0;
+
+   // indicator of the current section
+   VTK::DataType currentSection = VTK::DataType::CellData;
 };
 
 } // namespace Writers
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/Writers/VTKWriter_impl.h>
+#include <TNL/Meshes/Writers/VTKWriter.hpp>

@@ -10,287 +10,207 @@
 
 #pragma once
 
-#include <string>
-#include <utility>
+#include <experimental/filesystem>
 
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
+#include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
 #include <TNL/Meshes/Readers/TNLReader.h>
 #include <TNL/Meshes/Readers/NetgenReader.h>
 #include <TNL/Meshes/Readers/VTKReader.h>
-#include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
-#include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-
-// TODO: implement this in TNL::String
-inline bool ends_with( const std::string& value, const std::string& ending )
-{
-   if (ending.size() > value.size())
-      return false;
-   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
+#include <TNL/Meshes/Readers/VTUReader.h>
 
 namespace TNL {
 namespace Meshes {
 
-/*
- * TODO:
- * The variadic template parameter pack ProblemSetterArgs will not be necessary
- * in C++14 as it will be possible to use generic lambda functions to pass
- * parameters to the ProblemSetter:
- *
- *    // wrapper for MeshTypeResolver
- *    template< typename MeshType >
- *    using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >;
- *
- *    bool run( const Config::ParameterContainer& parameters )
- *    {
- *       const String& meshFileName = parameters.getParameter< String >( "mesh" );
- *       auto wrapper = []( auto&& mesh ) {
- *           return ProblemSetterWrapper< decltype(mesh) >::run( parameters );
- *       };
- *       return MeshTypeResolver< ConfigTag, Device, wrapper >::run( meshFileName );
- *    }
- */
 template< typename ConfigTag,
           typename Device,
-          template< typename MeshType > class ProblemSetter,
-          typename... ProblemSetterArgs >
-bool resolveMeshType( const String& fileName_,
-                      ProblemSetterArgs&&... problemSetterArgs )
+          typename Functor >
+bool
+resolveMeshType( Functor&& functor,
+                 const std::string& fileName,
+                 const std::string& fileFormat )
 {
-   std::cout << "Detecting mesh from file " << fileName_ << " ..." << std::endl;
-   std::string fileName( fileName_.getString() );
-   if( ends_with( fileName, ".tnl" ) ) {
-      Readers::TNLReader reader;
-      if( ! reader.detectMesh( fileName_ ) )
+   std::cout << "Detecting mesh from file " << fileName << " ..." << std::endl;
+
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   // TODO: when TNLReader is gone, use the MeshReader type instead of a template parameter in the mesh type resolver (and remove static_casts in this function)
+   if( format == "tnl" ) {
+      Readers::TNLReader reader( fileName );
+      if( ! reader.detectMesh() )
          return false;
       if( reader.getMeshType() == "Meshes::Grid" )
-         return GridTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return GridTypeResolver< ConfigTag, Device >::run( reader, functor );
       else if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return MeshTypeResolver< ConfigTag, Device >::run( reader, functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the TNL reader." << std::endl;
          return false;
       }
    }
-   else if( ends_with( fileName, ".ng" ) ) {
-      // FIXME: The Netgen files don't store the real, global index, local index and id types.
+   else if( format == "ng" ) {
+      // FIXME: The Netgen files don't store the real, global index and local index types.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
-      Readers::NetgenReader reader;
-      if( ! reader.detectMesh( fileName_ ) )
-         return false;
+      Readers::NetgenReader reader( fileName );
+      reader.detectMesh();
       if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the Netgen reader." << std::endl;
          return false;
       }
    }
-   else if( ends_with( fileName, ".vtk" ) ) {
-      // FIXME: The VTK files don't store the global index, local index and id types.
+   else if( format == "vtk" ) {
+      // FIXME: The VTK files don't store the global and local index types.
       // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
       // this case we should use the first enabled type.
-      Readers::VTKReader reader;
-      if( ! reader.detectMesh( fileName_ ) )
-         return false;
+      Readers::VTKReader reader( fileName );
+      reader.detectMesh();
       if( reader.getMeshType() == "Meshes::Mesh" )
-         return MeshTypeResolver< decltype(reader), ConfigTag, Device, ProblemSetter, ProblemSetterArgs... >::
-            run( reader, std::forward<ProblemSetterArgs>(problemSetterArgs)... );
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
+      else {
+         std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
+         return false;
+      }
+   }
+   else if( format == "vtu" ) {
+      // FIXME: The XML VTK files don't store the local index type.
+      // The reader has some defaults, but they might be disabled by the BuildConfigTags - in
+      // this case we should use the first enabled type.
+      Readers::VTUReader reader( fileName );
+      reader.detectMesh();
+      if( reader.getMeshType() == "Meshes::Mesh" )
+         return MeshTypeResolver< ConfigTag, Device >::run( static_cast<Readers::MeshReader&>(reader), functor );
       else {
          std::cerr << "The mesh type " << reader.getMeshType() << " is not supported in the VTK reader." << std::endl;
          return false;
       }
    }
    else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
+      if( fileFormat == "auto" )
+         std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
+      else
+         std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
+      std::cerr << " Supported formats are 'tnl', 'vtk', 'vtu' and 'ng'." << std::endl;
       return false;
    }
 }
 
-// TODO: reorganize
-template< typename CommunicatorType,
-          typename MeshConfig,
+template< typename ConfigTag,
+          typename Device,
+          typename Functor >
+bool
+resolveAndLoadMesh( Functor&& functor,
+                    const std::string& fileName,
+                    const std::string& fileFormat )
+{
+   auto wrapper = [&]( auto& reader, auto&& mesh ) -> bool
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
+      try {
+         reader.loadMesh( mesh );
+      }
+      catch( const Meshes::Readers::MeshReaderError& e ) {
+         std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
+         return false;
+      }
+      return functor( reader, std::forward<MeshType>(mesh) );
+   };
+   return resolveMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
+}
+
+template< typename MeshConfig,
           typename Device >
 bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Device >& mesh,
-          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh )
+loadMesh( Mesh< MeshConfig, Device >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
-   if( CommunicatorType::isDistributed() )
-   {
-      std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
+   std::cout << "Loading a mesh from the file " << fileName << " ..." << std::endl;
+
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   try {
+      if( format == "tnl" )
+         mesh.load( fileName );
+      else if( format == "ng" ) {
+         Readers::NetgenReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else if( format == "vtk" ) {
+         Readers::VTKReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else if( format == "vtu" ) {
+         Readers::VTUReader reader( fileName );
+         reader.loadMesh( mesh );
+      }
+      else {
+         if( fileFormat == "auto" )
+            std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
+         else
+            std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
+         std::cerr << " Supported formats are 'tnl', 'vtk', 'vtu' and 'ng'." << std::endl;
+         return false;
+      }
+   }
+   catch( const Meshes::Readers::MeshReaderError& e ) {
+      std::cerr << "Failed to load the mesh from the file " << fileName << ". The error is:\n" << e.what() << std::endl;
       return false;
    }
 
-   std::cout << "Loading mesh from file " << fileName << " ..." << std::endl;
-   std::string fileName_( fileName.getString() );
-   bool status = true;
-
-   if( ends_with( fileName_, ".tnl" ) )
-      mesh.load( fileName );
-   else if( ends_with( fileName_, ".ng" ) ) {
-      Readers::NetgenReader reader;
-      status = reader.readMesh( fileName, mesh );
-   }
-   else if( ends_with( fileName_, ".vtk" ) ) {
-      Readers::VTKReader reader;
-      status = reader.readMesh( fileName, mesh );
-   }
-   else {
-      std::cerr << "File '" << fileName << "' has unknown extension. Supported extensions are '.tnl', '.vtk' and '.ng'." << std::endl;
-      return false;
-   }
-
-   if( ! status )
-   {
-      std::cerr << "I am not able to load the mesh from the file " << fileName << ". "
-                   "Perhaps the mesh stored in the file is not supported by the mesh "
-                   "passed to the loadMesh function? The mesh type is "
-                << getType< decltype(mesh) >() << std::endl;
-      return false;
-   }
    return true;
 }
 
-template< typename Problem,
-          typename MeshConfig,
-          typename Device >
+template< typename MeshConfig >
 bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const String& prefix,
-               Mesh< MeshConfig, Device >& mesh,
-               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
-               Problem& problem )
+loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
-   using CommunicatorType = typename Problem::CommunicatorType;
-   if( CommunicatorType::isDistributed() )
-   {
-       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-       return false;
-   }
-   return true;
-}
-
-template< typename CommunicatorType,
-          typename MeshConfig >
-bool
-loadMesh( const String& fileName,
-          Mesh< MeshConfig, Devices::Cuda >& mesh,
-          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Cuda > >& distributedMesh )
-{
-   if(CommunicatorType::isDistributed())
-   {
-       std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-       return false;
-   }
-
    Mesh< MeshConfig, Devices::Host > hostMesh;
-   DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Host > > hostDistributedMesh;
-   if( ! loadMesh< CommunicatorType >( fileName, hostMesh, hostDistributedMesh ) )
+   if( ! loadMesh( hostMesh, fileName, fileFormat ) )
       return false;
    mesh = hostMesh;
-   // TODO
-//   distributedMesh = hostDistributedMesh;
    return true;
 }
 
-// Specializations for grids
-template< typename CommunicatorType,
-          int Dimension,
+// overload for grids
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index >
 bool
-loadMesh( const String& fileName,
-          Grid< Dimension, Real, Device, Index >& mesh,
-          DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh )
+loadMesh( Grid< Dimension, Real, Device, Index >& grid,
+          const std::string& fileName,
+          const std::string& fileFormat )
 {
-
-   if( CommunicatorType::isDistributed() )
-   {
-      std::cout << "Loading a global mesh from the file " << fileName << "...";
-      Grid< Dimension, Real, Device, Index > globalGrid;
-      try
-      {
-         globalGrid.load( fileName );
-      }
-      catch(...)
-      {
-         std::cerr << std::endl;
-         std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
-         return false;
-      }
-      std::cout << " [ OK ] " << std::endl;
-  
-      typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::SubdomainOverlapsType overlap;
-      distributedMesh.template setGlobalGrid< CommunicatorType >( globalGrid );
-      distributedMesh.setupGrid(mesh);
+   std::cout << "Loading a grid from the file " << fileName << "..." << std::endl;
+   try {
+      grid.load( fileName );
       return true;
    }
-   else
-   {
-      std::cout << "Loading a mesh from the file " << fileName << "...";
-      try
-      {
-         mesh.load( fileName );
-      }
-      catch(...)
-      {
-         std::cerr << std::endl;
-         std::cerr << "I am not able to load the mesh from the file " << fileName << "." << std::endl;
-         std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
-         return false;
-      }
-      std::cout << " [ OK ] " << std::endl;
-      return true;
-    }
-}
-
-template< typename Problem,
-          int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const String& prefix,
-               Grid< Dimension, Real, Device, Index >& mesh,
-               DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
-               Problem& problem )
-{
-   using GridType = Grid< Dimension, Real, Device, Index >;
-   using DistributedGridType = DistributedMeshes::DistributedMesh< GridType >;
-   using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
-   using CommunicatorType = typename Problem::CommunicatorType;
-
-   if( CommunicatorType::isDistributed() )
-   {
-      SubdomainOverlapsType lower( 0 ), upper( 0 );
-      distributedMesh.setOverlaps( lower, upper );
-      distributedMesh.setupGrid( mesh );
-      
-      problem.getSubdomainOverlaps( parameters, prefix, mesh, lower, upper  );
-      distributedMesh.setOverlaps( lower, upper );
-      distributedMesh.setupGrid( mesh );
-      return true;
+   catch(...) {
+      std::cerr << "I am not able to load the grid from the file " << fileName << "." << std::endl;
+      return false;
    }
-   else
-      return true;
-}
-
-// convenient overload for non-distributed meshes
-template< typename Mesh >
-bool
-loadMesh( const String& fileName, Mesh& mesh )
-{
-   using Communicator = TNL::Communicators::NoDistrCommunicator;
-   using DistributedMesh = DistributedMeshes::DistributedMesh< Mesh>;
-   DistributedMesh distributedMesh;
-   return loadMesh< Communicator >( fileName, mesh, distributedMesh );
 }
 
 } // namespace Meshes

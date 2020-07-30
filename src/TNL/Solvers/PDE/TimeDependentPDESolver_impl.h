@@ -12,6 +12,7 @@
 
 #include "TimeDependentPDESolver.h"
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/DistributedMeshes/loadDistributedMesh.h>
 
 namespace TNL {
 namespace Solvers {
@@ -59,11 +60,18 @@ setup( const Config::ParameterContainer& parameters,
    // Load the mesh from the mesh file
    //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
+   const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    this->distributedMesh.setup( parameters, prefix );
-   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distributedMesh ) )
-      return false;
-   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
-      return false;
+   if( Problem::CommunicatorType::isDistributed() ) {
+      if( ! Meshes::loadDistributedMesh< typename Problem::CommunicatorType >( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
+         return false;
+      if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
+         return false;
+   }
+   else {
+      if( ! Meshes::loadMesh( *this->meshPointer, meshFile, meshFileFormat ) )
+         return false;
+   }
 
    problem->setMesh( this->meshPointer );
 

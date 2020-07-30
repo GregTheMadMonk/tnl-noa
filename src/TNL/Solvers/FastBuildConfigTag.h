@@ -14,14 +14,9 @@
 #include <TNL/Meshes/BuildConfigTags.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
-class FastBuildConfigTag
-{
-   public:
-
-      static void print() { std::cerr << "FastBuildConfigTag" << std::endl; }
-};
+class FastBuildConfigTag {};
 
 /****
  * Turn off support for float and long double.

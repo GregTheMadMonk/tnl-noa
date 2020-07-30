@@ -16,9 +16,7 @@
 
 #pragma once
 
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
-#include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 
 namespace TNL {
 namespace Meshes {
@@ -40,13 +38,6 @@ public:
 
    using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SuperentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
-
-   /****
-    * Type of container for storing of the superentities indices.
-    */
-   // TODO: write general operator= for different SliceSize and remove the '32' here
-   using StorageNetworkType      = Containers::Multimaps::EllpackIndexMultimap< GlobalIndexType, Device, LocalIndexType, 32 >;
-   using SuperentityAccessorType = typename StorageNetworkType::ValuesAccessorType;
 };
 
 } // namespace Meshes

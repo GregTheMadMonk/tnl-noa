@@ -74,36 +74,36 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Edge > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    return getVectorLength( v1.getPoint() - v0.getPoint() );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    return getVectorLength( v1 - v0 );
 }
 
 // Triangle
-template< typename Real >
+template< typename VectorExpression,
+          std::enable_if_t< VectorExpression::getSize() == 2, bool > = true >
 __cuda_callable__
-Real
-getTriangleArea( const TNL::Containers::StaticVector< 2, Real > & v1,
-                 const TNL::Containers::StaticVector< 2, Real > & v2 )
+typename VectorExpression::RealType
+getTriangleArea( const VectorExpression & v1,
+                 const VectorExpression & v2 )
 {
-    return 0.5 * TNL::abs( v1.x() * v2.y() - v1.y() * v2.x() );
+    using Real = typename VectorExpression::RealType;
+    return Real( 0.5 ) * TNL::abs( v1.x() * v2.y() - v1.y() * v2.x() );
 }
 
-template< typename Real >
+template< typename VectorExpression,
+          std::enable_if_t< VectorExpression::getSize() == 3, bool > = true >
 __cuda_callable__
-Real
-getTriangleArea( const TNL::Containers::StaticVector< 3, Real > & v1,
-                 const TNL::Containers::StaticVector< 3, Real > & v2 )
+typename VectorExpression::RealType
+getTriangleArea( const VectorExpression & v1,
+                 const VectorExpression & v2 )
 {
+    using Real = typename VectorExpression::RealType;
     // formula from http://math.stackexchange.com/a/128999
-    Real S = 0.0;
-    Real aux = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
-    S += aux * aux;
-    aux = v1.z() * v2.x() - v1.x() * v2.z();        // second component of the cross product
-    S += aux * aux;
-    aux = v1.x() * v2.y() - v1.y() * v2.x();        // third component of the cross product
-    S += aux * aux;
-    return 0.5 * ::sqrt( S );
+    const Real c1 = v1.y() * v2.z() - v1.z() * v2.y();   // first component of the cross product
+    const Real c2 = v1.z() * v2.x() - v1.x() * v2.z();   // second component of the cross product
+    const Real c3 = v1.x() * v2.y() - v1.y() * v2.x();   // third component of the cross product
+    return Real( 0.5 ) * TNL::sqrt( c1 * c1 + c2 * c2 + c3 * c3 );
 }
 
 template< typename MeshConfig, typename Device >
@@ -112,13 +112,10 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Triangle > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    using Point = decltype( v0.getPoint() );
-    const Point p1 = v2.getPoint() - v0.getPoint();
-    const Point p2 = v1.getPoint() - v0.getPoint();
-    return getTriangleArea( p1, p2 );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    return getTriangleArea( v2 - v0, v1 - v0 );
 }
 
 // Quadrilateral
@@ -130,14 +127,11 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
 {
     // measure = 0.5 * |AC x BD|, where AC and BD are the diagonals
     // Hence, we can use the same formula as for the triangle area.
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    using Point = decltype( v0.getPoint() );
-    const Point p1 = v2.getPoint() - v0.getPoint();
-    const Point p2 = v3.getPoint() - v1.getPoint();
-    return getTriangleArea( p1, p2 );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
+    return getTriangleArea( v2 - v0, v3 - v1 );
 }
 
 template< typename VectorExpression >
@@ -155,7 +149,7 @@ getTetrahedronVolume( const VectorExpression& v1,
                    ( v1.z() * v2.y() * v3.x() +
                      v1.y() * v2.x() * v3.z() +
                      v1.x() * v2.z() * v3.y() );
-    return ( 1.0 / 6.0 ) * TNL::abs( det );
+    return Real( 1.0 / 6.0 ) * TNL::abs( det );
 }
 
 template< typename MeshConfig, typename Device >
@@ -164,11 +158,11 @@ typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
                   const MeshEntity< MeshConfig, Device, Topologies::Tetrahedron > & entity )
 {
-    const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
-    const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
-    const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    return getTetrahedronVolume( v3.getPoint() - v0.getPoint(), v2.getPoint() - v0.getPoint(), v1.getPoint() - v0.getPoint() );
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
+    return getTetrahedronVolume( v3 - v0, v2 - v0, v1 - v0 );
 }
 
 } // namespace Meshes

@@ -8,7 +8,7 @@
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
-using CommunicatorType = Communicators::MpiCommunicator;
+using CommunicatorType = TNL::Communicators::MpiCommunicator;
 
 #include <sstream>
 
@@ -58,7 +58,7 @@ int main( int argc, char* argv[] )
       delete listeners.Release(listeners.default_result_printer());
       listeners.Append(new MinimalistBufferedPrinter);
 
-      Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
+      TNL::Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
    #endif
    return RUN_ALL_TESTS();
 #else

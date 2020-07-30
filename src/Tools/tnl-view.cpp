@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <TNL/File.h>
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
@@ -47,15 +46,11 @@ struct MeshWorldDimensionTag< TNLViewBuildConfigTag, CellTopology, WorldDimensio
 { enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
-template< typename Real > struct MeshRealTag< TNLViewBuildConfigTag, Real > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshGlobalIndexTag< TNLViewBuildConfigTag, GlobalIndex > { enum { enabled = false }; };
-template< typename LocalIndex > struct MeshLocalIndexTag< TNLViewBuildConfigTag, LocalIndex > { enum { enabled = false }; };
-template< typename GlobalIndex, typename Id > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, Id > { enum { enabled = false }; };
+template<> struct MeshRealTag< TNLViewBuildConfigTag, float > { enum { enabled = false }; };
 template<> struct MeshRealTag< TNLViewBuildConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, int > { enum { enabled = true }; };
+template<> struct MeshGlobalIndexTag< TNLViewBuildConfigTag, long int > { enum { enabled = false }; };
 template<> struct MeshLocalIndexTag< TNLViewBuildConfigTag, short int > { enum { enabled = true }; };
-template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, void > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -65,6 +60,7 @@ void setupConfig( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addEntry        < String >( "mesh", "Mesh file.", "mesh.tnl" );
+   config.addEntry        < String >( "mesh-format", "Mesh file format.", "auto" );
    config.addRequiredList < String >( "input-files", "Input files." );
 //   config.addList         < String >( "output-files", "Output files." );
    config.addEntry        < bool >  ( "check-output-file", "If the output file already exists, do not recreate it.", false );
@@ -77,6 +73,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry        < String >( "output-format", "Output file format.", "gnuplot" );
       config.addEntryEnum< String > ( "gnuplot" );
       config.addEntryEnum< String > ( "vtk" );
+      config.addEntryEnum< String > ( "vtu" );
    config.addEntry        < int >   ( "verbose", "Set the verbosity of the program.", 1 );
 }
 
@@ -89,8 +86,11 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
 
    const String meshFile = parameters.getParameter< String >( "mesh" );
-   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag,
-                                          Devices::Host,
-                                          FilesProcessor >
-                                        ( meshFile, parameters );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
+   auto wrapper = [&] ( const auto& reader, auto&& mesh )
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      return processFiles< MeshType >( parameters );
+   };
+   return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag, Devices::Host >( wrapper, meshFile, meshFileFormat );
 }

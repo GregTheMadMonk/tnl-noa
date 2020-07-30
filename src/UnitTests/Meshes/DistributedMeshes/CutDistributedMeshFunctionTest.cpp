@@ -71,7 +71,7 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
    synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
@@ -152,7 +152,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
    synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
@@ -233,7 +233,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
 
-   DistributedMeshSynchronizer< MeshFunctionView<MeshType> > synchronizer;
+   DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
    synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
 
@@ -336,7 +336,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
        MeshFunctionView<CutMeshType> cutMeshFunction;
        cutMeshFunction.bind(cutGrid,cutDof);
 
-        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
         synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
@@ -421,7 +421,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
        MeshFunctionView<CutMeshType> cutMeshFunction;
        cutMeshFunction.bind(cutGrid,cutDof);
 
-        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
         synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 
@@ -510,7 +510,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
        MeshFunctionView<CutMeshType> cutMeshFunction;
        cutMeshFunction.bind(cutGrid,cutDof);
 
-        DistributedMeshSynchronizer< MeshFunctionView<CutMeshType> > synchronizer;
+        DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
         synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
 

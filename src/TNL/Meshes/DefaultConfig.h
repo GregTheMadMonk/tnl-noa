@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <TNL/String.h>
-#include <TNL/TypeInfo.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 
 namespace TNL {
@@ -25,38 +23,21 @@ namespace Meshes {
 
 /****
  * Basic structure for mesh configuration.
- * Setting Id to GlobalIndex enables storage of entity Id.
- * It means that each mesh entity stores its index in its
- * mesh storage layer.
  */
 template< typename Cell,
           int WorldDimension = Cell::dimension,
           typename Real = double,
           typename GlobalIndex = int,
-          typename LocalIndex = GlobalIndex,
-          typename Id = void >
+          typename LocalIndex = short int >
 struct DefaultConfig
 {
    using CellTopology = Cell;
    using RealType = Real;
    using GlobalIndexType = GlobalIndex;
    using LocalIndexType = LocalIndex;
-   using IdType = Id;
 
    static constexpr int worldDimension = WorldDimension;
    static constexpr int meshDimension = Cell::dimension;
-
-   /****
-    * Storage of mesh entities.
-    */
-   static constexpr bool entityStorage( int dimension )
-   {
-      /****
-       * Vertices and cells must always be stored.
-       */
-      return true;
-      //return ( dimension == 0 || dimension == cellDimension );
-   }
 
    /****
     * Storage of subentities of mesh entities.
@@ -64,12 +45,10 @@ struct DefaultConfig
    template< typename EntityTopology >
    static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
    {
-      /****
-       *  Subvertices of all stored entities must always be stored
-       */
-      return entityStorage( EntityTopology::dimension );
-      //return entityStorage( EntityTopology::dimension ) &&
-      //       SubentityDimension == 0;
+      return true;
+      // Subvertices must be stored for all entities which appear in other
+      // subentity or superentity mappings.
+      //return SubentityDimension == 0;
    }
 
    /****
@@ -79,7 +58,7 @@ struct DefaultConfig
    template< typename EntityTopology >
    static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
    {
-      return ( SubentityDimension > 0 );
+      return SubentityDimension > 0 && SubentityDimension < meshDimension;
    }
 
    /****
@@ -88,30 +67,42 @@ struct DefaultConfig
    template< typename EntityTopology >
    static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
    {
-      return entityStorage( EntityTopology::dimension );
+      return true;
+   }
+
+   /****
+    * Storage of mesh entity tags. Boundary tags are necessary for the mesh traverser.
+    *
+    * The configuration must satisfy the following necessary conditions in
+    * order to provide boundary tags:
+    *    - faces must store the cell indices in the superentity layer
+    *    - if dim(entity) < dim(face), the entities on which the tags are stored
+    *      must be stored as subentities of faces
+    */
+   template< typename EntityTopology >
+   static constexpr bool entityTagsStorage( EntityTopology )
+   {
+      using FaceTopology = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
+      return superentityStorage( FaceTopology(), meshDimension ) &&
+             ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
       //return false;
    }
 
    /****
-    * Storage of boundary tags of mesh entities. Necessary for the mesh traverser.
+    * Storage of the dual graph.
     *
-    * The configuration must satisfy the following necessary conditions in
-    * order to provide boundary tags:
-    *    - faces must be stored
-    *    - faces must store the cell indices in the superentity layer
-    *    - if dim(entity) < dim(face), the entities on which the tags are stored
-    *      must be stored as subentities of faces
-    * TODO: check this in the ConfigValidator
+    * If enabled, links from vertices to cells must be stored.
     */
-   template< typename EntityTopology >
-   static constexpr bool boundaryTagsStorage( EntityTopology )
+   static constexpr bool dualGraphStorage()
    {
-      using FaceTopology = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
-      return entityStorage( meshDimension - 1 ) &&
-             superentityStorage( FaceTopology(), meshDimension ) &&
-             ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
-      //return false;
+      return true;
    }
+
+   /****
+    * Cells must have at least this number of common vertices to be considered
+    * as neighbors in the dual graph.
+    */
+   static constexpr int dualGraphMinCommonVertices = meshDimension;
 };
 
 } // namespace Meshes

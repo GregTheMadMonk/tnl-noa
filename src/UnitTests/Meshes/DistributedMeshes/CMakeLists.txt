@@ -54,8 +54,23 @@ ELSE(  BUILD_CUDA )
     ADD_EXECUTABLE( DistributedGridIOTest DistributedGridIOTest.cpp )
        TARGET_COMPILE_OPTIONS( DistributedGridIOTest PRIVATE ${CXX_TESTS_FLAGS} )
        TARGET_LINK_LIBRARIES( DistributedGridIOTest ${GTEST_BOTH_LIBRARIES} )
-
 ENDIF( BUILD_CUDA )
+
+if( BUILD_CUDA )
+   cuda_add_executable( DistributedMeshTest DistributedMeshTest.cu OPTIONS ${CXX_TESTS_FLAGS})
+   target_link_libraries( DistributedMeshTest ${GTEST_BOTH_LIBRARIES} )
+else()
+   add_executable( DistributedMeshTest DistributedMeshTest.cpp )
+   target_compile_options( DistributedMeshTest PRIVATE ${CXX_TESTS_FLAGS} )
+   target_link_libraries( DistributedMeshTest ${GTEST_BOTH_LIBRARIES} )
+endif()
+
+find_package( tinyxml2 QUIET )
+if( tinyxml2_FOUND )
+   target_compile_definitions(DistributedMeshTest PUBLIC "-DHAVE_TINYXML2")
+   target_link_libraries(DistributedMeshTest tinyxml2::tinyxml2)
+endif()
+
 
 SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_1D COMMAND "mpirun" ${mpi_test_parameters_1d})
@@ -84,5 +99,9 @@ SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "
 # TODO: Fix
 #SET (mpi_test_parameters_DistributedVectorFieldIO_MPIIOTest -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorFieldIO_MPIIOTest ${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedVectorFieldIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
+
+add_test( NAME DistributedMeshTest_2x2 COMMAND mpirun -np 4 -H localhost:4 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+add_test( NAME DistributedMeshTest_3x3 COMMAND mpirun -np 9 -H localhost:9 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+add_test( NAME DistributedMeshTest_4x4 COMMAND mpirun -np 16 -H localhost:16 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 endif()

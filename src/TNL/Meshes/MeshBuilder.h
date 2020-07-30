@@ -17,7 +17,6 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 
 namespace TNL {
 namespace Meshes {

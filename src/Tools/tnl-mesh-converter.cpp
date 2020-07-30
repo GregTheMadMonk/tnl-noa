@@ -11,10 +11,8 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
+#include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/NetgenWriter.h>
-
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 
 using namespace TNL;
 
@@ -51,15 +49,61 @@ struct MeshWorldDimensionTag< MeshConverterConfigTag, CellTopology, WorldDimensi
 { enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
-template< typename Real > struct MeshRealTag< MeshConverterConfigTag, Real > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshGlobalIndexTag< MeshConverterConfigTag, GlobalIndex > { enum { enabled = false }; };
-template< typename LocalIndex > struct MeshLocalIndexTag< MeshConverterConfigTag, LocalIndex > { enum { enabled = false }; };
-template< typename GlobalIndex, typename Id > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, Id > { enum { enabled = false }; };
+template<> struct MeshRealTag< MeshConverterConfigTag, float > { enum { enabled = false }; };
 template<> struct MeshRealTag< MeshConverterConfigTag, double > { enum { enabled = true }; };
 template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { enabled = true }; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { enum { enabled = false }; };
 template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
-template< typename GlobalIndex > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, void > { enum { enabled = false }; };
-template< typename GlobalIndex > struct MeshIdTag< MeshConverterConfigTag, GlobalIndex, GlobalIndex > { enum { enabled = true }; };
+
+// Config tag specifying the MeshConfig template to use.
+template<>
+struct MeshConfigTemplateTag< MeshConverterConfigTag >
+{
+   template< typename Cell,
+             int WorldDimension = Cell::dimension,
+             typename Real = double,
+             typename GlobalIndex = int,
+             typename LocalIndex = GlobalIndex >
+   struct MeshConfig
+   {
+      using CellTopology = Cell;
+      using RealType = Real;
+      using GlobalIndexType = GlobalIndex;
+      using LocalIndexType = LocalIndex;
+
+      static constexpr int worldDimension = WorldDimension;
+      static constexpr int meshDimension = Cell::dimension;
+
+      template< typename EntityTopology >
+      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      {
+         return SubentityDimension == 0 && EntityTopology::dimension == meshDimension;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
+      {
+         return false;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      {
+         return false;
+      }
+
+      template< typename EntityTopology >
+      static constexpr bool entityTagsStorage( EntityTopology )
+      {
+         return false;
+      }
+
+      static constexpr bool dualGraphStorage()
+      {
+         return false;
+      }
+   };
+};
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -67,53 +111,52 @@ template< typename GlobalIndex > struct MeshIdTag< MeshConverterConfigTag, Globa
 
 
 template< typename Mesh >
-struct MeshConverter
+bool convertMesh( const Mesh& mesh, const String& inputFileName, const String& outputFileName, const String& outputFormat )
 {
-   static bool run( const String& inputFileName, const String& outputFileName, const String& outputFormat )
+   if( outputFormat == "tnl" )
    {
-      Mesh mesh;
-      Meshes::DistributedMeshes::DistributedMesh<Mesh> distributedMesh;
-      if( ! Meshes::loadMesh<Communicators::NoDistrCommunicator>( inputFileName, mesh, distributedMesh ) ) {
-         std::cerr << "Failed to load mesh from file '" << inputFileName << "'." << std::endl;
+      try
+      {
+         mesh.save( outputFileName );
+      }
+      catch(...)
+      {
+         std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
          return false;
       }
-
-      if( outputFormat == "tnl" )
-      {
-         try
-         {
-            mesh.save( outputFileName );
-         }
-         catch(...)
-         {
-            std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
-            return false;
-         }
-      }
-      else if( outputFormat == "vtk" ) {
-         using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
-         std::fstream file( outputFileName.getString() );
-         VTKWriter::template writeEntities< Mesh::getMeshDimension() >( mesh, file );
-      }
-      // FIXME: NetgenWriter is not specialized for grids
-//      else if( outputFormat == "netgen" ) {
-//         using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
-//         std::fstream file( outputFileName.getString() );
-//         NetgenWriter::writeMesh( mesh, file );
-//      }
-
-      return true;
    }
-};
+   else if( outputFormat == "vtk" ) {
+      using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
+      std::ofstream file( outputFileName.getString() );
+      VTKWriter writer( file );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   }
+   else if( outputFormat == "vtu" ) {
+      using VTKWriter = Meshes::Writers::VTUWriter< Mesh >;
+      std::ofstream file( outputFileName.getString() );
+      VTKWriter writer( file );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   }
+   // FIXME: NetgenWriter is not specialized for grids
+//   else if( outputFormat == "netgen" ) {
+//      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
+//      std::fstream file( outputFileName.getString() );
+//      NetgenWriter::writeMesh( mesh, file );
+//   }
+
+   return true;
+}
 
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
+   config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
-   config.addEntry< String >( "output-format", "Output mesh file format." );
+   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
    config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );
+   config.addEntryEnum( "vtu" );
 //   config.addEntryEnum( "netgen" );
 }
 
@@ -121,20 +164,20 @@ int main( int argc, char* argv[] )
 {
    Config::ParameterContainer parameters;
    Config::ConfigDescription conf_desc;
- 
+
    configSetup( conf_desc );
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
+   const String inputFileFormat = parameters.getParameter< String >( "input-file-format" );
    const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String outputFormat = parameters.getParameter< String >( "output-format" );
+   const String outputFileFormat = parameters.getParameter< String >( "output-file-format" );
 
-   return ! Meshes::resolveMeshType< MeshConverterConfigTag, Devices::Host, MeshConverter >
-               ( inputFileName,
-                 inputFileName,  // passed to MeshConverter::run
-                 outputFileName,
-                 outputFormat
-               );
+   auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
+   {
+      return convertMesh( mesh, inputFileName, outputFileName, outputFileFormat );
+   };
+   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
 }

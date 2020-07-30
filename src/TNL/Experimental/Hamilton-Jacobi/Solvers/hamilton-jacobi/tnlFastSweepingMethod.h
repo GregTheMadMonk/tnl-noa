@@ -113,7 +113,7 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     
     protected:
       
-      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
       DistributedMeshSynchronizerType synchronizer;
 
       const IndexType maxIterations;
@@ -174,7 +174,7 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     
     protected:
       
-      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< MeshFunctionType >;
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
       DistributedMeshSynchronizerType synchronizer;
 
       const IndexType maxIterations;

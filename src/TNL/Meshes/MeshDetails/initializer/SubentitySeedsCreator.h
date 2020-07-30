@@ -28,26 +28,22 @@ template< typename MeshConfig,
 class SubentitySeedsCreator
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityType            = typename EntityTraitsType::EntityType;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionTag::value >;
-   using SubentityType         = typename SubentityTraits::SubentityType;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
-   static constexpr LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< SubentityDimensionTag::value >();
-   static constexpr LocalIndexType SUBENTITY_VERTICES_COUNT = SubentityType::template getSubentitiesCount< 0 >();
+   static constexpr LocalIndexType SUBENTITY_VERTICES_COUNT = MeshTraitsType::template SubentityTraits< SubentityTopology, 0 >::count;
 
 public:
-   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
+   using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, EntitySeed< MeshConfig, SubentityTopology > >;
 
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
       SubentitySeedArray subentitySeeds;
-      Algorithms::TemplateStaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
+      Algorithms::TemplateStaticFor< LocalIndexType, 0, SubentitySeedArray::getSize(), CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
 
       return subentitySeeds;
    }
@@ -72,7 +68,7 @@ private:
                static void exec( SubentitySeed& subentitySeed, const SubvertexAccessorType& subvertices )
                {
                   static constexpr LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
-                  subentitySeed.setCornerId( subentityVertexIndex, subvertices[ VERTEX_INDEX ] );
+                  subentitySeed.setCornerId( subentityVertexIndex, subvertices.getColumnIndex( VERTEX_INDEX ) );
                }
          };
    };
@@ -83,24 +79,21 @@ template< typename MeshConfig,
 class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
-   using GlobalIndexType       = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityType            = typename EntityTraitsType::EntityType;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::SubentityAccessorType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
-
-   static constexpr LocalIndexType SUBENTITIES_COUNT = EntityType::template getSubentitiesCount< 0 >();
+   using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
 public:
-   using SubentitySeedArray = typename SubentityTraits::SeedArrayType;
+   using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, EntitySeed< MeshConfig, SubentityTopology > >;
 
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
       SubentitySeedArray seeds;
       for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
-         seeds[ i ].setCornerId( 0, subvertices[ i ] );
+         seeds[ i ].setCornerId( 0, subvertices.getColumnIndex( i ) );
       return seeds;
    }
 };

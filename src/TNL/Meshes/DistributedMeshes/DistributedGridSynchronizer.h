@@ -12,6 +12,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
@@ -19,25 +20,22 @@
 #include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
-namespace Meshes { 
-namespace DistributedMeshes { 
+namespace Meshes {
+namespace DistributedMeshes {
 
-template< typename MeshFunction,
-          int MeshDimension,
+// NOTE: this specialization works only for synchronizations on cells
+template< int MeshDimension,
           typename Index,
           typename Device,
           typename GridReal >
-class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, Device, Index > >
+class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridReal, Device, Index > >, MeshDimension >
 {
-   using RealType = typename MeshFunction::RealType;
    public:
       static constexpr int getMeshDimension() { return MeshDimension; };
       static constexpr int getNeighborCount() {return DirectionCount<MeshDimension>::get();};
 
       typedef typename Grid< MeshDimension, GridReal, Device, Index >::Cell Cell;
-      // FIXME: clang does not like this (incomplete type error)
-//      typedef typename Functions::MeshFunction< Grid< 3, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
-      typedef typename Grid< MeshDimension, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
+      typedef typename Grid< MeshDimension, GridReal, Device, Index >::DistributedMeshType DistributedGridType;
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
@@ -68,12 +66,12 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
          isSet = true;
 
          this->distributedGrid = distributedGrid;
-         
+
          const SubdomainOverlapsType& lowerOverlap = this->distributedGrid->getLowerOverlap();
          const SubdomainOverlapsType& upperOverlap = this->distributedGrid->getUpperOverlap();
-       
-         const CoordinatesType& localBegin = this->distributedGrid->getLocalBegin(); 
-         const CoordinatesType& localSize = this->distributedGrid->getLocalSize(); 
+
+         const CoordinatesType& localBegin = this->distributedGrid->getLocalBegin();
+         const CoordinatesType& localSize = this->distributedGrid->getLocalSize();
 
          const int *neighbors = distributedGrid->getNeighbors();
 
@@ -107,8 +105,6 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
             }
 
             sendSizes[ i ] = sendSize;
-            sendBuffers[ i ].setSize( sendSize );
-            recieveBuffers[ i ].setSize( sendSize);
 
             if( this->periodicBoundariesCopyDirection == OverlapToBoundary &&
                neighbors[ i ] == -1 )
@@ -123,16 +119,25 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
                         bool periodicBoundaries = false,
                         const PeriodicBoundariesMaskPointer& mask = PeriodicBoundariesMaskPointer( nullptr ) )
       {
+         using RealType = typename MeshFunctionType::RealType;
 
+         static_assert( MeshFunctionType::getEntitiesDimension() == MeshFunctionType::getMeshDimension(),
+                        "this specialization works only for synchronizations on cells" );
          TNL_ASSERT_TRUE( isSet, "Synchronizer is not set, but used to synchronize" );
 
-    	   if( !distributedGrid->isDistributed() ) return;
-         
+         if( !distributedGrid->isDistributed() ) return;
+
+         // allocate buffers (setSize does nothing if the array size is already correct)
+         for( int i=0; i<this->getNeighborCount(); i++ ) {
+            sendBuffers[ i ].setSize( sendSizes[ i ] * sizeof(RealType) );
+            recieveBuffers[ i ].setSize( sendSizes[ i ] * sizeof(RealType));
+         }
+
          const int *neighbors = distributedGrid->getNeighbors();
          const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();
-        
+
          //fill send buffers
-         copyBuffers( meshFunction, 
+         copyBuffers( meshFunction,
             sendBuffers, sendBegin,sendDimensions,
             true,
             neighbors,
@@ -145,25 +150,25 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
          group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
          int requestsCount( 0 );
 
-         //send everything, recieve everything 
+         //send everything, recieve everything
          for( int i=0; i<this->getNeighborCount(); i++ )
          {
-            /*TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " 
+            /*TNL_MPI_PRINT( "Sending data... " << i << " sizes -> "
                << sendSizes[ i ] << "sendDimensions -> " <<  sendDimensions[ i ]
                << " upperOverlap -> " << this->distributedGrid->getUpperOverlap() );*/
             if( neighbors[ i ] != -1 )
             {
                //TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
                //TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
       	   {
                //TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
                //TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
             }
          }
 
@@ -182,12 +187,11 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
     }
 
    private:
-      template< typename Real_,
-                typename MeshFunctionType,
+      template< typename MeshFunctionType,
                 typename PeriodicBoundariesMaskPointer >
       void copyBuffers(
          MeshFunctionType& meshFunction,
-         Containers::Array<Real_, Device, Index>* buffers,
+         Containers::Array<std::uint8_t, Device, Index>* buffers,
          CoordinatesType* begins,
          CoordinatesType* sizes,
          bool toBuffer,
@@ -195,23 +199,24 @@ class DistributedMeshSynchronizer< MeshFunction, Grid< MeshDimension, GridReal, 
          bool periodicBoundaries,
          const PeriodicBoundariesMaskPointer& mask )
       {
-         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, getMeshDimension(), Real_, Device >;
-       
+         using RealType = typename MeshFunctionType::RealType;
+         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, getMeshDimension(), RealType, Device >;
+
          for(int i=0;i<this->getNeighborCount();i++)
          {
             bool isBoundary=( neighbor[ i ] == -1 );
             if( ! isBoundary || periodicBoundaries )
             {
-               Helper::BufferEntities( meshFunction, mask, buffers[ i ].getData(), isBoundary, begins[i], sizes[i], toBuffer );
+               Helper::BufferEntities( meshFunction, mask, reinterpret_cast<RealType*>( buffers[ i ].getData() ), isBoundary, begins[i], sizes[i], toBuffer );
             }
          }
       }
 
    private:
 
-      Containers::Array<RealType, Device, Index> sendBuffers[getNeighborCount()];
-      Containers::Array<RealType, Device, Index> recieveBuffers[getNeighborCount()];
       Containers::StaticArray< getNeighborCount(), int > sendSizes;
+      Containers::Array< std::uint8_t, Device, Index > sendBuffers[getNeighborCount()];
+      Containers::Array< std::uint8_t, Device, Index > recieveBuffers[getNeighborCount()];
 
       PeriodicBoundariesCopyDirection periodicBoundariesCopyDirection = BoundaryToOverlap;
 

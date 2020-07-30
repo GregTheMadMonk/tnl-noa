@@ -20,11 +20,10 @@
 #include <TNL/Object.h>
 #include <TNL/Logger.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/MeshDetails/MeshLayers/StorageLayer.h>
-#include <TNL/Meshes/MeshDetails/MeshLayers/BoundaryTags/LayerFamily.h>
+#include <TNL/Meshes/MeshDetails/layers/StorageLayer.h>
+#include <TNL/Meshes/MeshDetails/layers/EntityTags/LayerFamily.h>
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
@@ -33,6 +32,11 @@ namespace TNL {
  * \brief Namespace for numerical meshes and related objects.
  */
 namespace Meshes {
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology_ >
+class MeshEntity;
 
 template< typename MeshConfig > class Initializer;
 template< typename Mesh > class EntityStorageRebinder;
@@ -64,10 +68,10 @@ class Mesh
      public ConfigValidator< MeshConfig >,
      public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >,
      public StorageLayerFamily< MeshConfig, Device >,
-     public BoundaryTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
+     public EntityTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
 {
       using StorageBaseType = StorageLayerFamily< MeshConfig, Device >;
-      using BoundaryTagsLayerFamily = BoundaryTags::LayerFamily< MeshConfig, Device, Mesh >;
+      using EntityTagsLayerFamily = EntityTags::LayerFamily< MeshConfig, Device, Mesh >;
 
    public:
       using Config          = MeshConfig;
@@ -77,7 +81,7 @@ class Mesh
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using PointType       = typename MeshTraitsType::PointType;
       using RealType        = typename PointType::RealType;
-      using GlobalIndexVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
+      using GlobalIndexArray = Containers::Array< GlobalIndexType, DeviceType, GlobalIndexType >;
 
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
@@ -110,22 +114,16 @@ class Mesh
 
       virtual String getSerializationTypeVirtual() const;
 
-
-      template< int Dimension >
-      static constexpr bool entitiesAvailable();
-
+      /**
+       * Entities
+       */
       template< int Dimension >
       __cuda_callable__
       GlobalIndexType getEntitiesCount() const;
 
       template< int Dimension >
       __cuda_callable__
-      EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex );
-
-      template< int Dimension >
-      __cuda_callable__
-      const EntityType< Dimension >& getEntity( const GlobalIndexType& entityIndex ) const;
-
+      EntityType< Dimension > getEntity( const GlobalIndexType entityIndex ) const;
 
       // duplicated for compatibility with grids
       template< typename EntityType >
@@ -134,11 +132,103 @@ class Mesh
 
       template< typename EntityType >
       __cuda_callable__
-      EntityType& getEntity( const GlobalIndexType& entityIndex );
+      EntityType getEntity( const GlobalIndexType entityIndex ) const;
 
-      template< typename EntityType >
+      /**
+       * Points
+       */
       __cuda_callable__
-      const EntityType& getEntity( const GlobalIndexType& entityIndex ) const;
+      const PointType& getPoint( const GlobalIndexType vertexIndex ) const;
+
+      __cuda_callable__
+      PointType& getPoint( const GlobalIndexType vertexIndex );
+
+      /**
+       * Subentities
+       */
+      template< int EntityDimension, int SubentityDimension >
+      __cuda_callable__
+      constexpr LocalIndexType getSubentitiesCount( const GlobalIndexType entityIndex ) const;
+
+      template< int EntityDimension, int SubentityDimension >
+      __cuda_callable__
+      GlobalIndexType getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const;
+
+      /**
+       * Superentities
+       */
+      template< int EntityDimension, int SuperentityDimension >
+      __cuda_callable__
+      LocalIndexType getSuperentitiesCount( const GlobalIndexType entityIndex ) const;
+
+      template< int EntityDimension, int SuperentityDimension >
+      __cuda_callable__
+      GlobalIndexType getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const;
+
+      /**
+       * Cell neighbors - access the dual graph
+       */
+      __cuda_callable__
+      LocalIndexType getCellNeighborsCount( const GlobalIndexType cellIndex ) const;
+
+      __cuda_callable__
+      GlobalIndexType getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const;
+
+
+      /**
+       * \brief Execute function \e f in parallel for all mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forAll( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all boundary mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forBoundary( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all interior mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forInterior( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all local mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forLocal( Func f ) const;
+
+      /**
+       * \brief Execute function \e f in parallel for all ghost mesh entities with dimension \e EntityDimension.
+       *
+       * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
+       * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
+       * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
+       * and/or using a \ref SharedPointer.
+       */
+      template< int EntityDimension, typename Device2 = DeviceType, typename Func >
+      void forGhost( Func f ) const;
 
 
       /*
@@ -148,8 +238,8 @@ class Mesh
        * M is the entity with index iperm[j] in M'.
        */
       template< int Dimension >
-      void reorderEntities( const GlobalIndexVector& perm,
-                            const GlobalIndexVector& iperm );
+      void reorderEntities( const GlobalIndexArray& perm,
+                            const GlobalIndexArray& iperm );
 
 
       void save( File& file ) const;
@@ -167,20 +257,12 @@ class Mesh
 
       void writeProlog( Logger& logger ) const;
 
-      DistributedMeshes::DistributedMesh< Mesh<MeshConfig,Device> >* getDistributedMesh(void) const
-      {
-            return NULL;
-      };
-
    protected:
       // Methods for the mesh initializer
+      using StorageBaseType::getPoints;
       using StorageBaseType::setEntitiesCount;
-      using StorageBaseType::getSubentityStorageNetwork;
-      using StorageBaseType::getSuperentityStorageNetwork;
 
       friend Initializer< MeshConfig >;
-
-      friend EntityStorageRebinder< Mesh >;
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;
@@ -192,4 +274,6 @@ std::ostream& operator<<( std::ostream& str, const Mesh< MeshConfig, Device >& m
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/MeshDetails/Mesh_impl.h>
+#include <TNL/Meshes/MeshEntity.h>
+
+#include <TNL/Meshes/Mesh.hpp>

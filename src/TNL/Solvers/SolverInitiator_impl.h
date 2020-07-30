@@ -225,7 +225,12 @@ class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& meshFileName = parameters.getParameter< String >( "mesh" );
-         return Meshes::resolveMeshType< ConfigTag, Device, ProblemSetterWrapper >( meshFileName, parameters );
+         const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
+         auto wrapper = [&]( const auto& reader, auto&& mesh ) {
+            using MeshType = std::decay_t< decltype(mesh) >;
+             return ProblemSetterWrapper< MeshType >::run( parameters );
+         };
+         return Meshes::resolveMeshType< ConfigTag, Device >( wrapper, meshFileName, meshFileFormat );
       }
 };
 

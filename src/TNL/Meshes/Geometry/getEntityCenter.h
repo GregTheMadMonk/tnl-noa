@@ -50,14 +50,13 @@ getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
                  const MeshEntity< MeshConfig, Device, EntityTopology > & entity )
 {
    using EntityType = MeshEntity< MeshConfig, Device, EntityTopology >;
-   constexpr typename MeshConfig::LocalIndexType subvertices = EntityType::template getSubentitiesCount< 0 >();
+   constexpr typename MeshConfig::LocalIndexType subvertices = EntityType::template SubentityTraits< 0 >::count;
    typename MeshTraits< MeshConfig >::PointType c = 0;
    for( typename MeshConfig::LocalIndexType i = 0;
         i < subvertices;
         i++ )
    {
-      const auto& v = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( i ) );
-      c += v.getPoint();
+      c += mesh.getPoint( entity.template getSubentityIndex< 0 >( i ) );
    }
    return ( 1.0 / subvertices ) * c;
 }

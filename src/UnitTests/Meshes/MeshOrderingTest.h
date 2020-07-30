@@ -17,7 +17,7 @@ using namespace TNL;
 using namespace TNL::Meshes;
 
 class TestTriangleMeshConfig
-   : public DefaultConfig< Topologies::Triangle, 2, double, int, short int, int >
+   : public DefaultConfig< Topologies::Triangle, 2, double, int, short int >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -85,11 +85,11 @@ bool buildTriangleMesh( Mesh< TestTriangleMeshConfig, Device >& mesh )
    return meshBuilder.build( mesh );
 }
 
-template< typename PermutationVector >
+template< typename PermutationArray >
 void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
-               const PermutationVector& vertexPermutation,
-               const PermutationVector& edgePermutation,
-               const PermutationVector& cellPermutation )
+               const PermutationArray& vertexPermutation,
+               const PermutationArray& edgePermutation,
+               const PermutationArray& cellPermutation )
 {
    using MeshType = Mesh< TestTriangleMeshConfig, Devices::Host >;
    using PointType = typename MeshType::PointType;
@@ -124,16 +124,16 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
 
 
    // test subentities
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).getVertexIndex( 0 ),  vertexPermutation[ 1 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).getVertexIndex( 1 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).getVertexIndex( 0 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).getVertexIndex( 1 ),  vertexPermutation[ 0 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).getVertexIndex( 0 ),  vertexPermutation[ 0 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).getVertexIndex( 1 ),  vertexPermutation[ 1 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).getVertexIndex( 0 ),  vertexPermutation[ 2 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).getVertexIndex( 1 ),  vertexPermutation[ 3 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).getVertexIndex( 0 ),  vertexPermutation[ 3 ] );
-   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).getVertexIndex( 1 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 0 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 1 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 0 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 0 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 2 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 2 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 3 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 3 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 3 ] );
+   EXPECT_EQ( mesh.template getEntity< 1 >( edgePermutation[ 4 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );
 
    EXPECT_EQ( mesh.template getEntity< 2 >( cellPermutation[ 0 ] ).template getSubentityIndex< 0 >( 0 ),  vertexPermutation[ 0 ] );
    EXPECT_EQ( mesh.template getEntity< 2 >( cellPermutation[ 0 ] ).template getSubentityIndex< 0 >( 1 ),  vertexPermutation[ 1 ] );
@@ -204,19 +204,25 @@ void testMesh( const Mesh< TestTriangleMeshConfig, Devices::Host >& mesh,
    // test boundary tags
    const std::vector< int > boundaryFaces = {1, 2, 3, 4};
    const std::vector< int > interiorFaces = {0};
-   EXPECT_EQ( mesh.template getBoundaryEntitiesCount< 1 >(), (int) boundaryFaces.size() );
+   EXPECT_EQ( mesh.template getBoundaryIndices< 1 >().getSize(), (int) boundaryFaces.size() );
    for( size_t i = 0; i < boundaryFaces.size(); i++ ) {
       EXPECT_TRUE( mesh.template isBoundaryEntity< 1 >( edgePermutation[ boundaryFaces[ i ] ] ) );
       // boundary indices are always sorted so we can't test this
-//      EXPECT_EQ( mesh.template getBoundaryEntityIndex< 1 >( i ), edgePermutation[ boundaryFaces[ i ] ] );
+//      EXPECT_EQ( mesh.template getBoundaryIndices< 1 >()[ i ], edgePermutation[ boundaryFaces[ i ] ] );
    }
    // Test interior faces
-   EXPECT_EQ( mesh.template getInteriorEntitiesCount< 1 >(), (int) interiorFaces.size() );
+   EXPECT_EQ( mesh.template getInteriorIndices< 1 >().getSize(), (int) interiorFaces.size() );
    for( size_t i = 0; i < interiorFaces.size(); i++ ) {
       EXPECT_FALSE( mesh.template isBoundaryEntity< 1 >( edgePermutation[ interiorFaces[ i ] ] ) );
       // boundary indices are always sorted so we can't test this
-//      EXPECT_EQ( mesh.template getInteriorEntityIndex< 1 >( i ), edgePermutation[ interiorFaces[ i ] ] );
+//      EXPECT_EQ( mesh.template getInteriorIndices< 1 >()[ i ], edgePermutation[ interiorFaces[ i ] ] );
    }
+
+   // tests for the dual graph layer
+   ASSERT_EQ( mesh.getCellNeighborsCount( cellPermutation[ 0 ] ), 1 );
+   ASSERT_EQ( mesh.getCellNeighborsCount( cellPermutation[ 1 ] ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( cellPermutation[ 0 ], 0 ), cellPermutation[ 1 ] );
+   EXPECT_EQ( mesh.getCellNeighborIndex( cellPermutation[ 1 ], 0 ), cellPermutation[ 0 ] );
 }
 
 // hack due to TNL::Containers::Vector not supporting initilizer lists
@@ -247,10 +253,10 @@ TEST( MeshOrderingTest, OrderingOnHost )
    MeshHost mesh;
    ASSERT_TRUE( buildTriangleMesh( mesh ) );
 
-   using PermutationVector = typename MeshHost::GlobalIndexVector;
-   PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
-                     vertexPermutation, edgePermutation, cellPermutation,
-                     vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+   using PermutationArray = typename MeshHost::GlobalIndexArray;
+   PermutationArray vertexIdentity, edgeIdentity, cellIdentity,
+                    vertexPermutation, edgePermutation, cellPermutation,
+                    vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
    setPermutation( vertexIdentity, _vertexIdentity );
    setPermutation( edgeIdentity, _edgeIdentity );
    setPermutation( cellIdentity, _cellIdentity );
@@ -282,7 +288,7 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    ASSERT_TRUE( buildTriangleMesh( meshHost ) );
    mesh = meshHost;
 
-   using PermutationCuda = typename MeshCuda::GlobalIndexVector;
+   using PermutationCuda = typename MeshCuda::GlobalIndexArray;
    PermutationCuda vertexIdentity, edgeIdentity, cellIdentity,
                    vertexPermutation, edgePermutation, cellPermutation,
                    vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
@@ -303,10 +309,10 @@ TEST( MeshOrderingTest, OrderingOnCuda )
    // test is on host
    {
       // local scope so we can use the same names
-      using PermutationVector = typename MeshHost::GlobalIndexVector;
-      PermutationVector vertexIdentity, edgeIdentity, cellIdentity,
-                        vertexPermutation, edgePermutation, cellPermutation,
-                        vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
+      using PermutationArray = typename MeshHost::GlobalIndexArray;
+      PermutationArray vertexIdentity, edgeIdentity, cellIdentity,
+                       vertexPermutation, edgePermutation, cellPermutation,
+                       vertexInversePermutation, edgeInversePermutation, cellInversePermutation;
       setPermutation( vertexIdentity, _vertexIdentity );
       setPermutation( edgeIdentity, _edgeIdentity );
       setPermutation( cellIdentity, _cellIdentity );

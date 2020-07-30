@@ -12,7 +12,7 @@
 
 #include <TNL/String.h>
 #include <TNL/Object.h>
-#include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -21,11 +21,16 @@ namespace Readers {
 class TNLReader
 {
 public:
+   TNLReader() = delete;
+
+   TNLReader( const String& fileName )
+   : fileName( fileName )
+   {}
+
    bool
-   detectMesh( const String& fileName )
+   detectMesh()
    {
       this->reset();
-      this->fileName = fileName;
 
       const String objectType = getObjectType( fileName );
       const std::vector< String > parsedMeshType = parseObjectType( objectType );
@@ -39,14 +44,14 @@ public:
          // save parts necessary to determine the mesh type
          meshDimension = worldDimension = std::atoi( parsedMeshType[ 1 ].getString() );
          realType = parsedMeshType[ 2 ];
-         globalIndexType = localIndexType = idType = parsedMeshType[ 4 ];
+         globalIndexType = localIndexType = parsedMeshType[ 4 ];
          // populate entity types (not necessary for GridTypeResolver, but while we're at it...)
          if( meshDimension == 1 )
-            cellShape = EntityShape::Line;
+            cellShape = VTK::EntityShape::Line;
          else if( meshDimension == 2 )
-            cellShape = EntityShape::Quad;
+            cellShape = VTK::EntityShape::Quad;
          else if( meshDimension == 3 )
-            cellShape = EntityShape::Hexahedron;
+            cellShape = VTK::EntityShape::Hexahedron;
       }
       else if( meshType == "Meshes::Mesh" ) {
          const std::vector< String > parsedMeshConfig = parseObjectType( parsedMeshType[ 1 ] );
@@ -54,8 +59,8 @@ public:
             std::cerr << "Unable to parse the mesh config type " << parsedMeshType[ 1 ] << "." << std::endl;
             return false;
          }
-         if( parsedMeshConfig.size() != 7 ) {
-            std::cerr << "The parsed mesh config type has wrong size (expected 7 elements):" << std::endl;
+         if( parsedMeshConfig.size() != 6 ) {
+            std::cerr << "The parsed mesh config type has wrong size (expected 6 elements):" << std::endl;
             std::cerr << "[ ";
             for( std::size_t i = 0; i < parsedMeshConfig.size() - 1; i++ )
                std::cerr << parsedMeshConfig[ i ] << ", ";
@@ -69,18 +74,17 @@ public:
          realType = parsedMeshConfig[ 3 ];
          globalIndexType = parsedMeshConfig[ 4 ];
          localIndexType = parsedMeshConfig[ 5 ];
-         idType = parsedMeshConfig[ 6 ];
 
-         if( topology == "MeshEdgeTopology" )
-            cellShape = EntityShape::Line;
-         else if( topology == "MeshTriangleTopology" )
-            cellShape = EntityShape::Triangle;
-         else if( topology == "MeshQuadrilateralTopology" )
-            cellShape = EntityShape::Quad;
-         else if( topology == "MeshTetrahedronTopology" )
-            cellShape = EntityShape::Tetra;
-         else if( topology == "MeshHexahedronTopology" )
-            cellShape = EntityShape::Hexahedron;
+         if( topology == "TNL::Meshes::Topologies::Edge" )
+            cellShape = VTK::EntityShape::Line;
+         else if( topology == "TNL::Meshes::Topologies::Triangle" )
+            cellShape = VTK::EntityShape::Triangle;
+         else if( topology == "TNL::Meshes::Topologies::Quadrilateral" )
+            cellShape = VTK::EntityShape::Quad;
+         else if( topology == "TNL::Meshes::Topologies::Tetrahedron" )
+            cellShape = VTK::EntityShape::Tetra;
+         else if( topology == "TNL::Meshes::Topologies::Hexahedron" )
+            cellShape = VTK::EntityShape::Hexahedron;
          else {
             std::cerr << "Detected topology '" << topology << "' is not supported." << std::endl;
             return false;
@@ -95,11 +99,10 @@ public:
    }
 
    template< typename MeshType >
-   static bool
-   readMesh( const String& fileName, MeshType& mesh )
+   void
+   loadMesh( MeshType& mesh )
    {
       mesh.load( fileName );
-      return true;
    }
 
    String
@@ -120,12 +123,12 @@ public:
       return worldDimension;
    }
 
-   EntityShape
+   VTK::EntityShape
    getCellShape() const
    {
       return cellShape;
    }
- 
+
    String
    getRealType() const
    {
@@ -137,37 +140,29 @@ public:
    {
       return globalIndexType;
    }
- 
+
    String
    getLocalIndexType() const
    {
       return localIndexType;
    }
- 
-   String
-   getIdType() const
-   {
-      return idType;
-   }
- 
+
 protected:
    String fileName;
    String meshType;
    int meshDimension = 0;
    int worldDimension = 0;
-   EntityShape cellShape = EntityShape::Vertex;
+   VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
    String realType;
    String globalIndexType;
    String localIndexType;
-   String idType;
 
    void reset()
    {
-      fileName = "";
       meshType = "";
       meshDimension = worldDimension = 0;
-      cellShape = EntityShape::Vertex;
-      realType = localIndexType = globalIndexType = idType = "";
+      cellShape = VTK::EntityShape::Vertex;
+      realType = localIndexType = globalIndexType = "";
    }
 };
 

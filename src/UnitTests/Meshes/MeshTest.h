@@ -97,6 +97,7 @@ void testMeshOnCuda( const Mesh& mesh )
    DeviceMesh dmesh2;
    dmesh2 = mesh;
    EXPECT_EQ( dmesh2, mesh );
+   compareStringRepresentation( dmesh2, mesh );
 
    // test CUDA->CUDA copy
    testCopyAssignment( dmesh1 );
@@ -129,8 +130,8 @@ void testEntities( const Mesh& mesh )
 
    // test that superentity accessors have been correctly bound
    for( IndexType i = 0; i < mesh.template getEntitiesCount< 0 >(); i++ ) {
-      auto v1 = mesh.template getEntity< 0 >( i );
-      auto& v2 = mesh.template getEntity< 0 >( i );
+      const auto v1 = mesh.template getEntity< 0 >( i );
+      const auto v2 = mesh.template getEntity< 0 >( i );
       EXPECT_EQ( v1, v2 );
       EXPECT_EQ( v1.template getSuperentitiesCount< Mesh::getMeshDimension() >(),
                  v2.template getSuperentitiesCount< Mesh::getMeshDimension() >() );
@@ -141,8 +142,8 @@ void testEntities( const Mesh& mesh )
 
    // test that subentity accessors have been correctly bound
    for( IndexType i = 0; i < mesh.template getEntitiesCount< Mesh::getMeshDimension() >(); i++ ) {
-      auto c1 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
-      auto& c2 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
+      const auto c1 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
+      const auto c2 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
       EXPECT_EQ( c1, c2 );
       EXPECT_EQ( c1.template getSubentitiesCount< 0 >(),
                  c2.template getSubentitiesCount< 0 >() );
@@ -234,16 +235,16 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).getPoint(),  point2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).getPoint(),  point3 );
 
-   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 0 ),  1 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).getVertexIndex( 1 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 0 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).getVertexIndex( 1 ),  0 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 0 ),  0 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).getVertexIndex( 1 ),  1 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 0 ),  2 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).getVertexIndex( 1 ),  3 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 0 ),  3 );
-   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).getVertexIndex( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 0 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 1 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 1 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 0 ),  0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 1 ),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 0 ),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 1 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 0 ),  3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 1 ),  1 );
 
    EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 0 ),  0 );
    EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 1 ),  1 );
@@ -258,9 +259,7 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 1 ),  4 );
    EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 2 ),  0 );
 
-   /*
-    * Tests for the superentities layer.
-    */
+   // tests for the superentities layer
    ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentitiesCount< 1 >(),  2 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 0 ),    1 );
    EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 1 ),    2 );
@@ -278,6 +277,11 @@ TEST( MeshTest, TwoTrianglesTest )
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 0 ),    0 );
    EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 1 ),    1 );
 
+   // tests for the dual graph layer
+   ASSERT_EQ( mesh.getCellNeighborsCount( 0 ), 1 );
+   ASSERT_EQ( mesh.getCellNeighborsCount( 1 ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( 0, 0 ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( 1, 0 ), 0 );
 
    testFinishedMesh( mesh );
 };
@@ -645,6 +649,40 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          }
       }
 
+   // Tests for the dual graph layer
+   ASSERT_EQ( mesh.getNeighborCounts().getSize(), numberOfCells );
+   cellIdx = 0;
+   for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType i = 0; i < xSize; i++ )
+   {
+      IndexType nnbrs = 4;
+      if( i == 0 || i == xSize - 1 )
+         --nnbrs;
+      if( j == 0 || j == ySize - 1 )
+         --nnbrs;
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
+      std::set< IndexType > neighbors;
+      for( IndexType n = 0; n < nnbrs; n++ )
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
+
+      // the cell itself should not be its own neighbor
+      EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
+      auto check_neighbor = [&]( IndexType i, IndexType j )
+      {
+         if( i >= 0 && i < xSize && j >= 0 && j < ySize ) {
+            EXPECT_EQ( (IndexType) neighbors.count( j * xSize + i ), 1 );
+         }
+      };
+      // check neighbors over face
+      check_neighbor( i - 1, j );
+      check_neighbor( i + 1, j );
+      check_neighbor( i, j - 1 );
+      check_neighbor( i, j + 1 );
+
+      ++cellIdx;
+   }
+
    testFinishedMesh( mesh );
 }
 
@@ -809,6 +847,177 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
                EXPECT_EQ( vertex.template getSuperentityIndex< 3 >( 7 ),   ( k     ) * xSize * ySize + ( j     ) * xSize + i     );
             }
          }
+
+   // Tests for the dual graph layer
+   ASSERT_EQ( mesh.getNeighborCounts().getSize(), numberOfCells );
+   cellIdx = 0;
+   for( IndexType k = 0; k < zSize; k++ )
+   for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType i = 0; i < xSize; i++ )
+   {
+      IndexType nnbrs = 6;
+      if( i == 0 || i == xSize - 1 )
+         --nnbrs;
+      if( j == 0 || j == ySize - 1 )
+         --nnbrs;
+      if( k == 0 || k == zSize - 1 )
+         --nnbrs;
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
+      std::set< IndexType > neighbors;
+      for( IndexType n = 0; n < nnbrs; n++ )
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
+
+      // the cell itself should not be its own neighbor
+      EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
+      auto check_neighbor = [&]( IndexType i, IndexType j, IndexType k )
+      {
+         if( i >= 0 && i < xSize && j >= 0 && j < ySize && k >= 0 && k < zSize ) {
+            EXPECT_EQ( (IndexType) neighbors.count( k * xSize * ySize + j * xSize + i ), 1 );
+         }
+      };
+      // check neighbors over face
+      check_neighbor( i - 1, j, k );
+      check_neighbor( i + 1, j, k );
+      check_neighbor( i, j - 1, k );
+      check_neighbor( i, j + 1, k );
+      check_neighbor( i, j, k - 1 );
+      check_neighbor( i, j, k + 1 );
+
+      ++cellIdx;
+   }
+
+   // Tests for the dual graph layer - with minCommonVertices override
+   mesh.initializeDualGraph( mesh, 2 );
+   ASSERT_EQ( mesh.getNeighborCounts().getSize(), numberOfCells );
+   cellIdx = 0;
+   for( IndexType k = 0; k < zSize; k++ )
+   for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType i = 0; i < xSize; i++ )
+   {
+      IndexType nnbrs = 18;
+      if( i == 0 || i == xSize - 1 )
+         nnbrs -= 5;
+      if( j == 0 || j == ySize - 1 )
+         nnbrs -= 5;
+      if( k == 0 || k == zSize - 1 )
+         nnbrs -= 5;
+      if( (i == 0 || i == xSize - 1) && (j == 0 || j == ySize - 1) )
+         ++nnbrs;
+      if( (i == 0 || i == xSize - 1) && (k == 0 || k == zSize - 1) )
+         ++nnbrs;
+      if( (j == 0 || j == ySize - 1) && (k == 0 || k == zSize - 1) )
+         ++nnbrs;
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
+      std::set< IndexType > neighbors;
+      for( IndexType n = 0; n < nnbrs; n++ )
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
+
+      // the cell itself should not be its own neighbor
+      EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
+      auto check_neighbor = [&]( IndexType i, IndexType j, IndexType k )
+      {
+         if( i >= 0 && i < xSize && j >= 0 && j < ySize && k >= 0 && k < zSize ) {
+            EXPECT_EQ( (IndexType) neighbors.count( k * xSize * ySize + j * xSize + i ), 1 );
+         }
+      };
+      // check neighbors over face
+      check_neighbor( i - 1, j, k );
+      check_neighbor( i + 1, j, k );
+      check_neighbor( i, j - 1, k );
+      check_neighbor( i, j + 1, k );
+      check_neighbor( i, j, k - 1 );
+      check_neighbor( i, j, k + 1 );
+      // check neighbors over edge
+      check_neighbor( i - 1, j - 1, k );
+      check_neighbor( i - 1, j + 1, k );
+      check_neighbor( i + 1, j - 1, k );
+      check_neighbor( i + 1, j + 1, k );
+      check_neighbor( i - 1, j, k - 1 );
+      check_neighbor( i - 1, j, k + 1 );
+      check_neighbor( i + 1, j, k - 1 );
+      check_neighbor( i + 1, j, k + 1 );
+      check_neighbor( i, j - 1, k - 1 );
+      check_neighbor( i, j - 1, k + 1 );
+      check_neighbor( i, j + 1, k - 1 );
+      check_neighbor( i, j + 1, k + 1 );
+
+      ++cellIdx;
+   }
+
+   // Tests for the dual graph layer - with minCommonVertices override
+   mesh.initializeDualGraph( mesh, 1 );
+   ASSERT_EQ( mesh.getNeighborCounts().getSize(), numberOfCells );
+   cellIdx = 0;
+   for( IndexType k = 0; k < zSize; k++ )
+   for( IndexType j = 0; j < ySize; j++ )
+   for( IndexType i = 0; i < xSize; i++ )
+   {
+      IndexType nnbrs = 26;
+      if( i == 0 || i == xSize - 1 )
+         nnbrs -= 9;
+      if( j == 0 || j == ySize - 1 )
+         nnbrs -= 9;
+      if( k == 0 || k == zSize - 1 )
+         nnbrs -= 9;
+      if( (i == 0 || i == xSize - 1) && (j == 0 || j == ySize - 1) )
+         nnbrs += 3;
+      if( (i == 0 || i == xSize - 1) && (k == 0 || k == zSize - 1) )
+         nnbrs += 3;
+      if( (j == 0 || j == ySize - 1) && (k == 0 || k == zSize - 1) )
+         nnbrs += 3;
+      if( (i == 0 || i == xSize - 1) && (j == 0 || j == ySize - 1) && (k == 0 || k == zSize - 1) )
+         --nnbrs;
+
+      EXPECT_EQ( mesh.getCellNeighborsCount( cellIdx ), nnbrs );
+      std::set< IndexType > neighbors;
+      for( IndexType n = 0; n < nnbrs; n++ )
+         neighbors.insert( mesh.getDualGraph().getRow( cellIdx ).getColumnIndex( n ) );
+
+      // the cell itself should not be its own neighbor
+      EXPECT_EQ( (IndexType) neighbors.count( cellIdx ), 0 );
+      auto check_neighbor = [&]( IndexType i, IndexType j, IndexType k )
+      {
+         if( i >= 0 && i < xSize && j >= 0 && j < ySize && k >= 0 && k < zSize ) {
+            EXPECT_EQ( (IndexType) neighbors.count( k * xSize * ySize + j * xSize + i ), 1 );
+         }
+      };
+      // check neighbors over face
+      check_neighbor( i - 1, j, k );
+      check_neighbor( i + 1, j, k );
+      check_neighbor( i, j - 1, k );
+      check_neighbor( i, j + 1, k );
+      check_neighbor( i, j, k - 1 );
+      check_neighbor( i, j, k + 1 );
+      // check neighbors over edge
+      check_neighbor( i - 1, j - 1, k );
+      check_neighbor( i - 1, j + 1, k );
+      check_neighbor( i + 1, j - 1, k );
+      check_neighbor( i + 1, j + 1, k );
+      check_neighbor( i - 1, j, k - 1 );
+      check_neighbor( i - 1, j, k + 1 );
+      check_neighbor( i + 1, j, k - 1 );
+      check_neighbor( i + 1, j, k + 1 );
+      check_neighbor( i, j - 1, k - 1 );
+      check_neighbor( i, j - 1, k + 1 );
+      check_neighbor( i, j + 1, k - 1 );
+      check_neighbor( i, j + 1, k + 1 );
+      // check neighbors over vertex
+      check_neighbor( i - 1, j - 1, k - 1 );
+      check_neighbor( i - 1, j - 1, k + 1 );
+      check_neighbor( i - 1, j + 1, k - 1 );
+      check_neighbor( i - 1, j + 1, k + 1 );
+      check_neighbor( i + 1, j - 1, k - 1 );
+      check_neighbor( i + 1, j - 1, k + 1 );
+      check_neighbor( i + 1, j + 1, k - 1 );
+      check_neighbor( i + 1, j + 1, k + 1 );
+
+      ++cellIdx;
+   }
+
+   // reset dual graph back to its default state
+   mesh.initializeDualGraph( mesh );
 
    testFinishedMesh( mesh );
 }

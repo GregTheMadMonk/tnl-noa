@@ -29,19 +29,6 @@ public:
  
    constexpr static int getMeshDimension() { return 1; }
  
-   const Real& getParametricStep(){ return 0.0; }
- 
-   String getSerializationType() const { return String( "DummyMesh" ); }
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
-                                                        const GridFunction& f2 ) const { return 0.0; }
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
-                                                        const GridFunction& f2,
-                                                        const typename GridFunction::RealType& p ) const { return 0.0; }
-
    void save( File& file ) const {}
 
    void load( File& file ) {}
@@ -49,15 +36,6 @@ public:
    void save( const String& fileName ) const {}
 
    void load( const String& fileName ) {}
-
-   bool writeMesh( const String& fileName,
-                   const String& format ) const { return true; }
-
-
-   template< typename MeshFunction >
-   bool write( const MeshFunction& function,
-                const String& fileName,
-                const String& format ) const { return true; }
 };
 
 } // namespace Meshes

@@ -14,7 +14,8 @@
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
-#include <TNL/Functions/MeshFunctionVTKWriter.h>
+#include <TNL/Meshes/Writers/VTKWriter.h>
+#include <TNL/Meshes/Writers/VTUWriter.h>
 
 #pragma once
 
@@ -405,8 +406,22 @@ write( const String& fileName,
       std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
-   if( format == "vtk" )
-      return MeshFunctionVTKWriter< MeshFunction >::write( *this, file );
+   if( format == "vtk" ) {
+      Meshes::Writers::VTKWriter< Mesh > writer( file );
+      writer.template writeEntities< getEntitiesDimension() >( *meshPointer );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( getData(), "cellFunctionValues", 1 );
+      else
+         writer.writeCellData( getData(), "pointFunctionValues", 1 );
+   }
+   else if( format == "vtu" ) {
+      Meshes::Writers::VTUWriter< Mesh > writer( file );
+      writer.template writeEntities< getEntitiesDimension() >( *meshPointer );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( getData(), "cellFunctionValues", 1 );
+      else
+         writer.writeCellData( getData(), "pointFunctionValues", 1 );
+   }
    else if( format == "gnuplot" )
       return MeshFunctionGnuplotWriter< MeshFunction >::write( *this, file );
    else {

@@ -24,6 +24,8 @@
 #include <TNL/Problems/CommonData.h>
 #include <TNL/Pointers/SharedPointer.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+
 namespace TNL {
 namespace Solvers {
 namespace PDE {

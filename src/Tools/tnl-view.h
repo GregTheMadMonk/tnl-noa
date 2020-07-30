@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_VIEW_H_
-#define TNL_VIEW_H_
+#pragma once
 
 #include <cstdlib>
 #include <TNL/FileName.h>
@@ -21,28 +20,17 @@
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
 
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
 using namespace TNL;
 
-bool getOutputFileName( const String& inputFileName,
-                        const String& outputFormat,
-                        String& outputFileName )
+String getOutputFileName( const String& inputFileName,
+                          const String& outputFormat )
 {
-   outputFileName = removeFileNameExtension( inputFileName );
+   String outputFileName = removeFileNameExtension( inputFileName );
    if( outputFormat == "gnuplot" )
-   {
-      outputFileName += ".gplt";
-      return true;
-   }
-   if( outputFormat == "vtk" )
-   {
-      outputFileName += ".vtk";
-      return true;
-   }
-   std::cerr << "Unknown file format " << outputFormat << ".";
-   return false;
+      return outputFileName + ".gplt";
+   return outputFileName + "." + outputFormat;
 }
 
 
@@ -64,13 +52,9 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
       return false;
    }
 
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -95,13 +79,9 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
       return false;
    }
 
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -238,13 +218,9 @@ bool convertObject( const MeshPointer& meshPointer,
                     const std::vector< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
-   int verbose = parameters. getParameter< int >( "verbose");
-   String outputFormat = parameters. getParameter< String >( "output-format" );
-   String outputFileName;
-   if( ! getOutputFileName( inputFileName,
-                            outputFormat,
-                            outputFileName ) )
-      return false;
+   int verbose = parameters.getParameter< int >( "verbose");
+   String outputFormat = parameters.getParameter< String >( "output-format" );
+   String outputFileName = getOutputFileName( inputFileName, outputFormat );
    if( verbose )
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
@@ -307,57 +283,6 @@ bool setIndexType( const MeshPointer& meshPointer,
 }
 
 template< typename MeshPointer >
-bool setTupleType( const MeshPointer& meshPointer,
-                   const String& inputFileName,
-                   const std::vector< String >& parsedObjectType,
-                   const std::vector< String >& parsedValueType,
-                   const Config::ParameterContainer& parameters )
-{
-   int dimensions = atoi( parsedValueType[ 1 ].getString() );
-   String dataType = parsedValueType[ 2 ];
-   if( dataType == "float" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
-   if( dataType == "double" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
-//   if( dataType == "long double" )
-//      switch( dimensions )
-//      {
-//         case 1:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//         case 2:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//         case 3:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//      }
-   return false;
-}
-
-template< typename MeshPointer >
 bool setValueType( const MeshPointer& meshPointer,
                      const String& inputFileName,
                      const std::vector< String >& parsedObjectType,
@@ -382,99 +307,74 @@ bool setValueType( const MeshPointer& meshPointer,
    if( elementType == "bool" )
       return setIndexType< MeshPointer, bool, bool >( meshPointer, inputFileName, parsedObjectType, parameters );
 
-   const std::vector< String > parsedValueType = parseObjectType( elementType );
-   if( ! parsedValueType.size() )
-   {
-      std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
-      return false;
-   }
-   if( parsedValueType[ 0 ] == "Containers::StaticVector" )
-      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedValueType, parameters );
-
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;
 }
 
 template< typename Mesh >
-struct FilesProcessor
+bool processFiles( const Config::ParameterContainer& parameters )
 {
-   static bool run( const Config::ParameterContainer& parameters )
+   int verbose = parameters.getParameter< int >( "verbose");
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
+
+   typedef Pointers::SharedPointer< Mesh > MeshPointer;
+   MeshPointer meshPointer;
+   if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
+      return false;
+
+   bool checkOutputFile = parameters.getParameter< bool >( "check-output-file" );
+   std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
+   bool error( false );
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif
+   for( int i = 0; i < (int) inputFiles.size(); i++ )
    {
-      int verbose = parameters. getParameter< int >( "verbose");
-      String meshFile = parameters. getParameter< String >( "mesh" );
-
-      typedef Pointers::SharedPointer<  Mesh > MeshPointer;
-      MeshPointer meshPointer;
-      
-      if( meshFile != "" )
-      {
-         Meshes::DistributedMeshes::DistributedMesh<Mesh> distributedMesh;
-         if( ! Meshes::loadMesh<Communicators::NoDistrCommunicator>( meshFile, *meshPointer, distributedMesh ) )
-            return false;
-      }
-
-      bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
-      std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
-      bool error( false );
-   //#ifdef HAVE_OPENMP
-   //#pragma omp parallel for
-   //#endif
-      for( int i = 0; i < (int) inputFiles.size(); i++ )
-      {
-         if( verbose )
-           std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
-
-         String outputFormat = parameters. getParameter< String >( "output-format" );
-         String outputFileName;
-         if( ! getOutputFileName( inputFiles[ i ],
-                                  outputFormat,
-                                  outputFileName ) )
-         {
-            error = true;
-            continue;
-         }
-         if( checkOutputFile && fileExists( outputFileName ) )
-         {
-            if( verbose )
-              std::cout << " file already exists. Skipping.            \r" << std::flush;
-            continue;
-         }
-
-         String objectType;
-         try
-         {
-            objectType = getObjectType( inputFiles[ i ] );
-         }
-         catch(...)
-         {
-            std::cerr << "unknown object ... SKIPPING!" << std::endl;
-            continue;
-         }
-         
-         if( verbose )
-           std::cout << objectType << " detected ... ";
-
-         const std::vector< String > parsedObjectType = parseObjectType( objectType );
-         if( ! parsedObjectType.size() )
-         {
-            std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
-            error = true;
-            continue;
-         }
-         if( parsedObjectType[ 0 ] == "Containers::Array" ||
-             parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
-            setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
-            setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "Functions::VectorField" )
-            setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( verbose )
-            std::cout << "[ OK ].  " << std::endl;
-      }
       if( verbose )
-        std::cout << std::endl;
-      return ! error;
-   }
-};
+        std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
 
-#endif /* TNL_VIEW_H_ */
+      String outputFormat = parameters.getParameter< String >( "output-format" );
+      String outputFileName = getOutputFileName( inputFiles[ i ], outputFormat );
+      if( checkOutputFile && fileExists( outputFileName ) )
+      {
+         if( verbose )
+           std::cout << " file already exists. Skipping.            \r" << std::flush;
+         continue;
+      }
+
+      String objectType;
+      try
+      {
+         objectType = getObjectType( inputFiles[ i ] );
+      }
+      catch(...)
+      {
+         std::cerr << "unknown object ... SKIPPING!" << std::endl;
+         continue;
+      }
+      
+      if( verbose )
+        std::cout << objectType << " detected ... ";
+
+      const std::vector< String > parsedObjectType = parseObjectType( objectType );
+      if( ! parsedObjectType.size() )
+      {
+         std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
+         error = true;
+         continue;
+      }
+      if( parsedObjectType[ 0 ] == "Containers::Array" ||
+          parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
+         setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
+         setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( parsedObjectType[ 0 ] == "Functions::VectorField" )
+         setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+      if( verbose )
+         std::cout << "[ OK ].  " << std::endl;
+   }
+   if( verbose )
+     std::cout << std::endl;
+   return ! error;
+}

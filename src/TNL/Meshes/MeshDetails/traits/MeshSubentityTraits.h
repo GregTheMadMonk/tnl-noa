@@ -17,18 +17,14 @@
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntityOrientation;
-template< typename MeshConfig, typename EntityTopology >
-class EntitySeed;
 
 template< typename MeshConfig,
           typename Device,
@@ -49,22 +45,12 @@ public:
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
-   using Seed              = EntitySeed< MeshConfig, SubentityTopology >;
    using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
-
-   /****
-    * Type of container for storing of the subentities indices.
-    */
-   // TODO: write general operator= for different SliceSize and remove the '32' here
-   using StorageNetworkType     = Containers::Multimaps::StaticEllpackIndexMultimap< count, GlobalIndexType, Device, LocalIndexType, 32 >;
-   using SubentityAccessorType  = typename StorageNetworkType::ValuesAccessorType;
-
-   // static array used in MeshSubentitySeedCreator
-   using SeedArrayType          = Containers::StaticArray< count, Seed >;
 
    // orientation and its accessor
    using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
    using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
+   using OrientationsStorageArrayType = Containers::Array< OrientationArrayType, Device, GlobalIndexType >;
 
    template< LocalIndexType subentityIndex,
              LocalIndexType subentityVertexIndex >

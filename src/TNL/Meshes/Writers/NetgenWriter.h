@@ -59,7 +59,7 @@ public:
          for( int cellVertexIdx = 0;
               cellVertexIdx < meshDimension + 1;
               cellVertexIdx++ )
-            str << " " << cell.getVertexIndex( cellVertexIdx );
+            str << " " << cell.template getSubentityIndex< 0 >( cellVertexIdx );
          str << "\n";
       }
    }

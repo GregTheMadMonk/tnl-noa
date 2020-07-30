@@ -18,6 +18,9 @@
 
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Algorithms/Segments/Ellpack.h>
+#include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 
@@ -30,6 +33,12 @@ template< typename MeshConfig, typename Device, int Dimension > class MeshEntity
 template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
 template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
 
+// helper templates (must be public because nvcc sucks, and outside of MeshTraits to avoid duplicate code generation)
+template< typename Device, typename Index, typename IndexAlocator >
+using EllpackSegments = Algorithms::Segments::Ellpack< Device, Index, IndexAlocator >;
+template< typename Device, typename Index, typename IndexAlocator >
+using SlicedEllpackSegments = Algorithms::Segments::SlicedEllpack< Device, Index, IndexAlocator >;
+
 template< typename MeshConfig,
           typename Device = Devices::Host >
 class MeshTraits
@@ -38,18 +47,21 @@ public:
    static constexpr int meshDimension  = MeshConfig::CellTopology::dimension;
    static constexpr int worldDimension = MeshConfig::worldDimension;
 
-   using DeviceType        = Device;
-   using GlobalIndexType   = typename MeshConfig::GlobalIndexType;
-   using LocalIndexType    = typename MeshConfig::LocalIndexType;
+   using DeviceType          = Device;
+   using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType      = typename MeshConfig::LocalIndexType;
 
-   using CellTopology      = typename MeshConfig::CellTopology;
-   using CellType          = MeshEntity< MeshConfig, Device, CellTopology >;
-   using VertexType        = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
-   using PointType         = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
-   using CellSeedType      = EntitySeed< MeshConfig, CellTopology >;
+   using CellTopology        = typename MeshConfig::CellTopology;
+   using CellType            = MeshEntity< MeshConfig, Device, CellTopology >;
+   using VertexType          = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
+   using PointType           = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
+   using CellSeedType        = EntitySeed< MeshConfig, CellTopology >;
+   using EntityTagType       = std::uint8_t;
 
-   using PointArrayType    = Containers::Array< PointType, DeviceType, GlobalIndexType >;
-   using CellSeedArrayType = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
+   using NeighborCountsArray = Containers::Vector< LocalIndexType, DeviceType, GlobalIndexType >;
+   using PointArrayType      = Containers::Array< PointType, DeviceType, GlobalIndexType >;
+   using CellSeedArrayType   = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
+   using EntityTagsArrayType = Containers::Array< EntityTagType, DeviceType, GlobalIndexType >;
 
    template< int Dimension >
    using EntityTraits = MeshEntityTraits< MeshConfig, DeviceType, Dimension >;
@@ -61,6 +73,15 @@ public:
    using SuperentityTraits = MeshSuperentityTraits< MeshConfig, DeviceType, EntityTopology, Superdimension >;
 
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
+
+   // container for storing the subentity indices
+   using SubentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, EllpackSegments >;
+
+   // container for storing the superentity indices
+   using SuperentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
+
+   // container for storing the dual graph adjacency matrix
+   using DualGraph = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
 };
 
 } // namespace Meshes
