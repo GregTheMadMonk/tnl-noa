@@ -68,7 +68,7 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRHybrid,
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, // Hybrid is not implemented
                  CSRLight, CSRLight2, CSRLight3, CSRLight4, CSRLight5, CSRLight6,
                  CSRAdaptive, CSRMultiVector, CSRLightWithoutAtomic };
 
