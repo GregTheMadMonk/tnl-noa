@@ -24,15 +24,31 @@ gpu_matrix_formats = [ 'CSR Legacy Scalar', 'CSR Legacy Vector', 'CSR Legacy Mul
                        'SlicedEllpack', 'SlicedEllpack Legacy',
                        'ChunkedEllpack', 'ChunkedEllpack Legacy',
                        'BiEllpack', 'BiEllpack Legacy' ]
+"""
+CPU formats to be compared 
+"""
+cpu_comparison_formats = { 'CSR' : 'CSR Legacy Scalar',
+                           'Ellpack' : 'Ellpack Legacy',
+                           'SlicedEllpack' : 'SlicedEllpack Legacy',
+                           'BiEllpack' : 'BiEllpack Legacy'
+                          }
 
+"""
+GPU formats to be compared 
+"""
+gpu_comparison_formats = { #'CSR' : 'CSR Legacy Scalar',
+                           'Ellpack' : 'Ellpack Legacy',
+                           'SlicedEllpack' : 'SlicedEllpack Legacy',
+                           'BiEllpack' : 'BiEllpack Legacy'
+                          }
 #pandas.options.display.float_format = "{:.2f}".format
 pandas.options.display.float_format = "{:.2e}".format
 pandas.options.display.width = 0    # auto-detect terminal width for formatting
 pandas.options.display.max_rows = None
 
 def slugify(s):
-    s = str(s).strip().replace(' ', '_')
-    return re.sub(r'(?u)[^-\w.]', '', s)
+   s = str(s).strip().replace(' ', '_')
+   return re.sub(r'(?u)[^-\w.]', '', s)
 
 
 def parse_file(fname):
@@ -99,58 +115,52 @@ for gpu_format in gpu_matrix_formats:
    df[ gpu_format, "GPU", "cuSparse speedup"] = df[ gpu_format,"GPU", "time"] / df["cuSparse", "GPU", "time"]
 
 # Add speedup compared to legacy formats
-df["CSR",                   "GPU", "Legacy speedup"]   = df["CSR",                   "GPU", "time"] / df["CSR Legacy Scalar",    "GPU", "time"]
-df["CSR",                   "CPU", "Legacy speedup"]   = df["CSR",                   "CPU", "time"] / df["CSR Legacy Scalar",    "CPU", "time"]
-df["Ellpack",               "GPU", "Legacy speedup"]   = df["Ellpack",               "GPU", "time"] / df["Ellpack Legacy",       "GPU", "time"]
-df["Ellpack",               "CPU", "Legacy speedup"]   = df["Ellpack",               "CPU", "time"] / df["Ellpack Legacy",       "CPU", "time"]
-df["SlicedEllpack",         "GPU", "Legacy speedup"]   = df["SlicedEllpack",         "GPU", "time"] / df["SlicedEllpack Legacy", "GPU", "time"]
-df["SlicedEllpack",         "CPU", "Legacy speedup"]   = df["SlicedEllpack",         "CPU", "time"] / df["SlicedEllpack Legacy", "CPU", "time"]
-df["BiEllpack",             "GPU", "Legacy speedup"]   = df["BiEllpack",             "GPU", "time"] / df["BiEllpack Legacy",     "GPU", "time"]
-df["BiEllpack",             "CPU", "Legacy speedup"]   = df["BiEllpack",             "CPU", "time"] / df["BiEllpack Legacy",     "CPU", "time"]
+for format in cpu_comparison_formats:
+   other_format = cpu_comparison_formats[ format ]
+   df[ format, "CPU", f"{other_format} speedup"]  = df[ format, "CPU", "time"] / df[ other_format,  "CPU", "time"]
+
+for format in gpu_comparison_formats:
+   other_format = gpu_comparison_formats[ format ]
+   df[ format, "GPU", f"{other_format} speedup"]  = df[ format, "GPU", "time"] / df[ other_format,  "GPU", "time"]
 
 print( "Exporting data frame to log.html..." )
 pandas.options.display.float_format = '{:,.4f}'.format
 df.to_html("log.html")
 
-# extract columns of reference formats on GPU
+"""
+Extract columns of reference formats on GPU
+"""
 print( "Preparing data for graph analysis..." )
 df['cuSparse-bandwidth'                        ] = df[ 'cuSparse','GPU','bandwidth']
 for gpu_format in gpu_matrix_formats:
    df[ gpu_format + ' Bandwidth' ] = df[ gpu_format,'GPU','bandwidth']
 
-# sort by cuSparse
+"""
+Sort by cuSparse
+"""
 df.sort_values(by=["cuSparse-bandwidth"],inplace=True,ascending=False)
 cuSparse_list = df['cuSparse-bandwidth'].tolist()
 cusparse_comparison = defaultdict( list )
 for gpu_format in gpu_matrix_formats:
    cusparse_comparison[ gpu_format ] = df[ gpu_format, "GPU", "bandwidth" ].tolist()
 
-# sort by Ellpack
-df.sort_values(by=["Ellpack Bandwidth"],inplace=True,ascending=False)
-ellpack_gpu_list = df["Ellpack", "GPU", "bandwidth"].tolist();
-ellpack_legacy_gpu_list = df["Ellpack Legacy", "GPU", "bandwidth"].tolist();
+"""
+Sort by comparison formats
+"""
+formats_comparison = defaultdict( list )
+for format in gpu_comparison_formats:
+   df.sort_values(by=[f"{format} Bandwidth"],inplace=True,ascending=False)
+   formats_comparison[ format ] = df[format, "GPU", "bandwidth"].tolist();
+   formats_comparison[ gpu_comparison_formats[ format ] ] = df[gpu_comparison_formats[ format ], "GPU", "bandwidth"].tolist();
 
-# sort by SlicedEllpack
-df.sort_values(by=["SlicedEllpack Bandwidth"],inplace=True,ascending=False)
-sliced_ellpack_gpu_list = df["SlicedEllpack", "GPU", "bandwidth"].tolist();
-sliced_ellpack_legacy_gpu_list = df["SlicedEllpack Legacy", "GPU", "bandwidth"].tolist();
-
-# sort by ChunkedEllpack
-df.sort_values(by=["ChunkedEllpack Bandwidth"],inplace=True,ascending=False)
-chunked_ellpack_gpu_list = df["ChunkedEllpack", "GPU", "bandwidth"].tolist();
-chunked_ellpack_legacy_gpu_list = df["ChunkedEllpack Legacy", "GPU", "bandwidth"].tolist();
-
-# sort by BiEllpack
-df.sort_values(by=["BiEllpack Bandwidth"],inplace=True,ascending=False)
-bi_ellpack_gpu_list = df["BiEllpack", "GPU", "bandwidth"].tolist();
-bi_ellpack_legacy_gpu_list = df["BiEllpack Legacy", "GPU", "bandwidth"].tolist();
-
+"""
+Writting gnuplot source files
+"""
 print( "Writing gnuplot files..." )
 
 for gpu_format in gpu_matrix_formats:
    filename = "cusparse-" + slugify( gpu_format ) + ".gplt"
    data = cusparse_comparison[ gpu_format ]
-   print( "Writing to " + filename + "..." );
    out_file = open( filename, "w" )
    i = 0
    for x in cuSparse_list:
@@ -160,44 +170,22 @@ for gpu_format in gpu_matrix_formats:
             i = i + 1;
    out_file.close()
 
-ellpack_file = open( "ellpack.gplt", "w" )
-i = 0;
-for x in ellpack_gpu_list:
-   if str( x ) != "nan":
-      if str( ellpack_legacy_gpu_list[ i ] ) != "nan":
-         ellpack_file.write( f"{i+1} {x} {ellpack_legacy_gpu_list[ i ]}\n" )
-   i = i + 1
-ellpack_file.close()
+for format in gpu_comparison_formats:
+   out_file = open( f"{slugify(format)}-gpu-comparison.gplt", "w" )
+   data = formats_comparison[ format ]
+   other_data = formats_comparison[ gpu_comparison_formats[ format ] ]
+   i = 0
+   for x in data:
+      if str( x ) != "nan":
+         if str( other_data[ i ] ) != "nan":
+            out_file.write( f"{i+1} {x} {other_data[ i ]}\n" )
+      i = i + 1
+   out_file.close()
 
-sliced_ellpack_file = open( "sliced-ellpack.gplt", "w" )
-i = 0;
-for x in sliced_ellpack_gpu_list:
-   if str( x ) != "nan":
-      if str( sliced_ellpack_legacy_gpu_list[ i ] ) != "nan":
-         sliced_ellpack_file.write( f"{i+1} {x} {sliced_ellpack_legacy_gpu_list[ i ]}\n" )
-   i = i + 1
-sliced_ellpack_file.close()
-
-chunked_ellpack_file = open( "chunked-ellpack.gplt", "w" )
-i = 0;
-for x in chunked_ellpack_gpu_list:
-   if str( x ) != "nan":
-      if str( chunked_ellpack_legacy_gpu_list[ i ] ) != "nan":
-         chunked_ellpack_file.write( f"{i+1} {x} {chunked_ellpack_legacy_gpu_list[ i ]}\n" )
-   i = i + 1
-chunked_ellpack_file.close()
-
-bi_ellpack_file = open( "bi-ellpack.gplt", "w" )
-i = 0;
-for x in bi_ellpack_gpu_list:
-   if str( x ) != "nan":
-      if str( bi_ellpack_legacy_gpu_list[ i ] ) != "nan":
-         bi_ellpack_file.write( f"{i+1} {x} {bi_ellpack_legacy_gpu_list[ i ]}\n" )
-   i = i + 1
-bi_ellpack_file.close()
-
-print( "Generating Gnuplot file..." )
-
+"""
+Generating gnuplot script
+"""
+print( "Generating Gnuplot script..." )
 
 gnuplot_file = open( "gnuplot.gplt", "w" )
 gnuplot_file.write( r"""
@@ -216,51 +204,50 @@ for gpu_format in gpu_matrix_formats:
    gnuplot_file.write( f" '{filename}' using 1:3 title '{gpu_format}' with lines linewidth 0.5 lt rgb 'green'  \n" )
 
 
-gnuplot_file.write( r"""
-set output 'ellpack-vs-ellpack-legacy.eps'                                                              
-plot 'ellpack.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                      \
-     'ellpack.gplt' using 1:2 title 'Ellpack' with lines linewidth 0.5 lt rgb 'red',                            \
-     'ellpack.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'blue',                                     \
-     'ellpack.gplt' using 1:3 title 'Ellpack Legacy' with lines linewidth 0.5 lt rgb 'blue'                
-set output 'sliced-ellpack-vs-sliced-ellpack-legacy.eps'                                                
-plot 'sliced-ellpack.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                               \
-     'sliced-ellpack.gplt' using 1:2 title 'SlicedEllpack' with lines linewidth 0.5 lt rgb 'red',               \
-     'sliced-ellpack.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'blue',                              \
-     'sliced-ellpack.gplt' using 1:3 title 'SlicedEllpack Legacy' with lines linewidth 0.5 lt rgb 'blue'   
-set output 'chunked-ellpack-vs-chunked-ellpack-legacy.eps'                                                        
-plot 'chunked-ellpack.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                              \
-     'chunked-ellpack.gplt' using 1:2 title 'ChunkedEllpack' with lines linewidth 0.5 lt rgb 'red',             \
-     'chunked-ellpack.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'blue',                             \
-     'chunked-ellpack.gplt' using 1:3 title 'ChunkedEllpack Legacy' with lines linewidth 0.5 lt rgb 'blue'
-set output 'bi-ellpack-vs-bi-ellpack-legacy.eps'                                                        
-plot 'bi-ellpack.gplt' using 1:2 title '' with dots linewidth 2 lt rgb 'red',                                   \
-     'bi-ellpack.gplt' using 1:2 title 'BiEllpack' with lines linewidth 0.5 lt rgb 'red',                       \
-     'bi-ellpack.gplt' using 1:3 title '' with dots linewidth 2 lt rgb 'blue',                                  \
-     'bi-ellpack.gplt' using 1:3 title 'BiEllpack Legacy' with lines linewidth 0.5 lt rgb 'blue'
-""")
+for format in gpu_comparison_formats:
+   filename = f"{slugify(format)}-gpu-comparison.gplt"
+   data = formats_comparison[ format ]
+   other_data = formats_comparison[ gpu_comparison_formats[ format ] ]
+   gnuplot_file.write( f"set output '{slugify(format)}-vs-{slugify(gpu_comparison_formats[ format ])}.eps' \n" )
+   gnuplot_file.write( f"plot '{filename}' using 1:2 title '' with dots linewidth 2 lt rgb 'red', " )
+   gnuplot_file.write( f" '{filename}' using 1:2 title '{format}' with lines linewidth 0.5 lt rgb 'red'," )
+   gnuplot_file.write( f" '{filename}' using 1:3 title '' with dots linewidth 2 lt rgb 'blue', " )
+   gnuplot_file.write( f" '{filename}' using 1:3 title '{gpu_comparison_formats[ format ]}' with lines linewidth 0.5 lt rgb 'blue' \n" )
+
 gnuplot_file.close()
+
+"""
+Executing Gnuplot
+"""
 
 print( "Executing Gnuplot ..." )
 os.system( "gnuplot gnuplot.gplt" )
 
+"""
+Converting files to PDF
+"""
 print( "Converting files to PDF ..." )
 for gpu_format in gpu_matrix_formats:
    filename = "cusparse-vs-" + slugify( gpu_format ) + ".eps"
    os.system( f"epstopdf --autorotate All {filename}" )
 
-os.system( "epstopdf --autorotate All ellpack-vs-ellpack-legacy.eps" )
-os.system( "epstopdf --autorotate All sliced-ellpack-vs-sliced-ellpack-legacy.eps" )
-os.system( "epstopdf --autorotate All chunked-ellpack-vs-chunked-ellpack-legacy.eps" )
-os.system( "epstopdf --autorotate All bi-ellpack-vs-bi-ellpack-legacy.eps" )
+for format in gpu_comparison_formats:
+   filename = slugify(format) + "-vs-" + slugify(gpu_comparison_formats[ format ]) + ".eps"
+   os.system( f"epstopdf --autorotate All {filename}" )
 
+"""
+Deleting temporary files
+"""
 print( "Deleting temprary files..." )
-#os.system( "rm cusparse.gplt" )
-#os.system( "rm ellpack.gplt" )
-#os.system( "rm sliced-ellpack.gplt" )
-#os.system( "rm gnuplot.gplt" )
-#os.system( "rm ellpack-vs-cusparse.eps" )
-#os.system( "rm sliced-ellpack-vs-cusparse.eps" )
-#os.system( "rm chunked-ellpack-vs-cusparse.eps" )
-#os.system( "rm bi-ellpack-vs-cusparse.eps" )
-#os.system( "rm ellpack-vs-ellpack-legacy.eps" )
-#os.system( "rm sliced-ellpack-vs-sliced-ellpack-legacy.eps" )
+for gpu_format in gpu_matrix_formats:
+   filename = "cusparse-" + slugify( gpu_format ) + ".gplt"
+   os.system( f"rm {filename}" )
+   filename = "cusparse-vs-" + slugify( gpu_format ) + ".eps"
+   os.system( f"rm {filename}" )
+
+for format in gpu_comparison_formats:
+   filename = f"{slugify(format)}-gpu-comparison.gplt"
+   os.system( f"rm {filename}" )
+   filename = slugify(format) + "-vs-" + slugify(gpu_comparison_formats[ format ]) + ".eps"
+   os.system( f"rm {filename}" )
+os.system( "rm gnuplot.gplt" )
