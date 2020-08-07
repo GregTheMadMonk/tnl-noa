@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/Sparse.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -354,5 +354,5 @@ protected:
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/ChunkedEllpack_impl.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack_impl.h>
 

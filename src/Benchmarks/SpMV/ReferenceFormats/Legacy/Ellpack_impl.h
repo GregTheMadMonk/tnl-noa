@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/Ellpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/NotImplementedError.h>

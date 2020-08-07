@@ -15,9 +15,9 @@
 #include <iostream>
 
 // Temporary, until test_OperatorEquals doesn't work for all formats.
-#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
 #include <TNL/Matrices/Legacy/AdEllpack.h>
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>

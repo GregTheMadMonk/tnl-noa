@@ -1,16 +1,27 @@
 /***************************************************************************
-                          Ellpack.h  -  description
+                          SlicedEllpack.h  -  description
                              -------------------
-    begin                : Dec 7, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Dec 8, 2013
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Vacata Jan
+ *
+ * The algorithm/method was published in:
+ *  Oberhuber T., Suzuki A., Vacata J., New Row-grouped CSR format for storing
+ *  the sparse matrices on GPU with implementation in CUDA, Acta Technica, 2011,
+ *  vol. 56, no. 4, pp. 447-466.
+ */
+
 #pragma once
 
-#include <TNL/Matrices/Legacy/Sparse.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -18,10 +29,28 @@ namespace Matrices {
    namespace Legacy {
 
 template< typename Device >
-class EllpackDeviceDependentCode;
+class SlicedEllpackDeviceDependentCode;
 
-template< typename Real, typename Device = Devices::Host, typename Index = int >
-class Ellpack : public Sparse< Real, Device, Index >
+template< typename Real = double,
+          typename Device = Devices::Host,
+          typename Index = int,
+          int SliceSize = 32 >
+class SlicedEllpack;
+
+#ifdef HAVE_CUDA
+template< typename Real,
+          typename Index,
+          int SliceSize >
+__global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                          typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
+                                                                          int gridIdx );
+#endif
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+class SlicedEllpack : public Sparse< Real, Device, Index >
 {
 private:
    // convenient template alias for controlling the selection of copy-assignment operator
@@ -29,8 +58,8 @@ private:
    using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
    // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
-   friend class Ellpack;
+   template< typename Real2, typename Device2, typename Index2, int SliceSize2 >
+   friend class SlicedEllpack;
 
 public:
    typedef Real RealType;
@@ -47,10 +76,11 @@ public:
 
    template< typename _Real = Real,
              typename _Device = Device,
-             typename _Index = Index >
-   using Self = Ellpack< _Real, _Device, _Index >;
+             typename _Index = Index,
+             int _SliceSize = SliceSize >
+   using Self = SlicedEllpack< _Real, _Device, _Index, _SliceSize >;
 
-   Ellpack();
+   SlicedEllpack();
 
    static String getSerializationType();
 
@@ -63,8 +93,6 @@ public:
 
    void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
-   void setConstantCompressedRowLengths( const IndexType& rowLengths );
-
    IndexType getRowLength( const IndexType row ) const;
 
    __cuda_callable__
@@ -73,15 +101,15 @@ public:
    IndexType getNonZeroRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
+   void setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );
 
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -103,7 +131,6 @@ public:
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-
    __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
@@ -114,7 +141,6 @@ public:
                 const IndexType* columnIndexes,
                 const RealType* values,
                 const IndexType elements );
-
 
    __cuda_callable__
    bool addRowFast( const IndexType row,
@@ -159,12 +185,12 @@ public:
                        RealType multiplicator = 1.0 ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const Ellpack< Real2, Device, Index2 >& matrix,
+   void addMatrix( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
+   void getTransposition( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
@@ -173,20 +199,13 @@ public:
                              Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
-   template< typename Vector >
-   bool performJacobiIteration( const Vector& b,
-								const IndexType row,
-								const Vector& old_x,
-								Vector& x,
-								const RealType& omega ) const;
-
    // copy assignment
-   Ellpack& operator=( const Ellpack& matrix );
+   SlicedEllpack& operator=( const SlicedEllpack& matrix );
 
    // cross-device copy assignment
    template< typename Real2, typename Device2, typename Index2,
              typename = typename Enabler< Device2 >::type >
-   Ellpack& operator=( const Ellpack< Real2, Device2, Index2 >& matrix );
+   SlicedEllpack& operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );
 
    void save( File& file ) const;
 
@@ -200,16 +219,25 @@ public:
 
 protected:
 
-   void allocateElements();
+   Containers::Vector< Index, Device, Index > slicePointers, sliceCompressedRowLengths;
 
-   IndexType rowLengths, alignedRows;
+   typedef SlicedEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class SlicedEllpackDeviceDependentCode< DeviceType >;
+#ifdef HAVE_CUDA
+   /*friend __global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                      const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::CompressedRowLengthsVector* rowLengths,
+                                                                                      int gridIdx );
+    */
+   // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
 
-   typedef EllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class EllpackDeviceDependentCode< DeviceType >;
+public:
+   __device__ void computeMaximalRowLengthInSlicesCuda( ConstCompressedRowLengthsVectorView rowLengths,
+                                                        const IndexType sliceIdx );
+#endif
 };
 
 } //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/Ellpack_impl.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack_impl.h>

@@ -11,7 +11,7 @@
 #pragma once
 
 
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <cstdio>

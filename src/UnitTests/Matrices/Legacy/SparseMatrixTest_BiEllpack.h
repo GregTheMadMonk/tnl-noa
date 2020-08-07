@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 #include "SparseMatrixTest.hpp"
 #include <iostream>

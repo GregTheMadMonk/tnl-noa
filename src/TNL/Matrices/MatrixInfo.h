@@ -19,10 +19,10 @@
 #include <TNL/Algorithms/Segments/EllpackView.h>
 #include <TNL/Algorithms/Segments/SlicedEllpackView.h>
 #include <TNL/Matrices/Legacy/CSR.h>
-#include <TNL/Matrices/Legacy/Ellpack.h>
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
-#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 namespace TNL {
 /**
