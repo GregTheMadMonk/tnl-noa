@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/Sparse.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 #include <TNL/Devices/Cuda.h>
@@ -19,6 +19,43 @@
 namespace TNL {
 namespace Matrices {
    namespace Legacy {
+
+enum class Type {
+   /* LONG = 0!!! Non zero value rewrites index[1] */
+   LONG = 0,
+   STREAM = 1,
+   VECTOR = 2
+};
+
+template<typename Index>
+union Block {
+   Block(Index row, Type type = Type::VECTOR, Index index = 0) noexcept {
+      this->index[0] = row;
+      this->index[1] = index;
+      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
+   }
+
+   Block(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept {
+      this->index[0] = row;
+      this->index[1] = 0;
+      this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
+
+      if (type == Type::STREAM)
+         this->twobytes[sizeof(Index) == 4 ? 3 : 5] = nextRow - row;
+
+      if (type == Type::STREAM)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b1000000;
+      else if (type == Type::VECTOR)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;
+   }
+
+   Block() = default;
+
+   Index index[2]; // index[0] is row pointer, index[1] is index in warp
+   uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
+   uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
+                                                //twobytes[3/5] is nextRow - row
+};
 
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
@@ -31,7 +68,9 @@ class CusparseCSR;
 template< typename Device >
 class CSRDeviceDependentCode;
 
-enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, CSRLight, CSRAdaptive, CSRStream };
+enum CSRKernel { CSRScalar, CSRVector, CSRHybrid, // Hybrid is not implemented
+                 CSRLight, CSRLight2, CSRLight3, CSRLight4, CSRLight5, CSRLight6,
+                 CSRAdaptive, CSRMultiVector, CSRLightWithoutAtomic };
 
 template< typename Real, typename Device = Devices::Host, typename Index = int, CSRKernel KernelType = CSRScalar >
 class CSR : public Sparse< Real, Device, Index >
@@ -64,6 +103,34 @@ public:
 
    constexpr CSRKernel getSpMVKernelType() { return KernelType; };
    //enum SPMVCudaKernel { scalar, vector, hybrid };
+
+
+   Containers::Vector< Block<Index>, Device, Index > blocks;
+   
+   /* Configuration of CSR SpMV kernels ----------------------------------------- */
+
+   /* Block sizes */
+   static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
+   static constexpr Index THREADS_SCALAR = 128;
+   static constexpr Index THREADS_VECTOR = 128;
+   static constexpr Index THREADS_LIGHT = 128;
+
+   /* Max length of row to process one warp */
+   static constexpr Index MAX_ELEMENTS_PER_WARP = 1024;
+
+   /* How many shared memory use per block in CSR Adaptive kernel */
+   static constexpr Index SHARED_PER_BLOCK = 24576;
+
+   /* Number of elements in shared memory */
+   static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
+
+   /* Number of warps in block for CSR Adaptive */
+   static constexpr Index WARPS = THREADS_ADAPTIVE / 32;
+
+   /* Number of elements in shared memory per one warp */
+   static constexpr Index SHARED_PER_WARP = SHARED / WARPS;
+   /* -------------------------------------------------------------------------- */
+   
 
    using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
@@ -217,42 +284,8 @@ public:
    __cuda_callable__
    IndexType getHybridModeSplit() const;
 
-#ifdef HAVE_CUDA
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCudaVectorized( const InVector& inVector,
-                            OutVector& outVector,
-                            const IndexType gridIdx ) const;
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-   __device__
-   void vectorProductCuda( const InVector& inVector,
-                           OutVector& outVector,
-                           int gridIdx, int *blocks, size_t size ) const;
-   
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCudaLightSpmv( const InVector& inVector,
-                            OutVector& outVector,
-                            int gridIdx) const;
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize > 
-   __device__
-   void spmvCSRAdaptive( const InVector& inVector,
-                           OutVector& outVector,
-                           int gridIdx,
-                           int *blocks,
-                           size_t blocks_size) const;
-#endif
+   /* Analyze rowPointers, columnIndecies and values to create block for CSR Adaptive */
+   void setBlocks();
 
    // The following getters allow us to interface TNL with external C-like
    // libraries such as UMFPACK or SuperLU, which need the raw data.

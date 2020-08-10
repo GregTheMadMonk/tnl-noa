@@ -19,10 +19,10 @@
 #include <TNL/Algorithms/Segments/EllpackView.h>
 #include <TNL/Algorithms/Segments/SlicedEllpackView.h>
 #include <TNL/Matrices/Legacy/CSR.h>
-#include <TNL/Matrices/Legacy/Ellpack.h>
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
-#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 namespace TNL {
 /**
@@ -114,6 +114,46 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight > >
 };
 
 template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight2 > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy Light2"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight3 > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy Light3"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight4 > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy Light4"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight5 > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy Light5"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight6 > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy Light6"; };
+};
+
+template< typename Real, typename Device, typename Index >
 struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRAdaptive > >
 {
    static String getDensity() { return String( "sparse" ); };
@@ -122,11 +162,19 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRAdaptive > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRStream > >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRMultiVector > >
 {
    static String getDensity() { return String( "sparse" ); };
 
-   static String getFormat() { return "CSR Legacy Stream"; };
+   static String getFormat() { return "CSR Legacy MultiVector"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLightWithoutAtomic > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy LightWithoutAtomic"; };
 };
 
 template< typename Real, typename Device, typename Index >

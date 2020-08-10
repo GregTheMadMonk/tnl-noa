@@ -16,9 +16,9 @@
 
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Matrices/Legacy/CSR.h>
-#include <TNL/Matrices/Legacy/Ellpack.h>
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
-#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
 
 namespace TNL {
 namespace Benchmarks {

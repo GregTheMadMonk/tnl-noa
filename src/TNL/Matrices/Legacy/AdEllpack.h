@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/Sparse.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {

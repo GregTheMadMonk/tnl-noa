@@ -27,23 +27,55 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long >
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Host, long, TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Host, long, TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Host, long, TNL::Matrices::Legacy::CSRScalar >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long >
+  ,TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRScalar >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRVector >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRVector >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRVector >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRVector >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRVector >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRVector >,
+   /*TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRHybrid >, // Not implemented
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRHybrid >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRHybrid >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRHybrid >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRHybrid >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRHybrid >,*/
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLight >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLight >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLight >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLight >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLight >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLight >,
+   /*TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRAdaptive >, // Does not work, needs to be fixed.
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRAdaptive >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRAdaptive >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRAdaptive >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRAdaptive >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRAdaptive >,*/
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRMultiVector >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLightWithoutAtomic >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLightWithoutAtomic >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, int,  TNL::Matrices::Legacy::CSRLightWithoutAtomic >,
+   TNL::Matrices::Legacy::CSR< int,    TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLightWithoutAtomic >,
+   TNL::Matrices::Legacy::CSR< float,  TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLightWithoutAtomic >,
+   TNL::Matrices::Legacy::CSR< double, TNL::Devices::Cuda, long, TNL::Matrices::Legacy::CSRLightWithoutAtomic >
 #endif
 >;
 
@@ -105,12 +137,12 @@ TYPED_TEST( CSRMatrixTest, setRowTest )
     test_SetRow< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, vectorProductTest )
+/* TYPED_TEST( CSRMatrixTest, vectorProductTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_VectorProduct< CSRMatrixType >();
-}
+} */
 
 /*TYPED_TEST( CSRMatrixTest, vectorProductLargerTest )
 {
@@ -119,12 +151,12 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProductLarger< CSRMatrixType >();
 }*/
 
-/*TYPED_TEST( CSRMatrixTest, vectorProductGiantTest )
+TYPED_TEST( CSRMatrixTest, vectorProductCSRApadtiveTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_VectorProductGiant< CSRMatrixType >();
-}*/
+    test_VectorProductCSRAdaptive< CSRMatrixType >();
+}
 
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {

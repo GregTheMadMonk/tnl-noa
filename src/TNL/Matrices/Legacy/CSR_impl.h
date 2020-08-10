@@ -13,12 +13,17 @@
 #include <TNL/Matrices/Legacy/CSR.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
+#include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
-#include <vector>
+#include <TNL/Atomic.h>
+#include <vector> // for blocks in CSR Adaptive
 
 #ifdef HAVE_CUSPARSE
+#include <cuda.h>
 #include <cusparse.h>
 #endif
+
+constexpr size_t MAX_X_DIM = 2147483647;
 
 namespace TNL {
 namespace Matrices {
@@ -104,6 +109,83 @@ void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstCompr
    this->values.setSize( this->rowPointers.getElement( this->rows ) );
    this->columnIndexes.setSize( this->rowPointers.getElement( this->rows ) );
    this->columnIndexes.setValue( this->columns );
+
+   if (KernelType == CSRAdaptive && this->blocks.empty())
+      this->setBlocks();
+}
+
+/* Find limit of block */
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType>
+Index findLimit(const Index start,
+               const CSR< Real, Device, Index, KernelType >& matrix,
+               const Index size,
+               Type &type,
+               Index &sum) {
+   sum = 0;
+   for (Index current = start; current < size - 1; ++current) {
+      Index elements = matrix.getRowPointers().getElement(current + 1) -
+                       matrix.getRowPointers().getElement(current);
+      sum += elements;
+      if (sum > matrix.SHARED_PER_WARP) {
+         if (current - start > 0) { // extra row
+            type = Type::STREAM;
+            return current;
+         } else {                  // one long row
+            if (sum <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
+               type = Type::VECTOR;
+            else
+               type = Type::LONG;
+            return current + 1;
+         }
+      }
+   }
+
+   type = Type::STREAM;
+   return size - 1; // return last row pointer
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setBlocks()
+{
+   const Index rows = this->getRowPointers().getSize();
+   Index sum, start = 0, nextStart = 0;
+
+   /* Fill blocks */
+   std::vector<Block<Index>> inBlock;
+   inBlock.reserve(rows); // reserve space to avoid reallocation
+
+   while (nextStart != rows - 1) {
+      Type type;
+      nextStart = findLimit<Real, Index, Device, KernelType>(
+         start, *this, rows, type, sum
+      );
+      if (type == Type::LONG) {
+         Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
+         for (Index index = 0; index < parts; ++index) {
+            inBlock.emplace_back(start, Type::LONG, index);
+         }
+      } else {
+         inBlock.emplace_back(start, type,
+            nextStart,
+            this->rowPointers.getElement(nextStart),
+            this->rowPointers.getElement(start)
+         );
+      }
+
+      start = nextStart;
+   }
+   inBlock.emplace_back(nextStart);
+
+   /* Copy values */
+   this->blocks.setSize(inBlock.size());
+   for (size_t i = 0; i < inBlock.size(); ++i)
+      this->blocks.setElement(i, inBlock[i]);
 }
 
 template< typename Real,
@@ -583,6 +665,7 @@ CSR< Real, Device, Index, KernelType >::operator=( const CSR& matrix )
    this->values = matrix.values;
    this->columnIndexes = matrix.columnIndexes;
    this->rowPointers = matrix.rowPointers;
+   this->blocks = matrix.blocks;
    return *this;
 }
 
@@ -599,6 +682,7 @@ CSR< Real, Device, Index, KernelType >::operator=( const CSR< Real2, Device2, In
    this->values = matrix.values;
    this->columnIndexes = matrix.columnIndexes;
    this->rowPointers = matrix.rowPointers;
+   this->blocks = matrix.blocks;
    return *this;
 }
 
@@ -718,294 +802,974 @@ Index CSR< Real, Device, Index, KernelType >::getHybridModeSplit() const
 #ifdef HAVE_CUDA
 
 template< typename Real,
-          typename Device,
           typename Index,
-          CSRKernel KernelType >
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-__device__
-void CSR< Real, Device, Index, KernelType >::spmvCudaLightSpmv( const InVector& inVector,
-                                                      OutVector& outVector,
-                                                      int gridIdx) const
-{
-   const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
-   const IndexType elemPerGroup   = 4;
-   const IndexType laneID      = index % 32;
-   const IndexType groupID     = laneID / elemPerGroup;
-   const IndexType inGroupID   = laneID % elemPerGroup;
+          int warpSize,
+          int WARPS,
+          int SHARED_PER_WARP,
+          int MAX_ELEM_PER_WARP >
+__global__
+void SpMVCSRAdaptive( const Real *inVector,
+                      Real *outVector,
+                      const Index* rowPointers,
+                      const Index* columnIndexes,
+                      const Real* values,
+                      const Block<Index> *blocks,
+                      Index blocksSize,
+                      Index gridID) {
+   __shared__ Real shared[WARPS][SHARED_PER_WARP];
+   const Index index = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
+   const Index blockIdx = index / warpSize;
+   if (blockIdx >= blocksSize)
+      return;
 
-   IndexType row, minID, column, maxID, idxMtx;
-   __shared__ unsigned rowCnt;
+   Real result = 0.0;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   Block<Index> block = blocks[blockIdx];
+   const Index minID = rowPointers[block.index[0]/* minRow */];
+   Index i, to, maxID;
+   if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b1000000) {
+      /////////////////////////////////////* CSR STREAM *//////////////
+      const Index warpID = threadIdx.x / 32;
+      maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
 
-   if (index == 0) rowCnt = 0;  // Init shared variable
-   __syncthreads();
+      /* Stream data to shared memory */
+      for (i = laneID + minID; i < maxID; i += warpSize)
+         shared[warpID][i - minID] = values[i] * inVector[columnIndexes[i]];
 
-   while (true) {
+      const Index maxRow = block.index[0]/* minRow */ +
+         /* maxRow - minRow */(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FFF);
+      /* Calculate result */
+      for (i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize) {
+         to = rowPointers[i + 1] - minID; // end of preprocessed data
+         result = 0;
+         /* Scalar reduction */
+         for (Index sharedID = rowPointers[i] - minID; sharedID < to; ++sharedID)
+            result += shared[warpID][sharedID];
 
-      /* Get row number */
-      if (inGroupID == 0) row = atomicAdd(&rowCnt, 1);
-
-      /* Propagate row number in group */
-      row = __shfl_sync((unsigned)(warpSize - 1), row, groupID * elemPerGroup);
-
-      if (row >= this->rowPointers.getSize() - 1)
-         return;
-
-      minID = this->rowPointers[row];
-      maxID = this->rowPointers[row + 1];
-
-      Real result = 0.0;
-
-      idxMtx = minID + inGroupID;
-      while (idxMtx < maxID) {
-         column = this->columnIndexes[idxMtx];
-         if (column >= this->getColumns())
-            break;
-
-         result += this->values[idxMtx] * inVector[column];
-         idxMtx += elemPerGroup;
+         outVector[i] = result; // Write result
       }
+   } else if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b10000000) {
+      /////////////////////////////////////* CSR VECTOR *//////////////
+      maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
+
+      for (i = minID + laneID; i < maxID; i += warpSize)
+         result += values[i] * inVector[columnIndexes[i]];
 
       /* Parallel reduction */
-      for (int i = elemPerGroup/2; i > 0; i /= 2)
-         result += __shfl_down_sync((unsigned)(warpSize - 1), result, i);
-      /* Write result */
-      if (inGroupID == 0) {
-         outVector[row] = result;
-      }
+      result += __shfl_down_sync(0xFFFFFFFF, result, 16);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+      if (laneID == 0) outVector[block.index[0]/* minRow */] = result; // Write result
+   } else {
+      /////////////////////////////////////* CSR VECTOR L */////////////
+      /* Number of elements processed by previous warps */
+      const Index offset = block.index[1]/* warpInRow */ * MAX_ELEM_PER_WARP;
+      to = minID + (block.index[1]/* warpInRow */ + 1) * MAX_ELEM_PER_WARP;
+      maxID = rowPointers[block.index[0]/* minRow */ + 1];
+      if (to > maxID) to = maxID;
+      for (i = minID + offset + laneID; i < to; i += warpSize)
+         result += values[i] * inVector[columnIndexes[i]];
+
+      /* Parallel reduction */
+      result += __shfl_down_sync(0xFFFFFFFF, result, 16);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+      result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+      if (laneID == 0) atomicAdd(&outVector[block.index[0]/* minRow */], result);
    }
 }
 
-/* template< typename Real,
-          typename Device,
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRScalar( const Real *inVector,
+                    Real* outVector,
+                    const Index* rowPointers,
+                    const Index* columnIndexes,
+                    const Real* values,
+                    const Index rows,
+                    const Index gridID) {
+   const Index row = (gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
+   if (row >= rows)
+      return;
+
+   Real result = 0.0;
+   const Index endID = rowPointers[row + 1];
+
+   for (Index i = rowPointers[row]; i < endID; ++i)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   outVector[row] = result;
+}
+
+template< typename Real,
           typename Index,
-          typename InVector,
           int warpSize >
 __global__
-void spmvCSRVectorHelper( const InVector& inVector,
-                          Real *out,
-                          size_t from,
-                          size_t to,
-                          size_t perWarp)
+void SpMVCSRMultiVector( const Real *inVector,
+                         Real* outVector,
+                         const Index* rowPointers,
+                         const Index* columnIndexes,
+                         const Real* values,
+                         const Index rows,
+                         const Index warps, // warps per row
+                         const Index gridID)
 {
-   const size_t index  = blockIdx.x * blockDim.x + threadIdx.x;
-   const size_t warpID = index / warpSize;
-   const size_t laneID = index % warpSize;
-   const size_t minID  = from + warpID * perWarp;
-   size_t maxID  = from + (warpID + 1) * perWarp;
-   if (minID >= to)  return;
-   if (maxID >= to ) maxID = to;
-   
-   Real result = 0.0;
-   for (IndexType i = minID + laneID; i < maxID; i += warpSize) {
-      const IndexType column = this->columnIndexes[i];
-      if (column >= this->getColumns())
-            continue;
-      result += this->values[i] * inVector[column];
-   }
-   atomicAdd(out, result);
-} */
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          CSRKernel KernelType >
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-__device__
-void CSR< Real, Device, Index, KernelType >::spmvCSRAdaptive( const InVector& inVector,
-                                                      OutVector& outVector,
-                                                      int gridIdx,
-                                                      int *blocks,
-                                                      size_t blocks_size) const
-{
-   /* Configuration ---------------------------------------------------*/
-   constexpr size_t SHARED = 49152/sizeof(float);
-   constexpr size_t SHARED_PER_WARP = SHARED / warpSize;
-   constexpr size_t MAX_PER_WARP = 65536;
-   //constexpr size_t ELEMENTS_PER_WARP = 1024;
-   //constexpr size_t THREADS_PER_BLOCK = 1024;
-   //constexpr size_t WARPS_PER_BLOCK = THREADS_PER_BLOCK / warpSize;
-   //--------------------------------------------------------------------
-   const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
-   const IndexType laneID = index % warpSize;
-   IndexType blockIdx = index / warpSize;
-   __shared__ float shared_res[SHARED];
-   Real result = 0.0;
-   if (blockIdx >= blocks_size - 1)
+   const Index warpID =
+      ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / warpSize;
+   const Index rowID = warpID / warps;
+   if (rowID >= rows)
       return;
-   const IndexType minRow = blocks[blockIdx];
-   const IndexType maxRow = blocks[blockIdx + 1];
-   const IndexType minID = this->rowPointers[minRow];
-   const IndexType maxID = this->rowPointers[maxRow];
-   const IndexType elements = maxID - minID;
-   /* rows per block more than 1 */
-   if ((maxRow - minRow) > 1) {
-      /////////////////////////////////////* CSR STREAM *//////////////
-      /* Copy and calculate elements from global to shared memory, coalesced */
-      const IndexType offset = threadIdx.x / warpSize * SHARED_PER_WARP;
-      for (IndexType i = laneID; i < elements; i += warpSize) {
-         const IndexType elementIdx = i + minID;
-         const IndexType column = this->columnIndexes[elementIdx];
-         if (column >= this->getColumns())
-            continue;
-         shared_res[i + offset] = this->values[elementIdx] * inVector[column];
-      }
 
-      const IndexType row = minRow + laneID;
-      if (row >= maxRow)
-         return;
-      /* Calculate result */
-      const IndexType to = this->rowPointers[row + 1] - minID;
-      for (IndexType i = this->rowPointers[row] - minID; i < to; ++i) {
-         result += shared_res[i + offset];
-      }
-      outVector[row] = result; // Write result
-   } else if (elements <= MAX_PER_WARP) {
-      /////////////////////////////////////* CSR VECTOR *//////////////
-      for (IndexType i = minID + laneID; i < maxID; i += warpSize) {
-         IndexType column = this->columnIndexes[i];
-         if (column >= this->getColumns())
-            break;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Index offset = warps * warpSize;
 
-         result += this->values[i] * inVector[column];
-      }
-      /* Reduction */
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 16);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 8);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 4);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 2);
-      result += __shfl_down_sync((unsigned)(warpSize - 1), result, 1);
-      if (laneID == 0) outVector[minRow] = result; // Write result
-   } else {
-      /////////////////////////////////////* CSR VECTOR LONG *//////////////
-      //const size_t warps = (elements - ELEMENTS_PER_WARP) / ELEMENTS_PER_WARP + 1;
-      //const size_t blocks = warps <= WARPS_PER_BLOCK ? 1 : warps / WARPS_PER_BLOCK + 1;
-      //const size_t threads_per_block = blocks == 1 ? warps * warpSize : WARPS_PER_BLOCK * warpSize;
-      // spmvCSRVectorHelper<InVector, warpSize> <<<blocks, threads_per_block>>>(
-      //             inVector,
-      //             &outVector[minRow],
-      //             (size_t)(minID + ELEMENTS_PER_WARP),
-      //             (size_t)maxID,
-      //             (size_t)ELEMENTS_PER_WARP
-      // );
+   Real result = 0.0;
+   Index endID = rowPointers[rowID + 1];
+   /* Calculate result */
+   for (Index i = rowPointers[rowID] + (warpID % warps) * warpSize + laneID;
+            i < endID; i += offset) {
+      result += values[i] * inVector[columnIndexes[i]];
    }
-}
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          CSRKernel KernelType >
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-__device__
-void CSR< Real, Device, Index, KernelType >::spmvCudaVectorized( const InVector& inVector,
-                                                              OutVector& outVector,
-                                                              const IndexType gridIdx ) const
-{
-   IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType warpStart = warpSize * ( globalIdx / warpSize );
-   const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
-   const IndexType inWarpIdx = globalIdx % warpSize;
-
-   volatile Real* aux = Cuda::getSharedMemory< Real >();
-   for( IndexType row = warpStart; row < warpEnd; row++ )
-   {
-      aux[ threadIdx.x ] = 0.0;
-
-      IndexType elementPtr = this->rowPointers[ row ] + inWarpIdx;
-      const IndexType rowEnd = this->rowPointers[ row + 1 ];
-      IndexType column;
-      while( elementPtr < rowEnd &&
-             ( column = this->columnIndexes[ elementPtr ] ) < this->getColumns() )
-      {
-         aux[ threadIdx.x ] += inVector[ column ] * this->values[ elementPtr ];
-         elementPtr += warpSize;
-      }
-      if( warpSize == 32 )
-         if( inWarpIdx < 16 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 16 ];
-      if( warpSize >= 16 )
-         if( inWarpIdx < 8 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 8 ];
-      if( warpSize >= 8 )
-         if( inWarpIdx < 4 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 4 ];
-      if( warpSize >= 4 )
-         if( inWarpIdx < 2 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 2 ];
-      if( warpSize >= 2 )
-         if( inWarpIdx < 1 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 1 ];
-      if( inWarpIdx == 0 )
-         outVector[ row ] = aux[ threadIdx.x ];
-   }
+   /* Reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 16);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+   /* Write result */
+   if (laneID == 0) atomicAdd(&outVector[rowID], result);
 }
 
 template< typename Real,
-          typename Device,
           typename Index,
-          CSRKernel KernelType >
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-__device__
-void CSR< Real, Device, Index, KernelType >::vectorProductCuda( const InVector& inVector,
-                                                             OutVector& outVector,
-                                                             int gridIdx,
-                                                             int *blocks, size_t size ) const
+          int warpSize >
+__global__
+void SpMVCSRVector( const Real *inVector,
+                    Real* outVector,
+                    const Index* rowPointers,
+                    const Index* columnIndexes,
+                    const Real* values,
+                    const Index rows,
+                    const Index gridID)
 {
-   switch( KernelType )
-   {
-      case CSRScalar:
-         // TODO:
-         break;
-      case CSRVector:
-         spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
-         break;
-      case CSRLight:
-         spmvCudaLightSpmv< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
-         break;
-      case CSRAdaptive:
-         spmvCSRAdaptive< InVector, OutVector, warpSize >( inVector, outVector, gridIdx, blocks, size );
-         break;
-      case CSRStream:
-         // TODO:
-         break;
+   const Index warpID = ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / warpSize;
+   if (warpID >= rows)
+      return;
+
+   Real result = 0.0;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   Index endID = rowPointers[warpID + 1];
+
+   /* Calculate result */
+   for (Index i = rowPointers[warpID] + laneID; i < endID; i += warpSize)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   /* Reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 16);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+   /* Write result */
+   if (laneID == 0) outVector[warpID] = result;
+}
+
+template< typename Real,
+          typename Index,
+          int groupSize,
+          int MAX_NUM_VECTORS_PER_BLOCK >
+__global__
+void SpMVCSRLight( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   unsigned *rowCnt) {
+   Real sum;
+   Index row, i, rowStart, rowEnd;
+   const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
+   const Index vectorId = threadIdx.x / groupSize; /*vector index in the thread block*/
+   const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
+   const Index warpVectorId = warpLaneId / groupSize;	/*vector index in the warp*/
+
+   __shared__ volatile Index space[MAX_NUM_VECTORS_PER_BLOCK][2];
+
+   /*get the row index*/
+   if (warpLaneId == 0) {
+      row = atomicAdd(rowCnt, 32 / groupSize);
    }
+   /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
+   row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
+   /*check the row range*/
+   while (row < rows) {
 
-   /*IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const IndexType warpStart = warpSize * ( globalIdx / warpSize );
-   const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
-   const IndexType inWarpIdx = globalIdx % warpSize;
-
-   if( this->getCudaKernelType() == vector )
+      /*use two threads to fetch the row offset*/
+      if (laneId < 2)
+         space[vectorId][laneId] = rowPointers[row + laneId];
       
+      rowStart = space[vectorId][0];
+      rowEnd = space[vectorId][1];
 
-   /////
-   // Hybrid mode
-   //
-   const Index firstRow = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
-   const IndexType lastRow = min( this->getRows(), firstRow + blockDim. x );
-   const IndexType nonzerosPerRow = ( this->rowPointers[ lastRow ] - this->rowPointers[ firstRow ] ) /
-                                    ( lastRow - firstRow );
+      /*there are non-zero elements in the current row*/
+      sum = 0;
+      /*compute dot product*/
+      if (groupSize == 32) {
 
-   if( nonzerosPerRow < this->getHybridModeSplit() )
-   {
-      /////
-      // Use the scalar mode
-      //
-      if( globalIdx < this->getRows() )
-          outVector[ globalIdx ] = this->rowVectorProduct( globalIdx, inVector );
-   }
-   else
-   {
-      ////
-      // Use the vector mode
-      //
-      spmvCudaVectorized< InVector, OutVector, warpSize >( inVector, outVector, warpStart, warpEnd, inWarpIdx );
-   }*/
+         /*ensure aligned memory access*/
+         i = rowStart - (rowStart & (groupSize - 1)) + laneId;
+
+         /*process the unaligned part*/
+         if (i >= rowStart && i < rowEnd)
+            sum += values[i] * inVector[columnIndexes[i]];
+
+         /*process the aligned part*/
+         for (i += groupSize; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      } else {
+         /*regardless of the global memory access alignment*/
+         for (i = rowStart + laneId; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      }
+      /*intra-vector reduction*/
+      for (i = groupSize >> 1; i > 0; i >>= 1)
+         sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+      /*save the results and get a new row*/
+      if (laneId == 0)
+         outVector[row] = sum;
+
+      /*get a new row index*/
+      if(warpLaneId == 0)
+         row = atomicAdd(rowCnt, 32 / groupSize);
+      
+      /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
+      row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+	}/*while*/
 }
+
+/* Original CSR Light without shared memory */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight2( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   unsigned *rowCnt) {
+   Real sum;
+   Index i, rowStart, rowEnd, row;
+   const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
+   const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
+   const Index warpVectorId = warpLaneId / groupSize;	/*vector index in the warp*/
+
+   /*get the row index*/
+   if (warpLaneId == 0)
+      row = atomicAdd(rowCnt, 32 / groupSize);
+   
+   /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
+   row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+   /*check the row range*/
+   while (row < rows) {
+
+      rowStart = rowPointers[row];
+      rowEnd = rowPointers[row + 1];
+
+      /*there are non-zero elements in the current row*/
+      sum = 0;
+      /*compute dot product*/
+      if (groupSize == 32) {
+
+         /*ensure aligned memory access*/
+         i = rowStart - (rowStart & (groupSize - 1)) + laneId;
+
+         /*process the unaligned part*/
+         if (i >= rowStart && i < rowEnd)
+            sum += values[i] * inVector[columnIndexes[i]];
+
+         /*process the aligned part*/
+         for (i += groupSize; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      } else {
+         /*regardless of the global memory access alignment*/
+         for (i = rowStart + laneId; i < rowEnd; i += groupSize)
+            sum += values[i] * inVector[columnIndexes[i]];
+      }
+      /*intra-vector reduction*/
+      for (i = groupSize >> 1; i > 0; i >>= 1)
+         sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+      /*save the results and get a new row*/
+      if (laneId == 0)
+         outVector[row] = sum;
+
+      /*get a new row index*/
+      if(warpLaneId == 0)
+         row = atomicAdd(rowCnt, 32 / groupSize);
+      
+      /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
+      row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+	}/*while*/
+}
+
+/* Original CSR Light without shared memory and allign memory access */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight3( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   unsigned *rowCnt) {
+   Real sum;
+   Index i, rowEnd, row;
+   const Index laneId = threadIdx.x % groupSize; /*lane index in the vector*/
+   const Index warpLaneId = threadIdx.x & 31;	/*lane index in the warp*/
+   const Index warpVectorId = warpLaneId / groupSize;	/*vector index in the warp*/
+
+   /*get the row index*/
+   if (warpLaneId == 0)
+      row = atomicAdd(rowCnt, 32 / groupSize);
+   
+   /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
+   row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+   /*check the row range*/
+   while (row < rows) {
+      sum = 0;
+      
+      /*compute dot product*/
+      rowEnd = rowPointers[row + 1];
+      for (i = rowPointers[row] + laneId; i < rowEnd; i += groupSize)
+         sum += values[i] * inVector[columnIndexes[i]];
+
+      /*intra-vector reduction*/
+      for (i = groupSize >> 1; i > 0; i >>= 1)
+         sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+      /*save the results and get a new row*/
+      if (laneId == 0)
+         outVector[row] = sum;
+
+      /*get a new row index*/
+      if(warpLaneId == 0)
+         row = atomicAdd(rowCnt, 32 / groupSize);
+
+      /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
+      row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
+
+	}/*while*/
+}
+
+/* Original CSR Light without shared memory, allign memory access and atomic instructions */
+template< typename Real,
+          typename Index,
+          int groupSize >
+__global__
+void SpMVCSRLight4( const Real *inVector,
+                   Real* outVector,
+                   const Index* rowPointers,
+                   const Index* columnIndexes,
+                   const Real* values,
+                   const Index rows,
+                   const Index gridID) {
+   const Index row = ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / groupSize;
+   if (row >= rows)
+      return;
+
+   Real sum = 0;
+   Index i;
+   const Index laneId = threadIdx.x & (groupSize - 1);	/*lane index in the group*/
+
+   /*compute dot product*/
+   const Index rowEnd = rowPointers[row + 1];
+   for (i = rowPointers[row] + laneId; i < rowEnd; i += groupSize)
+      sum += values[i] * inVector[columnIndexes[i]];
+
+   /*intra-vector reduction*/
+   for (i = groupSize >> 1; i > 0; i >>= 1)
+      sum += __shfl_down_sync(0xFFFFFFFF, sum, i);
+
+   /*save the results and get a new row*/
+   if (laneId == 0) outVector[row] = sum;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic2( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index gridID) {
+   const Index row =
+      ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / 2;
+   if (row >= rows)
+      return;
+
+   const Index inGroupID = threadIdx.x & 1; // & is cheaper than %
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (Index i = rowPointers[row] + inGroupID; i < maxID; i += 2)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic4( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index gridID) {
+   const Index row =
+      ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / 4;
+   if (row >= rows)
+      return;
+
+   const Index inGroupID = threadIdx.x & 3; // & is cheaper than %
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (Index i = rowPointers[row] + inGroupID; i < maxID; i += 4)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic8( const Real *inVector,
+                                 Real* outVector,
+                                 const Index* rowPointers,
+                                 const Index* columnIndexes,
+                                 const Real* values,
+                                 const Index rows,
+                                 const Index gridID) {
+   const Index row =
+      ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / 8;
+   if (row >= rows)
+      return;
+
+   Index i;
+   const Index inGroupID = threadIdx.x & 7; // & is cheaper than %
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (i = rowPointers[row] + inGroupID; i < maxID; i += 8)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index>
+__global__
+void SpMVCSRLightWithoutAtomic16( const Real *inVector,
+                                  Real* outVector,
+                                  const Index* rowPointers,
+                                  const Index* columnIndexes,
+                                  const Real* values,
+                                  const Index rows,
+                                  const Index gridID) {
+   const Index row =
+      ((gridID * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x) / 16;
+   if (row >= rows)
+      return;
+
+
+   Index i;
+   const Index inGroupID = threadIdx.x & 15; // & is cheaper than %
+   const Index maxID = rowPointers[row + 1];
+
+   Real result = 0.0;
+   for (i = rowPointers[row] + inGroupID; i < maxID; i += 16)
+      result += values[i] * inVector[columnIndexes[i]];
+
+   /* Parallel reduction */
+   result += __shfl_down_sync(0xFFFFFFFF, result, 8);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 4);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 2);
+   result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+   /* Write result */
+   if (inGroupID == 0) outVector[row] = result;
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType>
+void SpMVCSRScalarPrepare( const Real *inVector,
+                           Real* outVector,
+                           const CSR< Real, Device, Index, KernelType >& matrix) {
+   const Index threads = matrix.THREADS_SCALAR; // block size
+   size_t neededThreads = matrix.getRowPointers().getSize() - 1;
+   Index blocks;
+   /* Execute kernels on device */
+   for (Index grid = 0; neededThreads != 0; ++grid) {
+      if (MAX_X_DIM * threads >= neededThreads) {
+         blocks = roundUpDivision(neededThreads, threads);
+         neededThreads = 0;
+      } else {
+         blocks = MAX_X_DIM;
+         neededThreads -= MAX_X_DIM * threads;
+      }
+
+      SpMVCSRScalar<Real, Index><<<blocks, threads>>>(
+               inVector,
+               outVector,
+               matrix.getRowPointers().getData(),
+               matrix.getColumnIndexes().getData(),
+               matrix.getValues().getData(),
+               matrix.getRowPointers().getSize() - 1,
+               grid
+      );
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType,
+          int warpSize >
+void SpMVCSRVectorPrepare( const Real *inVector,
+                           Real* outVector,
+                           const CSR< Real, Device, Index, KernelType >& matrix) {
+   const Index threads = matrix.THREADS_VECTOR; // block size
+   size_t neededThreads = matrix.getRowPointers().getSize() * warpSize;
+   Index blocks;
+   /* Execute kernels on device */
+   for (Index grid = 0; neededThreads != 0; ++grid) {
+      if (MAX_X_DIM * threads >= neededThreads) {
+         blocks = roundUpDivision(neededThreads, threads);
+         neededThreads = 0;
+      } else {
+         blocks = MAX_X_DIM;
+         neededThreads -= MAX_X_DIM * threads;
+      }
+
+      SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+               inVector,
+               outVector,
+               matrix.getRowPointers().getData(),
+               matrix.getColumnIndexes().getData(),
+               matrix.getValues().getData(),
+               matrix.getRowPointers().getSize() - 1,
+               grid
+      );
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType,
+          int warpSize >
+void SpMVCSRLightPrepare( const Real *inVector,
+                          Real* outVector,
+                          const CSR< Real, Device, Index, KernelType >& matrix) {
+   const Index threads = 1024; // max block size
+   const Index rows = matrix.getRowPointers().getSize() - 1;
+   /* Copy rowCnt to GPU */
+   unsigned rowCnt = 0;
+   unsigned *kernelRowCnt = nullptr;
+   cudaMalloc((void **)&kernelRowCnt, sizeof(*kernelRowCnt));
+   cudaMemcpy(kernelRowCnt, &rowCnt, sizeof(*kernelRowCnt), cudaMemcpyHostToDevice);
+   /* Get info about GPU */
+   cudaDeviceProp properties;
+   cudaGetDeviceProperties( &properties, Cuda::DeviceInfo::getActiveDevice() );
+   const Index blocks = 
+      properties.multiProcessorCount * properties.maxThreadsPerMultiProcessor / threads;
+
+   const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
+   if (KernelType == CSRLight) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight<Real, Index, 2, 1024 / 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight<Real, Index, 4, 1024 / 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight<Real, Index, 8, 1024 / 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight<Real, Index, 32, 1024 / 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight2) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight2<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight2<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight2<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight2<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight3) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight3<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight3<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 64)
+         SpMVCSRLight3<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight3<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   } else if(KernelType == CSRLight6) { //-----------------------------------------
+      if (nnz <= 2)
+         SpMVCSRLight3<Real, Index, 2><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 4)
+         SpMVCSRLight3<Real, Index, 4><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 8)
+         SpMVCSRLight3<Real, Index, 8><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else if (nnz <= 16)
+         SpMVCSRLight3<Real, Index, 16><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+      else
+         SpMVCSRLight3<Real, Index, 32><<<blocks, threads>>>(
+            inVector, outVector, matrix.getRowPointers().getData(),
+            matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+            rows, kernelRowCnt
+         );
+   }
+
+   cudaFree(kernelRowCnt);
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType,
+          int warpSize>
+void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
+                                       Real* outVector,
+                                       const CSR< Real, Device, Index, KernelType >& matrix) {
+   const Index rows = matrix.getRowPointers().getSize() - 1;
+   const Index threads = matrix.THREADS_LIGHT; // block size
+   size_t neededThreads = rows * warpSize;
+   Index blocks, groupSize;
+
+   const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
+   if (nnz <= 2)
+      groupSize = 2;
+   else if (nnz <= 4)
+      groupSize = 4;
+   else if (nnz <= 8)
+      groupSize = 8;
+   else if (nnz <= 16)
+      groupSize = 16;
+   else if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
+      groupSize = 32; // CSR Vector
+   else
+      groupSize = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
+
+   if (KernelType == CSRLightWithoutAtomic)
+      neededThreads = groupSize * rows;
+   else
+      neededThreads = rows * (groupSize > 32 ? 32 : groupSize);
+   
+   /* Execute kernels on device */
+   for (Index grid = 0; neededThreads != 0; ++grid) {
+      if (MAX_X_DIM * threads >= neededThreads) {
+         blocks = roundUpDivision(neededThreads, threads);
+         neededThreads = 0;
+      } else {
+         blocks = MAX_X_DIM;
+         neededThreads -= MAX_X_DIM * threads;
+      }
+
+      if (KernelType == CSRLightWithoutAtomic) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 32) { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // Execute CSR MultiVector
+            SpMVCSRMultiVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, groupSize / 32, grid
+            );
+         }
+      } else if (KernelType == CSRLight5) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLightWithoutAtomic2<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLightWithoutAtomic4<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLightWithoutAtomic8<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLightWithoutAtomic16<Real, Index><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         }
+      } else if (KernelType == CSRLight4) { //-----------------------------------------
+         if (groupSize == 2) {
+            SpMVCSRLight4<Real, Index, 2><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 4) {
+            SpMVCSRLight4<Real, Index, 4><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 8) {
+            SpMVCSRLight4<Real, Index, 8><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else if (groupSize == 16) {
+            SpMVCSRLight4<Real, Index, 16><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } else { // CSR SpMV Light with groupsize = 32 is CSR Vector
+            SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+                     inVector, outVector, matrix.getRowPointers().getData(),
+                     matrix.getColumnIndexes().getData(), matrix.getValues().getData(),
+                     rows, grid
+            );
+         } //-----------------------------------------
+      }
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType,
+          int warpSize>
+void SpMVCSRMultiVectorPrepare( const Real *inVector,
+                                Real* outVector,
+                                const CSR< Real, Device, Index, KernelType >& matrix) {
+   const Index rows = matrix.getRowPointers().getSize() - 1;
+   const Index threads = matrix.THREADS_VECTOR; // block size
+   Index blocks;
+
+   const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
+   const Index neededWarps = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP); // warps per row
+   size_t neededThreads = warpSize * neededWarps * rows;
+   /* Execute kernels on device */
+   for (Index grid = 0; neededThreads != 0; ++grid) {
+      if (MAX_X_DIM * threads >= neededThreads) {
+         blocks = roundUpDivision(neededThreads, threads);
+         neededThreads = 0;
+      } else {
+         blocks = MAX_X_DIM;
+         neededThreads -= MAX_X_DIM * threads;
+      }
+
+      if (neededWarps == 1) { // one warp per row -> execute CSR Vector
+         SpMVCSRVector<Real, Index, warpSize><<<blocks, threads>>>(
+               inVector,
+               outVector,
+               matrix.getRowPointers().getData(),
+               matrix.getColumnIndexes().getData(),
+               matrix.getValues().getData(),
+               rows,
+               grid
+         );
+      } else {
+         SpMVCSRMultiVector<Real, Index, warpSize><<<blocks, threads>>>(
+                  inVector,
+                  outVector,
+                  matrix.getRowPointers().getData(),
+                  matrix.getColumnIndexes().getData(),
+                  matrix.getValues().getData(),
+                  rows,
+                  neededWarps,
+                  grid
+         );
+      }
+   }
+}
+
+template< typename Real,
+          typename Index,
+          typename Device,
+          CSRKernel KernelType,
+          int warpSize>
+void SpMVCSRAdaptivePrepare( const Real *inVector,
+                             Real* outVector,
+                             const CSR< Real, Device, Index, KernelType >& matrix) {
+   Index blocks;
+   const Index threads = matrix.THREADS_ADAPTIVE;
+
+   /* Fill blocks */
+   size_t neededThreads = matrix.blocks.getSize() * warpSize; // one warp per block
+   /* Execute kernels on device */
+   for (Index grid = 0; neededThreads != 0; ++grid) {
+      if (MAX_X_DIM * threads >= neededThreads) {
+         blocks = roundUpDivision(neededThreads, threads);
+         neededThreads = 0;
+      } else {
+         blocks = MAX_X_DIM;
+         neededThreads -= MAX_X_DIM * threads;
+      }
+
+      SpMVCSRAdaptive< Real, Index, warpSize, 
+            matrix.WARPS,
+            matrix.SHARED_PER_WARP, 
+            matrix.MAX_ELEMENTS_PER_WARP >
+         <<<blocks, threads>>>(
+               inVector,
+               outVector,
+               matrix.getRowPointers().getData(),
+               matrix.getColumnIndexes().getData(),
+               matrix.getValues().getData(),
+               matrix.blocks.getData(),
+               matrix.blocks.getSize() - 1, // last block shouldn't be used
+               grid
+      );
+   }
+}
+
 #endif
 
 template<>
@@ -1036,121 +1800,6 @@ class CSRDeviceDependentCode< Devices::Host >
       }
 
 };
-
-#ifdef HAVE_CUDA
-template< typename Real,
-          typename Index,
-          CSRKernel KernelType,
-          typename InVector,
-          typename OutVector,
-          int warpSize >
-__global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Index, KernelType >* matrix,
-                                                     const InVector* inVector,
-                                                     OutVector* outVector,
-                                                     int gridIdx,
-                                                     int *blocks, size_t size)
-{
-   typedef CSR< Real, Devices::Cuda, Index > Matrix;
-   static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( KernelType == CSRScalar )
-   {
-      if( rowIdx < matrix->getRows() )
-         ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
-   }
-   else
-   {
-      matrix->template vectorProductCuda< InVector, OutVector, warpSize >
-                                        ( *inVector, *outVector, gridIdx, blocks, size );
-   }
-}
-#endif
-
-template< typename Real,
-          typename Index,
-          CSRKernel KernelType,
-          typename InVector,
-          typename OutVector >
-void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index, KernelType >& matrix,
-                                    const InVector& inVector,
-                                    OutVector& outVector,
-                                    int *blocks,
-                                    size_t size )
-{
-#ifdef HAVE_CUDA
-   typedef CSR< Real, Devices::Cuda, Index, KernelType > Matrix;
-   typedef typename Matrix::IndexType IndexType;
-   Matrix* kernel_this = Cuda::passToDevice( matrix );
-   InVector* kernel_inVector = Cuda::passToDevice( inVector );
-   OutVector* kernel_outVector = Cuda::passToDevice( outVector );
-   int *kernelBlocks;
-   cudaMalloc((void **)&kernelBlocks, sizeof(int) * size);
-   cudaMemcpy(kernelBlocks, blocks, size * sizeof(int), cudaMemcpyHostToDevice);
-
-   TNL_CHECK_CUDA_DEVICE;
-   dim3 cudaBlockSize( 256 );
-   //dim3 cudaGridSize( Cuda::getMaxGridSize() );
-   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
-   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-   {
-      //if( gridIdx == cudaGrids - 1 )
-      //   cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-      //const int sharedMemory = cudaBlockSize.x * sizeof( Real );
-      //const int threads = cudaBlockSize.x;
-      if( matrix.getCudaWarpSize() == 32 ) {
-         // printf("BL %d BLSIZE %d\n", (int)cudaBlocks, (int)threads);
-         CSRVectorProductCudaKernel< Real, Index, KernelType, InVector, OutVector, 32 >
-                                            <<< 2, 1024 >>>
-                                            ( kernel_this,
-                                              kernel_inVector,
-                                              kernel_outVector,
-                                              gridIdx, kernelBlocks, size );
-      }
-      // if( matrix.getCudaWarpSize() == 16 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 16 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 8 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 8 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 4 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 4 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 2 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 2 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-      // if( matrix.getCudaWarpSize() == 1 )
-      //    CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 1 >
-      //                                       <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-      //                                       ( kernel_this,
-      //                                         kernel_inVector,
-      //                                         kernel_outVector,
-      //                                         gridIdx, kernelBlocks, size );
-
-   }
-   TNL_CHECK_CUDA_DEVICE;
-   Cuda::freeFromDevice( kernel_this );
-   Cuda::freeFromDevice( kernel_inVector );
-   Cuda::freeFromDevice( kernel_outVector );
-   TNL_CHECK_CUDA_DEVICE;
-#endif
-}
 
 
 #ifdef HAVE_CUSPARSE
@@ -1260,6 +1909,7 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE
          tnlCusparseCSRWrapper< Real, Index >::vectorProduct( matrix.getRows(),
                                                               matrix.getColumns(),
@@ -1270,39 +1920,47 @@ class CSRDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         constexpr int SHARED = 49152/sizeof(float);
-         constexpr int SHARED_PER_WARP = SHARED / 32;
-         std::vector<int> inBlock;
-         inBlock.push_back(0);
-         size_t sum = 0;
-         Index i;
-         int prev_i = 0;
-         for (i = 1; i < matrix.getRowPointers().getSize() - 1; ++i) {
-            size_t elements = matrix.getRowPointers().getElement(i) -
-                                 matrix.getRowPointers().getElement(i - 1);
-            sum += elements;
-            if (sum > SHARED_PER_WARP) {
-               if (i - prev_i == 1) {
-                  inBlock.push_back(i);
-               } else {
-                  inBlock.push_back(i - 1);
-                  --i;
-               }
-               sum = 0;
-               prev_i = i;
-               continue;
-            }
-            if (i - prev_i == 32) {
-               inBlock.push_back(i);
-               prev_i = i;
-               sum = 0;
-            }
+         switch(KernelType)
+         {
+            case CSRScalar:
+               SpMVCSRScalarPrepare<Real, Index, Device, KernelType>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
+            case CSRVector:
+               SpMVCSRVectorPrepare<Real, Index, Device, KernelType, 32>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
+            case CSRLight:
+            case CSRLight2:
+            case CSRLight3:
+            case CSRLight6:
+               SpMVCSRLightPrepare<Real, Index, Device, KernelType, 32>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
+            case CSRAdaptive:
+               SpMVCSRAdaptivePrepare<Real, Index, Device, KernelType, 32>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
+            case CSRMultiVector:
+               SpMVCSRMultiVectorPrepare<Real, Index, Device, KernelType, 32>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
+            case CSRLight4:
+            case CSRLight5:
+            case CSRLightWithoutAtomic:
+               SpMVCSRLightWithoutAtomicPrepare<Real, Index, Device, KernelType, 32>(
+                  inVector.getData(), outVector.getData(), matrix
+               );
+               break;
          }
-         inBlock.push_back(matrix.getRowPointers().getSize() - 1);
-         CSRVectorProductCuda( matrix, inVector, outVector, inBlock.data(), inBlock.size() );
+#endif /* HAVE_CUDA */
 #endif
       }
-
 };
 
 } //namespace Legacy

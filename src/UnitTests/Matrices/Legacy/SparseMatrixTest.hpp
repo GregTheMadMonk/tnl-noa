@@ -15,9 +15,9 @@
 #include <iostream>
 
 // Temporary, until test_OperatorEquals doesn't work for all formats.
-#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
 #include <TNL/Matrices/Legacy/AdEllpack.h>
-#include <TNL/Matrices/Legacy/BiEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
@@ -1386,88 +1386,82 @@ void test_VectorProductLarger()
 }
 
 template< typename Matrix >
-void test_VectorProductGiant()
+void test_VectorProductCSRAdaptive()
 {
-  using RealType = typename Matrix::RealType;
-  using DeviceType = typename Matrix::DeviceType;
-  using IndexType = typename Matrix::IndexType;
-    
-  IndexType m_rows = 100;
-  IndexType m_cols = 100;
-  
-  Matrix m;
-  m.reset();
-  m.setDimensions( m_rows, m_cols );
-  typename Matrix::CompressedRowLengthsVector rowLengths(
-     {
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-        100, 100, 100, 100, 100, 100, 100, 100, 100, 100
-     }
-  );
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
-  m.setCompressedRowLengths( rowLengths );
-  
-  for (int i = 0; i < m_rows; ++i)
-     for (int j = 0; j < m_cols; ++j) 
-         m.setElement( i, j, i + 1 );
+   IndexType m_rows = 100;
+   IndexType m_cols = 100;
+   //----------------- Test CSR Stream part ------------------
+   Matrix m;
+   m.setDimensions( m_rows, m_cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths( 100, 100 );
 
-  using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-  
-  VectorType inVector;
-  inVector.setSize( m_rows );
-  for( IndexType i = 0; i < inVector.getSize(); ++i )        
-      inVector.setElement( i, 1 );
+   if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
+   {
+      typedef typename Matrix::template Self< RealType, TNL::Devices::Host, IndexType > HostMatrixType;
+      typename HostMatrixType::CompressedRowLengthsVector rowLengths( 100, 100 );
+      HostMatrixType hostMatrix;
+      hostMatrix.setDimensions( m_rows, m_cols );
+      hostMatrix.setCompressedRowLengths( rowLengths );
+      for (int i = 0; i < m_rows; ++i)
+         for (int j = 0; j < m_cols; ++j) 
+            hostMatrix.setElement( i, j, i + 1 );
+      m = hostMatrix;
+   }
+   else
+   {
+      m.setCompressedRowLengths( rowLengths );
+      for (int i = 0; i < m_rows; ++i)
+         for (int j = 0; j < m_cols; ++j) 
+            m.setElement( i, j, i + 1 );
+   }
 
-  VectorType outVector;  
-  outVector.setSize( m_rows );
-  for( IndexType i = 0; i < outVector.getSize(); ++i )
-      outVector.setElement( i, 0 );
 
-  m.vectorProduct( inVector, outVector);
+   VectorType inVector( m_rows, 1.0 );
+   VectorType outVector( m_rows, 0.0 );
+   m.vectorProduct( inVector, outVector);
 
-  for (int i = 0; i < m_rows; ++i)
+   for (int i = 0; i < m_rows; ++i)
    EXPECT_EQ( outVector.getElement( i ), (i + 1) * 100 );
 
-   //-----------------------------------------------------
+   //----------------- Test CSR Vector L part ------------------
 
-  m_rows = 2;
-  m_cols = 1000;
-  
-  m.reset();
-  m.setDimensions( m_rows, m_cols );
-  typename Matrix::CompressedRowLengthsVector rowLengths2(
-     {
-        1000, 1000
-     }
-  );
+   m_rows = 1;
+   // if less than 'max elements per block to start CSR Dynamic Vector' tests CSR Vector part
+   m_cols = 3000;
 
-  m.setCompressedRowLengths( rowLengths2 );
-  
-  for (int i = 0; i < m_rows; ++i)
-     for (int j = 0; j < m_cols; ++j) 
-         m.setElement( i, j, i + 1 );
+   m.reset();
+   m.setDimensions( m_rows, m_cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths2({m_cols});
 
-  VectorType inVector2;
-  inVector2.setSize( m_cols );
-  for( IndexType i = 0; i < inVector2.getSize(); i++ )
-      inVector2.setElement( i, 1 );
+   if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
+   {
+      typedef typename Matrix::template Self< RealType, TNL::Devices::Host, IndexType > HostMatrixType;
+      typename HostMatrixType::CompressedRowLengthsVector rowLengths( {m_cols} );
+      HostMatrixType hostMatrix;
+      hostMatrix.setDimensions( m_rows, m_cols );
+      hostMatrix.setCompressedRowLengths( rowLengths );
+      for( int i = 0; i < m_cols; ++i )
+         hostMatrix.setElement( 0, i, i );
+      m = hostMatrix;
+   }
+   else
+   {
+      m.setCompressedRowLengths( rowLengths2 );
+      for (int i = 0; i < m_cols; ++i) 
+         m.setElement( 0, i, i );
+   }
 
-  VectorType outVector2;  
-  outVector2.setSize( m_rows );
-  for( IndexType i = 0; i < outVector2.getSize(); ++i )
-      outVector2.setElement( i, 0 );
-  m.vectorProduct( inVector2, outVector2);
+   VectorType inVector2( m_cols, 2.0 );
 
-  for (int i = 0; i < m_rows; ++i)
-   EXPECT_EQ( outVector2.getElement( i ), (i + 1) * 1000 );
+   VectorType outVector2( m_rows, 0.0 );
+
+   m.vectorProduct(inVector2, outVector2);
+   EXPECT_EQ( outVector2.getElement( 0 ), 8997000 );
 }
 
 template< typename Matrix >
