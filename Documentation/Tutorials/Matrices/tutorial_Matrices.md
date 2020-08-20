@@ -1,86 +1,144 @@
-\page tutorial_Pointers  Cross-device pointers tutorial
+\page tutorial_Matrices  Matrices tutorial
 
 ## Introduction
 
-Smart pointers in TNL are motivated by the smart pointers in the STL library. In addition, they can manage image of the object they hold on different devices which is supposed to make objects offloading easier.
+TNL offers the following type of matrices:  dense matrices, sparse matrices, tridiagonal matrices, multidiagonal matrices and lambda matrices. The sparse matrices can be marked as symmetric to optimize memory requirements. The interfaces of given matrix types are designed to be as unified as possible to ensure that the user can easily switch between different matrix types while making no or only a little changes in the source code. All matrix types allows traversing all matrix elements and manipulate them using a lambda function as well as performing flexible reduction in matrix rows. The following text describes particular matrix types in details.
+
 
 ## Table of Contents
-1. [Unique pointers](#unique_pointers)
-2. [Shared pointers](#shared_pointers)
-3. [Device pointers](#device_pointers)
+1. [Dense matrices](#dense_matrices)
+2. [Sparse matrices](#sparse_matrices)
+3. [Tridiagonal matrices](#tridiagonal_matrices)
+4. [Multidiagonal matrices](#multidiagonal_matrices)
+5. [Lambda matrices](#lambda_matrices)
 
 
-## Unique pointers <a name="unique_pointers"></a>
+## Dense matrices <a name="dense_matrices"></a>
 
-Simillar to STL unique smart pointer `std::unique_ptr`, `UniquePointer` manages certain dynamicaly allocated object. The object is automatically deallocated when the pointer goes out of scope. The definition of `UniquePointer` reads as:
+Dense matrix is a templated class defined in namespace \ref TNL::Matrices. It has five template parameters:
 
-\include codeSnippetUniquePointer.cpp
+* `Real` is a type of the matrix elements. It is `double` by default.
+* `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Index` is a type to be used for indexing of the matrix elements. It `int` by default.
+* `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
+* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 
-It takes two template parameters:
+### Dense matrix allocation and initiation
 
-1. `Object` is a type of object managed by the pointer.
-2. `Device` is a device where the object is to be allocated.
+The following examples show how to allocate the dense matrix and how to initialize the matrix elements. Small matrices can be created simply by the constructor with an initializer list.
 
-If the device type is `Devices::Host`, `UniquePointer` behaves as usual unique smart pointer. See the following example:
+\include Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
 
-\include UniquePointerHostExample.cpp
+In fact, the constructor takes a list of initializer lists. Each embedded list defines one matrix row and so the number of matrix rows is given by the size of the outer initializer list.  The number of matrix columns is given by the longest inner initializer lists. Shorter inner lists are filled with zeros from the right side. The result looks as follows:
 
-The result is:
+\include DenseMatrixExample_Constructor_init_list.out
 
-\include UniquePointerHostExample.out
+Larger matrices can be set-up with methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement). The following example shows how to call these methods from the host.
+
+\include DenseMatrixExample_addElement.cpp
+
+As we can see, both methods can be called from the host no matter where the matrix is allocated. If it is on GPU, each call of `setElement` or `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) causes slow transfer of tha data between CPU and GPU. Use this approach only if the performance is not a priority for example for matrices which are set only once this way. The result looks as follows:
+
+\include DenseMatrixExample_addElement.out
+
+More efficient way of the matrix initialization on GPU consists in calling the methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) directly from GPU. It is demonstrated in the following example (of course it works even for CPU):
+
+\include DenseMatrixExample_setElement.cpp
+
+Here we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to make the matrix accessible in lambda functions even on GPU. We first call the `setElement` method from CPU to set the `i`-th diagonal element to `i`. Next we iterate over the matrix rows with `ParallelFor`and for each row we call a lambda function `f`. This is done on the same device where the matrix is allocated and so it is more efficient for matrices allocated on GPU. In the lambda function we just set the `i`-th diagonal element to `-i`. The result looks as follows:
+
+\include DenseMatrixExample_setElement.out
+
+If we want to set more matrix elements in each row, we can use inner for-loop in the lambda function `f`. This, however, is limiting the parallelization and it can be inefficient for larger matrices. The next example demonstrates a method `forRows` (\ref TNL::Matrices::DenseMatrix::forRows) which iterates over all matrix elements in parallel and it calls a lambda function defining an operation we want to do on the matrix elements.
+
+\include DenseMatrixExample_forRows.cpp
+
+Firstly note, that this is simpler since we do not need any `SharedPointer`. The lambda function `f` requires the following parameters:
+
+* `rowIdx` is the row index of given matrix element.
+* `columnIdx` is the column index of given matrix element.
+* `value` is a reference on the matrix element value and so by changing this value we can modify the matrix element.
+* `compute` is a boolean which, when set to `false`, indicates that we can skip the rest of the matrix row. This is, however, only a hint and it does not guarantee that the rest of the matrix row is really skipped.
+
+The result looks as follows:
+
+\include DenseMatrixExample_forRows.out
+
+### Flexible reduction in matrix rows
+
+Simillar operation to `forRows` is `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction) which performs given reduction in each matric row. For example, a matrix-vector product can be seen as a reduction of products of matrix elements and input vector in particular matrix rows. The first element of the result vector ios obtained as:
+
+\f[
+y_1 = a_{11} x_1 + a_{12} x_2 + \ldots + a_{1n} x_n = \sum_{j=1}^n a_{1j}x_j
+\f]
+
+and in general i-th element of the result vector is computed as
+
+\f[
+y_i = a_{i1} x_1 + a_{i2} x_2 + \ldots + a_{in} x_n = \sum_{j=1}^n a_{ij}x_j.
+\f]
+
+We see that in i-th matrix row we have to compute the sum \f$\sum_{j=1}^n a_{ij}x_j\f$ which is reduction of products \f$ a_{ij}x_j\f$. Similar to *flexible parallel reduction* (\ref TNL::Algorithms::Reduction) we just need to design proper lambda functions. See the following example:
 
 
-If the device is different, `Devices::Cuda` for example, the unique pointer creates an image of the object even in the host memory. It allows one to manipulate the object on the host. All smart pointers are registered in a special register using which they can be synchronised with the host images before calling a CUDA kernel - all at once. This means that all modified images of the objects in the host memory are transferred on the GPU. See the following example:
+\include DenseMatrixExample_rowsReduction_vectorProduct.cpp
 
-\include UniquePointerExample.cpp
-
+The `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]`. The reduction is just sum of results particular products and it is represented by by the lambda function `reduce`. Finaly, the lambda function `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.  
 The result looks as:
 
-\include UniquePointerExample.out
+\include DenseMatrixExample_rowsReduction_vectorProduct.out
 
-A disadventage of `UniquePointer` is that it cannot be passed to the CUDA kernel since it requires making a copy of itself. This is, however, from the nature of this object, prohibited. For this reason we have to derreference the pointer on the host. This is done by a method `getData`. Its template parameter tells what object image we want to dereference - the one on the host or the one on the device. When we passing the object on the device, we need to get the device image. The method `getData` returns constant reference on the object. Non-constant reference is accessible via a method `modifyData`. When this method is used to get the reference on the host image, the pointer is marked as **potentialy modified**. Note that we need to have non-const reference even when we need to change the data (array elements for example) but not the meta-data (array size for example). If meta-data do not change there is no need to synchronize the object image with the one on the device. To distinguish between these two situations, the smart pointer keeps one more object image which stores the meta-data state since the last synchronization. Before the device image is synchronised, the host image and the last-synchronization-state image are compared. If they do not change no synchronization is required. One can see that TNL cross-device smart pointers are really meant only for small objects, otherwise the smart pointers overhead might be significant.
+We will show one more example which is computation of maximal absolute value in each matrix row. The results will be stored in a vector:
 
-## Shared pointers <a name="shared_pointers"></a>
+\f[
+y_i = \max_{j=1,\ldots,n} |a_{ij}|.
+\f]
 
-One of the main goals of the TNL library is to make the development of the HPC code, including GPU kernels, as easy and efficient as possible. One way to do this is to profit from the object opriented programming even in CUDA kernels. Let us explain it on arrays. From certain point of view `Array` can be understood as an object consisting of data and metadata. Data part means elements that we insert into the array. Metadata is a pointer to the data but also size of the array. This information makes use of the class easier for example by checking array bounds when accessing the array elements. It is something that, when it is performed even in CUDA kernels, may help significantly with finding bugs in a code. To do this, we need to transfer not only pointers to the data but also complete metadata on the device. It is simple if the structure which is supposed to be transfered on the GPU does not have pointers to metadata. See the following example:
+See the following example:
+
+\include DenseMatrixExample_rowsReduction_maxNorm.cpp
 
 
-\include codeSnippetSharedPointer-1.cpp
+The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the varibale `value`. The `reduce` lambda function returns larger of given values and the lambda fuction 'keep' stores the results to the output vectro the same way as in the previous example. Of course, if we compute the maximum of all output vector elements we get some kined of max matrix norm. The output looks as:
 
-If the pointer `data` points to a memory on GPU, this array can be passed to a kernel like this:
+\include DenseMatrixExample_rowsReduction_maxNorm.out
 
-\include codeSnippetSharedPointer-2.cpp
+### Dense-matrix vector product
 
-The kernel `cudaKernel` can access the data as follows:
+One of the most important matrix operation is the matrix-vector multiplication. It is represented by a method `vectorProduct` (\ref TNL::Matrices::DenseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method accepts the following parameters:
 
-\include codeSnippetSharedPointer-3.cpp
+* `inVector` is the input vector having the same number of elements as the number of matrix columns.
+* `outVector` is the output vector having the same number of elements as the number of matrix rows.
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
+* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
+* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
 
-But what if we have an object like this:
+Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
 
-\include codeSnippetSharedPointer-4.cpp
+To summarize, this method computes the following formula:
 
-Assume that there is an instance of `ArrayTuple` lets say `tuple` containing pointers to instances `a1` and `a2` of `Array`. The instances must be allocated on the GPU if one wants to simply pass the `tuple` to the CUDA kernel. Indeed, the CUDA kernels needs the arrays `a1` and `a2` to be on the GPU. See the following example:
+`outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.`
 
-\include codeSnippetSharedPointer-5.cpp
+### Dense matrix IO
 
-See, that the kernel needs to dereference `tuple.a1` and `tuple.a2`. Therefore these pointers must point to the global memoty of the GPU which means that arrays `a1` and `a2` must be allocated there using [cudaMalloc](http://developer.download.nvidia.com/compute/cuda/2_3/toolkit/docs/online/group__CUDART__MEMORY_gc63ffd93e344b939d6399199d8b12fef.html) lets say. It means, however, that the arrays `a1` and `a2` cannot be managed (for example resizing them requires changing `a1->size` and `a2->size`) on the host system by the CPU. The only solution to this is to have images of `a1` and `a2` and in the host memory and to copy them on the GPU before calling the CUDA kernel. One must not forget to modify the pointers in the `tuple` to point to the array copies on the GPU. To simplify this, TNL offers *cross-device shared smart pointers*. In addition to common smart pointers thay can manage an images of an object on different devices. Note that [CUDA Unified Memory](https://devblogs.nvidia.com/unified-memory-cuda-beginners/) is an answer to this problem as well. TNL cross-device smart pointers can be more efficient in some situations. (TODO: Prove this with benchmark problem.)
+The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load). To print the matrix a method `print` (\ref TNL::Matrices::DenseMatrix::print) can be used.
 
-The previous example could be implemented in TNL as follows:
+### Dense matrix view
 
-\include SharedPointerExample.cpp
+Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrcioes::DenseMatrixView). We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
 
-The result looks as:
+\include DenseMatrixViewExample_setElement.cpp
 
-\include SharedPointerExample.out
+And the result is:
 
-One of the differences between `UniquePointer` and `SmartPointer` is that the `SmartPointer` can be passed to the CUDA kernel. Dereferencing by operators `*` and `->` can be done in kernels as well and the result is reference to a proper object image i.e. on the host or the device. When these operators are used on constant smart pointer, constant reference is returned which is the same as calling the method `getData` with appropriate explicitely stated `Device` template parameter. In case of non-constant `SharedPointer` non-constant reference is obtained. It has the same effect as calling `modifyData` method. On the host system, everything what was mentioned in the section about `UniquePointer` holds even for the `SharedPointer`. In addition, `modifyData` method call or non-constant dereferencing can be done in kernel on the device. In this case, the programmer gets non-constant reference to an object which is however meant to be used to change the data managed by the object but not the metadata. There is no way to synchronize objects managed by the smart pointers from the device to the host. **It means that the metadata should not be changed on the device!** In fact, it would not make sense. Imagine changing array size or re-allocating the array within a CUDA kernel. This is something one should never do.
+\include DenseMatrixViewExample_setElement.out
 
-## Device pointers <a name="device_pointers"></a>
 
-The last type of the smart pointer implemented in TNL is `DevicePointer`. It works the same way as `SharedPointer` but it does not create new object on the host system. `DevicePointer` is therefore useful in situation when there is already an object created in the host memory and we want to create its image even on the device. Both images are linked one with each other and so one can just manipulate the one on the host and then synchronize it on the device. The following listing is a modification of the previous example with tuple:
+## Sparse matrices <a name="sparse_matrices"></a>
 
-\include DevicePointerExample.cpp
+## Tridiagonal matrices <a name="tridiagonal_matrices"></a>
 
-The result looks the same:
+## Multidiagonal matrices <a name="multidiagonal_matrices"></a>
 
-\include DevicePointerExample.out
+## Lambda matrices <a name="lambda_matrices"></a>
