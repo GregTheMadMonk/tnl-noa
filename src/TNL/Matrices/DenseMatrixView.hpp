@@ -678,7 +678,8 @@ void DenseMatrixView< Real, Device, Index, Organization >::print( std::ostream& 
          str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << this->getElement( row, column );
          str << std::setw( 10 ) << str_.str();
       }
-      str << std::endl;
+      if( row < this->getRows() - 1 )
+         str << std::endl;
    }
 }
 
