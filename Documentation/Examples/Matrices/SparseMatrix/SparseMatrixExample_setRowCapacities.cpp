@@ -19,11 +19,11 @@ void setRowCapacitiesExample()
 
 int main( int argc, char* argv[] )
 {
-   std::cout << "Creating matrices on CPU ... " << std::endl;
+   std::cout << "Creating matrix on CPU ... " << std::endl;
    setRowCapacitiesExample< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
-   std::cout << "Creating matrices on CUDA GPU ... " << std::endl;
+   std::cout << "Creating matrix on CUDA GPU ... " << std::endl;
    setRowCapacitiesExample< TNL::Devices::Cuda >();
 #endif
 }

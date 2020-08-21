@@ -19,7 +19,7 @@ Dense matrix is a templated class defined in namespace \ref TNL::Matrices. It ha
 
 * `Real` is a type of the matrix elements. It is `double` by default.
 * `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
-* `Index` is a type to be used for indexing of the matrix elements. It `int` by default.
+* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
 * `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 
@@ -126,7 +126,11 @@ The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrice
 
 ### Dense matrix view
 
-Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrcioes::DenseMatrixView). We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
+Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrcioes::DenseMatrixView).
+
+TODO: Template parameters description
+
+We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
 
 \include DenseMatrixViewExample_setElement.cpp
 
@@ -134,10 +138,120 @@ And the result is:
 
 \include DenseMatrixViewExample_setElement.out
 
+The dense matrix view offers almost all methods which the dense matrix does. So it can be easily used at almost any situation the same way as the dense matrix itself.
+
+
+TODO: Using DenseMatrixView for data encapsulation
 
 ## Sparse matrices <a name="sparse_matrices"></a>
 
+[Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) arte extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possible some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. Consider just matrix having 50,000 rows and columns whih is 2,500,000,000 matrix elements. If we store each matrix element in double precision (it means eight bytes per element) we need 20,000,000,000 bytes which is nearly 20 GB of memory. If there are only five non-zero elements in each row we need only \f$8 \times 5 \times 50,000=2,000,000\f$ bytes and so nearly 200 MB. It is really great difference.
+
+Major disadventage of sparse matrices is that there are a lot of different formats for storing such matrices. Though [CSR - Compressed Sparse Row](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs there are many other formats which perform differently on various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing the sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template paramaters is as follows:
+
+
+* `Real` is type if the matrix elements. It is `double` by default.
+* `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
+* `MatrixType` tells if the matrix is symmetric (\ref TNL::Matrices::SymmetricMatrix) or general (\ref TNL::Matrices::GeneralMatrix). It is a \ref TNL::Matrices::GeneralMatrix by default.
+* `Segments` define the format of the sparse matrix. It can be (by default, it is \ref TNL::Algorithms::Segments::CSR):
+   * \ref TNL::Algorithms::Segments::CSR for [CSR format](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)).
+   * \ref TNL::Algorithms::Segments::Ellpack for [Ellpack format](http://mgarland.org/files/papers/nvr-2008-004.pdf).
+   * \ref TNL::Algorithms::Segments::SlicedEllpack for [SlicedEllpack format](https://link.springer.com/chapter/10.1007/978-3-642-11515-8_10) which was also presented as [Row-grouped CSR format](https://arxiv.org/abs/1012.2270).
+   * \ref TNL::Algorithms::Segments::ChunkedEllpack for [ChunkedEllpack format](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/12-heller-oberhuber-improved-rgcsr-format.pdf) which we reffered as Improved Row-grouped CSR and we renamed it to Ellpack format since it uses padding zeros.
+   * \ref TNL::Algorithms::Segments::BiEllpack for [BiEllpack format](https://www.sciencedirect.com/science/article/pii/S0743731514000458?casa_token=2phrEj0Ef1gAAAAA:Lgf6rMBUN6T7TJne6mAgI_CSUJ-jR8jz7Eghdv6L0SJeGm4jfso-x6Wh8zgERk3Si7nFtTAJngg).
+* `ComputeReal` is type which is used for internal computations. By default it is the same as `Real` if `Real` is not `bool`. If `Real` is `bool`, `ComputeReal` is set to `Index` type. This can be changed, of course, by the user.
+* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type – see TNL::Allocators::Default.
+* `IndexAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the column indexes of the matrix elements. By default, it is the default allocator for given `Index` type and `Device` type – see \ref TNL::Allocators::Default.
+
+If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.
+
+### Sparse matrix allocation and initiation
+
+Small matrices can be initialized by a constructor with initializer list. We assume having the follwong sparse matrix
+
+\f[
+\left(
+\begin{array}{ccccc}
+ 1 &  0 &  0 &  0 &  0 \\
+-1 &  2 & -1 &  0 &  0 \\
+ 0 & -1 &  2 & -1 &  0 \\
+ 0 &  0 & -1 &  2 & -1 \\
+ 0 &  0 &  0 & -1 &  0
+\end{array}
+\right).
+\f]
+
+The following example shows how to create it using the initializer list constructor:
+
+\include SparseMatrixExample_Constructor_init_list_2.cpp
+
+The constructor accepts the following parameters:
+
+* `rows` is a number of matrix rows.
+* `columns` is a number of matrix columns.
+* `data` is definition of non-zero matrix elements. It is a initializer list of triples having a form `{ row_index, column_index, value }`. In fact, it is very much like the coordinates format - [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)).
+
+The constructor also accepts `Real` and `Index` allocators (\ref TNL::Allocators) but their are not important for this example. The result looks as follows:
+
+\include SparseMatrixExample_Constructor_init_list_2.out
+
+Larger matrices are created in two steps:
+
+1. We use a method \ref TNL::Matrices::SparseMatrix::setRowCapacities to initialize the underlying matrix format and to allocate memory for the matrix elements. This method only needs to know how many non-zero elements are supposed to be in each row. Once this is set, it cannot be changed only by reseting the whole matrix. In most situations, this is not an issue to compute the number of non-zero elements in each row. Note, however, that we do not tell the positions of the non-zeto elements. If some matrix format needs this information it cannot be used with this implementation of the sparse matrix.
+2. The non-zero matrix elements can be set-up. We insert one non-zero element after another by telling its coordinates and a value. Since probably all sparse matrix formats are designed to allow quick acces to particular matrix rows, this insertion is usualy quite efficient and can by done in parallel by mapping different threads to different matrix rows.
+
+See the following example which creates lower triangular matrix like this one
+
+\f[
+\left(
+\begin{array}{ccccc}
+ 1 &  0 &  0 &  0 &  0 \\
+ 2 &  1 &  0 &  0 &  0 \\
+ 3 &  2 &  1 &  0 &  0 \\
+ 4 &  3 &  2 &  1 &  0 \\
+ 5 &  4 &  3 &  2 &  1
+\end{array}
+\right).
+\f]
+
+
+\include SparseMatrixExample_setRowCapacities.cpp
+
+The method \ref TNL::Matrices::SparseMatrix::setRowCapacities reads the required capacities of the matrix rows from a vector (or simmilar container - \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector and \ref TNL::Containers::VectorView) which has the same number of elements as the number of matrix rows and each element defines the capacity of the related row. The result looks as follows:
+
+\include SparseMatrixExample_setRowCapacities.out
+
+There are constructors which also set the row capacities, one uses a vector ...
+
+\include SparseMatrixExample_Constructor_rowCapacities_vector.cpp
+
+... the result looks as follows ...
+
+\include SparseMatrixExample_Constructor_rowCapacities_vector.out
+
+while the other uses an initializer list ...
+
+\include SparseMatrixExample_Constructor_init_list_1.cpp
+
+... the result looks as follows.
+
+\include SparseMatrixExample_Constructor_init_list_1.out.
+
+
+
+### Flexible reduction in matrix rows
+### Sparse-matrix vector product
+### Sparse matrix IO
+### Sparse matrix view
+
 ## Tridiagonal matrices <a name="tridiagonal_matrices"></a>
+
+### Dense matrix allocation and initiation
+### Flexible reduction in matrix rows
+### Dense-matrix vector product
+### Dense matrix IO
+### Dense matrix view
 
 ## Multidiagonal matrices <a name="multidiagonal_matrices"></a>
 

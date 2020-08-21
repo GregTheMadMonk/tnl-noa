@@ -9,6 +9,11 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_2.out
                        OUTPUT SparseMatrixExample_Constructor_init_list_2.out )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_rowCapacities_vector_cuda SparseMatrixExample_Constructor_rowCapacities_vector.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_rowCapacities_vector_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_rowCapacities_vector.out
+                       OUTPUT SparseMatrixExample_Constructor_rowCapacities_vector.out )
+
    CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_std_map_cuda SparseMatrixExample_Constructor_std_map.cu )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_std_map_cuda >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_std_map.out
@@ -150,6 +155,11 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_2.out
                        OUTPUT SparseMatrixExample_Constructor_init_list_2.out )
 
+   ADD_EXECUTABLE( SparseMatrixExample_Constructor_rowCapacities_vector SparseMatrixExample_Constructor_rowCapacities_vector.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_rowCapacities_vector >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_rowCapacities_vector.out
+                       OUTPUT SparseMatrixExample_Constructor_rowCapacities_vector.out )
+
    ADD_EXECUTABLE( SparseMatrixExample_Constructor_std_map SparseMatrixExample_Constructor_std_map.cpp )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_std_map >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_std_map.out
@@ -285,6 +295,7 @@ ENDIF()
 ADD_CUSTOM_TARGET( RunSparseMatricesExamples ALL DEPENDS
    SparseMatrixExample_Constructor_init_list_1.out
    SparseMatrixExample_Constructor_init_list_2.out
+   SparseMatrixExample_Constructor_rowCapacities_vector.out
    SparseMatrixExample_Constructor_std_map.out
    SparseMatrixExample_getSerializationType.out
    SparseMatrixExample_setRowCapacities.out
