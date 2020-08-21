@@ -41,9 +41,10 @@ template< typename Real,
           typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename Index_t, std::enable_if_t< std::is_integral< Index_t >::value, int > >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const IndexType rows,
-              const IndexType columns,
+SparseMatrix( const Index_t rows,
+              const Index_t columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
 : BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ),
@@ -69,6 +70,25 @@ SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
 : BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator )
 {
    this->setRowCapacities( RowsCapacitiesType( rowCapacities ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename RowCapacitiesVector, std::enable_if_t< TNL::IsArrayType< RowCapacitiesVector >::value, int > >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseMatrix( const RowCapacitiesVector& rowCapacities,
+              const IndexType columns,
+              const RealAllocatorType& realAllocator,
+              const IndexAllocatorType& indexAllocator )
+: BaseType( rowCapacities.getSize(), columns, realAllocator ), columnIndexes( indexAllocator )
+{
+   this->setRowCapacities( rowCapacities );
 }
 
 template< typename Real,
