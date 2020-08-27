@@ -115,8 +115,11 @@ public:
    static constexpr Index THREADS_VECTOR = 128;
    static constexpr Index THREADS_LIGHT = 128;
 
-   /* Max length of row to process one warp */
-   static constexpr Index MAX_ELEMENTS_PER_WARP = 1024;
+   /* Max length of row to process one warp for CSR Light, MultiVector */
+   static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
+
+   /* Max length of row to process one warp for CSR Adaptive */
+   static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = 512;
 
    /* How many shared memory use per block in CSR Adaptive kernel */
    static constexpr Index SHARED_PER_BLOCK = 24576;

@@ -143,7 +143,7 @@ Index findLimit(const Index start,
             type = Type::STREAM;
             return current;
          } else {                  // one long row
-            if (sum <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
+            if (sum <= 2 * matrix.MAX_ELEMENTS_PER_WARP_ADAPT)
                type = Type::VECTOR;
             else
                type = Type::LONG;
@@ -1764,8 +1764,8 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
 
       SpMVCSRAdaptive< Real, Index, warpSize,
             matrix.WARPS,
-            matrix.SHARED_PER_WARP,
-            matrix.MAX_ELEMENTS_PER_WARP >
+            matrix.SHARED_PER_WARP, 
+            matrix.MAX_ELEMENTS_PER_WARP_ADAPT >
          <<<blocks, threads>>>(
                inVector,
                outVector,
