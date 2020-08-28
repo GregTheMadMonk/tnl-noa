@@ -18,7 +18,7 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_forRows >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
                        OUTPUT DenseMatrixExample_forRows.out )
-   
+
    CUDA_ADD_EXECUTABLE( DenseMatrixExample_rowsReduction_vectorProduct DenseMatrixExample_rowsReduction_vectorProduct.cu )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_rowsReduction_vectorProduct >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_rowsReduction_vectorProduct.out
@@ -49,6 +49,37 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_rowCapacities_vector.out
                        OUTPUT SparseMatrixExample_Constructor_rowCapacities_vector.out )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_std_map SparseMatrixExample_Constructor_std_map.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_std_map >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_std_map.out
+                       OUTPUT SparseMatrixExample_Constructor_std_map.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElements SparseMatrixExample_setElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements.out
+                       OUTPUT SparseMatrixExample_setElements.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElements_map SparseMatrixExample_setElements_map.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_map >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements_map.out
+                       OUTPUT SparseMatrixExample_setElements_map.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElement SparseMatrixExample_setElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElement >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElement.out
+                       OUTPUT SparseMatrixExample_setElement.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_addElement SparseMatrixExample_addElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_addElement >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_addElement.out
+                       OUTPUT SparseMatrixExample_addElement.out )
+
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forRows SparseMatrixExample_forRows.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forRows >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
+                       OUTPUT SparseMatrixExample_forRows.out )
+
+
 ELSE()
 #   ADD_EXECUTABLE( UniquePointerExample UniquePointerExample.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND UniquePointerExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UniquePointerExample.out OUTPUT UniquePointerExample.out )
@@ -69,6 +100,11 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    DenseMatrixViewExample_setElement.out
    SparseMatrixExample_Constructor_init_list_2.out
    SparseMatrixExample_setRowCapacities.out
+   SparseMatrixExample_Constructor_std_map.out
+   SparseMatrixExample_setElements.out
+   SparseMatrixExample_setElements_map.out
+   SparseMatrixExample_setElement.out
+   SparseMatrixExample_forRows.out
  )
 ENDIF()
 #

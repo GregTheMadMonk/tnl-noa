@@ -27,7 +27,7 @@ Dense matrix is a templated class defined in namespace \ref TNL::Matrices. It ha
 
 The following examples show how to allocate the dense matrix and how to initialize the matrix elements. Small matrices can be created simply by the constructor with an initializer list.
 
-\include Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
+\includelineno Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
 
 In fact, the constructor takes a list of initializer lists. Each embedded list defines one matrix row and so the number of matrix rows is given by the size of the outer initializer list.  The number of matrix columns is given by the longest inner initializer lists. Shorter inner lists are filled with zeros from the right side. The result looks as follows:
 
@@ -35,7 +35,7 @@ In fact, the constructor takes a list of initializer lists. Each embedded list d
 
 Larger matrices can be set-up with methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement). The following example shows how to call these methods from the host.
 
-\include DenseMatrixExample_addElement.cpp
+\includelineno DenseMatrixExample_addElement.cpp
 
 As we can see, both methods can be called from the host no matter where the matrix is allocated. If it is on GPU, each call of `setElement` or `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) causes slow transfer of tha data between CPU and GPU. Use this approach only if the performance is not a priority for example for matrices which are set only once this way. The result looks as follows:
 
@@ -43,7 +43,7 @@ As we can see, both methods can be called from the host no matter where the matr
 
 More efficient way of the matrix initialization on GPU consists in calling the methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) directly from GPU. It is demonstrated in the following example (of course it works even for CPU):
 
-\include DenseMatrixExample_setElement.cpp
+\includelineno DenseMatrixExample_setElement.cpp
 
 Here we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to make the matrix accessible in lambda functions even on GPU. We first call the `setElement` method from CPU to set the `i`-th diagonal element to `i`. Next we iterate over the matrix rows with `ParallelFor`and for each row we call a lambda function `f`. This is done on the same device where the matrix is allocated and so it is more efficient for matrices allocated on GPU. In the lambda function we just set the `i`-th diagonal element to `-i`. The result looks as follows:
 
@@ -51,7 +51,7 @@ Here we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to make the matr
 
 If we want to set more matrix elements in each row, we can use inner for-loop in the lambda function `f`. This, however, is limiting the parallelization and it can be inefficient for larger matrices. The next example demonstrates a method `forRows` (\ref TNL::Matrices::DenseMatrix::forRows) which iterates over all matrix elements in parallel and it calls a lambda function defining an operation we want to do on the matrix elements.
 
-\include DenseMatrixExample_forRows.cpp
+\includelineno DenseMatrixExample_forRows.cpp
 
 Firstly note, that this is simpler since we do not need any `SharedPointer`. The lambda function `f` requires the following parameters:
 
@@ -81,7 +81,7 @@ y_i = a_{i1} x_1 + a_{i2} x_2 + \ldots + a_{in} x_n = \sum_{j=1}^n a_{ij}x_j.
 We see that in i-th matrix row we have to compute the sum \f$\sum_{j=1}^n a_{ij}x_j\f$ which is reduction of products \f$ a_{ij}x_j\f$. Similar to *flexible parallel reduction* (\ref TNL::Algorithms::Reduction) we just need to design proper lambda functions. See the following example:
 
 
-\include DenseMatrixExample_rowsReduction_vectorProduct.cpp
+\includelineno DenseMatrixExample_rowsReduction_vectorProduct.cpp
 
 The `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]`. The reduction is just sum of results particular products and it is represented by by the lambda function `reduce`. Finaly, the lambda function `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.  
 The result looks as:
@@ -96,7 +96,7 @@ y_i = \max_{j=1,\ldots,n} |a_{ij}|.
 
 See the following example:
 
-\include DenseMatrixExample_rowsReduction_maxNorm.cpp
+\includelineno DenseMatrixExample_rowsReduction_maxNorm.cpp
 
 
 The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the varibale `value`. The `reduce` lambda function returns larger of given values and the lambda fuction 'keep' stores the results to the output vectro the same way as in the previous example. Of course, if we compute the maximum of all output vector elements we get some kined of max matrix norm. The output looks as:
@@ -132,7 +132,7 @@ TODO: Template parameters description
 
 We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
 
-\include DenseMatrixViewExample_setElement.cpp
+\includelineno DenseMatrixViewExample_setElement.cpp
 
 And the result is:
 
@@ -145,7 +145,7 @@ TODO: Using DenseMatrixView for data encapsulation
 
 ## Sparse matrices <a name="sparse_matrices"></a>
 
-[Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) arte extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possible some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. Consider just matrix having 50,000 rows and columns whih is 2,500,000,000 matrix elements. If we store each matrix element in double precision (it means eight bytes per element) we need 20,000,000,000 bytes which is nearly 20 GB of memory. If there are only five non-zero elements in each row we need only \f$8 \times 5 \times 50,000=2,000,000\f$ bytes and so nearly 200 MB. It is really great difference.
+[Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possible some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. Consider just matrix having 50,000 rows and columns whih is 2,500,000,000 matrix elements. If we store each matrix element in double precision (it means eight bytes per element) we need 20,000,000,000 bytes which is nearly 20 GB of memory. If there are only five non-zero elements in each row we need only \f$8 \times 5 \times 50,000=2,000,000\f$ bytes and so nearly 200 MB. It is really great difference.
 
 Major disadventage of sparse matrices is that there are a lot of different formats for storing such matrices. Though [CSR - Compressed Sparse Row](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs there are many other formats which perform differently on various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing the sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template paramaters is as follows:
 
@@ -164,7 +164,7 @@ Major disadventage of sparse matrices is that there are a lot of different forma
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type – see TNL::Allocators::Default.
 * `IndexAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the column indexes of the matrix elements. By default, it is the default allocator for given `Index` type and `Device` type – see \ref TNL::Allocators::Default.
 
-If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.
+**If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.**
 
 ### Sparse matrix allocation and initiation
 
@@ -184,7 +184,7 @@ Small matrices can be initialized by a constructor with initializer list. We ass
 
 The following example shows how to create it using the initializer list constructor:
 
-\include SparseMatrixExample_Constructor_init_list_2.cpp
+\includelineno SparseMatrixExample_Constructor_init_list_2.cpp
 
 The constructor accepts the following parameters:
 
@@ -192,7 +192,11 @@ The constructor accepts the following parameters:
 * `columns` is a number of matrix columns.
 * `data` is definition of non-zero matrix elements. It is a initializer list of triples having a form `{ row_index, column_index, value }`. In fact, it is very much like the coordinates format - [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)).
 
-The constructor also accepts `Real` and `Index` allocators (\ref TNL::Allocators) but their are not important for this example. The result looks as follows:
+The constructor also accepts `Real` and `Index` allocators (\ref TNL::Allocators) but their are not important for this example. A method `setElements` works the same way:
+
+\includelineno SparseMatrixExample_setElements.cpp
+
+The result of both examples looks as follows:
 
 \include SparseMatrixExample_Constructor_init_list_2.out
 
@@ -216,31 +220,81 @@ See the following example which creates lower triangular matrix like this one
 \f]
 
 
-\include SparseMatrixExample_setRowCapacities.cpp
+\includelineno SparseMatrixExample_setRowCapacities.cpp
 
 The method \ref TNL::Matrices::SparseMatrix::setRowCapacities reads the required capacities of the matrix rows from a vector (or simmilar container - \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector and \ref TNL::Containers::VectorView) which has the same number of elements as the number of matrix rows and each element defines the capacity of the related row. The result looks as follows:
 
 \include SparseMatrixExample_setRowCapacities.out
 
-There are constructors which also set the row capacities, one uses a vector ...
+There are constructors which also set the row capacities. The first one uses a vector:
 
-\include SparseMatrixExample_Constructor_rowCapacities_vector.cpp
+\includelineno SparseMatrixExample_Constructor_rowCapacities_vector.cpp
 
-... the result looks as follows ...
+The second one uses an initializer list:
 
-\include SparseMatrixExample_Constructor_rowCapacities_vector.out
+\includelineno SparseMatrixExample_Constructor_init_list_1.cpp
 
-while the other uses an initializer list ...
+The result of both examples looks as follows:
 
-\include SparseMatrixExample_Constructor_init_list_1.cpp
+\include SparseMatrixExample_Constructor_init_list_1.out
 
-... the result looks as follows.
+Finaly, there is a constructor which creates the sparse matrix from 'std::map'. It is usefull especially in situation when you cannot compute the matrix elements by rows but rather in random order. You can do it on CPU and store the matrix elements in `std::map` data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
 
-\include SparseMatrixExample_Constructor_init_list_1.out.
+```
+std::pair( std::pair( row_index, column_index ), element_value )
+```
 
+which defines one matrix element at given coordinates with given value. Of course, you can insert such entries in any order into the `map`. When it is complete you can pass it the sparse matrix. See the following example:
+
+\includelineno SparseMatrixExample_Constructor_std_map.cpp
+
+A method `setElements` works the same way for already existing instances of sparse matrix:
+
+
+\includelineno SparseMatrixExample_setElements_map.cpp
+
+The result of both examples looks as folows:
+
+\include SparseMatrixExample_setElements_map.out
+
+Another way of setting the sparse matrix is via the methods `setElement` and `addElement` (\ref TNL::Matrices::SparseMatrix::setElement, \ref TNL::Matrices::addElement). The procedure is as follows:
+
+1. Setup the matrix dimensions.
+2. Setup the row capacities.
+3. Setup the matrix elements.
+
+The method can be called from both host (CPU) and device (GPU) if the matrix is allocated there. Note, however, that if the matrix is allocated on GPU and the method is called from CPU there will be significant performance drop because the matrix elements will be transfered one after another. However, if the matrix elements setup is not a critical part of your algorithm this can be an easy way how to do it. See the following example:
+
+\includelineno SparseMatrixExample_setElement.cpp
+
+Note that we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to pass the matrix easily into the lambda function when it runs on GPU. The first for-loop runs on CPU no matter where the matrix is allocated. Next we call the lambda function `f` from `ParallelFor` which is device sensitive and so it runs on CPU or GPU depending where the matrix is allocated. To avoid use of `SharedPointer`, which requires explicit synchronization of smart pointers, you may use `SparseMatrixView' (\ref TNL::Matrices::SparseMatrixView) to achiev the same. The result looks as follows:
+
+\include SparseMatrixExample_setElement.out
+
+The method `addElement` adds a value to specific matrix element. Otherwise, it behaves the same as `setElement`. See the following example:
+
+\includelineno SparseMatrixExample_addElement.cpp
+
+The result looks as follows:
+
+\include SparseMatrixExample_addElement.out
+
+
+Finaly, for the most efficient way of setting the non-zero matrix elements, is use of a method `forRows`. It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each non-zero element. The lambda functions provides the following data:
+
+* `rowIdx` is a row index of the matrix element.
+* `localIdx` is an index of the non-zero matrix element within the matrix row.
+* `columnIdx` is a column index of the matrix element. If the matrix element is suppsoed to be changed, this parameter can be a reference and so its value can be changed.
+* `value` is a value of the matrix element. It the matrix element is supposed to be changed, this parameter can be a reference as well and so the element value can be changed.
+* `compute` is a bool reference. When it is set to `false` the rest of the row can be omitted. This is, however, only a hint and it depends on the underlying matrix format if it is taken into account.
+
+See the following example:
 
 
 ### Flexible reduction in matrix rows
+
+In the same way as with the dense matrices, we can perform *flexible parallel reduction* in rows even with sparse matrices. 
+
 ### Sparse-matrix vector product
 ### Sparse matrix IO
 ### Sparse matrix view

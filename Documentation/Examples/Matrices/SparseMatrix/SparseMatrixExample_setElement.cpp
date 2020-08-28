@@ -11,12 +11,19 @@ void setElements()
 {
    auto rowCapacities = { 1, 1, 1, 1, 1 };
    TNL::Pointers::SharedPointer< TNL::Matrices::SparseMatrix< double, Device > > matrix( rowCapacities, 5 );
+
+   /***
+    * Calling the method setElements from host (CPU).
+    */
    for( int i = 0; i < 5; i++ )
       matrix->setElement( i, i, i );
 
    std::cout << "Matrix set from the host:" << std::endl;
    std::cout << *matrix << std::endl;
 
+   /***
+    * This lambda function will run on the native device of the matrix which can be CPU or GPU.
+    */
    auto f = [=] __cuda_callable__ ( int i ) mutable {
       matrix->setElement( i, i, -i );
    };
