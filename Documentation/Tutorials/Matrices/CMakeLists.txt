@@ -79,6 +79,10 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
                        OUTPUT SparseMatrixExample_forRows.out )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_rowsReduction_vectorProduct SparseMatrixExample_rowsReduction_vectorProduct.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_rowsReduction_vectorProduct >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_rowsReduction_vectorProduct.out
+                       OUTPUT SparseMatrixExample_rowsReduction_vectorProduct.out )
 
 ELSE()
 #   ADD_EXECUTABLE( UniquePointerExample UniquePointerExample.cpp )
@@ -105,6 +109,7 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_setElements_map.out
    SparseMatrixExample_setElement.out
    SparseMatrixExample_forRows.out
+   SparseMatrixExample_rowsReduction_vectorProduct.out
  )
 ENDIF()
 #

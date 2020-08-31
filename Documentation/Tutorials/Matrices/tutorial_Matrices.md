@@ -279,7 +279,6 @@ The result looks as follows:
 
 \include SparseMatrixExample_addElement.out
 
-
 Finaly, for the most efficient way of setting the non-zero matrix elements, is use of a method `forRows`. It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each non-zero element. The lambda functions provides the following data:
 
 * `rowIdx` is a row index of the matrix element.
@@ -290,13 +289,150 @@ Finaly, for the most efficient way of setting the non-zero matrix elements, is u
 
 See the following example:
 
+\includelineno SparseMatrixExample_forRows.cpp
+
+On the line 9, we allocate a lower triangular matrix (because the row capacities `{1,2,3,4,5}` are equal to row index) using the `SparseMatrix`. On the line 11, we prepare lambda function `f` which we execute on the line 22 just by calling the method `forRows` (\ref TNL::Matrices::SpartseMatrix::forRows). This method takes the range of matrix rows as the first two parameters and the lambda function as the last parameter. The lambda function receives parameters metioned above (see the line 11). We first check if the matrix element coordinates (`rowIdx` and `localIdx`) points to an element lying before the matrix diagonal or on the diagonal. At this moment we should better explain the meaning of the parameter `localIdx`. It says the local index or the range of the non-zero element in the matrix row. The sparse matrix formats usualy in the first step compress the matrix rows by omitting the zero matrix elements as follows
+
+\f[
+\left(
+\begin{array}{ccccc}
+0 & 1 & 0 & 2 & 0 \\
+0 & 0 & 5 & 0 & 0 \\
+4 & 0 & 0 & 0 & 7 \\
+0 & 3 & 0 & 8 & 5 \\
+0 & 5 & 7 & 0 & 0
+\end{array}
+\right)
+\rightarrow
+\left(
+\begin{array}{ccccc}
+1 & 2 & . & . & . \\
+5 & . & . & . & . \\
+4 & 7 & . & . & . \\
+3 & 8 & 5 & . & . \\
+5 & 7 & . & . & .
+\end{array}
+\right)
+\f]
+
+Some sparse matrix formats adds back padding zeros for better alignment of data in memory. But if this is not the case, the local indexes of the matrix elements would read as:
+
+\f[
+\left(
+\begin{array}{ccccc}
+0 & 1 & . & . & . \\
+0 & . & . & . & . \\
+0 & 1 & . & . & . \\
+0 & 1 & 2 & . & . \\
+0 & 1 & . & . & .
+\end{array}
+\right)
+\f]
+
+In case of the lower triangular matrix in our example, the local index is in fact the same as the column index
+
+\f[
+\left(
+\begin{array}{ccccc}
+0 & . & . & . & . \\
+0 & 1 & . & . & . \\
+0 & 1 & 2 & . & . \\
+0 & 1 & 2 & 3 & . \\
+0 & 1 & 2 & 3 & 4
+\end{array}
+\right)
+\f]
+
+If we call the method `forRows` to setup the matrix elements for the first time, the parameter `columnIdx` has no sense because the matrix elements and their column indexes were not set yet. Therefore it is important that the test on the line 12 reads as
+
+```
+if( rowIdx < localIdx )
+```
+
+because
+
+```
+if( rowIdx < columnIdx )
+```
+
+would not make sense. If we pass through this test, the matrix element lies in the lower triangular part of the matrix and we may set the matrix elements which is done on the lines 17 and 18. The column index (`columnIdx`) is set to local index (line 17) and `value` is set on the line 18. The result looks as follows:
+
+
+\includelineno SparseMatrixExample_forRows.out
 
 ### Flexible reduction in matrix rows
 
-In the same way as with the dense matrices, we can perform *flexible parallel reduction* in rows even with sparse matrices. 
+The *flexible parallel reduction* in rows for sparse matrices is very simmilar to the one for dense matrices. It consits of three lambda functions:
+
+1. `fetch` reads and preproces data entering the flexible parallel reduction.
+2. `reduce` performs the reduction operation.
+3. `keep` stores the results from each matrix row.
+
+See the following example:
+
+\includelineno SparseMatrixExample_rowsReduction_vectorProduct.cpp
+
+On the lines 11-16 we set the following matrix:
+
+\f[
+\left(
+\begin{array}{ccccc}
+1 & . & . & . & . \\
+1 & 2 & . & . & . \\
+. & 1 & 8 & . & . \\
+. & . & 1 & 9 & . \\
+. & . & . & . & 1
+\end{array}
+\right)
+\f]
+
+Next we prepare input (`x`) and output (`y`) vectors on the lines 21 and 22 and set all elements of the input vector to one (line 27). Since we will need to access these vectors in lambda functions we prepare their views on lines 32 and 33. On the lines 39-41, we define the `fetch` lambda function. It receives three arguments:
+
+1. `rowIdx` is a row index of the matrix element being currently processed.
+2. `columnIdx` is a column index of the matrix elements being currently processed.
+3. `value` is a value of the matrix element being currently procesed.
+
+We ommit the row index and take the column index which indicates index of the element of the input vector we need to fetch (`xView[ columnIdx ]`). We take its value and multiply it with the value (`value`) of the current matrix element. We do not need to write lambda function for reduction since it is only summation of the intermediate results from the `fetch` lamda and we can use `std::plus<>{}` (see the line 60). The `keep` lambda function offers two parameters:
+
+1. `rowIdx` tells the index of the matrix row for which we aimm to store the result.
+2. `value` is the result obtained in the given matrix row.
+
+In our example, we just write the result into appropriate element of the output vector `y` which is given just by the row index `rowIdx` -- see the line 47.  On the line 53 we start the computation of the matrix-vector product. The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) accepts the following arguments:
+
+1. `begin` is the begining of the matrix rows range on which the reduction will be performed.
+2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
+3. `fetch` is the fetch lambda function.
+4. `reduce` is the the lmabda function performing the reduction.
+5. `keep` is the lambda function responsible for processing the results from particular matrix rows.
+6. `zero` is the "zero" element of given reduction opertation also known as *idempotent*. It is really 0 for summation in our example (adding zero to any number does not change the result).
+
+At the end we print the matrix, the input and the output vector -- lines 55-57. The result looks as follows:
+
+\include SparseMatrixExample_rowsReduction_vectorProduct.out
 
 ### Sparse-matrix vector product
+
+As we mentioned already in the part explaining the dense matrices, matrix-vector multiplication or in this case sparse matrix-vector multiplication ([SpMV](https://en.wikipedia.org/wiki/Sparse_matrix-vector_multiplication)) is one of the most important operations in numerical mathematics and high-performance computing. It is represented by a method `vectorProduct` (\ref TNL::Matrices::SparseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
+
+```
+outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
+```
+
+and it accepts the following parameters:
+
+* `inVector` is the input vector having the same number of elements as the number of matrix columns.
+* `outVector` is the output vector having the same number of elements as the number of matrix rows.
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
+* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
+* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
+
+Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+
 ### Sparse matrix IO
+
+The sparse matrix can be saved to a file using a method `save` (\ref TNL::Matrices::SparseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::SparseMatrix::load). To print the matrix a method `print` (\ref TNL::Matrices::SparseMatrix::print) can be used.
+
 ### Sparse matrix view
 
 ## Tridiagonal matrices <a name="tridiagonal_matrices"></a>
