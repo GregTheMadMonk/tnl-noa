@@ -34,6 +34,11 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_setElement.out OUTPUT
                        DenseMatrixViewExample_setElement.out )
 
+   CUDA_ADD_EXECUTABLE( DenseMatrixViewExample_data_encapsulation DenseMatrixViewExample_data_encapsulation.cu )
+   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixViewExample_data_encapsulation >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixViewExample_data_encapsulation.out OUTPUT
+                       DenseMatrixViewExample_data_encapsulation.out )
+
    CUDA_ADD_EXECUTABLE( SparseMatrixExample_Constructor_init_list_2 SparseMatrixExample_Constructor_init_list_2.cu )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_Constructor_init_list_2 >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_Constructor_init_list_2.out
@@ -84,6 +89,11 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_rowsReduction_vectorProduct.out
                        OUTPUT SparseMatrixExample_rowsReduction_vectorProduct.out )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_setElement SparseMatrixViewExample_setElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_setElement >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_setElement.out
+                       OUTPUT SparseMatrixViewExample_setElement.out )
+
 ELSE()
 #   ADD_EXECUTABLE( UniquePointerExample UniquePointerExample.cpp )
 #   ADD_CUSTOM_COMMAND( COMMAND UniquePointerExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UniquePointerExample.out OUTPUT UniquePointerExample.out )
@@ -102,6 +112,7 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    DenseMatrixExample_rowsReduction_vectorProduct.out
    DenseMatrixExample_rowsReduction_maxNorm.out
    DenseMatrixViewExample_setElement.out
+   DenseMatrixViewExample_data_encapsulation.out
    SparseMatrixExample_Constructor_init_list_2.out
    SparseMatrixExample_setRowCapacities.out
    SparseMatrixExample_Constructor_std_map.out
@@ -110,6 +121,7 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_setElement.out
    SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
+   SparseMatrixViewExample_setElement.out
  )
 ENDIF()
 #

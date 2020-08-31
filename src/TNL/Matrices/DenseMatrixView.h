@@ -29,8 +29,9 @@ namespace Matrices {
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam MatrixElementsOrganization tells the ordering of matrix elements. It is either RowMajorOrder
- *         or ColumnMajorOrder.
+ * \tparam MatrixElementsOrganization tells the ordering of matrix elements in memory. It is either
+ *         \ref TNL::Algorithms::Segments::RowMajorOrder
+ *         or \ref TNL::Algorithms::Segments::ColumnMajorOrder.
  * 
  * See \ref DenseMatrix.
  */

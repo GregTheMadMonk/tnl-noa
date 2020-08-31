@@ -126,22 +126,32 @@ The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrice
 
 ### Dense matrix view
 
-Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrcioes::DenseMatrixView).
+Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrices::DenseMatrixView) which is a templated class with the following template arguments (they are the same as for `DenseMatrix` -- \ref TNL::Matrices::DenseMatrix -- except of the allocator):
 
-TODO: Template parameters description
+* `Real` is a type of matrix elements. 
+* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
+* `Index` is a type for indexing the matrix elements and also row and column indexes.
+* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
 
-We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
+The first main reason for using the dense matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
 
 \includelineno DenseMatrixViewExample_setElement.cpp
 
-And the result is:
+You can see that we do not need to use the shared pointer (\ref TNL::Pointers::SharedPointer) as we did in the example demonstrating the method `setElement` for dense matrix.  And the result is:
 
 \include DenseMatrixViewExample_setElement.out
 
+The second reason for using the `DenseMatrixView` is to encapsulate data allocated by some other library or program then TNL. The following example demonstrates how to do it:
+
+\includelineno DenseMatrixViewExample_data_encapsulation.cpp
+
+On the lines 18--34 we create matrix by allocating array `data` and filling the matrix using a formula \f$ a_{ij} = i * size + j + 1\f$. We do it first on the host (lines 18--21) in auxilliary array `host_data` to make initiation of the array `data` easier in case when `Device` is GPU. Next, depending on the argument `Device`, we allocate the array `data` on the host or on GPU and copy data from the arary `host_data` to the array `data`. To insert this array into the dense matrix view, we first need to encapsulate it with vector view (\ref TNL::Conatianers::VectorView) `dataView` on the line 39 which can be then used to create the dense matrix view `matrix` on the line 40. Note that wee must set proper matrix elements organizationa which is `RowMajorOrder` (\ref TNL::Algorithms::Segments::RowMajorOrder) in this example. Next, we print the matrix to see if the encapsulation was succesfull (lines 42 and 43) and finaly we demonstrate manipulation with matrix elements (lines 45--48) and we print the result (lines 50 and 51). 
+
+The result looks as follows:
+
+\includelineno DenseMatrixViewExample_data_encapsulation.out
+
 The dense matrix view offers almost all methods which the dense matrix does. So it can be easily used at almost any situation the same way as the dense matrix itself.
-
-
-TODO: Using DenseMatrixView for data encapsulation
 
 ## Sparse matrices <a name="sparse_matrices"></a>
 
@@ -434,6 +444,30 @@ Note that the ouput vector dimension must be the same as the number of matrix ro
 The sparse matrix can be saved to a file using a method `save` (\ref TNL::Matrices::SparseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::SparseMatrix::load). To print the matrix a method `print` (\ref TNL::Matrices::SparseMatrix::print) can be used.
 
 ### Sparse matrix view
+
+Sparse matrix view serves, simillar to other views in TNL, to data sharing and for use with lambda functions (views can be easily captured since they make only shallow copy). The sparse matrix view (\ref TNL::Matrices::SparseMatrixView) is templated class having the following template arguments (they are the same as for `SparseMatrix` -- \ref TNL::Matrices::SparseMatrix -- except of the allocators):
+
+* `Real` is type if the matrix elements. It is `double` by default.
+* `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
+* `MatrixType` tells if the matrix is symmetric (\ref TNL::Matrices::SymmetricMatrix) or general (\ref TNL::Matrices::GeneralMatrix). It is a \ref TNL::Matrices::GeneralMatrix by default.
+* `Segments` define the format of the sparse matrix. It can be (by default, it is \ref TNL::Algorithms::Segments::CSR):
+   * \ref TNL::Algorithms::Segments::CSR for [CSR format](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)).
+   * \ref TNL::Algorithms::Segments::Ellpack for [Ellpack format](http://mgarland.org/files/papers/nvr-2008-004.pdf).
+   * \ref TNL::Algorithms::Segments::SlicedEllpack for [SlicedEllpack format](https://link.springer.com/chapter/10.1007/978-3-642-11515-8_10) which was also presented as [Row-grouped CSR format](https://arxiv.org/abs/1012.2270).
+   * \ref TNL::Algorithms::Segments::ChunkedEllpack for [ChunkedEllpack format](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/12-heller-oberhuber-improved-rgcsr-format.pdf) which we reffered as Improved Row-grouped CSR and we renamed it to Ellpack format since it uses padding zeros.
+   * \ref TNL::Algorithms::Segments::BiEllpack for [BiEllpack format](https://www.sciencedirect.com/science/article/pii/S0743731514000458?casa_token=2phrEj0Ef1gAAAAA:Lgf6rMBUN6T7TJne6mAgI_CSUJ-jR8jz7Eghdv6L0SJeGm4jfso-x6Wh8zgERk3Si7nFtTAJngg).
+* `ComputeReal` is type which is used for internal computations. By default it is the same as `Real` if `Real` is not `bool`. If `Real` is `bool`, `ComputeReal` is set to `Index` type. This can be changed, of course, by the user.
+
+**If `Real` is set to `bool`, we get *a binary matrix view*.**
+
+The following example shows the use of `SparseMatrixView` with lambda functions:
+
+\includelineno SparseMatrixViewExample_setElement.cpp
+
+The result looks as follows:
+
+\includelineno SparseMatrixViewExample_setElement.out
 
 ## Tridiagonal matrices <a name="tridiagonal_matrices"></a>
 
