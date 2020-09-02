@@ -25,6 +25,7 @@ class SmartPointer
 
       virtual bool synchronize() = 0;
 
+      virtual ~SmartPointer() = default;
 };
 
 } // namespace Pointers
