@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# exit as soon as there is an error
+set -e
+
+PREFIX=${HOME}/.local
+for option in "$@"; do
+    case $option in
+        --prefix=*) PREFIX="${option#*=}" ;;
+    esac
+done
+
+pkgname=tinyxml2
+pkgver=8.0.0
+url="https://github.com/leethomason/$pkgname/archive/$pkgver.tar.gz"
+sha256sum='6ce574fbb46751842d23089485ae73d3db12c1b6639cda7721bf3a7ee862012c'
+
+# prepare
+mkdir -p "build-$pkgname"
+pushd "build-$pkgname"
+
+if [[ ! -f "$pkgver.tar.gz" ]]; then
+   curl -gqb "" -fLC - --retry 3 --retry-delay 3 -o "$pkgver.tar.gz" "$url"
+fi
+echo -e "$sha256sum\t$pkgver.tar.gz" > "$pkgname.checksum"
+sha256sum --check "$pkgname.checksum"
+tar -xf "$pkgver.tar.gz"
+
+# build and install
+cmake ./$pkgname-$pkgver \
+   -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+   -DCMAKE_INSTALL_LIBDIR=lib \
+   -DCMAKE_BUILD_TYPE=Release
+make
+make install

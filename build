@@ -178,6 +178,9 @@ if [[ ${CMAKE_ONLY} == "yes" ]]; then
    exit 0
 fi
 
+# install dependencies into $PREFIX if they are not found system-wide
+pkg-config --exists tinyxml2 || "$ROOT_DIR/scripts/install_tinyxml2" --prefix "$PREFIX"
+
 # get the number of physical cores present on the system, even with multiple NUMA nodes
 # see https://unix.stackexchange.com/a/279354
 SYSTEM_CORES=$(lscpu --all --parse=CORE,SOCKET | grep -Ev "^#" | sort -u | wc -l)
