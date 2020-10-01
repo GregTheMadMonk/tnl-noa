@@ -1,9 +1,9 @@
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-before_script:
-    - which g++
-    - which cmake
-    - which ninja
+default:
+    image: "archlinux/devel-tnl:latest"
+    tags:
+        - docker
 
 stages:
     - build
@@ -32,9 +32,6 @@ stages:
 
 # base for OpenMP+MPI builds
 .openmp_mpi:
-    tags:
-        - openmp
-        - mpi
     variables:
         WITH_OPENMP: "yes"
         WITH_MPI: "yes"
@@ -43,9 +40,8 @@ stages:
     extends: .openmp_mpi
     # tags are overridden, not merged...
     tags:
-        - gpu
-        - openmp
-        - mpi
+        - docker
+        - nvidia
 
 # base for Clang builds
 .clang:
@@ -54,15 +50,6 @@ stages:
         CXX: clang++
         CC: clang
         CUDA_HOST_COMPILER: clang++
-    tags:
-        - clang
-
-.clang_mpi:
-    extends: .clang
-    # tags are overridden, not merged...
-    tags:
-        - clang
-        - mpi
 
 # template for build jobs
 .build_template:
@@ -81,6 +68,9 @@ stages:
         - export CTEST_OUTPUT_ON_FAILURE=1
         - export CTEST_PARALLEL_LEVEL=4
         - export OMP_NUM_THREADS=4
+        # running as root does not matter inside Docker containers
+        - export OMPI_ALLOW_RUN_AS_ROOT=1
+        - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
         - mkdir -p "./builddir/$CI_JOB_NAME"
         - pushd "./builddir/$CI_JOB_NAME"
         - cmake ../..
@@ -142,7 +132,8 @@ cuda_tests_Debug:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -153,7 +144,8 @@ cuda_tests_Release:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -165,7 +157,8 @@ cuda_matrix_tests_Debug:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -176,7 +169,8 @@ cuda_matrix_tests_Release:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -188,7 +182,8 @@ cuda_examples_Debug:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -205,7 +200,8 @@ cuda_examples_Release:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -217,7 +213,8 @@ cuda_benchmarks_tools_python_Debug:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -230,7 +227,8 @@ cuda_benchmarks_tools_python_Release:
     extends: .build_template
     stage: build:cuda
     tags:
-        - gpu
+        - docker
+        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -430,42 +428,42 @@ clang_benchmarks_tools_python_Release:
 clang_mpi_tests_Debug:
     extends:
         - mpi_tests_Debug
-        - .clang_mpi
+        - .clang
 
 clang_mpi_tests_Release:
     extends:
         - mpi_tests_Release
-        - .clang_mpi
+        - .clang
 
 clang_mpi_matrix_tests_Debug:
     extends:
         - mpi_matrix_tests_Debug
-        - .clang_mpi
+        - .clang
 
 clang_mpi_matrix_tests_Release:
     extends:
         - mpi_matrix_tests_Release
-        - .clang_mpi
+        - .clang
 
 clang_mpi_examples_Debug:
     extends:
         - mpi_examples_Debug
-        - .clang_mpi
+        - .clang
 
 clang_mpi_examples_Release:
     extends:
         - mpi_examples_Release
-        - .clang_mpi
+        - .clang
 
 clang_mpi_benchmarks_tools_python_Debug:
     extends:
         - mpi_benchmarks_tools_python_Debug
-        - .clang_mpi
+        - .clang
 
 clang_mpi_benchmarks_tools_python_Release:
     extends:
         - mpi_benchmarks_tools_python_Release
-        - .clang_mpi
+        - .clang
 
 
 
@@ -487,8 +485,8 @@ build documentation:
     artifacts:
         paths:
             - ./Documentation/html/
-    tags:
-        - doxygen
+#    tags:
+#        - doxygen
 
 deploy documentation:
     stage: deploy
@@ -509,5 +507,5 @@ deploy documentation:
     script:
         - ./Documentation/deploy
     tags:
-        - doxygen
+#        - doxygen
         - deploy_key
