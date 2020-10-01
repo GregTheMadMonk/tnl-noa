@@ -9,7 +9,8 @@
 
 # cmake 3.12.2 is required due to compatibility with CUDA 10
 # (see the issue reported here: https://github.com/clab/dynet/issues/1457 )
-cmake_minimum_required( VERSION 3.12.2 )
+# cmake 3.13 is required for add_link_options
+cmake_minimum_required( VERSION 3.13 )
 
 project( tnl )
 
