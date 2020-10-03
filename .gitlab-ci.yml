@@ -504,8 +504,11 @@ deploy documentation:
     # use "dependencies" instead of "needs" to deploy only when the entire pipeline succeeds
     dependencies:
         - build documentation
+    image: "archlinux:latest"
+    before_script:
+        - pacman -Suy --noconfirm --needed rsync
     script:
         - ./Documentation/deploy
     tags:
-#        - doxygen
+        - docker
         - deploy_key
