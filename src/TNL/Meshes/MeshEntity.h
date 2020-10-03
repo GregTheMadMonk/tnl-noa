@@ -90,8 +90,8 @@ class MeshEntity
 
       template< int Subdimension >
       __cuda_callable__
-      const typename SubentityTraits< Subdimension >::OrientationArrayType&
-      getSubentityOrientation( const LocalIndexType localIndex ) const;
+      auto getSubentityOrientation( const LocalIndexType localIndex ) const
+         -> const typename SubentityTraits< Subdimension >::OrientationArrayType&;
 
       /****
        * Superentities

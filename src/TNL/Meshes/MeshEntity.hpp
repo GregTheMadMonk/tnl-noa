@@ -129,9 +129,10 @@ template< typename MeshConfig,
           typename EntityTopology >
    template< int Subdimension >
 __cuda_callable__
-const typename MeshEntity< MeshConfig, Device, EntityTopology >::template SubentityTraits< Subdimension >::OrientationArrayType&
+auto
 MeshEntity< MeshConfig, Device, EntityTopology >::
 getSubentityOrientation( const LocalIndexType localIndex ) const
+   -> const typename SubentityTraits< Subdimension >::OrientationArrayType&
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSubentityOrientation< getEntityDimension(), Subdimension >( this->getIndex(), localIndex );
