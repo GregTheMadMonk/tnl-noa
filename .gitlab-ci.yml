@@ -506,7 +506,7 @@ deploy documentation:
         - build documentation
     image: "archlinux:latest"
     before_script:
-        - pacman -Suy --noconfirm --needed rsync
+        - pacman -Suy --noconfirm --needed rsync openssh
     script:
         - ./Documentation/deploy
     tags:
