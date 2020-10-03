@@ -25,5 +25,11 @@ if [[ "$TNL_DOC_DEPLOY_KEY" != "" ]]; then
    echo "$TNL_DOC_DEPLOY_KEY" | base64 -d > "$tempfile"
    SSH_ARGS="$SSH_ARGS -i $tempfile"
 fi
+if [[ "$TNL_DOC_DEPLOY_HOSTKEY" != "" ]]; then
+   tempfile=$(mktemp)
+   trap "rm -f $tempfile" EXIT
+   echo "$TNL_DOC_DEPLOY_HOSTKEY" | base64 -d > "$tempfile"
+   SSH_ARGS="$SSH_ARGS -o UserKnownHostsFile=$tempfile"
+fi
 
 rsync -e "ssh $SSH_ARGS" -P -rvzc --cvs-exclude --delete "$OUTPUTDIR/" "$SSH_USER@$SSH_HOST:$SSH_TARGET_DIR"
