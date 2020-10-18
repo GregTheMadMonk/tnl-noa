@@ -392,25 +392,32 @@ struct DecomposeMesh
       // set METIS options from parameters
       setMETISoptions(options, parameters);
 
-      if( options[METIS_OPTION_PTYPE] == METIS_PTYPE_KWAY ) {
-         std::cout << "Running METIS_PartGraphKway..." << std::endl;
-         status = METIS_PartGraphKway(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+      if( nparts == 1 ) {
+         // k-way partitioning from Metis fails for nparts == 1 (segfault),
+         // RB succeeds but produces nonsense
+         part_array.setValue( 0 );
       }
       else {
-         std::cout << "Running METIS_PartGraphRecursive..." << std::endl;
-         status = METIS_PartGraphRecursive(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
-      }
+         if( options[METIS_OPTION_PTYPE] == METIS_PTYPE_KWAY ) {
+            std::cout << "Running METIS_PartGraphKway..." << std::endl;
+            status = METIS_PartGraphKway(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+         }
+         else {
+            std::cout << "Running METIS_PartGraphRecursive..." << std::endl;
+            status = METIS_PartGraphRecursive(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+         }
 
-      switch( status )
-      {
-         case METIS_OK: break;
-         case METIS_ERROR_INPUT:
-            throw std::runtime_error( "METIS_PartGraph failed due to an input error." );
-         case METIS_ERROR_MEMORY:
-            throw std::runtime_error( "METIS_PartGraph failed due to a memory allocation error." );
-         case METIS_ERROR:
-         default:
-            throw std::runtime_error( "METIS_PartGraph failed with an unspecified error." );
+         switch( status )
+         {
+            case METIS_OK: break;
+            case METIS_ERROR_INPUT:
+               throw std::runtime_error( "METIS_PartGraph failed due to an input error." );
+            case METIS_ERROR_MEMORY:
+               throw std::runtime_error( "METIS_PartGraph failed due to a memory allocation error." );
+            case METIS_ERROR:
+            default:
+               throw std::runtime_error( "METIS_PartGraph failed with an unspecified error." );
+         }
       }
 
       // deallocate auxiliary vectors
