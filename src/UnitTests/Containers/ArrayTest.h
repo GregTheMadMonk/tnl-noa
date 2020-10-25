@@ -39,9 +39,8 @@ struct MyData
    __cuda_callable__
    MyData() : data(0) {}
 
-   template< typename T >
    __cuda_callable__
-   MyData( T v ) : data(v) {}
+   MyData( double v ) : data(v) {}
 
    __cuda_callable__
    bool operator==( const MyData& v ) const { return data == v.data; }
