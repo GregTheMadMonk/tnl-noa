@@ -55,6 +55,8 @@ distributeSubentities( DistributedMesh& mesh )
    };
 
    // find which rank owns all vertices of its local cells
+   // (this is not unique, there might be more such subdomains (which are not connected),
+   // so we assume it's either 0 or nproc-1)
    int rankOwningAllLocalCellSubvertices = nproc;
    {
       std::atomic<bool> its_us( true );
@@ -70,16 +72,15 @@ distributeSubentities( DistributedMesh& mesh )
       CommunicatorType::Alltoall( sendbuf.getData(), 1,
                                   recvbuf.getData(), 1,
                                   mesh.getCommunicationGroup() );
-      for( int i = 0; i < nproc; i++ )
-         if( recvbuf[ i ] ) {
-            rankOwningAllLocalCellSubvertices = i;
-            break;
-         }
+      if( recvbuf[ 0 ] )
+         rankOwningAllLocalCellSubvertices = 0;
+      else if( recvbuf[ nproc - 1 ] )
+         rankOwningAllLocalCellSubvertices = nproc - 1;
+      else
+         throw std::runtime_error("Vertices are not distributed consistently. Shared vertices on the boundaries must be assigned "
+                                  "either to the highest or to the lowest rank. Thus, either the first or the last rank must "
+                                  "own all subvertices of its local cells.");
    }
-   if( rankOwningAllLocalCellSubvertices != 0 && rankOwningAllLocalCellSubvertices != nproc - 1 )
-      throw std::runtime_error("Vertices are not distributed consistently. Shared vertices on the boundaries must be assigned "
-                               "either to the highest or to the lowest rank. Thus, either the first or the last rank must "
-                               "own all subvertices of its local cells.");
 
    auto getEntityOwner = [&] ( GlobalIndexType local_idx ) -> int
    {
