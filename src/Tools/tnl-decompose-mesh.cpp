@@ -14,9 +14,11 @@
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
+#include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
 #include <metis.h>
 
+#include <numeric>   // std::iota
 #include <memory>
 #include <vector>
 #include <set>
@@ -515,8 +517,8 @@ struct DecomposeMesh
       points_counts.setValue( 0 );
       {
          // first assign points to subdomains - the subdomain with the highest number takes the point
+         // (go over local cells, set subvertex owner = cell owner, higher rank will overwrite)
          IndexArray point_to_subdomain( pointsCount );
-         point_to_subdomain.setValue( 0 );
          for( unsigned p = 0; p < nparts; p++ ) {
             for( Index local_idx = 0; local_idx < cells_counts[ p ]; local_idx++ ) {
                const Index global_idx = seed_to_cell_index[ cells_offsets[ p ] + local_idx ];
@@ -524,8 +526,7 @@ struct DecomposeMesh
                const Index subvertices = cell.template getSubentitiesCount< 0 >();
                for( Index j = 0; j < subvertices; j++ ) {
                   const Index v = cell.template getSubentityIndex< 0 >( j );
-                  if( (Index) p > point_to_subdomain[ v ] )
-                     point_to_subdomain[ v ] = p;
+                  point_to_subdomain[ v ] = p;
                }
             }
          }
@@ -692,12 +693,52 @@ struct DecomposeMesh
          for( Index i = cells_counts[ p ]; i < cellSeeds.getSize(); i++ )
             cellGhosts[ i ] = (std::uint8_t) Meshes::VTK::CellGhostTypes::DUPLICATECELL;
          // point ghosts are more tricky because they were assigned to the subdomain with higher number
+         Index pointsGhostCount = 0;
          for( Index i = 0; i < points.getSize(); i++ ) {
             const Index global_idx = pointsGlobalIndices[ i ];
-            if( global_idx < points_offsets[ p ] || global_idx >= points_offsets[ p ] + points_counts[ p ] )
+            if( global_idx < points_offsets[ p ] || global_idx >= points_offsets[ p ] + points_counts[ p ] ) {
                pointGhosts[ i ] = (std::uint8_t) Meshes::VTK::PointGhostTypes::DUPLICATEPOINT;
+               pointsGhostCount++;
+            }
             else
                pointGhosts[ i ] = 0;
+         }
+
+         // reorder ghost points to make sure that global indices are sorted
+         {
+            // prepare vector with an identity permutation
+            std::vector< Index > permutation( points.getSize() );
+            std::iota( permutation.begin(), permutation.end(), (Index) 0 );
+
+            // sort the subarray corresponding to ghost entities by the global index
+            std::stable_sort( permutation.begin() + points.getSize() - pointsGhostCount,
+                              permutation.end(),
+                              [&pointsGlobalIndices](auto& left, auto& right) {
+               return pointsGlobalIndices[ left ] < pointsGlobalIndices[ right ];
+            });
+
+            // copy the permutation into TNL array
+            typename Mesh::GlobalIndexArray perm( permutation );
+            permutation.clear();
+            permutation.shrink_to_fit();
+
+            // apply the permutation
+            using PermutationApplier = TNL::Meshes::IndexPermutationApplier< Mesh, 0 >;
+            // - pointGhosts
+            PermutationApplier::permuteArray( pointGhosts, perm );
+            // - pointsGlobalIndices
+            PermutationApplier::permuteArray( pointsGlobalIndices, perm );
+            // - points
+            PermutationApplier::permuteArray( points, perm );
+            // - cellSeeds.setCornerID (inverse perm)
+            std::vector< Index > iperm( points.getSize() );
+            for( Index i = 0; i < perm.getSize(); i++ )
+               iperm[ perm[ i ] ] = i;
+            for( Index i = 0; i < cellSeeds.getSize(); i++ ) {
+               auto& cornerIds = cellSeeds[ i ].getCornerIds();
+               for( Index v = 0; v < cornerIds.getSize(); v++ )
+                  cornerIds[ v ] = iperm[ cornerIds[ v ] ];
+            }
          }
 
          // init mesh for the subdomain
