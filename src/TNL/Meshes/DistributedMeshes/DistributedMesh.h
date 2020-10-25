@@ -197,11 +197,14 @@ public:
                 << "\tMesh dimension:\t" << getMeshDimension() << "\n"
                 << "\tCell topology:\t" << getType( typename Cell::EntityTopology{} ) << "\n"
                 << "\tCells count:\t" << cellsCount << "\n"
+                << "\tFaces count:\t" << localMesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >() << "\n"
                 << "\tvertices count:\t" << verticesCount << "\n"
                 << "\tGhost levels:\t" << getGhostLevels() << "\n"
                 << "\tGhost cells count:\t" << localMesh.template getGhostEntitiesCount< Mesh::getMeshDimension() >() << "\n"
+                << "\tGhost faces count:\t" << localMesh.template getGhostEntitiesCount< Mesh::getMeshDimension() - 1 >() << "\n"
                 << "\tGhost vertices count:\t" << localMesh.template getGhostEntitiesCount< 0 >() << "\n"
                 << "\tBoundary cells count:\t" << localMesh.template getBoundaryIndices< Mesh::getMeshDimension() >().getSize() << "\n"
+                << "\tBoundary faces count:\t" << localMesh.template getBoundaryIndices< Mesh::getMeshDimension() - 1 >().getSize() << "\n"
                 << "\tBoundary vertices count:\t" << localMesh.template getBoundaryIndices< 0 >().getSize() << "\n";
             const GlobalIndexType globalPointIndices = getGlobalIndices< 0 >().getSize();
             const GlobalIndexType globalCellIndices = getGlobalIndices< Mesh::getMeshDimension() >().getSize();
