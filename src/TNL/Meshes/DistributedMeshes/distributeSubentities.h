@@ -12,9 +12,6 @@
 
 #pragma once
 
-#include <numeric>   // std::iota
-#include <atomic>
-
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
@@ -137,19 +134,12 @@ exchangeGhostIndices( typename CommunicatorType::CommunicationGroup group,
    return ghost_indices;
 }
 
-// FIXME: This algorithm works only when min-common-vertices == 1, i.e. we have
-// the full information about neighbors of ghosts on the overlap. Otherwise,
-// depending on how the mesh was decomposed, we might end up with errors like
-//    vertex with gid=XXX received from rank X was not found on the local mesh for rank Y (global offset = YYY)
-// The problem is with the getEntityOwner function, which assumes that it knows
-// everything about the neighbors of the entity based on its subvertices.
-//
-// FIXME: This algorithm may distribute entities in such a way that some rank
-// owns an entity on the interface between two (other) subdomains, but the
-// neighbor cell of the entity is a ghost.
+// \param preferHighRanks  When true, faces on the interface between two subdomains will be owned
+//                         by the rank with the higher number. Otherwise, they will be owned by the
+//                         rank with the lower number.
 template< int Dimension, typename DistributedMesh >
 void
-distributeSubentities( DistributedMesh& mesh )
+distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
 {
    using DeviceType = typename DistributedMesh::DeviceType;
    using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
@@ -167,73 +157,65 @@ distributeSubentities( DistributedMesh& mesh )
    const int rank = CommunicatorType::GetRank( mesh.getCommunicationGroup() );
    const int nproc = CommunicatorType::GetSize( mesh.getCommunicationGroup() );
 
-   // 0. exchange vertex data to prepare getVertexOwner for use in getEntityOwner
-   DistributedMeshSynchronizer< DistributedMesh, 0 > synchronizer;
-   synchronizer.initialize( mesh );
+   // 0. exchange cell data to prepare getCellOwner for use in getEntityOwner
+   DistributedMeshSynchronizer< DistributedMesh, DistributedMesh::getMeshDimension() > cell_synchronizer;
+   cell_synchronizer.initialize( mesh );
 
-   auto getVertexOwner = [&] ( GlobalIndexType local_idx ) -> int
+   auto getCellOwner = [&] ( GlobalIndexType local_idx ) -> int
    {
-      const GlobalIndexType global_idx = mesh.template getGlobalIndices< 0 >()[ local_idx ];
-      return synchronizer.getEntityOwner( global_idx );
+      const GlobalIndexType global_idx = mesh.template getGlobalIndices< DistributedMesh::getMeshDimension() >()[ local_idx ];
+      return cell_synchronizer.getEntityOwner( global_idx );
    };
 
-   // find which rank owns all vertices of its local cells
-   // (this is not unique, there might be more such subdomains (which are not connected),
-   // so we assume it's either 0 or nproc-1)
-   int rankOwningAllLocalCellSubvertices = nproc;
-   {
-      std::atomic<bool> its_us( true );
-      mesh.getLocalMesh().template forLocal< DistributedMesh::getMeshDimension() >( [&] ( GlobalIndexType i ) mutable {
-         for( LocalIndexType v = 0; v < mesh.getLocalMesh().template getSubentitiesCount< DistributedMesh::getMeshDimension(), 0 >( i ); v++ ) {
-            const GlobalIndexType gv = mesh.getLocalMesh().template getSubentityIndex< DistributedMesh::getMeshDimension(), 0 >( i, v );
-            if( getVertexOwner( gv ) != rank )
-               its_us = false;
-         }
-      });
-      Containers::Array< bool, Devices::Host, int > recvbuf( nproc ), sendbuf( nproc );
-      sendbuf.setValue( its_us );
-      CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                  recvbuf.getData(), 1,
-                                  mesh.getCommunicationGroup() );
-      if( recvbuf[ 0 ] )
-         rankOwningAllLocalCellSubvertices = 0;
-      else if( recvbuf[ nproc - 1 ] )
-         rankOwningAllLocalCellSubvertices = nproc - 1;
-      else
-         throw std::runtime_error("Vertices are not distributed consistently. Shared vertices on the boundaries must be assigned "
-                                  "either to the highest or to the lowest rank. Thus, either the first or the last rank must "
-                                  "own all subvertices of its local cells.");
-   }
-
+   // algorithm for getEntityOwner:
+   // 0. if all neighbor cells are local, we are the owner
+   //    -> this is still necessary, e.g. for situations like this:
+   //             __/\__
+   //       if the upper rank owns the vertices on the interface, it would get the face below the /\ cape
+   // (1.) all vertices internal -> local entity
+   //      (this should be covered by 0.)
+   // (2.) some internal vertices, other vertices on the interface -> local entity
+   //      (this should be covered by 0.)
+   // 3. all vertices on the interface (i.e. some neighbor cells are local, some are ghosts)
+   //    -> faces: there are exactly 2 ranks which share the face on their interface, pick the one with min/max number
+   //    -> other subentities: the face owner should own all subentities of the face
+   // 4. any number of ghost non-interface vertices (i.e. the entity has only ghost neighbor cells)
+   //    -> the true owner cannot be determined, so we return just the owner of the first neighbor cell
+   //       and let the iterative algorithm with padding indices to take care of the rest
+   //       (the neighbor will return a padding index until it gets the global index from the true owner)
+   // TODO: implement getEntityOwner for other subentities
+   static_assert( Dimension == DistributedMesh::getMeshDimension() - 1, "the getEntityOwner function is implemented only for faces" );
    auto getEntityOwner = [&] ( GlobalIndexType local_idx ) -> int
    {
       auto entity = mesh.getLocalMesh().template getEntity< Dimension >( local_idx );
 
-      // if all neighbor cells are local, we are the owner
-      bool all_neighbor_cells_local = true;
+      int local_neighbor_cells_count = 0;
       for( LocalIndexType k = 0; k < entity.template getSuperentitiesCount< DistributedMesh::getMeshDimension() >(); k++ ) {
          const GlobalIndexType gk = entity.template getSuperentityIndex< DistributedMesh::getMeshDimension() >( k );
-         if( mesh.getLocalMesh().template isGhostEntity< DistributedMesh::getMeshDimension() >( gk ) ) {
-            all_neighbor_cells_local = false;
-            break;
-         }
+         if( ! mesh.getLocalMesh().template isGhostEntity< DistributedMesh::getMeshDimension() >( gk ) )
+            local_neighbor_cells_count++;
       }
-      if( all_neighbor_cells_local )
+
+      // if all neighbor cells are local, we are the owner
+      if( local_neighbor_cells_count == 2 )
          return rank;
 
-      int owner = (rankOwningAllLocalCellSubvertices == 0) ? 0 : nproc;
-      for( LocalIndexType v = 0; v < entity.template getSubentitiesCount< 0 >(); v++ ) {
-         const GlobalIndexType gv = entity.template getSubentityIndex< 0 >( v );
-         if( rankOwningAllLocalCellSubvertices == 0 )
-            // this assumes that vertices at the boundaries were assigned to the subdomain with the lowest rank
-            // (this is used in DistributedMeshTest for simplicitty)
-            owner = TNL::max( owner, getVertexOwner( gv ) );
-         else
-            // this assumes that vertices at the boundaries were assigned to the subdomain with the highest rank
-            // (this is what tnl-decompose-mesh does)
-            owner = TNL::min( owner, getVertexOwner( gv ) );
+      // face is on the interface
+      if( local_neighbor_cells_count == 1 ) {
+         int owner = (preferHighRanks) ? 0 : nproc;
+         for( LocalIndexType k = 0; k < entity.template getSuperentitiesCount< DistributedMesh::getMeshDimension() >(); k++ ) {
+            const GlobalIndexType gk = entity.template getSuperentityIndex< DistributedMesh::getMeshDimension() >( k );
+            if( preferHighRanks )
+               owner = TNL::max( owner, getCellOwner( gk ) );
+            else
+               owner = TNL::min( owner, getCellOwner( gk ) );
+         }
+         return owner;
       }
-      return owner;
+
+      // only ghost cell neighbors - owner cannot be determined, return the first cell neighbor
+      const GlobalIndexType gk = entity.template getSuperentityIndex< DistributedMesh::getMeshDimension() >( 0 );
+      return getCellOwner( gk );
    };
 
    // 1. identify local entities, set the GhostEntity tag on others
@@ -243,77 +225,57 @@ distributeSubentities( DistributedMesh& mesh )
          localMesh.template addEntityTag< Dimension >( i, EntityTags::GhostEntity );
    });
 
-   // 2. reorder the entities to make sure that all ghost entities are after local entities
-   // TODO: it would be nice if the mesh initializer could do this
+   // 2. exchange the counts of local entities between ranks, compute offsets for global indices
+   Containers::Vector< GlobalIndexType, Devices::Host, int > globalOffsets( nproc );
    {
-      // count local entities
       GlobalIndexType localEntitiesCount = 0;
       for( GlobalIndexType i = 0; i < localMesh.template getEntitiesCount< Dimension >(); i++ )
          if( ! localMesh.template isGhostEntity< Dimension >( i ) )
             ++localEntitiesCount;
 
-      // create the permutation
-      typename LocalMesh::GlobalIndexArray perm, iperm;
-      perm.setSize( localMesh.template getEntitiesCount< Dimension >() );
-      iperm.setSize( localMesh.template getEntitiesCount< Dimension >() );
-      GlobalIndexType localsCount = 0;
-      GlobalIndexType ghostsCount = 0;
-      for( GlobalIndexType j = 0; j < iperm.getSize(); j++ ) {
-         if( localMesh.template isGhostEntity< Dimension >( j ) ) {
-            iperm[ j ] = localEntitiesCount + ghostsCount;
-            perm[ localEntitiesCount + ghostsCount ] = j;
-            ++ghostsCount;
-         }
-         else {
-            iperm[ j ] = localsCount;
-            perm[ localsCount ] = j;
-            ++localsCount;
-         }
-      }
-
-      // reorder the local mesh
-      localMesh.template reorderEntities< Dimension >( perm, iperm );
-   }
-
-   // 3. update entity tags layer (this is actually done as part of the mesh reordering)
-   //localMesh.template updateEntityTagsLayer< Dimension >();
-
-   // 4. exchange the counts of local entities between ranks, compute offsets for global indices
-   Containers::Vector< GlobalIndexType, Devices::Host, int > globalOffsets( nproc );
-   {
       Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
-      sendbuf.setValue( localMesh.template getGhostEntitiesOffset< Dimension >() );
+      sendbuf.setValue( localEntitiesCount );
       CommunicatorType::Alltoall( sendbuf.getData(), 1,
                                   globalOffsets.getData(), 1,
                                   mesh.getCommunicationGroup() );
    }
    globalOffsets.template scan< Algorithms::ScanType::Exclusive >();
 
-   // 5. assign global indices to the local entities
+   // 3. assign global indices to the local entities and a padding index to ghost entities
+   //    (later we can check the padding index to know if an index was set or not)
+   const GlobalIndexType padding_index = (std::is_signed<GlobalIndexType>::value) ? -1 : std::numeric_limits<GlobalIndexType>::max();
    mesh.template getGlobalIndices< Dimension >().setSize( localMesh.template getEntitiesCount< Dimension >() );
-   localMesh.template forLocal< Dimension >( [&] ( GlobalIndexType i ) mutable {
-      mesh.template getGlobalIndices< Dimension >()[ i ] = globalOffsets[ rank ] + i;
-   });
+   // also create mapping for ghost entities so that we can efficiently iterate over ghost entities
+   // while the entities were not sorted yet on the local mesh
+   std::vector< GlobalIndexType > localGhostIndices;
+   GlobalIndexType entityIndex = globalOffsets[ rank ];
+   for( GlobalIndexType i = 0; i < localMesh.template getEntitiesCount< Dimension >(); i++ ) {
+      if( localMesh.template isGhostEntity< Dimension >( i ) ) {
+         mesh.template getGlobalIndices< Dimension >()[ i ] = padding_index;
+         localGhostIndices.push_back( i );
+      }
+      else
+         mesh.template getGlobalIndices< Dimension >()[ i ] = entityIndex++;
+   }
 
    // Now for each ghost entity, we will take the global indices of its subvertices and
-   // send them to the owner of the entity. The owner will scan its vertex-entity
-   // superentity matrix, find the entity which has the received vertex indices and send
-   // the global entity index back to the inquirer.
+   // send them to another rank (does not necessarily have to be the owner of the entity).
+   // The other rank will scan its vertex-entity superentity matrix, find the entity which
+   // has the received vertex indices and send the global entity index (which can be a
+   // padding index if it does not know it yet) back to the inquirer. The communication
+   // process is repeated until there are no padding indices.
    // Note that we have to synchronize based on the vertex-entity superentity matrix,
    // because synchronization based on the cell-entity subentity matrix would not be
    // general. For example, two subdomains can have a common face, but no common cell,
    // even when ghost_levels > 0. On the other hand, if two subdomains have a common face,
    // they have common all its subvertices.
 
-   // 6. build seeds for ghost entities
+   // 4. build seeds for ghost entities
    std::vector< std::vector< GlobalIndexType > > seeds_vertex_indices, seeds_entity_offsets, seeds_local_indices;
    seeds_vertex_indices.resize( nproc );
    seeds_entity_offsets.resize( nproc );
    seeds_local_indices.resize( nproc );
-   for( GlobalIndexType entity_index = localMesh.template getGhostEntitiesOffset< Dimension >();
-        entity_index < localMesh.template getEntitiesCount< Dimension >();
-        entity_index++ )
-   {
+   for( auto entity_index : localGhostIndices ) {
       const int owner = getEntityOwner( entity_index );
       for( LocalIndexType v = 0; v < localMesh.template getSubentitiesCount< Dimension, 0 >( entity_index ); v++ ) {
          const GlobalIndexType local_index = localMesh.template getSubentityIndex< Dimension, 0 >( entity_index, v );
@@ -325,141 +287,139 @@ distributeSubentities( DistributedMesh& mesh )
       seeds_local_indices[ owner ].push_back( entity_index );
    }
 
-   // 7. exchange seeds for ghost entities
+   // 5. exchange seeds for ghost entities
    const auto foreign_seeds = exchangeGhostEntitySeeds< CommunicatorType >( mesh.getCommunicationGroup(), seeds_vertex_indices, seeds_entity_offsets );
    const auto& foreign_seeds_vertex_indices = std::get< 0 >( foreign_seeds );
    const auto& foreign_seeds_entity_offsets = std::get< 1 >( foreign_seeds );
 
-//   std::stringstream msg;
-//   msg << "rank " << rank << ":\n";
-//   for( int i = 0; i < nproc; i++ ) {
-//      msg << "- from rank " << i << ":\n";
-//      msg << "\tindices: ";
-//      for( auto j : foreign_seeds_vertex_indices[i] )
-//         msg << j << " ";
-//      msg << "\n\toffsets: ";
-//      for( auto j : foreign_seeds_entity_offsets[i] )
-//         msg << j << " ";
-//      msg << "\n";
-//   }
-//   std::cout << msg.str();
-
-   // 8. determine global indices for the received seeds
    std::vector< std::vector< GlobalIndexType > > foreign_ghost_indices;
    foreign_ghost_indices.resize( nproc );
    for( int i = 0; i < nproc; i++ )
       foreign_ghost_indices[ i ].resize( foreign_seeds_entity_offsets[ i ].size() );
-   Algorithms::ParallelFor< Devices::Host >::exec( 0, nproc, [&] ( int i ) {
-      GlobalIndexType vertexOffset = 0;
-      // loop over all foreign ghost entities
-      for( std::size_t entityIndex = 0; entityIndex < foreign_seeds_entity_offsets[ i ].size(); entityIndex++ ) {
-         // data structure for common indices
-         std::set< GlobalIndexType > common_indices;
 
-         // loop over all subvertices of the entity
-         while( vertexOffset < foreign_seeds_entity_offsets[ i ][ entityIndex ] ) {
-            const GlobalIndexType vertex = foreign_seeds_vertex_indices[ i ][ vertexOffset++ ];
-            GlobalIndexType localIndex = 0;
-            if( vertex >= synchronizer.getGlobalOffsets()[ rank ]
-                && vertex < synchronizer.getGlobalOffsets()[ rank ] + localMesh.template getGhostEntitiesOffset< 0 >() )
-            {
-               // subtract offset to get local index
-               localIndex = vertex - synchronizer.getGlobalOffsets()[ rank ];
-            }
-            else {
-               // we must go through the ghost entities
-               for( GlobalIndexType g = localMesh.template getGhostEntitiesOffset< 0 >();
-                    g < localMesh.template getEntitiesCount< 0 >();
-                    g++ )
-                  if( vertex == mesh.template getGlobalIndices< 0 >()[ g ] ) {
-                     localIndex = g;
-                     break;
-                  }
-               if( localIndex == 0 )
-                  throw std::runtime_error( "vertex with gid=" + std::to_string(vertex) + " received from rank "
-                                          + std::to_string(i) + " was not found on the local mesh for rank " + std::to_string(rank)
-                                          + " (global offset = " + std::to_string(synchronizer.getGlobalOffsets()[ rank ]) + ")" );
-            }
-
-            // collect superentities of this vertex
-            std::set< GlobalIndexType > superentities;
-            for( LocalIndexType e = 0; e < localMesh.template getSuperentitiesCount< 0, Dimension >( localIndex ); e++ ) {
-               const GlobalIndexType entity = localMesh.template getSuperentityIndex< 0, Dimension >( localIndex, e );
-               superentities.insert( entity );
-            }
-
-            // initialize or intersect
-            if( common_indices.empty() )
-               common_indices = superentities;
-            else
-               // remove indices which are not in the current superentities set
-               for( auto it = common_indices.begin(); it != common_indices.end(); ) {
-                  if( superentities.count( *it ) == 0 )
-                     it = common_indices.erase(it);
-                  else
-                     ++it;
-               }
-         }
-
-         if( common_indices.size() != 1 ) {
-            std::stringstream msg;
-            msg << "expected exactly 1 common index, but the algorithm found these common indices: ";
-            for( auto i : common_indices )
-               msg << i << " ";
-            msg << "\nDebug info: rank " << rank << ", entityIndex = " << entityIndex << ", received from rank " << i;
-            throw std::runtime_error( msg.str() );
-         }
-
-         const GlobalIndexType local_index = *common_indices.begin();
-         if( getEntityOwner( local_index ) != rank )
-            throw std::runtime_error( "rank " + std::to_string(rank) + " does not own the entity which was left common: " + std::to_string(local_index) );
-
-         // assign global index
-         foreign_ghost_indices[ i ][ entityIndex ] = mesh.template getGlobalIndices< Dimension >()[ local_index ];
-      }
-   });
-
-   // 9. exchange global ghost indices
-   const auto ghost_indices = exchangeGhostIndices< CommunicatorType >( mesh.getCommunicationGroup(), foreign_ghost_indices, seeds_local_indices );
-
-//   std::stringstream msg;
-//   msg << "rank " << rank << ":\n";
-//   for( int i = 0; i < nproc; i++ ) {
-//      msg << "- from rank " << i << ":\n";
-//      msg << "\tghost indices: ";
-//      for( auto j : ghost_indices[i] )
-//         msg << j << " ";
-//      msg << "\n";
-//   }
-//   std::cout << msg.str();
-
-   // 10. set the global indices of our ghost entities
-   for( int i = 0; i < nproc; i++ ) {
-      for( std::size_t g = 0; g < ghost_indices[ i ].size(); g++ )
-         mesh.template getGlobalIndices< Dimension >()[ seeds_local_indices[ i ][ g ] ] = ghost_indices[ i ][ g ];
-   }
-
-   // 11. reorder the entities to make sure that global indices are sorted
+   // 6. iterate until there are no padding indices
+   //    (maybe 2 iterations are always enough, but we should be extra careful)
+   for( int iter = 0; iter < DistributedMesh::getMeshDimension(); iter++ )
    {
-      // prepare vector with an identity permutation
-      std::vector< GlobalIndexType > permutation( localMesh.template getEntitiesCount< Dimension >() );
-      std::iota( permutation.begin(), permutation.end(), (GlobalIndexType) 0 );
+      // 6a. determine global indices for the received seeds
+      Algorithms::ParallelFor< Devices::Host >::exec( 0, nproc, [&] ( int i ) {
+         GlobalIndexType vertexOffset = 0;
+         // loop over all foreign ghost entities
+         for( std::size_t entityIndex = 0; entityIndex < foreign_seeds_entity_offsets[ i ].size(); entityIndex++ ) {
+            // data structure for common indices
+            std::set< GlobalIndexType > common_indices;
 
-      // sort the subarray corresponding to ghost entities by the global index
-      std::stable_sort( permutation.begin() + mesh.getLocalMesh().template getGhostEntitiesOffset< Dimension >(),
-                        permutation.end(),
-                        [&mesh](auto& left, auto& right) {
-         return mesh.template getGlobalIndices< Dimension >()[ left ] < mesh.template getGlobalIndices< Dimension >()[ right ];
+            // global vertex index offset (for global-to-local index conversion)
+            const GlobalIndexType globalOffset = mesh.template getGlobalIndices< 0 >().getElement( 0 );
+
+            // loop over all subvertices of the entity
+            while( vertexOffset < foreign_seeds_entity_offsets[ i ][ entityIndex ] ) {
+               const GlobalIndexType vertex = foreign_seeds_vertex_indices[ i ][ vertexOffset++ ];
+               GlobalIndexType localIndex = 0;
+               if( vertex >= globalOffset && vertex < globalOffset + localMesh.template getGhostEntitiesOffset< 0 >() )
+                  // subtract offset to get local index
+                  localIndex = vertex - globalOffset;
+               else {
+                  // we must go through the ghost vertices
+                  for( GlobalIndexType g = localMesh.template getGhostEntitiesOffset< 0 >();
+                       g < localMesh.template getEntitiesCount< 0 >();
+                       g++ )
+                     if( vertex == mesh.template getGlobalIndices< 0 >()[ g ] ) {
+                        localIndex = g;
+                        break;
+                     }
+                  if( localIndex == 0 )
+                     throw std::runtime_error( "vertex with gid=" + std::to_string(vertex) + " received from rank "
+                                             + std::to_string(i) + " was not found on the local mesh for rank " + std::to_string(rank)
+                                             + " (global offset = " + std::to_string(globalOffset) + ")" );
+               }
+
+               // collect superentities of this vertex
+               std::set< GlobalIndexType > superentities;
+               for( LocalIndexType e = 0; e < localMesh.template getSuperentitiesCount< 0, Dimension >( localIndex ); e++ ) {
+                  const GlobalIndexType entity = localMesh.template getSuperentityIndex< 0, Dimension >( localIndex, e );
+                  superentities.insert( entity );
+               }
+
+               // initialize or intersect
+               if( common_indices.empty() )
+                  common_indices = superentities;
+               else
+                  // remove indices which are not in the current superentities set
+                  for( auto it = common_indices.begin(); it != common_indices.end(); ) {
+                     if( superentities.count( *it ) == 0 )
+                        it = common_indices.erase(it);
+                     else
+                        ++it;
+                  }
+            }
+
+            if( common_indices.size() != 1 ) {
+               std::stringstream msg;
+               msg << "expected exactly 1 common index, but the algorithm found these common indices: ";
+               for( auto i : common_indices )
+                  msg << i << " ";
+               msg << "\nDebug info: rank " << rank << ", entityIndex = " << entityIndex << ", received from rank " << i;
+               throw std::runtime_error( msg.str() );
+            }
+
+            // assign global index
+            // (note that we do not have to check if we are the actual owner of the entity,
+            // we can just forward global indices that we received from somebody else, or
+            // send the padding index if the global index was not received yet)
+            const GlobalIndexType local_index = *common_indices.begin();
+            foreign_ghost_indices[ i ][ entityIndex ] = mesh.template getGlobalIndices< Dimension >()[ local_index ];
+         }
       });
 
-      // copy the permutation into TNL array and invert
+      // 6b. exchange global ghost indices
+      const auto ghost_indices = exchangeGhostIndices< CommunicatorType >( mesh.getCommunicationGroup(), foreign_ghost_indices, seeds_local_indices );
+
+      // 6c. set the global indices of our ghost entities
+      bool done = true;
+      for( int i = 0; i < nproc; i++ ) {
+         for( std::size_t g = 0; g < ghost_indices[ i ].size(); g++ ) {
+            mesh.template getGlobalIndices< Dimension >()[ seeds_local_indices[ i ][ g ] ] = ghost_indices[ i ][ g ];
+            if( ghost_indices[ i ][ g ] == padding_index )
+               done = false;
+         }
+      }
+
+      // 6d. check if finished
+      bool all_done = false;;
+      CommunicatorType::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      if( all_done )
+         break;
+   }
+   if( mesh.template getGlobalIndices< Dimension >().containsValue( padding_index ) )
+      throw std::runtime_error( "some global indices were left unset" );
+
+   // 7. reorder the entities to make sure that global indices are sorted
+   {
+      // prepare arrays for the permutation and inverse permutation
       typename LocalMesh::GlobalIndexArray perm, iperm;
       perm.setSize( localMesh.template getEntitiesCount< Dimension >() );
       iperm.setSize( localMesh.template getEntitiesCount< Dimension >() );
-      for( GlobalIndexType i = 0; i < localMesh.template getEntitiesCount< Dimension >(); i++ ) {
-         perm[ i ] = permutation[ i ];
+
+      // create the permutation - sort the identity array by the global index, but put local entities first
+      localMesh.template forAll< Dimension >( [&] ( GlobalIndexType i ) mutable { perm[ i ] = i; });
+      std::stable_sort( perm.getData(), // + mesh.getLocalMesh().template getGhostEntitiesOffset< Dimension >(),
+                        perm.getData() + perm.getSize(),
+                        [&mesh, &localMesh](auto& left, auto& right) {
+         auto is_local = [&](auto& i) {
+            return ! localMesh.template isGhostEntity< Dimension >( i );
+         };
+         if( is_local(left) && ! is_local(right) )
+            return true;
+         if( ! is_local(left) && is_local(right) )
+            return false;
+         return mesh.template getGlobalIndices< Dimension >()[ left ] < mesh.template getGlobalIndices< Dimension >()[ right ];
+      });
+
+      // invert the permutation
+      localMesh.template forAll< Dimension >( [&] ( GlobalIndexType i ) mutable {
          iperm[ perm[ i ] ] = i;
-      }
+      });
 
       // reorder the mesh
       mesh.template reorderEntities< Dimension >( perm, iperm );

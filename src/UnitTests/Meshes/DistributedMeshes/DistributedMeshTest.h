@@ -267,7 +267,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 
       if( overlap > 0 ) {
          // distribute faces
-         distributeSubentities< 1 >( mesh );
+         distributeSubentities< 1 >( mesh, /* preferHighRanks = */ false );
       }
    }
 
@@ -733,7 +733,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    reader.loadMesh( loadedMesh );
    // decomposition of faces is not stored in the VTK files
    if( mesh.getGhostLevels() > 0 ) {
-      distributeSubentities< 1 >( loadedMesh );
+      distributeSubentities< 1 >( loadedMesh, /* preferHighRanks = */ false );
    }
    EXPECT_EQ( loadedMesh, mesh );
 
