@@ -631,7 +631,7 @@ struct DecomposeMesh
          }
 
          // collect seed indices of ghost cells
-         std::vector< Index > ghost_seed_indices;
+         std::set< Index > ghost_seed_indices;
          for( unsigned gl = 0; gl < ghost_levels; gl++ ) {
             std::vector< Index > new_ghosts;
             for( auto global_idx : ghost_neighbors ) {
@@ -639,9 +639,15 @@ struct DecomposeMesh
                const Index neighbors_end = dual_xadj.get()[ global_idx + 1 ];
                for( Index i = neighbors_start; i < neighbors_end; i++ ) {
                   const Index neighbor_idx = dual_adjncy.get()[ i ];
-                  new_ghosts.push_back( neighbor_idx );
+                  // skip neighbors on the local subdomain
+                  if( part[ neighbor_idx ] == (int) p )
+                     continue;
                   const Index neighbor_seed_idx = cell_to_seed_index[ neighbor_idx ];
-                  ghost_seed_indices.push_back( neighbor_seed_idx );
+                  // skip neighbors whose seed was already added
+                  if( ghost_seed_indices.count( neighbor_seed_idx ) == 0 ) {
+                     new_ghosts.push_back( neighbor_idx );
+                     ghost_seed_indices.insert( neighbor_seed_idx );
+                  }
                }
             }
             std::swap( ghost_neighbors, new_ghosts );
@@ -649,10 +655,7 @@ struct DecomposeMesh
          ghost_neighbors.clear();
          ghost_neighbors.shrink_to_fit();
 
-         // sort ghosts by their seed index (i.g. global index on the decomposed mesh)
-         std::sort( ghost_seed_indices.begin(), ghost_seed_indices.end() );
-
-         // add ghost cells
+         // add ghost cells (the set is sorted by the seed index)
          for( auto idx : ghost_seed_indices ) {
             // the ghost_seed_indices array may contain duplicates and even local
             // cells, but add_cell takes care of uniqueness, so we don't have to
@@ -661,7 +664,6 @@ struct DecomposeMesh
             add_cell( cell );
          }
          ghost_seed_indices.clear();
-         ghost_seed_indices.shrink_to_fit();
          cell_global_indices.clear();
 
          // set points needed for the subdomain
