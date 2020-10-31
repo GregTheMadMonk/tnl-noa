@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest.cpp -  description
+                          SparseMatrixTest.cu -  description
                              -------------------
     begin                : Nov 2, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest.h"
+#include "Legacy_SparseMatrixTest.h"

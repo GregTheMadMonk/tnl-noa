@@ -10,7 +10,7 @@
 
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
 
-#include "SparseMatrixTest.hpp"
+#include "Legacy_SparseMatrixTest.hpp"
 #include <iostream>
 
 #ifdef HAVE_GTEST 

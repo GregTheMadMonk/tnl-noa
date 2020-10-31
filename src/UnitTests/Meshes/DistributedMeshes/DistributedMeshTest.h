@@ -11,6 +11,7 @@
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Traverser.h>
 #include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Geometry/getEntityCenter.h>
 #include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/VTKTraits.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
@@ -267,7 +268,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 
       if( overlap > 0 ) {
          // distribute faces
-         distributeSubentities< 1 >( mesh );
+         distributeSubentities< 1 >( mesh, /* preferHighRanks = */ false );
       }
    }
 
@@ -578,7 +579,7 @@ void testTraverser( const Mesh& mesh )
 }
 
 template< typename Device, typename EntityType, typename MeshType >
-void testSynchronizerOnDevice( const MeshType& mesh )
+void testSynchronizerOnDevice_global_indices( const MeshType& mesh )
 {
    using LocalMesh = Mesh< typename MeshType::Config, Device >;
    using DeviceMesh = DistributedMesh< LocalMesh >;
@@ -606,6 +607,79 @@ void testSynchronizerOnDevice( const MeshType& mesh )
 
    // check all global indices
    EXPECT_EQ( f.getData(), mesh.template getGlobalIndices< EntityType::getEntityDimension() >() );
+}
+
+template< typename Mesh >
+__cuda_callable__
+typename Mesh::LocalIndexType
+getCellsForFace( const Mesh & mesh, const typename Mesh::GlobalIndexType E, typename Mesh::GlobalIndexType* cellIndexes )
+{
+    using LocalIndexType = typename Mesh::LocalIndexType;
+    const LocalIndexType numCells = mesh.template getSuperentitiesCount< Mesh::getMeshDimension() - 1, Mesh::getMeshDimension() >( E );
+    for( LocalIndexType i = 0; i < numCells; i++ )
+        cellIndexes[ i ] = mesh.template getSuperentityIndex< Mesh::getMeshDimension() - 1, Mesh::getMeshDimension() >( E, i );
+    return numCells;
+}
+
+// testing global indices is not enough - entity centers are needed to ensure that the transferred data really match the physical entities
+template< typename Device, typename EntityType, typename MeshType >
+void testSynchronizerOnDevice_entity_centers( const MeshType& mesh )
+{
+   using LocalMesh = TNL::Meshes::Mesh< typename MeshType::Config, Device >;
+   using DeviceMesh = TNL::Meshes::DistributedMeshes::DistributedMesh< LocalMesh >;
+   using IndexType = typename MeshType::GlobalIndexType;
+   using PointType = typename MeshType::PointType;
+   using Array = TNL::Containers::Array< typename LocalMesh::RealType, typename LocalMesh::DeviceType, IndexType >;
+   using Synchronizer = TNL::Meshes::DistributedMeshes::DistributedMeshSynchronizer< DeviceMesh, EntityType::getEntityDimension() >;
+
+   // initialize
+   DeviceMesh deviceMesh;
+   deviceMesh = mesh;
+   Array f( mesh.getLocalMesh().template getEntitiesCount< EntityType::getEntityDimension() >() * MeshType::getMeshDimension() );
+   f.setValue( 0 );
+
+   // set center of each local entity
+   for( IndexType i = 0; i < mesh.getLocalMesh().template getEntitiesCount< EntityType >(); i++ )
+      if( ! mesh.getLocalMesh().template isGhostEntity< EntityType::getEntityDimension() >( i ) ) {
+         const auto center = getEntityCenter( mesh.getLocalMesh(), mesh.getLocalMesh().template getEntity< EntityType >( i ) );
+         for( int d = 0; d < MeshType::getMeshDimension(); d++ )
+            f.setElement( d + MeshType::getMeshDimension() * i, center[ d ] );
+      }
+
+   // synchronize
+   Synchronizer sync;
+   sync.initialize( deviceMesh );
+   sync.synchronizeArray( f, MeshType::getMeshDimension() );
+
+   // check all centers
+   IndexType errors = 0;
+   for( IndexType i = 0; i < mesh.getLocalMesh().template getEntitiesCount< EntityType >(); i++ )
+      if( mesh.getLocalMesh().template isGhostEntity< EntityType::getEntityDimension() >( i ) ) {
+         const PointType center = getEntityCenter( mesh.getLocalMesh(), mesh.getLocalMesh().template getEntity< EntityType >( i ) );
+         PointType received;
+         for( int d = 0; d < MeshType::getMeshDimension(); d++ )
+            received[ d ] = f.getElement( d + MeshType::getMeshDimension() * i );
+         if( received != center ) {
+            IndexType cellIndexes[ 2 ] = {0, 0};
+            const int numCells = getCellsForFace( mesh.getLocalMesh(), i, cellIndexes );
+            std::cerr << "rank " << CommunicatorType::GetRank()
+                      << ": wrong result for entity " << i << " (gid " << mesh.template getGlobalIndices< EntityType::getEntityDimension() >()[i] << ")"
+                      << " of dimension = " << EntityType::getEntityDimension()
+                      << ": received " << received << ", expected = " << center
+                      << ", neighbor cells " << cellIndexes[0] << " " << ((numCells>1) ? cellIndexes[1] : -1)
+                      << std::endl;
+            errors++;
+         }
+      }
+   if( errors > 0 )
+      FAIL() << "rank " << CommunicatorType::GetRank() << ": " << errors << " errors in total." << std::endl;
+}
+
+template< typename Device, typename EntityType, typename MeshType >
+void testSynchronizerOnDevice( const MeshType& mesh )
+{
+   testSynchronizerOnDevice_global_indices< Device, EntityType >( mesh );
+   testSynchronizerOnDevice_entity_centers< Device, EntityType >( mesh );
 }
 
 template< typename Mesh >
@@ -733,7 +807,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    reader.loadMesh( loadedMesh );
    // decomposition of faces is not stored in the VTK files
    if( mesh.getGhostLevels() > 0 ) {
-      distributeSubentities< 1 >( loadedMesh );
+      distributeSubentities< 1 >( loadedMesh, /* preferHighRanks = */ false );
    }
    EXPECT_EQ( loadedMesh, mesh );
 

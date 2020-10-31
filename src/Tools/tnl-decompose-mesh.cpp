@@ -14,9 +14,11 @@
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
+#include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
 #include <metis.h>
 
+#include <numeric>   // std::iota
 #include <memory>
 #include <vector>
 #include <set>
@@ -392,25 +394,32 @@ struct DecomposeMesh
       // set METIS options from parameters
       setMETISoptions(options, parameters);
 
-      if( options[METIS_OPTION_PTYPE] == METIS_PTYPE_KWAY ) {
-         std::cout << "Running METIS_PartGraphKway..." << std::endl;
-         status = METIS_PartGraphKway(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+      if( nparts == 1 ) {
+         // k-way partitioning from Metis fails for nparts == 1 (segfault),
+         // RB succeeds but produces nonsense
+         part_array.setValue( 0 );
       }
       else {
-         std::cout << "Running METIS_PartGraphRecursive..." << std::endl;
-         status = METIS_PartGraphRecursive(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
-      }
+         if( options[METIS_OPTION_PTYPE] == METIS_PTYPE_KWAY ) {
+            std::cout << "Running METIS_PartGraphKway..." << std::endl;
+            status = METIS_PartGraphKway(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+         }
+         else {
+            std::cout << "Running METIS_PartGraphRecursive..." << std::endl;
+            status = METIS_PartGraphRecursive(&nvtxs, &ncon, xadj, adjncy, vwgt, vsize, adjwgt, &nparts, tpwgts, ubvec, options, &objval, part);
+         }
 
-      switch( status )
-      {
-         case METIS_OK: break;
-         case METIS_ERROR_INPUT:
-            throw std::runtime_error( "METIS_PartGraph failed due to an input error." );
-         case METIS_ERROR_MEMORY:
-            throw std::runtime_error( "METIS_PartGraph failed due to a memory allocation error." );
-         case METIS_ERROR:
-         default:
-            throw std::runtime_error( "METIS_PartGraph failed with an unspecified error." );
+         switch( status )
+         {
+            case METIS_OK: break;
+            case METIS_ERROR_INPUT:
+               throw std::runtime_error( "METIS_PartGraph failed due to an input error." );
+            case METIS_ERROR_MEMORY:
+               throw std::runtime_error( "METIS_PartGraph failed due to a memory allocation error." );
+            case METIS_ERROR:
+            default:
+               throw std::runtime_error( "METIS_PartGraph failed with an unspecified error." );
+         }
       }
 
       // deallocate auxiliary vectors
@@ -508,8 +517,8 @@ struct DecomposeMesh
       points_counts.setValue( 0 );
       {
          // first assign points to subdomains - the subdomain with the highest number takes the point
+         // (go over local cells, set subvertex owner = cell owner, higher rank will overwrite)
          IndexArray point_to_subdomain( pointsCount );
-         point_to_subdomain.setValue( 0 );
          for( unsigned p = 0; p < nparts; p++ ) {
             for( Index local_idx = 0; local_idx < cells_counts[ p ]; local_idx++ ) {
                const Index global_idx = seed_to_cell_index[ cells_offsets[ p ] + local_idx ];
@@ -517,8 +526,7 @@ struct DecomposeMesh
                const Index subvertices = cell.template getSubentitiesCount< 0 >();
                for( Index j = 0; j < subvertices; j++ ) {
                   const Index v = cell.template getSubentityIndex< 0 >( j );
-                  if( (Index) p > point_to_subdomain[ v ] )
-                     point_to_subdomain[ v ] = p;
+                  point_to_subdomain[ v ] = p;
                }
             }
          }
@@ -623,7 +631,7 @@ struct DecomposeMesh
          }
 
          // collect seed indices of ghost cells
-         std::vector< Index > ghost_seed_indices;
+         std::set< Index > ghost_seed_indices;
          for( unsigned gl = 0; gl < ghost_levels; gl++ ) {
             std::vector< Index > new_ghosts;
             for( auto global_idx : ghost_neighbors ) {
@@ -631,9 +639,15 @@ struct DecomposeMesh
                const Index neighbors_end = dual_xadj.get()[ global_idx + 1 ];
                for( Index i = neighbors_start; i < neighbors_end; i++ ) {
                   const Index neighbor_idx = dual_adjncy.get()[ i ];
-                  new_ghosts.push_back( neighbor_idx );
+                  // skip neighbors on the local subdomain
+                  if( part[ neighbor_idx ] == (int) p )
+                     continue;
                   const Index neighbor_seed_idx = cell_to_seed_index[ neighbor_idx ];
-                  ghost_seed_indices.push_back( neighbor_seed_idx );
+                  // skip neighbors whose seed was already added
+                  if( ghost_seed_indices.count( neighbor_seed_idx ) == 0 ) {
+                     new_ghosts.push_back( neighbor_idx );
+                     ghost_seed_indices.insert( neighbor_seed_idx );
+                  }
                }
             }
             std::swap( ghost_neighbors, new_ghosts );
@@ -641,10 +655,7 @@ struct DecomposeMesh
          ghost_neighbors.clear();
          ghost_neighbors.shrink_to_fit();
 
-         // sort ghosts by their seed index (i.g. global index on the decomposed mesh)
-         std::sort( ghost_seed_indices.begin(), ghost_seed_indices.end() );
-
-         // add ghost cells
+         // add ghost cells (the set is sorted by the seed index)
          for( auto idx : ghost_seed_indices ) {
             // the ghost_seed_indices array may contain duplicates and even local
             // cells, but add_cell takes care of uniqueness, so we don't have to
@@ -653,7 +664,6 @@ struct DecomposeMesh
             add_cell( cell );
          }
          ghost_seed_indices.clear();
-         ghost_seed_indices.shrink_to_fit();
          cell_global_indices.clear();
 
          // set points needed for the subdomain
@@ -685,12 +695,52 @@ struct DecomposeMesh
          for( Index i = cells_counts[ p ]; i < cellSeeds.getSize(); i++ )
             cellGhosts[ i ] = (std::uint8_t) Meshes::VTK::CellGhostTypes::DUPLICATECELL;
          // point ghosts are more tricky because they were assigned to the subdomain with higher number
+         Index pointsGhostCount = 0;
          for( Index i = 0; i < points.getSize(); i++ ) {
             const Index global_idx = pointsGlobalIndices[ i ];
-            if( global_idx < points_offsets[ p ] || global_idx >= points_offsets[ p ] + points_counts[ p ] )
+            if( global_idx < points_offsets[ p ] || global_idx >= points_offsets[ p ] + points_counts[ p ] ) {
                pointGhosts[ i ] = (std::uint8_t) Meshes::VTK::PointGhostTypes::DUPLICATEPOINT;
+               pointsGhostCount++;
+            }
             else
                pointGhosts[ i ] = 0;
+         }
+
+         // reorder ghost points to make sure that global indices are sorted
+         {
+            // prepare vector with an identity permutation
+            std::vector< Index > permutation( points.getSize() );
+            std::iota( permutation.begin(), permutation.end(), (Index) 0 );
+
+            // sort the subarray corresponding to ghost entities by the global index
+            std::stable_sort( permutation.begin() + points.getSize() - pointsGhostCount,
+                              permutation.end(),
+                              [&pointsGlobalIndices](auto& left, auto& right) {
+               return pointsGlobalIndices[ left ] < pointsGlobalIndices[ right ];
+            });
+
+            // copy the permutation into TNL array
+            typename Mesh::GlobalIndexArray perm( permutation );
+            permutation.clear();
+            permutation.shrink_to_fit();
+
+            // apply the permutation
+            using PermutationApplier = TNL::Meshes::IndexPermutationApplier< Mesh, 0 >;
+            // - pointGhosts
+            PermutationApplier::permuteArray( pointGhosts, perm );
+            // - pointsGlobalIndices
+            PermutationApplier::permuteArray( pointsGlobalIndices, perm );
+            // - points
+            PermutationApplier::permuteArray( points, perm );
+            // - cellSeeds.setCornerID (inverse perm)
+            std::vector< Index > iperm( points.getSize() );
+            for( Index i = 0; i < perm.getSize(); i++ )
+               iperm[ perm[ i ] ] = i;
+            for( Index i = 0; i < cellSeeds.getSize(); i++ ) {
+               auto& cornerIds = cellSeeds[ i ].getCornerIds();
+               for( Index v = 0; v < cornerIds.getSize(); v++ )
+                  cornerIds[ v ] = iperm[ cornerIds[ v ] ];
+            }
          }
 
          // init mesh for the subdomain
