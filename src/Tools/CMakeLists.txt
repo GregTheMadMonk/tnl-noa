@@ -32,33 +32,19 @@ endif()
 
 find_package( ZLIB )
 if( ZLIB_FOUND )
-   target_compile_definitions(tnl-view PUBLIC "-DHAVE_ZLIB")
-   target_include_directories(tnl-view PUBLIC ${ZLIB_INCLUDE_DIRS})
-   target_link_libraries(tnl-view ${ZLIB_LIBRARIES})
-
-   target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_ZLIB")
-   target_include_directories(tnl-mesh-converter PUBLIC ${ZLIB_INCLUDE_DIRS})
-   target_link_libraries(tnl-mesh-converter ${ZLIB_LIBRARIES})
-
-   target_compile_definitions(tnl-game-of-life PUBLIC "-DHAVE_ZLIB")
-   target_include_directories(tnl-game-of-life PUBLIC ${ZLIB_INCLUDE_DIRS})
-   target_link_libraries(tnl-game-of-life ${ZLIB_LIBRARIES})
-
-   target_compile_definitions(tnl-test-distributed-mesh PUBLIC "-DHAVE_ZLIB")
-   target_include_directories(tnl-test-distributed-mesh PUBLIC ${ZLIB_INCLUDE_DIRS})
-   target_link_libraries(tnl-test-distributed-mesh ${ZLIB_LIBRARIES})
+   foreach( target IN ITEMS tnl-view tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+      target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
+      target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
+      target_link_libraries(${target} ${ZLIB_LIBRARIES})
+   endforeach()
 endif()
 
 find_package( tinyxml2 QUIET )
 if( tinyxml2_FOUND )
-   target_compile_definitions(tnl-mesh-converter PUBLIC "-DHAVE_TINYXML2")
-   target_link_libraries(tnl-mesh-converter tinyxml2::tinyxml2)
-
-   target_compile_definitions(tnl-game-of-life PUBLIC "-DHAVE_TINYXML2")
-   target_link_libraries(tnl-game-of-life tinyxml2::tinyxml2)
-
-   target_compile_definitions(tnl-test-distributed-mesh PUBLIC "-DHAVE_TINYXML2")
-   target_link_libraries(tnl-test-distributed-mesh tinyxml2::tinyxml2)
+   foreach( target IN ITEMS tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+      target_compile_definitions(${target} PUBLIC "-DHAVE_TINYXML2")
+      target_link_libraries(${target} tinyxml2::tinyxml2)
+   endforeach()
 endif()
 
 find_package( METIS QUIET )

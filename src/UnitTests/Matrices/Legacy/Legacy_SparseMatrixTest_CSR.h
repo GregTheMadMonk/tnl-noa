@@ -10,7 +10,7 @@
 
 #include <TNL/Matrices/Legacy/CSR.h>
 
-#include "SparseMatrixTest.hpp"
+#include "Legacy_SparseMatrixTest.hpp"
 #include <iostream>
 
 #ifdef HAVE_GTEST

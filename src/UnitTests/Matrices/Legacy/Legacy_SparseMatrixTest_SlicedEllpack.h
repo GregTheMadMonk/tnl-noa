@@ -11,7 +11,7 @@
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
 
 
-#include "SparseMatrixTest.hpp"
+#include "Legacy_SparseMatrixTest.hpp"
 #include <iostream>
 
 #ifdef HAVE_GTEST

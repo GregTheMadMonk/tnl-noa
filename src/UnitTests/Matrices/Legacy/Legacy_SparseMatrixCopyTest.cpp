@@ -1,11 +1,11 @@
 /***************************************************************************
-                          SparseMatrixTest.cu -  description
+                          SparseMatrixCopyTest.cpp  -  description
                              -------------------
-    begin                : Nov 2, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : Jun 25, 2017
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest.h"
+#include "Legacy_SparseMatrixCopyTest.h"
