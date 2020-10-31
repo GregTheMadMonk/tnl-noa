@@ -54,7 +54,8 @@ auto CudaReductionFunctorWrapper( Reduction&& reduction, Arg1&& arg1, Arg2&& arg
 // let's suppress the aforementioned warning...
 #ifdef __NVCC__
 #pragma push
-#pragma diag_suppress 2979
+#pragma diag_suppress 2979  // error number for nvcc 10.2
+#pragma diag_suppress 3123  // error number for nvcc 11.1
 #endif
    return std::forward<Reduction>(reduction)( std::forward<Arg1>(arg1), std::forward<Arg2>(arg2) );
 #ifdef __NVCC__
