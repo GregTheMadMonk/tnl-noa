@@ -18,7 +18,6 @@
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
@@ -50,15 +49,6 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag,
-          bool enabled = true  >
-class CommunicatorTypeResolver {};
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag,
-          typename CommunicatorType,
           bool enabled = ConfigTagMeshResolve< ConfigTag >::enabled >
 class SolverInitiatorMeshResolver {};
 
@@ -169,7 +159,7 @@ class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTa
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( parameters );
+         return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
       }
 };
 
@@ -178,28 +168,12 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-class CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         if( Communicators::MpiCommunicator::isDistributed() )
-            return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
-         return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::NoDistrCommunicator >::run( parameters );
-      }
-};
-
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename ConfigTag,
-          typename CommunicatorType >
-class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, CommunicatorType, false >
-{
-   public:
-      static bool run( const Config::ParameterContainer& parameters )
-      {
+         using CommunicatorType = Communicators::MpiCommunicator;
          return ProblemSetter< Real,
                                Device,
                                Index,
@@ -213,10 +187,11 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Real,
           typename Device,
           typename Index,
-          typename ConfigTag,
-          typename CommunicatorType >
-class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag,CommunicatorType, true >
+          typename ConfigTag >
+class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
+   using CommunicatorType = Communicators::MpiCommunicator;
+
    // wrapper for MeshTypeResolver
    template< typename MeshType >
    using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag >, CommunicatorType >;

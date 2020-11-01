@@ -13,8 +13,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 
 #include "Merson.h"
 

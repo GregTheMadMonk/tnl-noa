@@ -20,7 +20,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -39,11 +38,7 @@ using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, 
 using namespace TNL;
 using namespace TNL::Benchmarks;
 
-#ifdef HAVE_MPI
 using CommunicatorType = Communicators::MpiCommunicator;
-#else
-using CommunicatorType = Communicators::NoDistrCommunicator;
-#endif
 
 
 template< typename Matrix, typename Vector >

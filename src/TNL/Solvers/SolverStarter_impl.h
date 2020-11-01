@@ -14,7 +14,6 @@
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/BuildConfigTags.h>
@@ -66,7 +65,6 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     */
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
-       ! Communicators::NoDistrCommunicator::setup( parameters ) ||
        ! Communicators::MpiCommunicator::setup( parameters ) 
     )
       return false;

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include "ComputeBlockResidue.h"
 
 namespace TNL {

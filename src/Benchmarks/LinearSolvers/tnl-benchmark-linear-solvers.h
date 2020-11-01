@@ -25,7 +25,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -66,11 +65,7 @@ using namespace TNL;
 using namespace TNL::Benchmarks;
 using namespace TNL::Pointers;
 
-#ifdef HAVE_MPI
 using CommunicatorType = Communicators::MpiCommunicator;
-#else
-using CommunicatorType = Communicators::NoDistrCommunicator;
-#endif
 
 
 static const std::set< std::string > valid_solvers = {

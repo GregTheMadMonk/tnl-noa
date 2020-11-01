@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -26,7 +26,7 @@ namespace Linear {
 template< typename Matrix >
 struct Traits
 {
-   using CommunicatorType = Communicators::NoDistrCommunicator;
+   using CommunicatorType = Communicators::MpiCommunicator;
 
    using VectorType = Containers::Vector
          < typename Matrix::RealType,

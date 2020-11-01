@@ -14,6 +14,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
    namespace Benchmarks {
@@ -27,7 +28,7 @@ struct SimpleProblem
    using DeviceType = Device;
    using IndexType = Index;
    using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-   using CommunicatorType = Communicators::NoDistrCommunicator;
+   using CommunicatorType = Communicators::MpiCommunicator;
    
    template< typename VectorPointer >
    void getExplicitUpdate( const RealType& time,
