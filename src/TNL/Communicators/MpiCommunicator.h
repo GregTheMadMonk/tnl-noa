@@ -165,8 +165,6 @@ class MpiCommunicator
                Debugging::redirect_stdout_stderr( stdoutFile, stderrFile );
             }
          }
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -193,7 +191,7 @@ class MpiCommunicator
          MPI_Finalized(&finalized);
          return initialized && !finalized;
 #else
-         throw Exceptions::MPISupportMissing();
+         return true;
 #endif
       }
 
@@ -206,7 +204,7 @@ class MpiCommunicator
          MPI_Comm_rank(group,&rank);
          return rank;
 #else
-         throw Exceptions::MPISupportMissing();
+         return 0;
 #endif
       }
 
@@ -219,7 +217,7 @@ class MpiCommunicator
          MPI_Comm_size(group,&size);
          return size;
 #else
-         throw Exceptions::MPISupportMissing();
+         return 1;
 #endif
       }
 
@@ -252,7 +250,8 @@ class MpiCommunicator
 
          MPI_Dims_create(nproc, dim, distr);
 #else
-         throw Exceptions::MPISupportMissing();
+         for(int i=0;i<dim;i++)
+            distr[i]=1;
 #endif
       }
 
@@ -262,8 +261,6 @@ class MpiCommunicator
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
          TNL_ASSERT_NE(group, NullGroup, "Barrier cannot be called with NullGroup");
          MPI_Barrier(group);
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -274,8 +271,6 @@ class MpiCommunicator
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
          TNL_ASSERT_NE(group, NullGroup, "Send cannot be called with NullGroup");
          MPI_Send( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group );
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -287,8 +282,6 @@ class MpiCommunicator
          TNL_ASSERT_NE(group, NullGroup, "Recv cannot be called with NullGroup");
          MPI_Status status;
          MPI_Recv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &status );
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
      }
 
@@ -302,7 +295,7 @@ class MpiCommunicator
          MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group, &req);
          return req;
 #else
-         throw Exceptions::MPISupportMissing();
+         return 1;
 #endif
       }
 
@@ -316,7 +309,7 @@ class MpiCommunicator
          MPI_Irecv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &req);
          return req;
 #else
-         throw Exceptions::MPISupportMissing();
+         return 1;
 #endif
       }
 
@@ -325,8 +318,6 @@ class MpiCommunicator
 #ifdef HAVE_MPI
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
          MPI_Waitall(length, reqs, MPI_STATUSES_IGNORE);
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -337,8 +328,6 @@ class MpiCommunicator
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
          TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
          MPI_Bcast((void*) data, count, MPITypeResolver< T >::getType(), root, group);
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -353,7 +342,7 @@ class MpiCommunicator
          TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
          MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,group);
 #else
-         throw Exceptions::MPISupportMissing();
+         memcpy( ( void* ) reduced_data, ( const void* ) data, count * sizeof( T ) );
 #endif
       }
 
@@ -367,8 +356,6 @@ class MpiCommunicator
 #ifdef HAVE_MPI
          TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
          MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPITypeResolver< T >::getType(),op,group);
-#else
-         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -385,7 +372,7 @@ class MpiCommunicator
          TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
          MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,root,group);
 #else
-         throw Exceptions::MPISupportMissing();
+         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
 #endif
       }
 
@@ -437,7 +424,8 @@ class MpiCommunicator
                        MPITypeResolver< T >::getType(),
                        group );
 #else
-         throw Exceptions::MPISupportMissing();
+         TNL_ASSERT_EQ( sendCount, receiveCount, "sendCount must be equal to receiveCount when running without MPI." );
+         memcpy( (void*) receiveData, (const void*) sendData, sendCount * sizeof( T ) );
 #endif
       }
 
@@ -458,7 +446,7 @@ class MpiCommunicator
          else
             MPI_Comm_split(oldGroup, MPI_UNDEFINED, GetRank(oldGroup), &newGroup);
 #else
-         throw Exceptions::MPISupportMissing();
+         newGroup=oldGroup;
 #endif
       }
 
