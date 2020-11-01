@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>

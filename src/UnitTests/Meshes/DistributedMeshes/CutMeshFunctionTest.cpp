@@ -5,7 +5,7 @@
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 #include "../../Functions/Functions.h"
 
@@ -53,7 +53,7 @@ TEST(CutMeshFunction, 2D)
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MpiCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<1,int>(0),
             StaticVector<1,int>(1),
@@ -116,7 +116,7 @@ TEST(CutMeshFunction, 3D_1)
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MpiCommunicator,MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<1,int>(1),
             StaticVector<2,int>(0,2),
@@ -179,7 +179,7 @@ TEST(CutMeshFunction, 3D_2)
    //Prepare Mesh Function parts for Cut 
    Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<NoDistrCommunicator, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MpiCommunicator, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
             StaticVector<2,int>(2,1),
             StaticVector<1,int>(0),

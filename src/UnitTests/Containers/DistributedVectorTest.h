@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Containers/DistributedVectorView.h>
 #include <TNL/Containers/Partitioner.h>
@@ -69,12 +68,10 @@ protected:
 
 // types for which DistributedVectorTest is instantiated
 using DistributedVectorTypes = ::testing::Types<
-   DistributedVector< double, Devices::Host, int, Communicators::MpiCommunicator >,
-   DistributedVector< double, Devices::Host, int, Communicators::NoDistrCommunicator >
+   DistributedVector< double, Devices::Host, int, Communicators::MpiCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedVector< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-   DistributedVector< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
+   DistributedVector< double, Devices::Cuda, int, Communicators::MpiCommunicator >
 #endif
 >;
 

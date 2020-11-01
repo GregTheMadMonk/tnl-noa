@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Containers/DistributedArray.h>
 #include <TNL/Containers/Partitioner.h>
 
@@ -59,12 +58,10 @@ protected:
 
 // types for which DistributedArrayTest is instantiated
 using DistributedArrayTypes = ::testing::Types<
-   DistributedArray< double, Devices::Host, int, Communicators::MpiCommunicator >,
-   DistributedArray< double, Devices::Host, int, Communicators::NoDistrCommunicator >
+   DistributedArray< double, Devices::Host, int, Communicators::MpiCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedArray< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-   DistributedArray< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
+   DistributedArray< double, Devices::Cuda, int, Communicators::MpiCommunicator >
 #endif
 >;
 

@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
@@ -77,7 +76,7 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y, Z
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Cuda >,
-                       Communicators::NoDistrCommunicator >
+                       Communicators::MpiCommunicator >
 #endif
 >;
 

@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Matrices/DistributedMatrix.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Matrices/SparseMatrix.h>
@@ -101,12 +100,10 @@ protected:
 
 // types for which DistributedMatrixTest is instantiated
 using DistributedMatrixTypes = ::testing::Types<
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Host, int >, Communicators::MpiCommunicator >,
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Host, int >, Communicators::MpiCommunicator >
 #ifdef HAVE_CUDA
    ,
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Cuda, int >, Communicators::MpiCommunicator >
 #endif
 >;
 

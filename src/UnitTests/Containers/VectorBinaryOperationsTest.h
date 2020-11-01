@@ -14,7 +14,6 @@
 
 #if defined(DISTRIBUTED_VECTOR)
    #include <TNL/Communicators/MpiCommunicator.h>
-   #include <TNL/Communicators/NoDistrCommunicator.h>
    #include <TNL/Containers/DistributedVector.h>
    #include <TNL/Containers/DistributedVectorView.h>
    #include <TNL/Containers/Partitioner.h>
@@ -154,16 +153,7 @@ protected:
       Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
             DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
       Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
-
-      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     short, Devices::Host, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< short, Devices::Host, int, Communicators::NoDistrCommunicator > >
+            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >
    #else
       Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
             DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
@@ -172,15 +162,7 @@ protected:
       Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
             DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
       Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVector<     short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-            DistributedVectorView< short, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
+            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >
    #endif
    >;
 #elif defined(STATIC_VECTOR)

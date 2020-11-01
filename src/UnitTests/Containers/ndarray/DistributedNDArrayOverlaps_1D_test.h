@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
@@ -74,13 +73,6 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 Devices::Host >,
                        Communicators::MpiCommunicator,
                        std::index_sequence< 2 > >
-// TODO: does it make sense for NoDistrCommunicator?
-//   DistributedNDArray< NDArray< double,
-//                                SizesHolder< int, 0 >,
-//                                std::index_sequence< 0 >,
-//                                Devices::Host >,
-//                       Communicators::NoDistrCommunicator,
-//                       std::index_sequence< 2 > >
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
@@ -89,13 +81,6 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 Devices::Cuda >,
                        Communicators::MpiCommunicator,
                        std::index_sequence< 2 > >
-// TODO: does it make sense for NoDistrCommunicator?
-//   DistributedNDArray< NDArray< double,
-//                                SizesHolder< int, 0 >,
-//                                std::index_sequence< 0 >,
-//                                Devices::Cuda >,
-//                       Communicators::NoDistrCommunicator,
-//                       std::index_sequence< 2 > >
 #endif
 >;
 

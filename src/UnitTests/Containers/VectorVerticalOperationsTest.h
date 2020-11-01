@@ -14,7 +14,6 @@
 
 #if defined(DISTRIBUTED_VECTOR)
    #include <TNL/Communicators/MpiCommunicator.h>
-   #include <TNL/Communicators/NoDistrCommunicator.h>
    #include <TNL/Containers/DistributedVector.h>
    #include <TNL/Containers/DistributedVectorView.h>
    #include <TNL/Containers/Partitioner.h>
@@ -106,17 +105,11 @@ protected:
    #ifndef HAVE_CUDA
       DistributedVector<           double, Devices::Host, int, Communicators::MpiCommunicator >,
       DistributedVectorView<       double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVector<           double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-      DistributedVectorView<       double, Devices::Host, int, Communicators::NoDistrCommunicator >,
-      DistributedVectorView< const double, Devices::Host, int, Communicators::NoDistrCommunicator >
+      DistributedVectorView< const double, Devices::Host, int, Communicators::MpiCommunicator >
    #else
       DistributedVector<           double, Devices::Cuda, int, Communicators::MpiCommunicator >,
       DistributedVectorView<       double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVector<           double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-      DistributedVectorView<       double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
-      DistributedVectorView< const double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
+      DistributedVectorView< const double, Devices::Cuda, int, Communicators::MpiCommunicator >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
