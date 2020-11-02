@@ -211,6 +211,18 @@ public:
       mesh.setCommunicationGroup( group );
    }
 
+   VariantVector
+   readLocalPointData( std::string arrayName )
+   {
+      return localReader.readPointData( arrayName );
+   }
+
+   VariantVector
+   readLocalCellData( std::string arrayName )
+   {
+      return localReader.readCellData( arrayName );
+   }
+
    virtual void reset() override
    {
       resetBase();
