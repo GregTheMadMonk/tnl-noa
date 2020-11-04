@@ -31,7 +31,7 @@ public:
    PVTUWriter() = delete;
 
    PVTUWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::zlib_compressed )
-   : str(str), format(format)
+   : str(str.rdbuf()), format(format)
    {}
 
    // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
@@ -79,7 +79,7 @@ protected:
 
    void writeFooter();
 
-   std::ostream& str;
+   std::ostream str;
 
    VTK::FileFormat format;
 
