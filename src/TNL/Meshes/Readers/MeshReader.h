@@ -14,7 +14,7 @@
 
 #include <string>
 #include <vector>
-#include <TNL/variant.hpp>
+#include <mpark/variant.hpp>   // backport of std::variant from C++17
 
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/VTKTraits.h>

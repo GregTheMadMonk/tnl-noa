@@ -1,4 +1,6 @@
-INSTALL( DIRECTORY TNL/ DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}
+add_subdirectory( 3rdparty )
+
+install( DIRECTORY TNL/ DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}
          MESSAGE_NEVER
          FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" )
 
@@ -14,20 +16,20 @@ if( ${WITH_EXAMPLES} )
 endif()
 
 if( ${WITH_BENCHMARKS} )
-   ADD_SUBDIRECTORY( Benchmarks )
+   add_subdirectory( Benchmarks )
 endif()
 
 if( ${WITH_TOOLS} )
-   ADD_SUBDIRECTORY( Tools )
+   add_subdirectory( Tools )
 endif()
 
 if( ${WITH_TESTS} )
-   ADD_SUBDIRECTORY( UnitTests )
+   add_subdirectory( UnitTests )
 endif()
 if( ${WITH_MATRIX_TESTS} )
-   ADD_SUBDIRECTORY( UnitTests/Matrices )
+   add_subdirectory( UnitTests/Matrices )
 endif()
 
 if( ${WITH_PYTHON} )
-   ADD_SUBDIRECTORY( Python )
+   add_subdirectory( Python )
 endif()
