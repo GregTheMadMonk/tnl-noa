@@ -188,9 +188,8 @@ class streambuf : public std::basic_streambuf<char>
       }
 
       if (!py_write.is_none()) {
-        // C-like string to make debugging easier
+        // add one extra byte for characters passed to the overflow() method
         write_buffer = new char[buffer_size + 1];
-        write_buffer[buffer_size] = '\0';
         setp(write_buffer, write_buffer + buffer_size);  // 27.5.2.4.5 (5)
         farthest_pptr = pptr();
       }
@@ -255,12 +254,13 @@ class streambuf : public std::basic_streambuf<char>
       }
       farthest_pptr = std::max(farthest_pptr, pptr());
       off_type n_written = (off_type)(farthest_pptr - pbase());
+      if (!traits_type::eq_int_type(c, traits_type::eof())) {
+        // add the overflown character to the end of the buffer
+        // (we have one extra byte just for that)
+        write_buffer[n_written++] = traits_type::to_char_type(c);
+      }
       pybind11::bytes chunk(pbase(), n_written);
       py_write(chunk);
-      if (!traits_type::eq_int_type(c, traits_type::eof())) {
-        py_write(traits_type::to_char_type(c));
-        n_written++;
-      }
       if (n_written) {
         pos_of_write_buffer_end_in_py_file += n_written;
         setp(pbase(), epptr());
@@ -450,7 +450,7 @@ class streambuf : public std::basic_streambuf<char>
       public:
         istream(streambuf& buf) : std::istream(&buf)
         {
-          exceptions(std::ios_base::badbit);
+          exceptions(std::ios_base::badbit | std::ios_base::failbit);
         }
 
         ~istream() { if (this->good()) this->sync(); }
@@ -461,7 +461,7 @@ class streambuf : public std::basic_streambuf<char>
       public:
         ostream(streambuf& buf) : std::ostream(&buf)
         {
-          exceptions(std::ios_base::badbit);
+          exceptions(std::ios_base::badbit | std::ios_base::failbit);
         }
 
         ~ostream() { if (this->good()) this->flush(); }
