@@ -211,14 +211,14 @@ public:
       mesh.setCommunicationGroup( group );
    }
 
-   VariantVector
-   readLocalPointData( std::string arrayName )
+   virtual VariantVector
+   readPointData( std::string arrayName ) override
    {
       return localReader.readPointData( arrayName );
    }
 
-   VariantVector
-   readLocalCellData( std::string arrayName )
+   virtual VariantVector
+   readCellData( std::string arrayName ) override
    {
       return localReader.readCellData( arrayName );
    }

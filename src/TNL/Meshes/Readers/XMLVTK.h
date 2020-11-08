@@ -325,8 +325,8 @@ public:
 #endif
    }
 
-   VariantVector
-   readPointData( std::string arrayName )
+   virtual VariantVector
+   readPointData( std::string arrayName ) override
    {
 #ifdef HAVE_TINYXML2
       return readPointOrCellData( "PointData", arrayName );
@@ -335,8 +335,8 @@ public:
 #endif
    }
 
-   VariantVector
-   readCellData( std::string arrayName )
+   virtual VariantVector
+   readCellData( std::string arrayName ) override
    {
 #ifdef HAVE_TINYXML2
       return readPointOrCellData( "CellData", arrayName );

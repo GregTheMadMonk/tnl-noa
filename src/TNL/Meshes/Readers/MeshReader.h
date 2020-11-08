@@ -150,6 +150,18 @@ public:
          throw MeshReaderError( "VTKReader", "MeshBuilder failed" );
    }
 
+   virtual VariantVector
+   readPointData( std::string arrayName )
+   {
+      throw Exceptions::NotImplementedError( "readPointData is not implemented in the mesh reader for this specific file format." );
+   }
+
+   virtual VariantVector
+   readCellData( std::string arrayName )
+   {
+      throw Exceptions::NotImplementedError( "readPointData is not implemented in the mesh reader for this specific file format." );
+   }
+
    std::string
    getMeshType() const
    {
