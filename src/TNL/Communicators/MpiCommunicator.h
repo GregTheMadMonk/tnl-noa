@@ -73,6 +73,7 @@ class MpiCommunicator
       {
 #ifdef HAVE_MPI
          config.addEntry< bool >( "redirect-mpi-output", "Only process with rank 0 prints to console. Other processes are redirected to files.", true );
+         config.addEntry< String >( "redirect-mpi-output-dir", "Directory where ranks will store the files if their output is redirected.", "." );
          config.addEntry< bool >( "mpi-gdb-debug", "Wait for GDB to attach the master MPI process.", false );
          config.addEntry< int >( "mpi-process-to-attach", "Number of the MPI process to be attached by GDB. Set -1 for all processes.", 0 );
 #endif
@@ -85,8 +86,9 @@ class MpiCommunicator
          if(IsInitialized())//i.e. - isUsed
          {
             const bool redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
+            const String outputDirectory = parameters.getParameter< String >( "redirect-mpi-output-dir" );
             if( redirect )
-               setupRedirection();
+               setupRedirection( outputDirectory );
 #ifdef HAVE_CUDA
             int size;
             MPI_Comm_size( MPI_COMM_WORLD, &size );
@@ -152,15 +154,15 @@ class MpiCommunicator
          (void) NullRequest;
       }
 
-      static void setupRedirection()
+      static void setupRedirection( std::string outputDirectory )
       {
 #ifdef HAVE_MPI
          if(isDistributed() )
          {
             if(GetRank(AllGroup)!=0)
             {
-               const std::string stdoutFile = std::string("./stdout_") + std::to_string(GetRank(AllGroup)) + ".txt";
-               const std::string stderrFile = std::string("./stderr_") + std::to_string(GetRank(AllGroup)) + ".txt";
+               const std::string stdoutFile = outputDirectory + "/stdout_" + std::to_string(GetRank(AllGroup)) + ".txt";
+               const std::string stderrFile = outputDirectory + "/stderr_" + std::to_string(GetRank(AllGroup)) + ".txt";
                std::cout << GetRank(AllGroup) << ": Redirecting stdout and stderr to files " << stdoutFile << " and " << stderrFile << std::endl;
                Debugging::redirect_stdout_stderr( stdoutFile, stderrFile );
             }
