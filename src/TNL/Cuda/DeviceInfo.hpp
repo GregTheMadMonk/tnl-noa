@@ -204,6 +204,18 @@ getCudaCoresPerMultiprocessors( int deviceNum )
             default:
                return -1;
          }
+      case 7: // Volta and Turing generations
+         return 64;
+      case 8: // Ampere generation
+         switch( minor )
+         {
+            case 0:  // GA100 class
+               return 64;
+            case 6:
+               return 128;
+            default:
+               return -1;
+         }
       default:
          return -1;
    }
