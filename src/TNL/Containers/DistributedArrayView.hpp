@@ -38,6 +38,24 @@ template< typename Value,
 __cuda_callable__
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
+bind( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
+{
+   TNL_ASSERT_EQ( localData.getSize(), localRange.getSize(),
+                  "The local array size does not match the local range of the distributed array." );
+
+   this->localRange = localRange;
+   this->globalSize = globalSize;
+   this->group = group;
+   this->localData.bind( localData );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+__cuda_callable__
+void
+DistributedArrayView< Value, Device, Index, Communicator >::
 bind( DistributedArrayView view )
 {
    localRange = view.getLocalRange();

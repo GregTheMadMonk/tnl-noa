@@ -168,9 +168,7 @@ public:
    // TODO: serialization (save, load)
 
 protected:
-   LocalRangeType localRange;
-   IndexType globalSize = 0;
-   CommunicationGroup group = Communicator::NullGroup;
+   ViewType view;
    LocalArrayType localData;
 };
 

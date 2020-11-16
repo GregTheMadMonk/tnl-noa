@@ -74,9 +74,12 @@ public:
    __cuda_callable__
    DistributedArrayView( DistributedArrayView&& ) = default;
 
-   // method for rebinding (reinitialization)
-   // Note that you can also bind directly to Array and other types implicitly
-   // convertible to ArrayView.
+   // method for rebinding (reinitialization) to raw data
+   __cuda_callable__
+   void bind( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData );
+
+   // Note that you can also bind directly to DistributedArray and other types implicitly
+   // convertible to DistributedArrayView.
    __cuda_callable__
    void bind( DistributedArrayView view );
 
