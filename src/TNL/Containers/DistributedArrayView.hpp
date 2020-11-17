@@ -22,7 +22,6 @@ template< typename Value,
           typename Index,
           typename Communicator >
    template< typename Value_ >
-__cuda_callable__
 DistributedArrayView< Value, Device, Index, Communicator >::
 DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communicator >& view )
 : localRange( view.getLocalRange() ),
@@ -35,7 +34,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
 bind( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
@@ -53,7 +51,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
 bind( DistributedArrayView view )
@@ -82,7 +79,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 typename DistributedArrayView< Value, Device, Index, Communicator >::ViewType
 DistributedArrayView< Value, Device, Index, Communicator >::
 getView()
@@ -94,7 +90,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 typename DistributedArrayView< Value, Device, Index, Communicator >::ConstViewType
 DistributedArrayView< Value, Device, Index, Communicator >::
 getConstView() const

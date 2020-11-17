@@ -44,7 +44,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 typename DistributedVectorView< Value, Device, Index, Communicator >::ViewType
 DistributedVectorView< Value, Device, Index, Communicator >::
 getView()
@@ -56,7 +55,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-__cuda_callable__
 typename DistributedVectorView< Value, Device, Index, Communicator >::ConstViewType
 DistributedVectorView< Value, Device, Index, Communicator >::
 getConstView() const

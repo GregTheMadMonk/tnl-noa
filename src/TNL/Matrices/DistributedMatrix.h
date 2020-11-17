@@ -72,16 +72,12 @@ public:
 
    void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, CommunicationGroup group = Communicator::AllGroup );
 
-   __cuda_callable__
    const LocalRangeType& getLocalRowRange() const;
 
-   __cuda_callable__
    CommunicationGroup getCommunicationGroup() const;
 
-   __cuda_callable__
    const Matrix& getLocalMatrix() const;
 
-   __cuda_callable__
    Matrix& getLocalMatrix();
 
 
@@ -99,10 +95,8 @@ public:
 
    void reset();
 
-   __cuda_callable__
    IndexType getRows() const;
 
-   __cuda_callable__
    IndexType getColumns() const;
 
    template< typename RowCapacitiesVector >
@@ -120,14 +114,11 @@ public:
    RealType getElement( IndexType row,
                         IndexType column ) const;
 
-   __cuda_callable__
    RealType getElementFast( IndexType row,
                             IndexType column ) const;
 
-   __cuda_callable__
    MatrixRow getRow( IndexType row );
 
-   __cuda_callable__
    ConstMatrixRow getRow( IndexType row ) const;
 
    // multiplication with a global vector

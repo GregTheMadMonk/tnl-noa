@@ -58,12 +58,10 @@ public:
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
    // https://stackoverflow.com/a/51854172
-   __cuda_callable__
    DistributedVectorView() = default;
 
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
-   __cuda_callable__
    DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index, Communicator >& view )
    : BaseType( view ) {}
 
@@ -74,13 +72,11 @@ public:
    /**
     * \brief Returns a modifiable view of the array view.
     */
-   __cuda_callable__
    ViewType getView();
 
    /**
     * \brief Returns a non-modifiable view of the array view.
     */
-   __cuda_callable__
    ConstViewType getConstView() const;
 
    /*

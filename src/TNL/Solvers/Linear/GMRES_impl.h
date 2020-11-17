@@ -477,20 +477,20 @@ hauseholder_generate( const int i,
                       ConstVectorViewType z )
 {
    // XXX: the upper-right triangle of Y will be full of zeros, which can be exploited for optimization
+   ConstDeviceView z_local = Traits::getConstLocalView( z );
+   DeviceView y_i_local = Traits::getLocalView( y_i );
    if( localOffset == 0 ) {
       TNL_ASSERT_LT( i, size, "upper-right triangle of Y is not on rank 0" );
       auto kernel_truncation = [=] __cuda_callable__ ( IndexType j ) mutable
       {
          if( j < i )
-            y_i[ j ] = 0.0;
+            y_i_local[ j ] = 0.0;
          else
-            y_i[ j ] = z[ j ];
+            y_i_local[ j ] = z_local[ j ];
       };
       Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, size, kernel_truncation );
    }
    else {
-      ConstDeviceView z_local = Traits::getConstLocalView( z );
-      DeviceView y_i_local = Traits::getLocalView( y_i );
       y_i_local = z_local;
    }
 

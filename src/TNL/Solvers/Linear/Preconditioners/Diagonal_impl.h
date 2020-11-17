@@ -71,12 +71,15 @@ update( const MatrixPointer& matrixPointer )
    diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
 
    LocalViewType diag_view( diagonal );
-   const MatrixType* kernel_matrix = &matrixPointer.template getData< DeviceType >();
+   // FIXME: SparseMatrix::getConstView is broken
+//   const auto matrix_view = matrixPointer->getLocalMatrix().getConstView();
+   const auto matrix_view = matrixPointer->getLocalMatrix().getView();
+   const auto row_range = matrixPointer->getLocalRowRange();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {
-      const IndexType gi = kernel_matrix->getLocalRowRange().getGlobalIndex( i );
-      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElement( i, gi );
+      const IndexType gi = row_range.getGlobalIndex( i );
+      diag_view[ i ] = matrix_view.getElement( i, gi );
    };
 
    Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );

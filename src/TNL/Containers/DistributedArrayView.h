@@ -48,7 +48,6 @@ public:
 
 
    // Initialization by raw data
-   __cuda_callable__
    DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
    : localRange(localRange), globalSize(globalSize), group(group), localData(localData)
    {
@@ -56,31 +55,23 @@ public:
                      "The local array size does not match the local range of the distributed array." );
    }
 
-   __cuda_callable__
    DistributedArrayView() = default;
 
-   // Copy-constructor does shallow copy, so views can be passed-by-value into
-   // CUDA kernels and they can be captured-by-value in __cuda_callable__
-   // lambda functions.
-   __cuda_callable__
+   // Copy-constructor does shallow copy.
    DistributedArrayView( const DistributedArrayView& ) = default;
 
    // "Templated copy-constructor" accepting any cv-qualification of Value
    template< typename Value_ >
-   __cuda_callable__
    DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communicator >& );
 
    // default move-constructor
-   __cuda_callable__
    DistributedArrayView( DistributedArrayView&& ) = default;
 
    // method for rebinding (reinitialization) to raw data
-   __cuda_callable__
    void bind( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
    // convertible to DistributedArrayView.
-   __cuda_callable__
    void bind( DistributedArrayView view );
 
    // binding to local array via raw pointer
@@ -91,13 +82,11 @@ public:
    /**
     * \brief Returns a modifiable view of the array view.
     */
-   __cuda_callable__
    ViewType getView();
 
    /**
     * \brief Returns a non-modifiable view of the array view.
     */
-   __cuda_callable__
    ConstViewType getConstView() const;
 
 

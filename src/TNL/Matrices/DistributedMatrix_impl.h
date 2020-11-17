@@ -42,7 +42,6 @@ setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 const Containers::Subrange< typename Matrix::IndexType >&
 DistributedMatrix< Matrix, Communicator >::
 getLocalRowRange() const
@@ -52,7 +51,6 @@ getLocalRowRange() const
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename Communicator::CommunicationGroup
 DistributedMatrix< Matrix, Communicator >::
 getCommunicationGroup() const
@@ -62,7 +60,6 @@ getCommunicationGroup() const
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 const Matrix&
 DistributedMatrix< Matrix, Communicator >::
 getLocalMatrix() const
@@ -72,7 +69,6 @@ getLocalMatrix() const
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 Matrix&
 DistributedMatrix< Matrix, Communicator >::
 getLocalMatrix()
@@ -139,7 +135,6 @@ reset()
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename Matrix::IndexType
 DistributedMatrix< Matrix, Communicator >::
 getRows() const
@@ -149,7 +144,6 @@ getRows() const
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename Matrix::IndexType
 DistributedMatrix< Matrix, Communicator >::
 getColumns() const
@@ -224,7 +218,6 @@ getElement( IndexType row,
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename Matrix::RealType
 DistributedMatrix< Matrix, Communicator >::
 getElementFast( IndexType row,
@@ -236,7 +229,6 @@ getElementFast( IndexType row,
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename DistributedMatrix< Matrix, Communicator >::MatrixRow
 DistributedMatrix< Matrix, Communicator >::
 getRow( IndexType row )
@@ -247,7 +239,6 @@ getRow( IndexType row )
 
 template< typename Matrix,
           typename Communicator >
-__cuda_callable__
 typename DistributedMatrix< Matrix, Communicator >::ConstMatrixRow
 DistributedMatrix< Matrix, Communicator >::
 getRow( IndexType row ) const
