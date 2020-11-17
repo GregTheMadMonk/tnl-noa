@@ -79,61 +79,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedArrayView< Value, Device, Index, Communicator >::ViewType
-DistributedArrayView< Value, Device, Index, Communicator >::
-getView()
-{
-   return *this;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedArrayView< Value, Device, Index, Communicator >::ConstViewType
-DistributedArrayView< Value, Device, Index, Communicator >::
-getConstView() const
-{
-   return *this;
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-DistributedArrayView< Value, Device, Index, Communicator >&
-DistributedArrayView< Value, Device, Index, Communicator >::
-operator=( const DistributedArrayView& view )
-{
-   TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
-   localData = view.getConstLocalView();
-   return *this;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Array, typename..., typename >
-DistributedArrayView< Value, Device, Index, Communicator >&
-DistributedArrayView< Value, Device, Index, Communicator >::
-operator=( const Array& array )
-{
-   TNL_ASSERT_EQ( getSize(), array.getSize(), "The global sizes must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
-   localData = array.getConstLocalView();
-   return *this;
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
 const Subrange< Index >&
 DistributedArrayView< Value, Device, Index, Communicator >::
 getLocalRange() const
@@ -196,6 +141,28 @@ copyFromGlobal( ConstLocalViewType globalArray )
    Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArrayView< Value, Device, Index, Communicator >::ViewType
+DistributedArrayView< Value, Device, Index, Communicator >::
+getView()
+{
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArrayView< Value, Device, Index, Communicator >::ConstViewType
+DistributedArrayView< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return *this;
+}
 
 template< typename Value,
           typename Device,
@@ -294,6 +261,37 @@ operator[]( IndexType i ) const
 {
    const IndexType li = localRange.getLocalIndex( i );
    return localData[ li ];
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedArrayView< Value, Device, Index, Communicator >&
+DistributedArrayView< Value, Device, Index, Communicator >::
+operator=( const DistributedArrayView& view )
+{
+   TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
+   localData = view.getConstLocalView();
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Array, typename..., typename >
+DistributedArrayView< Value, Device, Index, Communicator >&
+DistributedArrayView< Value, Device, Index, Communicator >::
+operator=( const Array& array )
+{
+   TNL_ASSERT_EQ( getSize(), array.getSize(), "The global sizes must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
+   localData = array.getConstLocalView();
+   return *this;
 }
 
 template< typename Value,

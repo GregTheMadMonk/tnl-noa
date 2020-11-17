@@ -79,27 +79,6 @@ public:
    template< typename Value_ >
    void bind( Value_* data, IndexType localSize );
 
-   /**
-    * \brief Returns a modifiable view of the array view.
-    */
-   ViewType getView();
-
-   /**
-    * \brief Returns a non-modifiable view of the array view.
-    */
-   ConstViewType getConstView() const;
-
-
-   // Copy-assignment does deep copy, just like regular array, but the sizes
-   // must match (i.e. copy-assignment cannot resize).
-   DistributedArrayView& operator=( const DistributedArrayView& view );
-
-   template< typename Array,
-             typename...,
-             typename = std::enable_if_t< HasSubscriptOperator<Array>::value > >
-   DistributedArrayView& operator=( const Array& array );
-
-
    const LocalRangeType& getLocalRange() const;
 
    CommunicationGroup getCommunicationGroup() const;
@@ -114,6 +93,16 @@ public:
    /*
     * Usual ArrayView methods follow below.
     */
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   ConstViewType getConstView() const;
 
    // Resets the array view to the empty state.
    void reset();
@@ -142,6 +131,15 @@ public:
    // Unsafe element accessor usable only from the Device
    __cuda_callable__
    const ValueType& operator[]( IndexType i ) const;
+
+   // Copy-assignment does deep copy, just like regular array, but the sizes
+   // must match (i.e. copy-assignment cannot resize).
+   DistributedArrayView& operator=( const DistributedArrayView& view );
+
+   template< typename Array,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Array>::value > >
+   DistributedArrayView& operator=( const Array& array );
 
    // Comparison operators
    template< typename Array >
