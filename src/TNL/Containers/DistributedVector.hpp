@@ -48,7 +48,7 @@ typename DistributedVector< Value, Device, Index, Communicator >::ViewType
 DistributedVector< Value, Device, Index, Communicator >::
 getView()
 {
-   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalView() );
+   return BaseType::getView();
 }
 
 template< typename Value,
@@ -59,7 +59,7 @@ typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
 DistributedVector< Value, Device, Index, Communicator >::
 getConstView() const
 {
-   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getConstLocalView() );
+   return BaseType::getConstView();
 }
 
 template< typename Value,
@@ -97,9 +97,7 @@ DistributedVector< Real, Device, Index, Communicator >::
 operator=( const Vector& vector )
 {
    this->setLike( vector );
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = vector.getConstLocalView();
-   }
+   getView() = vector;
    return *this;
 }
 
@@ -112,16 +110,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator+=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += vector.getConstLocalView();
-   }
+   getView() += vector;
    return *this;
 }
 
@@ -134,16 +123,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator-=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= vector.getConstLocalView();
-   }
+   getView() -= vector;
    return *this;
 }
 
@@ -156,16 +136,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator*=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= vector.getConstLocalView();
-   }
+   getView() *= vector;
    return *this;
 }
 
@@ -178,16 +149,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator/=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= vector.getConstLocalView();
-   }
+   getView() /= vector;
    return *this;
 }
 
@@ -200,9 +162,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = c;
-   }
+   getView() = c;
    return *this;
 }
 
@@ -215,9 +175,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator+=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += c;
-   }
+   getView() += c;
    return *this;
 }
 
@@ -230,9 +188,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator-=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= c;
-   }
+   getView() -= c;
    return *this;
 }
 
@@ -245,9 +201,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator*=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= c;
-   }
+   getView() *= c;
    return *this;
 }
 
@@ -260,9 +214,7 @@ DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
 operator/=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= c;
-   }
+   getView() /= c;
    return *this;
 }
 
@@ -275,9 +227,7 @@ void
 DistributedVector< Real, Device, Index, Communicator >::
 scan( IndexType begin, IndexType end )
 {
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   getView().template scan< Type >( begin, end );
 }
 
 } // namespace Containers
