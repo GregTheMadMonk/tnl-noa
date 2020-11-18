@@ -177,7 +177,7 @@ DistributedMatrix< Matrix, Communicator >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      rowLengths.setDistribution( getLocalRowRange(), getRows(), getCommunicationGroup() );
+      rowLengths.setDistribution( getLocalRowRange(), 0, getRows(), getCommunicationGroup() );
       auto localRowLengths = rowLengths.getLocalView();
       localMatrix.getCompressedRowLengths( localRowLengths );
    }

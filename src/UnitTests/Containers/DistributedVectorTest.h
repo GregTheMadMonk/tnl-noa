@@ -56,11 +56,21 @@ protected:
    // scan with multiple CUDA grids
    const int globalSize = 10000 * nproc;
 
+   // some arbitrary value (but must be 0 if not distributed)
+   const int ghosts = (nproc > 1) ? 4 : 0;
+
    DistributedVectorTest()
    {
       using LocalRangeType = typename DistributedVector::LocalRangeType;
       const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
-      v.setDistribution( localRange, globalSize, group );
+      v.setDistribution( localRange, ghosts, globalSize, group );
+
+      using Synchronizer = typename Partitioner< IndexType, CommunicatorType >::template ArraySynchronizer< DeviceType >;
+      using HostSynchronizer = typename Partitioner< IndexType, CommunicatorType >::template ArraySynchronizer< Devices::Sequential >;
+      v.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
+      v_view.setSynchronizer( v.getSynchronizer() );
+      v_host.setSynchronizer( std::make_shared<HostSynchronizer>( localRange, ghosts / 2, group ) );
+
       v_view.bind( v );
       setConstantSequence( v, 1 );
    }
@@ -76,6 +86,8 @@ using DistributedVectorTypes = ::testing::Types<
 >;
 
 TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
+
+// TODO: test that horizontal operations are computed for ghost values without synchronization
 
 TYPED_TEST( DistributedVectorTest, scan )
 {

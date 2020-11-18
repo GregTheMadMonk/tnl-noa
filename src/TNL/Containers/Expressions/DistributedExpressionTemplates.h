@@ -10,6 +10,7 @@
 
 #pragma once
 #include <utility>
+#include <memory>
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
@@ -64,6 +65,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType,
                                                         typename T2::ConstLocalViewType,
                                                         Operation >;
+   using SynchronizerType = typename T1::SynchronizerType;
 
    static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
                   "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the left operand." );
@@ -79,13 +81,16 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
                      "Attempt to mix operands with different sizes." );
       TNL_ASSERT_EQ( op1.getLocalRange(), op2.getLocalRange(),
                      "Distributed expressions are supported only on vectors which are distributed the same way." );
+      TNL_ASSERT_EQ( op1.getGhosts(), op2.getGhosts(),
+                     "Distributed expressions are supported only on vectors which are distributed the same way." );
       TNL_ASSERT_EQ( op1.getCommunicationGroup(), op2.getCommunicationGroup(),
                      "Distributed expressions are supported only on vectors within the same communication group." );
    }
 
    RealType getElement( const IndexType i ) const
    {
-      return getConstLocalView().getElement( i );
+      const IndexType li = getLocalRange().getLocalIndex( i );
+      return getConstLocalView().getElement( li );
    }
 
    // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
@@ -105,6 +110,11 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getLocalRange();
    }
 
+   IndexType getGhosts() const
+   {
+      return op1.getGhosts();
+   }
+
    CommunicationGroup getCommunicationGroup() const
    {
       return op1.getCommunicationGroup();
@@ -113,6 +123,27 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    ConstLocalViewType getConstLocalView() const
    {
       return ConstLocalViewType( op1.getConstLocalView(), op2.getConstLocalView() );
+   }
+
+   ConstLocalViewType getConstLocalViewWithGhosts() const
+   {
+      return ConstLocalViewType( op1.getConstLocalViewWithGhosts(), op2.getConstLocalViewWithGhosts() );
+   }
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const
+   {
+      return op1.getSynchronizer();
+   }
+
+   int getValuesPerElement() const
+   {
+      return op1.getValuesPerElement();
+   }
+
+   void waitForSynchronization() const
+   {
+      op1.waitForSynchronization();
+      op2.waitForSynchronization();
    }
 
 protected:
@@ -132,6 +163,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType, T2, Operation >;
+   using SynchronizerType = typename T1::SynchronizerType;
 
    static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
                   "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the left operand." );
@@ -141,7 +173,8 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
 
    RealType getElement( const IndexType i ) const
    {
-      return getConstLocalView().getElement( i );
+      const IndexType li = getLocalRange().getLocalIndex( i );
+      return getConstLocalView().getElement( li );
    }
 
    // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
@@ -161,6 +194,11 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getLocalRange();
    }
 
+   IndexType getGhosts() const
+   {
+      return op1.getGhosts();
+   }
+
    CommunicationGroup getCommunicationGroup() const
    {
       return op1.getCommunicationGroup();
@@ -169,6 +207,26 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    ConstLocalViewType getConstLocalView() const
    {
       return ConstLocalViewType( op1.getConstLocalView(), op2 );
+   }
+
+   ConstLocalViewType getConstLocalViewWithGhosts() const
+   {
+      return ConstLocalViewType( op1.getConstLocalViewWithGhosts(), op2 );
+   }
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const
+   {
+      return op1.getSynchronizer();
+   }
+
+   int getValuesPerElement() const
+   {
+      return op1.getValuesPerElement();
+   }
+
+   void waitForSynchronization() const
+   {
+      op1.waitForSynchronization();
    }
 
 protected:
@@ -188,6 +246,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T2::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< T1, typename T2::ConstLocalViewType, Operation >;
+   using SynchronizerType = typename T2::SynchronizerType;
 
    static_assert( HasEnabledDistributedExpressionTemplates< T2 >::value,
                   "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the right operand." );
@@ -197,7 +256,8 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
 
    RealType getElement( const IndexType i ) const
    {
-      return getConstLocalView().getElement( i );
+      const IndexType li = getLocalRange().getLocalIndex( i );
+      return getConstLocalView().getElement( li );
    }
 
    // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
@@ -217,6 +277,11 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
       return op2.getLocalRange();
    }
 
+   IndexType getGhosts() const
+   {
+      return op2.getGhosts();
+   }
+
    CommunicationGroup getCommunicationGroup() const
    {
       return op2.getCommunicationGroup();
@@ -225,6 +290,26 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
    ConstLocalViewType getConstLocalView() const
    {
       return ConstLocalViewType( op1, op2.getConstLocalView() );
+   }
+
+   ConstLocalViewType getConstLocalViewWithGhosts() const
+   {
+      return ConstLocalViewType( op1, op2.getConstLocalViewWithGhosts() );
+   }
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const
+   {
+      return op2.getSynchronizer();
+   }
+
+   int getValuesPerElement() const
+   {
+      return op2.getValuesPerElement();
+   }
+
+   void waitForSynchronization() const
+   {
+      op2.waitForSynchronization();
    }
 
 protected:
@@ -245,6 +330,7 @@ struct DistributedUnaryExpressionTemplate
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = UnaryExpressionTemplate< typename T1::ConstLocalViewType, Operation >;
+   using SynchronizerType = typename T1::SynchronizerType;
 
    static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
                   "Invalid operand in distributed unary expression templates - distributed expression templates are not enabled for the operand." );
@@ -254,7 +340,8 @@ struct DistributedUnaryExpressionTemplate
 
    RealType getElement( const IndexType i ) const
    {
-      return getConstLocalView().getElement( i );
+      const IndexType li = getLocalRange().getLocalIndex( i );
+      return getConstLocalView().getElement( li );
    }
 
    // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
@@ -274,6 +361,11 @@ struct DistributedUnaryExpressionTemplate
       return operand.getLocalRange();
    }
 
+   IndexType getGhosts() const
+   {
+      return operand.getGhosts();
+   }
+
    CommunicationGroup getCommunicationGroup() const
    {
       return operand.getCommunicationGroup();
@@ -282,6 +374,26 @@ struct DistributedUnaryExpressionTemplate
    ConstLocalViewType getConstLocalView() const
    {
       return ConstLocalViewType( operand.getConstLocalView() );
+   }
+
+   ConstLocalViewType getConstLocalViewWithGhosts() const
+   {
+      return ConstLocalViewType( operand.getConstLocalViewWithGhosts() );
+   }
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const
+   {
+      return operand.getSynchronizer();
+   }
+
+   int getValuesPerElement() const
+   {
+      return operand.getValuesPerElement();
+   }
+
+   void waitForSynchronization() const
+   {
+      operand.waitForSynchronization();
    }
 
 protected:
@@ -812,10 +924,19 @@ template< typename T1,
           typename Operation >
 std::ostream& operator<<( std::ostream& str, const DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
+   const auto localRange = expression.getLocalRange();
    str << "[ ";
-   for( int i = 0; i < expression.getSize() - 1; i++ )
+   for( int i = localRange.getBegin(); i < localRange.getEnd() - 1; i++ )
       str << expression.getElement( i ) << ", ";
-   str << expression.getElement( expression.getSize() - 1 ) << " ]";
+   str << expression.getElement( localRange.getEnd() - 1 );
+   if( expression.getGhosts() > 0 ) {
+      str << " | ";
+      const auto localView = expression.getConstLocalViewWithGhosts();
+      for( int i = localRange.getSize(); i < localView.getSize() - 1; i++ )
+         str << localView.getElement( i ) << ", ";
+      str << localView.getElement( localView.getSize() - 1 );
+   }
+   str << " ]";
    return str;
 }
 
@@ -823,10 +944,19 @@ template< typename T,
           typename Operation >
 std::ostream& operator<<( std::ostream& str, const DistributedUnaryExpressionTemplate< T, Operation >& expression )
 {
+   const auto localRange = expression.getLocalRange();
    str << "[ ";
-   for( int i = 0; i < expression.getSize() - 1; i++ )
+   for( int i = localRange.getBegin(); i < localRange.getEnd() - 1; i++ )
       str << expression.getElement( i ) << ", ";
-   str << expression.getElement( expression.getSize() - 1 ) << " ]";
+   str << expression.getElement( localRange.getEnd() - 1 );
+   if( expression.getGhosts() > 0 ) {
+      str << " | ";
+      const auto localView = expression.getConstLocalViewWithGhosts();
+      for( int i = localRange.getSize(); i < localView.getSize() - 1; i++ )
+         str << localView.getElement( i ) << ", ";
+      str << localView.getElement( localView.getSize() - 1 );
+   }
+   str << " ]";
    return str;
 }
 

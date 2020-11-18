@@ -55,6 +55,14 @@ protected:
       using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
       template< typename Real >
       using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+
+      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+
+      const int rank = CommunicatorType::GetRank(group);
+      const int nproc = CommunicatorType::GetSize(group);
+
+      // some arbitrary even value (but must be 0 if not distributed)
+      const int ghosts = (nproc > 1) ? 4 : 0;
    #else
       using VectorType = Containers::Vector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
       template< typename Real >
@@ -167,13 +175,17 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
-      const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, this->group ); \
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       VectorType _V1, _V2;                                     \
-      _V1.setDistribution( localRange, size, group );          \
-      _V2.setDistribution( localRange, size, group );          \
+      _V1.setDistribution( localRange, this->ghosts, size, this->group ); \
+      _V2.setDistribution( localRange, this->ghosts, size, this->group ); \
+                                                               \
+      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->group ); \
+      _V1.setSynchronizer( _synchronizer );                    \
+      _V2.setSynchronizer( _synchronizer );                    \
                                                                \
       _V1 = 1;                                                 \
       _V2 = 2;                                                 \
@@ -188,14 +200,14 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
       using HostExpectedVector = typename ExpectedVector::template Self< typename ExpectedVector::RealType, Devices::Host >; \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
-      const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, this->group ); \
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       HostVector _V1h;                                         \
       HostExpectedVector expected_h;                           \
-      _V1h.setDistribution( localRange, size, group );         \
-      expected_h.setDistribution( localRange, size, group );   \
+      _V1h.setDistribution( localRange, this->ghosts, size, this->group ); \
+      expected_h.setDistribution( localRange, this->ghosts, size, this->group ); \
                                                                \
       const double h = (double) (end - begin) / size;          \
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ ) \
@@ -204,10 +216,17 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
          _V1h[ i ] = x;                                        \
          expected_h[ i ] = function(x);                        \
       }                                                        \
+      for( int i = localRange.getSize(); i < _V1h.getLocalView().getSize(); i++ ) \
+         _V1h.getLocalView()[ i ] = expected_h.getLocalView()[ i ] = 0;           \
                                                                \
       VectorType _V1; _V1 = _V1h;                              \
       VectorOrView V1( _V1 );                                  \
       ExpectedVector expected; expected = expected_h;          \
+                                                               \
+      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->group ); \
+      _V1.setSynchronizer( _synchronizer );                    \
+      expected.setSynchronizer( _synchronizer );               \
+      expected.startSynchronization();                         \
 
 #else
    #define SETUP_UNARY_VECTOR_TEST( size ) \

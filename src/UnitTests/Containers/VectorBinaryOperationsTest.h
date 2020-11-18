@@ -66,6 +66,14 @@ protected:
                      "CommunicatorType must be the same for both Left and Right vectors." );
       using LeftVector = DistributedVector< LeftReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
       using RightVector = DistributedVector< RightReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+
+      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+
+      const int rank = CommunicatorType::GetRank(group);
+      const int nproc = CommunicatorType::GetSize(group);
+
+      // some arbitrary value (but must be 0 if not distributed)
+      const int ghosts = (nproc > 1) ? 4 : 0;
    #else
       using LeftVector = Vector< LeftReal, typename Left::DeviceType, typename Left::IndexType >;
       using RightVector = Vector< RightReal, typename Right::DeviceType, typename Right::IndexType >;
@@ -89,14 +97,20 @@ protected:
       R2 = 2;
 #else
    #ifdef DISTRIBUTED_VECTOR
-      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
       using LocalRangeType = typename LeftVector::LocalRangeType;
+      using Synchronizer = typename Partitioner< typename Left::IndexType, CommunicatorType >::template ArraySynchronizer< typename Left::DeviceType >;
       const LocalRangeType localRange = Partitioner< typename Left::IndexType, CommunicatorType >::splitRange( size, group );
 
-      _L1.setDistribution( localRange, size, group );
-      _L2.setDistribution( localRange, size, group );
-      _R1.setDistribution( localRange, size, group );
-      _R2.setDistribution( localRange, size, group );
+      _L1.setDistribution( localRange, ghosts, size, group );
+      _L2.setDistribution( localRange, ghosts, size, group );
+      _R1.setDistribution( localRange, ghosts, size, group );
+      _R2.setDistribution( localRange, ghosts, size, group );
+
+      auto synchronizer = std::make_shared<Synchronizer>( localRange, ghosts / 2, group );
+      _L1.setSynchronizer( synchronizer );
+      _L2.setSynchronizer( synchronizer );
+      _R1.setSynchronizer( synchronizer );
+      _R2.setSynchronizer( synchronizer );
    #else
       _L1.setSize( size );
       _L2.setSize( size );

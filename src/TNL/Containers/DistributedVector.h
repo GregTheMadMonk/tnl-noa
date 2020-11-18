@@ -75,10 +75,27 @@ public:
     */
    DistributedVector& operator=( DistributedVector&& ) = default;
 
-   // we return only the view so that the user cannot resize it
+   /**
+    * \brief Returns a modifiable view of the local part of the vector.
+    */
    LocalViewType getLocalView();
 
+   /**
+    * \brief Returns a non-modifiable view of the local part of the vector.
+    */
    ConstLocalViewType getConstLocalView() const;
+
+   /**
+    * \brief Returns a modifiable view of the local part of the vector,
+    * including ghost values.
+    */
+   LocalViewType getLocalViewWithGhosts();
+
+   /**
+    * \brief Returns a non-modifiable view of the local part of the vector,
+    * including ghost values.
+    */
+   ConstLocalViewType getConstLocalViewWithGhosts() const;
 
    /**
     * \brief Returns a modifiable view of the vector.

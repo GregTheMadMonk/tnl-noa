@@ -89,7 +89,7 @@ protected:
       using LocalRangeType = typename DistributedMatrix::LocalRangeType;
       const LocalRangeType localRange = Containers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
       matrix.setDistribution( localRange, globalSize, globalSize, group );
-      rowCapacities.setDistribution( localRange, globalSize, group );
+      rowCapacities.setDistribution( localRange, 0, globalSize, group );
 
       EXPECT_EQ( matrix.getLocalRowRange(), localRange );
       EXPECT_EQ( matrix.getCommunicationGroup(), group );
@@ -215,7 +215,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 
    GlobalVector inVector( this->globalSize );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowCapacities )
@@ -230,9 +230,9 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
    this->matrix.setRowCapacities( this->rowCapacities );
    setMatrix( this->matrix, this->rowCapacities );
 
-   DistributedVector inVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector inVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowCapacities )

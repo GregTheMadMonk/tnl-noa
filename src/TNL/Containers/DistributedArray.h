@@ -37,6 +37,7 @@ public:
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
    using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+   using SynchronizerType = typename ViewType::SynchronizerType;
 
    /**
     * \brief A template which allows to quickly obtain a \ref DistributedArray type with changed template parameters.
@@ -50,45 +51,53 @@ public:
 
    DistributedArray() = default;
 
-   DistributedArray( const DistributedArray& ) = default;
+   // Copy-constructor does deep copy.
+   DistributedArray( const DistributedArray& );
 
-   DistributedArray( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
 
-   void setDistribution( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
 
    const LocalRangeType& getLocalRange() const;
+
+   IndexType getGhosts() const;
 
    CommunicationGroup getCommunicationGroup() const;
 
    /**
     * \brief Returns a modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
     */
    LocalViewType getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
     */
    ConstLocalViewType getConstLocalView() const;
 
+   /**
+    * \brief Returns a modifiable view of the local part of the array,
+    * including ghost values.
+    */
+   LocalViewType getLocalViewWithGhosts();
+
+   /**
+    * \brief Returns a non-modifiable view of the local part of the array,
+    * including ghost values.
+    */
+   ConstLocalViewType getConstLocalViewWithGhosts() const;
+
    void copyFromGlobal( ConstLocalViewType globalArray );
+
+   // synchronizer stuff
+   void setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement = 1 );
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const;
+
+   int getValuesPerElement() const;
+
+   void startSynchronization();
+
+   void waitForSynchronization() const;
 
 
    // Usual Array methods follow below.
@@ -170,6 +179,15 @@ public:
 protected:
    ViewType view;
    LocalArrayType localData;
+
+private:
+   template< typename Array, std::enable_if_t< std::is_same< typename Array::DeviceType, DeviceType >::value, bool > = true >
+   static void setSynchronizerHelper( ViewType& view, const Array& array )
+   {
+      view.setSynchronizer( array.getSynchronizer(), array.getValuesPerElement() );
+   }
+   template< typename Array, std::enable_if_t< ! std::is_same< typename Array::DeviceType, DeviceType >::value, bool > = true >
+   static void setSynchronizerHelper( ViewType& view, const Array& array ) {}
 };
 
 } // namespace Containers

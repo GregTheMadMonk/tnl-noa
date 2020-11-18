@@ -40,6 +40,28 @@ getConstLocalView() const
    return BaseType::getConstLocalView();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Real, Device, Index, Communicator >::LocalViewType
+DistributedVector< Real, Device, Index, Communicator >::
+getLocalViewWithGhosts()
+{
+   return BaseType::getLocalViewWithGhosts();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType
+DistributedVector< Real, Device, Index, Communicator >::
+getConstLocalViewWithGhosts() const
+{
+   return BaseType::getConstLocalViewWithGhosts();
+}
+
 template< typename Value,
           typename Device,
           typename Index,

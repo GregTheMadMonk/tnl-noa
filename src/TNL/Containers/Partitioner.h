@@ -12,7 +12,10 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Subrange.h"
+#include "ByteArraySynchronizer.h"
 
 #include <TNL/Math.h>
 
@@ -66,13 +69,64 @@ public:
       const Index end = min( globalSize, (rank + 1) * globalSize / partitions );
       return end - begin;
    }
-};
 
-// TODO:
-// - partitioner in deal.II stores also ghost indices:
-//   https://www.dealii.org/8.4.0/doxygen/deal.II/classUtilities_1_1MPI_1_1Partitioner.html
-// - ghost indices are stored in a general IndexMap class (based on collection of subranges):
-//   https://www.dealii.org/8.4.0/doxygen/deal.II/classIndexSet.html
+   template< typename Device >
+   class ArraySynchronizer
+   : public ByteArraySynchronizer< Device, Index >
+   {
+      using Base = ByteArraySynchronizer< Device, Index >;
+
+      SubrangeType localRange;
+      int overlaps;
+      CommunicationGroup group;
+
+   public:
+      using ByteArrayView = typename Base::ByteArrayView;
+
+      ArraySynchronizer() = delete;
+
+      ArraySynchronizer( SubrangeType localRange, int overlaps, CommunicationGroup group )
+      : localRange(localRange), overlaps(overlaps), group(group)
+      {}
+
+      virtual void synchronizeByteArray( ByteArrayView& array, int bytesPerValue ) override
+      {
+         TNL_ASSERT_EQ( array.getSize(), bytesPerValue * (localRange.getSize() + 2 * overlaps),
+                        "unexpected array size" );
+
+         const int rank = Communicator::GetRank( group );
+         const int nproc = Communicator::GetSize( group );
+         const int left = (rank > 0) ? rank - 1 : nproc - 1;
+         const int right = (rank < nproc - 1) ? rank + 1 : 0;
+
+         // buffer for asynchronous communication requests
+         std::vector< typename Communicator::Request > requests;
+
+         // issue all async receive operations
+         requests.push_back( Communicator::IRecv(
+                  array.getData() + bytesPerValue * localRange.getSize(),
+                  bytesPerValue * overlaps,
+                  left, 0, group ) );
+         requests.push_back( Communicator::IRecv(
+                  array.getData() + bytesPerValue * (localRange.getSize() + overlaps),
+                  bytesPerValue * overlaps,
+                  right, 0, group ) );
+
+         // issue all async send operations
+         requests.push_back( Communicator::ISend(
+                  array.getData(),
+                  bytesPerValue * overlaps,
+                  left, 0, group ) );
+         requests.push_back( Communicator::ISend(
+                  array.getData() + bytesPerValue * (localRange.getSize() - overlaps),
+                  bytesPerValue * overlaps,
+                  right, 0, group ) );
+
+         // wait for all communications to finish
+         Communicator::WaitAll( requests.data(), requests.size() );
+      }
+   };
+};
 
 } // namespace Containers
 } // namespace TNL

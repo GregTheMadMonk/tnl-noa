@@ -65,9 +65,27 @@ public:
    DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index, Communicator >& view )
    : BaseType( view ) {}
 
+   /**
+    * \brief Returns a modifiable view of the local part of the vector.
+    */
    LocalViewType getLocalView();
 
+   /**
+    * \brief Returns a non-modifiable view of the local part of the vector.
+    */
    ConstLocalViewType getConstLocalView() const;
+
+   /**
+    * \brief Returns a modifiable view of the local part of the vector,
+    * including ghost values.
+    */
+   LocalViewType getLocalViewWithGhosts();
+
+   /**
+    * \brief Returns a non-modifiable view of the local part of the vector,
+    * including ghost values.
+    */
+   ConstLocalViewType getConstLocalViewWithGhosts() const;
 
    /**
     * \brief Returns a modifiable view of the array view.

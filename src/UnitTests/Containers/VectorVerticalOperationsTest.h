@@ -56,6 +56,14 @@ protected:
       using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
       template< typename Real >
       using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+
+      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+
+      const int rank = CommunicatorType::GetRank(group);
+      const int nproc = CommunicatorType::GetSize(group);
+
+      // some arbitrary value (but must be 0 if not distributed)
+      const int ghosts = (nproc > 1) ? 4 : 0;
    #else
       using VectorType = Containers::Vector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
       template< typename Real >
@@ -75,11 +83,11 @@ protected:
       setLinearSequence( V1 );
 #else
    #ifdef DISTRIBUTED_VECTOR
-      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
       using LocalRangeType = typename VectorOrView::LocalRangeType;
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >;
       const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group );
-
-      _V1.setDistribution( localRange, size, group );
+      _V1.setDistribution( localRange, ghosts, size, group );
+      _V1.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
    #else
       _V1.setSize( size );
    #endif

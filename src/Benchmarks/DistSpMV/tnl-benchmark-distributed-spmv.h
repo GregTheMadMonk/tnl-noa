@@ -228,10 +228,10 @@ struct SpmvBenchmark
       const auto group = CommunicatorType::AllGroup;
       const auto localRange = Partitioner::splitRange( matrix.getRows(), group );
       DistributedMatrix distributedMatrix( localRange, matrix.getRows(), matrix.getColumns(), group );
-      DistributedVector distributedVector( localRange, matrix.getRows(), group );
+      DistributedVector distributedVector( localRange, 0, matrix.getRows(), group );
 
       // copy the row lengths from the global matrix to the distributed matrix
-      DistributedRowLengths distributedRowLengths( localRange, matrix.getRows(), group );
+      DistributedRowLengths distributedRowLengths( localRange, 0, matrix.getRows(), group );
       for( IndexType i = 0; i < distributedMatrix.getLocalMatrix().getRows(); i++ ) {
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrix.getRowCapacity( gi );

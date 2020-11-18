@@ -12,9 +12,12 @@
 
 #pragma once
 
+#include <memory>
+
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/Subrange.h>
+#include <TNL/Containers/ByteArraySynchronizer.h>
 
 namespace TNL {
 namespace Containers {
@@ -36,6 +39,7 @@ public:
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
    using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+   using SynchronizerType = ByteArraySynchronizer< DeviceType, IndexType >;
 
    /**
     * \brief A template which allows to quickly obtain a \ref DistributedArrayView type with changed template parameters.
@@ -48,11 +52,12 @@ public:
 
 
    // Initialization by raw data
-   DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
-   : localRange(localRange), globalSize(globalSize), group(group), localData(localData)
+   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
+   : localRange(localRange), ghosts(ghosts), globalSize(globalSize), group(group), localData(localData)
    {
-      TNL_ASSERT_EQ( localData.getSize(), localRange.getSize(),
+      TNL_ASSERT_EQ( localData.getSize(), localRange.getSize() + ghosts,
                      "The local array size does not match the local range of the distributed array." );
+      TNL_ASSERT_GE( ghosts, 0, "The ghosts count must be non-negative." );
    }
 
    DistributedArrayView() = default;
@@ -68,18 +73,20 @@ public:
    DistributedArrayView( DistributedArrayView&& ) = default;
 
    // method for rebinding (reinitialization) to raw data
-   void bind( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData );
+   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group, LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
    // convertible to DistributedArrayView.
    void bind( DistributedArrayView view );
 
    // binding to local array via raw pointer
-   // (local range, global size and communication group are preserved)
+   // (local range, ghosts, global size and communication group are preserved)
    template< typename Value_ >
    void bind( Value_* data, IndexType localSize );
 
    const LocalRangeType& getLocalRange() const;
+
+   IndexType getGhosts() const;
 
    CommunicationGroup getCommunicationGroup() const;
 
@@ -87,7 +94,22 @@ public:
 
    ConstLocalViewType getConstLocalView() const;
 
+   LocalViewType getLocalViewWithGhosts();
+
+   ConstLocalViewType getConstLocalViewWithGhosts() const;
+
    void copyFromGlobal( ConstLocalViewType globalArray );
+
+   // synchronizer stuff
+   void setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement = 1 );
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const;
+
+   int getValuesPerElement() const;
+
+   void startSynchronization();
+
+   void waitForSynchronization() const;
 
 
    /*
@@ -156,9 +178,13 @@ public:
 
 protected:
    LocalRangeType localRange;
+   IndexType ghosts = 0;
    IndexType globalSize = 0;
    CommunicationGroup group = Communicator::NullGroup;
    LocalViewType localData;
+
+   std::shared_ptr< SynchronizerType > synchronizer = nullptr;
+   int valuesPerElement = 1;
 };
 
 } // namespace Containers

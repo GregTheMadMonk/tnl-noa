@@ -38,7 +38,9 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
          return false;
       const bool localResult =
             a.getLocalRange() == b.getLocalRange() &&
+            a.getGhosts() == b.getGhosts() &&
             a.getSize() == b.getSize() &&
+            // compare without ghosts
             a.getConstLocalView() == b.getConstLocalView();
       bool result = true;
       if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
@@ -55,6 +57,7 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
       TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getGhosts(), b.getGhosts(), "Ghosts of expressions to be compared do not match." );
 
       // we can't run allreduce if the communication groups are different
       if( a.getCommunicationGroup() != b.getCommunicationGroup() )
@@ -70,6 +73,7 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
       TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getGhosts(), b.getGhosts(), "Ghosts of expressions to be compared do not match." );
 
       // we can't run allreduce if the communication groups are different
       if( a.getCommunicationGroup() != b.getCommunicationGroup() )
@@ -85,6 +89,7 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
       TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getGhosts(), b.getGhosts(), "Ghosts of expressions to be compared do not match." );
 
       // we can't run allreduce if the communication groups are different
       if( a.getCommunicationGroup() != b.getCommunicationGroup() )
@@ -100,6 +105,7 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
       TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getGhosts(), b.getGhosts(), "Ghosts of expressions to be compared do not match." );
 
       // we can't run allreduce if the communication groups are different
       if( a.getCommunicationGroup() != b.getCommunicationGroup() )

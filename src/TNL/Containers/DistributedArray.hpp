@@ -25,9 +25,20 @@ template< typename Value,
           typename Index,
           typename Communicator >
 DistributedArray< Value, Device, Index, Communicator >::
-DistributedArray( LocalRangeType localRange, IndexType globalSize, CommunicationGroup group )
+DistributedArray( const DistributedArray& array )
 {
-   setDistribution( localRange, globalSize, group );
+   setLike( array );
+   localData = array.getConstLocalViewWithGhosts();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group )
+{
+   setDistribution( localRange, ghosts, globalSize, group );
 }
 
 template< typename Value,
@@ -36,12 +47,12 @@ template< typename Value,
           typename Communicator >
 void
 DistributedArray< Value, Device, Index, Communicator >::
-setDistribution( LocalRangeType localRange, IndexType globalSize, CommunicationGroup group )
+setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group )
 {
    TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
    if( group != Communicator::NullGroup )
-      localData.setSize( localRange.getSize() );
-   view.bind( localRange, globalSize, group, localData.getView() );
+      localData.setSize( localRange.getSize() + ghosts );
+   view.bind( localRange, ghosts, globalSize, group, localData.getView() );
 }
 
 template< typename Value,
@@ -53,6 +64,17 @@ DistributedArray< Value, Device, Index, Communicator >::
 getLocalRange() const
 {
    return view.getLocalRange();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+Index
+DistributedArray< Value, Device, Index, Communicator >::
+getGhosts() const
+{
+   return view.getGhosts();
 }
 
 template< typename Value,
@@ -74,7 +96,7 @@ typename DistributedArray< Value, Device, Index, Communicator >::LocalViewType
 DistributedArray< Value, Device, Index, Communicator >::
 getLocalView()
 {
-   return localData.getView();
+   return view.getLocalView();
 }
 
 template< typename Value,
@@ -85,7 +107,29 @@ typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalViewT
 DistributedArray< Value, Device, Index, Communicator >::
 getConstLocalView() const
 {
-   return localData.getConstView();
+   return view.getConstLocalView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::LocalViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getLocalViewWithGhosts()
+{
+   return view.getLocalViewWithGhosts();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getConstLocalViewWithGhosts() const
+{
+   return view.getConstLocalViewWithGhosts();
 }
 
 
@@ -98,6 +142,61 @@ DistributedArray< Value, Device, Index, Communicator >::
 copyFromGlobal( ConstLocalViewType globalArray )
 {
    view.copyFromGlobal( globalArray );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+DistributedArray< Value, Device, Index, Communicator >::
+setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement )
+{
+   view.setSynchronizer( synchronizer, valuesPerElement );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+std::shared_ptr< typename DistributedArrayView< Value, Device, Index, Communicator >::SynchronizerType >
+DistributedArray< Value, Device, Index, Communicator >::
+getSynchronizer() const
+{
+   return view.getSynchronizer();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+int
+DistributedArray< Value, Device, Index, Communicator >::
+getValuesPerElement() const
+{
+   return view.getValuesPerElement();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+DistributedArray< Value, Device, Index, Communicator >::
+startSynchronization()
+{
+   view.startSynchronization();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+DistributedArray< Value, Device, Index, Communicator >::
+waitForSynchronization() const
+{
+   view.waitForSynchronization();
 }
 
 
@@ -156,8 +255,11 @@ void
 DistributedArray< Value, Device, Index, Communicator >::
 setLike( const Array& array )
 {
-   localData.setLike( array.getConstLocalView() );
-   view.bind( array.getLocalRange(), array.getSize(), array.getCommunicationGroup(), localData.getView() );
+   localData.setLike( array.getConstLocalViewWithGhosts() );
+   view.bind( array.getLocalRange(), array.getGhosts(), array.getSize(), array.getCommunicationGroup(), localData.getView() );
+   // set, but do not unset, the synchronizer
+   if( array.getSynchronizer() )
+      setSynchronizerHelper( view, array );
 }
 
 template< typename Value,

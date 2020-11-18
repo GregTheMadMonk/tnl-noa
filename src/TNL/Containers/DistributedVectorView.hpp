@@ -40,6 +40,28 @@ getConstLocalView() const
    return BaseType::getConstLocalView();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVectorView< Real, Device, Index, Communicator >::LocalViewType
+DistributedVectorView< Real, Device, Index, Communicator >::
+getLocalViewWithGhosts()
+{
+   return BaseType::getLocalViewWithGhosts();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType
+DistributedVectorView< Real, Device, Index, Communicator >::
+getConstLocalViewWithGhosts() const
+{
+   return BaseType::getConstLocalViewWithGhosts();
+}
+
 template< typename Value,
           typename Device,
           typename Index,
@@ -80,11 +102,16 @@ operator=( const Vector& vector )
                   "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "The local ranges must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "The communication groups of the array views must be equal." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = vector.getConstLocalView();
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() = vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
@@ -102,11 +129,16 @@ operator+=( const Vector& vector )
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += vector.getConstLocalView();
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() += vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
@@ -124,11 +156,16 @@ operator-=( const Vector& vector )
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= vector.getConstLocalView();
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() -= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
@@ -146,11 +183,16 @@ operator*=( const Vector& vector )
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= vector.getConstLocalView();
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() *= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
@@ -168,11 +210,16 @@ operator/=( const Vector& vector )
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= vector.getConstLocalView();
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() /= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
@@ -188,6 +235,7 @@ operator=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalView() = c;
+      this->startSynchronization();
    }
    return *this;
 }
@@ -203,6 +251,7 @@ operator+=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalView() += c;
+      this->startSynchronization();
    }
    return *this;
 }
@@ -218,6 +267,7 @@ operator-=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalView() -= c;
+      this->startSynchronization();
    }
    return *this;
 }
@@ -233,6 +283,7 @@ operator*=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalView() *= c;
+      this->startSynchronization();
    }
    return *this;
 }
@@ -248,6 +299,7 @@ operator/=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalView() /= c;
+      this->startSynchronization();
    }
    return *this;
 }
@@ -264,6 +316,7 @@ scan( IndexType begin, IndexType end )
    if( end == 0 )
       end = this->getSize();
    Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   this->startSynchronization();
 }
 
 } // namespace Containers
