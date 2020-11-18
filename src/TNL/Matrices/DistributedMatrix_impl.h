@@ -285,7 +285,6 @@ DistributedMatrix< Matrix, Communicator >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector ) const
 {
-   TNL_ASSERT_EQ( inVector.getSize(), getColumns(), "input vector has wrong size" );
    TNL_ASSERT_EQ( inVector.getLocalRange(), getLocalRowRange(), "input vector has wrong distribution" );
    TNL_ASSERT_EQ( inVector.getCommunicationGroup(), getCommunicationGroup(), "input vector has wrong communication group" );
    TNL_ASSERT_EQ( outVector.getSize(), getRows(), "output vector has wrong size" );
@@ -295,7 +294,24 @@ vectorProduct( const InVector& inVector,
    if( getCommunicationGroup() == CommunicatorType::NullGroup )
       return;
 
-   const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicationGroup() );
+   if( inVector.getGhosts() == 0 ) {
+      // NOTE: this branch is deprecated and kept only due to existing benchmarks
+      TNL_ASSERT_EQ( inVector.getSize(), getColumns(), "input vector has wrong size" );
+      const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicationGroup() );
+   }
+   else {
+      TNL_ASSERT_EQ( inVector.getConstLocalViewWithGhosts().getSize(), localMatrix.getColumns(), "the matrix uses non-local and non-ghost column indices" );
+      TNL_ASSERT_EQ( inVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "input vector has wrong ghosts size" );
+      TNL_ASSERT_EQ( outVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "output vector has wrong ghosts size" );
+      TNL_ASSERT_EQ( outVector.getConstLocalView().getSize(), localMatrix.getRows(), "number of local matrix rows does not match the output vector local size" );
+
+      inVector.waitForSynchronization();
+      const auto inView = inVector.getConstLocalViewWithGhosts();
+      auto outView = outVector.getLocalView();
+      localMatrix.vectorProduct( inView, outView );
+      // TODO: synchronization is not always necessary, e.g. when a preconditioning step follows
+//      outVector.startSynchronization();
+   }
 }
 
 template< typename Matrix,
