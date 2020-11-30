@@ -386,7 +386,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
       }
 
       // 6d. check if finished
-      bool all_done = false;;
+      bool all_done = false;
       CommunicatorType::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
       if( all_done )
          break;
