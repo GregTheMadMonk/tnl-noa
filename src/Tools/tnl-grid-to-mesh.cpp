@@ -215,8 +215,8 @@ void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
-   config.addEntry< String >( "output-file-format", "Output mesh file format." );
+   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
+   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
    config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
