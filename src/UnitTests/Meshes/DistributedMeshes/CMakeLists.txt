@@ -10,9 +10,9 @@ ADD_EXECUTABLE( CutMeshFunctionTest CutMeshFunctionTest.cpp )
    TARGET_COMPILE_OPTIONS( CutMeshFunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( CutMeshFunctionTest ${GTEST_BOTH_LIBRARIES} )
 
-ADD_TEST( NAME DirectionsTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/DirectionsTest${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( NAME CopyEntitesTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( NAME CutMeshFunctionTest COMMAND ${EXECUTABLE_OUTPUT_PATH}/CutMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( NAME DirectionsTest COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DirectionsTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( NAME CopyEntitesTest COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/CopyEntitesTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( NAME CutMeshFunctionTest COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/CutMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( BUILD_MPI )
 ADD_EXECUTABLE( DistributedGridTest_1D DistributedGridTest_1D.cpp )
@@ -72,36 +72,36 @@ if( tinyxml2_FOUND )
 endif()
 
 
-SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_1D COMMAND "mpirun" ${mpi_test_parameters_1d})
 
 # TODO: Fix this test
-#SET (mpi_test_parameters_2d -np 9 -H localhost:9 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_2D${CMAKE_EXECUTABLE_SUFFIX}")
+#SET (mpi_test_parameters_2d -np 9 -H localhost:9 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedGridTest_2D${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedGridTest_2D COMMAND "mpirun" ${mpi_test_parameters_2d})
 
-SET (mpi_test_parameters_3d -np 27 -H localhost:27 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_3D${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_3d -np 27 -H localhost:27 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedGridTest_3D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_3D COMMAND "mpirun" ${mpi_test_parameters_3d})
 
 # TODO: Fix
-#SET (mpi_test_parameters_IO -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
+#SET (mpi_test_parameters_IO -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedGridIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedGridIOTest COMMAND "mpirun" ${mpi_test_parameters_IO})
 
 # TODO: Fix
-#SET (mpi_test_parameters_IOMPIIO -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
+#SET (mpi_test_parameters_IOMPIIO -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedGridIO_MPIIOTest${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedGridIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
-SET (mpi_test_parameters_CutDistributedGridTest -np 12 -H localhost:12 "${EXECUTABLE_OUTPUT_PATH}/CutDistributedGridTest${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_CutDistributedGridTest -np 12 -H localhost:12 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/CutDistributedGridTest${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME CutDistributedGridTest COMMAND "mpirun" ${mpi_test_parameters_CutDistributedGridTest})
 
-SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "${EXECUTABLE_OUTPUT_PATH}/CutDistributedMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX}")
+SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/CutDistributedMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME CutDistributedMeshFunctionTest COMMAND "mpirun" ${mpi_test_parameters_CutDistributedMeshFunctionTest})
 
 # TODO: Fix
-#SET (mpi_test_parameters_DistributedVectorFieldIO_MPIIOTest -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorFieldIO_MPIIOTest ${CMAKE_EXECUTABLE_SUFFIX}")
+#SET (mpi_test_parameters_DistributedVectorFieldIO_MPIIOTest -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorFieldIO_MPIIOTest ${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedVectorFieldIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
-add_test( NAME DistributedMeshTest_2x2 COMMAND mpirun -np 4 -H localhost:4 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
-add_test( NAME DistributedMeshTest_3x3 COMMAND mpirun -np 9 -H localhost:9 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
-add_test( NAME DistributedMeshTest_4x4 COMMAND mpirun -np 16 -H localhost:16 ${EXECUTABLE_OUTPUT_PATH}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+add_test( NAME DistributedMeshTest_2x2 COMMAND mpirun -np 4 -H localhost:4 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+add_test( NAME DistributedMeshTest_3x3 COMMAND mpirun -np 9 -H localhost:9 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
+add_test( NAME DistributedMeshTest_4x4 COMMAND mpirun -np 16 -H localhost:16 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedMeshTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 endif()

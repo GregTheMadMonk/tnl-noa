@@ -34,14 +34,14 @@ foreach( target IN ITEMS ${CPP_TESTS} )
    add_executable( ${target} ${target}.cpp )
    target_compile_options( ${target} PRIVATE ${CXX_TESTS_FLAGS} )
    target_link_libraries( ${target} ${GTEST_BOTH_LIBRARIES} )
-   add_test( ${target} ${EXECUTABLE_OUTPUT_PATH}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
+   add_test( ${target} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
 endforeach()
 
 if( BUILD_CUDA )
    foreach( target IN ITEMS ${CUDA_TESTS} )
       cuda_add_executable( ${target} ${target}.cu OPTIONS ${CXX_TESTS_FLAGS} )
       target_link_libraries( ${target} ${GTEST_BOTH_LIBRARIES} )
-      add_test( ${target} ${EXECUTABLE_OUTPUT_PATH}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
+      add_test( ${target} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
    endforeach()
 endif()
 
@@ -90,32 +90,32 @@ if( ${BUILD_MPI} )
       TARGET_LINK_LIBRARIES( DistributedVectorVerticalOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
    endif( BUILD_CUDA )
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedArrayTest COMMAND "mpirun" ${mpi_test_parameters})
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorTest COMMAND "mpirun" ${mpi_test_parameters})
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorBinaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorUnaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorVerticalOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
 
    if( BUILD_CUDA )
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorTestCuda COMMAND "mpirun" ${mpi_test_parameters})
 
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorBinaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
 
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorUnaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
 
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorVerticalOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorVerticalOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorVerticalOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
    endif()
 endif()

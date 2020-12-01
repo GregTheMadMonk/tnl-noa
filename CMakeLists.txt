@@ -47,21 +47,10 @@ set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 find_package( OpenMP )
 find_package( MPI )
 
-####
-# Settings for debug/release version
-#
+# Settings for debug build
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Debug/src )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
-    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
-    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( CMAKE_EXECUTABLE_SUFFIX "-dbg${CMAKE_EXECUTABLE_SUFFIX}" )  # suffix for executables
     set( CMAKE_DEBUG_POSTFIX "-dbg" )  # suffix for libraries
-else()
-    set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
-    set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
-    set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib )
-    set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
 endif()
 
 # check if the compiler is good enough
@@ -329,10 +318,11 @@ endif()
 #   endif()
 #endif()
 
-INCLUDE_DIRECTORIES( src )
-INCLUDE_DIRECTORIES( src/3rdparty )
-INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
-LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
+# configure build paths
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
+include_directories( src )
+include_directories( src/3rdparty )
 
 # Add all subdirectories
 add_subdirectory( src )
