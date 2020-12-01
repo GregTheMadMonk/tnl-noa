@@ -1,9 +1,0 @@
-version=@tnlVersion@
-
-Name: TNL (with CUDA support)
-Description: Template Numerical Library (with CUDA support)
-URL:
-Version: ${version}
-Libs:
-Cflags: -DHAVE_CUDA
-Requires: cuda, tnl = ${version}

@@ -336,7 +336,6 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
 add_subdirectory( src )
-add_subdirectory( share )
 
 # Add subdirectories for examples included in the documentation
 if( ${WITH_DOC} )

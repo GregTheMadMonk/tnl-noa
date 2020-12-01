@@ -1,9 +1,0 @@
-version=@tnlVersion@
-
-Name: TNL (with OpenMP support)
-Description: Template Numerical Library (with OpenMP support)
-URL:
-Version: ${version}
-Libs: -lgomp
-Cflags: -DHAVE_OPENMP -fopenmp
-Requires: tnl = ${version}
