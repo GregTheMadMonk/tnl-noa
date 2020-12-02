@@ -39,7 +39,7 @@ getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
 /*
  * Get an arithmetic mean of the entity's subvertices.
  *
- * For an simplex entity this corresponds to the centroid of the entity, but
+ * For a simplex entity this corresponds to the centroid of the entity, but
  * note that other shapes such as general polygons have different formulas for
  * the centroid: https://en.wikipedia.org/wiki/Centroid#Centroid_of_a_polygon
  */
