@@ -20,7 +20,9 @@ set( COMMON_TESTS
             LambdaMatrixTest
 )
 
-set( CPP_TESTS )
+set( CPP_TESTS
+            StaticMatrixTest
+)
 set( CUDA_TESTS )
 if( BUILD_CUDA )
    set( CUDA_TESTS  ${CUDA_TESTS} ${COMMON_TESTS} )
