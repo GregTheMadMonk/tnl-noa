@@ -32,7 +32,7 @@ endif()
 
 find_package( ZLIB )
 if( ZLIB_FOUND )
-   foreach( target IN ITEMS tnl-view tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+   foreach( target IN ITEMS tnl-view tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
       target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
       target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
       target_link_libraries(${target} ${ZLIB_LIBRARIES})
