@@ -45,7 +45,7 @@ template<> struct GridRealTag< DecomposeMeshConfigTag, long double > { enum { en
  */
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 

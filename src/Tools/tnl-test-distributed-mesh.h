@@ -48,7 +48,7 @@ template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = false 
  */
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-//template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+//template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 

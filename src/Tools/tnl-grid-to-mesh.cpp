@@ -98,7 +98,7 @@ template< typename Real, typename Device, typename Index >
 struct MeshCreator< Meshes::Grid< 2, Real, Device, Index > >
 {
    using GridType = Meshes::Grid< 2, Real, Device, Index >;
-   using CellTopology = Meshes::Topologies::Quadrilateral;
+   using CellTopology = Meshes::Topologies::Quadrangle;
    using MeshConfig = Meshes::DefaultConfig< CellTopology,
                                                   CellTopology::dimension,
                                                   typename GridType::RealType,

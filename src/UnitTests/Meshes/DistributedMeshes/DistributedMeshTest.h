@@ -10,7 +10,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Traverser.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Geometry/getEntityCenter.h>
 #include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/VTKTraits.h>
@@ -45,7 +45,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 {
    using GridType = TNL::Meshes::Grid< 2, Real, Device, Index >;
    using CoordinatesType = typename GridType::CoordinatesType;
-   using CellTopology = TNL::Meshes::Topologies::Quadrilateral;
+   using CellTopology = TNL::Meshes::Topologies::Quadrangle;
    using MeshConfig = TNL::Meshes::DefaultConfig< CellTopology,
                                                   CellTopology::dimension,
                                                   typename GridType::RealType,

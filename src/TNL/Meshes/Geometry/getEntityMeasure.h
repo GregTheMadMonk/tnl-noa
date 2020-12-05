@@ -17,7 +17,7 @@
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 
 namespace TNL {
@@ -118,12 +118,12 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     return getTriangleArea( v2 - v0, v1 - v0 );
 }
 
-// Quadrilateral
+// Quadrangle
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 typename MeshConfig::RealType
 getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
-                  const MeshEntity< MeshConfig, Device, Topologies::Quadrilateral > & entity )
+                  const MeshEntity< MeshConfig, Device, Topologies::Quadrangle > & entity )
 {
     // measure = 0.5 * |AC x BD|, where AC and BD are the diagonals
     // Hence, we can use the same formula as for the triangle area.
