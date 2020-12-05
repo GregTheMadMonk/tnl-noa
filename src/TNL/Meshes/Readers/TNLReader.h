@@ -79,7 +79,7 @@ public:
             cellShape = VTK::EntityShape::Line;
          else if( topology == "TNL::Meshes::Topologies::Triangle" )
             cellShape = VTK::EntityShape::Triangle;
-         else if( topology == "TNL::Meshes::Topologies::Quadrilateral" )
+         else if( topology == "TNL::Meshes::Topologies::Quadrangle" )
             cellShape = VTK::EntityShape::Quad;
          else if( topology == "TNL::Meshes::Topologies::Tetrahedron" )
             cellShape = VTK::EntityShape::Tetra;

@@ -136,7 +136,7 @@ void assertIndicesInBounds( const SizesHolder& sizes, Index&& i, IndexTypes&&...
    // shouldn't be declared when compiling without assertions
    constexpr std::size_t level = SizesHolder::getDimension() - sizeof...(indices) - 1;
    const auto size = sizes.template getSize< level >();
-   TNL_ASSERT_LT( i, (Index) size, "Input error - some index is out of bounds." );
+   TNL_ASSERT_LT( (decltype(size)) i, size, "Input error - some index is out of bounds." );
 #endif
    assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
 }

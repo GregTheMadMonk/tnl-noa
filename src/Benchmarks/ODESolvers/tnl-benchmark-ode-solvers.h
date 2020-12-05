@@ -213,8 +213,9 @@ configSetup( Config::ConfigDescription& config )
 
    config.addDelimiter( "ODE solver settings:" );
    Solvers::IterativeSolver< double, int >::configSetup( config );
-   Solvers::ODE::Euler<>::configSetup( config );
-   Solvers::ODE::Merson<>::configSetup( config );
+   using Problem = SimpleProblem< double, Devices::Host, int >;
+   Solvers::ODE::Euler< Problem >::configSetup( config );
+   Solvers::ODE::Merson< Problem >::configSetup( config );
 }
 
 int

@@ -368,35 +368,6 @@ public:
 };
 
 template< typename Value,
-          std::size_t Rows,
-          std::size_t Columns,
-          typename Permutation = std::index_sequence< 0, 1 > >  // identity by default
-class StaticMatrix
-: public StaticNDArray< Value,
-                        SizesHolder< std::size_t, Rows, Columns >,
-                        Permutation >
-{
-   using Base = StaticNDArray< Value,
-                        SizesHolder< std::size_t, Rows, Columns >,
-                        Permutation >;
-
-public:
-   // inherit all assignment operators
-   using Base::operator=;
-
-   static constexpr std::size_t getRows()
-   {
-      return Rows;
-   }
-
-   __cuda_callable__
-   static constexpr std::size_t getColumns()
-   {
-      return Columns;
-   }
-};
-
-template< typename Value,
           typename SizesHolder,
           typename Permutation = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
           typename SliceInfo = SliceInfo<>,  // no slicing by default

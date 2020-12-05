@@ -8,7 +8,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/DefaultConfig.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
 namespace EntityTagsTest {
@@ -20,7 +20,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
+class TestQuadrangleMeshConfig : public DefaultConfig< Topologies::Quadrangle >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -30,11 +30,11 @@ public:
    template< typename EntityTopology > static constexpr bool boundaryTagsStorage( EntityTopology ) { return true; }
 };
 
-TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
+TEST( MeshTest, RegularMeshOfQuadranglesTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, Topologies::Quadrilateral >;
-   using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
-   using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using QuadrangleMeshEntityType = MeshEntity< TestQuadrangleMeshConfig, Devices::Host, Topologies::Quadrangle >;
+   using EdgeMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
    static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
@@ -47,9 +47,9 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    const IndexType numberOfCells = xSize * ySize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-   typedef Mesh< TestQuadrilateralMeshConfig > TestQuadrilateralMesh;
-   TestQuadrilateralMesh mesh, mesh2;
-   MeshBuilder< TestQuadrilateralMesh > meshBuilder;
+   typedef Mesh< TestQuadrangleMeshConfig > TestQuadrangleMesh;
+   TestQuadrangleMesh mesh, mesh2;
+   MeshBuilder< TestQuadrangleMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
 

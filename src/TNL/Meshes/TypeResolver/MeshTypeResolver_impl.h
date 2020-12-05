@@ -46,7 +46,7 @@ resolveCellTopology( Reader& reader, Functor&& functor )
       case VTK::EntityShape::Triangle:
          return resolveWorldDimension< Topologies::Triangle >( reader, std::forward<Functor>(functor) );
       case VTK::EntityShape::Quad:
-         return resolveWorldDimension< Topologies::Quadrilateral >( reader, std::forward<Functor>(functor) );
+         return resolveWorldDimension< Topologies::Quadrangle >( reader, std::forward<Functor>(functor) );
       case VTK::EntityShape::Tetra:
          return resolveWorldDimension< Topologies::Tetrahedron >( reader, std::forward<Functor>(functor) );
       case VTK::EntityShape::Hexahedron:

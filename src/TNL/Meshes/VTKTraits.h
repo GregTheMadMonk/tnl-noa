@@ -15,7 +15,7 @@
 
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 
@@ -125,7 +125,7 @@ template< typename Topology > struct TopologyToEntityShape {};
 template<> struct TopologyToEntityShape< Topologies::Vertex >         { static constexpr EntityShape shape = EntityShape::Vertex; };
 template<> struct TopologyToEntityShape< Topologies::Edge >           { static constexpr EntityShape shape = EntityShape::Line; };
 template<> struct TopologyToEntityShape< Topologies::Triangle >       { static constexpr EntityShape shape = EntityShape::Triangle; };
-template<> struct TopologyToEntityShape< Topologies::Quadrilateral >  { static constexpr EntityShape shape = EntityShape::Quad; };
+template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad; };
 template<> struct TopologyToEntityShape< Topologies::Tetrahedron >    { static constexpr EntityShape shape = EntityShape::Tetra; };
 template<> struct TopologyToEntityShape< Topologies::Hexahedron >     { static constexpr EntityShape shape = EntityShape::Hexahedron; };
 

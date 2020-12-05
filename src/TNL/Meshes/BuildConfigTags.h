@@ -15,7 +15,7 @@
 #include <TNL/Meshes/DefaultConfig.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/Topologies/Simplex.h>
@@ -80,7 +80,7 @@ template< typename ConfigTag > struct MeshDeviceTag< ConfigTag, Devices::Cuda > 
 template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag { enum { enabled = false }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Edge > { enum { enabled = true }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 // TODO: Simplex has not been tested yet

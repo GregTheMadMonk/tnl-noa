@@ -12,14 +12,13 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
-#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Problem = DummyProblem<>,
+template< typename Problem,
           typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
 class Euler : public ExplicitSolver< Problem, SolverMonitor >
 {

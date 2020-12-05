@@ -39,7 +39,7 @@ template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ enum { enabl
  */
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
@@ -152,7 +152,7 @@ void configSetup( Config::ConfigDescription& config )
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
    config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
+   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
    config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
    config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );

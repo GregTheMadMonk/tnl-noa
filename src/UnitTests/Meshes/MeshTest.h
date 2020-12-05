@@ -11,7 +11,7 @@
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/MeshBuilder.h>
@@ -36,7 +36,7 @@ public:
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
-class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
+class TestQuadrangleMeshConfig : public DefaultConfig< Topologies::Quadrangle >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -554,11 +554,11 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    testFinishedMesh( mesh );
 }
 
-TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
+TEST( MeshTest, RegularMeshOfQuadranglesTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, Topologies::Quadrilateral >;
-   using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
-   using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using QuadrangleMeshEntityType = MeshEntity< TestQuadrangleMeshConfig, Devices::Host, Topologies::Quadrangle >;
+   using EdgeMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
    static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
@@ -571,9 +571,9 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    const IndexType numberOfCells = xSize * ySize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-   typedef Mesh< TestQuadrilateralMeshConfig > TestQuadrilateralMesh;
-   TestQuadrilateralMesh mesh;
-   MeshBuilder< TestQuadrilateralMesh > meshBuilder;
+   typedef Mesh< TestQuadrangleMeshConfig > TestQuadrangleMesh;
+   TestQuadrangleMesh mesh;
+   MeshBuilder< TestQuadrangleMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
 
@@ -614,7 +614,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
          const IndexType vertex2 = ( j + 1 ) * ( xSize + 1 ) + i + 1;
          const IndexType vertex3 = ( j + 1 ) * ( xSize + 1 ) + i;
 
-         const QuadrilateralMeshEntityType& cell = mesh.template getEntity< 2 >( cellIdx++ );
+         const QuadrangleMeshEntityType& cell = mesh.template getEntity< 2 >( cellIdx++ );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 0 ), vertex0 );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 1 ), vertex1 );
          EXPECT_EQ( cell.template getSubentityIndex< 0 >( 2 ), vertex2 );
@@ -689,7 +689,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
 {
    using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, Devices::Host, Topologies::Hexahedron >;
-   using QuadrilateralMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
+   using QuadrangleMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
    using EdgeMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
 

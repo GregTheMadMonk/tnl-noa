@@ -11,15 +11,14 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 
 namespace TNL {
 namespace Solvers {
-namespace ODE {   
+namespace ODE {
 
-template< class Problem = DummyProblem<>,
+template< class Problem,
           typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
 class Merson : public ExplicitSolver< Problem, SolverMonitor >
 {

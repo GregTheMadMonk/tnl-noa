@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Quadrilateral.h  -  description
+                          Quadrangle.h  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -22,14 +22,14 @@ namespace TNL {
 namespace Meshes {
 namespace Topologies {
 
-struct Quadrilateral
+struct Quadrangle
 {
    static constexpr int dimension = 2;
 };
 
 
 template<>
-struct Subtopology< Quadrilateral, 0 >
+struct Subtopology< Quadrangle, 0 >
 {
    typedef Vertex Topology;
 
@@ -37,7 +37,7 @@ struct Subtopology< Quadrilateral, 0 >
 };
 
 template<>
-struct Subtopology< Quadrilateral, 1 >
+struct Subtopology< Quadrangle, 1 >
 {
    typedef Edge Topology;
 
@@ -72,17 +72,17 @@ struct Subtopology< Quadrilateral, 1 >
  *
  */
 
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 0, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 0, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 0, 0> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 0, 1> { enum { index = 1 }; };
 
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 1, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 1, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 1, 0> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 1, 1> { enum { index = 2 }; };
 
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 2, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 2, 1> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 2, 0> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 2, 1> { enum { index = 3 }; };
 
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 3, 0> { enum { index = 3 }; };
-template<> struct SubentityVertexMap< Quadrilateral, Edge, 3, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 3, 0> { enum { index = 3 }; };
+template<> struct SubentityVertexMap< Quadrangle, Edge, 3, 1> { enum { index = 0 }; };
 
 } // namespace Topologies
 } // namespace Meshes

@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
-#include <TNL/variant.hpp>   // backport of std::variant from C++17
+#include <mpark/variant.hpp>   // backport of std::variant from C++17
 
 namespace TNL {
 namespace Config {

@@ -20,7 +20,9 @@ set( COMMON_TESTS
             LambdaMatrixTest
 )
 
-set( CPP_TESTS )
+set( CPP_TESTS
+            StaticMatrixTest
+)
 set( CUDA_TESTS )
 if( BUILD_CUDA )
    set( CUDA_TESTS  ${CUDA_TESTS} ${COMMON_TESTS} )
@@ -32,14 +34,14 @@ foreach( target IN ITEMS ${CPP_TESTS} )
    add_executable( ${target} ${target}.cpp )
    target_compile_options( ${target} PRIVATE ${CXX_TESTS_FLAGS} )
    target_link_libraries( ${target} ${GTEST_BOTH_LIBRARIES} )
-   add_test( ${target} ${EXECUTABLE_OUTPUT_PATH}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
+   add_test( ${target} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
 endforeach()
 
 if( BUILD_CUDA )
    foreach( target IN ITEMS ${CUDA_TESTS} )
       cuda_add_executable( ${target} ${target}.cu OPTIONS ${CXX_TESTS_FLAGS} )
       target_link_libraries( ${target} ${GTEST_BOTH_LIBRARIES} )
-      add_test( ${target} ${EXECUTABLE_OUTPUT_PATH}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
+      add_test( ${target} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}${CMAKE_EXECUTABLE_SUFFIX} )
    endforeach()
 endif()
 
@@ -54,6 +56,6 @@ if( ${BUILD_MPI} )
       TARGET_LINK_LIBRARIES( DistributedMatrixTest ${GTEST_BOTH_LIBRARIES} )
    endif()
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedMatrixTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedMatrixTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedMatrixTest COMMAND "mpirun" ${mpi_test_parameters})
 endif()

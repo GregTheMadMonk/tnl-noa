@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include <TNL/Problems/PDEProblem.h>
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 #include <TNL/Solvers/LinearSolverTypeResolver.h>
@@ -25,8 +25,6 @@ template< typename ConfigTag,
           typename ProblemConfig >
 bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescription& config )
 {
-   typedef DummyProblem< double, Devices::Host, int > DummyProblemType;
-
    config.addDelimiter( " === General parameters ==== " );
    config.addEntry< bool >( "catch-exceptions",
                             "Catch C++ exceptions. Disabling it allows the program to drop into the debugger "
@@ -89,9 +87,9 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     * Time discretisation
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
-   typedef PDE::ExplicitTimeStepper< DummyProblemType, ODE::Euler > ExplicitTimeStepper;
-   typedef Solvers::DummySolver DiscreteSolver;
-   PDE::TimeDependentPDESolver< DummyProblemType, ExplicitTimeStepper >::configSetup( config );
+   using PDEProblem = Problems::PDEProblem< Meshes::Grid<1, double, Devices::Host, int>, Communicators::MpiCommunicator >;
+   using ExplicitTimeStepper = PDE::ExplicitTimeStepper< PDEProblem, ODE::Euler >;
+   PDE::TimeDependentPDESolver< PDEProblem, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled ||
@@ -130,12 +128,12 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
-      ODE::ExplicitSolver< DummyProblem< double, Devices::Host, int > >::configSetup( config );
+      ODE::ExplicitSolver< PDEProblem >::configSetup( config );
       if( ConfigTagExplicitSolver< ConfigTag, ExplicitEulerSolverTag >::enabled )
-         ODE::Euler< DummyProblem< double, Devices::Host, int > >::configSetup( config );
+         ODE::Euler< PDEProblem >::configSetup( config );
 
       if( ConfigTagExplicitSolver< ConfigTag, ExplicitMersonSolverTag >::enabled )
-         ODE::Merson< DummyProblem< double, Devices::Host, int > >::configSetup( config );
+         ODE::Merson< PDEProblem >::configSetup( config );
    }
    if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {

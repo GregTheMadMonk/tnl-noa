@@ -45,7 +45,7 @@ template<> struct GridRealTag< DecomposeMeshConfigTag, long double > { enum { en
  */
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrilateral > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
@@ -123,7 +123,7 @@ void configSetup( Config::ConfigDescription& config )
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
    config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file in TNL or VTK format." );
+   config.addRequiredEntry< String >( "output-file", "Output mesh file (PVTU format)." );
    config.addRequiredEntry< unsigned >( "subdomains", "Number of subdomains to decompose the mesh." );
    config.addEntry< unsigned >( "ghost-levels", "Number of ghost levels by which the subdomains overlap.", 0 );
    config.addEntry< unsigned >( "min-common-vertices",

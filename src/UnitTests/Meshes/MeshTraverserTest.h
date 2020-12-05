@@ -6,7 +6,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/DefaultConfig.h>
-#include <TNL/Meshes/Topologies/Quadrilateral.h>
+#include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Traverser.h>
@@ -20,7 +20,7 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
-class TestQuadrilateralMeshConfig : public DefaultConfig< Topologies::Quadrilateral >
+class TestQuadrangleMeshConfig : public DefaultConfig< Topologies::Quadrangle >
 {
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
@@ -97,11 +97,11 @@ void testTraverser( const DeviceMeshPointer& deviceMeshPointer,
    EXPECT_EQ( array_all,      host_array_all      );
 }
 
-TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
+TEST( MeshTest, RegularMeshOfQuadranglesTest )
 {
-   using QuadrilateralMeshEntityType = MeshEntity< TestQuadrilateralMeshConfig, Devices::Host, Topologies::Quadrilateral >;
-   using EdgeMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 1 >::SubentityType;
-   using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using QuadrangleMeshEntityType = MeshEntity< TestQuadrangleMeshConfig, Devices::Host, Topologies::Quadrangle >;
+   using EdgeMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename QuadrangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
    static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
@@ -114,9 +114,9 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    const IndexType numberOfCells = xSize * ySize;
    const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-   using TestQuadrilateralMesh = Mesh< TestQuadrilateralMeshConfig >;
-   Pointers::SharedPointer< TestQuadrilateralMesh > meshPointer;
-   MeshBuilder< TestQuadrilateralMesh > meshBuilder;
+   using TestQuadrangleMesh = Mesh< TestQuadrangleMeshConfig >;
+   Pointers::SharedPointer< TestQuadrangleMesh > meshPointer;
+   MeshBuilder< TestQuadrangleMesh > meshBuilder;
    meshBuilder.setPointsCount( numberOfVertices );
    meshBuilder.setCellsCount( numberOfCells );
 
@@ -217,17 +217,17 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    }
 
    // test traverser with host
-   testTraverser< QuadrilateralMeshEntityType >( meshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< QuadrangleMeshEntityType >( meshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
    testTraverser< EdgeMeshEntityType          >( meshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
    testTraverser< VertexMeshEntityType        >( meshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 
    // test traverser with CUDA
 #ifdef HAVE_CUDA
-   using DeviceMesh = Mesh< TestQuadrilateralMeshConfig, Devices::Cuda >;
+   using DeviceMesh = Mesh< TestQuadrangleMeshConfig, Devices::Cuda >;
    Pointers::SharedPointer< DeviceMesh > deviceMeshPointer;
    *deviceMeshPointer = *meshPointer;
 
-   testTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
+   testTraverser< QuadrangleMeshEntityType >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
    testTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
    testTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 #endif
@@ -236,7 +236,7 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
 TEST( MeshTest, RegularMeshOfHexahedronsTest )
 {
    using HexahedronMeshEntityType = MeshEntity< TestHexahedronMeshConfig, Devices::Host, Topologies::Hexahedron >;
-   using QuadrilateralMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
+   using QuadrangleMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 2 >::SubentityType;
    using EdgeMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 1 >::SubentityType;
    using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
@@ -389,7 +389,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
 
    // test traverser with host
    testTraverser< HexahedronMeshEntityType    >( meshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
-   testTraverser< QuadrilateralMeshEntityType >( meshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
+   testTraverser< QuadrangleMeshEntityType >( meshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
    testTraverser< EdgeMeshEntityType          >( meshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
    testTraverser< VertexMeshEntityType        >( meshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 
@@ -400,7 +400,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    *deviceMeshPointer = *meshPointer;
 
    testTraverser< HexahedronMeshEntityType    >( deviceMeshPointer, array_cells_boundary, array_cells_interior, array_cells_all );
-   testTraverser< QuadrilateralMeshEntityType >( deviceMeshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
+   testTraverser< QuadrangleMeshEntityType >( deviceMeshPointer, array_faces_boundary, array_faces_interior, array_faces_all );
    testTraverser< EdgeMeshEntityType          >( deviceMeshPointer, array_edges_boundary, array_edges_interior, array_edges_all );
    testTraverser< VertexMeshEntityType        >( deviceMeshPointer, array_vertices_boundary, array_vertices_interior, array_vertices_all );
 #endif
