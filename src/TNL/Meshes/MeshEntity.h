@@ -17,7 +17,6 @@
 #pragma once
 
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/Meshes/Topologies/Vertex.h>
 
 namespace TNL {
 namespace Meshes {
