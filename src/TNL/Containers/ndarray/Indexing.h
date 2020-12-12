@@ -20,6 +20,47 @@ namespace __ndarray_impl {
 
 template< typename OffsetsHolder,
           typename Sequence >
+struct OffsetsHelper
+{};
+
+template< typename OffsetsHolder,
+          std::size_t... N >
+struct OffsetsHelper< OffsetsHolder, std::index_sequence< N... > >
+{
+   template< typename Func >
+   __cuda_callable__
+   static auto apply( const OffsetsHolder& offsets, Func&& f ) -> decltype(auto)
+   {
+      return f( offsets.template getSize< N >()... );
+   }
+
+   template< typename Func >
+   static auto apply_host( const OffsetsHolder& offsets, Func&& f ) -> decltype(auto)
+   {
+      return f( offsets.template getSize< N >()... );
+   }
+};
+
+template< typename OffsetsHolder,
+          typename Func >
+__cuda_callable__
+auto call_with_offsets( const OffsetsHolder& offsets, Func&& f ) -> decltype(auto)
+{
+   return OffsetsHelper< OffsetsHolder, std::make_index_sequence< OffsetsHolder::getDimension() > >
+          ::apply( offsets, std::forward< Func >( f ) );
+}
+
+template< typename OffsetsHolder,
+          typename Func >
+auto host_call_with_offsets( const OffsetsHolder& offsets, Func&& f ) -> decltype(auto)
+{
+   return OffsetsHelper< OffsetsHolder, std::make_index_sequence< OffsetsHolder::getDimension() > >
+          ::apply_host( offsets, std::forward< Func >( f ) );
+}
+
+
+template< typename OffsetsHolder,
+          typename Sequence >
 struct IndexShiftHelper
 {};
 
@@ -56,7 +97,7 @@ auto call_with_shifted_indices( const OffsetsHolder& offsets, Func&& f, Indices&
 template< typename OffsetsHolder,
           typename Func,
           typename... Indices >
-auto host_call_with_unshifted_indices( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
+auto host_call_with_shifted_indices( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
 {
    return IndexShiftHelper< OffsetsHolder, std::make_index_sequence< sizeof...( Indices ) > >
           ::apply_host( offsets, std::forward< Func >( f ), std::forward< Indices >( indices )... );
