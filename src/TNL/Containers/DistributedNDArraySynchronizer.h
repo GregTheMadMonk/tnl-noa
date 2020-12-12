@@ -19,7 +19,12 @@
 namespace TNL {
 namespace Containers {
 
-template< typename DistributedNDArray >
+template< typename DistributedNDArray,
+          // This can be set to false to optimize out buffering when it is not needed
+          // (e.g. for LBM with 1D distribution and specific orientation of the ndarray)
+          bool buffered = true,
+          // switch for the LBM hack: only 9 of 27 distribution functions will be sent
+          bool LBM_HACK = false >
 class DistributedNDArraySynchronizer
 {
 public:
@@ -117,10 +122,17 @@ protected:
          SizesHolder bufferSize( localEnds );
          bufferSize.template setSize< dim >( overlap );
 
+         // allocate buffers
          dim_buffers.left_send_buffer.setSize( bufferSize );
          dim_buffers.left_recv_buffer.setSize( bufferSize );
          dim_buffers.right_send_buffer.setSize( bufferSize );
          dim_buffers.right_recv_buffer.setSize( bufferSize );
+
+         // bind views to the buffers
+         dim_buffers.left_send_view.bind( dim_buffers.left_send_buffer.getView() );
+         dim_buffers.left_recv_view.bind( dim_buffers.left_recv_buffer.getView() );
+         dim_buffers.right_send_view.bind( dim_buffers.right_send_buffer.getView() );
+         dim_buffers.right_recv_view.bind( dim_buffers.right_recv_buffer.getView() );
 
          // TODO: check overlap offsets for 2D and 3D distributions (watch out for the corners - maybe use SetSizesSubtractOverlapsHelper?)
 
@@ -153,35 +165,46 @@ protected:
    {
       static void exec( Buffers& buffers, DistributedNDArrayView& array_view, bool to_buffer )
       {
+         // skip if there are no overlaps
          const std::size_t overlap = __ndarray_impl::get< dim >( typename DistributedNDArray::OverlapsType{} );
          if( overlap == 0 )
             return;
 
          auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
-         // TODO: specify CUDA stream for the copy, otherwise async won't work !!!
-         CopyKernel< decltype(dim_buffers.left_send_buffer.getView()) > copy_kernel;
-         copy_kernel.array_view.bind( array_view );
-         copy_kernel.to_buffer = to_buffer;
+         if( buffered ) {
+            // TODO: specify CUDA stream for the copy, otherwise async won't work !!!
+            CopyKernel< decltype(dim_buffers.left_send_view) > copy_kernel;
+            copy_kernel.array_view.bind( array_view );
+            copy_kernel.to_buffer = to_buffer;
 
-         if( to_buffer ) {
-            copy_kernel.buffer_view.bind( dim_buffers.left_send_buffer.getView() );
-            copy_kernel.array_offsets = dim_buffers.left_send_offsets;
-            dim_buffers.left_send_buffer.forAll( copy_kernel );
+            if( to_buffer ) {
+               copy_kernel.buffer_view.bind( dim_buffers.left_send_view );
+               copy_kernel.array_offsets = dim_buffers.left_send_offsets;
+               dim_buffers.left_send_view.forAll( copy_kernel );
 
-            copy_kernel.buffer_view.bind( dim_buffers.right_send_buffer.getView() );
-            copy_kernel.array_offsets = dim_buffers.right_send_offsets;
-            dim_buffers.right_send_buffer.forAll( copy_kernel );
+               copy_kernel.buffer_view.bind( dim_buffers.right_send_view );
+               copy_kernel.array_offsets = dim_buffers.right_send_offsets;
+               dim_buffers.right_send_view.forAll( copy_kernel );
+            }
+            else {
+               copy_kernel.buffer_view.bind( dim_buffers.left_recv_view );
+               copy_kernel.array_offsets = dim_buffers.left_recv_offsets;
+               dim_buffers.left_recv_view.forAll( copy_kernel );
+
+               copy_kernel.buffer_view.bind( dim_buffers.right_recv_view );
+               copy_kernel.array_offsets = dim_buffers.right_recv_offsets;
+               dim_buffers.right_recv_view.forAll( copy_kernel );
+            }
          }
          else {
-            copy_kernel.buffer_view.bind( dim_buffers.left_recv_buffer.getView() );
-            copy_kernel.array_offsets = dim_buffers.left_recv_offsets;
-            dim_buffers.left_recv_buffer.forAll( copy_kernel );
-
-            copy_kernel.buffer_view.bind( dim_buffers.right_recv_buffer.getView() );
-            copy_kernel.array_offsets = dim_buffers.right_recv_offsets;
-            dim_buffers.right_recv_buffer.forAll( copy_kernel );
+            // avoid buffering - bind buffer views directly to the array
+            dim_buffers.left_send_view.bind( &call_with_offsets( dim_buffers.left_send_offsets, array_view ) );
+            dim_buffers.left_recv_view.bind( &call_with_offsets( dim_buffers.left_recv_offsets, array_view ) );
+            dim_buffers.right_send_view.bind( &call_with_offsets( dim_buffers.right_send_offsets, array_view ) );
+            dim_buffers.right_recv_view.bind( &call_with_offsets( dim_buffers.right_recv_offsets, array_view ) );
          }
+
       }
    };
 
@@ -197,18 +220,34 @@ protected:
 
          auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
-         requests.push_back( Communicator::ISend( dim_buffers.left_send_buffer.getStorageArray().getData(),
-                                                  dim_buffers.left_send_buffer.getStorageSize(),
-                                                  dim_buffers.left_neighbor, 0, group ) );
-         requests.push_back( Communicator::IRecv( dim_buffers.left_recv_buffer.getStorageArray().getData(),
-                                                  dim_buffers.left_recv_buffer.getStorageSize(),
-                                                  dim_buffers.left_neighbor, 1, group ) );
-         requests.push_back( Communicator::ISend( dim_buffers.right_send_buffer.getStorageArray().getData(),
-                                                  dim_buffers.right_send_buffer.getStorageSize(),
-                                                  dim_buffers.right_neighbor, 1, group ) );
-         requests.push_back( Communicator::IRecv( dim_buffers.right_recv_buffer.getStorageArray().getData(),
-                                                  dim_buffers.right_recv_buffer.getStorageSize(),
-                                                  dim_buffers.right_neighbor, 0, group ) );
+         if( LBM_HACK == false ) {
+            requests.push_back( Communicator::ISend( dim_buffers.left_send_view.getData(),
+                                                     dim_buffers.left_send_view.getStorageSize(),
+                                                     dim_buffers.left_neighbor, 0, group ) );
+            requests.push_back( Communicator::IRecv( dim_buffers.left_recv_view.getData(),
+                                                     dim_buffers.left_recv_view.getStorageSize(),
+                                                     dim_buffers.left_neighbor, 1, group ) );
+            requests.push_back( Communicator::ISend( dim_buffers.right_send_view.getData(),
+                                                     dim_buffers.right_send_view.getStorageSize(),
+                                                     dim_buffers.right_neighbor, 1, group ) );
+            requests.push_back( Communicator::IRecv( dim_buffers.right_recv_view.getData(),
+                                                     dim_buffers.right_recv_view.getStorageSize(),
+                                                     dim_buffers.right_neighbor, 0, group ) );
+         }
+         else {
+            requests.push_back( Communicator::ISend( dim_buffers.left_send_view.getData() + 0,
+                                                     dim_buffers.left_send_view.getStorageSize() / 27 * 9,
+                                                     dim_buffers.left_neighbor, 0, group ) );
+            requests.push_back( Communicator::IRecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
+                                                     dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
+                                                     dim_buffers.left_neighbor, 1, group ) );
+            requests.push_back( Communicator::ISend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
+                                                     dim_buffers.right_send_view.getStorageSize() / 27 * 9,
+                                                     dim_buffers.right_neighbor, 1, group ) );
+            requests.push_back( Communicator::IRecv( dim_buffers.right_recv_view.getData() + 0,
+                                                     dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
+                                                     dim_buffers.right_neighbor, 0, group ) );
+         }
       }
    };
 
