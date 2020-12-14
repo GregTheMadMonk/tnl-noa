@@ -21,6 +21,7 @@
 
 namespace TNL {
 namespace Meshes {
+//! \brief Namespace for mesh readers.
 namespace Readers {
 
 struct MeshReaderError

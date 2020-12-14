@@ -41,10 +41,11 @@ several modules:
   TNL provides a framework for the development of ODE or PDE solvers.
 - _[Image processing][image processing]_.
   TNL provides structures for the representation of image data. Imports and
-  exports from several file formats are provided using external libraries, such
-  as [DCMTK](http://dicom.offis.de/dcmtk.php.en) for DICOM files,
-  [libpng](http://www.libpng.org/pub/png/libpng.html) for PNG files, or
-  [libjpeg](http://libjpeg.sourceforge.net/) for JPEG files.
+  exports from several file formats such as DICOM, PNG, and JPEG are provided
+  using external libraries (see below).
+
+See also [Comparison with other libraries](
+https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/comparison_with_other_libraries.html).
 
 [allocators]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Allocators.html
 [devices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Devices.html
@@ -57,77 +58,44 @@ several modules:
 [meshes]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Meshes.html
 [image processing]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Images.html
 
-For more information, see the [full documentation][full documentation].
+TNL also provides several optional components:
 
-## Installation
-
-You can either download the [stable version](http://tnl-project.org/download/)
-or directly clone the git repository via HTTPS:
-
-    git clone https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev.git
-
-or via SSH:
-
-    git clone gitlab@mmg-gitlab.fjfi.cvut.cz:tnl/tnl-dev.git
-
-Since TNL is a header-only library, no installation is necessary to actually use
-the library. You can just extract the [src/TNL](
-https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/TNL)
-subdirectory, for example into `~/.local/include/`, and configure your compiler
-to include headers from this path.
-
-Optionally, you may want to compile and install various [tools and examples](
-#optional-components).
-
-### Supported compilers
-
-You need a compiler which supports the [C++14](
-https://en.wikipedia.org/wiki/C%2B%2B14) standard, for example [GCC](
-https://gcc.gnu.org/) 5.0 or later or [Clang](http://clang.llvm.org/) 3.4 or
-later. For CUDA support, you also need [CUDA](
-https://docs.nvidia.com/cuda/index.html) 9.0 or later.
-
-### Optional components
-
-TNL provides several optional components such as pre-processing and
-post-processing tools which can be compiled and installed by executing the
-`install` script:
-
-    ./install
-
-[CMake](https://cmake.org/) 3.12.2 or later is required for the compilation. The
-script compiles and/or installs the following components into the `~/.local/`
-directory:
-
-- TNL header files from the
+- TNL header files in the
   [src/TNL](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/TNL)
   directory.
-- Various pre-processing and post-processing tools from the
+- Various pre-processing and post-processing tools in the
   [src/Tools](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/Tools)
   directory.
-- Python bindings and scripts from the
+- Python bindings and scripts in the
   [src/Python](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/Python)
   directory.
-- Examples of various numerical solvers from the
+- Examples of various numerical solvers in the
   [src/Examples](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/Examples)
   directory.
-- Benchmarks from the
+- Benchmarks in the
   [src/Benchmarks](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/Benchmarks)
   directory.
-- Compiles and executes the unit tests from the
-  [src/UnitTests](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/tree/develop/src/UnitTests)
-  directory.
 
-Individual components can be disabled and the installation prefix can be changed
-by passing command-line arguments to the install script. Run `./install --help`
-for details.
+These components can be individually enabled or disabled and installed by a
+convenient `install` script. See the [Installation][installation] section in
+the documentation for details.
 
 ## Documentation
 
-See the [full documentation][full documentation] for the API reference manual,
-tutorials and other documented topics.
+See the [full documentation][full documentation] for information about:
+
+- [installation instructions][installation],
+- [usage hints][usage],
+- [tutorials][tutorials],
+- [API reference manual][API],
+
+and other documented topics.
 
 [full documentation]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/
+[installation]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/#installation
+[usage]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/#usage
+[tutorials]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/Tutorials.html
+[API]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/annotated.html
 
 ## Authors
 

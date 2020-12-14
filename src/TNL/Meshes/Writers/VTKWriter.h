@@ -16,6 +16,7 @@
 
 namespace TNL {
 namespace Meshes {
+//! \brief Namespace for mesh writers.
 namespace Writers {
 
 namespace details {
