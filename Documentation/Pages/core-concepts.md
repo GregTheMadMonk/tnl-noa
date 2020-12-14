@@ -38,5 +38,23 @@ TNL is based on the following core concepts:
    - Views have a copy-assignment operator which does a deep copy.
    - Views have all other methods present in the relevant container (data
      structure).
+7. Smart pointers
+   - TODO
 
 TODO: formalize the concepts involving lambda functions (e.g. in `Reduction`)
+
+## Programming principles
+
+TNL follows common programming principles and design patterns to maintain a
+comprehensible and efficient code base. We highlight some principles with
+respect to the support for different compute architectures:
+
+- CUDA kernels should not operate with needlessly extensive objects, e.g.
+  objects which include smart pointers, because this wastes the device
+  registers.
+- CUDA kernels should not operate with "distributed" objects – they should
+  operate only with the "local parts" of the distributed objects. MPI support is
+  a higher layer than CUDA support and distributed objects generally contain
+  attributes which should not be needed by CUDA kernels.
+- Smart pointers should be cached if appropriate in order to avoid repeated
+  memory allocations and copies.
