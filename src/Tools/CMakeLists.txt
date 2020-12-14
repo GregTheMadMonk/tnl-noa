@@ -1,7 +1,4 @@
-add_subdirectory (tnl-quickstart)
-
-CONFIGURE_FILE( "tnl-compile.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tnl-compile" @ONLY )
-CONFIGURE_FILE( "tnl-bindir.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tnl-bindir" @ONLY )
+add_subdirectory(tnl-quickstart)
 
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
 ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
@@ -84,9 +81,6 @@ INSTALL( TARGETS tnl-init
                  tnl-lattice-init
          DESTINATION bin )
 
-INSTALL( FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tnl-bindir
-               ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tnl-compile
-               tnl-err2eoc
+INSTALL( FILES tnl-err2eoc
                tnl-log-to-html.py
-         DESTINATION bin
-         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+         DESTINATION bin )
