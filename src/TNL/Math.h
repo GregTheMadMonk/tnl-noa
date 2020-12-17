@@ -43,6 +43,19 @@ ResultType min( const T1& a, const T2& b )
 #endif
 }
 
+/**
+ * \brief This function returns minimum of a variadic number of inputs.
+ *
+ * The inputs are folded with the \ref min function from the left to the right.
+ */
+template< typename T1, typename T2, typename T3, typename... Ts >
+__cuda_callable__
+typename std::common_type< T1, T2, T3, Ts... >::type
+min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
+{
+   return min( min( std::forward<T1>(val1), std::forward<T2>(val2) ),
+               std::forward<T3>(val3), std::forward<Ts>(vs)... );
+}
 
 /**
  * \brief This function returns maximum of two numbers.
@@ -66,6 +79,20 @@ ResultType max( const T1& a, const T2& b )
    return std::max( (ResultType) a, (ResultType) b );
  #endif
 #endif
+}
+
+/**
+ * \brief This function returns minimum of a variadic number of inputs.
+ *
+ * The inputs are folded with the \ref max function from the left to the right.
+ */
+template< typename T1, typename T2, typename T3, typename... Ts >
+__cuda_callable__
+typename std::common_type< T1, T2, T3, Ts... >::type
+max( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
+{
+   return max( max( std::forward<T1>(val1), std::forward<T2>(val2) ),
+               std::forward<T3>(val3), std::forward<Ts>(vs)... );
 }
 
 /**
