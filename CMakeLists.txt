@@ -215,6 +215,10 @@ if( ${WITH_CUDA} )
         #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
         #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe --diag_suppress=code_is_unreachable -Xcudafe --diag_suppress=loop_not_reachable -Xcudafe --diag_suppress=implicit_return_from_non_void_function -Xcudafe --diag_suppress=unsigned_compare_with_zero -Xcudafe --diag_suppress=2906 -Xcudafe --diag_suppress=2913 -Xcudafe --diag_suppress=2886 -Xcudafe --diag_suppress=2929 -Xcudafe --diag_suppress=2977 -Xcudafe --diag_suppress=3057 -Xcudafe --diag_suppress=3124 -Xcudafe --display_error_number)
+        if(CUDA_VERSION_STRING VERSION_GREATER_EQUAL "11.2")
+           # this diag number would cause an error on older nvcc
+           set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Xcudafe --diag_suppress=20012)
+        endif()
         # temporarily disable host-compler warnings about VLAs, which are caused by nvcc's modifications to the source code
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Xcompiler -Wno-vla)
         # Select GPU architecture
@@ -263,7 +267,7 @@ if( JPEG_FOUND )
 endif()
 
 ####
-# Test for GMP 
+# Test for GMP
 #
 if( ${WITH_GMP} )
    if (GMP_INCLUDES AND GMP_LIBRARIES)
@@ -301,7 +305,7 @@ endif()
 #     DOC "PETSC headers."
 #   )
 #   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
-#      message( "PETSC not found." ) 
+#      message( "PETSC not found." )
 #   else()
 #      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
 #      FIND_LIBRARY(PETSC_LIBRARY petsc
@@ -313,7 +317,7 @@ endif()
 #         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
 #         message( "PETSC library found -- ${PETSC_LIBRARY}")
 #         list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
-#         set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")                     
+#         set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")
 #      endif()
 #   endif()
 #endif()
