@@ -46,11 +46,11 @@ TYPED_TEST( BinaryMatrixTest_CSR, setDimensionsTest )
     test_SetDimensions< CSRMatrixType >();
 }
 
-TYPED_TEST( BinaryMatrixTest_CSR, setCompressedRowLengthsTest )
+TYPED_TEST( BinaryMatrixTest_CSR, setRowCapacitiesTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_SetCompressedRowLengths< CSRMatrixType >();
+    test_SetRowCapacities< CSRMatrixType >();
 }
 
 TYPED_TEST( BinaryMatrixTest_CSR, setLikeTest )

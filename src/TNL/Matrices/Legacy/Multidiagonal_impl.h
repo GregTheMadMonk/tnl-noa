@@ -81,6 +81,14 @@ void Multidiagonal< Real, Device, Index >::setCompressedRowLengths( ConstCompres
 template< typename Real,
           typename Device,
           typename Index >
+void Multidiagonal< Real, Device, Index >::setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths )
+{
+   setCompressedRowLengths( rowLengths );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index Multidiagonal< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    IndexType rowLength( 0 );

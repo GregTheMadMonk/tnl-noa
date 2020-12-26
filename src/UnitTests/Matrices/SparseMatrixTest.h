@@ -46,11 +46,11 @@ TYPED_TEST( MatrixTest, setDimensionsTest )
     test_SetDimensions< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, setCompressedRowLengthsTest )
+TYPED_TEST( MatrixTest, setRowCapacitiesTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_SetCompressedRowLengths< MatrixType >();
+    test_SetRowCapacities< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, setLikeTest )

@@ -114,6 +114,15 @@ void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstCompr
       this->setBlocks();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          CSRKernel KernelType >
+void CSR< Real, Device, Index, KernelType >::setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths )
+{
+   setCompressedRowLengths( rowLengths );
+}
+
 /* Find limit of block */
 template< typename Real,
           typename Index,
@@ -1013,7 +1022,7 @@ void SpMVCSRLight( const Real *inVector,
       /*use two threads to fetch the row offset*/
       if (laneId < 2)
          space[vectorId][laneId] = rowPointers[row + laneId];
-      
+
       rowStart = space[vectorId][0];
       rowEnd = space[vectorId][1];
 
@@ -1048,7 +1057,7 @@ void SpMVCSRLight( const Real *inVector,
       /*get a new row index*/
       if(warpLaneId == 0)
          row = atomicAdd(rowCnt, 32 / groupSize);
-      
+
       /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
       row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
@@ -1076,7 +1085,7 @@ void SpMVCSRLight2( const Real *inVector,
    /*get the row index*/
    if (warpLaneId == 0)
       row = atomicAdd(rowCnt, 32 / groupSize);
-   
+
    /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
    row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
@@ -1117,7 +1126,7 @@ void SpMVCSRLight2( const Real *inVector,
       /*get a new row index*/
       if(warpLaneId == 0)
          row = atomicAdd(rowCnt, 32 / groupSize);
-      
+
       /*broadcast the row index to the other threads in the same warp and compute the row index of each vetor*/
       row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
@@ -1145,14 +1154,14 @@ void SpMVCSRLight3( const Real *inVector,
    /*get the row index*/
    if (warpLaneId == 0)
       row = atomicAdd(rowCnt, 32 / groupSize);
-   
+
    /*broadcast the value to other threads in the same warp and compute the row index of each vector*/
    row = __shfl_sync(0xFFFFFFFF, row, 0) + warpVectorId;
 
    /*check the row range*/
    while (row < rows) {
       sum = 0;
-      
+
       /*compute dot product*/
       rowEnd = rowPointers[row + 1];
       for (i = rowPointers[row] + laneId; i < rowEnd; i += groupSize)
@@ -1417,7 +1426,7 @@ void SpMVCSRLightPrepare( const Real *inVector,
    /* Get info about GPU */
    cudaDeviceProp properties;
    cudaGetDeviceProperties( &properties, Cuda::DeviceInfo::getActiveDevice() );
-   const Index blocks = 
+   const Index blocks =
       properties.multiProcessorCount * properties.maxThreadsPerMultiProcessor / threads;
 
    const Index nnz = roundUpDivision(matrix.getValues().getSize(), rows); // non zeroes per row
@@ -1563,7 +1572,7 @@ void SpMVCSRLightWithoutAtomicPrepare( const Real *inVector,
       neededThreads = groupSize * rows;
    else
       neededThreads = rows * (groupSize > 32 ? 32 : groupSize);
-   
+
    /* Execute kernels on device */
    for (Index grid = 0; neededThreads != 0; ++grid) {
       if (MAX_X_DIM * threads >= neededThreads) {
@@ -1753,9 +1762,9 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
          neededThreads -= MAX_X_DIM * threads;
       }
 
-      SpMVCSRAdaptive< Real, Index, warpSize, 
+      SpMVCSRAdaptive< Real, Index, warpSize,
             matrix.WARPS,
-            matrix.SHARED_PER_WARP, 
+            matrix.SHARED_PER_WARP,
             matrix.MAX_ELEMENTS_PER_WARP >
          <<<blocks, threads>>>(
                inVector,

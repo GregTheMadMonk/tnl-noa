@@ -243,7 +243,7 @@ void test_SetDimensions()
 }
 
 template< typename Matrix >
-void test_SetCompressedRowLengths()
+void test_SetRowCapacities()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -259,7 +259,7 @@ void test_SetCompressedRowLengths()
    for( IndexType i = 2; i < rows; i++ )
       rowLengths.setElement( i, rowLength++ );
 
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    // Insert values into the rows.
    RealType value = 1;
@@ -347,7 +347,7 @@ void test_GetNonzeroElementsCount()
    Matrix m( rows, cols );
 
    typename Matrix::CompressedRowLengthsVector rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    RealType value = 1;
    for( IndexType i = 0; i < 4; i++ )
@@ -539,7 +539,7 @@ void test_GetRow()
    Matrix m( rows, cols );
 
    typename Matrix::CompressedRowLengthsVector rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    auto matrixView = m.getView();
    auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
@@ -736,7 +736,7 @@ void test_SetElement()
    m.setDimensions( rows, cols );
 
    typename Matrix::CompressedRowLengthsVector rowLengths { 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    RealType value = 1;
    for( IndexType i = 0; i < 4; i++ )
@@ -898,7 +898,7 @@ void test_AddElement()
                     { 4, 1, 11 }, { 4, 2, 1 }, { 4, 3,  1 },
                                   { 5, 2, 1 }, { 5, 3, 12 }, { 5, 4, 1 } } );
    /*typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    RealType value = 1;
    for( IndexType i = 0; i < cols - 2; i++ )     // 0th row
@@ -1047,7 +1047,7 @@ void test_VectorProduct()
    m_1.reset();
    m_1.setDimensions( m_rows_1, m_cols_1 );
    typename Matrix::CompressedRowLengthsVector rowLengths_1{ 1, 2, 1, 1 };
-   m_1.setCompressedRowLengths( rowLengths_1 );
+   m_1.setRowCapacities( rowLengths_1 );
 
    RealType value_1 = 1;
    m_1.setElement( 0, 0, value_1++ );      // 0th row
@@ -1090,7 +1090,7 @@ void test_VectorProduct()
 
    Matrix m_2( m_rows_2, m_cols_2 );
    typename Matrix::CompressedRowLengthsVector rowLengths_2{ 3, 1, 3, 1 };
-   m_2.setCompressedRowLengths( rowLengths_2 );
+   m_2.setRowCapacities( rowLengths_2 );
 
    RealType value_2 = 1;
    for( IndexType i = 0; i < 3; i++ )      // 0th row
@@ -1135,7 +1135,7 @@ void test_VectorProduct()
 
    Matrix m_3( m_rows_3, m_cols_3 );
    typename Matrix::CompressedRowLengthsVector rowLengths_3{ 3, 3, 3, 3 };
-   m_3.setCompressedRowLengths( rowLengths_3 );
+   m_3.setRowCapacities( rowLengths_3 );
 
    RealType value_3 = 1;
    for( IndexType i = 0; i < 3; i++ )          // 0th row
@@ -1185,7 +1185,7 @@ void test_VectorProduct()
 
    Matrix m_4( m_rows_4, m_cols_4 );
    typename Matrix::CompressedRowLengthsVector rowLengths_4{ 4, 4, 5, 4, 4, 4, 5, 5 };
-   m_4.setCompressedRowLengths( rowLengths_4 );
+   m_4.setRowCapacities( rowLengths_4 );
 
    RealType value_4 = 1;
    for( IndexType i = 0; i < 3; i++ )       // 0th row
@@ -1253,7 +1253,7 @@ void test_VectorProduct()
 
    Matrix m_5( m_rows_5, m_cols_5 );
    typename Matrix::CompressedRowLengthsVector rowLengths_5{ 6, 3, 4, 5, 2, 7, 8, 8 };
-   m_5.setCompressedRowLengths( rowLengths_5 );
+   m_5.setRowCapacities( rowLengths_5 );
 
    RealType value_5 = 1;
    for( IndexType i = 0; i < 3; i++ )   // 0th row
@@ -1388,7 +1388,7 @@ void test_RowsReduction()
    Matrix m;
    m.setDimensions( rows, cols );
    typename Matrix::RowsCapacitiesType rowsCapacities{ 6, 3, 4, 5, 2, 7, 8, 8 };
-   m.setCompressedRowLengths( rowsCapacities );
+   m.setRowCapacities( rowsCapacities );
 
    RealType value = 1;
    for( IndexType i = 0; i < 3; i++ )   // 0th row
@@ -1473,7 +1473,7 @@ void test_PerformSORIteration()
 
    Matrix m( m_rows, m_cols );
    typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    m.setElement( 0, 0, 4.0 );        // 0th row
    m.setElement( 0, 1, 1.0);
@@ -1545,7 +1545,7 @@ void test_SaveAndLoad( const char* filename )
 
    Matrix savedMatrix( m_rows, m_cols );
    typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
-   savedMatrix.setCompressedRowLengths( rowLengths );
+   savedMatrix.setRowCapacities( rowLengths );
 
    RealType value = 1;
    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
