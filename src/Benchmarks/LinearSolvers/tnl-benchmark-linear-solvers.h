@@ -122,14 +122,6 @@ parse_comma_list( const Config::ParameterContainer& parameters,
    return set;
 }
 
-// TODO: implement this in TNL::String
-bool ends_with( const std::string& value, const std::string& ending )
-{
-   if (ending.size() > value.size())
-      return false;
-   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
-
 // initialize all vector entries with a unioformly distributed random value from the interval [a, b]
 template< typename Vector >
 void set_random_vector( Vector& v, typename Vector::RealType a, typename Vector::RealType b )
@@ -161,9 +153,7 @@ void set_random_vector( Vector& v, typename Vector::RealType a, typename Vector:
 template< typename Matrix, typename Vector >
 void
 benchmarkIterativeSolvers( Benchmark& benchmark,
-// FIXME: ParameterContainer should be copyable, but that leads to double-free
-//                           Config::ParameterContainer parameters,
-                           Config::ParameterContainer& parameters,
+                           Config::ParameterContainer parameters,
                            const SharedPointer< Matrix >& matrixPointer,
                            const Vector& x0,
                            const Vector& b )
@@ -356,9 +346,7 @@ struct LinearSolversBenchmark
    static bool
    run( Benchmark& benchmark,
         Benchmark::MetadataMap metadata,
-// FIXME: ParameterContainer should be copyable, but that leads to double-free
-//        const Config::ParameterContainer& parameters )
-        Config::ParameterContainer& parameters )
+        const Config::ParameterContainer& parameters )
    {
       const String file_matrix = parameters.getParameter< String >( "input-matrix" );
       const String file_dof = parameters.getParameter< String >( "input-dof" );
@@ -368,7 +356,7 @@ struct LinearSolversBenchmark
       VectorType x0, b;
 
       // load the matrix
-      if( ends_with( file_matrix, ".mtx" ) ) {
+      if( file_matrix.endsWith( ".mtx" ) ) {
          Matrices::MatrixReader< MatrixType > reader;
          reader.readMtxFile( file_matrix, *matrixPointer );
       }
@@ -443,9 +431,7 @@ struct LinearSolversBenchmark
    static void
    runDistributed( Benchmark& benchmark,
                    Benchmark::MetadataMap metadata,
-// FIXME: ParameterContainer should be copyable, but that leads to double-free
-//                   const Config::ParameterContainer& parameters,
-                   Config::ParameterContainer& parameters,
+                   const Config::ParameterContainer& parameters,
                    const SharedPointer< MatrixType >& matrixPointer,
                    const VectorType& x0,
                    const VectorType& b )
@@ -489,9 +475,7 @@ struct LinearSolversBenchmark
    static void
    runNonDistributed( Benchmark& benchmark,
                       Benchmark::MetadataMap metadata,
-// FIXME: ParameterContainer should be copyable, but that leads to double-free
-//                      const Config::ParameterContainer& parameters,
-                      Config::ParameterContainer& parameters,
+                      const Config::ParameterContainer& parameters,
                       const SharedPointer< MatrixType >& matrixPointer,
                       const VectorType& x0,
                       const VectorType& b )
