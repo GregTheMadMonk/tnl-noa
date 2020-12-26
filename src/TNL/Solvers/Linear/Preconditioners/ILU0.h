@@ -90,7 +90,12 @@ protected:
    template< typename M >
    static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
    {
-      return m.getLocalRowRange().getBegin();
+      if( m.getRows() == m.getColumns() )
+         // square matrix, assume global column indices
+         return m.getLocalRowRange().getBegin();
+      else
+         // non-square matrix, assume ghost indexing
+         return 0;
    }
 };
 

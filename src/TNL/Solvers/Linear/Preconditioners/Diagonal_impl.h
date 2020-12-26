@@ -96,9 +96,6 @@ solve( ConstVectorViewType b, VectorViewType x ) const
    const auto b_view = b.getConstLocalView();
    auto x_view = x.getLocalView();
 
-   // wait for pending synchronization
-   b.waitForSynchronization();
-
    // compute without ghosts (diagonal includes only local rows)
    x_view = b_view / diag_view;
 

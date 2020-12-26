@@ -272,6 +272,9 @@ solve( ConstVectorViewType _b, VectorViewType _x ) const
 
    // Step 2: solve x from Ux = y
    triangularSolveUpper< true, false >( U, x, x );
+
+   // synchronize ghosts
+   Traits< Matrix >::startSynchronization( _x );
 }
 
 } // namespace Preconditioners

@@ -52,6 +52,8 @@ struct Traits
    static LocalViewType getLocalView( VectorViewType v ) { return v; }
 
    static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrix& m ) { return CommunicatorType::AllGroup; }
+   static void startSynchronization( VectorViewType v ) {}
+   static void waitForSynchronization( VectorViewType v ) {}
 };
 
 template< typename Matrix, typename Communicator >
@@ -95,6 +97,8 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
    static LocalViewType getLocalView( VectorViewType v ) { return v.getLocalView(); }
 
    static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
+   static void startSynchronization( VectorViewType v ) { v.startSynchronization(); }
+   static void waitForSynchronization( VectorViewType v ) { v.waitForSynchronization(); }
 };
 
 } // namespace Linear
