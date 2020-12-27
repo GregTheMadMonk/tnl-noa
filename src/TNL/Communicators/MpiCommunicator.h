@@ -142,10 +142,42 @@ class MpiCommunicator
          return true;
       }
 
-      static void Init(int& argc, char**& argv )
+      static void Init( int& argc, char**& argv, int required_thread_level = MPI_THREAD_SINGLE )
       {
 #ifdef HAVE_MPI
-         MPI_Init( &argc, &argv );
+         switch( required_thread_level ) {
+            case MPI_THREAD_SINGLE:
+            case MPI_THREAD_FUNNELED:
+            case MPI_THREAD_SERIALIZED:
+            case MPI_THREAD_MULTIPLE:
+               break;
+            default:
+               printf("ERROR: invalid argument for the 'required' thread level support: %d\n", required_thread_level);
+               MPI_Abort(MPI_COMM_WORLD, 1);
+         }
+
+         int provided;
+         MPI_Init_thread( &argc, &argv, required_thread_level, &provided );
+         if( provided < required_thread_level ) {
+            const char* level = "";
+            switch( required_thread_level ) {
+               case MPI_THREAD_SINGLE:
+                  level = "MPI_THREAD_SINGLE";
+                  break;
+               case MPI_THREAD_FUNNELED:
+                  level = "MPI_THREAD_FUNNELED";
+                  break;
+               case MPI_THREAD_SERIALIZED:
+                  level = "MPI_THREAD_SERIALIZED";
+                  break;
+               case MPI_THREAD_MULTIPLE:
+                  level = "MPI_THREAD_MULTIPLE";
+                  break;
+            }
+            printf("ERROR: The MPI library does not have the required level of thread support: %s\n", level);
+            MPI_Abort(MPI_COMM_WORLD, 1);
+         }
+
          selectGPU();
 #endif
 

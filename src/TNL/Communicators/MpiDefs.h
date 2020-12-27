@@ -25,4 +25,12 @@ enum MPI_Op {
    MPI_MINLOC,
    MPI_MAXLOC,
 };
+
+// MPI_Init_thread constants
+enum {
+  MPI_THREAD_SINGLE,
+  MPI_THREAD_FUNNELED,
+  MPI_THREAD_SERIALIZED,
+  MPI_THREAD_MULTIPLE
+};
 #endif
