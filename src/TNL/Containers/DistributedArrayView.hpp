@@ -21,6 +21,20 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
+DistributedArrayView< Value, Device, Index, Communicator >::
+~DistributedArrayView()
+{
+   // Wait for pending async operation, otherwise the synchronizer might crash
+   // if the view goes out of scope.
+   // (The same thing is done even in DistributedArray, but there might be views
+   // bound to an array without a synchronizer, in which case this helps.)
+   waitForSynchronization();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
    template< typename Value_ >
 DistributedArrayView< Value, Device, Index, Communicator >::
 DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communicator >& view )
@@ -234,14 +248,9 @@ startSynchronization()
    // like linear solvers...)
    TNL_ASSERT_TRUE( synchronizer, "the synchronizer was not set" );
 
-   // wait for any previous synchronization (in case the array was inconsistently modified
-   // while a synchronization was in progress)
-   waitForSynchronization();
-
    typename SynchronizerType::ByteArrayView bytes;
    bytes.bind( reinterpret_cast<std::uint8_t*>( localData.getData() ), sizeof(ValueType) * localData.getSize() );
-   // TODO: implement the async stuff
-   synchronizer->synchronizeByteArray( bytes, sizeof(ValueType) * valuesPerElement );
+   synchronizer->synchronizeByteArrayAsync( bytes, sizeof(ValueType) * valuesPerElement );
 }
 
 template< typename Value,
@@ -252,7 +261,11 @@ void
 DistributedArrayView< Value, Device, Index, Communicator >::
 waitForSynchronization() const
 {
-   // TODO: implement the async stuff
+   if( synchronizer && synchronizer->async_op.valid() ) {
+      synchronizer->async_wait_timer.start();
+      synchronizer->async_op.wait();
+      synchronizer->async_wait_timer.stop();
+   }
 }
 
 

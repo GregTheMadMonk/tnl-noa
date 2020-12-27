@@ -49,6 +49,8 @@ public:
    using Self = DistributedArray< _Value, _Device, _Index, _Communicator >;
 
 
+   ~DistributedArray();
+
    DistributedArray() = default;
 
    // Copy-constructor does deep copy.

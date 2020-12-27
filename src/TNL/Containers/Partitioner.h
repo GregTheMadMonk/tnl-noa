@@ -82,6 +82,14 @@ public:
 
    public:
       using ByteArrayView = typename Base::ByteArrayView;
+      using RequestsVector = typename Base::RequestsVector;
+
+      ~ArraySynchronizer()
+      {
+         // wait for pending async operation, otherwise it would crash
+         if( this->async_op.valid() )
+            this->async_op.wait();
+      }
 
       ArraySynchronizer() = delete;
 
@@ -89,7 +97,13 @@ public:
       : localRange(localRange), overlaps(overlaps), group(group)
       {}
 
-      virtual void synchronizeByteArray( ByteArrayView& array, int bytesPerValue ) override
+      virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
+      {
+         auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
+         Communicator::WaitAll( requests.data(), requests.size() );
+      }
+
+      virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
       {
          TNL_ASSERT_EQ( array.getSize(), bytesPerValue * (localRange.getSize() + 2 * overlaps),
                         "unexpected array size" );
@@ -122,8 +136,7 @@ public:
                   bytesPerValue * overlaps,
                   right, 0, group ) );
 
-         // wait for all communications to finish
-         Communicator::WaitAll( requests.data(), requests.size() );
+         return requests;
       }
    };
 };

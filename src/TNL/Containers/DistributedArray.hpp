@@ -25,6 +25,18 @@ template< typename Value,
           typename Index,
           typename Communicator >
 DistributedArray< Value, Device, Index, Communicator >::
+~DistributedArray()
+{
+   // Wait for pending async operation, otherwise the synchronizer would crash
+   // if the array goes out of scope.
+   waitForSynchronization();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
 DistributedArray( const DistributedArray& array )
 {
    setLike( array );

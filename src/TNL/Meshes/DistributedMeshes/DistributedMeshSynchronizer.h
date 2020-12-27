@@ -42,6 +42,14 @@ public:
    using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
    using CommunicatorType = typename DistributedMesh::CommunicatorType;
    using ByteArrayView = typename Base::ByteArrayView;
+   using RequestsVector = typename Base::RequestsVector;
+
+   ~DistributedMeshSynchronizer()
+   {
+      // wait for pending async operation, otherwise it would crash
+      if( this->async_op.valid() )
+         this->async_op.wait();
+   }
 
    DistributedMeshSynchronizer() = default;
 
@@ -51,12 +59,6 @@ public:
          throw std::logic_error( "There are no ghost levels on the distributed mesh." );
       TNL_ASSERT_EQ( mesh.template getGlobalIndices< EntityDimension >().getSize(), mesh.getLocalMesh().template getEntitiesCount< EntityDimension >(),
                      "Global indices are not allocated properly." );
-
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
-      if( std::is_same< DeviceType, Devices::Cuda >::value )
-         cudaGetDevice(&this->gpu_id);
-      #endif
 
       group = mesh.getCommunicationGroup();
       const int rank = CommunicatorType::GetRank( group );
@@ -127,7 +129,7 @@ public:
 
       // send indices of ghost entities - set them as ghost neighbors on the target rank
       {
-         std::vector< typename CommunicatorType::Request > requests;
+         RequestsVector requests;
 
          // send our ghost indices to the neighboring ranks
          GlobalIndexType ghostOffset = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
@@ -196,16 +198,16 @@ public:
       synchronizeByteArray( view, sizeof(ValueType) * valuesPerElement );
    }
 
-   virtual void synchronizeByteArray( ByteArrayView& array, int bytesPerValue ) override
+   virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
+   {
+      auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
+      CommunicatorType::WaitAll( requests.data(), requests.size() );
+   }
+
+   virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
    {
       TNL_ASSERT_EQ( array.getSize(), bytesPerValue * ghostOffsets[ ghostOffsets.getSize() - 1 ],
                      "The array does not have the expected size." );
-
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
-      if( std::is_same< DeviceType, Devices::Cuda >::value )
-         cudaSetDevice(gpu_id);
-      #endif
 
       const int rank = CommunicatorType::GetRank( group );
       const int nproc = CommunicatorType::GetSize( group );
@@ -214,7 +216,7 @@ public:
       sendBuffers.setSize( bytesPerValue * ghostNeighborOffsets[ nproc ] );
 
       // buffer for asynchronous communication requests
-      std::vector< typename CommunicatorType::Request > requests;
+      RequestsVector requests;
 
       // issue all receive async operations
       for( int j = 0; j < nproc; j++ ) {
@@ -250,8 +252,7 @@ public:
          }
       }
 
-      // wait for all communications to finish
-      CommunicatorType::WaitAll( requests.data(), requests.size() );
+      return requests;
    }
 
    // performs a synchronization of a sparse matrix
@@ -271,7 +272,7 @@ public:
       const int nproc = CommunicatorType::GetSize( group );
 
       // buffer for asynchronous communication requests
-      std::vector< typename CommunicatorType::Request > requests;
+      RequestsVector requests;
 
       Containers::Array< GlobalIndexType, Devices::Host, int > send_rankOffsets( nproc + 1 ), recv_rankOffsets( nproc + 1 );
       Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > send_rowCapacities, send_rowPointers, send_columnIndices, recv_rowPointers, recv_columnIndices;
@@ -350,7 +351,7 @@ public:
          // allocate row pointers
          recv_rowPointers.setSize( recv_rankOffsets[ nproc ] + 1 );
 
-         std::vector< typename CommunicatorType::Request > row_lengths_requests;
+         RequestsVector row_lengths_requests;
 
          // set row pointers
          GlobalIndexType rowPtr = 0;
@@ -443,9 +444,6 @@ public:
    }
 
 protected:
-   // GOTCHA (see above)
-   int gpu_id = 0;
-
    // communication group taken from the distributed mesh
    typename CommunicatorType::CommunicationGroup group;
 

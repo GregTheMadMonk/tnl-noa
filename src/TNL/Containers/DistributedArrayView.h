@@ -51,6 +51,8 @@ public:
    using Self = DistributedArrayView< _Value, _Device, _Index, _Communicator >;
 
 
+   ~DistributedArrayView();
+
    // Initialization by raw data
    DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
    : localRange(localRange), ghosts(ghosts), globalSize(globalSize), group(group), localData(localData)
@@ -107,6 +109,8 @@ public:
 
    int getValuesPerElement() const;
 
+   // Note that this method is not thread-safe - only the thread which created
+   // and "owns" the instance of this object can call this method.
    void startSynchronization();
 
    void waitForSynchronization() const;

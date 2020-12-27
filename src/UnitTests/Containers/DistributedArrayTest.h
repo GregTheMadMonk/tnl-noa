@@ -104,6 +104,7 @@ TYPED_TEST( DistributedArrayTest, copyFromGlobal )
    ArrayType globalArray( this->globalSize );
    setLinearSequence( globalArray );
    this->distributedArray.copyFromGlobal( globalArray );
+   this->distributedArray.waitForSynchronization();
 
    const auto localRange = this->distributedArray.getLocalRange();
    ArrayViewType localArrayView;
@@ -151,6 +152,7 @@ TYPED_TEST( DistributedArrayTest, setValue )
    using ArrayType = typename TestFixture::ArrayType;
 
    this->distributedArray.setValue( 1.0 );
+   this->distributedArray.waitForSynchronization();
    ArrayViewType localArrayView = this->distributedArray.getLocalView();
    ArrayType expected( localArrayView.getSize() );
    expected.setValue( 1.0 );
@@ -163,6 +165,7 @@ TYPED_TEST( DistributedArrayTest, setValueGhosts )
    using ArrayType = typename TestFixture::ArrayType;
 
    this->distributedArray.setValue( this->rank );
+   this->distributedArray.waitForSynchronization();
    ArrayViewType localArrayView = this->distributedArray.getLocalViewWithGhosts();
    ArrayType expected( localArrayView.getSize() );
    expected.setValue( this->rank );
@@ -184,6 +187,7 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
    using IndexType = typename TestFixture::IndexType;
 
    this->distributedArray.setValue( 0 );
+   this->distributedArray.waitForSynchronization();
    ArrayViewType localArrayView = this->distributedArray.getLocalView();
    const auto localRange = this->distributedArray.getLocalRange();
 
@@ -214,6 +218,7 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
    }
 
    this->distributedArray.setValue( 0 );
+   this->distributedArray.waitForSynchronization();
 
    // use operator[]
    if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value ) {
@@ -322,6 +327,7 @@ TYPED_TEST( DistributedArrayTest, containsOnlyValue )
       EXPECT_FALSE( this->distributedArray.containsOnlyValue( i ) );
 
    this->distributedArray.setValue( 100 );
+   this->distributedArray.waitForSynchronization();
    EXPECT_TRUE( this->distributedArray.containsOnlyValue( 100 ) );
 }
 
