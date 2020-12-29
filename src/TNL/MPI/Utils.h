@@ -42,5 +42,35 @@ inline void restoreRedirection()
    }
 }
 
+/**
+ * \brief Returns a local rank ID of the current process within a group of
+ * processes running on a shared-memory node.
+ *
+ * The given MPI communicator is split into groups according to the
+ * `MPI_COMM_TYPE_SHARED` type (from MPI-3) and the rank ID of the process
+ * within the group is returned.
+ */
+inline int getRankOnNode( MPI_Comm group = AllGroup() )
+{
+#ifdef HAVE_MPI
+   const int rank = GetRank(group);
+
+   MPI_Info info;
+   MPI_Info_create( &info );
+
+   MPI_Comm local_comm;
+   MPI_Comm_split_type( group, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
+
+   const int local_rank = GetRank( local_comm );
+
+   MPI_Comm_free(&local_comm);
+   MPI_Info_free(&info);
+
+   return local_rank;
+#else
+   return 0;
+#endif
+}
+
 } // namespace MPI
 } // namespace TNL

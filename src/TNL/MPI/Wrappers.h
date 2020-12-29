@@ -22,10 +22,12 @@
 
 #include <TNL/Assert.h>
 #include "getDataType.h"
-#include "selectGPU.h"
 
 namespace TNL {
 namespace MPI {
+
+// forward declaration to break cyclic inclusion
+inline void selectGPU();
 
 // function wrappers for MPI constants
 
@@ -345,3 +347,6 @@ void Alltoall( const T* sendData,
 
 } // namespace MPI
 } // namespace TNL
+
+// late inclusion to break cyclic inclusion
+#include "selectGPU.h"
