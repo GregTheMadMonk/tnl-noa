@@ -20,7 +20,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
@@ -309,7 +309,7 @@ main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
    const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )

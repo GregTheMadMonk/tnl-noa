@@ -15,7 +15,6 @@
 #include "DistributedArray.h"
 
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Communicators/MpiDefs.h>  // important only when MPI is disabled
 
 namespace TNL {
 namespace Containers {

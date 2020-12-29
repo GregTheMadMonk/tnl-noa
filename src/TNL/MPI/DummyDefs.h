@@ -1,8 +1,8 @@
 /***************************************************************************
-                          MpiCommunicator.h  -  description
+                          MPI/DummyDefs.h  -  description
                              -------------------
-    begin                : 2005/04/23
-    copyright            : (C) 2005 by Tomas Oberhuber
+    begin                : Dec 29, 2020
+    copyright            : (C) 2020 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -11,6 +11,9 @@
 #pragma once
 
 #ifndef HAVE_MPI
+using MPI_Request = int;
+using MPI_Comm = int;
+
 enum MPI_Op {
    MPI_MAX,
    MPI_MIN,
@@ -28,9 +31,9 @@ enum MPI_Op {
 
 // MPI_Init_thread constants
 enum {
-  MPI_THREAD_SINGLE,
-  MPI_THREAD_FUNNELED,
-  MPI_THREAD_SERIALIZED,
-  MPI_THREAD_MULTIPLE
+   MPI_THREAD_SINGLE,
+   MPI_THREAD_FUNNELED,
+   MPI_THREAD_SERIALIZED,
+   MPI_THREAD_MULTIPLE
 };
 #endif

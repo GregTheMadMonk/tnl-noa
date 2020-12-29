@@ -24,7 +24,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/ODE/Merson.h>
 
@@ -63,7 +63,7 @@ benchmarkODESolvers( Benchmark& benchmark,
 #ifdef HAVE_CUDA
       CudaVectorPointer cuda_u( dofs );
       *cuda_u = 0.0;
-#endif      
+#endif
       if( solver == "euler" || solver == "all" ) {
          using HostSolver = Solvers::ODE::Euler< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Euler");
@@ -168,10 +168,10 @@ bool resolveRealTypes( Benchmark& benchmark,
    Config::ParameterContainer& parameters )
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
-   if( ( realType == "float" || realType == "all" ) && 
+   if( ( realType == "float" || realType == "all" ) &&
        ! resolveIndexType< float >( benchmark, metadata, parameters ) )
       return false;
-   if( ( realType == "double" || realType == "all" ) && 
+   if( ( realType == "double" || realType == "all" ) &&
        ! resolveIndexType< double >( benchmark, metadata, parameters ) )
       return false;
    return true;
@@ -225,7 +225,7 @@ main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
    const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )

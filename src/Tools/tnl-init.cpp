@@ -16,7 +16,7 @@
 #include <TNL/Meshes/Grid.h>
 
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
 
 
 using namespace TNL;
@@ -55,7 +55,7 @@ int main( int argc, char* argv[] )
    setupConfig( configDescription );
    Communicators::MpiCommunicator::configSetup( configDescription );
 
-   Communicators::ScopedInitializer< Communicators::MpiCommunicator > mpi(argc, argv);
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;

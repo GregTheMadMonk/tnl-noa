@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/VerticalOperations.h>
-#include <TNL/Communicators/MpiDefs.h>
+#include <TNL/MPI/DummyDefs.h>
 
 namespace TNL {
 namespace Containers {

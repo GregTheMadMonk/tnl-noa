@@ -18,7 +18,7 @@
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
 
 using namespace TNL;
 
@@ -361,7 +361,7 @@ int main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;

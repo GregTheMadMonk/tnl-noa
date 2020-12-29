@@ -18,7 +18,6 @@
 #include <TNL/Meshes/DistributedMeshes/distributeSubentities.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/MPIPrint.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>

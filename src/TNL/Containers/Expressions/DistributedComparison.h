@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Communicators/MpiDefs.h>
+#include <TNL/MPI/DummyDefs.h>
 
 namespace TNL {
 namespace Containers {
