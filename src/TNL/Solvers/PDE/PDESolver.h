@@ -18,8 +18,8 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE { 
-   
+namespace PDE {
+
 template< typename Real,
           typename Index >
 class PDESolver
@@ -28,8 +28,8 @@ class PDESolver
       using RealType = Real;
       using IndexType = Index;
       using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
-      
-      
+
+
       PDESolver();
 
       static void configSetup( Config::ConfigDescription& config,
@@ -38,29 +38,28 @@ class PDESolver
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
-      template< typename Communicator >
       bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
-      
+
       void setIoTimer( Timer& ioTimer);
 
       void setComputeTimer( Timer& computeTimer );
-      
+
       void setTotalTimer( Timer& totalTimer );
-      
+
       void setSolverMonitor( SolverMonitorType& solverMonitor );
-      
+
       SolverMonitorType& getSolverMonitor();
 
-      bool writeEpilog( Logger& logger ) const;      
-      
+      bool writeEpilog( Logger& logger ) const;
+
    protected:
 
       Timer *ioTimer, *computeTimer, *totalTimer;
-      
+
       SolverMonitorType *solverMonitorPointer;
 };
- 
+
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL

@@ -278,15 +278,6 @@ class MpiCommunicator
          MPI::Alltoall( sendData, sendCount, receiveData, receiveCount, group );
       }
 
-
-      static void writeProlog( Logger& logger )
-      {
-         if( isDistributed() )
-         {
-            logger.writeParameter( "MPI processes:", GetSize(AllGroup) );
-         }
-      }
-
       static void CreateNewGroup( bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup )
       {
 #ifdef HAVE_MPI
