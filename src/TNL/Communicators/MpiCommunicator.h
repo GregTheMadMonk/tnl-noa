@@ -14,7 +14,6 @@
 #include <TNL/MPI/DummyDefs.h>
 #include <TNL/MPI/Utils.h>
 #include <TNL/MPI/Config.h>
-#include <TNL/Exceptions/MPIDimsCreateError.h>
 
 namespace TNL {
 //! \brief Namespace for TNL communicators.
@@ -189,7 +188,9 @@ class MpiCommunicator
             prod *= distr[ i ];
          }
          if( prod != 0 && prod != GetSize( AllGroup ) )
-            throw Exceptions::MPIDimsCreateError();
+            throw std::logic_error( "The program tries to call MPI_Dims_create with wrong dimensions."
+                                    "Non of the dimensions is zero and product of all dimensions does "
+                                    "not fit with number of MPI processes." );
          if(sum==0) {
             for(int i=0;i<dim-1;i++)
                distr[i]=1;
