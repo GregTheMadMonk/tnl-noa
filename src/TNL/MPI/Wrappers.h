@@ -22,6 +22,7 @@
 
 #include <TNL/Assert.h>
 #include "getDataType.h"
+#include "Profiling.h"
 
 namespace TNL {
 namespace MPI {
@@ -278,7 +279,9 @@ void Allreduce( const T* data,
 {
 #ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
+   getTimerAllreduce().start();
    MPI_Allreduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, group );
+   getTimerAllreduce().stop();
 #else
    std::memcpy( (void*) reduced_data, (const void*) data, count * sizeof(T) );
 #endif
@@ -293,7 +296,9 @@ void Allreduce( T* data,
 {
 #ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
+   getTimerAllreduce().start();
    MPI_Allreduce( MPI_IN_PLACE, (void*) data, count, getDataType<T>(), op, group );
+   getTimerAllreduce().stop();
 #endif
 }
 

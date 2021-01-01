@@ -22,6 +22,7 @@
 
 #include "MPI/DummyDefs.h"
 #include "MPI/getDataType.h"
+#include "MPI/Profiling.h"
 #include "MPI/selectGPU.h"
 #include "MPI/Wrappers.h"
 #include "MPI/Utils.h"
