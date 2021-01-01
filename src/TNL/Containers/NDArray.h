@@ -59,10 +59,8 @@ public:
 
    NDArrayStorage() = default;
 
-   // The copy-constructor of TNL::Containers::Array makes shallow copy so our
-   // copy-constructor cannot be default. Actually, we most likely don't need
-   // it anyway, so let's just delete it.
-   NDArrayStorage( const NDArrayStorage& ) = delete;
+   // Copy constructor (makes a deep copy).
+   explicit NDArrayStorage( const NDArrayStorage& ) = default;
 
    // Standard copy-semantics with deep copy, just like regular 1D array.
    // Mismatched sizes cause reallocations.
@@ -326,21 +324,49 @@ template< typename Value,
           typename SizesHolder,
           typename Permutation = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
           typename Device = Devices::Host,
-          typename Index = typename SizesHolder::IndexType >
+          typename Index = typename SizesHolder::IndexType,
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Value > >
 class NDArray
-: public NDArrayStorage< Array< Value, Device, Index >,
+: public NDArrayStorage< Array< Value, Device, Index, Allocator >,
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >
 {
-   using Base = NDArrayStorage< Array< Value, Device, Index >,
+   using Base = NDArrayStorage< Array< Value, Device, Index, Allocator >,
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >;
 
 public:
-   // inherit all assignment operators
+   // inherit all constructors and assignment operators
+   using Base::Base;
    using Base::operator=;
+
+   // default constructor
+   NDArray() = default;
+
+   // implement dynamic array interface
+   using AllocatorType = Allocator;
+
+   NDArray( const NDArray& allocator )
+   {
+      // set empty array containing the specified allocator
+      this->getStorageArray() = Array< Value, Device, Index, Allocator >( allocator );
+   }
+
+   // Copy constructor with a specific allocator (makes a deep copy).
+   explicit NDArray( const NDArray& other, const AllocatorType& allocator )
+   {
+      // set empty array containing the specified allocator
+      this->array = Array< Value, Device, Index, Allocator >( allocator );
+      // copy the data
+      *this = other;
+   }
+
+   AllocatorType getAllocator() const
+   {
+      return this->array.getAllocator();
+   }
 };
 
 template< typename Value,
@@ -372,21 +398,49 @@ template< typename Value,
           typename Permutation = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
           typename SliceInfo = SliceInfo<>,  // no slicing by default
           typename Device = Devices::Host,
-          typename Index = typename SizesHolder::IndexType >
+          typename Index = typename SizesHolder::IndexType,
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Value > >
 class SlicedNDArray
-: public NDArrayStorage< Array< Value, Device, Index >,
+: public NDArrayStorage< Array< Value, Device, Index, Allocator >,
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::SlicedNDArrayBase< SliceInfo > >
 {
-   using Base = NDArrayStorage< Array< Value, Device, Index >,
+   using Base = NDArrayStorage< Array< Value, Device, Index, Allocator >,
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::SlicedNDArrayBase< SliceInfo > >;
 
 public:
-   // inherit all assignment operators
+   // inherit all constructors and assignment operators
+   using Base::Base;
    using Base::operator=;
+
+   // default constructor
+   SlicedNDArray() = default;
+
+   // implement dynamic array interface
+   using AllocatorType = Allocator;
+
+   SlicedNDArray( const SlicedNDArray& allocator )
+   {
+      // set empty array containing the specified allocator
+      this->getStorageArray() = Array< Value, Device, Index, Allocator >( allocator );
+   }
+
+   // Copy constructor with a specific allocator (makes a deep copy).
+   explicit SlicedNDArray( const SlicedNDArray& other, const AllocatorType& allocator )
+   {
+      // set empty array containing the specified allocator
+      this->array = Array< Value, Device, Index, Allocator >( allocator );
+      // copy the data
+      *this = other;
+   }
+
+   AllocatorType getAllocator() const
+   {
+      return this->array.getAllocator();
+   }
 };
 
 } // namespace Containers

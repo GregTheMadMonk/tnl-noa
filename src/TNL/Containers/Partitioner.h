@@ -22,7 +22,7 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Index, typename Communicator >
+template< typename Index, typename Communicator = Communicators::MpiCommunicator >
 class Partitioner
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;

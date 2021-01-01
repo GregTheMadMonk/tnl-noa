@@ -9,7 +9,6 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
 #include <TNL/Containers/DistributedNDArraySynchronizer.h>
@@ -33,7 +32,6 @@ class DistributedNDArrayOverlaps_semi1D_test
 protected:
    using ValueType = typename DistributedNDArray::ValueType;
    using DeviceType = typename DistributedNDArray::DeviceType;
-   using CommunicatorType = typename DistributedNDArray::CommunicatorType;
    using IndexType = typename DistributedNDArray::IndexType;
    using DistributedNDArrayType = DistributedNDArray;
 
@@ -44,17 +42,17 @@ protected:
    const int globalSize = 97;  // prime number to force non-uniform distribution
    const int overlaps = __ndarray_impl::get< 1 >( typename DistributedNDArray::OverlapsType{} );
 
-   const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+   const MPI_Comm group = TNL::MPI::AllGroup();
 
    DistributedNDArrayType distributedNDArray;
 
-   const int rank = CommunicatorType::GetRank(group);
-   const int nproc = CommunicatorType::GetSize(group);
+   const int rank = TNL::MPI::GetRank(group);
+   const int nproc = TNL::MPI::GetSize(group);
 
    DistributedNDArrayOverlaps_semi1D_test()
    {
       using LocalRangeType = typename DistributedNDArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
       distributedNDArray.setSizes( 0, globalSize, globalSize / 2 );
       distributedNDArray.template setDistribution< 1 >( localRange.getBegin(), localRange.getEnd(), group );
       distributedNDArray.allocate();
@@ -70,7 +68,6 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Host >,
-                       Communicators::MpiCommunicator,
                        std::index_sequence< 0, 2, 0 > >
 #ifdef HAVE_CUDA
    ,
@@ -78,7 +75,6 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Cuda >,
-                       Communicators::MpiCommunicator,
                        std::index_sequence< 0, 2, 0 > >
 #endif
 >;
@@ -87,12 +83,10 @@ TYPED_TEST_SUITE( DistributedNDArrayOverlaps_semi1D_test, DistributedNDArrayType
 
 TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, checkSumOfLocalSizes )
 {
-   using CommunicatorType = typename TestFixture::CommunicatorType;
-
    const auto localRange = this->distributedNDArray.template getLocalRange< 1 >();
    const int localSize = localRange.getEnd() - localRange.getBegin();
    int sumOfLocalSizes = 0;
-   CommunicatorType::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   TNL::MPI::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedNDArray.template getSize< 1 >(), this->globalSize );
 

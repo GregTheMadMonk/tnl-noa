@@ -12,33 +12,30 @@
 
 #pragma once
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/NDArrayView.h>
 #include <TNL/Containers/Subrange.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Containers {
 
 template< typename NDArrayView,
-          typename Communicator = Communicators::MpiCommunicator,
           typename Overlaps = __ndarray_impl::make_constant_index_sequence< NDArrayView::getDimension(), 0 > >
 class DistributedNDArrayView
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
    using ValueType = typename NDArrayView::ValueType;
    using DeviceType = typename NDArrayView::DeviceType;
    using IndexType = typename NDArrayView::IndexType;
    using SizesHolderType = typename NDArrayView::SizesHolderType;
    using PermutationType = typename NDArrayView::PermutationType;
-   using CommunicatorType = Communicator;
    using LocalBeginsType = __ndarray_impl::LocalBeginsHolder< typename NDArrayView::SizesHolderType >;
    using LocalRangeType = Subrange< IndexType >;
    using OverlapsType = Overlaps;
    using LocalIndexerType = NDArrayIndexer< SizesHolderType, PermutationType, typename NDArrayView::NDBaseType, typename NDArrayView::StridesHolderType, Overlaps >;
 
-   using ViewType = DistributedNDArrayView< NDArrayView, Communicator, Overlaps >;
-   using ConstViewType = DistributedNDArrayView< typename NDArrayView::ConstViewType, Communicator, Overlaps >;
+   using ViewType = DistributedNDArrayView< NDArrayView, Overlaps >;
+   using ConstViewType = DistributedNDArrayView< typename NDArrayView::ConstViewType, Overlaps >;
    using LocalViewType = NDArrayView;
    using ConstLocalViewType = typename NDArrayView::ConstViewType;
 
@@ -49,7 +46,7 @@ public:
 
    // explicit initialization by local array view, global sizes and local begins and ends
    __cuda_callable__
-   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, CommunicationGroup group )
+   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm group )
    : localView(localView), group(group), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
 
    // Copy-constructor does shallow copy, so views can be passed-by-value into
@@ -112,7 +109,7 @@ public:
    void reset()
    {
       localView.reset();
-      group = CommunicatorType::NullGroup;
+      group = MPI::NullGroup();
       globalSizes = SizesHolderType{};
       localBegins = LocalBeginsType{};
       localEnds = SizesHolderType{};
@@ -124,7 +121,7 @@ public:
    }
 
    __cuda_callable__
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return group;
    }
@@ -276,8 +273,8 @@ public:
             localEnds == other.localEnds &&
             localView == other.localView;
       bool result = true;
-      if( group != CommunicatorType::NullGroup )
-         CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+      if( group != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
       return result;
    }
 
@@ -406,7 +403,7 @@ public:
 
 protected:
    NDArrayView localView;
-   CommunicationGroup group = Communicator::NullGroup;
+   MPI_Comm group = MPI::NullGroup();
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;
