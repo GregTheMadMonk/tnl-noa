@@ -13,13 +13,13 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 
 #include "Merson.h"
 
 namespace TNL {
 namespace Solvers {
-namespace ODE {   
+namespace ODE {
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -154,9 +154,9 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
       RealType error( 0.0 );
       if( adaptivity != 0.0 )
       {
-         const RealType localError = 
+         const RealType localError =
             max( currentTau / 3.0 * abs( 0.2 * k1 -0.9 * k3 + 0.8 * k4 -0.1 * k5 ) );
-            Problem::CommunicatorType::Allreduce( &localError, &error, 1, MPI_MAX, Problem::CommunicatorType::AllGroup );
+            MPI::Allreduce( &localError, &error, 1, MPI_MAX, MPI::AllGroup() );
       }
 
       if( adaptivity == 0.0 || error < adaptivity )
@@ -185,7 +185,7 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
          currentTau = min( currentTau, this->getMaxTau() );
 #ifdef USE_MPI
          TNLMPI::Bcast( currentTau, 1, 0 );
-#endif        
+#endif
       }
       if( time + currentTau > this->getStopTime() )
          currentTau = this->getStopTime() - time; //we don't want to keep such tau

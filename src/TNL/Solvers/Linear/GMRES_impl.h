@@ -510,7 +510,7 @@ hauseholder_generate( const int i,
       norm_yi_squared = 2 * (normz * normz + std::fabs( y_ii ) * normz);
    }
    // no-op if the problem is not distributed
-   CommunicatorType::Bcast( &norm_yi_squared, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
+   MPI::Bcast( &norm_yi_squared, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
 
    // XXX: normalization is slower, but more stable
 //   y_i *= 1.0 / std::sqrt( norm_yi_squared );
@@ -534,7 +534,7 @@ hauseholder_generate( const int i,
                  i,
                  aux );
       // no-op if the problem is not distributed
-      CommunicatorType::Allreduce( aux, i, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
+      MPI::Allreduce( aux, i, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
 
       // [T_i]_{0..i-1} = - T_{i-1} * t_i * aux
       for( int k = 0; k < i; k++ ) {
@@ -559,7 +559,7 @@ hauseholder_apply_trunc( HostView out,
    HostView YL_i( &YL[ i * (restarting_max + 1) ], restarting_max + 1 );
    Algorithms::MultiDeviceMemoryOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalView( y_i ).getData(), YL_i.getSize() );
    // no-op if the problem is not distributed
-   CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
+   MPI::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
    // NOTE: aux = t_i * (y_i, z) = 1  since  t_i = 2 / ||y_i||^2  and
    //       (y_i, z) = ||z_trunc||^2 + |z_i| ||z_trunc|| = ||y_i||^2 / 2
@@ -579,7 +579,7 @@ hauseholder_apply_trunc( HostView out,
    }
 
    // no-op if the problem is not distributed
-   CommunicatorType::Bcast( out.getData(), i + 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
+   MPI::Bcast( out.getData(), i + 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
 }
 
 template< typename Matrix >
@@ -634,7 +634,7 @@ hauseholder_cwy_transposed( VectorViewType z,
               i + 1,
               aux );
    // no-op if the problem is not distributed
-   Traits::CommunicatorType::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
+   MPI::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
 
    // aux = T_i^T * aux
    // Note that T_i^T is lower triangular, so we can overwrite the aux vector with the result in place

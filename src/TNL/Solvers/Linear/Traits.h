@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/DistributedVector.h>
@@ -26,8 +26,6 @@ namespace Linear {
 template< typename Matrix >
 struct Traits
 {
-   using CommunicatorType = Communicators::MpiCommunicator;
-
    using VectorType = Containers::Vector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
@@ -51,7 +49,7 @@ struct Traits
    static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v; }
    static LocalViewType getLocalView( VectorViewType v ) { return v; }
 
-   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrix& m ) { return CommunicatorType::AllGroup; }
+   static MPI_Comm getCommunicationGroup( const Matrix& m ) { return MPI::AllGroup(); }
    static void startSynchronization( VectorViewType v ) {}
    static void waitForSynchronization( VectorViewType v ) {}
 };
@@ -59,8 +57,6 @@ struct Traits
 template< typename Matrix, typename Communicator >
 struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
 {
-   using CommunicatorType = Communicator;
-
    using VectorType = Containers::DistributedVector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
@@ -96,7 +92,7 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
    static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v.getConstLocalView(); }
    static LocalViewType getLocalView( VectorViewType v ) { return v.getLocalView(); }
 
-   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
+   static MPI_Comm getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
    static void startSynchronization( VectorViewType v ) { v.startSynchronization(); }
    static void waitForSynchronization( VectorViewType v ) { v.waitForSynchronization(); }
 };
