@@ -15,6 +15,7 @@
 #include <TNL/Containers/ByteArraySynchronizer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Meshes {
@@ -40,7 +41,6 @@ class DistributedMeshSynchronizer
 public:
    using DeviceType = typename DistributedMesh::DeviceType;
    using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
-   using CommunicatorType = typename DistributedMesh::CommunicatorType;
    using ByteArrayView = typename Base::ByteArrayView;
    using RequestsVector = typename Base::RequestsVector;
 
@@ -61,8 +61,8 @@ public:
                      "Global indices are not allocated properly." );
 
       group = mesh.getCommunicationGroup();
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
@@ -71,9 +71,9 @@ public:
       {
          Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( ownStart );
-         CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                     globalOffsets.getData(), 1,
-                                     group );
+         MPI::Alltoall( sendbuf.getData(), 1,
+                        globalOffsets.getData(), 1,
+                        group );
       }
 
       // count local ghost entities for each rank
@@ -110,9 +110,9 @@ public:
          for( int j = 0; j < nproc; j++ )
          for( int i = 0; i < nproc; i++ )
             sendbuf.setElement( j, i, localGhostCounts[ i ] );
-         CommunicatorType::Alltoall( &sendbuf(0, 0), nproc,
-                                     &ghostEntitiesCounts(0, 0), nproc,
-                                     group );
+         MPI::Alltoall( &sendbuf(0, 0), nproc,
+                        &ghostEntitiesCounts(0, 0), nproc,
+                        group );
       }
 
       // allocate ghost offsets
@@ -136,7 +136,7 @@ public:
          ghostOffsets[ 0 ] = ghostOffset;
          for( int i = 0; i < nproc; i++ ) {
             if( ghostEntitiesCounts( rank, i ) > 0 ) {
-               requests.push_back( CommunicatorType::ISend(
+               requests.push_back( MPI::Isend(
                         mesh.template getGlobalIndices< EntityDimension >().getData() + ghostOffset,
                         ghostEntitiesCounts( rank, i ),
                         i, 0, group ) );
@@ -151,7 +151,7 @@ public:
          // receive ghost indices from the neighboring ranks
          for( int j = 0; j < nproc; j++ ) {
             if( ghostEntitiesCounts( j, rank ) > 0 ) {
-               requests.push_back( CommunicatorType::IRecv(
+               requests.push_back( MPI::Irecv(
                         ghostNeighbors.getData() + ghostNeighborOffsets[ j ],
                         ghostEntitiesCounts( j, rank ),
                         j, 0, group ) );
@@ -159,7 +159,7 @@ public:
          }
 
          // wait for all communications to finish
-         CommunicatorType::WaitAll( requests.data(), requests.size() );
+         MPI::Waitall( requests.data(), requests.size() );
 
          // convert received ghost indices from global to local
          ghostNeighbors -= ownStart;
@@ -201,7 +201,7 @@ public:
    virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
    {
       auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
-      CommunicatorType::WaitAll( requests.data(), requests.size() );
+      MPI::Waitall( requests.data(), requests.size() );
    }
 
    virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
@@ -209,8 +209,8 @@ public:
       TNL_ASSERT_EQ( array.getSize(), bytesPerValue * ghostOffsets[ ghostOffsets.getSize() - 1 ],
                      "The array does not have the expected size." );
 
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // allocate send buffers (setSize does nothing if the array size is already correct)
       sendBuffers.setSize( bytesPerValue * ghostNeighborOffsets[ nproc ] );
@@ -221,7 +221,7 @@ public:
       // issue all receive async operations
       for( int j = 0; j < nproc; j++ ) {
          if( ghostEntitiesCounts( rank, j ) > 0 ) {
-            requests.push_back( CommunicatorType::IRecv(
+            requests.push_back( MPI::Irecv(
                      array.getData() + bytesPerValue * ghostOffsets[ j ],
                      bytesPerValue * ghostEntitiesCounts( rank, j ),
                      j, 0, group ) );
@@ -245,7 +245,7 @@ public:
             Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, ghostEntitiesCounts( i, rank ), copy_kernel, offset );
 
             // issue async send operation
-            requests.push_back( CommunicatorType::ISend(
+            requests.push_back( MPI::Isend(
                      sendBuffersView.getData() + bytesPerValue * ghostNeighborOffsets[ i ],
                      bytesPerValue * ghostEntitiesCounts( i, rank ),
                      i, 0, group ) );
@@ -268,8 +268,8 @@ public:
    {
       TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
 
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // buffer for asynchronous communication requests
       RequestsVector requests;
@@ -306,7 +306,7 @@ public:
             // send our row sizes to the target rank
             if( ! assumeConsistentRowCapacities )
                // issue async send operation
-               requests.push_back( CommunicatorType::ISend(
+               requests.push_back( MPI::Isend(
                         send_rowCapacities.getData() + send_rankOffsets[ i ],
                         ghostNeighborOffsets[ i + 1 ] - ghostNeighborOffsets[ i ],
                         i, 1, group ) );
@@ -334,7 +334,7 @@ public:
             if( send_rankOffsets[ i + 1 ] == send_rankOffsets[ i ] )
                continue;
             // issue async send operation
-            requests.push_back( CommunicatorType::ISend(
+            requests.push_back( MPI::Isend(
                      send_columnIndices.getData() + send_rowPointers[ send_rankOffsets[ i ] ],
                      send_rowPointers[ send_rankOffsets[ i + 1 ] ] - send_rowPointers[ send_rankOffsets[ i ] ],
                      i, 0, group ) );
@@ -369,7 +369,7 @@ public:
             else {
                // receive row sizes from the sender
                // issue async recv operation
-               row_lengths_requests.push_back( CommunicatorType::IRecv(
+               row_lengths_requests.push_back( MPI::Irecv(
                         recv_rowPointers.getData() + recv_rankOffsets[ i ],
                         ghostOffsets[ i + 1 ] - ghostOffsets[ i ],
                         i, 1, group ) );
@@ -378,7 +378,7 @@ public:
 
          if( ! assumeConsistentRowCapacities ) {
             // wait for all row lengths
-            CommunicatorType::WaitAll( row_lengths_requests.data(), row_lengths_requests.size() );
+            MPI::Waitall( row_lengths_requests.data(), row_lengths_requests.size() );
 
             // scan the rowPointers array to convert
             Containers::VectorView< GlobalIndexType, Devices::Host, GlobalIndexType > rowPointersView;
@@ -393,7 +393,7 @@ public:
             if( recv_rankOffsets[ i + 1 ] == recv_rankOffsets[ i ] )
                continue;
             // issue async recv operation
-            requests.push_back( CommunicatorType::IRecv(
+            requests.push_back( MPI::Irecv(
                      recv_columnIndices.getData() + recv_rowPointers[ recv_rankOffsets[ i ] ],
                      recv_rowPointers[ recv_rankOffsets[ i + 1 ] ] - recv_rowPointers[ recv_rankOffsets[ i ] ],
                      i, 0, group ) );
@@ -401,7 +401,7 @@ public:
       }
 
       // wait for all communications to finish
-      CommunicatorType::WaitAll( requests.data(), requests.size() );
+      MPI::Waitall( requests.data(), requests.size() );
 
       return std::make_tuple( recv_rankOffsets, recv_rowPointers, recv_columnIndices );
    }
@@ -445,7 +445,7 @@ public:
 
 protected:
    // communication group taken from the distributed mesh
-   typename CommunicatorType::CommunicationGroup group;
+   MPI_Comm group;
 
    /**
     * Global offsets: array of size nproc where the i-th value is the lowest

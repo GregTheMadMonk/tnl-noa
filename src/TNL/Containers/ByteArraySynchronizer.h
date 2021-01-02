@@ -17,7 +17,7 @@
 #include <async/threadpool.h>
 
 #include <TNL/Containers/ArrayView.h>
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 #include <TNL/Timer.h>
 
 namespace TNL {
@@ -42,7 +42,7 @@ private:
 
 public:
    using ByteArrayView = ArrayView< std::uint8_t, Device, Index >;
-   using RequestsVector = std::vector< typename Communicators::MpiCommunicator::Request >;
+   using RequestsVector = std::vector< MPI_Request >;
 
    enum class AsyncPolicy {
       synchronous,
@@ -105,7 +105,7 @@ public:
          // immediate start, deferred synchronization (but still in the same thread)
          auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
          auto worker = [requests] () mutable {
-            Communicators::MpiCommunicator::WaitAll( requests.data(), requests.size() );
+            MPI::Waitall( requests.data(), requests.size() );
          };
          this->async_op = std::async( std::launch::deferred, worker );
       }

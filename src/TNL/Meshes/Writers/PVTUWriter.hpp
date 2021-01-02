@@ -137,15 +137,14 @@ PVTUWriter< Mesh >::addPiece( const String& mainFileName,
 }
 
 template< typename Mesh >
-   template< typename Communicator >
 std::string
 PVTUWriter< Mesh >::addPiece( const String& mainFileName,
-                              const typename Communicator::CommunicationGroup group )
+                              const MPI_Comm group )
 {
    std::string source;
-   for( int i = 0; i < Communicator::GetSize( group ); i++ ) {
+   for( int i = 0; i < MPI::GetSize( group ); i++ ) {
       const std::string s = addPiece( mainFileName, i );
-      if( i == Communicator::GetRank( group ) )
+      if( i == MPI::GetRank( group ) )
          source = s;
    }
    return source;

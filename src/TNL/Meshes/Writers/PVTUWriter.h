@@ -65,9 +65,8 @@ public:
 
    // add all pieces and return the source path for the current rank
    // (useful for parallel writing)
-   template< typename Communicator >
    std::string addPiece( const String& mainFileName,
-                         const typename Communicator::CommunicationGroup group );
+                         const MPI_Comm group );
 
    ~PVTUWriter();
 

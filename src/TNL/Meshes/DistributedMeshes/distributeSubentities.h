@@ -19,14 +19,14 @@ namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
 
-template< typename CommunicatorType, typename GlobalIndexType >
+template< typename GlobalIndexType >
 auto
-exchangeGhostEntitySeeds( typename CommunicatorType::CommunicationGroup group,
+exchangeGhostEntitySeeds( MPI_Comm group,
                           const std::vector< std::vector< GlobalIndexType > >& seeds_vertex_indices,
                           const std::vector< std::vector< GlobalIndexType > >& seeds_entity_offsets )
 {
-   const int rank = CommunicatorType::GetRank( group );
-   const int nproc = CommunicatorType::GetSize( group );
+   const int rank = MPI::GetRank( group );
+   const int nproc = MPI::GetSize( group );
 
    // exchange sizes of the arrays
    Containers::Array< GlobalIndexType, Devices::Host, int > sizes_vertex_indices( nproc ), sizes_entity_offsets( nproc );
@@ -36,12 +36,12 @@ exchangeGhostEntitySeeds( typename CommunicatorType::CommunicationGroup group,
          sendbuf_indices[ i ] = seeds_vertex_indices[ i ].size();
          sendbuf_offsets[ i ] = seeds_entity_offsets[ i ].size();
       }
-      CommunicatorType::Alltoall( sendbuf_indices.getData(), 1,
-                                  sizes_vertex_indices.getData(), 1,
-                                  group );
-      CommunicatorType::Alltoall( sendbuf_offsets.getData(), 1,
-                                  sizes_entity_offsets.getData(), 1,
-                                  group );
+      MPI::Alltoall( sendbuf_indices.getData(), 1,
+                     sizes_vertex_indices.getData(), 1,
+                     group );
+      MPI::Alltoall( sendbuf_offsets.getData(), 1,
+                     sizes_entity_offsets.getData(), 1,
+                     group );
    }
 
    // allocate arrays for the results
@@ -54,17 +54,17 @@ exchangeGhostEntitySeeds( typename CommunicatorType::CommunicationGroup group,
    }
 
    // buffer for asynchronous communication requests
-   std::vector< typename CommunicatorType::Request > requests;
+   std::vector< MPI_Request > requests;
 
    // issue all async receive operations
    for( int j = 0; j < nproc; j++ ) {
       if( j == rank )
           continue;
-      requests.push_back( CommunicatorType::IRecv(
+      requests.push_back( MPI::Irecv(
                foreign_seeds_vertex_indices[ j ].data(),
                foreign_seeds_vertex_indices[ j ].size(),
                j, 0, group ) );
-      requests.push_back( CommunicatorType::IRecv(
+      requests.push_back( MPI::Irecv(
                foreign_seeds_entity_offsets[ j ].data(),
                foreign_seeds_entity_offsets[ j ].size(),
                j, 1, group ) );
@@ -74,30 +74,30 @@ exchangeGhostEntitySeeds( typename CommunicatorType::CommunicationGroup group,
    for( int i = 0; i < nproc; i++ ) {
       if( i == rank )
           continue;
-      requests.push_back( CommunicatorType::ISend(
+      requests.push_back( MPI::Isend(
                seeds_vertex_indices[ i ].data(),
                seeds_vertex_indices[ i ].size(),
                i, 0, group ) );
-      requests.push_back( CommunicatorType::ISend(
+      requests.push_back( MPI::Isend(
                seeds_entity_offsets[ i ].data(),
                seeds_entity_offsets[ i ].size(),
                i, 1, group ) );
    }
 
    // wait for all communications to finish
-   CommunicatorType::WaitAll( requests.data(), requests.size() );
+   MPI::Waitall( requests.data(), requests.size() );
 
    return std::make_tuple( foreign_seeds_vertex_indices, foreign_seeds_entity_offsets );
 }
 
-template< typename CommunicatorType, typename GlobalIndexType >
+template< typename GlobalIndexType >
 auto
-exchangeGhostIndices( typename CommunicatorType::CommunicationGroup group,
+exchangeGhostIndices( MPI_Comm group,
                       const std::vector< std::vector< GlobalIndexType > >& foreign_ghost_indices,
                       const std::vector< std::vector< GlobalIndexType > >& seeds_local_indices )
 {
-   const int rank = CommunicatorType::GetRank( group );
-   const int nproc = CommunicatorType::GetSize( group );
+   const int rank = MPI::GetRank( group );
+   const int nproc = MPI::GetSize( group );
 
    // allocate arrays for the results
    std::vector< std::vector< GlobalIndexType > > ghost_indices;
@@ -106,13 +106,13 @@ exchangeGhostIndices( typename CommunicatorType::CommunicationGroup group,
       ghost_indices[ i ].resize( seeds_local_indices[ i ].size() );
 
    // buffer for asynchronous communication requests
-   std::vector< typename CommunicatorType::Request > requests;
+   std::vector< MPI_Request > requests;
 
    // issue all async receive operations
    for( int j = 0; j < nproc; j++ ) {
       if( j == rank )
           continue;
-      requests.push_back( CommunicatorType::IRecv(
+      requests.push_back( MPI::Irecv(
                ghost_indices[ j ].data(),
                ghost_indices[ j ].size(),
                j, 0, group ) );
@@ -122,14 +122,14 @@ exchangeGhostIndices( typename CommunicatorType::CommunicationGroup group,
    for( int i = 0; i < nproc; i++ ) {
       if( i == rank )
           continue;
-      requests.push_back( CommunicatorType::ISend(
+      requests.push_back( MPI::Isend(
                foreign_ghost_indices[ i ].data(),
                foreign_ghost_indices[ i ].size(),
                i, 0, group ) );
    }
 
    // wait for all communications to finish
-   CommunicatorType::WaitAll( requests.data(), requests.size() );
+   MPI::Waitall( requests.data(), requests.size() );
 
    return ghost_indices;
 }
@@ -145,7 +145,6 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
    using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
    using LocalIndexType = typename DistributedMesh::LocalIndexType;
    using LocalMesh = typename DistributedMesh::MeshType;
-   using CommunicatorType = typename DistributedMesh::CommunicatorType;
 
    static_assert( ! std::is_same< DeviceType, Devices::Cuda >::value,
                   "this method can be called only for host meshes" );
@@ -154,8 +153,8 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
    if( mesh.getGhostLevels() <= 0 )
       throw std::logic_error( "There are no ghost levels on the distributed mesh." );
 
-   const int rank = CommunicatorType::GetRank( mesh.getCommunicationGroup() );
-   const int nproc = CommunicatorType::GetSize( mesh.getCommunicationGroup() );
+   const int rank = MPI::GetRank( mesh.getCommunicationGroup() );
+   const int nproc = MPI::GetSize( mesh.getCommunicationGroup() );
 
    // 0. exchange cell data to prepare getCellOwner for use in getEntityOwner
    DistributedMeshSynchronizer< DistributedMesh, DistributedMesh::getMeshDimension() > cell_synchronizer;
@@ -235,9 +234,9 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
 
       Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
       sendbuf.setValue( localEntitiesCount );
-      CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                  globalOffsets.getData(), 1,
-                                  mesh.getCommunicationGroup() );
+      MPI::Alltoall( sendbuf.getData(), 1,
+                     globalOffsets.getData(), 1,
+                     mesh.getCommunicationGroup() );
    }
    globalOffsets.template scan< Algorithms::ScanType::Exclusive >();
 
@@ -288,7 +287,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
    }
 
    // 5. exchange seeds for ghost entities
-   const auto foreign_seeds = exchangeGhostEntitySeeds< CommunicatorType >( mesh.getCommunicationGroup(), seeds_vertex_indices, seeds_entity_offsets );
+   const auto foreign_seeds = exchangeGhostEntitySeeds( mesh.getCommunicationGroup(), seeds_vertex_indices, seeds_entity_offsets );
    const auto& foreign_seeds_vertex_indices = std::get< 0 >( foreign_seeds );
    const auto& foreign_seeds_entity_offsets = std::get< 1 >( foreign_seeds );
 
@@ -373,7 +372,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
       });
 
       // 6b. exchange global ghost indices
-      const auto ghost_indices = exchangeGhostIndices< CommunicatorType >( mesh.getCommunicationGroup(), foreign_ghost_indices, seeds_local_indices );
+      const auto ghost_indices = exchangeGhostIndices( mesh.getCommunicationGroup(), foreign_ghost_indices, seeds_local_indices );
 
       // 6c. set the global indices of our ghost entities
       bool done = true;
@@ -387,7 +386,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
 
       // 6d. check if finished
       bool all_done = false;
-      CommunicatorType::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
       if( all_done )
          break;
    }

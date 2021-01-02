@@ -18,12 +18,10 @@
 #include <TNL/Meshes/Geometry/getEntityCenter.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 
 using namespace TNL;
-
-using CommunicatorType = Communicators::MpiCommunicator;
 
 struct MyConfigTag {};
 
@@ -214,7 +212,7 @@ void testSynchronizerOnDevice( const MeshType& mesh )
          if( received != center ) {
             IndexType cellIndexes[ 2 ] = {0, 0};
             const int numCells = getCellsForFace( mesh.getLocalMesh(), i, cellIndexes );
-            std::cerr << "rank " << CommunicatorType::GetRank()
+            std::cerr << "rank " << TNL::MPI::GetRank()
                       << ": wrong result for entity " << i << " (gid " << mesh.template getGlobalIndices< EntityType::getEntityDimension() >()[i] << ")"
                       << " of dimension = " << EntityType::getEntityDimension()
                       << ": received " << received << ", expected = " << center
@@ -224,7 +222,7 @@ void testSynchronizerOnDevice( const MeshType& mesh )
          }
       }
    if( errors > 0 ) {
-      std::cerr << "rank " << CommunicatorType::GetRank() << ": " << errors << " errors in total." << std::endl;
+      std::cerr << "rank " << TNL::MPI::GetRank() << ": " << errors << " errors in total." << std::endl;
       TNL_ASSERT_TRUE( false, "test failed" );
    }
 }
@@ -273,7 +271,7 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
       // create a .pvtu file (only rank 0 actually writes to the file)
       const std::string mainFilePath = "data_" + std::to_string(iteration) + ".pvtu";
       std::ofstream file;
-      if( CommunicatorType::GetRank() == 0 )
+      if( TNL::MPI::GetRank() == 0 )
          file.open( mainFilePath );
       using PVTU = Meshes::Writers::PVTUWriter< LocalMesh >;
       PVTU pvtu( file );
@@ -284,7 +282,7 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       pvtu.template writePCellData< Real >( "function values" );
       pvtu.template writePCellData< Real >( "test values" );
-      const std::string subfilePath = pvtu.template addPiece< CommunicatorType >( mainFilePath, mesh.getCommunicationGroup() );
+      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
 
       // create a .vtu file for local data
       using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
@@ -315,7 +313,7 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
    int iteration = 0;
    do {
       iteration++;
-      if( CommunicatorType::GetRank() == 0 )
+      if( TNL::MPI::GetRank() == 0 )
          std::cout << "Computing iteration " << iteration << "..." << std::endl;
 
       const Index prev_sum = sum( f_K.getData() );
@@ -400,14 +398,14 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
          std::cerr << "ERROR: propatation over faces differs from the propagation over neighbor cells. Differing values are:\n";
          for( Index K = 0; K < f_K_view.getSize(); K++ )
             if( f_K_view[ K ] != f_K_test_view[ K ] )
-               std::cerr << "   rank = " << CommunicatorType::GetRank() << ", K = " << K << ": " << f_K_view[ K ] << " instead of " << f_K_test_view[ K ] << "\n";
+               std::cerr << "   rank = " << TNL::MPI::GetRank() << ", K = " << K << ": " << f_K_view[ K ] << " instead of " << f_K_test_view[ K ] << "\n";
          std::cerr.flush();
          TNL_ASSERT_TRUE( false, "test failed" );
       }
 
       // check if finished
       const bool done = sum( f_K.getData() ) == prev_sum || iteration > max_iterations;
-      CommunicatorType::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
    }
    while( all_done == false );
 
@@ -421,7 +419,7 @@ void configSetup( Config::ConfigDescription& config )
    config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addEntry< int >( "max-iterations", "Maximum number of iterations to compute", 100 );
    config.addDelimiter( "MPI settings:" );
-   CommunicatorType::configSetup( config );
+   TNL::MPI::configSetup( config );
 }
 
 int main( int argc, char* argv[] )
@@ -436,7 +434,7 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   if( ! CommunicatorType::setup( parameters ) )
+   if( ! TNL::MPI::setup( parameters ) )
       return EXIT_FAILURE;
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
