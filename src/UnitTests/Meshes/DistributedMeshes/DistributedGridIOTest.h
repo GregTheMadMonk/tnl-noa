@@ -6,7 +6,6 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
@@ -18,7 +17,6 @@
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
-using namespace TNL::Communicators;
 using namespace TNL::Meshes::DistributedMeshes;
 
 
@@ -186,8 +184,6 @@ class ParameterProvider<3,Device>
 
 //------------------------------------------------------------------------------
 
-typedef MpiCommunicator CommunicatorType;
-
 template <int dim, typename Device>
 class TestDistributedGridIO
 {
@@ -227,9 +223,9 @@ class TestDistributedGridIO
         overlap.setValue(1);
         DistributedGridType distributedGrid;
         distributedGrid.setDomainDecomposition( parameters.getDistr() );
-        distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        distributedGrid.setGlobalGrid( globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         //std::cout << distributedGrid.printProcessDistr() <<std::endl;
@@ -249,8 +245,8 @@ class TestDistributedGridIO
 
 
        //create similar local mesh function and evaluate linear function on it
-        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));
-        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank(CommunicatorType::AllGroup));;
+        PointType localOrigin=parameters.getOrigin(TNL::MPI::GetRank());
+        PointType localProportions=parameters.getProportions(TNL::MPI::GetRank());
 
         Pointers::SharedPointer<MeshType>  localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -313,14 +309,14 @@ class TestDistributedGridIO
         overlap.setValue(1);
         DistributedGridType distributedGrid;
         distributedGrid.setDomainDecomposition( parameters.getDistr() );
-        distributedGrid.template setGlobalGrid<CommunicatorType>( globalGrid );
+        distributedGrid.setGlobalGrid( globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         //save files from local mesh
-        PointType localOrigin=parameters.getOrigin(CommunicatorType::GetRank(CommunicatorType::AllGroup));
-        PointType localProportions=parameters.getProportions(CommunicatorType::GetRank(CommunicatorType::AllGroup));;
+        PointType localOrigin=parameters.getOrigin(TNL::MPI::GetRank());
+        PointType localProportions=parameters.getProportions(TNL::MPI::GetRank());
 
         Pointers::SharedPointer<MeshType> localGridptr;
         localGridptr->setDimensions(localProportions);
@@ -355,7 +351,7 @@ class TestDistributedGridIO
 
         DistributedMeshSynchronizer< DistributedGridType > synchronizer;
         synchronizer.setDistributedGrid( &distributedGrid );
-        synchronizer.template synchronize<CommunicatorType>( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
+        synchronizer.synchronize( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
 
         //Crete "distributedgrid driven" grid filed by evaluated linear function
         Pointers::SharedPointer<MeshType> gridptr;
@@ -367,7 +363,7 @@ class TestDistributedGridIO
         meshFunctionptr->bind(gridptr,dof);
 
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
-        synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
+        synchronizer.synchronize( *meshFunctionptr );
 
         for(int i=0;i<dof.getSize();i++)
         {

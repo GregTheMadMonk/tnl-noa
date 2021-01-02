@@ -1,9 +1,8 @@
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#ifdef HAVE_MPI    
+#ifdef HAVE_MPI
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -16,8 +15,7 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
-using namespace TNL::Communicators;
-using namespace TNL::Meshes::DistributedMeshes; 
+using namespace TNL::Meshes::DistributedMeshes;
 
 template<typename DofType>
 void setDof_3D(DofType &dof, typename DofType::RealType value)
@@ -49,14 +47,14 @@ void checkConner(const GridType &grid, const DofType &dof,bool bottom, bool nort
 {
     int i=getAdd(grid,bottom,north,west);
     EXPECT_EQ( dof[i], expectedValue) << "Conner test failed";
-    
+
 }
 
 template<typename DofType,typename GridType>
 void checkXDirectionEdge(const GridType &grid, const DofType &dof, bool bottom, bool north, typename DofType::RealType expectedValue)
 {
-    int add=getAdd(grid,bottom,north,true);        
-    for(int i=1;i<grid.getDimensions().x()-1;i++) 
+    int add=getAdd(grid,bottom,north,true);
+    for(int i=1;i<grid.getDimensions().x()-1;i++)
             EXPECT_EQ( dof[i+add], expectedValue) << "X direction Edge test failed " << i;
 }
 
@@ -65,7 +63,7 @@ template<typename DofType,typename GridType>
 void checkYDirectionEdge(const GridType &grid, const DofType &dof, bool bottom, bool west, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,bottom,true,west);
-    for(int i=1;i<grid.getDimensions().y()-1;i++) 
+    for(int i=1;i<grid.getDimensions().y()-1;i++)
             EXPECT_EQ( dof[grid.getDimensions().x()*i+add], expectedValue) << "Y direction Edge test failed " << i;
 }
 
@@ -73,7 +71,7 @@ template<typename DofType,typename GridType>
 void checkZDirectionEdge(const GridType &grid, const DofType &dof, bool north, bool west, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,true,north,west);
-    for(int i=1;i<grid.getDimensions().z()-1;i++) 
+    for(int i=1;i<grid.getDimensions().z()-1;i++)
             EXPECT_EQ( dof[grid.getDimensions().y()*grid.getDimensions().x()*i+add], expectedValue) << "Z direction Edge test failed " << i;
 }
 
@@ -125,7 +123,7 @@ void check_Boundary_3D(int rank, const GridType &grid, const DofType &dof, typen
         checkXFace(grid, dof, true, expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, true, expectedValue);
-    }    
+    }
 
     if(rank==1)//Bottom North Center
     {
@@ -199,7 +197,7 @@ void check_Boundary_3D(int rank, const GridType &grid, const DofType &dof, typen
         checkZDirectionEdge(grid,dof,true,true,expectedValue);
         checkXFace(grid, dof, true, expectedValue);
         checkYFace(grid, dof, true, expectedValue);
-    }    
+    }
 
     if(rank==10)//Center North Center
     {
@@ -257,7 +255,7 @@ void check_Boundary_3D(int rank, const GridType &grid, const DofType &dof, typen
         checkXFace(grid, dof, true, expectedValue);
         checkYFace(grid, dof, true, expectedValue);
         checkZFace(grid, dof, false, expectedValue);
-    }    
+    }
 
     if(rank==19)//Top North Center
     {
@@ -406,8 +404,8 @@ void CheckXFaceNode_Overlap(const GridType &grid, const DofType &dof,bool west, 
    checkXFace(grid, dof, !west, expectedValue);
    checkYFace(grid, dof, false, expectedValue);
    checkYFace(grid, dof, true, expectedValue);
-   checkZFace(grid, dof, false, expectedValue);    
-   checkZFace(grid, dof, true, expectedValue);        
+   checkZFace(grid, dof, false, expectedValue);
+   checkZFace(grid, dof, true, expectedValue);
 }
 
 template<typename DofType,typename GridType>
@@ -429,7 +427,7 @@ void CheckYFaceNode_Overlap(const GridType &grid, const DofType &dof,bool north,
    checkXFace(grid, dof, true, expectedValue);
    checkYFace(grid, dof, !north, expectedValue);
    checkZFace(grid, dof, false, expectedValue);
-   checkZFace(grid, dof, true, expectedValue);    
+   checkZFace(grid, dof, true, expectedValue);
 }
 
 template<typename DofType,typename GridType>
@@ -451,7 +449,7 @@ void CheckZFaceNode_Overlap(const GridType &grid, const DofType &dof,bool bottom
    checkXFace(grid, dof, true, expectedValue);
    checkYFace(grid, dof, false, expectedValue);
    checkYFace(grid, dof, true, expectedValue);
-   checkZFace(grid, dof, !bottom, expectedValue);    
+   checkZFace(grid, dof, !bottom, expectedValue);
 }
 
 template<typename DofType,typename GridType>
@@ -484,11 +482,11 @@ void CheckCentralNode_Overlap(const GridType &grid, const DofType &dof,typename 
    checkYFace(grid, dof, false, expectedValue);
    checkYFace(grid, dof, true, expectedValue);
    checkZFace(grid, dof, false, expectedValue);
-   checkZFace(grid, dof, true, expectedValue);    
+   checkZFace(grid, dof, true, expectedValue);
 }
 
 /*
-* Expected 27 processes. 
+* Expected 27 processes.
 */
 template<typename DofType,typename GridType>
 void check_Overlap_3D(int rank, const GridType &grid, const DofType &dof, typename DofType::RealType expectedValue)
@@ -499,7 +497,7 @@ void check_Overlap_3D(int rank, const GridType &grid, const DofType &dof, typena
    if(rank==1)
        CheckXEdgeNode_Overlap(grid,dof,true,true,expectedValue);
 
-   if(rank==2)    
+   if(rank==2)
        CheckConnerNode_Overlap(grid,dof,true,true,false,expectedValue);
 
    if(rank==3)
@@ -553,7 +551,7 @@ void check_Overlap_3D(int rank, const GridType &grid, const DofType &dof, typena
    if(rank==19)
        CheckXEdgeNode_Overlap(grid,dof,false,true,expectedValue);
 
-   if(rank==20)    
+   if(rank==20)
        CheckConnerNode_Overlap(grid,dof,false,true,false,expectedValue);
 
    if(rank==21)
@@ -590,19 +588,18 @@ void check_Inner_3D(int rank, const GridType& grid, const DofType& dof, typename
 
 
 /*
- * Light check of 3D distributed grid and its synchronization. 
+ * Light check of 3D distributed grid and its synchronization.
  * expected 27 processes
  */
-typedef MpiCommunicator CommunicatorType;
 typedef Grid<3,double,Host,int> GridType;
 typedef MeshFunctionView<GridType> MeshFunctionType;
 typedef Vector<double,Host,int> DofType;
 typedef typename GridType::Cell Cell;
-typedef typename GridType::IndexType IndexType; 
-typedef typename GridType::PointType PointType; 
+typedef typename GridType::IndexType IndexType;
+typedef typename GridType::PointType PointType;
 typedef DistributedMesh<GridType> DistributedGridType;
 using Synchronizer = DistributedMeshSynchronizer< DistributedGridType >;
-     
+
 class DistributedGirdTest_3D : public ::testing::Test
 {
    protected:
@@ -620,14 +617,14 @@ class DistributedGirdTest_3D : public ::testing::Test
       Pointers::SharedPointer< LinearFunction<double,3>, Host > linearFunctionPtr;
 
       int rank;
-      int nproc;    
+      int nproc;
 
       void SetUp()
       {
 
          int size=10;
-         rank=CommunicatorType::GetRank(CommunicatorType::AllGroup);
-         nproc=CommunicatorType::GetSize(CommunicatorType::AllGroup);
+         rank=TNL::MPI::GetRank();
+         nproc=TNL::MPI::GetSize();
 
          PointType globalOrigin;
          PointType globalProportions;
@@ -635,7 +632,7 @@ class DistributedGirdTest_3D : public ::testing::Test
 
          globalOrigin.x()=-0.5;
          globalOrigin.y()=-0.5;
-         globalOrigin.z()=-0.5;    
+         globalOrigin.z()=-0.5;
          globalProportions.x()=size;
          globalProportions.y()=size;
          globalProportions.z()=size;
@@ -645,17 +642,17 @@ class DistributedGirdTest_3D : public ::testing::Test
 
          distributedGrid=new DistributedGridType();
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
-         distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-         distributedGrid->setupGrid(*gridptr);    
+         distributedGrid->setGlobalGrid( globalGrid );
+         distributedGrid->setupGrid(*gridptr);
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::
+         SubdomainOverlapsGetter< GridType >::
             getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
          distributedGrid->setupGrid(*gridptr);
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());
 
-         meshFunctionptr->bind(gridptr,*dof);   
+         meshFunctionptr->bind(gridptr,*dof);
          constFunctionPtr->Number=rank;
       }
 
@@ -697,17 +694,17 @@ TEST_F(DistributedGirdTest_3D, evaluateInteriorEntities)
     check_Boundary_3D(rank, *gridptr, *dof, -1);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);
-}   
+}
 
 TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
 {
-    //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
+    //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid)
     setDof_3D(*dof,-1);
     linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
     Synchronizer synchronizer;
     synchronizer.setDistributedGrid( meshFunctionptr->getMesh().getDistributedMesh() );
-    synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
-    
+    synchronizer.synchronize( *meshFunctionptr );
+
     int count =gridptr->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
     {

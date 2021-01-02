@@ -6,7 +6,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Functions/CutMeshFunction.h>
 #include <TNL/Functions/MeshFunctionView.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -18,9 +17,6 @@ using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Meshes::DistributedMeshes;
 using namespace TNL::Devices;
-using namespace TNL::Communicators;
-
-typedef MpiCommunicator CommunicatorType;
 
 static const char* TEST_FILE_NAME = "test_CutDistributedMeshFunctionTest.tnl";
 
@@ -52,9 +48,9 @@ TEST(CutDistributedMeshFunction, 2D_Data)
 
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   distributedGrid.setGlobalGrid(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
 
@@ -73,14 +69,14 @@ TEST(CutDistributedMeshFunction, 2D_Data)
 
    DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
-   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
+   synchronizer.synchronize( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<1,int>(0),
@@ -134,9 +130,9 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
 
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   distributedGrid.setGlobalGrid(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -154,14 +150,14 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
 
    DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
-   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
+   synchronizer.synchronize( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(2),
             StaticVector<2,int>(1,0),
@@ -215,9 +211,9 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
 
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2, 2, 3 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   distributedGrid.setGlobalGrid(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -235,14 +231,14 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
 
    DistributedMeshSynchronizer< DistributedMeshType > synchronizer;
    synchronizer.setDistributedGrid( &distributedGrid );
-   synchronizer.template synchronize<CommunicatorType>( *meshFunctionptr );
+   synchronizer.synchronize( *meshFunctionptr );
 
    //Prepare Mesh Function parts for Cut
    CutDistributedMeshType cutDistributedGrid;
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -302,9 +298,9 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
 
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 3, 4 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   distributedGrid.setGlobalGrid(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -325,7 +321,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<1,int>(0),
@@ -338,7 +334,7 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
 
         DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
-        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
+        synchronizer.synchronize( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -387,9 +383,9 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
 
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
+   distributedGrid.setGlobalGrid( globalOriginalGrid );
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -410,7 +406,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<1,int>(1),
             StaticVector<2,int>(0,2),
@@ -423,7 +419,7 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
 
         DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
-        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
+        synchronizer.synchronize( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -476,9 +472,9 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    overlap.setValue(1);
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>(globalOriginalGrid);
+   distributedGrid.setGlobalGrid(globalOriginalGrid);
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -499,7 +495,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -512,7 +508,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
 
         DistributedMeshSynchronizer< CutDistributedMeshType > synchronizer;
         synchronizer.setDistributedGrid( &cutDistributedGrid );
-        synchronizer.template synchronize<CommunicatorType>( cutMeshFunction );
+        synchronizer.synchronize( cutMeshFunction );
 
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
@@ -563,9 +559,9 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    overlap.setValue(1);
    DistributedMeshType distributedGrid;
    distributedGrid.setDomainDecomposition( typename DistributedMeshType::CoordinatesType( 2,2,3 ) );
-   distributedGrid.template setGlobalGrid<CommunicatorType>( globalOriginalGrid );
+   distributedGrid.setGlobalGrid( globalOriginalGrid );
    typename DistributedMeshType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
    Pointers::SharedPointer<MeshType> originalGrid;
@@ -586,7 +582,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    Pointers::SharedPointer<CutMeshType> cutGrid;
    cutGrid->setDistMesh(&cutDistributedGrid);
    DofType cutDof(0);
-   bool inCut=CutMeshFunction<CommunicatorType, MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
+   bool inCut=CutMeshFunction<MeshFunctionView<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof,
             StaticVector<2,int>(0,2),
             StaticVector<1,int>(1),
@@ -600,9 +596,8 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
         DistributedGridIO<MeshFunctionView<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
 
         //save globalgrid for debug render
-        typename CommunicatorType::CommunicationGroup *group;
-        group=(typename CommunicatorType::CommunicationGroup *)(cutDistributedGrid.getCommunicationGroup());
-        if(CommunicatorType::GetRank(*group)==0)
+        MPI_Comm group=cutDistributedGrid.getCommunicationGroup();
+        if(TNL::MPI::GetRank(group)==0)
         {
             File meshFile;
             meshFile.open( TEST_FILE_NAME+String("-mesh.tnl"),std::ios_base::out);
@@ -612,7 +607,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
 
     }
 
-   if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
+   if(TNL::MPI::GetRank()==0)
    {
        Pointers::SharedPointer<CutMeshType> globalCutGrid;
        MeshFunctionView<CutMeshType> loadMeshFunctionptr;

@@ -15,8 +15,8 @@
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 
 namespace TNL {
 namespace Solvers {
@@ -35,7 +35,7 @@ run( int argc, char* argv[] )
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
-   Communicators::MpiCommunicator::configSetup( configDescription );
+   MPI::configSetup( configDescription );
 
    TNL::MPI::ScopedInitializer mpi( argc, argv );
 

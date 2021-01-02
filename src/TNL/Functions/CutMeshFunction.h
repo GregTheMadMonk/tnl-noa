@@ -14,9 +14,8 @@
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
-namespace Functions {  
-template <  typename CommunicatorType,
-            typename MeshFunctionType,
+namespace Functions {
+template <  typename MeshFunctionType,
             typename OutMesh,
             typename OutDof,
             int outDimension=OutMesh::getMeshDimension(),
@@ -25,10 +24,10 @@ class CutMeshFunction
 {
   public:
     static bool Cut(MeshFunctionType &inputMeshFunction,
-                    OutMesh &outMesh, 
+                    OutMesh &outMesh,
                     OutDof &outData,
-                    Containers::StaticVector<outDimension, int> savedDimensions, 
-                    Containers::StaticVector<codimension,int> reducedDimensions, 
+                    Containers::StaticVector<outDimension, int> savedDimensions,
+                    Containers::StaticVector<codimension,int> reducedDimensions,
                     Containers::StaticVector<codimension,typename MeshFunctionType::IndexType> fixedIndexs )
     {
         bool inCut;
@@ -44,7 +43,7 @@ class CutMeshFunction
             auto toDistributedGrid=outMesh.getDistributedMesh();
             TNL_ASSERT_TRUE(toDistributedGrid!=nullptr,"You are trying cut distributed meshfunction, but output grid is not set up for distribution");
 
-            inCut=toDistributedGrid-> template SetupByCut<CommunicatorType>(*fromDistributedGrid,savedDimensions,reducedDimensions,fixedIndexs);
+            inCut=toDistributedGrid->SetupByCut(*fromDistributedGrid,savedDimensions,reducedDimensions,fixedIndexs);
             if(inCut)
             {
                toDistributedGrid->setupGrid(outMesh);
@@ -56,7 +55,7 @@ class CutMeshFunction
         {
             typename OutMesh::PointType outOrigin;
             typename OutMesh::PointType outProportions;
-            typename OutMesh::CoordinatesType outDimensions; 
+            typename OutMesh::CoordinatesType outDimensions;
 
             for(int i=0; i<outDimension;i++)
             {
@@ -64,13 +63,13 @@ class CutMeshFunction
                 outProportions[i]=fromMesh.getProportions()[savedDimensions[i]];
                 outDimensions[i]=fromMesh.getDimensions()[savedDimensions[i]];
             }
-            
+
             outMesh.setDimensions(outDimensions);
             outMesh.setDomain(outOrigin,outProportions);
-            
+
             inCut=true;
             localFixedIndexs=fixedIndexs;
-            
+
         }
 
         //copy data
@@ -104,7 +103,7 @@ class CutMeshFunction
         }
 
         return inCut;
-    } 
+    }
 };
 
 } // namespace Functions

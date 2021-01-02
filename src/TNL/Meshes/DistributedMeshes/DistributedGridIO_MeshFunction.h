@@ -159,7 +159,7 @@ class DistributedGridIO_MPIIOBase
             meshFunction.save(fileName);
         }
 
-       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+       MPI_Comm group=distrGrid->getCommunicationGroup();
 
 	   MPI_File file;
       int ok=MPI_File_open( group,
@@ -182,7 +182,7 @@ class DistributedGridIO_MPIIOBase
     {
 
        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
-       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+       MPI_Comm group=distrGrid->getCommunicationGroup();
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
@@ -191,7 +191,7 @@ class DistributedGridIO_MPIIOBase
 
        MPI_File_set_view(file,0,MPI_BYTE,MPI_BYTE,"native",MPI_INFO_NULL);
 
-       if(Communicators::MpiCommunicator::GetRank(group)==0)
+       if(MPI::GetRank(group)==0)
        {
             MPI_File_seek(file,offset,MPI_SEEK_SET);
             headerSize=writeMeshFunctionHeader(file,meshFunction,dataCount);
@@ -334,7 +334,7 @@ class DistributedGridIO_MPIIOBase
          return true;
       }
 
-      MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+      MPI_Comm group=distrGrid->getCommunicationGroup();
 
       MPI_File file;
       if( MPI_File_open( group,
@@ -357,7 +357,7 @@ class DistributedGridIO_MPIIOBase
     {
        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
 
-       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+       MPI_Comm group=distrGrid->getCommunicationGroup();
        MPI_Datatype ftype;
        MPI_Datatype atype;
        int dataCount=CreateDataTypes(distrGrid,&ftype,&atype);
@@ -366,7 +366,7 @@ class DistributedGridIO_MPIIOBase
 
        int headerSize=0;
 
-       if(Communicators::MpiCommunicator::GetRank(group)==0)
+       if(MPI::GetRank(group)==0)
        {
             MPI_File_seek(file,offset,MPI_SEEK_SET);
             headerSize=readMeshFunctionHeader(file,meshFunction,dataCount);
@@ -443,7 +443,7 @@ class DistributedGridIO<
       static bool save(const String& fileName, MeshFunctionType &meshFunction)
       {
 #ifdef HAVE_MPI
-         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         if(MPI::isInitialized())//i.e. - isUsed
          {
             using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >;
             HostVectorType hostVector;
@@ -452,14 +452,14 @@ class DistributedGridIO<
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
          }
 #endif
-         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
          return false;
       };
 
       static bool load(const String& fileName,MeshFunctionType &meshFunction)
       {
 #ifdef HAVE_MPI
-         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         if(MPI::isInitialized())//i.e. - isUsed
          {
             using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >;
             HostVectorType hostVector;
@@ -470,7 +470,7 @@ class DistributedGridIO<
             return true;
          }
 #endif
-         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
          return false;
     };
 };
@@ -492,26 +492,26 @@ class DistributedGridIO<
       static bool save(const String& fileName, MeshFunctionType &meshFunction)
       {
 #ifdef HAVE_MPI
-         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         if(MPI::isInitialized())//i.e. - isUsed
          {
             typename MeshFunctionType::RealType* data=meshFunction.getData().getData();
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
          }
 #endif
-         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
          return false;
     };
 
       static bool load(const String& fileName,MeshFunctionType &meshFunction)
       {
 #ifdef HAVE_MPI
-         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         if(MPI::isInitialized())//i.e. - isUsed
          {
             typename MeshFunctionType::RealType* data = meshFunction.getData().getData();
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
          }
 #endif
-         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
          return false;
     };
 };

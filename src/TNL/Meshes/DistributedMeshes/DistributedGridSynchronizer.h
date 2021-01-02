@@ -111,8 +111,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
          }
      }
 
-      template< typename CommunicatorType,
-                typename MeshFunctionType,
+      template< typename MeshFunctionType,
                 typename PeriodicBoundariesMaskPointer = Pointers::SharedPointer< MeshFunctionType > >
       void synchronize( MeshFunctionType &meshFunction,
                         bool periodicBoundaries = false,
@@ -144,9 +143,8 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
             PeriodicBoundariesMaskPointer( nullptr ) ); // the mask is used only when receiving data );
 
          //async send and receive
-         typename CommunicatorType::Request requests[2*this->getNeighborCount()];
-         typename CommunicatorType::CommunicationGroup group;
-         group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
+         MPI_Request requests[2*this->getNeighborCount()];
+         MPI_Comm group = distributedGrid->getCommunicationGroup();
          int requestsCount( 0 );
 
          //send everything, recieve everything
@@ -158,22 +156,22 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
             if( neighbors[ i ] != -1 )
             {
                //TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::ISend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
                //TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
       	   {
                //TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::ISend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
                //TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
             }
          }
 
         //wait until send is done
         //TNL_MPI_PRINT( "Waiting for data ..." )
-        CommunicatorType::WaitAll( requests, requestsCount );
+        MPI::Waitall( requests, requestsCount );
 
         //copy data from receive buffers
         //TNL_MPI_PRINT( "Copying data ..." )

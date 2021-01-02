@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/MPI/Wrappers.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/TestFunction.h>
@@ -21,8 +22,6 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
-
 using namespace TNL;
 
 template< typename MeshType,
@@ -32,25 +31,23 @@ template< typename MeshType,
           int zDiff >
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
-   using CommunicatorType = Communicators::MpiCommunicator;
-
    using namespace  Meshes::DistributedMeshes;
    using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
    DistributedGridType distributedMesh;
    Pointers::SharedPointer< MeshType > meshPointer;
    MeshType globalMesh;
 
-   if(CommunicatorType::isDistributed())
+   if(TNL::MPI::GetSize() > 1)
    {
        //suppose global mesh loaded from single file
        String meshFile = parameters.getParameter< String >( "mesh" );
        std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
        globalMesh.load( meshFile );
-   
+
        // TODO: This should work with no overlaps
-       distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh);
+       distributedMesh.setGlobalGrid(globalMesh);
        typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-       SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
+       SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
        distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
        distributedMesh.setupGrid(*meshPointer);
     }
@@ -73,7 +70,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    MeshFunctionPointer meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
- 
+
    double finalTime = parameters.getParameter< double >( "final-time" );
    double initialTime = parameters.getParameter< double >( "initial-time" );
    double tau = parameters.getParameter< double >( "snapshot-period" );
@@ -115,7 +112,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       else
         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
 
-      if(CommunicatorType::isDistributed())
+      if(TNL::MPI::GetSize() > 1)
       {
          if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
             return false;

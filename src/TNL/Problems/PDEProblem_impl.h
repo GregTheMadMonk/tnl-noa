@@ -59,7 +59,7 @@ template< typename Mesh,
 typename PDEProblem< Mesh, Communicator, Real, Device, Index >::IndexType
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
 subdomainOverlapSize()
-{ 
+{
    return 1;
 }
 
@@ -77,9 +77,9 @@ getSubdomainOverlaps( const Config::ParameterContainer& parameters,
                       SubdomainOverlapsType& upper )
 {
    using namespace Meshes::DistributedMeshes;
-   SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
+   SubdomainOverlapsGetter< MeshType >::getOverlaps( mesh.getDistributedMesh(), lower, upper, this->subdomainOverlapSize() );
 }
-      
+
 template< typename Mesh,
           typename Communicator,
           typename Real,

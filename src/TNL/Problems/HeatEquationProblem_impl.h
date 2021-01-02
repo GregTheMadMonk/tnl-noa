@@ -146,7 +146,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
         if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
             Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
         synchronizer.setDistributedGrid( uPointer->getMesh().getDistributedMesh() );
-        synchronizer.template synchronize<CommunicatorType>( *uPointer );
+        synchronizer.synchronize( *uPointer );
     }
     else
     {
@@ -173,7 +173,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename Communicator,
           typename DifferentialOperator >
-   template< typename MatrixPointer >          
+   template< typename MatrixPointer >
 bool
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 setupLinearSystem( MatrixPointer& matrixPointer )
@@ -247,7 +247,7 @@ getExplicitUpdate( const RealType& time,
     *
     * You may use supporting vectors again if you need.
     */
-   
+
    this->bindDofs( uDofs );
    this->fuPointer->bind( this->getMesh(), *fuDofs );
    this->explicitUpdater.template update< typename Mesh::Cell, Communicator >( time, tau, this->getMesh(), this->uPointer, this->fuPointer );
@@ -258,7 +258,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename Communicator,
           typename DifferentialOperator >
-void 
+void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 applyBoundaryConditions( const RealType& time,
                          DofVectorPointer& uDofs )
@@ -272,7 +272,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename Communicator,
           typename DifferentialOperator >
-    template< typename MatrixPointer > 
+    template< typename MatrixPointer >
 void
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
@@ -282,7 +282,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& bPointer )
 {
    this->bindDofs( dofsPointer );
-   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
+   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >(
       time,
       tau,
       this->getMesh(),

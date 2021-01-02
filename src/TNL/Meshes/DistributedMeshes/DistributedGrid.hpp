@@ -11,9 +11,9 @@
 #pragma once
 
 #include <cstdlib>
-#include <TNL/Communicators/MpiCommunicator.h>
 
 #include "DistributedGrid.h"
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
    namespace Meshes {
@@ -28,8 +28,6 @@ template<int Dimension, typename Real, typename Device, typename Index >
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 ~DistributedMesh()
 {
-    if(isSet && this->communicationGroup!=nullptr)
-        std::free(this->communicationGroup);
 }
 
 
@@ -57,7 +55,7 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setDomainDecomposition( const CoordinatesType& domainDecomposition )
@@ -65,7 +63,7 @@ setDomainDecomposition( const CoordinatesType& domainDecomposition )
    this->domainDecomposition = domainDecomposition;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getDomainDecomposition() const
@@ -73,18 +71,12 @@ getDomainDecomposition() const
    return this->domainDecomposition;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
-template< typename CommunicatorType >
+template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setGlobalGrid( const GridType &globalGrid )
 {
-   if(this->isSet && this->communicationGroup != nullptr)
-        std::free(this->communicationGroup);
-   this->communicationGroup= std::malloc(sizeof(typename CommunicatorType::CommunicationGroup));
-
-   *((typename CommunicatorType::CommunicationGroup *)this->communicationGroup) = CommunicatorType::AllGroup;
-   auto group=*((typename CommunicatorType::CommunicationGroup *)this->communicationGroup);
+   this->group = MPI::AllGroup();
 
    this->globalGrid = globalGrid;
    this->isSet=true;
@@ -99,15 +91,12 @@ setGlobalGrid( const GridType &globalGrid )
    this->spaceSteps=globalGrid.getSpaceSteps();
    this->distributed=false;
 
-   if( CommunicatorType::IsInitialized() )
+   this->rank=MPI::GetRank(group);
+   this->nproc=MPI::GetSize(group);
+   //use MPI only if have more than one process
+   if(this->nproc>1)
    {
-      this->rank=CommunicatorType::GetRank(group);
-      this->nproc=CommunicatorType::GetSize(group);
-      //use MPI only if have more than one process
-      if(this->nproc>1)
-      {
-         this->distributed=true;
-      }
+      this->distributed=true;
    }
 
    if( !this->distributed )
@@ -127,10 +116,8 @@ setGlobalGrid( const GridType &globalGrid )
       //compute node distribution
       int dims[ Dimension ];
       for( int i = 0; i < Dimension; i++ )
-         dims[ i ]= this->domainDecomposition[ i ];
-
-
-      CommunicatorType::DimsCreate( this->nproc, Dimension, dims );
+         dims[ i ] = this->domainDecomposition[ i ];
+      MPI::Compute_dims( this->nproc, Dimension, dims );
       for( int i = 0; i < Dimension; i++ )
          this->domainDecomposition[ i ] = dims[ i ];
 
@@ -146,16 +133,16 @@ setGlobalGrid( const GridType &globalGrid )
       for( int i = 0; i < Dimension; i++ )
       {
          numberOfLarger[ i ] = globalGrid.getDimensions()[ i ] % this->domainDecomposition[ i ];
-         
+
          this->localSize[ i ] = globalGrid.getDimensions()[ i ] / this->domainDecomposition[ i ];
-         
+
          if( numberOfLarger[ i ] > this->subdomainCoordinates[ i ] )
             this->localSize[ i ] += 1;
-         
+
          if( numberOfLarger[ i ] > this->subdomainCoordinates[ i ] )
              this->globalBegin[ i ] = this->subdomainCoordinates[ i ] * this->localSize[ i ];
          else
-             this->globalBegin[ i ] = numberOfLarger[ i ] * ( this->localSize[ i ] + 1 ) + 
+             this->globalBegin[ i ] = numberOfLarger[ i ] * ( this->localSize[ i ] + 1 ) +
                                      ( this->subdomainCoordinates[ i ] - numberOfLarger[ i ] ) * this->localSize[ i ];
       }
 
@@ -164,7 +151,7 @@ setGlobalGrid( const GridType &globalGrid )
   }
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setOverlaps( const SubdomainOverlapsType& lower,
@@ -191,7 +178,7 @@ setupGrid( GridType& grid)
    grid.setDistMesh(this);
 };
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getSubdomainCoordinates() const
@@ -199,7 +186,7 @@ getSubdomainCoordinates() const
    return this->subdomainCoordinates;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::PointType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalOrigin() const
@@ -207,15 +194,15 @@ getLocalOrigin() const
    return this->localOrigin;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::PointType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
 }
-   
-template< int Dimension, typename Real, typename Device, typename Index >     
+
+template< int Dimension, typename Real, typename Device, typename Index >
 bool
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isDistributed() const
@@ -223,7 +210,7 @@ isDistributed() const
    return this->distributed;
 };
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 bool
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isBoundarySubdomain() const
@@ -234,7 +221,7 @@ isBoundarySubdomain() const
    return false;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLowerOverlap() const
@@ -242,7 +229,7 @@ getLowerOverlap() const
    return this->lowerOverlap;
 };
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getUpperOverlap() const
@@ -250,7 +237,7 @@ getUpperOverlap() const
    return this->upperOverlap;
 };
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalSize() const
@@ -258,7 +245,7 @@ getLocalSize() const
    return this->localSize;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalSize() const
@@ -266,7 +253,7 @@ getGlobalSize() const
    return this->globalGrid.getDimensions();
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::GridType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalGrid() const
@@ -274,7 +261,7 @@ getGlobalGrid() const
     return this->globalGrid;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getGlobalBegin() const
@@ -282,7 +269,7 @@ getGlobalBegin() const
    return this->globalBegin;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalGridSize() const
@@ -290,7 +277,7 @@ getLocalGridSize() const
    return this->localGridSize;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >     
+template< int Dimension, typename Real, typename Device, typename Index >
 const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getLocalBegin() const
@@ -298,7 +285,7 @@ getLocalBegin() const
    return this->localBegin;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >      
+template< int Dimension, typename Real, typename Device, typename Index >
    template< int EntityDimension >
 Index
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
@@ -307,7 +294,7 @@ getEntitiesCount() const
    return this->globalGrid. template getEntitiesCount< EntityDimension >();
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >       
+template< int Dimension, typename Real, typename Device, typename Index >
    template< typename Entity >
 Index
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
@@ -316,23 +303,23 @@ getEntitiesCount() const
    return this->globalGrid. template getEntitiesCount< Entity >();
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >    
-void 
+template< int Dimension, typename Real, typename Device, typename Index >
+void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-setCommunicationGroup(void * group)
+setCommunicationGroup(MPI_Comm group)
 {
-    this->communicationGroup=group;
+    this->group=group;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >    
-void *
+template< int Dimension, typename Real, typename Device, typename Index >
+MPI_Comm
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getCommunicationGroup() const
 {
-    return this->communicationGroup;
+    return this->group;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >    
+template< int Dimension, typename Real, typename Device, typename Index >
 int
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const
@@ -347,7 +334,7 @@ getRankOfProcCoord(const CoordinatesType &nodeCoordinates) const
     return ret;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >    
+template< int Dimension, typename Real, typename Device, typename Index >
 bool
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 isThereNeighbor(const CoordinatesType &direction) const
@@ -365,7 +352,7 @@ isThereNeighbor(const CoordinatesType &direction) const
 
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >    
+template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setupNeighbors()
@@ -378,7 +365,7 @@ setupNeighbors()
          this->neighbors[ i ] = this->getRankOfProcCoord( coordinates );
       else
          this->neighbors[ i ] = -1;
-      
+
       // Handling periodic neighbors
       for( int d = 0; d < Dimension; d++ )
       {
@@ -388,12 +375,12 @@ setupNeighbors()
             coordinates[ d ] = 0;
          this->periodicNeighbors[ i ] = this->getRankOfProcCoord( coordinates );
       }
-      
+
       //std::cout << "Setting i-th neighbour to " << neighbors[ i ] << " and " << periodicNeighbors[ i ] << std::endl;
    }
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >   
+template< int Dimension, typename Real, typename Device, typename Index >
 const int*
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getNeighbors() const
@@ -402,7 +389,7 @@ getNeighbors() const
     return this->neighbors;
 }
 
-template< int Dimension, typename Real, typename Device, typename Index >   
+template< int Dimension, typename Real, typename Device, typename Index >
 const int*
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getPeriodicNeighbors() const
@@ -412,12 +399,12 @@ getPeriodicNeighbors() const
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >
-    template<typename CommunicatorType, typename DistributedGridType >
-bool 
+    template<typename DistributedGridType >
+bool
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-SetupByCut(DistributedGridType &inputDistributedGrid, 
-         Containers::StaticVector<Dimension, int> savedDimensions, 
-         Containers::StaticVector<DistributedGridType::getMeshDimension()-Dimension,int> reducedDimensions, 
+SetupByCut(DistributedGridType &inputDistributedGrid,
+         Containers::StaticVector<Dimension, int> savedDimensions,
+         Containers::StaticVector<DistributedGridType::getMeshDimension()-Dimension,int> reducedDimensions,
          Containers::StaticVector<DistributedGridType::getMeshDimension()-Dimension,IndexType> fixedIndexs)
 {
 
@@ -432,21 +419,17 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
       }
 
       //create new group with used nodes
-      typename CommunicatorType::CommunicationGroup *oldGroup=(typename CommunicatorType::CommunicationGroup *)(inputDistributedGrid.getCommunicationGroup());
-      if(this->isSet && this->communicationGroup != nullptr)
-            free(this->communicationGroup);
-      this->communicationGroup = std::malloc(sizeof(typename CommunicatorType::CommunicationGroup));
-
+      const MPI_Comm oldGroup=inputDistributedGrid.getCommunicationGroup();
       if(isInCut)
       {
            this->isSet=true;
-            
+
             auto fromGlobalMesh=inputDistributedGrid.getGlobalGrid();
             //set global grid
             typename GridType::PointType outOrigin;
             typename GridType::PointType outProportions;
             typename GridType::CoordinatesType outDimensions;
-            
+
             for(int i=0; i<Dimension;i++)
             {
                 outOrigin[i]=fromGlobalMesh.getOrigin()[savedDimensions[i]];
@@ -468,14 +451,13 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
                 this->spaceSteps[i]=inputDistributedGrid.getSpaceSteps()[savedDimensions[i]];
             }
 
-            int newRank= getRankOfProcCoord(this->subdomainCoordinates);
-
-            CommunicatorType::CreateNewGroup(isInCut,newRank,*oldGroup ,*((typename CommunicatorType::CommunicationGroup*) this->communicationGroup));
+            int newRank = getRankOfProcCoord(this->subdomainCoordinates);
+            this->group = MPI::Comm_split( oldGroup, 1, newRank );
 
             setupNeighbors();
 
 
-            
+
             bool isDistributed=false;
             for(int i=0;i<Dimension; i++)
             {
@@ -483,7 +465,7 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
             }
 
             this->distributed=isDistributed;
-            
+
             this->globalGrid.setDimensions(outDimensions);
             this->globalGrid.setDomain(outOrigin,outProportions);
 
@@ -491,7 +473,7 @@ SetupByCut(DistributedGridType &inputDistributedGrid,
       }
       else
       {
-         CommunicatorType::CreateNewGroup(isInCut,0,*oldGroup ,*((typename CommunicatorType::CommunicationGroup*) this->communicationGroup));
+         this->group = MPI::Comm_split( oldGroup, MPI_UNDEFINED, 0 );
       }
 
       return false;
@@ -517,7 +499,7 @@ printProcessDistr() const
    for(int i=1; i<Dimension; i++)
         res=res+String("-")+convertToString(this->domainDecomposition[i]);
    return res;
-};  
+};
 
 template< int Dimension, typename Real, typename Device, typename Index >
 void
@@ -525,19 +507,18 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 writeProlog( Logger& logger )
 {
    logger.writeParameter( "Domain decomposition:", this->getDomainDecomposition() );
-}           
+}
 
-template< int Dimension, typename Real, typename Device, typename Index >    
+template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 print( std::ostream& str ) const
 {
-   using Communicator = Communicators::MpiCommunicator;
-   for( int j = 0; j < Communicator::GetSize( Communicator::AllGroup ); j++ )
+   for( int j = 0; j < MPI::GetSize(); j++ )
    {
-      if( j == Communicator::GetRank( Communicator::AllGroup ) )
+      if( j == MPI::GetRank() )
       {
-         str << "Node : " << Communicator::GetRank( Communicator::AllGroup ) << std::endl
+         str << "Node : " << MPI::GetRank() << std::endl
              << " localOrigin : " << localOrigin << std::endl
              << " localBegin : " << localBegin << std::endl
              << " localSize : " << localSize  << std::endl
@@ -558,7 +539,7 @@ print( std::ostream& str ) const
             str << " " << periodicNeighbors[ i ];
          str << std::endl;
       }
-      Communicator::Barrier( Communicator::AllGroup );
+      MPI::Barrier();
    }
 }
 

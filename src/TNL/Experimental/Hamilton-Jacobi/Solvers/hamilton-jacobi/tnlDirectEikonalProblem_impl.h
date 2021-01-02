@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   tnlFastSweepingMethod_impl.h
  * Author: oberhuber
  *
@@ -25,7 +25,7 @@ String
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 getType()
 {
-   return String( "DirectEikonalProblem< " + 
+   return String( "DirectEikonalProblem< " +
                   Mesh::getType() + ", " +
                   Anisotropy::getType() + ", " +
                   Real::getType() + ", " +
@@ -54,7 +54,7 @@ tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters ) const
 {
-   
+
 }
 
 template< typename Mesh,
@@ -123,7 +123,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
   this->bindDofs( dofs );
   String inputFile = parameters.getParameter< String >( "input-file" );
-  this->initialData->setMesh( this->getMesh() ); 
+  this->initialData->setMesh( this->getMesh() );
   if( CommunicatorType::isDistributed() )
   {
     std::cout<<"Nodes Distribution: " << initialData->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
@@ -132,7 +132,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
     if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
       Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
     synchronizer.setDistributedGrid( initialData->getMesh().getDistributedMesh() );
-    synchronizer.template synchronize<CommunicatorType>( *initialData );
+    synchronizer.synchronize( *initialData );
   }
   else
   {
@@ -190,7 +190,7 @@ solve( DofVectorPointer& dofs )
 {
    FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
    fsm.solve( this->getMesh(), u, anisotropy, initialData );
-   
+
    makeSnapshot();
    return true;
 }

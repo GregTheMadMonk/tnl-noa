@@ -94,8 +94,7 @@ resolveAndLoadDistributedMesh( Functor&& functor,
    return resolveDistributedMeshType< ConfigTag, Device >( wrapper, fileName, fileFormat );
 }
 
-template< typename CommunicatorType,
-          typename MeshConfig,
+template< typename MeshConfig,
           typename Device >
 bool
 loadDistributedMesh( Mesh< MeshConfig, Device >& mesh,
@@ -145,8 +144,7 @@ decomposeMesh( const Config::ParameterContainer& parameters,
 }
 
 // overloads for grids
-template< typename CommunicatorType,
-          int Dimension,
+template< int Dimension,
           typename Real,
           typename Device,
           typename Index >
@@ -171,7 +169,7 @@ loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
    std::cout << " [ OK ] " << std::endl;
 
    typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::SubdomainOverlapsType overlap;
-   distributedMesh.template setGlobalGrid< CommunicatorType >( globalGrid );
+   distributedMesh.setGlobalGrid( globalGrid );
    distributedMesh.setupGrid(mesh);
    return true;
 }
@@ -191,7 +189,6 @@ decomposeMesh( const Config::ParameterContainer& parameters,
    using GridType = Grid< Dimension, Real, Device, Index >;
    using DistributedGridType = DistributedMeshes::DistributedMesh< GridType >;
    using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
-   using CommunicatorType = typename Problem::CommunicatorType;
 
    SubdomainOverlapsType lower( 0 ), upper( 0 );
    distributedMesh.setOverlaps( lower, upper );
