@@ -125,7 +125,7 @@ copy( DestinationElement* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
 #ifdef HAVE_CUDA
-   if( std::is_same< DestinationElement, SourceElement >::value )
+   if( std::is_same< std::remove_cv_t<DestinationElement>, std::remove_cv_t<SourceElement> >::value )
    {
       if( cudaMemcpy( destination,
                       source,
@@ -136,7 +136,7 @@ copy( DestinationElement* destination,
    }
    else
    {
-      using BaseType = typename std::remove_cv< SourceElement >::type;
+      using BaseType = std::remove_cv_t< SourceElement >;
       const int buffer_size = TNL::min( Cuda::getTransferBufferSize() / sizeof(BaseType), size );
       std::unique_ptr< BaseType[] > buffer{ new BaseType[ buffer_size ] };
       Index i = 0;
@@ -221,7 +221,7 @@ copy( DestinationElement* destination,
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
-   if( std::is_same< DestinationElement, SourceElement >::value )
+   if( std::is_same< std::remove_cv_t<DestinationElement>, std::remove_cv_t<SourceElement> >::value )
    {
       if( cudaMemcpy( destination,
                       source,
