@@ -6,9 +6,8 @@
 #endif
 
 #if (defined(HAVE_GTEST) && defined(HAVE_MPI))
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/MPI/ScopedInitializer.h>
-using CommunicatorType = TNL::Communicators::MpiCommunicator;
+#include <TNL/MPI/Wrappers.h>
 
 #include <sstream>
 
@@ -37,7 +36,7 @@ public:
    // Called after a test ends.
    virtual void OnTestEnd(const ::testing::TestInfo& test_info)
    {
-      const int rank = CommunicatorType::GetRank(CommunicatorType::AllGroup);
+      const int rank = TNL::MPI::GetRank();
       sout << test_info.test_case_name() << "." << test_info.name() << " End." <<std::endl;
       std::cout << rank << ":" << std::endl << sout.str()<< std::endl;
       sout.str( std::string() );

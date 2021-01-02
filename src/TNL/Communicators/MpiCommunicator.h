@@ -21,7 +21,8 @@ namespace Communicators {
 namespace {
 
 //! \brief MPI communicator.
-class MpiCommunicator
+class [[deprecated("use the functions in the TNL::MPI namespace instead")]]
+MpiCommunicator
 {
    public:
 #ifdef HAVE_MPI

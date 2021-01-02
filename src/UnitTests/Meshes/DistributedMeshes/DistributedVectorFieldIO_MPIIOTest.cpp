@@ -2,12 +2,7 @@
       #include <gtest/gtest.h>
 #ifdef HAVE_MPI
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include "DistributedVectorFieldIO_MPIIOTestBase.h"
-
-using namespace TNL::Communicators;
-
-typedef MpiCommunicator CommunicatorType;
 
 TEST( DistributedVectorFieldIO_MPIIO, Save_1D )
 {

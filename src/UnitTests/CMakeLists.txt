@@ -1,4 +1,3 @@
-ADD_SUBDIRECTORY( Communicators )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Functions )
 # Matrices are included from src/CMakeLists.txt
