@@ -175,47 +175,6 @@ class MpiCommunicator
          MPI::Alltoall( sendData, sendCount, receiveData, receiveCount, group );
       }
 
-
-      //dim-number of dimensions, distr array of guess distr - 0 for computation
-      //distr array will be filled by computed distribution
-      //more information in MPI documentation
-      static void DimsCreate(int nproc, int dim, int *distr)
-      {
-#ifdef HAVE_MPI
-         int sum = 0, prod = 1;
-         for( int i = 0;i < dim; i++ ) {
-            sum += distr[ i ];
-            prod *= distr[ i ];
-         }
-         if( prod != 0 && prod != GetSize( AllGroup ) )
-            throw std::logic_error( "The program tries to call MPI_Dims_create with wrong dimensions."
-                                    "Non of the dimensions is zero and product of all dimensions does "
-                                    "not fit with number of MPI processes." );
-         if(sum==0) {
-            for(int i=0;i<dim-1;i++)
-               distr[i]=1;
-            distr[dim-1]=0;
-         }
-
-         MPI_Dims_create(nproc, dim, distr);
-#else
-         for(int i=0;i<dim;i++)
-            distr[i]=1;
-#endif
-      }
-
-      static void CreateNewGroup( bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup )
-      {
-#ifdef HAVE_MPI
-         if(meToo)
-            MPI_Comm_split(oldGroup, 1, myRank, &newGroup);
-         else
-            MPI_Comm_split(oldGroup, MPI_UNDEFINED, GetRank(oldGroup), &newGroup);
-#else
-         newGroup=oldGroup;
-#endif
-      }
-
 #ifdef HAVE_MPI
       static MPI_Comm AllGroup;
       static MPI_Comm NullGroup;

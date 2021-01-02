@@ -11,6 +11,7 @@
 #pragma once
 
 #include <iostream>
+#include <stdexcept>
 
 #ifdef HAVE_MPI
    #include <mpi.h>
@@ -153,6 +154,55 @@ inline int GetSize( MPI_Comm group = AllGroup() )
    return size;
 #else
    return 1;
+#endif
+}
+
+// wrappers for MPI helper functions
+
+inline MPI_Comm Comm_split( MPI_Comm comm, int color, int key )
+{
+#ifdef HAVE_MPI
+   MPI_Comm newcomm;
+   MPI_Comm_split( comm, color, key, &newcomm );
+   return newcomm;
+#else
+   return comm;
+#endif
+}
+
+/**
+ * \brief Wrapper for \ref MPI_Dims_create.
+ *
+ * \param nproc - number of processes in the group to be distributed
+ * \param ndims - number of dimensions of the Cartesian grid
+ * \param dims - distribution of processes into the \e dim-dimensional
+ *               Cartesian grid (array of length \e ndims)
+ *
+ * Negative input values of \e dims[i] are erroneous. An error will occur if
+ * \e nproc is not a multiple of the product of all non-zero values \e dims[i].
+ *
+ * See the MPI documentation for more information.
+ */
+inline void Compute_dims( int nproc, int ndims, int* dims )
+{
+#ifdef HAVE_MPI
+   int prod = 1;
+   for( int i = 0; i < ndims; i++ ) {
+      if( dims[ i ] < 0 )
+         throw std::invalid_argument( "Negative value passed to MPI::Compute_dims in the dims array argument." );
+      if( dims[ i ] > 0 )
+         prod *= dims[ i ];
+   }
+
+   if( nproc % prod != 0 )
+      throw std::logic_error( "The program tries to call MPI_Dims_create with wrong dimensions."
+            "The product of the non-zero values dims[i] is " + std::to_string(prod) + " and the "
+            "number of processes (" + std::to_string(nproc) + ") is not a multiple of the product." );
+
+   MPI_Dims_create( nproc, ndims, dims );
+#else
+   for( int i = 0; i < ndims; i++)
+      dims[ i ] = 1;
 #endif
 }
 

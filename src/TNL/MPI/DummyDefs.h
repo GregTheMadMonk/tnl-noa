@@ -36,4 +36,16 @@ enum {
    MPI_THREAD_SERIALIZED,
    MPI_THREAD_MULTIPLE
 };
+
+// Miscellaneous constants
+#define MPI_ANY_SOURCE         -1                      /* match any source rank */
+#define MPI_PROC_NULL          -2                      /* rank of null process */
+#define MPI_ROOT               -4                      /* special value for intercomms */
+#define MPI_ANY_TAG            -1                      /* match any message tag */
+#define MPI_UNDEFINED          -32766                  /* undefined stuff */
+#define MPI_DIST_GRAPH         3                       /* dist graph topology */
+#define MPI_CART               1                       /* cartesian topology */
+#define MPI_GRAPH              2                       /* graph topology */
+#define MPI_KEYVAL_INVALID     -1                      /* invalid key value */
+
 #endif
