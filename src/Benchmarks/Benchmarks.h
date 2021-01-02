@@ -26,7 +26,7 @@
 #include <TNL/SystemInfo.h>
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Benchmarks {
@@ -55,7 +55,7 @@ struct BenchmarkResult
       elements << time << stddev << stddev / time << bandwidth;
       if( speedup != 0 )
          elements << speedup;
-      else 
+      else
          elements << "N/A";
       return elements;
    }
@@ -356,9 +356,7 @@ inline Benchmark::MetadataMap getHardwareMetadata()
        { "system release", SystemInfo::getSystemRelease() },
        { "start time", SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", convertToString( (Communicators::MpiCommunicator::IsInitialized())
-                                       ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
-                                       : 1 ) },
+       { "number of MPI processes", convertToString( TNL::MPI::GetSize() ) },
 #endif
        { "OpenMP enabled", convertToString( Devices::Host::isOMPEnabled() ) },
        { "OpenMP threads", convertToString( Devices::Host::getMaxThreadsCount() ) },
