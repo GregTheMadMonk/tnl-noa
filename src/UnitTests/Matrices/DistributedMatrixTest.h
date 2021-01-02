@@ -9,12 +9,12 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Matrices/DistributedMatrix.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
 using namespace TNL;
+using namespace TNL::MPI;
 
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset = 0 )
@@ -32,7 +32,7 @@ void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset =
 template< typename Matrix, typename RowCapacities >
 void setMatrix( Matrix& matrix, const RowCapacities& rowCapacities )
 {
-   using HostMatrix = Matrices::DistributedMatrix< typename Matrix::MatrixType::template Self< typename Matrix::RealType, TNL::Devices::Sequential >, typename Matrix::CommunicatorType >;
+   using HostMatrix = Matrices::DistributedMatrix< typename Matrix::MatrixType::template Self< typename Matrix::RealType, TNL::Devices::Sequential > >;
    using HostRowCapacities = typename RowCapacities::template Self< typename RowCapacities::RealType, TNL::Devices::Sequential >;
 
    HostMatrix hostMatrix;
@@ -65,20 +65,19 @@ class DistributedMatrixTest
 protected:
    using RealType = typename DistributedMatrix::RealType;
    using DeviceType = typename DistributedMatrix::DeviceType;
-   using CommunicatorType = typename DistributedMatrix::CommunicatorType;
    using IndexType = typename DistributedMatrix::IndexType;
    using DistributedMatrixType = DistributedMatrix;
 
    using RowCapacitiesVector = typename DistributedMatrixType::CompressedRowLengthsVector;
    using GlobalVector = Containers::Vector< RealType, DeviceType, IndexType >;
-   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
+   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+   const MPI_Comm group = AllGroup();
 
-   const int rank = CommunicatorType::GetRank(group);
-   const int nproc = CommunicatorType::GetSize(group);
+   const int rank = GetRank(group);
+   const int nproc = GetSize(group);
 
    DistributedMatrixType matrix;
 
@@ -87,7 +86,7 @@ protected:
    DistributedMatrixTest()
    {
       using LocalRangeType = typename DistributedMatrix::LocalRangeType;
-      const LocalRangeType localRange = Containers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( globalSize, group );
       matrix.setDistribution( localRange, globalSize, globalSize, group );
       rowCapacities.setDistribution( localRange, 0, globalSize, group );
 
@@ -100,10 +99,10 @@ protected:
 
 // types for which DistributedMatrixTest is instantiated
 using DistributedMatrixTypes = ::testing::Types<
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Host, int >, Communicators::MpiCommunicator >
+   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Host, int > >
 #ifdef HAVE_CUDA
    ,
-   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Cuda, int >, Communicators::MpiCommunicator >
+   Matrices::DistributedMatrix< Matrices::SparseMatrix< double, Devices::Cuda, int > >
 #endif
 >;
 
@@ -111,11 +110,9 @@ TYPED_TEST_SUITE( DistributedMatrixTest, DistributedMatrixTypes );
 
 TYPED_TEST( DistributedMatrixTest, checkSumOfLocalSizes )
 {
-   using CommunicatorType = typename TestFixture::CommunicatorType;
-
    const int localSize = this->matrix.getLocalMatrix().getRows();
    int sumOfLocalSizes = 0;
-   CommunicatorType::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->matrix.getRows(), this->globalSize );
 }

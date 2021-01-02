@@ -11,7 +11,6 @@
 
 #include <gtest/gtest.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Containers/DistributedVectorView.h>
 #include <TNL/Containers/Partitioner.h>
@@ -21,6 +20,7 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace TNL::MPI;
 
 /*
  * Light check of DistributedVector.
@@ -36,21 +36,20 @@ class DistributedVectorTest
 protected:
    using RealType = typename DistributedVector::RealType;
    using DeviceType = typename DistributedVector::DeviceType;
-   using CommunicatorType = typename DistributedVector::CommunicatorType;
    using IndexType = typename DistributedVector::IndexType;
    using DistributedVectorType = DistributedVector;
    using VectorViewType = typename DistributedVectorType::LocalViewType;
-   using DistributedVectorView = Containers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
+   using DistributedVectorView = Containers::DistributedVectorView< RealType, DeviceType, IndexType >;
    using HostDistributedVectorType = typename DistributedVectorType::template Self< RealType, Devices::Sequential >;
 
-   const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+   const MPI_Comm group = AllGroup();
 
    DistributedVectorType v;
    DistributedVectorView v_view;
    HostDistributedVectorType v_host;
 
-   const int rank = CommunicatorType::GetRank(group);
-   const int nproc = CommunicatorType::GetSize(group);
+   const int rank = GetRank(group);
+   const int nproc = GetSize(group);
 
    // should be small enough to have fast tests, but large enough to test
    // scan with multiple CUDA grids
@@ -62,11 +61,11 @@ protected:
    DistributedVectorTest()
    {
       using LocalRangeType = typename DistributedVector::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
       v.setDistribution( localRange, ghosts, globalSize, group );
 
-      using Synchronizer = typename Partitioner< IndexType, CommunicatorType >::template ArraySynchronizer< DeviceType >;
-      using HostSynchronizer = typename Partitioner< IndexType, CommunicatorType >::template ArraySynchronizer< Devices::Sequential >;
+      using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
+      using HostSynchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< Devices::Sequential >;
       v.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
       v_view.setSynchronizer( v.getSynchronizer() );
       v_host.setSynchronizer( std::make_shared<HostSynchronizer>( localRange, ghosts / 2, group ) );
@@ -78,10 +77,10 @@ protected:
 
 // types for which DistributedVectorTest is instantiated
 using DistributedVectorTypes = ::testing::Types<
-   DistributedVector< double, Devices::Host, int, Communicators::MpiCommunicator >
+   DistributedVector< double, Devices::Host, int >
 #ifdef HAVE_CUDA
    ,
-   DistributedVector< double, Devices::Cuda, int, Communicators::MpiCommunicator >
+   DistributedVector< double, Devices::Cuda, int >
 #endif
 >;
 

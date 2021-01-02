@@ -21,9 +21,19 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::LocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Real, Device, Index, Allocator >::
+DistributedVector( const DistributedVector& vector, const AllocatorType& allocator )
+: BaseType::DistributedArray( vector, allocator )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::LocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getLocalView()
 {
    return BaseType::getLocalView();
@@ -32,9 +42,9 @@ getLocalView()
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::ConstLocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getConstLocalView() const
 {
    return BaseType::getConstLocalView();
@@ -43,9 +53,9 @@ getConstLocalView() const
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::LocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::LocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getLocalViewWithGhosts()
 {
    return BaseType::getLocalViewWithGhosts();
@@ -54,9 +64,9 @@ getLocalViewWithGhosts()
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::ConstLocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getConstLocalViewWithGhosts() const
 {
    return BaseType::getConstLocalViewWithGhosts();
@@ -65,9 +75,9 @@ getConstLocalViewWithGhosts() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Value, Device, Index, Communicator >::ViewType
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Value, Device, Index, Allocator >::ViewType
+DistributedVector< Value, Device, Index, Allocator >::
 getView()
 {
    return BaseType::getView();
@@ -76,9 +86,9 @@ getView()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Value, Device, Index, Allocator >::ConstViewType
+DistributedVector< Value, Device, Index, Allocator >::
 getConstView() const
 {
    return BaseType::getConstView();
@@ -87,8 +97,8 @@ getConstView() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Value, Device, Index, Allocator >::
 operator ViewType()
 {
    return getView();
@@ -97,8 +107,8 @@ operator ViewType()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Value, Device, Index, Allocator >::
 operator ConstViewType() const
 {
    return getConstView();
@@ -112,10 +122,10 @@ operator ConstViewType() const
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator=( const Vector& vector )
 {
    this->setLike( vector );
@@ -126,10 +136,10 @@ operator=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator+=( const Vector& vector )
 {
    getView() += vector;
@@ -139,10 +149,10 @@ operator+=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator-=( const Vector& vector )
 {
    getView() -= vector;
@@ -152,10 +162,10 @@ operator-=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator*=( const Vector& vector )
 {
    getView() *= vector;
@@ -165,10 +175,10 @@ operator*=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator/=( const Vector& vector )
 {
    getView() /= vector;
@@ -178,10 +188,10 @@ operator/=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator=( Scalar c )
 {
    getView() = c;
@@ -191,10 +201,10 @@ operator=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator+=( Scalar c )
 {
    getView() += c;
@@ -204,10 +214,10 @@ operator+=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator-=( Scalar c )
 {
    getView() -= c;
@@ -217,10 +227,10 @@ operator-=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator*=( Scalar c )
 {
    getView() *= c;
@@ -230,10 +240,10 @@ operator*=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator/=( Scalar c )
 {
    getView() /= c;
@@ -243,10 +253,10 @@ operator/=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< Algorithms::ScanType Type >
 void
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >::
 scan( IndexType begin, IndexType end )
 {
    getView().template scan< Type >( begin, end );

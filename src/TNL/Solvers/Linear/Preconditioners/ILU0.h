@@ -194,11 +194,11 @@ protected:
 #endif
 };
 
-template< typename Matrix, typename Communicator >
-class ILU0_impl< Matrices::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
-: public Preconditioner< Matrices::DistributedMatrix< Matrix, Communicator > >
+template< typename Matrix >
+class ILU0_impl< Matrices::DistributedMatrix< Matrix >, double, Devices::Cuda, int >
+: public Preconditioner< Matrices::DistributedMatrix< Matrix > >
 {
-   using MatrixType = Matrices::DistributedMatrix< Matrix, Communicator >;
+   using MatrixType = Matrices::DistributedMatrix< Matrix >;
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;

@@ -253,4 +253,21 @@ public:
     static constexpr bool value = type::value;
 };
 
+/**
+ * \brief Type trait for checking if T has getCommunicationGroup method.
+ */
+template< typename T >
+class HasGetCommunicationGroupMethod
+{
+private:
+    typedef char YesType[1];
+    typedef char NoType[2];
+
+    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicationGroup()) );
+    template< typename C > static NoType& test(...);
+
+public:
+    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+};
+
 } //namespace TNL

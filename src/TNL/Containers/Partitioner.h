@@ -22,18 +22,17 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Index, typename Communicator = Communicators::MpiCommunicator >
+template< typename Index >
 class Partitioner
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
    using SubrangeType = Subrange< Index >;
 
-   static SubrangeType splitRange( Index globalSize, CommunicationGroup group )
+   static SubrangeType splitRange( Index globalSize, MPI_Comm group )
    {
-      if( group != Communicator::NullGroup ) {
-         const int rank = Communicator::GetRank( group );
-         const int partitions = Communicator::GetSize( group );
+      if( group != MPI::NullGroup() ) {
+         const int rank = MPI::GetRank( group );
+         const int partitions = MPI::GetSize( group );
          const Index begin = TNL::min( globalSize, rank * globalSize / partitions );
          const Index end = TNL::min( globalSize, (rank + 1) * globalSize / partitions );
          return SubrangeType( begin, end );
@@ -78,7 +77,7 @@ public:
 
       SubrangeType localRange;
       int overlaps;
-      CommunicationGroup group;
+      MPI_Comm group;
 
    public:
       using ByteArrayView = typename Base::ByteArrayView;
@@ -93,14 +92,14 @@ public:
 
       ArraySynchronizer() = delete;
 
-      ArraySynchronizer( SubrangeType localRange, int overlaps, CommunicationGroup group )
+      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI_Comm group )
       : localRange(localRange), overlaps(overlaps), group(group)
       {}
 
       virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
       {
          auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
-         Communicator::WaitAll( requests.data(), requests.size() );
+         MPI::Waitall( requests.data(), requests.size() );
       }
 
       virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
@@ -108,30 +107,30 @@ public:
          TNL_ASSERT_EQ( array.getSize(), bytesPerValue * (localRange.getSize() + 2 * overlaps),
                         "unexpected array size" );
 
-         const int rank = Communicator::GetRank( group );
-         const int nproc = Communicator::GetSize( group );
+         const int rank = MPI::GetRank( group );
+         const int nproc = MPI::GetSize( group );
          const int left = (rank > 0) ? rank - 1 : nproc - 1;
          const int right = (rank < nproc - 1) ? rank + 1 : 0;
 
          // buffer for asynchronous communication requests
-         std::vector< typename Communicator::Request > requests;
+         std::vector< MPI_Request > requests;
 
          // issue all async receive operations
-         requests.push_back( Communicator::IRecv(
+         requests.push_back( MPI::Irecv(
                   array.getData() + bytesPerValue * localRange.getSize(),
                   bytesPerValue * overlaps,
                   left, 0, group ) );
-         requests.push_back( Communicator::IRecv(
+         requests.push_back( MPI::Irecv(
                   array.getData() + bytesPerValue * (localRange.getSize() + overlaps),
                   bytesPerValue * overlaps,
                   right, 0, group ) );
 
          // issue all async send operations
-         requests.push_back( Communicator::ISend(
+         requests.push_back( MPI::Isend(
                   array.getData(),
                   bytesPerValue * overlaps,
                   left, 0, group ) );
-         requests.push_back( Communicator::ISend(
+         requests.push_back( MPI::Isend(
                   array.getData() + bytesPerValue * (localRange.getSize() - overlaps),
                   bytesPerValue * overlaps,
                   right, 0, group ) );

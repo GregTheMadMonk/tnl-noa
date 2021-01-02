@@ -17,60 +17,54 @@
 namespace TNL {
 namespace Matrices {
 
-template< typename Matrix,
-          typename Communicator >
-DistributedMatrix< Matrix, Communicator >::
-DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, CommunicationGroup group )
+template< typename Matrix >
+DistributedMatrix< Matrix >::
+DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group )
 {
    setDistribution( localRowRange, rows, columns, group );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 void
-DistributedMatrix< Matrix, Communicator >::
-setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, CommunicationGroup group )
+DistributedMatrix< Matrix >::
+setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group )
 {
    this->localRowRange = localRowRange;
    this->rows = rows;
    this->group = group;
-   if( group != Communicator::NullGroup )
+   if( group != MPI::NullGroup() )
       localMatrix.setDimensions( localRowRange.getSize(), columns );
 
    spmv.reset();
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 const Containers::Subrange< typename Matrix::IndexType >&
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getLocalRowRange() const
 {
    return localRowRange;
 }
 
-template< typename Matrix,
-          typename Communicator >
-typename Communicator::CommunicationGroup
-DistributedMatrix< Matrix, Communicator >::
+template< typename Matrix >
+MPI_Comm
+DistributedMatrix< Matrix >::
 getCommunicationGroup() const
 {
    return group;
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 const Matrix&
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getLocalMatrix() const
 {
    return localMatrix;
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 Matrix&
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getLocalMatrix()
 {
    return localMatrix;
@@ -81,10 +75,9 @@ getLocalMatrix()
  * Some common Matrix methods follow below.
  */
 
-template< typename Matrix,
-          typename Communicator >
-DistributedMatrix< Matrix, Communicator >&
-DistributedMatrix< Matrix, Communicator >::
+template< typename Matrix >
+DistributedMatrix< Matrix >&
+DistributedMatrix< Matrix >::
 operator=( const DistributedMatrix& matrix )
 {
    setLike( matrix );
@@ -92,11 +85,10 @@ operator=( const DistributedMatrix& matrix )
    return *this;
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename MatrixT >
-DistributedMatrix< Matrix, Communicator >&
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >&
+DistributedMatrix< Matrix >::
 operator=( const MatrixT& matrix )
 {
    setLike( matrix );
@@ -104,11 +96,10 @@ operator=( const MatrixT& matrix )
    return *this;
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename MatrixT >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 setLike( const MatrixT& matrix )
 {
    localRowRange = matrix.getLocalRowRange();
@@ -119,84 +110,77 @@ setLike( const MatrixT& matrix )
    spmv.reset();
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 reset()
 {
    localRowRange.reset();
    rows = 0;
-   group = Communicator::NullGroup;
+   group = MPI::NullGroup();
    localMatrix.reset();
 
    spmv.reset();
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 typename Matrix::IndexType
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getRows() const
 {
    return rows;
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 typename Matrix::IndexType
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getColumns() const
 {
    return localMatrix.getColumns();
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename RowCapacitiesVector >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 setRowCapacities( const RowCapacitiesVector& rowCapacities )
 {
    TNL_ASSERT_EQ( rowCapacities.getSize(), getRows(), "row lengths vector has wrong size" );
    TNL_ASSERT_EQ( rowCapacities.getLocalRange(), getLocalRowRange(), "row lengths vector has wrong distribution" );
    TNL_ASSERT_EQ( rowCapacities.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
 
-   if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( getCommunicationGroup() != MPI::NullGroup() ) {
       localMatrix.setRowCapacities( rowCapacities.getConstLocalView() );
 
       spmv.reset();
    }
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename Vector >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( getCommunicationGroup() != MPI::NullGroup() ) {
       rowLengths.setDistribution( getLocalRowRange(), 0, getRows(), getCommunicationGroup() );
       auto localRowLengths = rowLengths.getLocalView();
       localMatrix.getCompressedRowLengths( localRowLengths );
    }
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 typename Matrix::IndexType
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getRowCapacity( IndexType row ) const
 {
    const IndexType localRow = localRowRange.getLocalIndex( row );
    return localMatrix.getRowCapacity( localRow );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 setElement( IndexType row,
             IndexType column,
             RealType value )
@@ -205,10 +189,9 @@ setElement( IndexType row,
    localMatrix.setElement( localRow, column, value );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 typename Matrix::RealType
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getElement( IndexType row,
             IndexType column ) const
 {
@@ -216,10 +199,9 @@ getElement( IndexType row,
    return localMatrix.getElement( localRow, column );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 typename Matrix::RealType
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 getElementFast( IndexType row,
                 IndexType column ) const
 {
@@ -227,32 +209,29 @@ getElementFast( IndexType row,
    return localMatrix.getElementFast( localRow, column );
 }
 
-template< typename Matrix,
-          typename Communicator >
-typename DistributedMatrix< Matrix, Communicator >::MatrixRow
-DistributedMatrix< Matrix, Communicator >::
+template< typename Matrix >
+typename DistributedMatrix< Matrix >::MatrixRow
+DistributedMatrix< Matrix >::
 getRow( IndexType row )
 {
    const IndexType localRow = localRowRange.getLocalIndex( row );
    return localMatrix.getRow( localRow );
 }
 
-template< typename Matrix,
-          typename Communicator >
-typename DistributedMatrix< Matrix, Communicator >::ConstMatrixRow
-DistributedMatrix< Matrix, Communicator >::
+template< typename Matrix >
+typename DistributedMatrix< Matrix >::ConstMatrixRow
+DistributedMatrix< Matrix >::
 getRow( IndexType row ) const
 {
    const IndexType localRow = localRowRange.getLocalIndex( row );
    return localMatrix.getRow( localRow );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename InVector,
              typename OutVector >
-typename std::enable_if< ! has_communicator< InVector >::value >::type
-DistributedMatrix< Matrix, Communicator >::
+typename std::enable_if< ! HasGetCommunicationGroupMethod< InVector >::value >::type
+DistributedMatrix< Matrix >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector ) const
 {
@@ -265,23 +244,21 @@ vectorProduct( const InVector& inVector,
    localMatrix.vectorProduct( inVector, outView );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
 void
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 updateVectorProductCommunicationPattern()
 {
-   if( getCommunicationGroup() == CommunicatorType::NullGroup )
+   if( getCommunicationGroup() == MPI::NullGroup() )
       return;
    spmv.updateCommunicationPattern( getLocalMatrix(), getCommunicationGroup() );
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename InVector,
              typename OutVector >
-typename std::enable_if< has_communicator< InVector >::value >::type
-DistributedMatrix< Matrix, Communicator >::
+typename std::enable_if< HasGetCommunicationGroupMethod< InVector >::value >::type
+DistributedMatrix< Matrix >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector ) const
 {
@@ -291,7 +268,7 @@ vectorProduct( const InVector& inVector,
    TNL_ASSERT_EQ( outVector.getLocalRange(), getLocalRowRange(), "output vector has wrong distribution" );
    TNL_ASSERT_EQ( outVector.getCommunicationGroup(), getCommunicationGroup(), "output vector has wrong communication group" );
 
-   if( getCommunicationGroup() == CommunicatorType::NullGroup )
+   if( getCommunicationGroup() == MPI::NullGroup() )
       return;
 
    if( inVector.getGhosts() == 0 ) {
@@ -314,11 +291,10 @@ vectorProduct( const InVector& inVector,
    }
 }
 
-template< typename Matrix,
-          typename Communicator >
+template< typename Matrix >
    template< typename Vector1, typename Vector2 >
 bool
-DistributedMatrix< Matrix, Communicator >::
+DistributedMatrix< Matrix >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,

@@ -59,8 +59,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType,
                                                         typename T2::ConstLocalViewType,
@@ -115,7 +113,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return op1.getCommunicationGroup();
    }
@@ -159,8 +157,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType, T2, Operation >;
    using SynchronizerType = typename T1::SynchronizerType;
@@ -199,7 +195,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return op1.getCommunicationGroup();
    }
@@ -242,8 +238,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
    using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
-   using CommunicatorType = typename T2::CommunicatorType;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T2::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< T1, typename T2::ConstLocalViewType, Operation >;
    using SynchronizerType = typename T2::SynchronizerType;
@@ -282,7 +276,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
       return op2.getGhosts();
    }
 
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return op2.getCommunicationGroup();
    }
@@ -326,8 +320,6 @@ struct DistributedUnaryExpressionTemplate
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = UnaryExpressionTemplate< typename T1::ConstLocalViewType, Operation >;
    using SynchronizerType = typename T1::SynchronizerType;
@@ -366,7 +358,7 @@ struct DistributedUnaryExpressionTemplate
       return operand.getGhosts();
    }
 
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return operand.getCommunicationGroup();
    }

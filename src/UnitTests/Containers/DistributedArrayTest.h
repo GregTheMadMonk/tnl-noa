@@ -9,7 +9,6 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/DistributedArray.h>
 #include <TNL/Containers/Partitioner.h>
 
@@ -17,6 +16,7 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace TNL::MPI;
 
 /*
  * Light check of DistributedArray.
@@ -32,7 +32,6 @@ class DistributedArrayTest
 protected:
    using ValueType = typename DistributedArray::ValueType;
    using DeviceType = typename DistributedArray::DeviceType;
-   using CommunicatorType = typename DistributedArray::CommunicatorType;
    using IndexType = typename DistributedArray::IndexType;
    using DistributedArrayType = DistributedArray;
    using ArrayViewType = typename DistributedArrayType::LocalViewType;
@@ -40,12 +39,12 @@ protected:
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+   const MPI_Comm group = AllGroup();
 
    DistributedArrayType distributedArray;
 
-   const int rank = CommunicatorType::GetRank(group);
-   const int nproc = CommunicatorType::GetSize(group);
+   const int rank = GetRank(group);
+   const int nproc = GetSize(group);
 
    // some arbitrary even value (but must be 0 if not distributed)
    const int ghosts = (nproc > 1) ? 4 : 0;
@@ -53,10 +52,10 @@ protected:
    DistributedArrayTest()
    {
       using LocalRangeType = typename DistributedArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
       distributedArray.setDistribution( localRange, ghosts, globalSize, group );
 
-      using Synchronizer = typename Partitioner< IndexType, CommunicatorType >::template ArraySynchronizer< DeviceType >;
+      using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
       distributedArray.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
 
       EXPECT_EQ( distributedArray.getLocalRange(), localRange );
@@ -67,10 +66,10 @@ protected:
 
 // types for which DistributedArrayTest is instantiated
 using DistributedArrayTypes = ::testing::Types<
-   DistributedArray< double, Devices::Host, int, Communicators::MpiCommunicator >
+   DistributedArray< double, Devices::Host, int >
 #ifdef HAVE_CUDA
    ,
-   DistributedArray< double, Devices::Cuda, int, Communicators::MpiCommunicator >
+   DistributedArray< double, Devices::Cuda, int >
 #endif
 >;
 
@@ -86,11 +85,9 @@ TYPED_TEST( DistributedArrayTest, checkLocalSizes )
 
 TYPED_TEST( DistributedArrayTest, checkSumOfLocalSizes )
 {
-   using CommunicatorType = typename TestFixture::CommunicatorType;
-
    const int localSize = this->distributedArray.getLocalView().getSize();
    int sumOfLocalSizes = 0;
-   CommunicatorType::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedArray.getSize(), this->globalSize );
 }

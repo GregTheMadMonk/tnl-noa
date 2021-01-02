@@ -24,8 +24,8 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
@@ -64,8 +64,6 @@ using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, 
 using namespace TNL;
 using namespace TNL::Benchmarks;
 using namespace TNL::Pointers;
-
-using CommunicatorType = Communicators::MpiCommunicator;
 
 
 static const std::set< std::string > valid_solvers = {
@@ -333,9 +331,9 @@ struct LinearSolversBenchmark
    using IndexType = typename MatrixType::IndexType;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   using Partitioner = Containers::Partitioner< IndexType, CommunicatorType >;
-   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType, CommunicatorType >;
-   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
+   using Partitioner = Containers::Partitioner< IndexType >;
+   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
+   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
    using DistributedRowLengths = typename DistributedMatrix::CompressedRowLengthsVector;
 
    static bool
@@ -383,7 +381,7 @@ struct LinearSolversBenchmark
       matrixPointer->getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 
-      const String name = String( (CommunicatorType::isDistributed()) ? "Distributed linear solvers" : "Linear solvers" )
+      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed linear solvers" : "Linear solvers" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -408,13 +406,13 @@ struct LinearSolversBenchmark
          Matrices::reorderSparseMatrix( *matrixPointer, *matrix_perm, perm, iperm );
          Matrices::reorderArray( x0, x0_perm, perm );
          Matrices::reorderArray( b, b_perm, perm );
-         if( CommunicatorType::isDistributed() )
+         if( TNL::MPI::GetSize() > 1 )
             runDistributed( benchmark, metadata, parameters, matrix_perm, x0_perm, b_perm );
          else
             runNonDistributed( benchmark, metadata, parameters, matrix_perm, x0_perm, b_perm );
       }
       else {
-         if( CommunicatorType::isDistributed() )
+         if( TNL::MPI::GetSize() > 1 )
             runDistributed( benchmark, metadata, parameters, matrixPointer, x0, b );
          else
             runNonDistributed( benchmark, metadata, parameters, matrixPointer, x0, b );
@@ -432,7 +430,7 @@ struct LinearSolversBenchmark
                    const VectorType& b )
    {
       // set up the distributed matrix
-      const auto group = CommunicatorType::AllGroup;
+      const auto group = TNL::MPI::AllGroup();
       const auto localRange = Partitioner::splitRange( matrixPointer->getRows(), group );
       SharedPointer< DistributedMatrix > distMatrixPointer( localRange, matrixPointer->getRows(), matrixPointer->getColumns(), group );
       DistributedVector dist_x0( localRange, 0, matrixPointer->getRows(), group );
@@ -567,7 +565,7 @@ configSetup( Config::ConfigDescription& config )
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
    Devices::Cuda::configSetup( config );
-   CommunicatorType::configSetup( config );
+   TNL::MPI::configSetup( config );
 
    config.addDelimiter( "Linear solver settings:" );
    Solvers::IterativeSolver< double, int >::configSetup( config );
@@ -593,13 +591,13 @@ main( int argc, char* argv[] )
    configSetup( conf_desc );
 
    TNL::MPI::ScopedInitializer mpi(argc, argv);
-   const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   const int rank = TNL::MPI::GetRank();
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
-       ! CommunicatorType::setup( parameters ) )
+       ! TNL::MPI::setup( parameters ) )
       return EXIT_FAILURE;
 
    const String & logFileName = parameters.getParameter< String >( "log-file" );

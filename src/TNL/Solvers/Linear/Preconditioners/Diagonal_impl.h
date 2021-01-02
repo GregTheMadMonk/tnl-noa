@@ -53,9 +53,9 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 }
 
 
-template< typename Matrix, typename Communicator >
+template< typename Matrix >
 void
-Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix > >::
 update( const MatrixPointer& matrixPointer )
 {
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
@@ -87,9 +87,9 @@ update( const MatrixPointer& matrixPointer )
    }
 }
 
-template< typename Matrix, typename Communicator >
+template< typename Matrix >
 void
-Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix > >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
    ConstLocalViewType diag_view( diagonal );

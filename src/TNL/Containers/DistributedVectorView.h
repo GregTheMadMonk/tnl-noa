@@ -21,32 +21,28 @@ namespace Containers {
 
 template< typename Real,
           typename Device = Devices::Host,
-          typename Index = int,
-          typename Communicator = Communicators::MpiCommunicator >
+          typename Index = int >
 class DistributedVectorView
-: public DistributedArrayView< Real, Device, Index, Communicator >
+: public DistributedArrayView< Real, Device, Index >
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
-   using BaseType = DistributedArrayView< Real, Device, Index, Communicator >;
+   using BaseType = DistributedArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
 public:
    using RealType = Real;
    using DeviceType = Device;
-   using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalViewType = Containers::VectorView< Real, Device, Index >;
    using ConstLocalViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
-   using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
-   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
+   using ViewType = DistributedVectorView< Real, Device, Index >;
+   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index >;
 
    /**
     * \brief A template which allows to quickly obtain a \ref VectorView type with changed template parameters.
     */
    template< typename _Real,
              typename _Device = Device,
-             typename _Index = Index,
-             typename _Communicator = Communicator >
-   using Self = DistributedVectorView< _Real, _Device, _Index, _Communicator >;
+             typename _Index = Index >
+   using Self = DistributedVectorView< _Real, _Device, _Index >;
 
 
    // inherit all constructors and assignment operators from ArrayView
@@ -62,7 +58,7 @@ public:
 
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
-   DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index, Communicator >& view )
+   DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index >& view )
    : BaseType( view ) {}
 
    /**
@@ -156,8 +152,8 @@ public:
 
 // Enable expression templates for DistributedVector
 namespace Expressions {
-   template< typename Real, typename Device, typename Index, typename Communicator >
-   struct HasEnabledDistributedExpressionTemplates< DistributedVectorView< Real, Device, Index, Communicator > >
+   template< typename Real, typename Device, typename Index >
+   struct HasEnabledDistributedExpressionTemplates< DistributedVectorView< Real, Device, Index > >
    : std::true_type
    {};
 } // namespace Expressions

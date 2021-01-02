@@ -22,8 +22,8 @@ namespace Containers {
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
 ~DistributedArray()
 {
    // Wait for pending async operation, otherwise the synchronizer would crash
@@ -34,20 +34,43 @@ DistributedArray< Value, Device, Index, Communicator >::
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
-DistributedArray( const DistributedArray& array )
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
+DistributedArray( const Allocator& allocator )
+: localData( allocator )
 {
-   setLike( array );
-   localData = array.getConstLocalViewWithGhosts();
 }
 
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
-DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group )
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
+DistributedArray( const DistributedArray& array )
+{
+   setLike( array );
+   view = array;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
+DistributedArray( const DistributedArray& array, const Allocator& allocator )
+: localData( allocator )
+{
+   setLike( array );
+   view = array;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
+DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, const Allocator& allocator )
+: localData( allocator )
 {
    setDistribution( localRange, ghosts, globalSize, group );
 }
@@ -55,13 +78,13 @@ DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalS
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
-setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group )
+DistributedArray< Value, Device, Index, Allocator >::
+setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group )
 {
    TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
-   if( group != Communicator::NullGroup )
+   if( group != MPI::NullGroup() )
       localData.setSize( localRange.getSize() + ghosts );
    view.bind( localRange, ghosts, globalSize, group, localData.getView() );
 }
@@ -69,9 +92,9 @@ setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSi
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 const Subrange< Index >&
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 getLocalRange() const
 {
    return view.getLocalRange();
@@ -80,9 +103,9 @@ getLocalRange() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 Index
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 getGhosts() const
 {
    return view.getGhosts();
@@ -91,9 +114,9 @@ getGhosts() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename Communicator::CommunicationGroup
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+MPI_Comm
+DistributedArray< Value, Device, Index, Allocator >::
 getCommunicationGroup() const
 {
    return view.getCommunicationGroup();
@@ -102,9 +125,20 @@ getCommunicationGroup() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::LocalViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+Allocator
+DistributedArray< Value, Device, Index, Allocator >::
+getAllocator() const
+{
+   return localData.getAllocator();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::LocalViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getLocalView()
 {
    return view.getLocalView();
@@ -113,9 +147,9 @@ getLocalView()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::ConstLocalViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getConstLocalView() const
 {
    return view.getConstLocalView();
@@ -124,9 +158,9 @@ getConstLocalView() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::LocalViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::LocalViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getLocalViewWithGhosts()
 {
    return view.getLocalViewWithGhosts();
@@ -135,9 +169,9 @@ getLocalViewWithGhosts()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::ConstLocalViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getConstLocalViewWithGhosts() const
 {
    return view.getConstLocalViewWithGhosts();
@@ -147,9 +181,9 @@ getConstLocalViewWithGhosts() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 copyFromGlobal( ConstLocalViewType globalArray )
 {
    view.copyFromGlobal( globalArray );
@@ -158,9 +192,9 @@ copyFromGlobal( ConstLocalViewType globalArray )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement )
 {
    view.setSynchronizer( synchronizer, valuesPerElement );
@@ -169,9 +203,9 @@ setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPer
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-std::shared_ptr< typename DistributedArrayView< Value, Device, Index, Communicator >::SynchronizerType >
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+std::shared_ptr< typename DistributedArrayView< Value, Device, Index >::SynchronizerType >
+DistributedArray< Value, Device, Index, Allocator >::
 getSynchronizer() const
 {
    return view.getSynchronizer();
@@ -180,9 +214,9 @@ getSynchronizer() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 int
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 getValuesPerElement() const
 {
    return view.getValuesPerElement();
@@ -191,9 +225,9 @@ getValuesPerElement() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 startSynchronization()
 {
    view.startSynchronization();
@@ -202,9 +236,9 @@ startSynchronization()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 waitForSynchronization() const
 {
    view.waitForSynchronization();
@@ -218,9 +252,9 @@ waitForSynchronization() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::ViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getView()
 {
    return view;
@@ -229,9 +263,9 @@ getView()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedArray< Value, Device, Index, Allocator >::ConstViewType
+DistributedArray< Value, Device, Index, Allocator >::
 getConstView() const
 {
    return view.getConstView();
@@ -240,8 +274,8 @@ getConstView() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
 operator ViewType()
 {
    return getView();
@@ -250,8 +284,8 @@ operator ViewType()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >::
 operator ConstViewType() const
 {
    return getConstView();
@@ -260,10 +294,10 @@ operator ConstViewType() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Array >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 setLike( const Array& array )
 {
    localData.setLike( array.getConstLocalViewWithGhosts() );
@@ -276,9 +310,9 @@ setLike( const Array& array )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 reset()
 {
    view.reset();
@@ -288,9 +322,9 @@ reset()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 bool
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 empty() const
 {
    return view.empty();
@@ -299,9 +333,9 @@ empty() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 Index
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 getSize() const
 {
    return view.getSize();
@@ -310,9 +344,9 @@ getSize() const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 setValue( ValueType value )
 {
    view.setValue( value );
@@ -321,9 +355,9 @@ setValue( ValueType value )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 void
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 setElement( IndexType i, ValueType value )
 {
    view.setElement( i, value );
@@ -332,9 +366,9 @@ setElement( IndexType i, ValueType value )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 Value
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 getElement( IndexType i ) const
 {
    return view.getElement( i );
@@ -343,10 +377,10 @@ getElement( IndexType i ) const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 __cuda_callable__
 Value&
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 operator[]( IndexType i )
 {
    return view[ i ];
@@ -355,10 +389,10 @@ operator[]( IndexType i )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 __cuda_callable__
 const Value&
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 operator[]( IndexType i ) const
 {
    return view[ i ];
@@ -367,9 +401,9 @@ operator[]( IndexType i ) const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >&
-DistributedArray< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedArray< Value, Device, Index, Allocator >&
+DistributedArray< Value, Device, Index, Allocator >::
 operator=( const DistributedArray& array )
 {
    setLike( array );
@@ -380,10 +414,10 @@ operator=( const DistributedArray& array )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Array, typename..., typename >
-DistributedArray< Value, Device, Index, Communicator >&
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >&
+DistributedArray< Value, Device, Index, Allocator >::
 operator=( const Array& array )
 {
    setLike( array );
@@ -394,10 +428,10 @@ operator=( const Array& array )
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Array >
 bool
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 operator==( const Array& array ) const
 {
    return view == array;
@@ -406,10 +440,10 @@ operator==( const Array& array ) const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Array >
 bool
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 operator!=( const Array& array ) const
 {
    return view != array;
@@ -418,9 +452,9 @@ operator!=( const Array& array ) const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 bool
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 containsValue( ValueType value ) const
 {
    return view.containsValue( value );
@@ -429,9 +463,9 @@ containsValue( ValueType value ) const
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
 bool
-DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray< Value, Device, Index, Allocator >::
 containsOnlyValue( ValueType value ) const
 {
    return view.containsOnlyValue( value );

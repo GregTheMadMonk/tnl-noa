@@ -42,12 +42,12 @@ protected:
    VectorType diagonal;
 };
 
-template< typename Matrix, typename Communicator >
-class Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >
-: public Preconditioner< Matrices::DistributedMatrix< Matrix, Communicator > >
+template< typename Matrix >
+class Diagonal< Matrices::DistributedMatrix< Matrix > >
+: public Preconditioner< Matrices::DistributedMatrix< Matrix > >
 {
 public:
-   using MatrixType = Matrices::DistributedMatrix< Matrix, Communicator >;
+   using MatrixType = Matrices::DistributedMatrix< Matrix >;
    using RealType = typename MatrixType::RealType;
    using DeviceType = typename MatrixType::DeviceType;
    using IndexType = typename MatrixType::IndexType;

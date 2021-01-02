@@ -13,10 +13,10 @@
 #ifdef HAVE_GTEST
 
 #if defined(DISTRIBUTED_VECTOR)
-   #include <TNL/Communicators/MpiCommunicator.h>
    #include <TNL/Containers/DistributedVector.h>
    #include <TNL/Containers/DistributedVectorView.h>
    #include <TNL/Containers/Partitioner.h>
+   using namespace TNL::MPI;
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
@@ -51,15 +51,14 @@ protected:
 #else
    using NonConstReal = std::remove_const_t< typename VectorOrView::RealType >;
    #ifdef DISTRIBUTED_VECTOR
-      using CommunicatorType = typename VectorOrView::CommunicatorType;
-      using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+      using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
       template< typename Real >
-      using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+      using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
 
-      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+      const MPI_Comm group = AllGroup();
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
+      const int rank = GetRank(group);
+      const int nproc = GetSize(group);
 
       // some arbitrary even value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -75,13 +74,13 @@ protected:
 #if defined(DISTRIBUTED_VECTOR)
    using VectorTypes = ::testing::Types<
    #ifndef HAVE_CUDA
-      DistributedVector<           double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVectorView<       double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Host, int, Communicators::MpiCommunicator >
+      DistributedVector<           double, Devices::Host, int >,
+      DistributedVectorView<       double, Devices::Host, int >,
+      DistributedVectorView< const double, Devices::Host, int >
    #else
-      DistributedVector<           double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVectorView<       double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Cuda, int, Communicators::MpiCommunicator >
+      DistributedVector<           double, Devices::Cuda, int >,
+      DistributedVectorView<       double, Devices::Cuda, int >,
+      DistributedVectorView< const double, Devices::Cuda, int >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
@@ -174,10 +173,9 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    #define SETUP_UNARY_VECTOR_TEST( size ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
-      using CommunicatorType = typename VectorOrView::CommunicatorType; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, this->group ); \
-      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->group ); \
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       VectorType _V1, _V2;                                     \
       _V1.setDistribution( localRange, this->ghosts, size, this->group ); \
@@ -199,10 +197,9 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       EXPECTED_VECTOR( TestFixture, function );                \
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
       using HostExpectedVector = typename ExpectedVector::template Self< typename ExpectedVector::RealType, Devices::Host >; \
-      using CommunicatorType = typename VectorOrView::CommunicatorType; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, this->group ); \
-      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->group ); \
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       HostVector _V1h;                                         \
       HostExpectedVector expected_h;                           \
@@ -282,11 +279,8 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    using LeftNonConstReal = Expressions::RemoveET< std::remove_const_t< typename Left::RealType > >;
    using RightNonConstReal = Expressions::RemoveET< std::remove_const_t< typename Right::RealType > >;
 #ifdef DISTRIBUTED_VECTOR
-   using CommunicatorType = typename Left::CommunicatorType;
-   static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
-                  "CommunicatorType must be the same for both Left and Right vectors." );
-   using LeftVector = DistributedVector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
-   using RightVector = DistributedVector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+   using LeftVector = DistributedVector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
+   using RightVector = DistributedVector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
 #else
    using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
    using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;

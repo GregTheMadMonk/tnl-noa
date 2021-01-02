@@ -13,10 +13,10 @@
 #ifdef HAVE_GTEST
 
 #if defined(DISTRIBUTED_VECTOR)
-   #include <TNL/Communicators/MpiCommunicator.h>
    #include <TNL/Containers/DistributedVector.h>
    #include <TNL/Containers/DistributedVectorView.h>
    #include <TNL/Containers/Partitioner.h>
+   using namespace TNL::MPI;
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
@@ -61,16 +61,13 @@ protected:
    using RightReal = std::remove_const_t< typename Right::RealType >;
 #ifndef STATIC_VECTOR
    #ifdef DISTRIBUTED_VECTOR
-      using CommunicatorType = typename Left::CommunicatorType;
-      static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
-                     "CommunicatorType must be the same for both Left and Right vectors." );
-      using LeftVector = DistributedVector< LeftReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
-      using RightVector = DistributedVector< RightReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+      using LeftVector = DistributedVector< LeftReal, typename Left::DeviceType, typename Left::IndexType >;
+      using RightVector = DistributedVector< RightReal, typename Right::DeviceType, typename Right::IndexType >;
 
-      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+      const MPI_Comm group = AllGroup();
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
+      const int rank = GetRank(group);
+      const int nproc = GetSize(group);
 
       // some arbitrary value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -98,8 +95,8 @@ protected:
 #else
    #ifdef DISTRIBUTED_VECTOR
       using LocalRangeType = typename LeftVector::LocalRangeType;
-      using Synchronizer = typename Partitioner< typename Left::IndexType, CommunicatorType >::template ArraySynchronizer< typename Left::DeviceType >;
-      const LocalRangeType localRange = Partitioner< typename Left::IndexType, CommunicatorType >::splitRange( size, group );
+      using Synchronizer = typename Partitioner< typename Left::IndexType >::template ArraySynchronizer< typename Left::DeviceType >;
+      const LocalRangeType localRange = Partitioner< typename Left::IndexType >::splitRange( size, group );
 
       _L1.setDistribution( localRange, ghosts, size, group );
       _L2.setDistribution( localRange, ghosts, size, group );
@@ -160,23 +157,23 @@ protected:
 #if defined(DISTRIBUTED_VECTOR)
    using VectorPairs = ::testing::Types<
    #ifndef HAVE_CUDA
-      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     int,   Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVector<     short, Devices::Host, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Host, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Host, int, Communicators::MpiCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Host, int >,
+            DistributedVector<     short, Devices::Host, int > >,
+      Pair< DistributedVector<     int,   Devices::Host, int >,
+            DistributedVectorView< short, Devices::Host, int > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int >,
+            DistributedVector<     short, Devices::Host, int > >,
+      Pair< DistributedVectorView< int,   Devices::Host, int >,
+            DistributedVectorView< short, Devices::Host, int > >
    #else
-      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVector<     int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVector<     short, Devices::Cuda, int, Communicators::MpiCommunicator > >,
-      Pair< DistributedVectorView< int,   Devices::Cuda, int, Communicators::MpiCommunicator >,
-            DistributedVectorView< short, Devices::Cuda, int, Communicators::MpiCommunicator > >
+      Pair< DistributedVector<     int,   Devices::Cuda, int >,
+            DistributedVector<     short, Devices::Cuda, int > >,
+      Pair< DistributedVector<     int,   Devices::Cuda, int >,
+            DistributedVectorView< short, Devices::Cuda, int > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int >,
+            DistributedVector<     short, Devices::Cuda, int > >,
+      Pair< DistributedVectorView< int,   Devices::Cuda, int >,
+            DistributedVectorView< short, Devices::Cuda, int > >
    #endif
    >;
 #elif defined(STATIC_VECTOR)

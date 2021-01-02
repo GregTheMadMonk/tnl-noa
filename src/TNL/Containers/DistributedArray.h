@@ -21,22 +21,21 @@ namespace Containers {
 template< typename Value,
           typename Device = Devices::Host,
           typename Index = int,
-          typename Communicator = Communicators::MpiCommunicator >
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Value > >
 class DistributedArray
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
-   using LocalArrayType = Containers::Array< Value, Device, Index >;
+   using LocalArrayType = Containers::Array< Value, Device, Index, Allocator >;
 
 public:
    using ValueType = Value;
    using DeviceType = Device;
-   using CommunicatorType = Communicator;
    using IndexType = Index;
+   using AllocatorType = Allocator;
    using LocalRangeType = Subrange< Index >;
    using LocalViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
-   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
-   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index >;
    using SynchronizerType = typename ViewType::SynchronizerType;
 
    /**
@@ -45,26 +44,50 @@ public:
    template< typename _Value,
              typename _Device = Device,
              typename _Index = Index,
-             typename _Communicator = Communicator >
-   using Self = DistributedArray< _Value, _Device, _Index, _Communicator >;
+             typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Value > >
+   using Self = DistributedArray< _Value, _Device, _Index, _Allocator >;
 
 
    ~DistributedArray();
 
+   /**
+    * \brief Constructs an empty array with zero size.
+    */
    DistributedArray() = default;
 
-   // Copy-constructor does deep copy.
-   DistributedArray( const DistributedArray& );
+   /**
+    * \brief Constructs an empty array and sets the provided allocator.
+    *
+    * \param allocator The allocator to be associated with this array.
+    */
+   explicit DistributedArray( const AllocatorType& allocator );
 
-   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   /**
+    * \brief Copy constructor (makes a deep copy).
+    *
+    * \param array The array to be copied.
+    */
+   explicit DistributedArray( const DistributedArray& array );
 
-   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   /**
+    * \brief Copy constructor with a specific allocator (makes a deep copy).
+    *
+    * \param array The array to be copied.
+    * \param allocator The allocator to be associated with this array.
+    */
+   explicit DistributedArray( const DistributedArray& array, const AllocatorType& allocator );
+
+   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup(), const AllocatorType& allocator = AllocatorType() );
+
+   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup() );
 
    const LocalRangeType& getLocalRange() const;
 
    IndexType getGhosts() const;
 
-   CommunicationGroup getCommunicationGroup() const;
+   MPI_Comm getCommunicationGroup() const;
+
+   AllocatorType getAllocator() const;
 
    /**
     * \brief Returns a modifiable view of the local part of the array.

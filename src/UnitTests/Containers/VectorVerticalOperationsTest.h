@@ -13,10 +13,10 @@
 #ifdef HAVE_GTEST
 
 #if defined(DISTRIBUTED_VECTOR)
-   #include <TNL/Communicators/MpiCommunicator.h>
    #include <TNL/Containers/DistributedVector.h>
    #include <TNL/Containers/DistributedVectorView.h>
    #include <TNL/Containers/Partitioner.h>
+   using namespace TNL::MPI;
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
@@ -52,15 +52,14 @@ protected:
 #else
    using NonConstReal = std::remove_const_t< typename VectorOrView::RealType >;
    #ifdef DISTRIBUTED_VECTOR
-      using CommunicatorType = typename VectorOrView::CommunicatorType;
-      using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+      using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
       template< typename Real >
-      using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+      using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
 
-      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+      const MPI_Comm group = AllGroup();
 
-      const int rank = CommunicatorType::GetRank(group);
-      const int nproc = CommunicatorType::GetSize(group);
+      const int rank = GetRank(group);
+      const int nproc = GetSize(group);
 
       // some arbitrary value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -84,8 +83,8 @@ protected:
 #else
    #ifdef DISTRIBUTED_VECTOR
       using LocalRangeType = typename VectorOrView::LocalRangeType;
-      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType, CommunicatorType >::template ArraySynchronizer< typename VectorOrView::DeviceType >;
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group );
+      using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >;
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, group );
       _V1.setDistribution( localRange, ghosts, size, group );
       _V1.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
    #else
@@ -111,13 +110,13 @@ protected:
 #if defined(DISTRIBUTED_VECTOR)
    using VectorTypes = ::testing::Types<
    #ifndef HAVE_CUDA
-      DistributedVector<           double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVectorView<       double, Devices::Host, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Host, int, Communicators::MpiCommunicator >
+      DistributedVector<           double, Devices::Host, int >,
+      DistributedVectorView<       double, Devices::Host, int >,
+      DistributedVectorView< const double, Devices::Host, int >
    #else
-      DistributedVector<           double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVectorView<       double, Devices::Cuda, int, Communicators::MpiCommunicator >,
-      DistributedVectorView< const double, Devices::Cuda, int, Communicators::MpiCommunicator >
+      DistributedVector<           double, Devices::Cuda, int >,
+      DistributedVectorView<       double, Devices::Cuda, int >,
+      DistributedVectorView< const double, Devices::Cuda, int >
    #endif
    >;
 #elif defined(STATIC_VECTOR)

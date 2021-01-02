@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/MPI/DummyDefs.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Containers {
@@ -43,8 +43,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
             // compare without ghosts
             a.getConstLocalView() == b.getConstLocalView();
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -64,8 +64,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
          return false;
       const bool localResult = a.getConstLocalView() < b.getConstLocalView();
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -80,8 +80,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
          return false;
       const bool localResult = a.getConstLocalView() <= b.getConstLocalView();
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -96,8 +96,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
          return false;
       const bool localResult = a.getConstLocalView() > b.getConstLocalView();
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -112,8 +112,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpression
          return false;
       const bool localResult = a.getConstLocalView() >= b.getConstLocalView();
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 };
@@ -128,8 +128,8 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariab
    {
       const bool localResult = a == b.getConstLocalView();
       bool result = true;
-      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
-         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      if( b.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
@@ -142,8 +142,8 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariab
    {
       const bool localResult = a < b.getConstLocalView();
       bool result = true;
-      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
-         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      if( b.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
@@ -151,8 +151,8 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariab
    {
       const bool localResult = a <= b.getConstLocalView();
       bool result = true;
-      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
-         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      if( b.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
@@ -160,8 +160,8 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariab
    {
       const bool localResult = a > b.getConstLocalView();
       bool result = true;
-      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
-         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      if( b.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
@@ -169,8 +169,8 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariab
    {
       const bool localResult = a >= b.getConstLocalView();
       bool result = true;
-      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
-         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      if( b.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 };
@@ -185,8 +185,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
    {
       const bool localResult = a.getConstLocalView() == b;
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -199,8 +199,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
    {
       const bool localResult = a.getConstLocalView() < b;
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -208,8 +208,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
    {
       const bool localResult = a.getConstLocalView() <= b;
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -217,8 +217,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
    {
       const bool localResult = a.getConstLocalView() > b;
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
@@ -226,8 +226,8 @@ struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariab
    {
       const bool localResult = a.getConstLocalView() >= b;
       bool result = true;
-      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
-         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      if( a.getCommunicationGroup() != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 };

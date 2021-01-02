@@ -15,30 +15,27 @@
 #include <memory>
 
 #include <TNL/Containers/ArrayView.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/ByteArraySynchronizer.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Containers {
 
 template< typename Value,
           typename Device = Devices::Host,
-          typename Index = int,
-          typename Communicator = Communicators::MpiCommunicator >
+          typename Index = int >
 class DistributedArrayView
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
    using ValueType = Value;
    using DeviceType = Device;
-   using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalRangeType = Subrange< Index >;
    using LocalViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
-   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
-   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index >;
    using SynchronizerType = ByteArraySynchronizer< DeviceType, IndexType >;
 
    /**
@@ -46,15 +43,14 @@ public:
     */
    template< typename _Value,
              typename _Device = Device,
-             typename _Index = Index,
-             typename _Communicator = Communicator >
-   using Self = DistributedArrayView< _Value, _Device, _Index, _Communicator >;
+             typename _Index = Index >
+   using Self = DistributedArrayView< _Value, _Device, _Index >;
 
 
    ~DistributedArrayView();
 
    // Initialization by raw data
-   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
+   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData )
    : localRange(localRange), ghosts(ghosts), globalSize(globalSize), group(group), localData(localData)
    {
       TNL_ASSERT_EQ( localData.getSize(), localRange.getSize() + ghosts,
@@ -69,13 +65,13 @@ public:
 
    // "Templated copy-constructor" accepting any cv-qualification of Value
    template< typename Value_ >
-   DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communicator >& );
+   DistributedArrayView( const DistributedArrayView< Value_, Device, Index >& );
 
    // default move-constructor
    DistributedArrayView( DistributedArrayView&& ) = default;
 
    // method for rebinding (reinitialization) to raw data
-   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, CommunicationGroup group, LocalViewType localData );
+   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
    // convertible to DistributedArrayView.
@@ -90,7 +86,7 @@ public:
 
    IndexType getGhosts() const;
 
-   CommunicationGroup getCommunicationGroup() const;
+   MPI_Comm getCommunicationGroup() const;
 
    LocalViewType getLocalView();
 
@@ -184,7 +180,7 @@ protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
    IndexType globalSize = 0;
-   CommunicationGroup group = Communicator::NullGroup;
+   MPI_Comm group = MPI::NullGroup();
    LocalViewType localData;
 
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;

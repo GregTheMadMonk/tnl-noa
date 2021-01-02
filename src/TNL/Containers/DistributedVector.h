@@ -21,21 +21,20 @@ namespace Containers {
 template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
-          typename Communicator = Communicators::MpiCommunicator >
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class DistributedVector
-: public DistributedArray< Real, Device, Index, Communicator >
+: public DistributedArray< Real, Device, Index, Allocator >
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
-   using BaseType = DistributedArray< Real, Device, Index, Communicator >;
+   using BaseType = DistributedArray< Real, Device, Index, Allocator >;
 public:
    using RealType = Real;
    using DeviceType = Device;
-   using CommunicatorType = Communicator;
    using IndexType = Index;
+   using AllocatorType = Allocator;
    using LocalViewType = Containers::VectorView< Real, Device, Index >;
    using ConstLocalViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
-   using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
-   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
+   using ViewType = DistributedVectorView< Real, Device, Index >;
+   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index >;
 
    /**
     * \brief A template which allows to quickly obtain a \ref Vector type with changed template parameters.
@@ -43,8 +42,8 @@ public:
    template< typename _Real,
              typename _Device = Device,
              typename _Index = Index,
-             typename _Communicator = Communicator >
-   using Self = DistributedVector< _Real, _Device, _Index, _Communicator >;
+             typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
+   using Self = DistributedVector< _Real, _Device, _Index, _Allocator >;
 
 
    // inherit all constructors and assignment operators from Array
@@ -59,6 +58,11 @@ public:
     * \brief Copy constructor (makes a deep copy).
     */
    explicit DistributedVector( const DistributedVector& ) = default;
+
+   /**
+    * \brief Copy constructor with a specific allocator (makes a deep copy).
+    */
+   explicit DistributedVector( const DistributedVector& vector, const AllocatorType& allocator );
 
    /**
     * \brief Default move constructor.
@@ -177,8 +181,8 @@ public:
 
 // Enable expression templates for DistributedVector
 namespace Expressions {
-   template< typename Real, typename Device, typename Index, typename Communicator >
-   struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device, Index, Communicator > >
+   template< typename Real, typename Device, typename Index, typename Allocator >
+   struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device, Index, Allocator > >
    : std::true_type
    {};
 } // namespace Expressions

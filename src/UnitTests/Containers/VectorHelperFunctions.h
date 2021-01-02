@@ -2,6 +2,7 @@
 
 #include <TNL/Math.h>
 #include <TNL/TypeTraits.h>
+#include <TNL/Devices/Host.h>
 
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector )

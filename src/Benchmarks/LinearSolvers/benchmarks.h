@@ -33,10 +33,10 @@ void barrier( const Matrix& matrix )
 {
 }
 
-template< typename Matrix, typename Communicator >
-void barrier( const Matrices::DistributedMatrix< Matrix, Communicator >& matrix )
+template< typename Matrix >
+void barrier( const Matrices::DistributedMatrix< Matrix >& matrix )
 {
-   Communicator::Barrier( matrix.getCommunicationGroup() );
+   TNL::MPI::Barrier( matrix.getCommunicationGroup() );
 }
 
 template< typename Device >

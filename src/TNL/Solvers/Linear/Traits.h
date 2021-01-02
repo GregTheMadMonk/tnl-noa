@@ -54,24 +54,21 @@ struct Traits
    static void waitForSynchronization( VectorViewType v ) {}
 };
 
-template< typename Matrix, typename Communicator >
-struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
+template< typename Matrix >
+struct Traits< Matrices::DistributedMatrix< Matrix > >
 {
    using VectorType = Containers::DistributedVector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
-           typename Matrix::IndexType,
-           Communicator >;
+           typename Matrix::IndexType >;
    using VectorViewType = Containers::DistributedVectorView
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
-           typename Matrix::IndexType,
-           Communicator >;
+           typename Matrix::IndexType >;
    using ConstVectorViewType = Containers::DistributedVectorView
          < std::add_const_t< typename Matrix::RealType >,
            typename Matrix::DeviceType,
-           typename Matrix::IndexType,
-           Communicator >;
+           typename Matrix::IndexType >;
 
    using LocalVectorType = Containers::Vector
          < typename Matrix::RealType,
@@ -87,12 +84,11 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
            typename Matrix::IndexType >;
 
    // compatibility wrappers for some DistributedMatrix methods
-   static const Matrix& getLocalMatrix( const Matrices::DistributedMatrix< Matrix, Communicator >& m )
-   { return m.getLocalMatrix(); }
+   static const Matrix& getLocalMatrix( const Matrices::DistributedMatrix< Matrix >& m ) { return m.getLocalMatrix(); }
    static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v.getConstLocalView(); }
    static LocalViewType getLocalView( VectorViewType v ) { return v.getLocalView(); }
 
-   static MPI_Comm getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
+   static MPI_Comm getCommunicationGroup( const Matrices::DistributedMatrix< Matrix >& m ) { return m.getCommunicationGroup(); }
    static void startSynchronization( VectorViewType v ) { v.startSynchronization(); }
    static void waitForSynchronization( VectorViewType v ) { v.waitForSynchronization(); }
 };
