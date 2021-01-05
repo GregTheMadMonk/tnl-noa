@@ -10,11 +10,11 @@ void forRowsExample()
     * Set the following matrix (dots represent zero matrix elements and zeros are
     * padding zeros for memory alignment):
     * 
-    * 0 / 1  3  .  .  . \   -> { 0, 1, 3 }
-    *   | 2  1  3  .  . |   -> { 2, 1, 3 }
-    *   | .  2  1  3  . |   -> { 2, 1, 3 }
-    *   | .  .  2  1  3 |   -> { 2, 1, 3 }
-    *   \ .  .  .  2  1 / 0 -> { 2, 1, 0 } 
+    * 0 / 2  1  .  .  . \   -> { 0, 2, 1 }
+    *   | 3  2  1  .  . |   -> { 3, 2, 1 }
+    *   | .  3  2  1  . |   -> { 3, 2, 1 }
+    *   | .  .  3  2  1 |   -> { 3, 2, 1 }
+    *   \ .  .  .  3  2 / 0 -> { 3, 2, 0 } 
     */
    TNL::Matrices::TridiagonalMatrix< double, Device > matrix(
       5,      // number of matrix rows
@@ -29,11 +29,11 @@ void forRowsExample()
        * 
        *                           0  1  2  <- localIdx values
        *                           -------
-       * 0 / 1  3  .  .  . \   -> { 0, 1, 3 }
-       *   | 2  1  3  .  . |   -> { 2, 1, 3 }
-       *   | .  2  1  3  . |   -> { 2, 1, 3 }
-       *   | .  .  2  1  3 |   -> { 2, 1, 3 }
-       *   \ .  .  .  2  1 / 0 -> { 2, 1, 0 } 
+       * 0 / 2  1  .  .  . \   -> { 0, 2, 1 }
+       *   | 3  2  1  .  . |   -> { 3, 2, 1 }
+       *   | .  3  2  1  . |   -> { 3, 2, 1 }
+       *   | .  .  3  2  1 |   -> { 3, 2, 1 }
+       *   \ .  .  .  3  2 / 0 -> { 3, 2, 0 } 
        * 
        */
       value = 3 - localIdx;
