@@ -15,7 +15,7 @@ TNL offers the following type of matrices:  dense matrices, sparse matrices, tri
 
 ## Dense matrices <a name="dense_matrices"></a>
 
-Dense matrix is a templated class defined in namespace \ref TNL::Matrices. It has five template parameters:
+Dense matrix is a templated class defined in the namespace \ref TNL::Matrices. It has five template parameters:
 
 * `Real` is a type of the matrix elements. It is `double` by default.
 * `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
@@ -103,7 +103,7 @@ The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which i
 
 \include DenseMatrixExample_rowsReduction_maxNorm.out
 
-### Dense-matrix vector product
+### Dense matrix-vector product
 
 One of the most important matrix operation is the matrix-vector multiplication. It is represented by a method `vectorProduct` (\ref TNL::Matrices::DenseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method accepts the following parameters:
 
@@ -122,7 +122,7 @@ To summarize, this method computes the following formula:
 
 ### Dense matrix IO
 
-The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load). To print the matrix a method `print` (\ref TNL::Matrices::DenseMatrix::print) can be used.
+The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print) can be used.
 
 ### Dense matrix view
 
@@ -178,7 +178,7 @@ Major disadventage of sparse matrices is that there are a lot of different forma
 
 ### Sparse matrix allocation and initiation
 
-Small matrices can be initialized by a constructor with initializer list. We assume having the follwong sparse matrix
+Small matrices can be initialized by a constructor with initializer list. We assume having the following sparse matrix
 
 \f[
 \left(
@@ -404,7 +404,7 @@ Next we prepare input (`x`) and output (`y`) vectors on the lines 21 and 22 and 
 
 We ommit the row index and take the column index which indicates index of the element of the input vector we need to fetch (`xView[ columnIdx ]`). We take its value and multiply it with the value (`value`) of the current matrix element. We do not need to write lambda function for reduction since it is only summation of the intermediate results from the `fetch` lamda and we can use `std::plus<>{}` (see the line 60). The `keep` lambda function offers two parameters:
 
-1. `rowIdx` tells the index of the matrix row for which we aimm to store the result.
+1. `rowIdx` tells the index of the matrix row for which we aim to store the result.
 2. `value` is the result obtained in the given matrix row.
 
 In our example, we just write the result into appropriate element of the output vector `y` which is given just by the row index `rowIdx` -- see the line 47.  On the line 53 we start the computation of the matrix-vector product. The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) accepts the following arguments:
@@ -420,7 +420,7 @@ At the end we print the matrix, the input and the output vector -- lines 55-57. 
 
 \include SparseMatrixExample_rowsReduction_vectorProduct.out
 
-### Sparse-matrix vector product
+### Sparse matrix-vector product
 
 As we mentioned already in the part explaining the dense matrices, matrix-vector multiplication or in this case sparse matrix-vector multiplication ([SpMV](https://en.wikipedia.org/wiki/Sparse_matrix-vector_multiplication)) is one of the most important operations in numerical mathematics and high-performance computing. It is represented by a method `vectorProduct` (\ref TNL::Matrices::SparseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
 
@@ -441,7 +441,7 @@ Note that the ouput vector dimension must be the same as the number of matrix ro
 
 ### Sparse matrix IO
 
-The sparse matrix can be saved to a file using a method `save` (\ref TNL::Matrices::SparseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::SparseMatrix::load). To print the matrix a method `print` (\ref TNL::Matrices::SparseMatrix::print) can be used.
+The sparse matrix can be saved to a file using a method `save` (\ref TNL::Matrices::SparseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::SparseMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::SparseMatrix::print) can be used.
 
 ### Sparse matrix view
 
@@ -471,11 +471,281 @@ The result looks as follows:
 
 ## Tridiagonal matrices <a name="tridiagonal_matrices"></a>
 
-### Dense matrix allocation and initiation
+Tridiagonal matrix format serves for specific matrix pattern when the nonzero matrix elements can be placed only at the diagonal and immediately next to the diagonal. Here is an example:
+
+\f[
+\left(
+ \begin{array}{ccccccc}
+  2  & -1  &  .  & .   &  . & .  \\
+ -1  &  2  & -1  &  .  &  . & .  \\
+  .  & -1  &  2  & -1  &  . & .  \\
+  .  &  .  & -1  &  2  & -1 &  . \\
+  .  &  .  &  .  & -1  &  2 & -1 \\
+  .  &  .  &  .  &  .  & -1 &  2
+ \end{array}
+ \right)
+\f]
+
+An advantage is that we do not store the column indexes  explicitly as it is in \ref TNL::Matrices::SparseMatrix. This can reduce significantly the  memory requirements which also means better performance. See the following table for the storage requirements comparison between \ref TNL::Matrices::TridiagonalMatrix and \ref TNL::Matrices::SparseMatrix.
+
+ 
+  Real   | Index      |      SparseMatrix    | TridiagonalMatrix   | Ratio
+ --------|------------|----------------------|---------------------|--------
+  float  | 32-bit int | 8 bytes per element  | 4 bytes per element | 50%
+  double | 32-bit int | 12 bytes per element | 8 bytes per element | 75%
+  float  | 64-bit int | 12 bytes per element | 4 bytes per element | 30%
+  double | 64-bit int | 16 bytes per element | 8 bytes per element | 50%
+ 
+Tridiagonal matrix is a templated class defined in the namespace \ref TNL::Matrices. It has five template parameters:
+
+* `Real` is a type of the matrix elements. It is `double` by default.
+* `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
+* `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
+* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
+
+### Tridiagonal matrix allocation and initiation
+
+The tridiagonal matrix can be initialized by the means of the constructor with initializer list. The matrix from the begining of this section can be constructed as the following example shows:
+
+\includelineno TridiagonalMatrixExample_Constructor_init_list_1.cpp
+
+For better alignment in the memory the tridiagonal format is organised like if there were three nonzero matrix elements in each row. This is not true for example in the first row where there is no matrix element on the left side of the diagonal. The same happens on the last row of the matrix. In our example, we have to add even the artificial matrix elements like this:
+
+\f[
+\begin{array}{c}
+0 \\
+. \\
+. \\
+. \\
+. \\
+.
+\end{array}
+\left(
+ \begin{array}{ccccccc}
+  2  & -1  &  .  & .   &  . & .  \\
+ -1  &  2  & -1  &  .  &  . & .  \\
+  .  & -1  &  2  & -1  &  . & .  \\
+  .  &  .  & -1  &  2  & -1 &  . \\
+  .  &  .  &  .  & -1  &  2 & -1 \\
+  .  &  .  &  .  &  .  & -1 &  2
+ \end{array}
+ \right)
+ \begin{array}{c}
+. \\
+. \\
+. \\
+. \\
+. \\
+0
+\end{array}
+\f]
+
+If a matrix has more rows then columns, we have to extend the last two rows with nonzero elements in this way
+
+\f[
+\left(
+ \begin{array}{ccccccc}
+  2  & -1  &  .  & .   &  . & .  \\
+ -1  &  2  & -1  &  .  &  . & .  \\
+  .  & -1  &  2  & -1  &  . & .  \\
+  .  &  .  & -1  &  2  & -1 &  . \\
+  .  &  .  &  .  & -1  &  2 & -1 \\
+  .  &  .  &  .  &  .  & -1 &  2 \\
+  .  &  .  &  .  &  .  &  . & -1
+ \end{array}
+ \right)
+\rightarrow
+\begin{array}{c}
+0 \\
+. \\
+. \\
+. \\
+. \\
+. \\
+.
+\end{array}
+\left(
+ \begin{array}{ccccccc}
+  2  & -1  &  .  & .   &  . & .  \\
+ -1  &  2  & -1  &  .  &  . & .  \\
+  .  & -1  &  2  & -1  &  . & .  \\
+  .  &  .  & -1  &  2  & -1 &  . \\
+  .  &  .  &  .  & -1  &  2 & -1 \\
+  .  &  .  &  .  &  .  & -1 &  2 \\
+  .  &  .  &  .  &  .  &  . & -1
+ \end{array}
+ \right)
+ \begin{array}{cc}
+. & . \\
+. & . \\
+. & . \\
+. & . \\
+. & . \\
+0 & . \\
+0 & 0
+\end{array}
+\f]
+
+The output of the example looks as:
+
+\includelineno TridiagonalMatrixExample_Constructor_init_list_1.out
+
+Similar way of the tridiagonal matrix setup is offered by the method `setElements` (\ref TNL::Matrices::TridiagonalMatrix::setElements) as the following example demonstrates:
+
+\includelineno TridiagonalMatrixExample_setElements.cpp
+
+
+Here we create the matrix in two steps. Firstly, we setup the matrix dimensions by the appropriate constructor (line 24) and after that we setup the matrix elemets (line 25-45). The result looks the same as in the previous example:
+
+\includelineno TridiagonalMatrixExample_setElements.out
+
+In the following example we create tridiagonal matrix with 5 rows and 5 columns (line 12-14) by the means of a shared pointer (\ref TNL::Pointers::SharedPointer) to make this work even on GPU. We set numbers 0,...,4 on the diagonal (line 16) and we print the matrix (line 18). Next we use a lambda function (lines 21-27) combined with parallel for (\ref TNL::Alfgorithms::ParallelFor) (line 35), to modify the matrix. The offdiagonal elements are set to 1 (lines 23 and 26) and for the diagonal elements, we change the sign (line 24).
+
+\includelineno TridiagonalMatrixExample_setElement.cpp
+
+The result looks as follows:
+
+\includelineno TridiagonalMatrixExample_setElement.out
+
+ A slightly simpler way how to do the same with no need for shared pointer (\ref TNL::Pointers::SharedPointer), could be with the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
+
+\includelineno TridiagonalMatrixViewExample_getRow.cpp
+
+We create a matrix with the same size (line 10-15) set ones on the diagonal (lines 15-16). Next, we fetch the tridiagonal matrix view (line 16) which we can refer in the lambda function for matrix elements modification (lines 18-26). Inside the lambda function, we first get a matrix row by calling the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) using which we can acces the matrix elements (lines 21-25). The lambda function is called by the parallel for (\ref TNL::Algorithms::ParallelFor).
+
+The result looks as follows:
+
+\includelineno TridiagonalMatrixViewExample_getRow.out
+
+Finaly, even a bit more simple and bit less flexible way of matrix elements manipulation with use of the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) is demosntrated in the following example:
+
+\includelineno TridiagonalMatrixViewExample_forRows.cpp
+
+On the line 41 we call the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) instead of parallel for (\ref TNL::Algorithms::ParallelFor). This method iterates overl all matrix rows and all nonzero matrix elements. The lambda function function on the line 24 therefore do not receive only the matrix row index but also local index of the matrix element (`localIdx`) which is a rank of the nonzero matrix element in given row. The values of the local index for given matrix elements is as follows
+
+\f[ 
+\left(
+\begin{array}{cccccc}
+1 & 2 &   &   &   &     \\
+0 & 1 & 2 &   &   &     \\
+  & 0 & 1 & 2 &   &     \\
+  &   & 0 & 1 & 2 &     \\
+  &   &   & 0 & 1 & 2   \\
+  &   &   &   & 0 & 1
+\end{array}
+\right)
+\f]
+
+Next parameter `columnIdx` received by the lambda function is the column index of the matrix element. The fourth parameter `value` is a reference on the matrix element which we use for its modification. If the last parameter `compute` is set to false, the iterations over the matrix rows is terminated.
+
+The result looks as follows:
+
+\includelineno TridiagonalMatrixViewExample_forRows.out
+
 ### Flexible reduction in matrix rows
-### Dense-matrix vector product
-### Dense matrix IO
-### Dense matrix view
+
+The *flexible parallel reduction* in rows for tridiagonal matrices is also simmilar as for dense and sparse matrices. It is represented by three lambda functions:
+
+1. `fetch` reads and preproces data entering the flexible parallel reduction.
+2. `reduce` performs the reduction operation.
+3. `keep` stores the results from each matrix row.
+
+See the following example:
+
+\includelineno TridiagonalMatrixExample_rowsReduction.cpp
+
+Here we first set tridiagonal matrix (lines 10-27) which looks as
+
+\f[
+\left(
+\begin{array}{ccccc}
+1 & 3 &   &   &   &    \\
+2 & 1 & 3 &   &   &    \\
+  & 2 & 1 & 3 &   &    \\
+  &   & 2 & 1 & 3 &    \\
+  &   &   & 2 & 1 & 3
+\end{array}
+\right).
+\f]
+
+Next we want to compute maximal absolute value of the nonzero matrix elements in each row. We allocate the vector `rowMax` where we will store the results (line 32). The lambda function `fetch` (lines 42-44) is responsible for reading the matrix elements. It receives three arguments:
+
+1. `rowIdx` is a row index of the matrix element being currently processed.
+2. `columnIdx` is a column index of the matrix elements being currently processed.
+3. `value` is a value of the matrix element being currently procesed.
+
+In our example, the only thing this function has to do, is to compute the absolute value of each matrix element represented by variable `value`. The next lambda function, `reduce` (lines 49-51), performs reduction operation. In this case, it returns maximum of two input values `a` and `b`. Finaly, the lambda function `keep` (lines 56-58) is defined with the following parameters:
+
+1. `rowIdx` tells the index of the matrix row for which we aim to store the result.
+2. `value` is the result obtained in the given matrix row.
+
+In our example, it just takes the result of the reduction in variable `value` in each row and stores it into the vector `rowMax` via related vector view `rowMaxView`.
+
+The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) activates all the mantioned lambda functions (line 63). It accepts the following arguments:
+
+1. `begin` is the begining of the matrix rows range on which the reduction will be performed.
+2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
+3. `fetch` is the fetch lambda function.
+4. `reduce` is the the lmabda function performing the reduction.
+5. `keep` is the lambda function responsible for processing the results from particular matrix rows.
+6. `zero` is the "zero" element of given reduction opertation also known as *idempotent*. In our example, the role of this element has the lowest number of given type which we can obtain using function `std::numeric_limits< double >::lowest()` from STL.
+
+ The results looks as follows:
+
+\includelineno TridiagonalMatrixExample_rowsReduction.out
+
+### Tridiagonal matrix-vector product
+
+Similar to dense and sparse matrices, matrix-vector multiplication is represented by a method `vectorProduct` (\ref TNL::Matrices::TridiagonalMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
+
+```
+outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
+```
+
+and it accepts the following parameters:
+
+* `inVector` is the input vector having the same number of elements as the number of matrix columns.
+* `outVector` is the output vector having the same number of elements as the number of matrix rows.
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
+* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
+* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
+
+Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+
+### Tridiagonal matrix IO
+
+The tridiagonal matrix can be saved to a file using a method `save` (\ref TNL::Matrices::TridiagonalMatrix::save) and restored with a method `load` (\ref TNL::Matrices::TridiagonalMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::TridiagonalMatrix::print) can be used.
+
+### Tridiagonal matrix view
+
+Similar to dense and sparse matrix view, tridiagonal matrix also offers its view for easier use with lambda functions. It represented by a templated class \ref TNL::Matrices::TridiagonalMatrixView with the following template parameters:
+
+* `Real` is a type of matrix elements. 
+* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
+* `Index` is a type for indexing the matrix elements and also row and column indexes.
+* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
+
+The first main reason for using the dense matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::TridiagonalMatrix::setElement). The code looks as follows:
+
+\includelineno TridiagonalMatrixViewExample_setElement.cpp
+
+The matrix view is obtained by the method `getView` (\ref TNL::Matrices::TridiagonalMatrix::getView) on the line 13. We firsrt show, that the view can be used the same way as common matrix (lines 14 and 15) but it can be used the same way even in lambda functions as we can see on the lines 20-26. Compare it with the same example using shared pointer instead of the matrix view:
+
+\includelineno TridiagonalMatrixExample_setElement.cpp
+
+The main disadventages are:
+
+1. The shared pointer must be created together with the matrix (line 14) and there is no way to get it later. The matrix view can be obtained from any matrix at any time.
+2. We have to synchronize shared pointers explicitly by calling the function \ref TNL::Pointers::synchronizeSmartPointersOnDevice (line 34).
+
+So for the sake of using a matrix in lambda functions, the matrix view is better tool. The result of both examples looks as:
+
+\include TridiagonalMatrixExample_setElement.out
+
+As we mentioned already, the tridiagonal matrix view offers almost all methods which the tridiagonal matrix does. So it can be easily used at almost any situation the same way as the tridiagonal matrix itself.
+
 
 ## Multidiagonal matrices <a name="multidiagonal_matrices"></a>
 
