@@ -244,7 +244,15 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-            f( segmentIdx, localIdx++, globalIdx, compute, args... );
+         {
+            // The following is a workaround of a bug in nvcc 11.2
+#if CUDART_VERSION == 11020            
+             f( segmentIdx, localIdx, globalIdx, compute, args... );
+             localIdx++;
+#else
+             f( segmentIdx, localIdx++, globalIdx, compute, args... );
+#endif
+         }
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }
@@ -259,7 +267,15 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize )
+         {
+            // The following is a workaround of a bug in nvcc 11.2
+#if CUDART_VERSION == 11020            
+            f( segmentIdx, localIdx, globalIdx, compute, args... );
+            localIdx++;
+#else
             f( segmentIdx, localIdx++, globalIdx, compute, args... );
+#endif
+         }
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }
