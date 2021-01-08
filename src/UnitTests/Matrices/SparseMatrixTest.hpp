@@ -1310,51 +1310,55 @@ void test_VectorProduct()
 
    /////
    // Large test
-   if( ( std::is_same< IndexType, int >::value || std::is_same< IndexType, long int >::value ) &&
-      std::is_same< RealType, double >::value )
+   const IndexType size( 35 );
+   //for( int size = 1; size < 1000; size++ )
    {
-      const IndexType size( 35 );
-      //for( int size = 1; size < 1000; size++ )
-      {
-         //std::cerr << " size = " << size << std::endl;
-         // Test with large diagonal matrix
-         Matrix m1( size, size );
-         TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
-         rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return 1; } );
-         m1.setRowCapacities( rowCapacities );
-         auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
-            if( localIdx == 0  )
-            {
-               value = row + 1;
-               column = row;
-            }
-         };
-         m1.forAllRows( f1 );
-         TNL::Containers::Vector< double, DeviceType, IndexType > in( size, 1.0 ), out( size, 0.0 );
-         m1.vectorProduct( in, out );
-         //std::cerr << out << std::endl;
-         for( IndexType i = 0; i < size; i++ )
-            EXPECT_EQ( out.getElement( i ), i + 1 );
+      //std::cerr << " size = " << size << std::endl;
+      // Test with large diagonal matrix
+      Matrix m1( size, size );
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
+      rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return 1; } );
+      m1.setRowCapacities( rowCapacities );
+      auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
+         if( localIdx == 0  )
+         {
+            value = row + 1;
+            column = row;
+         }
+      };
+      m1.forAllRows( f1 );
+      // check that the matrix was initialized
+      m1.getCompressedRowLengths( rowCapacities );
+      EXPECT_EQ( rowCapacities, 1 );
 
-         // Test with large triangular matrix
-         Matrix m2( size, size );
-         rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return i + 1; } );
-         m2.setRowCapacities( rowCapacities );
-         auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
-            if( localIdx <= row )
-            {
-               value = row -localIdx + 1;
-               column = localIdx;
-            }
-         };
-         m2.forAllRows( f2 );
-         out = 0.0;
-         m2.vectorProduct( in, out );
-         //std::cerr << out << std::endl;
-         for( IndexType i = 0; i < size; i++ )
-            EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
-         
-      }
+      TNL::Containers::Vector< double, DeviceType, IndexType > in( size, 1.0 ), out( size, 0.0 );
+      m1.vectorProduct( in, out );
+      //std::cerr << out << std::endl;
+      for( IndexType i = 0; i < size; i++ )
+         EXPECT_EQ( out.getElement( i ), i + 1 );
+
+      // Test with large triangular matrix
+      Matrix m2( size, size );
+      rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return i + 1; } );
+      m2.setRowCapacities( rowCapacities );
+      auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
+         if( localIdx <= row )
+         {
+            value = row -localIdx + 1;
+            column = localIdx;
+         }
+      };
+      m2.forAllRows( f2 );
+      // check that the matrix was initialized
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( size );
+      m2.getCompressedRowLengths( rowLengths );
+      EXPECT_EQ( rowLengths, rowCapacities );
+
+      out = 0.0;
+      m2.vectorProduct( in, out );
+      //std::cerr << out << std::endl;
+      for( IndexType i = 0; i < size; i++ )
+         EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
    }
 }
 
