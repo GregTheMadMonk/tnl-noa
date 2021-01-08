@@ -321,8 +321,8 @@ allocate_LU()
       U_rowLengths_view[ i ] = U_entries;
    };
    Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_row_lengths );
-   L->setCompressedRowLengths( L_rowLengths );
-   U->setCompressedRowLengths( U_rowLengths );
+   L->setRowCapacities( L_rowLengths );
+   U->setRowCapacities( U_rowLengths );
 #else
    throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif

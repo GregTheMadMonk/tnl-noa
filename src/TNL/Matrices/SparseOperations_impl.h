@@ -110,7 +110,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
                break;
          rowLengths[ i ] = length;
       }
-      A.setCompressedRowLengths( rowLengths );
+      A.setRowCapacities( rowLengths );
 
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
@@ -145,7 +145,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
             rows,
             cols );
       TNL_CHECK_CUDA_DEVICE;
-      Apointer->setCompressedRowLengths( rowLengths );
+      Apointer->setRowCapacities( rowLengths );
 
       // copy rows
       Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
@@ -241,7 +241,7 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
          length--;
       rowLengths[ i ] += length;
    }
-   B.setCompressedRowLengths( rowLengths );
+   B.setRowCapacities( rowLengths );
 
    // set non-zeros
    for( IndexType i = 0; i < A.getRows(); i++ ) {

@@ -106,7 +106,7 @@ public:
 
 
    Containers::Vector< Block<Index>, Device, Index > blocks;
-   
+
    /* Configuration of CSR SpMV kernels ----------------------------------------- */
 
    /* Block sizes */
@@ -130,7 +130,7 @@ public:
    /* Number of elements in shared memory per one warp */
    static constexpr Index SHARED_PER_WARP = SHARED / WARPS;
    /* -------------------------------------------------------------------------- */
-   
+
 
    using Sparse< Real, Device, Index >::getAllocatedElementsCount;
 
@@ -144,6 +144,8 @@ public:
                        const IndexType columns );
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+
+   void setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths );
 
    void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 

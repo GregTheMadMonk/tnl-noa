@@ -58,7 +58,7 @@ void test_SetDimensions()
 }
 
 template< typename Matrix >
-void test_SetCompressedRowLengths()
+void test_SetRowCapacities()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -76,7 +76,7 @@ void test_SetCompressedRowLengths()
    for( IndexType i = 2; i < rows; i++ )
       rowLengths.setElement( i, rowLength++ );
 
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    // Insert values into the rows.
    for( IndexType i = 0; i < 3; i++ )      // 0th row
@@ -172,7 +172,7 @@ void test_GetNumberOfNonzeroMatrixElements()
 
    rowLengths.setElement( 8, 1 );
    rowLengths.setElement( 9, 1 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    for( IndexType i = 0; i < 4; i++ )
       m.setElement( 0, 2 * i, 1 );
@@ -261,7 +261,7 @@ void test_GetRow()
 
    rowLengths.setElement( 8, 10 );
    rowLengths.setElement( 9, 10 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    auto matrixView = m.getView();
    auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
@@ -458,7 +458,7 @@ void test_SetElement()
 
    rowLengths.setElement( 8, 10 );
    rowLengths.setElement( 9, 10 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    for( IndexType i = 0; i < 4; i++ )
        m.setElement( 0, 2 * i, 1 );
@@ -618,7 +618,7 @@ void test_VectorProduct()
    rowLengths_1.setElement( 1, 2 );
    rowLengths_1.setElement( 2, 1 );
    rowLengths_1.setElement( 3, 1 );
-   m_1.setCompressedRowLengths( rowLengths_1 );
+   m_1.setRowCapacities( rowLengths_1 );
 
    m_1.setElement( 0, 0, 1 );      // 0th row
 
@@ -661,7 +661,7 @@ void test_VectorProduct()
    rowLengths_2.setValue( 3 );
    rowLengths_2.setElement( 1, 1 );
    rowLengths_2.setElement( 3, 1 );
-   m_2.setCompressedRowLengths( rowLengths_2 );
+   m_2.setRowCapacities( rowLengths_2 );
 
    for( IndexType i = 0; i < 3; i++ )   // 0th row
       m_2.setElement( 0, i, 1 );
@@ -702,7 +702,7 @@ void test_VectorProduct()
    typename Matrix::CompressedRowLengthsVector rowLengths_3;
    rowLengths_3.setSize( m_rows_3 );
    rowLengths_3.setValue( 3 );
-   m_3.setCompressedRowLengths( rowLengths_3 );
+   m_3.setRowCapacities( rowLengths_3 );
 
    for( IndexType i = 0; i < 3; i++ )          // 0th row
       m_3.setElement( 0, i, 1 );
@@ -752,7 +752,7 @@ void test_VectorProduct()
    rowLengths_4.setElement( 2, 5 );
    rowLengths_4.setElement( 6, 5 );
    rowLengths_4.setElement( 7, 5 );
-   m_4.setCompressedRowLengths( rowLengths_4 );
+   m_4.setRowCapacities( rowLengths_4 );
 
    for( IndexType i = 0; i < 3; i++ )       // 0th row
       m_4.setElement( 0, i, 1 );
@@ -826,7 +826,7 @@ void test_VectorProduct()
    rowLengths_5.setElement(5, 7);
    rowLengths_5.setElement(6, 8);
    rowLengths_5.setElement(7, 8);
-   m_5.setCompressedRowLengths( rowLengths_5 );
+   m_5.setRowCapacities( rowLengths_5 );
 
    for( IndexType i = 0; i < 3; i++ )   // 0th row
       m_5.setElement( 0, i, 1 );
@@ -912,7 +912,7 @@ void test_RowsReduction()
    rowsCapacities.setElement(5, 7);
    rowsCapacities.setElement(6, 8);
    rowsCapacities.setElement(7, 8);
-   m.setCompressedRowLengths( rowsCapacities );
+   m.setRowCapacities( rowsCapacities );
 
    for( IndexType i = 0; i < 3; i++ )   // 0th row
       m.setElement( 0, i, 1 );
@@ -998,7 +998,7 @@ void test_PerformSORIteration()
    typename Matrix::CompressedRowLengthsVector rowLengths;
    rowLengths.setSize( m_rows );
    rowLengths.setValue( 3 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    m.setElement( 0, 0, 4.0 );        // 0th row
    m.setElement( 0, 1, 1.0);
@@ -1074,7 +1074,7 @@ void test_SaveAndLoad( const char* filename )
 
    Matrix savedMatrix( m_rows, m_cols );
    typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
-   savedMatrix.setCompressedRowLengths( rowLengths );
+   savedMatrix.setRowCapacities( rowLengths );
 
    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
        savedMatrix.setElement( 0, i, 1 );

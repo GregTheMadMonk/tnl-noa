@@ -55,7 +55,7 @@ void test_SetDimensions()
 }
 
 template< typename Matrix >
-void test_SetCompressedRowLengths()
+void test_SetRowCapacities()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -79,7 +79,7 @@ void test_SetCompressedRowLengths()
 
    Matrix m( rows, cols );
    typename Matrix::CompressedRowLengthsVector rowLengths { 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3  };
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    // Insert values into the rows.
    RealType value = 1;

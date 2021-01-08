@@ -58,6 +58,8 @@ public:
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+   void setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths );
+
    IndexType getRowLength( const IndexType row ) const;
 
    __cuda_callable__

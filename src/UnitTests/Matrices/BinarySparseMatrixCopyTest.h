@@ -68,7 +68,7 @@ void setupUnevenRowSizeMatrix( Matrix& m )
     rowLengths.setElement( 6,  1 );
     rowLengths.setElement( 7,  1 );
     rowLengths.setElement( 9,  1 );
-    m.setCompressedRowLengths( rowLengths );
+    m.setRowCapacities( rowLengths );
 
     for( int i = 0; i < cols - 4; i++ )  // 0th row
         m.setElement( 0, i, 1 );
@@ -198,7 +198,7 @@ void setupAntiTriDiagMatrix( Matrix& m )
     rowLengths.setValue( 3 );
     rowLengths.setElement( 0, 4);
     rowLengths.setElement( 1,  4 );
-    m.setCompressedRowLengths( rowLengths );
+    m.setRowCapacities( rowLengths );
 
     for( int i = 0; i < rows; i++ )
         for( int j = cols - 1; j > 2; j-- )
@@ -285,7 +285,7 @@ void setupTriDiagMatrix( Matrix& m )
    rowLengths.setValue( 3 );
    rowLengths.setElement( 0 , 4 );
    rowLengths.setElement( 1,  4 );
-   m.setCompressedRowLengths( rowLengths );
+   m.setRowCapacities( rowLengths );
 
    for( int i = 0; i < rows; i++ )
       for( int j = 0; j < 3; j++ )

@@ -57,11 +57,11 @@ TYPED_TEST( BinaryMatrixTest_Ellpack, setDimensionsTest )
     test_SetDimensions< EllpackMatrixType >();
 }
 
-TYPED_TEST( BinaryMatrixTest_Ellpack, setCompressedRowLengthsTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, setRowCapacitiesTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
-    test_SetCompressedRowLengths< EllpackMatrixType >();
+    test_SetRowCapacities< EllpackMatrixType >();
 }
 
 TYPED_TEST( BinaryMatrixTest_Ellpack, setLikeTest )

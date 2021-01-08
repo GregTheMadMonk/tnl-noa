@@ -19,13 +19,6 @@
 
 namespace TNL {
 
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
-__cuda_callable__ inline
-ResultType sum( const T1& a, const T2& b )
-{
-   return a + b;
-}
-
 /**
  * \brief This function returns minimum of two numbers.
  *
@@ -35,7 +28,7 @@ ResultType sum( const T1& a, const T2& b )
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
           std::enable_if_t< ! HasSubscriptOperator<T1>::value && ! HasSubscriptOperator<T2>::value, bool > = true >
-__cuda_callable__ inline
+__cuda_callable__
 ResultType min( const T1& a, const T2& b )
 {
 #if __cplusplus >= 201402L
@@ -50,6 +43,19 @@ ResultType min( const T1& a, const T2& b )
 #endif
 }
 
+/**
+ * \brief This function returns minimum of a variadic number of inputs.
+ *
+ * The inputs are folded with the \ref min function from the left to the right.
+ */
+template< typename T1, typename T2, typename T3, typename... Ts >
+__cuda_callable__
+typename std::common_type< T1, T2, T3, Ts... >::type
+min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
+{
+   return min( min( std::forward<T1>(val1), std::forward<T2>(val2) ),
+               std::forward<T3>(val3), std::forward<Ts>(vs)... );
+}
 
 /**
  * \brief This function returns maximum of two numbers.
@@ -76,11 +82,25 @@ ResultType max( const T1& a, const T2& b )
 }
 
 /**
+ * \brief This function returns minimum of a variadic number of inputs.
+ *
+ * The inputs are folded with the \ref max function from the left to the right.
+ */
+template< typename T1, typename T2, typename T3, typename... Ts >
+__cuda_callable__
+typename std::common_type< T1, T2, T3, Ts... >::type
+max( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
+{
+   return max( max( std::forward<T1>(val1), std::forward<T2>(val2) ),
+               std::forward<T3>(val3), std::forward<Ts>(vs)... );
+}
+
+/**
  * \brief This function returns absolute value of given number \e n.
  */
 template< class T,
           std::enable_if_t< ! std::is_unsigned<T>::value && ! std::is_class<T>::value, bool > = true >
-__cuda_callable__ inline
+__cuda_callable__
 T abs( const T& n )
 {
 #if defined(__CUDA_ARCH__)
@@ -98,7 +118,7 @@ T abs( const T& n )
  */
 template< class T,
           std::enable_if_t< std::is_unsigned<T>::value, bool > = true >
-__cuda_callable__ inline
+__cuda_callable__
 T abs( const T& n )
 {
    return n;
@@ -108,7 +128,7 @@ T abs( const T& n )
  * \brief This function returns argument of minimum of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
-__cuda_callable__ inline
+__cuda_callable__
 ResultType argMin( const T1& a, const T2& b )
 {
    return ( a < b ) ?  a : b;
@@ -128,7 +148,7 @@ ResultType argMax( const T1& a, const T2& b )
  * \brief This function returns argument of minimum of absolute values of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
-__cuda_callable__ inline
+__cuda_callable__
 ResultType argAbsMin( const T1& a, const T2& b )
 {
    return ( TNL::abs( a ) < TNL::abs( b ) ) ?  a : b;
@@ -150,7 +170,7 @@ ResultType argAbsMax( const T1& a, const T2& b )
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
           std::enable_if_t< ! std::is_class<T1>::value && ! std::is_class<T2>::value, bool > = true >
-__cuda_callable__ inline
+__cuda_callable__
 ResultType pow( const T1& base, const T2& exp )
 {
 #if defined(__CUDA_ARCH__)
@@ -164,7 +184,7 @@ ResultType pow( const T1& base, const T2& exp )
  * \brief This function returns the base-e exponential of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto exp( const T& value ) -> decltype( std::exp(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -178,7 +198,7 @@ auto exp( const T& value ) -> decltype( std::exp(value) )
  * \brief This function returns square root of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -192,7 +212,7 @@ auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
  * \brief This function returns cubic root of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -206,7 +226,7 @@ auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
  * \brief This function returns the natural logarithm of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto log( const T& value ) -> decltype( std::log(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -220,7 +240,7 @@ auto log( const T& value ) -> decltype( std::log(value) )
  * \brief This function returns the common logarithm of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto log10( const T& value ) -> decltype( std::log10(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -234,7 +254,7 @@ auto log10( const T& value ) -> decltype( std::log10(value) )
  * \brief This function returns the binary logarithm of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto log2( const T& value ) -> decltype( std::log2(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -248,7 +268,7 @@ auto log2( const T& value ) -> decltype( std::log2(value) )
  * \brief This function returns sine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto sin( const T& value ) -> decltype( std::sin(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -262,7 +282,7 @@ auto sin( const T& value ) -> decltype( std::sin(value) )
  * \brief This function returns cosine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto cos( const T& value ) -> decltype( std::cos(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -276,7 +296,7 @@ auto cos( const T& value ) -> decltype( std::cos(value) )
  * \brief This function returns tangent of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto tan( const T& value ) -> decltype( std::tan(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -290,7 +310,7 @@ auto tan( const T& value ) -> decltype( std::tan(value) )
  * \brief This function returns the arc sine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto asin( const T& value ) -> decltype( std::asin(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -304,7 +324,7 @@ auto asin( const T& value ) -> decltype( std::asin(value) )
  * \brief This function returns the arc cosine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto acos( const T& value ) -> decltype( std::acos(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -318,7 +338,7 @@ auto acos( const T& value ) -> decltype( std::acos(value) )
  * \brief This function returns the arc tangent of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto atan( const T& value ) -> decltype( std::atan(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -332,7 +352,7 @@ auto atan( const T& value ) -> decltype( std::atan(value) )
  * \brief This function returns the hyperbolic sine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto sinh( const T& value ) -> decltype( std::sinh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -346,7 +366,7 @@ auto sinh( const T& value ) -> decltype( std::sinh(value) )
  * \brief This function returns the hyperbolic cosine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto cosh( const T& value ) -> decltype( std::cosh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -360,7 +380,7 @@ auto cosh( const T& value ) -> decltype( std::cosh(value) )
  * \brief This function returns the hyperbolic tangent of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto tanh( const T& value ) -> decltype( std::tanh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -374,7 +394,7 @@ auto tanh( const T& value ) -> decltype( std::tanh(value) )
  * \brief This function returns the inverse hyperbolic sine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto asinh( const T& value ) -> decltype( std::asinh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -388,7 +408,7 @@ auto asinh( const T& value ) -> decltype( std::asinh(value) )
  * \brief This function returns the inverse hyperbolic cosine of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto acosh( const T& value ) -> decltype( std::acosh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -402,7 +422,7 @@ auto acosh( const T& value ) -> decltype( std::acosh(value) )
  * \brief This function returns the inverse hyperbolic tangent of the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto atanh( const T& value ) -> decltype( std::atanh(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -416,7 +436,7 @@ auto atanh( const T& value ) -> decltype( std::atanh(value) )
  * \brief This function returns largest integer value not greater than the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto floor( const T& value ) -> decltype( std::floor(value) )
 {
 #if defined(__CUDA_ARCH__)
@@ -430,7 +450,7 @@ auto floor( const T& value ) -> decltype( std::floor(value) )
  * \brief This function returns the smallest integer value not less than the given \e value.
  */
 template< typename T >
-__cuda_callable__ inline
+__cuda_callable__
 auto ceil( const T& value ) -> decltype( std::ceil(value) )
 {
 #if defined(__CUDA_ARCH__)

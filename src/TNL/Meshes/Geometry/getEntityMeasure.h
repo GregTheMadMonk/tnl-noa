@@ -50,23 +50,6 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     return 1.0;
 }
 
-// TODO: move to StaticVector::norm
-template< typename Real >
-__cuda_callable__
-Real
-getVectorLength( const TNL::Containers::StaticVector< 1, Real > & vector )
-{
-    return TNL::abs( vector[ 0 ] );
-}
-
-template< typename VectorExpression >
-__cuda_callable__
-typename VectorExpression::RealType
-getVectorLength( const VectorExpression& expr )
-{
-    return TNL::sqrt( TNL::dot( expr, expr ) );
-}
-
 // Edge
 template< typename MeshConfig, typename Device >
 __cuda_callable__
@@ -76,7 +59,7 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
 {
     const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
     const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
-    return getVectorLength( v1 - v0 );
+    return l2Norm( v1 - v0 );
 }
 
 // Triangle

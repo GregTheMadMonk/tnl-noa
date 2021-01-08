@@ -749,7 +749,8 @@ l1Norm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          std::enable_if_t< (ET1::getSize() > 1), bool > = true >
 __cuda_callable__
 auto
 l2Norm( const ET1& a )
@@ -759,8 +760,20 @@ l2Norm( const ET1& a )
 }
 
 template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          std::enable_if_t< ET1::getSize() == 1, bool > = true >
+__cuda_callable__
+auto
+l2Norm( const ET1& a )
+{
+   // avoid sqrt for 1D vectors (l1 and l2 norms are identical in 1D)
+   return l1Norm( a );
+}
+
+template< typename ET1,
           typename Real,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          std::enable_if_t< (ET1::getSize() > 1), bool > = true >
 __cuda_callable__
 auto
 lpNorm( const ET1& a, const Real& p )
@@ -774,6 +787,18 @@ lpNorm( const ET1& a, const Real& p )
       return l2Norm( a );
    using TNL::pow;
    return pow( sum( pow( abs( a ), p ) ), 1.0 / p );
+}
+
+template< typename ET1,
+          typename Real,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          std::enable_if_t< ET1::getSize() == 1, bool > = true >
+__cuda_callable__
+auto
+lpNorm( const ET1& a, const Real& p )
+{
+   // avoid sqrt and pow for 1D vectors (all lp norms are identical in 1D)
+   return l1Norm( a );
 }
 
 template< typename ET1,

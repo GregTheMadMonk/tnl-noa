@@ -17,8 +17,6 @@ namespace TNL {
 namespace Containers {
 namespace Expressions {
 
-////
-// Vertical operations
 template< typename Expression >
 auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
@@ -145,7 +143,6 @@ template< typename Expression >
 auto DistributedExpressionSum( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
-   using IndexType = typename Expression::IndexType;
    using CommunicatorType = typename Expression::CommunicatorType;
 
    ResultType result = 0;

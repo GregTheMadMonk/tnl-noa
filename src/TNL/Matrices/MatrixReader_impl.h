@@ -62,7 +62,7 @@ void MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
 
    computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose );
 
-   matrix.setCompressedRowLengths( rowLengths );
+   matrix.setRowCapacities( rowLengths );
 
    readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose, symReader );
 }

@@ -84,7 +84,8 @@ struct MeshCreator< Meshes::Grid< 1, Real, Device, Index > >
       }
 
       for( Index i = 0; i < numberOfCells; i++ ) {
-         const auto cell = grid.template getEntity< typename GridType::Cell >( i );
+         auto cell = grid.template getEntity< typename GridType::Cell >( i );
+         cell.refresh();
          const auto neighbors = cell.template getNeighborEntities< 0 >();
          meshBuilder.getCellSeed( i ).setCornerId( 0, neighbors.template getEntityIndex< -1 >() );
          meshBuilder.getCellSeed( i ).setCornerId( 1, neighbors.template getEntityIndex<  1 >() );
