@@ -44,12 +44,12 @@ namespace Matrices {
  * memory requirements which also means better performance. See the following table
  * for the storage requirements comparison between \ref TridiagonalMatrix and \ref SparseMatrix.
  *
- *  Data types         |      SparseMatrix    | TridiagonalMatrix | Ratio
- * --------------------|----------------------|---------------------|--------
- *  float + 32-bit int | 8 bytes per element  | 4 bytes per element | 50%
- *  double + 32-bit int| 12 bytes per element | 8 bytes per element | 75%
- *  float + 64-bit int | 12 bytes per element | 4 bytes per element | 30%
- *  double + 64-bit int| 16 bytes per element | 8 bytes per element | 50%
+ *  Real   | Index      |      SparseMatrix    | TridiagonalMatrix   | Ratio
+ * --------|------------|----------------------|---------------------|-------
+ *  float  | 32-bit int | 8 bytes per element  | 4 bytes per element | 50%
+ *  double | 32-bit int | 12 bytes per element | 8 bytes per element | 75%
+ *  float  | 64-bit int | 12 bytes per element | 4 bytes per element | 30%
+ *  double | 64-bit int | 16 bytes per element | 8 bytes per element | 50%
  *
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
