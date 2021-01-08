@@ -696,7 +696,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * where
        *
-       * \e rowIdx is an index of the matrix row. 
+       * \e rowIdx is an index of the matrix row.
        *
        * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
        *  index of the matrix subdiagonal.
@@ -705,7 +705,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \e value is the matrix element value.
        *
-       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can 
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -730,16 +730,16 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * where
        *
-       * \e rowIdx is an index of the matrix row. 
+       * \e rowIdx is an index of the matrix row.
        *
        * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
        *  index of the matrix subdiagonal.
        *
-       * \e columnIdx is a column index of the matrx element.
+       * \e columnIdx is a column index of the matrix element.
        *
        * \e value is a reference to the matrix element value. It can be used even for changing the matrix element value.
        *
-       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can 
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
