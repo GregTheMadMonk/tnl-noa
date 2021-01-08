@@ -40,7 +40,7 @@ void rowsReduction()
    /***
     * Reduce lambda return maximum of given values.
     */
-   auto reduce = [=] __cuda_callable__ ( double& a, const double& b ) -> double {
+   auto reduce = [=] __cuda_callable__ ( const double& a, const double& b ) -> double {
       return TNL::max( a, b );
    };
 

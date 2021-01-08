@@ -17,7 +17,7 @@ namespace TNL {
 namespace Matrices {
 
 /**
- * \brief "Matrix-free" matrix based on lambda functions.
+ * \brief "Matrix-free matrix" based on lambda functions.
  * 
  * The elements of this matrix are not stored explicitly in memory but
  * implicitly on a form of lambda functions.
@@ -26,22 +26,22 @@ namespace Matrices {
  * 
  *    It has the following form:
  * 
- *   `matrixElements( IndexType rows, IndexType columns, IndexType row, IndexType localIdx, IndexType& elementColumn, RealType& elementValue )`
+ *   `matrixElements( Index rows, Index columns, Index rowIdx, Index localIdx, Index& columnIdx, Real& value )`
  * 
- *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns, \e row is the index of matrix row being queried,
- *    \e localIdx is the rank of the non-zero element in given row, \e elementColumn is a column index of the matrix element computed by
- *    this lambda and \e elementValue is a value of the matrix element computed by this lambda.
+ *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns, \e rowIdx is the index of matrix row being queried,
+ *    \e localIdx is the rank of the non-zero element in given row, \e columnIdx is a column index of the matrix element computed by
+ *    this lambda and \e value is a value of the matrix element computed by this lambda.
  * \tparam CompressedRowLengthsLambda is a lambda function returning a number of non-zero elements in each row.
  * 
  *    It has the following form:
  * 
- *    `rowLengths( IndexType rows, IndexType columns, IndexType row ) -> IndexType`
+ *    `rowLengths( Index rows, Index columns, Index rowIdx ) -> IndexType`
  * 
- *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns and \e row is an index of the row being queried.
+ *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns and \e rowIdx is an index of the row being queried.
  *
  * \tparam Real is a type of matrix elements values.
  * \tparam Device is a device on which the lambda functions will be evaluated. 
- * \ẗparam Index is a type used for indexing.
+ * \ẗparam Index is a type to be used for indexing.
  */
 template< typename MatrixElementsLambda,
           typename CompressedRowLengthsLambda,

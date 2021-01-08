@@ -1137,10 +1137,118 @@ The main disadventages are:
 
 So for the sake of using a matrix in lambda functions, the matrix view is better tool. The result of both examples looks as:
 
-\include MultidiagonalMatrixExample_setElement.out
+\includelineno MultidiagonalMatrixExample_setElement.out
 
 As we mentioned already, the multidiagonal matrix view offers almost all methods which the multidiagonal matrix does. So it can be easily used at almost any situation the same way as the multidiagonal matrix itself.
 
 TODO: Move to explanation of the matrix view to introduction.
 
 ## Lambda matrices <a name="lambda_matrices"></a>
+
+Lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a special type of matrix which could be also called *** matrix-free matrix ***. Its elements are not stored in memory explicitlely but they are evaluated on-the-fly by means of user defined lambda functions. If the matrix elements can be expressed by computationaly not expansive formula, we can significantly reduce the memory consumptions which can be appriciated especially on GPU. Since the memory accesses are quite expensive even on CPU, we can get, at the end, even much faster code.
+
+The lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a templated class with the following template parameters:
+
+* `MatrixElementsLambda` is a lambda function which evaluates the matrix elements values and column indexes.
+* `CompressedRowLengthsLambda` is a lambda function telling how many nonzero elements are there in given matrix row.
+* `Real` is a of matrix elements values.
+* `Device` is a device on which the lambda functions mentioned above will be evaluated.
+* `Index` is a type to be used for indexing.
+
+The lambda function `MatrixElementsLambda` is supposed to have the following declaration:
+
+```
+matrixElements( Index rows, 
+                Index columns,
+                Index row,
+                Index localIdx,
+                Index& columnIdx,
+                Real& value )
+```
+where the particular parameterts have the following meaning:
+
+* `rows` tells the number of matrix rows.
+* `columns` tells the number of matrix columns.
+* `rowIdx` is index of the matrix row in which we are supposed to evaluate the matrix element.
+* `localIdx` is a rank of the nonzero matrix element.
+* `columnIdx` is a reference on variable where we are supposed to store the matrix element column index.
+* `value` is a reference on variable where we are supposed to store the matrix element value.
+
+The lambda function `CompressedRowLengthsLambda` is supposed to look like this:
+
+```
+rowLengths( Index rows, 
+            Index columns,
+            Index row ) -> Index
+```
+
+where the parameters can be described as follows:
+
+* `rows` tells the number of matrix rows.
+* `columns` tells the number of matrix columns.
+* `rowIdx` is index of the matrix row for which we are supposed to evaluate the number of nonzero matrix elements.
+
+The lambda function is supposed to return just the number of the nonzero matrix elements in given matrix row.
+
+### Lambda matrix inititation
+
+See the following example which demonstrates how to create the lambda matrix:
+
+\includelineno LambdaMatrixExample_Constructor.cpp
+
+Here we create two simple diagonal matrices. Therefore thay share the same lambda function `rowLengths` telling the the number of nonzero matrix elements in particular matrix rows which is always one (line 9). The first matrix, defined by the lambda function `matrixElements1`, is identity matrix and so its each diagonal element equals one. We set the matrix element value to `1.0` (line 12) and the column index equals the row index (line 15). The second matrix, defined by the lambda function `matrixElements2`, is also diagonal but not the identity matrix. The values of the diagonal elements equal to row index (line 16).
+
+With the same lambda functions we can define matrices with different dimensions. In this example, we set the matrix size to five (line 19). It can be quite difficult to express the lambda matrix type because it depends on the types of the lambda functions. To make this easier, one may use a lambda-matrix factory (\ref TNL::Matrices::LambdaMatrixFactory). Using `decltype` one can deduce even the matrix type (line 24) followed by calling lambda matrix constructor with matrix dimensions and instances of the lambda functions (line 25). Or one can just simply employ the keyword `auto` (line 30) followed by setting the matrix dimensins (line 31).
+
+The result looks as follows:
+
+\includelineno LambdaMatrixExample_Constructor.out
+
+Of course, the lambda matrix has the same interface as other matrix types. The following example demonstrates the use of the method `forRows` to copy the lambda matrix into the dense matrix:
+
+\includelineno LambdaMatrixExample_forRows.cpp
+
+Here, we treat the lambda matrix as if it was dense matrix. The lambda function `rowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nozero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23). 
+
+Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` woudl do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `rowLengths` (line 13) tells so. The result looks as follows:
+
+\includelineno LambdaMatrixExample_forRows.out
+
+### Flexible reduction in matrix rows
+
+The reduction of matrix rows is available for the lambda matrices as well. See the follogin example:
+
+\includelineno LambdaMatrixExample_rowsReduction.cpp
+
+On the lines 14-21, we create the same lower trianguilar lambda matrix as in the previous example. As we did it in similar examples for other matrix types, we want to compute maximal absolute value of matrix elements in each row. For this purpose we define well known lambda functions:
+
+* `fetch` takes the value of the lambda matrix element and returns its absolute value.
+* `reduce` computes maximum value of two input variables.
+* `keep` stores the results into output vector `rowMax`.
+
+Note that the interface of the lambda functions is the same as for other matrix types. The result looks as follows:
+
+\includelineno LambdaMatrixExample_rowsReduction.out
+
+### Lambda matrix-vector product
+
+The matrix-vector multiplication is represented by the method `vectorProduct` (\ref TNL::Matrices::LambdaMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of the input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
+
+```
+outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
+```
+
+and it accepts the following parameters:
+
+* `inVector` is the input vector having the same number of elements as the number of matrix columns.
+* `outVector` is the output vector having the same number of elements as the number of matrix rows.
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
+* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
+* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
+
+Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+
+### Lambda matrix IO
+
+The lambda matrix, can be printed by the means of the method `print` (\ref TNL::Matrices::LambdaMatrix::print). The lambda matrix do not offer the methods `save` and `load` since it does not manage any data. Of course, the lambda function evaluating the matrix elements can use any supporting data containers but it is up these containers to manage the IO operations.
