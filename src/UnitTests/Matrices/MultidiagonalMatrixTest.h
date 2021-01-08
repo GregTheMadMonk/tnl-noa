@@ -64,6 +64,44 @@ void test_SetDimensions()
    EXPECT_EQ( m.getColumns(), 8 );
 }
 
+template< typename Matrix >
+void test_SetDiagonalsOffsets()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
+
+   const IndexType rows = 9;
+   const IndexType cols = 8;
+   const DiagonalsOffsetsType diagonalsOffsets{ -3, -1, 0, 2, 4 };
+
+   Matrix m;
+   m.setDimensions( rows, cols );
+   m.setDiagonalsOffsets( diagonalsOffsets );
+
+   EXPECT_EQ( m.getRows(), 9 );
+   EXPECT_EQ( m.getColumns(), 8 );
+}
+
+template< typename Matrix >
+void test_SetDiagonalsOffsets_initalizer_list()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using DiagonalsOffsetsType = typename Matrix::DiagonalsOffsetsType;
+
+   const IndexType rows = 9;
+   const IndexType cols = 8;
+
+   Matrix m;
+   m.setDimensions( rows, cols );
+   m.setDiagonalsOffsets( { -3, -1, 0, 2, 4 } );
+
+   EXPECT_EQ( m.getRows(), 9 );
+   EXPECT_EQ( m.getColumns(), 8 );
+}
 
 template< typename Matrix1, typename Matrix2 >
 void test_SetLike()

@@ -47,14 +47,15 @@ namespace Matrices {
  * are \f$\{-3,-1,0,1,3\}\f$. Advantage is that we do not store the column indexes
  * explicitly as it is in \ref SparseMatrix. This can reduce significantly the
  * memory requirements which also means better performance. See the following table
- * for the storage requirements comparison between \ref MultidiagonalMatrix and \ref SparseMatrix.
+ * for the storage requirements comparison between \ref TNL::Matrices::MultidiagonalMatrix 
+ * and \ref TNL::Matrices::SparseMatrix.
  *
- *  Data types         |      SparseMatrix    | MultidiagonalMatrix | Ratio
- * --------------------|----------------------|---------------------|--------
- *  float + 32-bit int | 8 bytes per element  | 4 bytes per element | 50%
- *  double + 32-bit int| 12 bytes per element | 8 bytes per element | 75%
- *  float + 64-bit int | 12 bytes per element | 4 bytes per element | 30%
- *  double + 64-bit int| 16 bytes per element | 8 bytes per element | 50%
+ *  Real   | Index     |      SparseMatrix    | MultidiagonalMatrix | Ratio
+ * --------|-----------|----------------------|---------------------|-------
+ *  float  | 32-bit int| 8 bytes per element  | 4 bytes per element | 50%
+ *  double | 32-bit int| 12 bytes per element | 8 bytes per element | 75%
+ *  float  | 64-bit int| 12 bytes per element | 4 bytes per element | 30%
+ *  double | 64-bit int| 16 bytes per element | 8 bytes per element | 50%
  *
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
@@ -297,6 +298,28 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                           const Vector& diagonalsOffsets );
 
       /**
+       * @brief Set the diagonals offsets by means of vector-like container.
+       *
+       * This method deletes current matrix elements.
+       *
+       * @tparam Vector is a type of vector-like container holding the subdiagonals offsets.
+       * @param diagonalsOffsets  is a vector-like container holding the subdiagonals offsets.
+       */
+      template< typename Vector >
+      void setDiagonalsOffsets( const Vector& diagonalsOffsets );
+
+      /**
+       * @brief Set the diagonals offsets by means of initializer list.
+       *
+       * This method deletes current matrix elements.
+       *
+       * @tparam ListIndex is type of indexes used for the subdiagonals offsets definition.
+       * @param diagonalsOffsets is a initializer list with subdiagonals offsets.
+       */
+      template< typename ListIndex >
+      void setDiagonalsOffsets( const std::initializer_list< ListIndex > diagonalsOffsets );
+
+      /**
        * \brief This method is for compatibility with \ref SparseMatrix.
        *
        * It checks if the number of matrix diagonals is compatible with
@@ -308,6 +331,22 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param rowCapacities is vector-like container holding required row capacities.
        */
+      template< typename RowCapacitiesVector >
+      void setRowCapacities( const RowCapacitiesVector& rowCapacities );
+
+      /**
+       * \brief Returns number of diagonals.
+       *
+       * \return Number of diagonals.
+       */
+      const IndexType& getDiagonalsCount() const;
+
+      /**
+       * \brief Returns vector with diagonals offsets.
+       *
+       * \return vector with diagonals offsets.
+       */
+      const DiagonalsOffsetsType& getDiagonalsOffsets() const;
       template< typename RowCapacitiesVector >
       void setRowCapacities( const RowCapacitiesVector& rowCapacities );
 
@@ -328,20 +367,6 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename ListReal >
       void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data );
-
-      /**
-       * \brief Returns number of diagonals.
-       *
-       * \return Number of diagonals.
-       */
-      const IndexType& getDiagonalsCount() const;
-
-      /**
-       * \brief Returns vector with diagonals offsets.
-       *
-       * \return vector with diagonals offsets.
-       */
-      const DiagonalsOffsetsType& getDiagonalsOffsets() const;
 
       /**
        * \brief Computes number of non-zeros in each row.
@@ -666,9 +691,21 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row.
-       *  If the 'compute' variable is set to false the iteration over the row can
+       *
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       *
+       * where
+       *
+       * \e rowIdx is an index of the matrix row. 
+       *
+       * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
+       *  index of the matrix subdiagonal.
+       *
+       * \e columnIdx is a column index of the matrx element.
+       *
+       * \e value is the matrix element value.
+       *
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can 
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -688,9 +725,21 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row.
-       *  If the 'compute' variable is set to false the iteration over the row can
+       *
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       *
+       * where
+       *
+       * \e rowIdx is an index of the matrix row. 
+       *
+       * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
+       *  index of the matrix subdiagonal.
+       *
+       * \e columnIdx is a column index of the matrx element.
+       *
+       * \e value is a reference to the matrix element value. It can be used even for changing the matrix element value.
+       *
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can 
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
