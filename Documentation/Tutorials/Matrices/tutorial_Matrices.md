@@ -596,11 +596,11 @@ Similar way of the tridiagonal matrix setup is offered by the method `setElement
 \includelineno TridiagonalMatrixExample_setElements.cpp
 
 
-Here we create the matrix in two steps. Firstly, we setup the matrix dimensions by the appropriate constructor (line 24) and after that we setup the matrix elemets (line 25-45). The result looks the same as in the previous example:
+Here we create the matrix in two steps. Firstly, we setup the matrix dimensions by the appropriate constructor (line 24) and after that we setup the matrix elements (line 25-45). The result looks the same as in the previous example:
 
 \includelineno TridiagonalMatrixExample_setElements.out
 
-In the following example we create tridiagonal matrix with 5 rows and 5 columns (line 12-14) by the means of a shared pointer (\ref TNL::Pointers::SharedPointer) to make this work even on GPU. We set numbers 0,...,4 on the diagonal (line 16) and we print the matrix (line 18). Next we use a lambda function (lines 21-27) combined with parallel for (\ref TNL::Alfgorithms::ParallelFor) (line 35), to modify the matrix. The offdiagonal elements are set to 1 (lines 23 and 26) and for the diagonal elements, we change the sign (line 24).
+In the following example we create tridiagonal matrix with 5 rows and 5 columns (line 12-14) by the means of a shared pointer (\ref TNL::Pointers::SharedPointer) to make this work even on GPU. We set numbers 0,...,4 on the diagonal (line 16) and we print the matrix (line 18). Next we use a lambda function (lines 21-27) combined with parallel for (\ref TNL::Algorithms::ParallelFor) (line 35), to modify the matrix. The offdiagonal elements are set to 1 (lines 23 and 26) and for the diagonal elements, we change the sign (line 24).
 
 \includelineno TridiagonalMatrixExample_setElement.cpp
 
@@ -710,9 +710,9 @@ and it accepts the following parameters:
 * `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
+* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
 
-Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
 
 ### Tridiagonal matrix IO
 
@@ -720,14 +720,14 @@ The tridiagonal matrix can be saved to a file using a method `save` (\ref TNL::M
 
 ### Tridiagonal matrix view
 
-Similar to dense and sparse matrix view, tridiagonal matrix also offers its view for easier use with lambda functions. It represented by a templated class \ref TNL::Matrices::TridiagonalMatrixView with the following template parameters:
+Similar to dense and sparse matrix view, tridiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::TridiagonalMatrixView with the following template parameters:
 
 * `Real` is a type of matrix elements. 
 * `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
 * `Index` is a type for indexing the matrix elements and also row and column indexes.
 * `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
 
-The first main reason for using the dense matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::TridiagonalMatrix::setElement). The code looks as follows:
+The first main reason for using the matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::TridiagonalMatrix::setElement). The code looks as follows:
 
 \includelineno TridiagonalMatrixViewExample_setElement.cpp
 
@@ -746,7 +746,401 @@ So for the sake of using a matrix in lambda functions, the matrix view is better
 
 As we mentioned already, the tridiagonal matrix view offers almost all methods which the tridiagonal matrix does. So it can be easily used at almost any situation the same way as the tridiagonal matrix itself.
 
-
 ## Multidiagonal matrices <a name="multidiagonal_matrices"></a>
+
+Multidiagonal matrices are generalization of the tridiagonal matrix. It is a special type of sparse matrices with specific pattern of the nonzero matrix elements which are positioned only parallel along diagonal. See the following example:
+
+\f[
+  \left(
+  \begin{array}{ccccccc}
+   4  & -1  &  .  & -1  &  . & .  \\
+  -1  &  4  & -1  &  .  & -1 & .  \\
+   .  & -1  &  4  & -1  &  . & -1 \\
+  -1  & .   & -1  &  4  & -1 &  . \\
+   .  & -1  &  .  & -1  &  4 & -1 \\
+   .  &  .  & -1  &  .  & -1 &  4
+  \end{array}
+  \right)
+ \f]
+
+ We can see that the matrix elements lay on lines parallel to the main diagonal. Such lines can be expressed by their offsets from the main diagonal. On the following figure, each such line is depicted in different color:
+
+  \f[
+\begin{array}{ccc}
+\color{green}{-3} & .                & \color{cyan}{-1} \\
+\hline
+ \color{green}{*} & .                & \color{cyan}{*} \\
+ .                & \color{green}{*} & . \\
+ .                & .                & \color{green}{*} \\
+ .                & .                & . \\
+ .                & .                & . \\
+ .                & .                & . 
+\end{array}
+\left(
+  \begin{array}{ccccccc}
+ \color{blue}{0}    & \color{magenta}{1}   & .                   & \color{red}{3}      & .                   & . \\
+   \hline
+  \color{blue}{4}   & \color{magenta}{-1}  &  .                  & \color{red}{-1}     &  .                  & .  \\
+  \color{cyan}{-1}  & \color{blue}{4}      & \color{magenta}{-1} &  .                  & \color{red}{-1}     & .  \\
+   .                & \color{cyan}{-1}     & \color{blue}{4}     & \color{magenta}{-1} &  .                  & \color{red}{-1} \\
+  \color{green}{-1} & .                    & \color{cyan}{-1}    & \color{blue}{4}     & \color{magenta}{-1} &  . \\
+   .                & \color{green}{-1}    &  .                  & \color{cyan}{-1}    &  \color{blue}{4}    & \color{magenta}{-1} \\
+   .                &  .                   & \color{green}{-1}   &  .                  & \color{cyan}{-1}    &  \color{blue}{4}
+  \end{array}
+  \right)
+ \f]
+
+ In this matrix, the offsets reads as \f$\{-3, -1, 0, +1, +3\}\f$. It also means that the column indexes on \f$i-\f$th row are \f$\{i-3, i-1, i, i+1, i+3\}\f$ (where the resulting index is non-negative and  smaller than the number of matrix columns). An advantage is that, similar to the tridiagonal matrix (\ref TNL::Matrices::TridiagonalMatrix), we do not store the column indexes explicitly as it is in \ref SparseMatrix. This can reduce significantly the  memory requirements which also means better performance. See the following table for the storage requirements comparison between \ref TNL::Matrices::MultidiagonalMatrix and \ref TNL::Matrices::SparseMatrix.
+
+  Real   | Index     |      SparseMatrix    | MultidiagonalMatrix | Ratio
+ --------|-----------|----------------------|---------------------|--------
+  float  | 32-bit int| 8 bytes per element  | 4 bytes per element | 50%
+  double | 32-bit int| 12 bytes per element | 8 bytes per element | 75%
+  float  | 64-bit int| 12 bytes per element | 4 bytes per element | 30%
+  double | 64-bit int| 16 bytes per element | 8 bytes per element | 50%
+ 
+Multidiagonal matrix is a templated class defined in the namespace \ref TNL::Matrices. It has six template parameters:
+
+* `Real` is a type of the matrix elements. It is `double` by default.
+* `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
+* `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
+* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
+* `IndexAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements offsets. By default, it is the default allocator for given `Index` type and `Device` type -- see \ref TNL::Allocators::Default.
+
+### Multidiagonal matrix allocation and initiation
+
+The construction of the multidiagonal matrix differs from the tridiagonal mainly in necessity to define the offsets of "subdiagonals" as we demonstrate on the following example which creates matrix like of the following form:
+
+\f[
+\left(
+\begin{array}{cccccccccccccccc}
+1  &  . &    &    &  . &    &    &    &    &    &    &    &     &    &    &   \\
+.  &  1 &  . &    &    &  . &    &    &    &    &    &    &     &    &    &   \\
+   &  . &  1 &  . &    &    & .  &    &    &    &    &    &     &    &    &   \\
+   &    &  . &  1 &  . &    &    &  . &    &    &    &    &     &    &    &   \\
+.  &    &    &  . &  1 & .  &    &    & .  &    &    &    &     &    &    &   \\
+   & -1 &    &    & -1 & 1  & -1 &    &    & -1 &    &    &     &    &    &   \\
+   &    & -1 &    &    & -1 &  1 & -1 &    &    & -1 &    &     &    &    &   \\
+   &    &    & .  &    &    &  . &  1 & .  &    &    & .  &     &    &    &   \\
+   &    &    &    & .  &    &    &  . & 1  &  . &    &    &  .  &    &    &   \\
+   &    &    &    &    & -1 &    &    & -1 &  1 & -1 &    &     & -1 &    &   \\
+   &    &    &    &    &    & -1 &    &    & -1 &  1 & -1 &     &    & -1 &   \\
+   &    &    &    &    &    &    &  . &    &    &  . &  1 &  .  &    &    & . \\
+   &    &    &    &    &    &    &    & .  &    &    &  . &  1  & .  &    &   \\
+   &    &    &    &    &    &    &    &    &  . &    &    &  .  & 1  & .  &   \\
+   &    &    &    &    &    &    &    &    &    &  . &    &     & .  & 1  & . \\
+   &    &    &    &    &    &    &    &    &    &    & .  &     &    & .  & 1
+\end{array}
+\right)
+\f]
+
+The code reads as:
+
+\includelineno MultidiagonalMatrixExample_Constructor.cpp
+
+The matrix from this example arises from a discretization of the [Laplace operator in 2D by the finite difference method](https://en.wikipedia.org/wiki/Discrete_Poisson_equation). We use this example because it is very frequent numerical problem. If the reader, however, is not familiar with the finite difference method, please, do not be scared, we will just create the matrix mentioned above.
+
+We firstly compute the matrix size (`matrixSize`) based on the numerical grid dimensions on the line 16. The subdiagonals offsets are defined by the numerical grid size and since it is four in this example the offsets read as \f$\left\{-4,-1,0,1,4 \right\} \f$ or `{ -gridSize, -1, 0, 1, gridSize}` (line 17). Here we store the offsets (referred as `shifts`) in vector (\ref TNL::Containers::Vector). Next we use a constructor with matrix dimensions and offsets passed via TNL vector (line 18). Next we fetch matrix view (line 19) (see [Multidiagonal matrix view](#multidiagonal_matrix_view)).
+
+The matrix is constructed by iterating over particular nodes of the numerical grid. Each node corresponed to one matrix row. This is why the lambda function `f` (lines 20-35) take two indexes `i` and `j` (line 20). Their values are coordinates of the twodimensional numerical grid. Based on these coodrinates we compute index (`elementIdx`) of the corresponding matrix row (line 21). We fetch matrix row (`row`) by calling the `getRow` method (\ref TNL::Matrices::MutlidiagonalMatrix::getRow) (line 22). Depending on the grid node coordinates we set either the boundary conditions (lines 23-26) for the boundary nodes (those laying on the boundary of the grid and so their coordinates fulfil the condition `i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1` ) for which se set onle diagonal element to 1. The inner nodes of the numerical grid are handled on the lines 29-33 where we set coefficients approximating the Laplace operator. We use the method `setElement` of the matrix row (\ref TNL::Matrices::MultidiagonalMatrixRow::setElement) which takes the local index of the nonzero matrix element as the first parametr and the new value of the element as the second parameter. The local indexes, in fact, refer to particular subdiagonals as depicted on the following figure (in blue): 
+
+\f[
+\begin{array}{cccc}
+\color{blue}{-4} &   &   & \color{blue}{-1} \\
+\hline
+.  &   &   & .  \\
+   & . &   &    \\
+   &   & . &    \\
+   &   &   & .  \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &   
+\end{array}
+\left(
+\begin{array}{cccccccccccccccc}
+\color{blue}{0}  &  \color{blue}{1} &    &    &  \color{blue}{4} &    &    &    &    &    &    &    &     &    &    &   \\
+\hline
+1  &  . &    &    &  . &    &    &    &    &    &    &    &     &    &    &   \\
+.  &  1 &  . &    &    &  . &    &    &    &    &    &    &     &    &    &   \\
+   &  . &  1 &  . &    &    & .  &    &    &    &    &    &     &    &    &   \\
+   &    &  . &  1 &  . &    &    &  . &    &    &    &    &     &    &    &   \\
+.  &    &    &  . &  1 & .  &    &    & .  &    &    &    &     &    &    &   \\
+   & -1 &    &    & -1 & 1  & -1 &    &    & -1 &    &    &     &    &    &   \\
+   &    & -1 &    &    & -1 &  1 & -1 &    &    & -1 &    &     &    &    &   \\
+   &    &    & .  &    &    &  . &  1 & .  &    &    & .  &     &    &    &   \\
+   &    &    &    & .  &    &    &  . & 1  &  . &    &    &  .  &    &    &   \\
+   &    &    &    &    & -1 &    &    & -1 &  1 & -1 &    &     & -1 &    &   \\
+   &    &    &    &    &    & -1 &    &    & -1 &  1 & -1 &     &    & -1 &   \\
+   &    &    &    &    &    &    &  . &    &    &  . &  1 &  .  &    &    & . \\
+   &    &    &    &    &    &    &    & .  &    &    &  . &  1  & .  &    &   \\
+   &    &    &    &    &    &    &    &    &  . &    &    &  .  & 1  & .  &   \\
+   &    &    &    &    &    &    &    &    &    &  . &    &     & .  & 1  & . \\
+   &    &    &    &    &    &    &    &    &    &    & .  &     &    & .  & 1
+\end{array}
+\right)
+\f]
+
+We use `ParallelFor2D` (\ref TNL::Algorithms::ParallelFor2D) to iterate over all nodes of the numerical grid (line 36) and apply the lambda function. Also note that for the sake of better memory alignemnt and faster acces to the matrix elements, we store all subdiagonals in complete form including the elemenets which are outside the matrix as depicted on the following figure where zeros stand for the padding artificial zero matrix elements
+
+\f[
+\begin{array}{cccc}
+0  &   &   & 0  \\
+   & 0 &   &    \\
+   &   & 0 &    \\
+   &   &   & 0  \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &   
+\end{array}
+\left(
+\begin{array}{cccccccccccccccc}
+1  &  0 &    &    &  0 &    &    &    &    &    &    &    &     &    &    &   \\
+0  &  1 &  0 &    &    &  0 &    &    &    &    &    &    &     &    &    &   \\
+   &  0 &  1 &  0 &    &    & 0  &    &    &    &    &    &     &    &    &   \\
+   &    &  0 &  1 &  0 &    &    &  0 &    &    &    &    &     &    &    &   \\
+0  &    &    &  0 &  1 & 0  &    &    & 0  &    &    &    &     &    &    &   \\
+   & -1 &    &    & -1 & 1  & -1 &    &    & -1 &    &    &     &    &    &   \\
+   &    & -1 &    &    & -1 &  1 & -1 &    &    & -1 &    &     &    &    &   \\
+   &    &    & 0  &    &    &  0 &  1 & 0  &    &    & 0  &     &    &    &   \\
+   &    &    &    & 0  &    &    &  0 & 1  &  0 &    &    &  0  &    &    &   \\
+   &    &    &    &    & -1 &    &    & -1 &  1 & -1 &    &     & -1 &    &   \\
+   &    &    &    &    &    & -1 &    &    & -1 &  1 & -1 &     &    & -1 &   \\
+   &    &    &    &    &    &    &  0 &    &    &  0 &  1 &  0  &    &    & 0 \\
+   &    &    &    &    &    &    &    & 0  &    &    &  0 &  1  & 0  &    &   \\
+   &    &    &    &    &    &    &    &    &  0 &    &    &  0  & 1  & 0  &   \\
+   &    &    &    &    &    &    &    &    &    &  0 &    &     & 0  & 1  & 0 \\
+   &    &    &    &    &    &    &    &    &    &    & 0  &     &    & 0  & 1
+\end{array}
+\right)
+\begin{array}
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+   &   &   &    \\
+0  &   &   &    \\
+   & 0 &   &    \\
+   &   & 0 &    \\
+0  &   &   & 0  
+\end{array}
+\f]
+
+
+The result looks as follows:
+
+\includelineno MultidiagonalMatrixExample_Constructor.out
+
+Slightly simpler way of doing the same is by using the constructor of multidiagonal matrix taking the subdiagonals offsets as an STL initializer list:
+
+\includelineno MultidiagonalMatrixExample_Constructor_init_list_1.cpp
+
+The only change is on the line 17 which reads as
+
+```
+TNL::Matrices::MultidiagonalMatrix< double, Device > matrix( matrixSize, matrixSize, { - gridSize, -1, 0, 1, gridSize } );
+```
+
+Here we call the mentioned cosntructor, which accepts the matrix dimensions (number of rows and columns) as first two parameters and the initializer list with the subdiagonal offsets as the last one. The result looks the same as in the previous example.
+
+There is also a constructor with initializer list for matrix elements values as demonstrated by the following example:
+
+\includelineno MultidiagonalMatrixExample_Constructor_init_list_2.cpp
+
+Here, we create a matrix which looks as 
+
+\f[
+\left(
+\begin{array}{cccccc}
+4  & -1 &    & -1 &    &    \\
+-1 &  4 & -1 &    & -1 &    \\
+   & -1 & 4  & -1 &    & -1 \\
+-1 &    & -1 &  4 & -1 &    \\
+   & -1 &    & -1 & 4  & -1 \\
+   &    & -1 &    & -1 &  4 \\
+\end{array}
+\right).
+\f]
+
+On the lines 25-46, we call the constructor which, in addition to matrix dimensions and subdiagonals offsets, accepts also initializer list of initializer lists with matrix elements values. Each embeded list corresponds to one matrix row and it contains values of matrix elements on particular subdiagonals including those which lies out of the matrix. The resuls looks as follows:
+
+\includelineno MultidiagonalMatrixExample_Constructor_init_list_2.out
+
+The matrix elements values can be changed the same way using the method method `setElements` (\ref TNL::Matrices::MutlidiagonalMatrix::setElements) which accepts the elements values in the same form of embedded initializer list. It just does not allow changing the subdiagonals offsets. For this purpose method `setDiagonalsOffsets` (\ref TNL::Matrices::MultidiagonalMatrix::setDiagonalsOffsets) can be used. Note, however, that this method deletes all current matrix elements.
+
+Another way of setting the matrix elements is by means of the method `setElement` (\ref TNL::Matrices::MutlidiagonalMatrix::setElement). It works the same way as with other matrix types as we can see in the follofwing example:
+
+\includelineno MultidiagonalMatrixExample_setElement.cpp
+
+This examples shows that the method `setElement` can be used both on the host (CPU) (line 17) as well as in the GPU kernels (lines 23-27). Here we use shared pointer (\ref TNL::Pointers::SharedPointer) (line 15) to pass the multidiagonal matrix to lambda function `f` (lines 22-28) which may run on GPU. In this case we have to synchronize to share pointer explicitly by calling the function \ref TNL::Pointers::synchronizeSmartPointersOnDevice. To avoid this inconvenience the same can be achieved with the multidiagonal matrix view:
+
+\includelineno MultidiagonalMatrixViewExample_setElement.cpp
+
+In this example, we fetch the matrix view (line 16) immediately after creating the matrix itself (line 15). Note that the matrix view can be obtained from the matrix at any time while the shared pointer only at the time of the matrix creation. On the other hand, if the original matrix is changed, all matrix views become invalid which is not true for the shared pointers. So it is better to fetch the matrix view immediately before we use it to avoid the sitaution that you would use invalid matrix view. The method `setElement` (\ref TNL::Matrices::MutlidiagonalMatrixView::setElement) can be used on both host (CPU) (line 19) and the device (lines 25-29) if the lambda function `f` (lines 24-30) runs in GPU kernel. The result of both examles looks the same:
+
+\includelineno MultidiagonalMatrixViewExample_setElement.out
+
+Another way for setting the matrix elements is by means of the multidiagonal matrix row:
+
+\includelineno MultidiagonalMatrixViewExample_getRow.cpp
+
+Here we use the matrix view again (line 19) and in the lambda function `f` which serves for the matrix elements setting, we fetch the matrix row just at the beginning (line 22). Next we use the method `setElement` (\ref TNL::Matrices::MultidiagonalMatrixRow::setElement) which accepts two parameters. The first is the local index of the matrix element which in case of the multidiagonal matrix agrees with index of the subdiagonal as demonstrated on this figure which shows just the matrix we are creating in this example (the subdiagonal indexes are depicted in blue color):
+
+\f[
+\begin{array}{c}
+\color{blue}{0} \\
+\hline
+* \\
+  \\
+  \\
+  \\
+~
+\end{array}
+\left(
+\begin{array}{ccccc}
+ \color{blue}{1} &  \color{blue}{2} &    &    &    \\
+ \hline
+2  & -1 &    &    &    \\
+-1 &  2 & -1 &    &    \\
+   & -1 &  2 & -1 &    \\
+   &    & -1 &  2 & -1 \\ 
+   &    &    & -1 &  2
+\end{array}
+\right)
+\f]
+
+The second parameter of the method `setElement` is the new matrix elements value. An adventage of this method is that it can acces  the matrix elements faster. The output of this example looks as follows:
+
+\includelineno MultidiagonalMatrixViewExample_getRow.out
+
+Similar and even a bit simpler way of setting the matrix elements is offered by the method `forRows` (\ref TNL::Matrices::MultidiagonalMatrix::forRows, \ref TNL::Matrices::MultidiagonalMatrixView::forRows) as demonstrated in the following example:
+
+\includelineno MultidiagonalMatrixViewExample_forRows.cpp
+
+In this case, we need to provide a lambda function `f` (lines 27-43) which is called for each matrix row just by the method `forRows` (line 44). The lambda function `f` provides the following parameters
+
+* `rowIdx` is an index iof the matrix row.
+* `localIdx` is in index of the matrix subdiagonal.
+* `columnIdx` is a column index of the matrix element.
+* `value` is a reference to the matrix element value. It can be used even for changing the value.
+* `compute` is a reference to boolean. If it is set to false, the iteration over the matrix row can be stopped.
+
+In this example, the matrix element value depends only on the subdiagonal index `localIdx` as we can see on the line 42. The result looks as follows:
+
+\includelineno MultidiagonalMatrixExample_forRows.out
+
+### Flexible reduction in matrix rows
+
+The flexible parallel reduction in rows for multidiagonal matrices works the same way as for other matrix types. It consits of three lambda functions:
+
+1. `fetch` reads and preproces data entering the flexible parallel reduction.
+2. `reduce` performs the reduction operation.
+3. `keep` stores the results from each matrix row.
+
+See the following example:
+
+\includelineno MultidiagonalMatrixExample_rowsReduction.cpp
+
+On the lines 10-29, we first create the following matrix
+
+\f[
+\left(
+\begin{array}{ccccc}
+1  &   &   &   &  \\
+2  & 1 &   &   &  \\
+3  & 2 & 1 &   &  \\
+   & 3 & 2 & 1 &  \\
+   &   & 3 & 2 & 1
+\end{array}
+\right)
+\f]
+
+and we aim to compute maximal value in each row. We first create vector `rowMax` into which we will store the results and fetch it view `rowMaxView` (line 39). Next we prepare necessary lambda functions:
+
+* `fetch` (lines 44-46) is responsible for reading the matrix element value which is stored in the constant reference `value` and for returning its absolute value. The other parameters `rowIdx` and `columnIdx` correspond to row and column indexes respectively and they are omitted in our example.
+* `reduce` (lines 51-53) returns maximum value of the two input values `a` and `b`.
+* `keep` (line 58-60) stores the input `value` at the corresponding position, given by the row index `rowIdx`, in the ouput vector view `rowMaxView`.
+
+Finaly we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMatrix::rowsReduction) with parameters telling the interval of rows to be processed (the first and second parameter), the lambda functions `fetch`, `reduce` and `keep`, and the idempotent element for the reduction operation which is the lowest number of given type (\ref std::numeric_limits< double >::lowest ). The result looks as follows:
+
+\includelineno MultidiagonalMatrixExample_rowsReduction.out
+
+### Multidiagonal matrix-vector product
+
+Similar to matrix types, matrix-vector multiplication is represented by the method `vectorProduct` (\ref TNL::Matrices::MultidiagonalMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of the input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
+
+```
+outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
+```
+
+and it accepts the following parameters:
+
+* `inVector` is the input vector having the same number of elements as the number of matrix columns.
+* `outVector` is the output vector having the same number of elements as the number of matrix rows.
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
+* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
+* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
+
+Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+
+### Multidiagonal matrix IO
+
+The multidiagonal matrix can be saved to a file using a method `save` (\ref TNL::Matrices::MultiidiagonalMatrix::save) and restored with a method `load` (\ref TNL::Matrices::MultidiagonalMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::MultidiagonalMatrix::print) can be used.
+
+### Multidiagonal matrix view <a name="multidiagonal_matrix_view"></a>
+
+Multidiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::MultidiagonalMatrixView with the following template parameters:
+
+* `Real` is a type of matrix elements. 
+* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
+* `Index` is a type for indexing the matrix elements and also row and column indexes.
+* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
+
+The first main reason for using the matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::MultidiagonalMatrix::setElement). The code looks as follows:
+
+\includelineno MultidiagonalMatrixViewExample_setElement.cpp
+
+The matrix view is obtained by the method `getView` (\ref TNL::Matrices::MultidiagonalMatrix::getView) on the line 13. We firsrt show, that the view can be used the same way as common matrix (lines 14 and 15) but it can be used the same way even in lambda functions as we can see on the lines 20-26. Compare it with the same example using shared pointer instead of the matrix view:
+
+\includelineno MultidiagonalMatrixExample_setElement.cpp
+
+The main disadventages are:
+
+1. The shared pointer must be created together with the matrix (line 14) and there is no way to get it later. The matrix view can be obtained from any matrix at any time.
+2. We have to synchronize shared pointers explicitly by calling the function \ref TNL::Pointers::synchronizeSmartPointersOnDevice (line 34).
+
+So for the sake of using a matrix in lambda functions, the matrix view is better tool. The result of both examples looks as:
+
+\include MultidiagonalMatrixExample_setElement.out
+
+As we mentioned already, the multidiagonal matrix view offers almost all methods which the multidiagonal matrix does. So it can be easily used at almost any situation the same way as the multidiagonal matrix itself.
+
+TODO: Move to explanation of the matrix view to introduction.
 
 ## Lambda matrices <a name="lambda_matrices"></a>

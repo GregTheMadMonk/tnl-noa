@@ -8,14 +8,11 @@ template< typename Device >
 void getRowExample()
 {
    const int matrixSize( 5 );
-   auto diagonalsOffsets = { -1, 0, 1 }; // Variadic templates in SharedPointer
-                                         // constructor do not recognize initializer
-                                         // list so we give it a hint.
    using MatrixType = TNL::Matrices::MultidiagonalMatrix< double, Device >;
    MatrixType matrix(
       matrixSize,  // number of matrix rows
       matrixSize,  // number of matrix columns
-      diagonalsOffsets );
+      { -1, 0, 1 } );
    auto view = matrix.getView();
 
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
