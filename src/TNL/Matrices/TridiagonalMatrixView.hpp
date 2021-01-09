@@ -695,7 +695,7 @@ void TridiagonalMatrixView< Real, Device, Index, Organization >::print( std::ost
          {
             auto v = this->getElement( row, column );
             if( v )
-               str << " Col:" << column << "->" << v << "\t";
+               str << column << ":" << v << "\t";
          }
       str << std::endl;
    }

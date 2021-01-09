@@ -1264,54 +1264,6 @@ void test_SaveAndLoad()
    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
 }
 
-template< typename Matrix >
-void test_Print()
-{
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-
-   /*
-    * Sets up the following 5x4 sparse matrix:
-    *
-    *    /  1  2  0  0 \
-    *    |  5  6  7  0 |
-    *    |  0 10 11 12 |
-    *    |  0  0 15 16 |
-    *    \  0  0  0 20 /
-    */
-   const IndexType rows = 5;
-   const IndexType cols = 4;
-
-   Matrix m( rows, cols );
-
-   RealType value = 1;
-   for( IndexType i = 0; i < rows; i++)
-      for( IndexType j = 0; j < cols; j++)
-      {
-         if( abs( i - j ) <= 1 )
-            m.setElement( i, j, value );
-         value++;
-      }
-
-   std::stringstream printed;
-   std::stringstream couted;
-
-   //change the underlying buffer and save the old buffer
-   auto old_buf = std::cout.rdbuf(printed.rdbuf());
-
-   m.print( std::cout ); //all the std::cout goes to ss
-
-   std::cout.rdbuf(old_buf); //reset
-   couted << "Row: 0 ->  Col:0->1\t Col:1->2\t\n"
-             "Row: 1 ->  Col:0->5\t Col:1->6\t Col:2->7\t\n"
-             "Row: 2 ->  Col:1->10\t Col:2->11\t Col:3->12\t\n"
-             "Row: 3 ->  Col:2->15\t Col:3->16\t\n"
-             "Row: 4 ->  Col:3->20\t\n";
-
-   EXPECT_EQ( printed.str(), couted.str() );
-}
-
 // test fixture for typed tests
 template< typename Matrix >
 class MatrixTest : public ::testing::Test
@@ -1476,13 +1428,6 @@ TYPED_TEST( MatrixTest, saveAndLoadTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SaveAndLoad< MatrixType >();
-}
-
-TYPED_TEST( MatrixTest, printTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Print< MatrixType >();
 }
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
