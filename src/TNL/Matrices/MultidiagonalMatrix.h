@@ -347,8 +347,6 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return vector with diagonals offsets.
        */
       const DiagonalsOffsetsType& getDiagonalsOffsets() const;
-      template< typename RowCapacitiesVector >
-      void setRowCapacities( const RowCapacitiesVector& rowCapacities );
 
       /**
        * \brief Set matrix elements from an initializer list.
