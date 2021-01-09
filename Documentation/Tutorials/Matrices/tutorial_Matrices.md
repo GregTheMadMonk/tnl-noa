@@ -1214,6 +1214,18 @@ Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices
 
 \includelineno LambdaMatrixExample_forRows.out
 
+At the end of this part, we show two more examples, how to express a matrix approximating the Laplace operator:
+
+\includelineno LambdaMatrixExample_Laplace.cpp
+
+The following is another way of doing the same but precomputed supporting vectors:
+
+\includelineno LambdaMatrixExample_Laplace_2.cpp
+
+The result of both examples looks as follows:
+
+\includelineno LambdaMatrixExample_Laplace.out
+
 ### Flexible reduction in matrix rows
 
 The reduction of matrix rows is available for the lambda matrices as well. See the follogin example:
