@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Matrices/TridiagonalMatrixView.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -693,9 +694,13 @@ void TridiagonalMatrixView< Real, Device, Index, Organization >::print( std::ost
       for( IndexType column = row - 1; column < row + 2; column++ )
          if( column >= 0 && column < this->columns )
          {
-            auto v = this->getElement( row, column );
-            if( v )
-               str << column << ":" << v << "\t";
+            auto value = this->getElement( row, column );
+            if( value )
+            {
+               std::stringstream str_;
+               str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+               str << std::setw( 10 ) << str_.str();
+            }
          }
       str << std::endl;
    }
