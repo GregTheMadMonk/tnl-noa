@@ -37,23 +37,23 @@ void laplaceOperatorMatrix()
             {                                                 // and the others to -1
                case 0:
                   columnIdx = rowIdx - gridSize;
-                  value = -1;
+                  value = 1;
                   break;
                case 1:
                   columnIdx = rowIdx - 1;
-                  value = -1;
+                  value = 1;
                   break;
                case 2:
                   columnIdx = rowIdx;
-                  value = 4;
+                  value = -4;
                   break;
                case 3:
                   columnIdx = rowIdx + 1;
-                  value = -1;
+                  value = 1;
                   break;
                case 4:
                   columnIdx = rowIdx + gridSize;
-                  value = -1;
+                  value = 1;
                   break;
             }
          }
