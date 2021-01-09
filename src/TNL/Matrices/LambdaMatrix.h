@@ -19,29 +19,29 @@ namespace Matrices {
 
 /**
  * \brief "Matrix-free matrix" based on lambda functions.
- * 
+ *
  * The elements of this matrix are not stored explicitly in memory but
  * implicitly on a form of lambda functions.
- * 
+ *
  * \tparam MatrixElementsLambda is a lambda function returning matrix elements values and positions.
- * 
+ *
  *    It has the following form:
- * 
+ *
  *   `matrixElements( Index rows, Index columns, Index rowIdx, Index localIdx, Index& columnIdx, Real& value )`
- * 
+ *
  *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns, \e rowIdx is the index of matrix row being queried,
  *    \e localIdx is the rank of the non-zero element in given row, \e columnIdx is a column index of the matrix element computed by
  *    this lambda and \e value is a value of the matrix element computed by this lambda.
  * \tparam CompressedRowLengthsLambda is a lambda function returning a number of non-zero elements in each row.
- * 
+ *
  *    It has the following form:
- * 
+ *
  *    `rowLengths( Index rows, Index columns, Index rowIdx ) -> IndexType`
- * 
+ *
  *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns and \e rowIdx is an index of the row being queried.
  *
  * \tparam Real is a type of matrix elements values.
- * \tparam Device is a device on which the lambda functions will be evaluated. 
+ * \tparam Device is a device on which the lambda functions will be evaluated.
  * \ẗparam Index is a type to be used for indexing.
  */
 template< typename MatrixElementsLambda,
@@ -73,13 +73,13 @@ class LambdaMatrix
 
       /**
        * \brief Constructor with lambda functions defining the matrix elements.
-       * 
+       *
        * Note: It might be difficult to express the types of the lambdas. For easier creation of
        * \e LambdaMatrix you may use \ref LambdaMatrixFactory.
-       * 
+       *
        * \param matrixElements is a lambda function giving matrix elements position and value.
        * \param compressedRowLentghs is a lambda function returning how many non-zero matrix elements are in given row.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_Constructor.cpp
        * \par Output
@@ -90,15 +90,15 @@ class LambdaMatrix
 
       /**
        * \brief Constructor with matrix dimensions and lambda functions defining the matrix elements.
-       * 
+       *
        * Note: It might be difficult to express the types of the lambdas. For easier creation of
        * \e LambdaMatrix you may use \ref LambdaMatrixFactory.
-       * 
+       *
        * \param rows is a number of the matrix rows.
        * \param columns is a number of the matrix columns.
        * \param matrixElements is a lambda function giving matrix elements position and value.
        * \param compressedRowLentghs is a lambda function returning how many non-zero matrix elements are in given row.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_Constructor.cpp
        * \par Output
@@ -111,21 +111,21 @@ class LambdaMatrix
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param matrix is input matrix.
        */
       LambdaMatrix( const LambdaMatrix& matrix ) = default;
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param matrix is input matrix.
        */
       LambdaMatrix( LambdaMatrix&& matrix ) = default;
 
       /**
        * \brief Set number of rows and columns of this matrix.
-       * 
+       *
        * \param rows is the number of matrix rows.
        * \param columns is the number of matrix columns.
        */
@@ -134,7 +134,7 @@ class LambdaMatrix
 
       /**
        * \brief Returns a number of matrix rows.
-       * 
+       *
        * \return number of matrix rows.
        */
       __cuda_callable__
@@ -142,7 +142,7 @@ class LambdaMatrix
 
       /**
        * \brief Returns a number of matrix columns.
-       * 
+       *
        * \return number of matrix columns.
        */
       __cuda_callable__
@@ -150,10 +150,10 @@ class LambdaMatrix
 
       /**
        * \brief Computes number of non-zeros in each row.
-       * 
+       *
        * \param rowLengths is a vector into which the number of non-zeros in each row
        * will be stored.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_getCompressedRowLengths.cpp
        * \par Output
@@ -164,9 +164,9 @@ class LambdaMatrix
 
       /**
        * \brief Returns number of non-zero matrix elements.
-       * 
+       *
        * \return number of all non-zero matrix elements.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_getElementsCount.cpp
        * \par Output
@@ -176,10 +176,10 @@ class LambdaMatrix
 
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
-       * 
+       *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
-       * 
+       *
        * \return value of given matrix element.
        */
       RealType getElement( const IndexType row,
@@ -187,7 +187,7 @@ class LambdaMatrix
 
       /**
        * \brief Method for performing general reduction on matrix rows.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -196,14 +196,14 @@ class LambdaMatrix
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_rowsReduction.cpp
        * \par Output
@@ -214,7 +214,7 @@ class LambdaMatrix
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -223,12 +223,12 @@ class LambdaMatrix
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_allRowsReduction.cpp
        * \par Output
@@ -239,18 +239,18 @@ class LambdaMatrix
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
-       * 
+       *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
        *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_forRows.cpp
        * \par Output
@@ -261,12 +261,12 @@ class LambdaMatrix
 
       /**
        * \brief This method calls \e forRows for all matrix rows (for constant instances).
-       * 
+       *
        * See \ref LambdaMatrix::forRows.
-       * 
+       *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_forAllRows.cpp
        * \par Output
@@ -277,16 +277,16 @@ class LambdaMatrix
 
       /**
        * \brief Computes product of matrix and vector.
-       * 
+       *
        * More precisely, it computes:
-       * 
+       *
        * `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector`
-       * 
+       *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
        * \tparam OutVector is type of output vector. It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
-       * 
+       *
        * \param inVector is input vector.
        * \param outVector is output vector.
        * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
@@ -315,7 +315,7 @@ class LambdaMatrix
 
       /**
        * \brief Method for printing the matrix to output stream.
-       * 
+       *
        * \param str is the output stream.
        */
       void print( std::ostream& str ) const;
@@ -331,7 +331,7 @@ class LambdaMatrix
 
 /**
  * \brief Insertion operator for dense matrix and output stream.
- * 
+ *
  * \param str is the output stream.
  * \param matrix is the lambda matrix.
  * \return reference to the stream.
@@ -345,9 +345,9 @@ std::ostream& operator<< ( std::ostream& str, const LambdaMatrix< MatrixElements
 
 /**
  * \brief Helper class for creating instances of LambdaMatrix.
- * 
+ *
  * See \ref LambdaMatrix.
- * 
+ *
  * \param matrixElementsLambda
  * \param compressedRowLengthsLambda
  */
@@ -361,12 +361,12 @@ struct LambdaMatrixFactory
 
    /**
     * \brief Creates lambda matrix with given lambda functions.
-    * 
+    *
     * \param matrixElementsLambda is a lambda function evaluating matrix elements.
     * \param compressedRowLengthsLambda is a lambda function returning number of
     *    non-zero matrix elements in given \e row.
     * \return instance of LambdaMatrix.
-    * 
+    *
     * \par Example
     * \include Matrices/LambdaMatrix/LambdaMatrixExample_Constructor.cpp
     * \par Output
@@ -394,14 +394,14 @@ struct LambdaMatrixFactory
 
    /**
     * \brief Creates lambda matrix with given dimensions and lambda functions.
-    * 
+    *
     * \param rows is number of matrix rows.
     * \param columns is number of matrix columns.
     * \param matrixElementsLambda is a lambda function evaluating matrix elements.
     * \param compressedRowLengthsLambda is a lambda function returning number of
     *    non-zero matrix elements in given \e row.
     * \return instance of LambdaMatrix.
-    * 
+    *
     * \par Example
     * \include Matrices/LambdaMatrix/LambdaMatrixExample_Constructor.cpp
     * \par Output
