@@ -23,7 +23,7 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_rowsReduction_vectorProduct >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_rowsReduction_vectorProduct.out
                        OUTPUT DenseMatrixExample_rowsReduction_vectorProduct.out )
-   
+
    CUDA_ADD_EXECUTABLE( DenseMatrixExample_rowsReduction_maxNorm DenseMatrixExample_rowsReduction_maxNorm.cu )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_rowsReduction_maxNorm >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_rowsReduction_maxNorm.out
@@ -94,15 +94,17 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_setElement.out
                        OUTPUT SparseMatrixViewExample_setElement.out )
 
+   CUDA_ADD_EXECUTABLE( MatrixSetup_Benchmark_cuda MatrixSetup_Benchmark.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MatrixSetup_Benchmark_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MatrixSetup_Benchmark.out
+                        OUTPUT MatrixSetup_Benchmark.out )
 ELSE()
-#   ADD_EXECUTABLE( UniquePointerExample UniquePointerExample.cpp )
-#   ADD_CUSTOM_COMMAND( COMMAND UniquePointerExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UniquePointerExample.out OUTPUT UniquePointerExample.out )
+   ADD_EXECUTABLE( MatrixSetup_Benchmark MatrixSetup_Benchmark_cuda.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND MatrixSetup_Benchmark >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MatrixSetup_Benchmark.out
+                        OUTPUT MatrixSetup_Benchmark.out )
 ENDIF()
-#
-#ADD_EXECUTABLE( UniquePointerHostExample UniquePointerHostExample.cpp )
-#ADD_CUSTOM_COMMAND( COMMAND UniquePointerHostExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UniquePointerHostExample.out OUTPUT UniquePointerHostExample.out )
-#
-#
+
 IF( BUILD_CUDA )
 ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    DenseMatrixExample_Constructor_init_list.out
@@ -122,7 +124,12 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
    SparseMatrixViewExample_setElement.out
+   MatrixSetup_Benchmark.out
  )
+ELSE()
+ADD_CUSTOM_TARGET( TutorialsMatrices ALL DEPENDS
+   MatrixSetup_Benchmark.out
+)
 ENDIF()
 #
 #ADD_CUSTOM_TARGET( TutorialsPointers ALL DEPENDS
