@@ -8,13 +8,14 @@ TNL offers several types of matrices like dense (\ref TNL::Matrices::DenseMatrix
 1. [Overview of matrix types](#overview_of_matrix_types)
 2. [Allocation and setup of different matrix types](#allocation_and_setup_of_different_matrix_types)
    1. [Dense matrices](#dense_matrices_setup)
-   2. [Sparse matrices](#sparse_matrices)_setup
+   2. [Sparse matrices](#sparse_matrices_setup)
    3. [Tridiagonal matrices](#tridiagonal_matrices_setup)
    4. [Multidiagonal matrices](#multidiagonal_matrices_setup)
    5. [Lambda matrices](#lambda_matrices_setup)
-3. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
-4. [Matrix-vector product](#matrix_vector_product)
-5. [Matrix I/O operations](#matrix_io_operations)
+3. [Matrix view](#matrix_view)
+4. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
+5. [Matrix-vector product](#matrix_vector_product)
+6. [Matrix I/O operations](#matrix_io_operations)
 
 
 ## Overview of matrix types <a name="overview_of_matrix_types"></a>
@@ -106,6 +107,38 @@ In this table:
 * **Fill ratio** is maximal percentage of the nonzero matrix elements until which the sparse matrix can perform better.
 
 ## Allocation and setup of different matrix types <a name="allocation_and_setup_of_different_matrix_types"></a>
+
+There are several ways how to create new matrix:
+
+1. **Initializer lists** allow to create matrix from the C++ initializer lists. The matrix elements must be therefore encoded in the source code and so it is useful for rather smaller matrices. Methods and constructors with initializer lists are user friendly and simple to use. It is a good choice for tool problems with small matrices.
+2. **STL map** can be used for creation of sparse matrices only. The user first insert all matrix elements together with their coordinates into `std::map` based on which the sparse matrix is created in the next step. It is simple and user friendly approach suitable for creation of large matrices. An advantage is that we do not need to know the distribution of the matrix elements in matrix rows in advance like we do in other ways of matrix construction. This makes the use of STL map suitable for combining of sparse matrices in TNL with other numerical packages. However, the sparse matrix is constructed on the host and then copied on GPU if necessary. Therefor, this approach is not a good choice if fast and efficient matrix construction is required.
+3. **Methods `setElement` and `addElement` called from the host** allows to change particular matrix elements. The methods can be called from host even for matrices allocated on GPU. In this case, however, the matrix elements are transferred on GPU one by one which is very inefficient. If the matrix is allocated on the host system (CPU), the efficiency is good. In case of sparse matrices, one must set row capacities (i.e. maximal number of nonzero elements in each row) before using these methods. If the row capacity is exceeded, the matrix has to be reallocated and all matrix elements are lost.
+4. **Methods `setElement` and `addElement` called from native device** allows to do efficient matrix elements setup even on devices (GPUs). In this case, the methods must be called from a GPU kernel or a lambda function combined with parallel for (\ref TNL::Algorithms::ParallelFor). The user get very good performance even when manipulating matrix allocated on GPU. On the other hand, only data structures allocated on GPUs can be used in the kernel or lambda function. The the matrix can be accessed in the GPU kernel or lambda function by means of [matrix view](#matrix_view) or the shared pointer (\ref TNL::Pointers::SharedPointer).
+5. **Method `getRow` combined with `ParallelFor`** is very simillar to the previous one. The difference is that with first fetch helper object called *matrix row* which is linked to particular matrix row. Using methods of this object, one may change the matrix elements in given matrix row. An advantage is that the access to the matrix row is resolved only once for all elements in the row. In some more sophisticated sparse matrix formats, this can be nontrivial operation and this approach may slightly improve the performance. Another advantage for sparse matrices is that we access the matrix elements based on their *local index* in the row which is something like a rank of the nonzero element in the row. This is more efficient than adressing the matrix elements by the column indexes which requires searching in the matrix row. So this may significantly improve the performance of setup of sparse matrices. When it comes to dense matrices, there should not be great difference in performance compared to use of the methods `setElement` and `getElement`. Note that when the method is called from GPU kernel or lambda function , only data structures allocated on GPU can be accessed and the matrix must be made accessible by the means of.
+6. **Method `forRows`** this approach is very similar to the previous one but it avoids using `ParallelFor` and necessity of passing the matrix to GPU kernels by matrix view or shared pointers.
+
+The following table shows pros and cons of particular mathods:
+
+|  Method                                 |   Pros                                                                 | Cons                                                                  |
+|:----------------------------------------|:-----------------------------------------------------------------------|:----------------------------------------------------------------------|
+| **Initializer list**                    | Simple.                                                                | Only for small matrices.                                              |
+| **STL map**                             | Simplest of all methods for sparse matrices.                           | Higher memory requirements, slow transfer on GPU.                     |
+| **[set,add]Element on host**            | Simple.                                                                | Requires setting of row capacities, slow transfer on GPU.             |
+| **[set,add]Element on native device**   | Good efficiency.                                                       | Requires setting of row capacities.                                   |
+|                                         |                                                                        | Requires writting GPU kernel or lambda function.                      |
+|                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
+| **getRow and ParallelFor**              | Best efficiency for sparse matrices.                                   | Requires setting of row capacities.                                   |
+|                                         |                                                                        | Requires writting GPU kernel or lambda function.                      |
+|                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
+|                                         |                                                                        | Use of matrix local indexes can be less intuitive.                    |
+| **forRows**                             | Best efficiency for sparse matrices.                                   | Requires setting of row capacities.                                   |
+|                                         | Avoid use of matrix view or shared pointer in kernels/lambda function. | Requires writting GPU kernel or lambda function.                      |
+|                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
+|                                         |                                                                        | Use of matrix local indexes is less intuitive.                        |
+
+Though it may seem that the later methods come with more cons than pros they offer much higher performance and we believe they even them are still very user friendly. On the other hand, if the matrix setup performance is not a priority the use the simple but slow method can still be a good choice.
+
+
 
 ### Dense matrices <a name="dense_matrices_setup"></a>
 
@@ -868,7 +901,7 @@ The lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a templated class with t
 The lambda function `MatrixElementsLambda` is supposed to have the following declaration:
 
 ```
-matrixElements( Index rows, 
+matrixElements( Index rows,
                 Index columns,
                 Index row,
                 Index localIdx,
@@ -887,7 +920,7 @@ where the particular parameterts have the following meaning:
 The lambda function `CompressedRowLengthsLambda` is supposed to look like this:
 
 ```
-rowLengths( Index rows, 
+rowLengths( Index rows,
             Index columns,
             Index row ) -> Index
 ```
@@ -918,7 +951,7 @@ Of course, the lambda matrix has the same interface as other matrix types. The f
 
 \includelineno LambdaMatrixExample_forRows.cpp
 
-Here, we treat the lambda matrix as if it was dense matrix. The lambda function `rowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nozero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23). 
+Here, we treat the lambda matrix as if it was dense matrix. The lambda function `rowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nozero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23).
 
 Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` woudl do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `rowLengths` (line 13) tells so. The result looks as follows:
 
@@ -1139,7 +1172,7 @@ One of the most important matrix operation is the matrix-vector multiplication. 
 
 * `inVector` is the input vector having the same number of elements as the number of matrix columns.
 * `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
 * `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
@@ -1162,7 +1195,7 @@ and it accepts the following parameters:
 
 * `inVector` is the input vector having the same number of elements as the number of matrix columns.
 * `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
 * `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
@@ -1181,12 +1214,12 @@ and it accepts the following parameters:
 
 * `inVector` is the input vector having the same number of elements as the number of matrix columns.
 * `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
 * `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
 
-Note that the output vector dimension must be the same as the number of matrix rows no 
+Note that the output vector dimension must be the same as the number of matrix rows no
 matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
 
 ### Multidiagonal matrix
@@ -1202,7 +1235,7 @@ and it accepts the following parameters:
 
 * `inVector` is the input vector having the same number of elements as the number of matrix columns.
 * `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
 * `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
@@ -1221,7 +1254,7 @@ and it accepts the following parameters:
 
 * `inVector` is the input vector having the same number of elements as the number of matrix columns.
 * `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied. 
+* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
 * `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
 * `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
 * `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
@@ -1249,7 +1282,7 @@ The multidiagonal matrix can be saved to a file using a method `save` (\ref TNL:
 
 The lambda matrix, can be printed by the means of the method `print` (\ref TNL::Matrices::LambdaMatrix::print). The lambda matrix do not offer the methods `save` and `load` since it does not manage any data. Of course, the lambda function evaluating the matrix elements can use any supporting data containers but it is up these containers to manage the IO operations.
 
-## Matrix view 
+## Matrix view
 
 ### Dense matrix view
 
@@ -1310,7 +1343,7 @@ The result looks as follows:
 
 Similar to dense and sparse matrix view, tridiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::TridiagonalMatrixView with the following template parameters:
 
-* `Real` is a type of matrix elements. 
+* `Real` is a type of matrix elements.
 * `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
 * `Index` is a type for indexing the matrix elements and also row and column indexes.
 * `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
@@ -1338,7 +1371,7 @@ As we mentioned already, the tridiagonal matrix view offers almost all methods w
 
 Multidiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::MultidiagonalMatrixView with the following template parameters:
 
-* `Real` is a type of matrix elements. 
+* `Real` is a type of matrix elements.
 * `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
 * `Index` is a type for indexing the matrix elements and also row and column indexes.
 * `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
