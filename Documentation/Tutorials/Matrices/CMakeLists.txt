@@ -145,11 +145,15 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
    SparseMatrixViewExample_setElement.out
-   MatrixSetup_Benchmark.out
+   DenseMatrixSetup_Benchmark.out
+   SparseMatrixSetup_Benchmark.out
+   MultidiagonalMatrixSetup_Benchmark.out
  )
 ELSE()
 ADD_CUSTOM_TARGET( TutorialsMatrices ALL DEPENDS
-   MatrixSetup_Benchmark.out
+   DenseMatrixSetup_Benchmark.out
+   SparseMatrixSetup_Benchmark.out
+   MultidiagonalMatrixSetup_Benchmark.out
 )
 ENDIF()
 #
