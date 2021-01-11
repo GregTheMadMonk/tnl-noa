@@ -1,38 +1,22 @@
 #include <iostream>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Timer.h>
 
 const int testsCount = 5;
 
-template< typename Matrix >
-void STL_Map( const int gridSize, Matrix& matrix )
+template< typename Device >
+TNL::Containers::Vector< int, Device > getOffsets( const int gridSize )
 {
-   /***
-    * Set  matrix representing approximation of the Laplace operator on regular
-    * grid using the finite difference method by means of STL map.
-    */
-   const int matrixSize = gridSize * gridSize;
-   matrix.setDimensions( matrixSize, matrixSize );
-   std::map< std::pair< int, int >, double > map;
-   for( int j = 0; j < gridSize; j++ )
-      for( int i = 0; i < gridSize; i++ )
-      {
-         const int rowIdx = j * gridSize + i;
-         if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 )
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx ),  1.0 ) );
-         else
-         {
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx - gridSize ),  1.0 ) );
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx - 1 ),  1.0 ) );
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx ),  -4.0 ) );
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx + 1 ),  1.0 ) );
-            map.insert( std::make_pair( std::make_pair( rowIdx, rowIdx + gridSize ),  1.0 ) );
-         }
-      }
-   matrix.setElements( map );
+   TNL::Containers::Vector< int, Device > offsets( 5 );
+   offsets.setElement( 0, -gridSize );
+   offsets.setElement( 1, -1 );
+   offsets.setElement( 2, 0 );
+   offsets.setElement( 3, 1 );
+   offsets.setElement( 4, gridSize );
+   return offsets;
 }
 
 template< typename Matrix >
@@ -44,9 +28,7 @@ void setElement_on_host( const int gridSize, Matrix& matrix )
     * from the host system.
     */
    const int matrixSize = gridSize * gridSize;
-   TNL::Containers::Vector< int, typename Matrix::DeviceType, int > rowCapacities( matrixSize, 5 );
-   matrix.setDimensions( matrixSize, matrixSize );
-   matrix.setRowCapacities( rowCapacities );
+   matrix.setDimensions( matrixSize, matrixSize, getOffsets< typename Matrix::DeviceType >( gridSize ) );
 
    for( int j = 0; j < gridSize; j++ )
       for( int i = 0; i < gridSize; i++ )
@@ -74,9 +56,7 @@ void setElement_on_device( const int gridSize, Matrix& matrix )
     * from the native device.
     */
    const int matrixSize = gridSize * gridSize;
-   TNL::Containers::Vector< int, typename Matrix::DeviceType, int > rowCapacities( matrixSize, 5 );
-   matrix.setDimensions( matrixSize, matrixSize );
-   matrix.setRowCapacities( rowCapacities );
+   matrix.setDimensions( matrixSize, matrixSize, getOffsets< typename Matrix::DeviceType >( gridSize ) );
 
    auto matrixView = matrix.getView();
    auto f = [=] __cuda_callable__ ( int i, int j ) mutable {
@@ -103,9 +83,7 @@ void getRow( const int gridSize, Matrix& matrix )
     * grid using the finite difference method by means of getRow method.
     */
    const int matrixSize = gridSize * gridSize;
-   TNL::Containers::Vector< int, typename Matrix::DeviceType, int > rowCapacities( matrixSize, 5 );
-   matrix.setDimensions( matrixSize, matrixSize );
-   matrix.setRowCapacities( rowCapacities );
+   matrix.setDimensions( matrixSize, matrixSize, getOffsets< typename Matrix::DeviceType >( gridSize ) );
 
    auto matrixView = matrix.getView();
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
@@ -113,14 +91,14 @@ void getRow( const int gridSize, Matrix& matrix )
       const int j = rowIdx / gridSize;
       auto row = matrixView.getRow( rowIdx );
       if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 )
-         row.setElement( 2, rowIdx,  1.0 );
+         row.setElement( 2, 1.0 );
       else
       {
-         row.setElement( 0, rowIdx - gridSize, 1.0 );
-         row.setElement( 1, rowIdx - 1, 1.0 );
-         row.setElement( 2, rowIdx, -4.0 );
-         row.setElement( 3, rowIdx + 1, 1.0 );
-         row.setElement( 4, rowIdx + gridSize, 1.0 );
+         row.setElement( 0, 1.0 );
+         row.setElement( 1, 1.0 );
+         row.setElement( 2, -4.0 );
+         row.setElement( 3, 1.0 );
+         row.setElement( 4, 1.0 );
       }
    };
    TNL::Algorithms::ParallelFor< typename Matrix::DeviceType >::exec( 0, matrixSize, f );
@@ -135,15 +113,11 @@ void forRows( const int gridSize, Matrix& matrix )
     */
 
    const int matrixSize = gridSize * gridSize;
-   TNL::Containers::Vector< int, typename Matrix::DeviceType, int > rowCapacities( matrixSize, 5 );
-   matrix.setDimensions( matrixSize, matrixSize );
-   matrix.setRowCapacities( rowCapacities );
-   auto matrixView = matrix.getView();
+   matrix.setDimensions( matrixSize, matrixSize, getOffsets< typename Matrix::DeviceType >( gridSize ) );
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, float& value, bool& compute ) mutable {
       const int i = rowIdx % gridSize;
       const int j = rowIdx / gridSize;
-      auto row = matrixView.getRow( rowIdx );
       if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 && localIdx == 0 )
       {
          columnIdx = rowIdx;
@@ -180,62 +154,7 @@ void forRows( const int gridSize, Matrix& matrix )
 }
 
 template< typename Device >
-void laplaceOperatorDenseMatrix()
-{
-   std::cout << " Dense matrix test:" << std::endl;
-   for( int gridSize = 16; gridSize <= 8192; gridSize *= 2 )
-   {
-      std::cout << "  Grid size = " << gridSize << std::endl;
-      TNL::Timer timer;
-
-      std::cout << "   setElement on host: ";
-      timer.reset();
-      timer.start();
-      for( int i = 0; i < testsCount; i++ )
-      {
-         TNL::Matrices::DenseMatrix< float, Device, int > matrix;
-         setElement_on_host( gridSize, matrix );
-      }
-      timer.stop();
-      std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
-
-      std::cout << "   setElement on device: ";
-      timer.reset();
-      timer.start();
-      for( int i = 0; i < testsCount; i++ )
-      {
-         TNL::Matrices::DenseMatrix< float, Device, int > matrix;
-         setElement_on_device( gridSize, matrix );
-      }
-      timer.stop();
-      std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
-
-      std::cout << "   getRow: ";
-      timer.reset();
-      timer.start();
-      for( int i = 0; i < testsCount; i++ )
-      {
-         TNL::Matrices::DenseMatrix< float, Device, int > matrix;
-         getRow( gridSize, matrix );
-      }
-      timer.stop();
-      std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
-
-      std::cout << "   forRows: ";
-      timer.reset();
-      timer.start();
-      for( int i = 0; i < testsCount; i++ )
-      {
-         TNL::Matrices::DenseMatrix< float, Device, int > matrix;
-         forRows( gridSize, matrix );
-      }
-      timer.stop();
-      std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
-   }
-}
-
-template< typename Device >
-void laplaceOperatorSparseMatrix()
+void laplaceOperatorMultidiagonalMatrix()
 {
    std::cout << " Sparse matrix test:" << std::endl;
    for( int gridSize = 16; gridSize <= 8192; gridSize *= 2 )
@@ -243,23 +162,12 @@ void laplaceOperatorSparseMatrix()
       std::cout << "  Grid size = " << gridSize << std::endl;
       TNL::Timer timer;
 
-      std::cout << "   STL map: ";
-      timer.reset();
-      timer.start();
-      for( int i = 0; i < testsCount; i++ )
-      {
-         TNL::Matrices::SparseMatrix< float, Device, int > matrix;
-         STL_Map( gridSize, matrix );
-      }
-      timer.stop();
-      std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
-
       std::cout << "   setElement on host: ";
       timer.reset();
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
-         TNL::Matrices::SparseMatrix< float, Device, int > matrix;
+         TNL::Matrices::MultidiagonalMatrix< float, Device, int > matrix;
          setElement_on_host( gridSize, matrix );
       }
       timer.stop();
@@ -270,7 +178,7 @@ void laplaceOperatorSparseMatrix()
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
-         TNL::Matrices::SparseMatrix< float, Device, int > matrix;
+         TNL::Matrices::MultidiagonalMatrix< float, Device, int > matrix;
          setElement_on_device( gridSize, matrix );
       }
       timer.stop();
@@ -281,7 +189,7 @@ void laplaceOperatorSparseMatrix()
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
-         TNL::Matrices::SparseMatrix< float, Device, int > matrix;
+         TNL::Matrices::MultidiagonalMatrix< float, Device, int > matrix;
          getRow( gridSize, matrix );
       }
       timer.stop();
@@ -292,7 +200,7 @@ void laplaceOperatorSparseMatrix()
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
-         TNL::Matrices::SparseMatrix< float, Device, int > matrix;
+         TNL::Matrices::MultidiagonalMatrix< float, Device, int > matrix;
          forRows( gridSize, matrix );
       }
       timer.stop();
@@ -304,12 +212,10 @@ void laplaceOperatorSparseMatrix()
 int main( int argc, char* argv[] )
 {
    std::cout << "Creating Laplace operator matrix on CPU ... " << std::endl;
-   //laplaceOperatorDenseMatrix< TNL::Devices::Host >();
-   laplaceOperatorSparseMatrix< TNL::Devices::Host >();
+   laplaceOperatorMultidiagonalMatrix< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << "Creating Laplace operator matrix on CUDA GPU ... " << std::endl;
-   laplaceOperatorDenseMatrix< TNL::Devices::Cuda >();
-   laplaceOperatorSparseMatrix< TNL::Devices::Cuda >();
+   laplaceOperatorMultidiagonalMatrix< TNL::Devices::Cuda >();
 #endif
 }
