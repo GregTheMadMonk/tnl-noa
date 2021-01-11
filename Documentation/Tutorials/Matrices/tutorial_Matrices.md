@@ -6,13 +6,13 @@ TNL offers several types of matrices like dense (\ref TNL::Matrices::DenseMatrix
 
 ## Table of Contents
 1. [Overview of matrix types](#overview_of_matrix_types)
-2. [Allocation and setup of different matrix types](#allocation_and_setup_of_different_matrix_types)
+2. [Matrix view](#matrix_view)
+3. [Allocation and setup of different matrix types](#allocation_and_setup_of_different_matrix_types)
    1. [Dense matrices](#dense_matrices_setup)
    2. [Sparse matrices](#sparse_matrices_setup)
    3. [Tridiagonal matrices](#tridiagonal_matrices_setup)
    4. [Multidiagonal matrices](#multidiagonal_matrices_setup)
    5. [Lambda matrices](#lambda_matrices_setup)
-3. [Matrix view](#matrix_view)
 4. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
 5. [Matrix-vector product](#matrix_vector_product)
 6. [Matrix I/O operations](#matrix_io_operations)
@@ -106,12 +106,16 @@ In this table:
 * **Sparse matrix** is number of bytes needed to store one matrix element in the sparse matrix.
 * **Fill ratio** is maximal percentage of the nonzero matrix elements until which the sparse matrix can perform better.
 
+## Matrix view <a name="matrix_view"></a>
+
+TODO: concept of matrix view. Add reference to general concepts
+
 ## Allocation and setup of different matrix types <a name="allocation_and_setup_of_different_matrix_types"></a>
 
 There are several ways how to create new matrix:
 
-1. **Initializer lists** allow to create matrix from the C++ initializer lists. The matrix elements must be therefore encoded in the source code and so it is useful for rather smaller matrices. Methods and constructors with initializer lists are user friendly and simple to use. It is a good choice for tool problems with small matrices.
-2. **STL map** can be used for creation of sparse matrices only. The user first insert all matrix elements together with their coordinates into `std::map` based on which the sparse matrix is created in the next step. It is simple and user friendly approach suitable for creation of large matrices. An advantage is that we do not need to know the distribution of the matrix elements in matrix rows in advance like we do in other ways of matrix construction. This makes the use of STL map suitable for combining of sparse matrices in TNL with other numerical packages. However, the sparse matrix is constructed on the host and then copied on GPU if necessary. Therefor, this approach is not a good choice if fast and efficient matrix construction is required.
+1. **Initializer lists** allow to create matrix from the [C++ initializer lists](https://en.cppreference.com/w/cpp/utility/initializer_list). The matrix elements must be therefore encoded in the source code and so it is useful for rather smaller matrices. Methods and constructors with initializer lists are user friendly and simple to use. It is a good choice for tool problems with small matrices.
+2. **STL map** can be used for creation of sparse matrices only. The user first insert all matrix elements together with their coordinates into [`std::map`](https://en.cppreference.com/w/cpp/container/map) based on which the sparse matrix is created in the next step. It is simple and user friendly approach suitable for creation of large matrices. An advantage is that we do not need to know the distribution of the matrix elements in matrix rows in advance like we do in other ways of matrix construction. This makes the use of STL map suitable for combining of sparse matrices in TNL with other numerical packages. However, the sparse matrix is constructed on the host and then copied on GPU if necessary. Therefor, this approach is not a good choice if fast and efficient matrix construction is required.
 3. **Methods `setElement` and `addElement` called from the host** allows to change particular matrix elements. The methods can be called from host even for matrices allocated on GPU. In this case, however, the matrix elements are transferred on GPU one by one which is very inefficient. If the matrix is allocated on the host system (CPU), the efficiency is good. In case of sparse matrices, one must set row capacities (i.e. maximal number of nonzero elements in each row) before using these methods. If the row capacity is exceeded, the matrix has to be reallocated and all matrix elements are lost.
 4. **Methods `setElement` and `addElement` called from native device** allows to do efficient matrix elements setup even on devices (GPUs). In this case, the methods must be called from a GPU kernel or a lambda function combined with parallel for (\ref TNL::Algorithms::ParallelFor). The user get very good performance even when manipulating matrix allocated on GPU. On the other hand, only data structures allocated on GPUs can be used in the kernel or lambda function. The the matrix can be accessed in the GPU kernel or lambda function by means of [matrix view](#matrix_view) or the shared pointer (\ref TNL::Pointers::SharedPointer).
 5. **Method `getRow` combined with `ParallelFor`** is very simillar to the previous one. The difference is that with first fetch helper object called *matrix row* which is linked to particular matrix row. Using methods of this object, one may change the matrix elements in given matrix row. An advantage is that the access to the matrix row is resolved only once for all elements in the row. In some more sophisticated sparse matrix formats, this can be nontrivial operation and this approach may slightly improve the performance. Another advantage for sparse matrices is that we access the matrix elements based on their *local index* in the row which is something like a rank of the nonzero element in the row. This is more efficient than adressing the matrix elements by the column indexes which requires searching in the matrix row. So this may significantly improve the performance of setup of sparse matrices. When it comes to dense matrices, there should not be great difference in performance compared to use of the methods `setElement` and `getElement`. Note that when the method is called from GPU kernel or lambda function , only data structures allocated on GPU can be accessed and the matrix must be made accessible by the means of.
@@ -122,8 +126,10 @@ The following table shows pros and cons of particular mathods:
 |  Method                                 |   Pros                                                                 | Cons                                                                  |
 |:----------------------------------------|:-----------------------------------------------------------------------|:----------------------------------------------------------------------|
 | **Initializer list**                    | Simple.                                                                | Only for small matrices.                                              |
-| **STL map**                             | Simplest of all methods for sparse matrices.                           | Higher memory requirements, slow transfer on GPU.                     |
-| **[set,add]Element on host**            | Simple.                                                                | Requires setting of row capacities, slow transfer on GPU.             |
+| **STL map**                             | Simplest of all methods for sparse matrices.                           | Higher memory requirements.                                           |
+|                                         | Does not need setting of matrix rows capacities                        | Slow transfer on GPU.                                                 |
+| **[set,add]Element on host**            | Simple.                                                                | Requires setting of row capacities.                                   |
+|                                         |                                                                        | Extremely slow transfer on GPU.                                       |
 | **[set,add]Element on native device**   | Good efficiency.                                                       | Requires setting of row capacities.                                   |
 |                                         |                                                                        | Requires writting GPU kernel or lambda function.                      |
 |                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
@@ -136,21 +142,81 @@ The following table shows pros and cons of particular mathods:
 |                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
 |                                         |                                                                        | Use of matrix local indexes is less intuitive.                        |
 
-Though it may seem that the later methods come with more cons than pros they offer much higher performance and we believe they even them are still very user friendly. On the other hand, if the matrix setup performance is not a priority the use the simple but slow method can still be a good choice.
+Though it may seem that the later methods come with more cons than pros they offer much higher performance and we believe they even them are still very user friendly. On the other hand, if the matrix setup performance is not a priority the use the simple but slow method can still be a good choice. The following tables demonstrate the performance of different methods. The tests were performed on CPU Intel Xeon CPU E5-2640 and GPU GeForce RTX 2070 in single precision.
+
+In the test of dense matrices, we set each matrix element to value equal to `rowIdx + columnIdx`. The times in seconds obtained on CPU looks as follows:
+
+| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
+|----------------------------:|---------------------:|--------------------------------:|------------:|------------:|
+|                             |                      |                                 |             |             |
+
+And the same on GPU is in the following table:
+
+| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
+|----------------------------:|---------------------:|--------------------------------:|------------:|------------:|
+|                             |                      |                                 |             |             |
 
 
+The sparse matrices are tested on computation of matrix approximating the Laplace operator in 2D. This matrix has at most five non-zero elements in each row. The times for sparse matrix (and CSR formart) on CPU in seconds looks as follows:
+
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `getRow`    | `forRows`   |
+|----------------------------:|-------------:|---------------------:|------------:|------------:|
+|                         256 |      0.00045 |              0.00007 |     0.00005 |     0.00007 |
+|                       1,024 |      0.00129 |              0.00015 |     0.00007 |     0.00008 |
+|                       4,096 |      0.00569 |              0.00040 |     0.00007 |     0.00009 |
+|                      16,384 |      0.02024 |              0.00144 |     0.00007 |     0.00014 |
+|                      65,536 |      0.08687 |              0.00373 |     0.00014 |     0.00040 |
+|                     262,144 |      0.42524 |              0.01039 |     0.00039 |     0.00146 |
+|                   1,048,576 |      1.90120 |              0.03860 |     0.00417 |     0.00770 |
+|                   4,194,304 |      9.89239 |              0.15147 |     0.01844 |     0.03164 |
+|                  16,777,216 |     55.81530 |              0.61169 |     0.08441 |     0.13739 |
+|                  67,108,864 |    268.66000 |              2.44765 |     0.33831 |     0.54954 |
+
+We see, that use of STL map makes sence only in situation when it is hard to estimate necessary row capasities. Otherwise very simple with `setElement` method is much faster. If the performance is the highest priority, `getRow` method should be prefered. And the same on GPU is in the following table:
+
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
+|----------------------------:|-------------:|---------------------:|------------------------------:|------------:|------------:|
+|                         256 |      0.02423 |           0.0457575  |                       0.00027 |     0.00026 |     0.00027 |
+|                       1,024 |      0.00280 |           0.2043830  |                       0.00028 |     0.00028 |     0.00028 |
+|                       4,096 |      0.00637 |           0.8647010  |                       0.00031 |     0.00030 |     0.00031 |
+|                      16,384 |      0.02349 |           3.5592200  |                       0.00032 |     0.00031 |     0.00032 |
+|                      65,536 |      0.10333 |          14.4267000  |                       0.00072 |     0.00069 |     0.00070 |
+|                     262,144 |      0.52870 |          58.6620000  |                       0.00117 |     0.00115 |     0.00115 |
+|                   1,048,576 |      2.17003 |         235.7660000  |                       0.00335 |     0.00331 |     0.00333 |
+|                   4,194,304 |     11.98680 |         930.6170000  |                       0.00993 |     0.00997 |     0.01003 |
+|                  16,777,216 |     64.24220 |        3737.8400000  |                       0.02759 |     0.02751 |     0.02745 |
+|                  67,108,864 |    284.11700 |       15007.6000000  |                       0.06648 |     0.06802 |     0.06834 |
+
+Here we see, the `setElement` methods performs extremely bad because all matrix elements are transfered to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Another simple method could by to setup the matrix on CPU by the means of `setElement` method and trasnfer it on GPU.
+
+Finaly, the following tables show the times of the same test performed with multidiagonal matrix. Times on CPU looks as follows:
+
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `getRow`    | `forRows`   |
+|----------------------------:|-------------:|---------------------:|------------:|------------:|
+|                             |              |                      |             |             |
+
+
+And on GPU like the fallowing table:
+
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
+|----------------------------:|-------------:|---------------------:|------------------------------:|------------:|------------:|
+|                             |              |                      |                               |             |             |
 
 ### Dense matrices <a name="dense_matrices_setup"></a>
 
-Dense matrix is a templated class defined in the namespace \ref TNL::Matrices. It has five template parameters:
+Dense matrix (\ref TNL::Matrices::DenseMatrix) is a templated class defined in the namespace \ref TNL::Matrices. It has five template parameters:
 
 * `Real` is a type of the matrix elements. It is `double` by default.
 * `Device` is a device where the matrix shall be allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
 * `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
-* `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
+* `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated on the host system and column major order if it is allocated on GPU.
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 
-The following examples show how to allocate the dense matrix and how to initialize the matrix elements. Small matrices can be created simply by the constructor with an initializer list.
+The following examples show how to allocate the dense matrix and how to initialize the matrix elements.
+
+#### Initializer list
+
+Small matrices can be created simply by the constructor with an [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list).
 
 \includelineno Matrices/DenseMatrix/DenseMatrixExample_Constructor_init_list.cpp
 
@@ -158,21 +224,29 @@ In fact, the constructor takes a list of initializer lists. Each embedded list d
 
 \include DenseMatrixExample_Constructor_init_list.out
 
-Larger matrices can be set-up with methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement). The following example shows how to call these methods from the host.
+#### Methods `setElement` and `addElement`
+
+Larger matrices can be setup with methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement). The following example shows how to call these methods from the host.
 
 \includelineno DenseMatrixExample_addElement.cpp
 
-As we can see, both methods can be called from the host no matter where the matrix is allocated. If it is on GPU, each call of `setElement` or `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) causes slow transfer of tha data between CPU and GPU. Use this approach only if the performance is not a priority for example for matrices which are set only once this way. The result looks as follows:
+As we can see, both methods can be called from the host no matter where the matrix is allocated. If it is on GPU, each call of `setElement` or `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) causes slow transfer of tha data between CPU and GPU. Use this approach only if the performance is not a priority. The result looks as follows:
 
 \include DenseMatrixExample_addElement.out
 
-More efficient way of the matrix initialization on GPU consists in calling the methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) directly from GPU. It is demonstrated in the following example (of course it works even for CPU):
+More efficient way of the matrix initialization on GPU consists of calling the methods `setElement` and `addElement` (\ref TNL::Matrices::DenseMatrix::setElement, \ref TNL::Matrices::DenseMatrix::addElement) directly from GPU. It is demonstrated in the following example (of course it works even for CPU):
 
 \includelineno DenseMatrixExample_setElement.cpp
 
 Here we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to make the matrix accessible in lambda functions even on GPU. We first call the `setElement` method from CPU to set the `i`-th diagonal element to `i`. Next we iterate over the matrix rows with `ParallelFor`and for each row we call a lambda function `f`. This is done on the same device where the matrix is allocated and so it is more efficient for matrices allocated on GPU. In the lambda function we just set the `i`-th diagonal element to `-i`. The result looks as follows:
 
 \include DenseMatrixExample_setElement.out
+
+#### Method `getRow`
+
+This method is available for the dense matrix (\ref TNL::Matrices::DenseMatrix::getRow) but only for compatibility with the sparse matrices which the method was designed for. Use it only when you need unified code for both dense and sparse matrices.
+
+#### Method `forRows`
 
 If we want to set more matrix elements in each row, we can use inner for-loop in the lambda function `f`. This, however, is limiting the parallelization and it can be inefficient for larger matrices. The next example demonstrates a method `forRows` (\ref TNL::Matrices::DenseMatrix::forRows) which iterates over all matrix elements in parallel and it calls a lambda function defining an operation we want to do on the matrix elements.
 
@@ -211,9 +285,11 @@ Major disadventage of sparse matrices is that there are a lot of different forma
 
 **If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.**
 
-### Sparse matrix allocation and initiation
+In the following text we will show how to create and setup sparse matrices.
 
-Small matrices can be initialized by a constructor with initializer list. We assume having the following sparse matrix
+#### Initializer list
+
+Small matrices can be initialized by a constructor with an [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list). We assume having the following sparse matrix
 
 \f[
 \left(
@@ -245,6 +321,20 @@ The result of both examples looks as follows:
 
 \include SparseMatrixExample_Constructor_init_list_2.out
 
+#### STL map
+
+Finaly, there is a constructor which creates the sparse matrix from [`std::map`](https://en.cppreference.com/w/cpp/container/map). It is usefull especially in situation when you cannot compute the matrix elements by rows but rather in random order. You can do it on CPU and store the matrix elements in [`std::map`](https://en.cppreference.com/w/cpp/container/map) data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
+
+```
+std::pair( std::pair( row_index, column_index ), element_value )
+```
+
+which defines one matrix element at given coordinates with given value. Of course, you can insert such entries in any order into the `map`. When it is complete you can pass it the sparse matrix. See the following example:
+
+\includelineno SparseMatrixExample_Constructor_std_map.cpp
+
+#### Setting of row capacities
+
 Larger matrices are created in two steps:
 
 1. We use a method \ref TNL::Matrices::SparseMatrix::setRowCapacities to initialize the underlying matrix format and to allocate memory for the matrix elements. This method only needs to know how many non-zero elements are supposed to be in each row. Once this is set, it cannot be changed only by reseting the whole matrix. In most situations, this is not an issue to compute the number of non-zero elements in each row. Note, however, that we do not tell the positions of the non-zeto elements. If some matrix format needs this information it cannot be used with this implementation of the sparse matrix.
@@ -264,7 +354,6 @@ See the following example which creates lower triangular matrix like this one
 \right).
 \f]
 
-
 \includelineno SparseMatrixExample_setRowCapacities.cpp
 
 The method \ref TNL::Matrices::SparseMatrix::setRowCapacities reads the required capacities of the matrix rows from a vector (or simmilar container - \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector and \ref TNL::Containers::VectorView) which has the same number of elements as the number of matrix rows and each element defines the capacity of the related row. The result looks as follows:
@@ -283,18 +372,9 @@ The result of both examples looks as follows:
 
 \include SparseMatrixExample_Constructor_init_list_1.out
 
-Finaly, there is a constructor which creates the sparse matrix from 'std::map'. It is usefull especially in situation when you cannot compute the matrix elements by rows but rather in random order. You can do it on CPU and store the matrix elements in `std::map` data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
-
-```
-std::pair( std::pair( row_index, column_index ), element_value )
-```
-
-which defines one matrix element at given coordinates with given value. Of course, you can insert such entries in any order into the `map`. When it is complete you can pass it the sparse matrix. See the following example:
-
-\includelineno SparseMatrixExample_Constructor_std_map.cpp
+#### Methods `setElement` and `addElement`
 
 A method `setElements` works the same way for already existing instances of sparse matrix:
-
 
 \includelineno SparseMatrixExample_setElements_map.cpp
 
@@ -323,6 +403,24 @@ The method `addElement` adds a value to specific matrix element. Otherwise, it b
 The result looks as follows:
 
 \include SparseMatrixExample_addElement.out
+
+#### Method `getRow`
+
+More efficient method is to combine `getRow` (\ref TNL::Matrices::SparseMatrix::getRow) method with `ParallelFor` (\ref TNL::Algorithms::ParallelFor) and lambda function as the following example demonstrates:
+
+\includelineno SparseMatrixViewExample_getRow.cpp
+
+On the line 11, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one (particular elements of the initalizer list). On the line 22, we call `ParallelFor` to iterate over all matrix elements. Each row is processed by the lambda function `f` (lines14-17). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) which is a proxy to matrix row. This object has a method `setElement` accepting three parameters:
+
+1. `localIdx` is a rank of the nonzero element in given matrix row.
+2. `columnIdx` is the new column index of the matrix element.
+3. `value` is the new value of the matrix element.
+
+The result looks as follows:
+
+\include SparseMatrixViewExample_getRow.out
+
+#### Method `forRows`
 
 Finaly, for the most efficient way of setting the non-zero matrix elements, is use of a method `forRows`. It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each non-zero element. The lambda functions provides the following data:
 
@@ -404,7 +502,7 @@ would not make sense. If we pass through this test, the matrix element lies in t
 
 \include SparseMatrixExample_forRows.out
 
-## Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
+### Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
 
 Tridiagonal matrix format serves for specific matrix pattern when the nonzero matrix elements can be placed only at the diagonal and immediately next to the diagonal. Here is an example:
 
@@ -439,7 +537,9 @@ Tridiagonal matrix is a templated class defined in the namespace \ref TNL::Matri
 * `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 
-### Tridiagonal matrix allocation and initiation
+In the following text we shows different methods for setup of tridiagonal matrices.
+
+#### Initializer list
 
 The tridiagonal matrix can be initialized by the means of the constructor with initializer list. The matrix from the begining of this section can be constructed as the following example shows:
 
@@ -526,6 +626,8 @@ The output of the example looks as:
 
 \include TridiagonalMatrixExample_Constructor_init_list_1.out
 
+#### Methods `setElement` and `addElement`
+
 Similar way of the tridiagonal matrix setup is offered by the method `setElements` (\ref TNL::Matrices::TridiagonalMatrix::setElements) as the following example demonstrates:
 
 \includelineno TridiagonalMatrixExample_setElements.cpp
@@ -543,6 +645,8 @@ The result looks as follows:
 
 \include TridiagonalMatrixExample_setElement.out
 
+#### Method `getRow`
+
  A slightly simpler way how to do the same with no need for shared pointer (\ref TNL::Pointers::SharedPointer), could be with the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
 
 \includelineno TridiagonalMatrixViewExample_getRow.cpp
@@ -552,6 +656,8 @@ We create a matrix with the same size (line 10-15) set ones on the diagonal (lin
 The result looks as follows:
 
 \include TridiagonalMatrixViewExample_getRow.out
+
+#### Method `forRows`
 
 Finaly, even a bit more simple and bit less flexible way of matrix elements manipulation with use of the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) is demonstrated in the following example:
 
@@ -578,7 +684,7 @@ The result looks as follows:
 
 \include TridiagonalMatrixViewExample_forRows.out
 
-## Multidiagonal matrices <a name="multidiagonal_matrices_setup"></a>
+### Multidiagonal matrices <a name="multidiagonal_matrices_setup"></a>
 
 Multidiagonal matrices are generalization of the tridiagonal matrix. It is a special type of sparse matrices with specific pattern of the nonzero matrix elements which are positioned only parallel along diagonal. See the following example:
 
@@ -639,6 +745,8 @@ Multidiagonal matrix is a templated class defined in the namespace \ref TNL::Mat
 * `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 * `IndexAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements offsets. By default, it is the default allocator for given `Index` type and `Device` type -- see \ref TNL::Allocators::Default.
+
+In the following text we show different methods how to setup multidiagonal matrices.
 
 ### Multidiagonal matrix allocation and initiation
 
