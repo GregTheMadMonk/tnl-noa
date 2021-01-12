@@ -3,7 +3,7 @@
 ## Tutorials
 
 1. [Building applications with TNL](tutorial_building_applications_with_tnl.html)
-2. [Core concepts](tutorial_CoreConcepts.html)
+2. [General concepts](tutorial_GeneralConcepts.html)
 3. [Arrays](tutorial_Arrays.html)
 4. [Vectors](tutorial_Vectors.html)
 5. [Flexible parallel reduction and scan](tutorial_ReductionAndScan.html)
