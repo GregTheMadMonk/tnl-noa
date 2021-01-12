@@ -94,36 +94,19 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_setElement.out
                        OUTPUT SparseMatrixViewExample_setElement.out )
 
+   ####
+   # THe following examples/benchmarks run for very long time
    CUDA_ADD_EXECUTABLE( DenseMatrixSetup_Benchmark_cuda DenseMatrixSetup_Benchmark.cu )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixSetup_Benchmark_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixSetup_Benchmark.out
-                        OUTPUT DenseMatrixSetup_Benchmark.out )
-
    CUDA_ADD_EXECUTABLE( SparseMatrixSetup_Benchmark_cuda SparseMatrixSetup_Benchmark.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixSetup_Benchmark_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixSetup_Benchmark.out
-                        OUTPUT SparseMatrixSetup_Benchmark.out )
-
    CUDA_ADD_EXECUTABLE( MultidiagonalMatrixSetup_Benchmark_cuda MultidiagonalMatrixSetup_Benchmark.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixSetup_Benchmark_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixSetup_Benchmark.out
-                        OUTPUT MultidiagonalMatrixSetup_Benchmark.out )
 
 ELSE()
+
+   ####
+   # THe following examples/benchmarks run for very long time
    ADD_EXECUTABLE( DenseMatrixSetup_Benchmark DenseMatrixSetup_Benchmark_cuda.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixSetup_Benchmark >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixSetup_Benchmark.out
-                        OUTPUT DenseMatrixSetup_Benchmark.out )
-
    ADD_EXECUTABLE( SparseMatrixSetup_Benchmark SparseMatrixSetup_Benchmark_cuda.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixSetup_Benchmark >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixSetup_Benchmark.out
-                        OUTPUT SparseMatrixSetup_Benchmark.out )
-
    ADD_EXECUTABLE( MultidiagonalMatrixSetup_Benchmark MultidiagonalMatrixSetup_Benchmark_cuda.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND MultidiagonalMatrixSetup_Benchmark >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MultidiagonalMatrixSetup_Benchmark.out
-                        OUTPUT MultidiagonalMatrixSetup_Benchmark.out )
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -145,15 +128,9 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
    SparseMatrixViewExample_setElement.out
-   DenseMatrixSetup_Benchmark.out
-   SparseMatrixSetup_Benchmark.out
-   MultidiagonalMatrixSetup_Benchmark.out
  )
 ELSE()
 ADD_CUSTOM_TARGET( TutorialsMatrices ALL DEPENDS
-   DenseMatrixSetup_Benchmark.out
-   SparseMatrixSetup_Benchmark.out
-   MultidiagonalMatrixSetup_Benchmark.out
 )
 ENDIF()
 #
