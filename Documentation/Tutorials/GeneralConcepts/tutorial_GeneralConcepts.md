@@ -6,8 +6,8 @@
 - [Devices and allocators<a name="devices-and-allocators"></a>](#devices-and-allocators)
 - [Algorithms and lambda functions<a name="algorithms-and-lambda-functions"></a>](#algorithms-and-lambda-functions)
 - [Shared pointers and views<a name="shared-pointers-and-views"></a>](#shared-pointers-and-views)
-  - [Data structures views](#data-structures-views)
-  - [Shared pointers](#shared-pointers)
+  - [Data structures views<a name="data-structures-views"></a>](#data-structures-views)
+  - [Shared pointers<a name="shared-pointers"></a>](#shared-pointers)
 
 ## Introduction
 
@@ -90,7 +90,7 @@ This would be correct on CPU (i.e. when `Device` is \ref TNL::Devices::Host ). H
 1. Data structures views
 2. Shared pointers
 
-### Data structures views
+### Data structures views<a name="data-structures-views"></a>
 
 View is a kind of lightweight reference object which makes only a shallow copy of itself in copy constructor. Therefore view can by captured by value, but because it is, in fact, a reference to another object, everything we do with the view will affect the original object. The example with the array would look as follows:
 
@@ -110,6 +110,6 @@ Note, that changing the data managed by the array after fetching the view is not
 
 On the line 6, we change value of the first element. This causes no data reallocation or change of size and so the view fetched on the line 5 is still valid and up-to-date.
 
-### Shared pointers
+### Shared pointers<a name="shared-pointers"></a>
 
 TNL offers smart pointers working across different devices (meaning CPU or GPU).
