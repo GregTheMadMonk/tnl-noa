@@ -184,65 +184,116 @@ The following table shows pros and cons of particular mathods:
 |                                         |                                                                        | Allows accessing only data allocated on the same device/memory space. |
 |                                         |                                                                        | Use of matrix local indexes is less intuitive.                        |
 
-Though it may seem that the later methods come with more cons than pros they offer much higher performance and we believe they even them are still very user friendly. On the other hand, if the matrix setup performance is not a priority the use the simple but slow method can still be a good choice. The following tables demonstrate the performance of different methods. The tests were performed on CPU Intel Xeon CPU E5-2640 and GPU GeForce RTX 2070 in single precision.
+Though it may seem that the later methods come with more cons than pros they offer much higher performance and we believe they even them are still very user friendly. On the other hand, if the matrix setup performance is not a priority the use the simple but slow method can still be a good choice. The following tables demonstrate the performance of different methods. The tests were performed with the following setup:
+
+|              |                                                   |
+|--------------|---------------------------------------------------|
+| CPU          | Intel i9-9900KF, 3.60GHz, 8 cores, 16384 KB cache |
+| GPU          | GeForce RTX 2070                                  |
+| g++ version  | 10.2.0                                            |
+| nvcc version | 11.2.67                                           |
+| Precision    | single precision                                  |
+
+### Dense matrix
 
 In the test of dense matrices, we set each matrix element to value equal to `rowIdx + columnIdx`. The times in seconds obtained on CPU looks as follows:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
-|----------------------------:|---------------------:|--------------------------------:|------------:|------------:|
-|                             |                      |                                 |             |             |
+| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` |  `getRow`    | `forRows`   |
+|----------------------------:|---------------------:|--------------------------------:|-------------:|------------:|
+|                          16 |           0.00000086 |                       0.0000053 |   0.00000035 |   0.0000023 |
+|                          32 |           0.00000278 |                       0.0000050 |   0.00000201 |   0.0000074 |
+|                          64 |           0.00000703 |                       0.0000103 |   0.00000354 |   0.0000203 |
+|                         128 |           0.00002885 |                       0.0000312 |   0.00000867 |   0.0000709 |
+|                         256 |           0.00017543 |                       0.0000439 |   0.00002490 |   0.0001054 |
+|                         512 |           0.00078153 |                       0.0001683 |   0.00005999 |   0.0002713 |
+|                        1024 |           0.00271989 |                       0.0006691 |   0.00003808 |   0.0003942 |
+|                        2048 |           0.01273520 |                       0.0038295 |   0.00039116 |   0.0017083 |
+|                        4096 |           0.08381450 |                       0.0716542 |   0.00937997 |   0.0116771 |
+|                        8192 |           0.51596800 |                       0.3535530 |   0.03971900 |   0.0467374 |
+
+The results on GPU looks as follows:
 
 And the same on GPU is in the following table:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
-|----------------------------:|---------------------:|--------------------------------:|------------:|------------:|
-|                             |                      |                                 |             |             |
+| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`     | `forRows`   |
+|----------------------------:|---------------------:|--------------------------------:|-------------:|------------:|
+|                          16 |           0.027835   |                     0.000101198 | 0.00009903   | 0.000101214 |
+|                          32 |           0.002776   |                     0.000099197 | 0.00009901   | 0.000100481 |
+|                          64 |           0.010791   |                     0.000094446 | 0.00009493   | 0.000101796 |
+|                         128 |           0.043014   |                     0.000099397 | 0.00010024   | 0.000102729 |
+|                         256 |           0.171029   |                     0.000100469 | 0.00010448   | 0.000105893 |
+|                         512 |           0.683627   |                     0.000103346 | 0.00011034   | 0.000112752 |
+|                        1024 |           2.736680   |                     0.000158805 | 0.00016932   | 0.000170302 |
+|                        2048 |          10.930300   |                     0.000509000 | 0.00050917   | 0.000511183 |
+|                        4096 |          43.728700   |                     0.001557030 | 0.00156117   | 0.001557930 |
+|                        8192 |         174.923000   |                     0.005312470 | 0.00526658   | 0.005263870 |
 
 
-The sparse matrices are tested on computation of matrix approximating the Laplace operator in 2D. This matrix has at most five non-zero elements in each row. The times for sparse matrix (and CSR formart) on CPU in seconds looks as follows:
+### Sparse matrix
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `getRow`    | `forRows`   |
-|----------------------------:|-------------:|---------------------:|------------:|------------:|
-|                         256 |      0.00045 |              0.00007 |     0.00005 |     0.00007 |
-|                       1,024 |      0.00129 |              0.00015 |     0.00007 |     0.00008 |
-|                       4,096 |      0.00569 |              0.00040 |     0.00007 |     0.00009 |
-|                      16,384 |      0.02024 |              0.00144 |     0.00007 |     0.00014 |
-|                      65,536 |      0.08687 |              0.00373 |     0.00014 |     0.00040 |
-|                     262,144 |      0.42524 |              0.01039 |     0.00039 |     0.00146 |
-|                   1,048,576 |      1.90120 |              0.03860 |     0.00417 |     0.00770 |
-|                   4,194,304 |      9.89239 |              0.15147 |     0.01844 |     0.03164 |
-|                  16,777,216 |     55.81530 |              0.61169 |     0.08441 |     0.13739 |
-|                  67,108,864 |    268.66000 |              2.44765 |     0.33831 |     0.54954 |
+The sparse matrices are tested on computation of matrix approximating the Laplace operator in 2D. This matrix has at most five non-zero elements in each row. The times for sparse matrix (and CSR format) on CPU in seconds looks as follows:
 
-We see, that use of STL map makes sence only in situation when it is hard to estimate necessary row capasities. Otherwise very simple with `setElement` method is much faster. If the performance is the highest priority, `getRow` method should be prefered. And the same on GPU is in the following table:
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`    |
+|----------------------------:|-------------:|---------------------:|--------------------------------:|------------:|-------------:|
+|                         256 |      0.00016 |             0.000017 |                        0.000014 |    0.000013 |     0.000020 |
+|                       1,024 |      0.00059 |             0.000044 |                        0.000021 |    0.000019 |     0.000022 |
+|                       4,096 |      0.00291 |             0.000130 |                        0.000031 |    0.000022 |     0.000031 |
+|                      16,384 |      0.01414 |             0.000471 |                        0.000067 |    0.000031 |     0.000065 |
+|                      65,536 |      0.06705 |             0.001869 |                        0.000218 |    0.000074 |     0.000209 |
+|                     262,144 |      0.31728 |             0.007436 |                        0.000856 |    0.000274 |     0.000799 |
+|                   1,048,576 |      1.46388 |             0.027087 |                        0.006162 |    0.005653 |     0.005904 |
+|                   4,194,304 |      7.46147 |             0.102808 |                        0.028385 |    0.027925 |     0.027937 |
+|                  16,777,216 |     38.95900 |             0.413823 |                        0.125870 |    0.124588 |     0.123858 |
+|                  67,108,864 |    185.75700 |             1.652580 |                        0.505232 |    0.501003 |     0.500927 |
+
+We see, that use of STL map makes sense only in situation when it is hard to estimate necessary row capacities. Otherwise very simple with `setElement` method is much faster. If the performance is the highest priority, `getRow` method should be preferred. And the same on GPU is in the following table:
 
 | Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
 |----------------------------:|-------------:|---------------------:|------------------------------:|------------:|------------:|
-|                         256 |      0.02423 |           0.0457575  |                       0.00027 |     0.00026 |     0.00027 |
-|                       1,024 |      0.00280 |           0.2043830  |                       0.00028 |     0.00028 |     0.00028 |
-|                       4,096 |      0.00637 |           0.8647010  |                       0.00031 |     0.00030 |     0.00031 |
-|                      16,384 |      0.02349 |           3.5592200  |                       0.00032 |     0.00031 |     0.00032 |
-|                      65,536 |      0.10333 |          14.4267000  |                       0.00072 |     0.00069 |     0.00070 |
-|                     262,144 |      0.52870 |          58.6620000  |                       0.00117 |     0.00115 |     0.00115 |
-|                   1,048,576 |      2.17003 |         235.7660000  |                       0.00335 |     0.00331 |     0.00333 |
-|                   4,194,304 |     11.98680 |         930.6170000  |                       0.00993 |     0.00997 |     0.01003 |
-|                  16,777,216 |     64.24220 |        3737.8400000  |                       0.02759 |     0.02751 |     0.02745 |
-|                  67,108,864 |    284.11700 |       15007.6000000  |                       0.06648 |     0.06802 |     0.06834 |
+|                         256 |       0.002  |                0.036 |                       0.00017 |     0.00017 |     0.00017 |
+|                       1,024 |       0.001  |                0.161 |                       0.00017 |     0.00017 |     0.00017 |
+|                       4,096 |       0.003  |                0.680 |                       0.00020 |     0.00020 |     0.00020 |
+|                      16,384 |       0.015  |                2.800 |                       0.00021 |     0.00020 |     0.00021 |
+|                      65,536 |       0.074  |               11.356 |                       0.00048 |     0.00047 |     0.00048 |
+|                     262,144 |       0.350  |               45.745 |                       0.00088 |     0.00087 |     0.00088 |
+|                   1,048,576 |       1.630  |              183.632 |                       0.00247 |     0.00244 |     0.00245 |
+|                   4,194,304 |       8.036  |              735.848 |                       0.00794 |     0.00783 |     0.00788 |
+|                  16,777,216 |      41.057  |             2946.610 |                       0.02481 |     0.02429 |     0.02211 |
+|                  67,108,864 |     187.581  |            11791.601 |                       0.07196 |     0.06329 |     0.06308 |
 
-Here we see, the `setElement` methods performs extremely bad because all matrix elements are transfered to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Another simple method could by to setup the matrix on CPU by the means of `setElement` method and trasnfer it on GPU.
+Here we see, the `setElement` methods performs extremely bad because all matrix elements are transferred to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Another simple method could by to setup the matrix on CPU by the means of `setElement` method and transfer it on GPU.
 
-Finaly, the following tables show the times of the same test performed with multidiagonal matrix. Times on CPU looks as follows:
+### Multidiagonal matrix
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `getRow`    | `forRows`   |
-|----------------------------:|-------------:|---------------------:|------------:|------------:|
-|                             |              |                      |             |             |
+Finally, the following tables show the times of the same test performed with multidiagonal matrix. Times on CPU looks as follows:
 
+| Matrix rows and columns     |  `setElement` on host     | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
+|----------------------------:|--------------------------:|--------------------------------:|------------:|------------:|
+|                         256 |                  0.000055 |                       0.0000038 |    0.000004 |    0.000009 |
+|                       1,024 |                  0.000002 |                       0.0000056 |    0.000003 |    0.000006 |
+|                       4,096 |                  0.000087 |                       0.0000130 |    0.000005 |    0.000014 |
+|                      16,384 |                  0.000347 |                       0.0000419 |    0.000010 |    0.000046 |
+|                      65,536 |                  0.001378 |                       0.0001528 |    0.000032 |    0.000177 |
+|                     262,144 |                  0.005504 |                       0.0006025 |    0.000131 |    0.000711 |
+|                   1,048,576 |                  0.019392 |                       0.0028773 |    0.001005 |    0.003265 |
+|                   4,194,304 |                  0.072078 |                       0.0162378 |    0.011915 |    0.018065 |
+|                  16,777,216 |                  0.280085 |                       0.0642682 |    0.048876 |    0.072084 |
+|                  67,108,864 |                  1.105120 |                       0.2427610 |    0.181974 |    0.272579 |
 
 And on GPU like the fallowing table:
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
-|----------------------------:|-------------:|---------------------:|------------------------------:|------------:|------------:|
-|                             |              |                      |                               |             |             |
+| Matrix rows and columns     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
+|----------------------------:|---------------------:|------------------------------:|------------:|------------:|
+|                         256 |                0.035 |                      0.000048 |    0.000045 |   0.000047  |
+|                       1,024 |                0.059 |                      0.000047 |    0.000045 |   0.000047  |
+|                       4,096 |                0.251 |                      0.000048 |    0.000045 |   0.000047  |
+|                      16,384 |                1.030 |                      0.000049 |    0.000046 |   0.000048  |
+|                      65,536 |                4.169 |                      0.000053 |    0.000048 |   0.000052  |
+|                     262,144 |               16.807 |                      0.000216 |    0.000214 |   0.000217  |
+|                   1,048,576 |               67.385 |                      0.000630 |    0.000629 |   0.000634  |
+|                   4,194,304 |              270.025 |                      0.001939 |    0.001941 |   0.001942  |
+|                  16,777,216 |             1080.741 |                      0.003212 |    0.004185 |   0.004207  |
+|                  67,108,864 |             4326.120 |                      0.013672 |    0.022494 |   0.030369  |
 
 ### Dense matrices <a name="dense_matrices_setup"></a>
 
