@@ -159,11 +159,12 @@ There are several ways how to create new matrix:
 1. **Initializer lists** allow to create matrix from the [C++ initializer lists](https://en.cppreference.com/w/cpp/utility/initializer_list). The matrix elements must be therefore encoded in the source code and so it is useful for rather smaller matrices. Methods and constructors with initializer lists are user friendly and simple to use. It is a good choice for tool problems with small matrices.
 2. **STL map** can be used for creation of sparse matrices only. The user first insert all matrix elements together with their coordinates into [`std::map`](https://en.cppreference.com/w/cpp/container/map) based on which the sparse matrix is created in the next step. It is simple and user friendly approach suitable for creation of large matrices. An advantage is that we do not need to know the distribution of the matrix elements in matrix rows in advance like we do in other ways of matrix construction. This makes the use of STL map suitable for combining of sparse matrices in TNL with other numerical packages. However, the sparse matrix is constructed on the host and then copied on GPU if necessary. Therefor, this approach is not a good choice if fast and efficient matrix construction is required.
 3. **Methods `setElement` and `addElement` called from the host** allows to change particular matrix elements. The methods can be called from host even for matrices allocated on GPU. In this case, however, the matrix elements are transferred on GPU one by one which is very inefficient. If the matrix is allocated on the host system (CPU), the efficiency is good. In case of sparse matrices, one must set row capacities (i.e. maximal number of nonzero elements in each row) before using these methods. If the row capacity is exceeded, the matrix has to be reallocated and all matrix elements are lost.
-4. **Methods `setElement` and `addElement` called from native device** allows to do efficient matrix elements setup even on devices (GPUs). In this case, the methods must be called from a GPU kernel or a lambda function combined with parallel for (\ref TNL::Algorithms::ParallelFor). The user get very good performance even when manipulating matrix allocated on GPU. On the other hand, only data structures allocated on GPUs can be used in the kernel or lambda function. The the matrix can be accessed in the GPU kernel or lambda function by means of [matrix view](#matrix_view) or the shared pointer (\ref TNL::Pointers::SharedPointer).
-5. **Method `getRow` combined with `ParallelFor`** is very simillar to the previous one. The difference is that with first fetch helper object called *matrix row* which is linked to particular matrix row. Using methods of this object, one may change the matrix elements in given matrix row. An advantage is that the access to the matrix row is resolved only once for all elements in the row. In some more sophisticated sparse matrix formats, this can be nontrivial operation and this approach may slightly improve the performance. Another advantage for sparse matrices is that we access the matrix elements based on their *local index* in the row which is something like a rank of the nonzero element in the row. This is more efficient than adressing the matrix elements by the column indexes which requires searching in the matrix row. So this may significantly improve the performance of setup of sparse matrices. When it comes to dense matrices, there should not be great difference in performance compared to use of the methods `setElement` and `getElement`. Note that when the method is called from GPU kernel or lambda function , only data structures allocated on GPU can be accessed and the matrix must be made accessible by the means of.
-6. **Method `forRows`** this approach is very similar to the previous one but it avoids using `ParallelFor` and necessity of passing the matrix to GPU kernels by matrix view or shared pointers.
+4. **Methods `setElement` and `addElement` called from the host and copy matrix on GPU** setting particular matrix elements by the methods `setElement` and `addElement` when the matrix is allocated on GPU can be time consuming for large matrices. Setting up the matrix on CPU using the same methods and copying it on GPU at once when the setup is finished can be significantly more efficient. A drawback is that we need allocate temporarily whole matrix on CPU.
+5. **Methods `setElement` and `addElement` called from native device** allows to do efficient matrix elements setup even on devices (GPUs). In this case, the methods must be called from a GPU kernel or a lambda function combined with parallel for (\ref TNL::Algorithms::ParallelFor). The user get very good performance even when manipulating matrix allocated on GPU. On the other hand, only data structures allocated on GPUs can be used in the kernel or lambda function. The the matrix can be accessed in the GPU kernel or lambda function by means of [matrix view](#matrix_view) or the shared pointer (\ref TNL::Pointers::SharedPointer).
+6. **Method `getRow` combined with `ParallelFor`** is very similar to the previous one. The difference is that with first fetch helper object called *matrix row* which is linked to particular matrix row. Using methods of this object, one may change the matrix elements in given matrix row. An advantage is that the access to the matrix row is resolved only once for all elements in the row. In some more sophisticated sparse matrix formats, this can be nontrivial operation and this approach may slightly improve the performance. Another advantage for sparse matrices is that we access the matrix elements based on their *local index* in the row which is something like a rank of the nonzero element in the row. This is more efficient than addressing the matrix elements by the column indexes which requires searching in the matrix row. So this may significantly improve the performance of setup of sparse matrices. When it comes to dense matrices, there should not be great difference in performance compared to use of the methods `setElement` and `getElement`. Note that when the method is called from GPU kernel or lambda function , only data structures allocated on GPU can be accessed and the matrix must be made accessible by the means of.
+7. **Method `forRows`** this approach is very similar to the previous one but it avoids using `ParallelFor` and necessity of passing the matrix to GPU kernels by matrix view or shared pointers.
 
-The following table shows pros and cons of particular mathods:
+The following table shows pros and cons of particular methods:
 
 |  Method                                 |   Pros                                                                 | Cons                                                                  |
 |:----------------------------------------|:-----------------------------------------------------------------------|:----------------------------------------------------------------------|
@@ -215,19 +216,18 @@ The results on GPU looks as follows:
 
 And the same on GPU is in the following table:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`     | `forRows`   |
-|----------------------------:|---------------------:|--------------------------------:|-------------:|------------:|
-|                          16 |           0.027835   |                     0.000101198 | 0.00009903   | 0.000101214 |
-|                          32 |           0.002776   |                     0.000099197 | 0.00009901   | 0.000100481 |
-|                          64 |           0.010791   |                     0.000094446 | 0.00009493   | 0.000101796 |
-|                         128 |           0.043014   |                     0.000099397 | 0.00010024   | 0.000102729 |
-|                         256 |           0.171029   |                     0.000100469 | 0.00010448   | 0.000105893 |
-|                         512 |           0.683627   |                     0.000103346 | 0.00011034   | 0.000112752 |
-|                        1024 |           2.736680   |                     0.000158805 | 0.00016932   | 0.000170302 |
-|                        2048 |          10.930300   |                     0.000509000 | 0.00050917   | 0.000511183 |
-|                        4096 |          43.728700   |                     0.001557030 | 0.00156117   | 0.001557930 |
-|                        8192 |         174.923000   |                     0.005312470 | 0.00526658   | 0.005263870 |
-
+| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` with `ParallelFor` | `getRow`     | `forRows`   |
+|----------------------------:|---------------------:|------------------------------:|--------------------------------:|-------------:|------------:|
+|                          16 |           0.027835   |                       0.02675 |                     0.000101198 | 0.00009903   | 0.000101214 |
+|                          32 |           0.002776   |                       0.00018 |                     0.000099197 | 0.00009901   | 0.000100481 |
+|                          64 |           0.010791   |                       0.00015 |                     0.000094446 | 0.00009493   | 0.000101796 |
+|                         128 |           0.043014   |                       0.00021 |                     0.000099397 | 0.00010024   | 0.000102729 |
+|                         256 |           0.171029   |                       0.00056 |                     0.000100469 | 0.00010448   | 0.000105893 |
+|                         512 |           0.683627   |                       0.00192 |                     0.000103346 | 0.00011034   | 0.000112752 |
+|                        1024 |           2.736680   |                       0.00687 |                     0.000158805 | 0.00016932   | 0.000170302 |
+|                        2048 |          10.930300   |                       0.02474 |                     0.000509000 | 0.00050917   | 0.000511183 |
+|                        4096 |          43.728700   |                       0.13174 |                     0.001557030 | 0.00156117   | 0.001557930 |
+|                        8192 |         174.923000   |                       0.70602 |                     0.005312470 | 0.00526658   | 0.005263870 |
 
 ### Sparse matrix
 
@@ -248,18 +248,18 @@ The sparse matrices are tested on computation of matrix approximating the Laplac
 
 We see, that use of STL map makes sense only in situation when it is hard to estimate necessary row capacities. Otherwise very simple with `setElement` method is much faster. If the performance is the highest priority, `getRow` method should be preferred. And the same on GPU is in the following table:
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
-|----------------------------:|-------------:|---------------------:|------------------------------:|------------:|------------:|
-|                         256 |       0.002  |                0.036 |                       0.00017 |     0.00017 |     0.00017 |
-|                       1,024 |       0.001  |                0.161 |                       0.00017 |     0.00017 |     0.00017 |
-|                       4,096 |       0.003  |                0.680 |                       0.00020 |     0.00020 |     0.00020 |
-|                      16,384 |       0.015  |                2.800 |                       0.00021 |     0.00020 |     0.00021 |
-|                      65,536 |       0.074  |               11.356 |                       0.00048 |     0.00047 |     0.00048 |
-|                     262,144 |       0.350  |               45.745 |                       0.00088 |     0.00087 |     0.00088 |
-|                   1,048,576 |       1.630  |              183.632 |                       0.00247 |     0.00244 |     0.00245 |
-|                   4,194,304 |       8.036  |              735.848 |                       0.00794 |     0.00783 |     0.00788 |
-|                  16,777,216 |      41.057  |             2946.610 |                       0.02481 |     0.02429 |     0.02211 |
-|                  67,108,864 |     187.581  |            11791.601 |                       0.07196 |     0.06329 |     0.06308 |
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on host and copy |`setElement` on native device | `getRow`    | `forRows`   |
+|----------------------------:|-------------:|---------------------:|------------------------------:|-----------------------------:|------------:|------------:|
+|                         256 |       0.002  |                0.036 |                        0.0280 |                      0.00017 |     0.00017 |     0.00017 |
+|                       1,024 |       0.001  |                0.161 |                        0.0006 |                      0.00017 |     0.00017 |     0.00017 |
+|                       4,096 |       0.003  |                0.680 |                        0.0010 |                      0.00020 |     0.00020 |     0.00020 |
+|                      16,384 |       0.015  |                2.800 |                        0.0034 |                      0.00021 |     0.00020 |     0.00021 |
+|                      65,536 |       0.074  |               11.356 |                        0.0130 |                      0.00048 |     0.00047 |     0.00048 |
+|                     262,144 |       0.350  |               45.745 |                        0.0518 |                      0.00088 |     0.00087 |     0.00088 |
+|                   1,048,576 |       1.630  |              183.632 |                        0.2057 |                      0.00247 |     0.00244 |     0.00245 |
+|                   4,194,304 |       8.036  |              735.848 |                        0.8119 |                      0.00794 |     0.00783 |     0.00788 |
+|                  16,777,216 |      41.057  |             2946.610 |                        3.2198 |                      0.02481 |     0.02429 |     0.02211 |
+|                  67,108,864 |     187.581  |            11791.601 |                       12.7775 |                      0.07196 |     0.06329 |     0.06308 |
 
 Here we see, the `setElement` methods performs extremely bad because all matrix elements are transferred to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Another simple method could by to setup the matrix on CPU by the means of `setElement` method and transfer it on GPU.
 
@@ -282,18 +282,18 @@ Finally, the following tables show the times of the same test performed with mul
 
 And on GPU like the fallowing table:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` on native device | `getRow`    | `forRows`   |
-|----------------------------:|---------------------:|------------------------------:|------------:|------------:|
-|                         256 |                0.035 |                      0.000048 |    0.000045 |   0.000047  |
-|                       1,024 |                0.059 |                      0.000047 |    0.000045 |   0.000047  |
-|                       4,096 |                0.251 |                      0.000048 |    0.000045 |   0.000047  |
-|                      16,384 |                1.030 |                      0.000049 |    0.000046 |   0.000048  |
-|                      65,536 |                4.169 |                      0.000053 |    0.000048 |   0.000052  |
-|                     262,144 |               16.807 |                      0.000216 |    0.000214 |   0.000217  |
-|                   1,048,576 |               67.385 |                      0.000630 |    0.000629 |   0.000634  |
-|                   4,194,304 |              270.025 |                      0.001939 |    0.001941 |   0.001942  |
-|                  16,777,216 |             1080.741 |                      0.003212 |    0.004185 |   0.004207  |
-|                  67,108,864 |             4326.120 |                      0.013672 |    0.022494 |   0.030369  |
+| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` on native device | `getRow`    | `forRows`   |
+|----------------------------:|---------------------:|------------------------------:|------------------------------:|------------:|------------:|
+|                         256 |                0.035 |                       0.02468 |                      0.000048 |    0.000045 |   0.000047  |
+|                       1,024 |                0.059 |                       0.00015 |                      0.000047 |    0.000045 |   0.000047  |
+|                       4,096 |                0.251 |                       0.00044 |                      0.000048 |    0.000045 |   0.000047  |
+|                      16,384 |                1.030 |                       0.00158 |                      0.000049 |    0.000046 |   0.000048  |
+|                      65,536 |                4.169 |                       0.00619 |                      0.000053 |    0.000048 |   0.000052  |
+|                     262,144 |               16.807 |                       0.02187 |                      0.000216 |    0.000214 |   0.000217  |
+|                   1,048,576 |               67.385 |                       0.08043 |                      0.000630 |    0.000629 |   0.000634  |
+|                   4,194,304 |              270.025 |                       0.31272 |                      0.001939 |    0.001941 |   0.001942  |
+|                  16,777,216 |             1080.741 |                       1.18849 |                      0.003212 |    0.004185 |   0.004207  |
+|                  67,108,864 |             4326.120 |                       4.74481 |                      0.013672 |    0.022494 |   0.030369  |
 
 ### Dense matrices <a name="dense_matrices_setup"></a>
 
