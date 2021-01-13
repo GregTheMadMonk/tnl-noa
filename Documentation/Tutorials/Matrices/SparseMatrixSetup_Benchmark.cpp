@@ -66,6 +66,35 @@ void setElement_on_host( const int gridSize, Matrix& matrix )
 }
 
 template< typename Matrix >
+void setElement_on_host_and_transfer( const int gridSize, Matrix& matrix )
+{
+   using RealType = typename Matrix::RealType;
+   using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
+
+   const int matrixSize = gridSize * gridSize;
+   TNL::Containers::Vector< int, typename HostMatrix::DeviceType, int > rowCapacities( matrixSize, 5 );
+   HostMatrix hostMatrix( matrixSize, matrixSize );
+   hostMatrix.setRowCapacities( rowCapacities );
+
+   for( int j = 0; j < gridSize; j++ )
+      for( int i = 0; i < gridSize; i++ )
+      {
+         const int rowIdx = j * gridSize + i;
+         if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 )
+            hostMatrix.setElement( rowIdx, rowIdx,  1.0 );
+         else
+         {
+            hostMatrix.setElement( rowIdx, rowIdx - gridSize,  1.0 );
+            hostMatrix.setElement( rowIdx, rowIdx - 1,  1.0 );
+            hostMatrix.setElement( rowIdx, rowIdx,  -4.0 );
+            hostMatrix.setElement( rowIdx, rowIdx + 1,  1.0 );
+            hostMatrix.setElement( rowIdx, rowIdx + gridSize,  1.0 );
+         }
+      }
+   matrix = hostMatrix;
+}
+
+template< typename Matrix >
 void setElement_on_device( const int gridSize, Matrix& matrix )
 {
    /***
@@ -207,6 +236,20 @@ void laplaceOperatorSparseMatrix()
       }
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
+
+      if( std::is_same< Device, TNL::Devices::Cuda >::value )
+      {
+         std::cout << "   setElement on host and transfer on GPU: ";
+         timer.reset();
+         timer.start();
+         for( int i = 0; i < testsCount; i++ )
+         {
+            TNL::Matrices::SparseMatrix< float, Device, int > matrix;
+            setElement_on_host_and_transfer( gridSize, matrix );
+         }
+         timer.stop();
+         std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
+      }
 
       std::cout << "   setElement on device: ";
       timer.reset();

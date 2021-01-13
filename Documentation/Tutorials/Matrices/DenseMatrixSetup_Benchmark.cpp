@@ -18,6 +18,20 @@ void setElement_on_host( const int matrixSize, Matrix& matrix )
 }
 
 template< typename Matrix >
+void setElement_on_host_and_transfer( const int matrixSize, Matrix& matrix )
+{
+   using RealType = typename Matrix::RealType;
+   using IndexType = typename Matrix::IndexType;
+   using HostMatrix = TNL::Matrices::DenseMatrix< RealType, TNL::Devices::Host, IndexType >;
+   HostMatrix hostMatrix( matrixSize, matrixSize );
+
+   for( int j = 0; j < matrixSize; j++ )
+      for( int i = 0; i < matrixSize; i++ )
+         hostMatrix.setElement( i, j,  i + j );
+   matrix = hostMatrix;
+}
+
+template< typename Matrix >
 void setElement_on_device( const int matrixSize, Matrix& matrix )
 {
    matrix.setDimensions( matrixSize, matrixSize );
@@ -84,6 +98,20 @@ void setupDenseMatrix()
       }
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
+
+      if( std::is_same< Device, TNL::Devices::Cuda >::value )
+      {
+         std::cout << "   setElement on host and transfer on GPU: ";
+         timer.reset();
+         timer.start();
+         for( int i = 0; i < testsCount; i++ )
+         {
+            TNL::Matrices::DenseMatrix< float, Device, int > matrix;
+            setElement_on_host_and_transfer( matrixSize, matrix );
+         }
+         timer.stop();
+         std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
+      }
 
       std::cout << "   getRow: ";
       timer.reset();
