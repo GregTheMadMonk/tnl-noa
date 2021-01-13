@@ -1,5 +1,5 @@
 template< typename Array >
-void checkDevice
+void testDevice
 {
     using Device = typename Array::DeviceType;
     if( std::is_same< Device, TNL::Device::Host >::value )
