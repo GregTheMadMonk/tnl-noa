@@ -108,7 +108,7 @@ In this table:
 
 The multidiagonal matrix type is especially suitable for the finite difference method or similar numerical methods for solution of the partial differential equations.
 
-## Indexing of nonzero matrix elements in sparse matrices<a name="indexing_of_nonzero_matrix_elements_in_sparse_matrices"></a>
+## Indexing of nonzero matrix elements in sparse matrices<a name="indexing-of-nonzero-matrix-elements-in-sparse-matrices"></a>
 
 The sparse matrix formats usually, in the first step, compress the matrix rows by omitting the zero matrix elements as follows
 
@@ -427,80 +427,34 @@ The result looks as follows:
 
 ### Sparse matrices <a name="sparse_matrices_setup"></a>
 
-[Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possible some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. Consider just matrix having 50,000 rows and columns whih is 2,500,000,000 matrix elements. If we store each matrix element in double precision (it means eight bytes per element) we need 20,000,000,000 bytes which is nearly 20 GB of memory. If there are only five non-zero elements in each row we need only \f$8 \times 5 \times 50,000=2,000,000\f$ bytes and so nearly 200 MB. It is really great difference.
+[Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possibly some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. See the [Overview of matrix types](#overview_of_matrix_types) for the differences in memory requirements.
 
-Major disadventage of sparse matrices is that there are a lot of different formats for storing such matrices. Though [CSR - Compressed Sparse Row](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs there are many other formats which perform differently on various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing the sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template paramaters is as follows:
+Major disadvantage of sparse matrices is that there are a lot of different formats for their storage in memory. Though [CSR (Compressed Sparse Row)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs, there are many other formats. Often their performance differ significantly for various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing general sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template paramaters is as follows:
 
 * `Real` is type if the matrix elements. It is `double` by default.
-* `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
+* `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for CUDA supporting GPUs. It is \ref TNL::Devices::Host by default.
 * `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
 * `MatrixType` tells if the matrix is symmetric (\ref TNL::Matrices::SymmetricMatrix) or general (\ref TNL::Matrices::GeneralMatrix). It is a \ref TNL::Matrices::GeneralMatrix by default.
-* `Segments` define the format of the sparse matrix. It can be (by default, it is \ref TNL::Algorithms::Segments::CSR):
+* `Segments` define the format of the sparse matrix. It can be one of the following (by default, it is \ref TNL::Algorithms::Segments::CSR):
    * \ref TNL::Algorithms::Segments::CSR for [CSR format](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)).
    * \ref TNL::Algorithms::Segments::Ellpack for [Ellpack format](http://mgarland.org/files/papers/nvr-2008-004.pdf).
    * \ref TNL::Algorithms::Segments::SlicedEllpack for [SlicedEllpack format](https://link.springer.com/chapter/10.1007/978-3-642-11515-8_10) which was also presented as [Row-grouped CSR format](https://arxiv.org/abs/1012.2270).
    * \ref TNL::Algorithms::Segments::ChunkedEllpack for [ChunkedEllpack format](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/12-heller-oberhuber-improved-rgcsr-format.pdf) which we reffered as Improved Row-grouped CSR and we renamed it to Ellpack format since it uses padding zeros.
    * \ref TNL::Algorithms::Segments::BiEllpack for [BiEllpack format](https://www.sciencedirect.com/science/article/pii/S0743731514000458?casa_token=2phrEj0Ef1gAAAAA:Lgf6rMBUN6T7TJne6mAgI_CSUJ-jR8jz7Eghdv6L0SJeGm4jfso-x6Wh8zgERk3Si7nFtTAJngg).
 * `ComputeReal` is type which is used for internal computations. By default it is the same as `Real` if `Real` is not `bool`. If `Real` is `bool`, `ComputeReal` is set to `Index` type. This can be changed, of course, by the user.
-* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type – see TNL::Allocators::Default.
+* `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type – see \ref TNL::Allocators::Default.
 * `IndexAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the column indexes of the matrix elements. By default, it is the default allocator for given `Index` type and `Device` type – see \ref TNL::Allocators::Default.
 
-**If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.**
+**If `Real` is set to `bool`, we get *a binary matrix* for which the non-zero elements can be equal only to one and so the matrix elements values are not stored explicitly in the memory.** This can significantly reduce the memory requirements and also increase performance.
 
 In the following text we will show how to create and setup sparse matrices.
 
-#### Initializer list
+#### Setting of row capacities<a name="setting-of-matrix-row-capacities"></a>
 
-Small matrices can be initialized by a constructor with an [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list). We assume having the following sparse matrix
+Larger sparse matrices are created in two steps:
 
-\f[
-\left(
-\begin{array}{ccccc}
- 1 &  0 &  0 &  0 &  0 \\
--1 &  2 & -1 &  0 &  0 \\
- 0 & -1 &  2 & -1 &  0 \\
- 0 &  0 & -1 &  2 & -1 \\
- 0 &  0 &  0 & -1 &  0
-\end{array}
-\right).
-\f]
-
-The following example shows how to create it using the initializer list constructor:
-
-\includelineno SparseMatrixExample_Constructor_init_list_2.cpp
-
-The constructor accepts the following parameters:
-
-* `rows` is a number of matrix rows.
-* `columns` is a number of matrix columns.
-* `data` is definition of non-zero matrix elements. It is a initializer list of triples having a form `{ row_index, column_index, value }`. In fact, it is very much like the coordinates format - [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)).
-
-The constructor also accepts `Real` and `Index` allocators (\ref TNL::Allocators) but their are not important for this example. A method `setElements` works the same way:
-
-\includelineno SparseMatrixExample_setElements.cpp
-
-The result of both examples looks as follows:
-
-\include SparseMatrixExample_Constructor_init_list_2.out
-
-#### STL map
-
-Finaly, there is a constructor which creates the sparse matrix from [`std::map`](https://en.cppreference.com/w/cpp/container/map). It is usefull especially in situation when you cannot compute the matrix elements by rows but rather in random order. You can do it on CPU and store the matrix elements in [`std::map`](https://en.cppreference.com/w/cpp/container/map) data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
-
-```
-std::pair( std::pair( row_index, column_index ), element_value )
-```
-
-which defines one matrix element at given coordinates with given value. Of course, you can insert such entries in any order into the `map`. When it is complete you can pass it the sparse matrix. See the following example:
-
-\includelineno SparseMatrixExample_Constructor_std_map.cpp
-
-#### Setting of row capacities
-
-Larger matrices are created in two steps:
-
-1. We use a method \ref TNL::Matrices::SparseMatrix::setRowCapacities to initialize the underlying matrix format and to allocate memory for the matrix elements. This method only needs to know how many non-zero elements are supposed to be in each row. Once this is set, it cannot be changed only by reseting the whole matrix. In most situations, this is not an issue to compute the number of non-zero elements in each row. Note, however, that we do not tell the positions of the non-zeto elements. If some matrix format needs this information it cannot be used with this implementation of the sparse matrix.
-2. The non-zero matrix elements can be set-up. We insert one non-zero element after another by telling its coordinates and a value. Since probably all sparse matrix formats are designed to allow quick acces to particular matrix rows, this insertion is usualy quite efficient and can by done in parallel by mapping different threads to different matrix rows.
+1. We use a method \ref TNL::Matrices::SparseMatrix::setRowCapacities to initialize the underlying matrix format and to allocate memory for the matrix elements. This method only needs to know how many non-zero elements are supposed to be in each row. Once this is set, it cannot be changed only by resetting the whole matrix. In most situations, it is not an issue to compute the number of nonzero elements in each row. Otherwise, we can currently only recommend the use of matrix setup with [STL map](#sparse-matrix-stl-map), which is, however, quite slow.
+2. Now, the nonzero matrix elements can be set one after another by telling its coordinates and a value. Since majority of sparse matrix formats are designed to allow quick access to particular matrix rows the insertion can be done in parallel by mapping different threads to different matrix rows. This approach is usually optimal or nearly optimal when it comes to efficiency.
 
 See the following example which creates lower triangular matrix like this one
 
@@ -534,31 +488,74 @@ The result of both examples looks as follows:
 
 \include SparseMatrixExample_Constructor_init_list_1.out
 
-#### Methods `setElement` and `addElement`
 
-A method `setElements` works the same way for already existing instances of sparse matrix:
+#### Initializer list
+
+Small matrices can be initialized by a constructor with an [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list). We assume having the following sparse matrix
+
+\f[
+\left(
+\begin{array}{ccccc}
+ 1 &  0 &  0 &  0 &  0 \\
+-1 &  2 & -1 &  0 &  0 \\
+ 0 & -1 &  2 & -1 &  0 \\
+ 0 &  0 & -1 &  2 & -1 \\
+ 0 &  0 &  0 & -1 &  0
+\end{array}
+\right).
+\f]
+
+It can be created with the initializer list constructor like we shows in the following example:
+
+\includelineno SparseMatrixExample_Constructor_init_list_2.cpp
+
+The constructor accepts the following parameters (lines 9-17):
+
+* `rows` is a number of matrix rows.
+* `columns` is a number of matrix columns.
+* `data` is definition of nonzero matrix elements. It is a initializer list of triples having a form `{ row_index, column_index, value }`. In fact, it is very much like the Coordinate format - [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)).
+
+The constructor also accepts `Real` and `Index` allocators (\ref TNL::Allocators) but the default ones are used in this example. A method `setElements` (\ref TNL::Matrices::SparseMatrix::setElements) works the same way:
+
+\includelineno SparseMatrixExample_setElements.cpp
+
+In this example, we create the matrix in two steps. Firstly we use constructor with only matrix dimensions as parameters (line 9) and next we set the matrix elements by `setElements` method (lines 10-15). The result of both examples looks as follows:
+
+\include SparseMatrixExample_Constructor_init_list_2.out
+
+#### STL map<a name="sparse-matrix-stl-map"></a>
+
+The constructor which creates the sparse matrix from [`std::map`](https://en.cppreference.com/w/cpp/container/map) is useful especially in situations when you cannot estimate the [matrix row capacities](#setting-of-matrix-row-capacities) in advance. You can first store the matrix elements in [`std::map`](https://en.cppreference.com/w/cpp/container/map) data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
+
+```
+std::pair( std::pair( row_index, column_index ), element_value )
+```
+
+which defines one matrix element at given coordinates `(row_index,column_index)` with given value (`element_value`). Of course, you can insert such entries into the `map` in arbitrary order. When it is complete, you pass the map to the sparse matrix. See the following example:
+
+\includelineno SparseMatrixExample_Constructor_std_map.cpp
+
+The method `setElements` (\ref TNL::Matrices::SparseMatrix::setElements) works the same way for already existing instances of sparse matrix:
 
 \includelineno SparseMatrixExample_setElements_map.cpp
 
-The result of both examples looks as folows:
+The result of both examples looks as follows:
 
 \include SparseMatrixExample_setElements_map.out
 
-Another way of setting the sparse matrix is via the methods `setElement` and `addElement` (\ref TNL::Matrices::SparseMatrix::setElement, \ref TNL::Matrices::addElement). The procedure is as follows:
+Note, however, that the map can be constructed only on CPU and not on GPU. It requires allocation of additional memory on the host system (CPU) and if the target sparse matrix resided on GPU, the matrix elements must be copied on GPU. This is the reason, why this way of the sparse matrix setup is inefficient compared to other methods.
 
-1. Setup the matrix dimensions.
-2. Setup the row capacities.
-3. Setup the matrix elements.
+#### Methods `setElement` and `addElement`
 
-The method can be called from both host (CPU) and device (GPU) if the matrix is allocated there. Note, however, that if the matrix is allocated on GPU and the method is called from CPU there will be significant performance drop because the matrix elements will be transfered one after another. However, if the matrix elements setup is not a critical part of your algorithm this can be an easy way how to do it. See the following example:
+Another way of setting the sparse matrix is by means of the methods `setElement` and `addElement` (\ref TNL::Matrices::SparseMatrix::setElement, \ref TNL::Matrices::SparseMatrix::addElement). The method can be called from both host (CPU) and device (GPU) if the matrix is allocated there. Note, however, that if the matrix is allocated on GPU and the methods are called from CPU there will be significant performance drop because the matrix elements will be transferer one-by-one separately. However, if the matrix elements setup is not a critical part of your algorithm this can be an easy way how to do it. See the following example:
 
-\includelineno SparseMatrixExample_setElement.cpp
+\includelineno SparseMatrixViewExample_setElement.cpp
 
-Note that we use `SharedPointer` (\ref TNL::Pointers::SharedPointer) to pass the matrix easily into the lambda function when it runs on GPU. The first for-loop runs on CPU no matter where the matrix is allocated. Next we call the lambda function `f` from `ParallelFor` which is device sensitive and so it runs on CPU or GPU depending where the matrix is allocated. To avoid use of `SharedPointer`, which requires explicit synchronization of smart pointers, you may use `SparseMatrixView' (\ref TNL::Matrices::SparseMatrixView) to achieve the same. The result looks as follows:
+We first allocate matrix with five rows (it is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) and columns and we set capacity each row to one (line 12). The first for-loop (lines 17-19) runs on CPU no matter where the matrix is allocated. After printing the matrix (lines 21-22), we call the lambda function `f` (lines 24-26) with a help of `ParallelFor` (\ref TNL::Algorithms::ParallelFor , line 28) which is device sensitive and so it runs on CPU or GPU depending on where the matrix is allocated. The result looks as follows:
 
 \include SparseMatrixExample_setElement.out
 
-The method `addElement` adds a value to specific matrix element. Otherwise, it behaves the same as `setElement`. See the following example:
+The method `addElement` (\ref TNL::Matrices::SparseMatrix::addElement) adds a value to specific matrix element. Otherwise, it behaves the same as `setElement`. See the following example:
 
 \includelineno SparseMatrixExample_addElement.cpp
 
@@ -568,11 +565,11 @@ The result looks as follows:
 
 #### Method `getRow`
 
-More efficient method is to combine `getRow` (\ref TNL::Matrices::SparseMatrix::getRow) method with `ParallelFor` (\ref TNL::Algorithms::ParallelFor) and lambda function as the following example demonstrates:
+More efficient method, especially for GPUs, is to combine `getRow` (\ref TNL::Matrices::SparseMatrix::getRow) method with `ParallelFor` (\ref TNL::Algorithms::ParallelFor) and lambda function as the following example demonstrates:
 
 \includelineno SparseMatrixViewExample_getRow.cpp
 
-On the line 11, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one (particular elements of the initalizer list). On the line 22, we call `ParallelFor` to iterate over all matrix elements. Each row is processed by the lambda function `f` (lines14-17). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) which is a proxy to matrix row. This object has a method `setElement` accepting three parameters:
+On the line 11, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one (particular elements of the initializer list). On the line 22, we call `ParallelFor` (\ref TNL::Algorithms::ParallelFor) to iterate over all matrix elements. Each row is processed by the lambda function `f` (lines 14-17). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) which serves for accessing particular matrix rows. This object has a method `setElement` (\ref TNL::Matrices::SparseMatrixRowView::setElement) accepting three parameters:
 
 1. `localIdx` is a rank of the nonzero element in given matrix row.
 2. `columnIdx` is the new column index of the matrix element.
@@ -584,19 +581,19 @@ The result looks as follows:
 
 #### Method `forRows`
 
-Finaly, for the most efficient way of setting the non-zero matrix elements, is use of a method `forRows`. It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each non-zero element. The lambda functions provides the following data:
+Finally, another efficient way of setting the nonzero matrix elements, is use of the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows). It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each nonzero element. The lambda function provides the following data:
 
 * `rowIdx` is a row index of the matrix element.
-* `localIdx` is an index of the non-zero matrix element within the matrix row.
-* `columnIdx` is a column index of the matrix element. If the matrix element is suppsoed to be changed, this parameter can be a reference and so its value can be changed.
-* `value` is a value of the matrix element. It the matrix element is supposed to be changed, this parameter can be a reference as well and so the element value can be changed.
+* `localIdx` is an index of the nonzero matrix element within the matrix row.
+* `columnIdx` is a column index of the matrix element. If the matrix element column index is supposed to be modified, this parameter can be a reference and so its value can be changed.
+* `value` is a value of the matrix element. If the matrix element value is supposed to be modified, this parameter can be a reference as well and so the element value can be changed.
 * `compute` is a bool reference. When it is set to `false` the rest of the row can be omitted. This is, however, only a hint and it depends on the underlying matrix format if it is taken into account.
 
 See the following example:
 
 \includelineno SparseMatrixExample_forRows.cpp
 
-On the line 9, we allocate a lower triangular matrix (because the row capacities `{1,2,3,4,5}` are equal to row index) using the `SparseMatrix`. On the line 11, we prepare lambda function `f` which we execute on the line 22 just by calling the method `forRows` (\ref TNL::Matrices::SpartseMatrix::forRows). This method takes the range of matrix rows as the first two parameters and the lambda function as the last parameter. The lambda function receives parameters metioned above (see the line 11). We first check if the matrix element coordinates (`rowIdx` and `localIdx`) points to an element lying before the matrix diagonal or on the diagonal. In case of the lower triangular matrix in our example, the local index is in fact the same as the column index
+On the line 9, we allocate a lower triangular matrix byt setting the row capacities as `{1,2,3,4,5}`. On the line 11, we prepare lambda function `f` which we execute on the line 22 just by calling the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows). This method takes the range of matrix rows as the first two parameters and the lambda function as the last parameter. The lambda function receives parameters mentioned above (see the line 11). We first check if the matrix element coordinates (`rowIdx` and `localIdx`) points to an element lying before the matrix diagonal or on the diagonal (line 12). In case of the lower triangular matrix in our example, the local index is in fact the same as the column index
 
 \f[
 \left(
@@ -610,7 +607,7 @@ On the line 9, we allocate a lower triangular matrix (because the row capacities
 \right)
 \f]
 
-If we call the method `forRows` to setup the matrix elements for the first time, the parameter `columnIdx` has no sense because the matrix elements and their column indexes were not set yet. Therefore it is important that the test on the line 12 reads as
+If we call the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows) to setup the matrix elements for the first time, the parameter `columnIdx` has no sense because the matrix elements and their column indexes were not set yet. Therefore it is important that the test on the line 12 reads as
 
 ```
 if( rowIdx < localIdx )
@@ -643,8 +640,7 @@ Tridiagonal matrix format serves for specific matrix pattern when the nonzero ma
  \right)
 \f]
 
-An advantage is that we do not store the column indexes  explicitly as it is in \ref TNL::Matrices::SparseMatrix. This can reduce significantly the  memory requirements which also means better performance. See the following table for the storage requirements comparison between \ref TNL::Matrices::TridiagonalMatrix and \ref TNL::Matrices::SparseMatrix.
-
+An advantage is that we do not store the column indexes explicitly as it is in \ref TNL::Matrices::SparseMatrix. This can reduce significantly the  memory requirements which also means better performance. See the following table for the storage requirements comparison between \ref TNL::Matrices::TridiagonalMatrix and \ref TNL::Matrices::SparseMatrix.
 
   Real   | Index      |      SparseMatrix    | TridiagonalMatrix   | Ratio
  --------|------------|----------------------|---------------------|--------
@@ -661,15 +657,7 @@ Tridiagonal matrix is a templated class defined in the namespace \ref TNL::Matri
 * `ElementsOrganization` defines the organization of the matrix elements in memory. It can be \ref TNL::Algorithms::Segments::ColumnMajorOrder or \ref TNL::Algorithms::Segments::RowMajorOrder for column-major and row-major organization respectively. Be default it is the row-major order if the matrix is allocated in the host system and column major order if it is allocated on GPU.
 * `RealAllocator` is a memory allocator (one from \ref TNL::Allocators) which shall be used for allocation of the matrix elements. By default, it is the default allocator for given `Real` type and `Device` type -- see \ref TNL::Allocators::Default.
 
-In the following text we shows different methods for setup of tridiagonal matrices.
-
-#### Initializer list
-
-The tridiagonal matrix can be initialized by the means of the constructor with [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list). The matrix from the begining of this section can be constructed as the following example shows:
-
-\includelineno TridiagonalMatrixExample_Constructor_init_list_1.cpp
-
-For better alignment in the memory the tridiagonal format is organised like if there were three nonzero matrix elements in each row. This is not true for example in the first row where there is no matrix element on the left side of the diagonal. The same happens on the last row of the matrix. In our example, we have to add even the artificial matrix elements like this:
+For better alignment in the memory the tridiagonal format is organized like if there were three nonzero matrix elements in each row. This is not true for example in the first row where there is no matrix element on the left side of the diagonal. The same happens on the last row of the matrix. We have to add even the artificial matrix elements like this:
 
 \f[
 \begin{array}{c}
@@ -700,7 +688,7 @@ For better alignment in the memory the tridiagonal format is organised like if t
 \end{array}
 \f]
 
-If a matrix has more rows then columns, we have to extend the last two rows with nonzero elements in this way
+If the tridiagonal matrix has more rows then columns, we have to extend the last two rows with nonzero elements in this way
 
 \f[
 \left(
@@ -746,6 +734,32 @@ If a matrix has more rows then columns, we have to extend the last two rows with
 \end{array}
 \f]
 
+We also would like to remind the meaning of the local index (`localIdx`) of the matrix element within a matrix row. It is a rank of the nonzero matrix element in given row as we explained  in section [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). The values of the local index for tridiagonal matrix elements are as follows
+
+\f[
+\left(
+\begin{array}{cccccc}
+1 & 2 &   &   &   &     \\
+0 & 1 & 2 &   &   &     \\
+  & 0 & 1 & 2 &   &     \\
+  &   & 0 & 1 & 2 &     \\
+  &   &   & 0 & 1 & 2   \\
+  &   &   &   & 0 & 1
+\end{array}
+\right)
+\f]
+
+
+In the following text we show different methods for setup of tridiagonal matrices.
+
+#### Initializer list
+
+The tridiagonal matrix can be initialized by the means of the constructor with [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list). The matrix from the beginning of this section can be constructed as the following example demonstrates:
+
+\includelineno TridiagonalMatrixExample_Constructor_init_list_1.cpp
+
+The matrix elements values are defined on lines 39-44. Each matrix row is represented by embedded an initializer list. We set three values in each row including the padding zeros.
+
 The output of the example looks as:
 
 \include TridiagonalMatrixExample_Constructor_init_list_1.out
@@ -770,11 +784,11 @@ The result looks as follows:
 
 #### Method `getRow`
 
- A slightly simpler way how to do the same with no need for shared pointer (\ref TNL::Pointers::SharedPointer), could be with the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
+ A bit different way how to do the same is the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
 
 \includelineno TridiagonalMatrixViewExample_getRow.cpp
 
-We create a matrix with the same size (line 10-15) set ones on the diagonal (lines 15-16). Next, we fetch the tridiagonal matrix view (line 16) which we can refer in the lambda function for matrix elements modification (lines 18-26). Inside the lambda function, we first get a matrix row by calling the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) using which we can acces the matrix elements (lines 21-25). The lambda function is called by the parallel for (\ref TNL::Algorithms::ParallelFor).
+We create a matrix with the same size (line 10-15). Next, we fetch the tridiagonal matrix view (ef TNL::Matrices::TridiagonalMatrixView ,line 16) which we use in the lambda function for matrix elements modification (lines 18-26). Inside the lambda function, we first get a matrix row by calling the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) using which we can access the matrix elements (lines 21-25). We would like to stress that the method `setElement` addresses the matrix elements with the `localIdx` parameter which is a rank of the nonzero element in the matrix row - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). The lambda function is called by the `ParallelFor` (\ref TNL::Algorithms::ParallelFor).
 
 The result looks as follows:
 
@@ -782,26 +796,11 @@ The result looks as follows:
 
 #### Method `forRows`
 
-Finaly, even a bit more simple and bit less flexible way of matrix elements manipulation with use of the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) is demonstrated in the following example:
+Finally, even a bit more simple way of matrix elements manipulation with the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) is demonstrated in the following example:
 
 \includelineno TridiagonalMatrixViewExample_forRows.cpp
 
-On the line 41 we call the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) instead of parallel for (\ref TNL::Algorithms::ParallelFor). This method iterates over all matrix rows and all nonzero matrix elements. The lambda function function on the line 24 therefore do not receive only the matrix row index but also local index of the matrix element (`localIdx`) which is a rank of the nonzero matrix element in given row. The values of the local index for given matrix elements is as follows
-
-\f[
-\left(
-\begin{array}{cccccc}
-1 & 2 &   &   &   &     \\
-0 & 1 & 2 &   &   &     \\
-  & 0 & 1 & 2 &   &     \\
-  &   & 0 & 1 & 2 &     \\
-  &   &   & 0 & 1 & 2   \\
-  &   &   &   & 0 & 1
-\end{array}
-\right)
-\f]
-
-Next parameter `columnIdx` received by the lambda function is the column index of the matrix element. The fourth parameter `value` is a reference on the matrix element which we use for its modification. If the last parameter `compute` is set to false, the iterations over the matrix rows is terminated.
+On the line 41, we call the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) instead of parallel for (\ref TNL::Algorithms::ParallelFor). This method iterates over all matrix rows and all nonzero matrix elements. The lambda function on the line 24 therefore do not receive only the matrix row index but also local index of the matrix element (`localIdx`) which is a rank of the nonzero matrix element in given row  - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). Next parameter, `columnIdx` received by the lambda function, is the column index of the matrix element. The fourth parameter `value` is a reference on the matrix element which we use for its modification. If the last parameter `compute` is set to false, the iterations over the matrix rows is terminated.
 
 The result looks as follows:
 
