@@ -11,6 +11,11 @@
    4. [Multidiagonal matrices](#multidiagonal_matrices_setup)
    5. [Lambda matrices](#lambda_matrices_setup)
 5. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
+   1. [Dense matrices example](#dense-matrices-flexible-reduction-example)
+   2. [Sparse matrices example](#sparse-matrices-flexible-reduction-example)
+   3. [Tridiagonal matrices example](#tridiagonal-matrices-flexible-reduction-example)
+   4. [Multidiagonal matrices example](#multidiagonal-matrices-flexible-reduction-example)
+   5. [Lambda matrices example](#lambda-matrices-flexible-reduction-example)
 6. [Matrix-vector product](#matrix_vector_product)
 7. [Matrix I/O operations](#matrix_io_operations)
 8. [Appendix](#appendix)
@@ -1145,12 +1150,8 @@ The result of both examples looks as follows:
 
 ## Flexible reduction in matrix rows <a name="flexible_reduction_in_matrix_rows"></a>
 
-
-
-
-### Dense matrix
-
-Simillar operation to `forRows` is `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction) which performs given reduction in each matric row. For example, a matrix-vector product can be seen as a reduction of products of matrix elements and input vector in particular matrix rows. The first element of the result vector ios obtained as:
+Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, 
+\ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) and similar to the method `forRows` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
 
 \f[
 y_1 = a_{11} x_1 + a_{12} x_2 + \ldots + a_{1n} x_n = \sum_{j=1}^n a_{1j}x_j
@@ -1162,12 +1163,64 @@ and in general i-th element of the result vector is computed as
 y_i = a_{i1} x_1 + a_{i2} x_2 + \ldots + a_{in} x_n = \sum_{j=1}^n a_{ij}x_j.
 \f]
 
-We see that in i-th matrix row we have to compute the sum \f$\sum_{j=1}^n a_{ij}x_j\f$ which is reduction of products \f$ a_{ij}x_j\f$. Similar to *flexible parallel reduction* (\ref TNL::Algorithms::Reduction) we just need to design proper lambda functions. See the following example:
+We see that in i-th matrix row we have to compute the sum \f$\sum_{j=1}^n a_{ij}x_j\f$ which is reduction of products \f$ a_{ij}x_j\f$. Similar to flexible parallel reduction (\ref TNL::Algorithms::Reduction) we just need to design proper lambda functions. There are three of them.
 
+1. `fetch` reads and preprocesses data entering the flexible parallel reduction.
+2. `reduce` performs the reduction operation.
+3. `keep` stores the results from each matrix row.
+
+#### Lambda function fetch
+
+This lambda function has the same purpose as the lambda function `fetch` in flexible parallel reduction for arrays and vectors (see [Flexible Parallel Reduction](tutorial_ReductionAndScan.html#flexible_parallel_reduction)). It is supposed to be declared as follows:
+
+\includelineno snippet_rows_reduction_fetch_declaration.cpp
+
+The meaning of the particular parameters is as follows:
+
+1. `rowIdx` is the row index of the matrix element.
+2. `columnIdx` is the column index of the matrix element.
+3. `value` is the value of the matrix element.
+
+The lambda function returns a value of type `Real` based on the input data.
+
+#### Lambda function reduce
+
+The lambda function `reduce` expresses reduction operation (sum, product, minimum, maximum etc.) which is supposed to be done during the flexible reduction.
+
+\includelineno snippet_rows_reduction_reduce_declaration.cpp
+
+The meaning of the particular parameters is as follows:
+
+1. `a` is the first operand for the reduction operation.
+2. `b` is the second operand for the reduction operation.
+
+#### Lambda function keep
+
+The lambda function `keep` is new one compared to the flexible reduction for arrays, vectors or other linear structures. The reason is that the result consists of as many numbers as there are matrix rows. Result obtained for each matrix row is processed by this lambda function. It is declared as follows:
+
+\includelineno snippet_rows_reduction_keep_declaration.cpp
+
+The meaning of the particular parameters is as follows:
+
+1. `rowIdx` is an index of the matrix row related to given result of flexible reduction.
+2. `value`is the result of the flexible reduction in given matrix row.
+
+The method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, \ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) accepts the following arguments:
+
+1. `begin` is the beginning of the matrix rows range on which the reduction will be performed.
+2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
+3. `fetch` is the lambda function for data fetching.
+4. `reduce` is the the lambda function performing the reduction.
+5. `keep` is the lambda function responsible for processing the results from particular matrix rows.
+6. `zero` is the "zero" element of given reduction operation also known as *idempotent*.
+
+Though the interface is the same for all matrix types, in the following part we will show several examples for different matrix types to better demonstrate possible ways of use of the flexible reduction for matrices.
+
+### Dense matrices example <a name="dense-matrices-flexible-reduction-example"></a>
 
 \includelineno DenseMatrixExample_rowsReduction_vectorProduct.cpp
 
-The `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]`. The reduction is just sum of results particular products and it is represented by by the lambda function `reduce`. Finaly, the lambda function `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.
+The `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]`. The reduction is just sum of particular products and it is represented by by the lambda function `reduce`. Finally, the lambda function `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.
 The result looks as:
 
 \include DenseMatrixExample_rowsReduction_vectorProduct.out
@@ -1182,18 +1235,13 @@ See the following example:
 
 \includelineno DenseMatrixExample_rowsReduction_maxNorm.cpp
 
-
-The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the varibale `value`. The `reduce` lambda function returns larger of given values and the lambda fuction 'keep' stores the results to the output vectro the same way as in the previous example. Of course, if we compute the maximum of all output vector elements we get some kined of max matrix norm. The output looks as:
+The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the varibale `value`. The `reduce` lambda function returns larger of given values and the lambda function 'keep' stores the results to the output vector the same way as in the previous example. Of course, if we compute the maximum of all output vector elements we get some kind of maximal matrix norm. The output looks as:
 
 \include DenseMatrixExample_rowsReduction_maxNorm.out
 
-### Sparse matrix
+### Sparse matrices example <a name="sparse-matrices-flexible-reduction-example"></a>
 
 The *flexible parallel reduction* in rows for sparse matrices is very simmilar to the one for dense matrices. It consits of three lambda functions:
-
-1. `fetch` reads and preproces data entering the flexible parallel reduction.
-2. `reduce` performs the reduction operation.
-3. `keep` stores the results from each matrix row.
 
 See the following example:
 
@@ -1237,7 +1285,7 @@ At the end we print the matrix, the input and the output vector -- lines 55-57. 
 
 \include SparseMatrixExample_rowsReduction_vectorProduct.out
 
-### Tridiagonal matrix
+### Tridiagonal matrices example <a name="tridiagonal-matrices-flexible-reduction-example"></a>
 
 The *flexible parallel reduction* in rows for tridiagonal matrices is also simmilar as for dense and sparse matrices. It is represented by three lambda functions:
 
@@ -1289,7 +1337,7 @@ The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) act
 
 \include TridiagonalMatrixExample_rowsReduction.out
 
-### Multidiagonal matrix
+### Multidiagonal matrices example <a name="multidiagonal-matrices-flexible-reduction-example"></a>
 
 The flexible parallel reduction in rows for multidiagonal matrices works the same way as for other matrix types. It consits of three lambda functions:
 
@@ -1325,7 +1373,7 @@ Finaly we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMatr
 
 \include MultidiagonalMatrixExample_rowsReduction.out
 
-### Lambda matrix
+### Lambda matrices example <a name="lambda-matrices-flexible-reduction-example"></a>
 
 The reduction of matrix rows is available for the lambda matrices as well. See the follogin example:
 
