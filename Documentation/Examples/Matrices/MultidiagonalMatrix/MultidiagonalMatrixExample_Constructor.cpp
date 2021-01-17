@@ -14,8 +14,8 @@ void laplaceOperatorMatrix()
     */
    const int gridSize( 4 );
    const int matrixSize = gridSize * gridSize;
-   TNL::Containers::Vector< int, Device > shifts { - gridSize, -1, 0, 1, gridSize };
-   TNL::Matrices::MultidiagonalMatrix< double, Device > matrix( matrixSize, matrixSize, shifts );
+   TNL::Containers::Vector< int, Device > offsets { - gridSize, -1, 0, 1, gridSize };
+   TNL::Matrices::MultidiagonalMatrix< double, Device > matrix( matrixSize, matrixSize, offsets );
    auto matrixView = matrix.getView();
    auto f = [=] __cuda_callable__ ( int i, int j ) mutable {
       const int elementIdx = j * gridSize + i;
