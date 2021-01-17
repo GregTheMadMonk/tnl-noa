@@ -1068,44 +1068,34 @@ In this example, the matrix element value depends only on the subdiagonal index 
 
 \include MultidiagonalMatrixExample_forRows.out
 
-## Lambda matrices <a name="lambda_matrices_setup"></a>
+### Lambda matrices <a name="lambda_matrices_setup"></a>
 
-Lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a special type of matrix which could be also called *** matrix-free matrix ***. Its elements are not stored in memory explicitlely but they are evaluated on-the-fly by means of user defined lambda functions. If the matrix elements can be expressed by computationaly not expansive formula, we can significantly reduce the memory consumptions which can be appriciated especially on GPU. Since the memory accesses are quite expensive even on CPU, we can get, at the end, even much faster code.
+Lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a special type of matrix which could be also called *matrix-free matrix*. The matrix elements are not stored in memory explicitly but they are evaluated **on-the-fly** by means of user defined lambda functions. If the matrix elements can be expressed by computationally not expansive formula, we can significantly reduce the memory consumption which is appreciated especially on GPUs. Since the memory accesses are quite expensive even on both CPU and GPU, we can get, at the end, even much faster code.
 
 The lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a templated class with the following template parameters:
 
 * `MatrixElementsLambda` is a lambda function which evaluates the matrix elements values and column indexes.
 * `CompressedRowLengthsLambda` is a lambda function telling how many nonzero elements are there in given matrix row.
-* `Real` is a of matrix elements values.
+* `Real` is a type of matrix elements values.
 * `Device` is a device on which the lambda functions mentioned above will be evaluated.
 * `Index` is a type to be used for indexing.
 
 The lambda function `MatrixElementsLambda` is supposed to have the following declaration:
 
-```
-matrixElements( Index rows,
-                Index columns,
-                Index row,
-                Index localIdx,
-                Index& columnIdx,
-                Real& value )
-```
-where the particular parameterts have the following meaning:
+\includelineno snippet_MatrixElementsLambda_declaration.cpp
+
+where the particular parameters have the following meaning:
 
 * `rows` tells the number of matrix rows.
 * `columns` tells the number of matrix columns.
 * `rowIdx` is index of the matrix row in which we are supposed to evaluate the matrix element.
-* `localIdx` is a rank of the nonzero matrix element.
+* `localIdx` is a rank of the nonzero matrix element, see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices).
 * `columnIdx` is a reference on variable where we are supposed to store the matrix element column index.
 * `value` is a reference on variable where we are supposed to store the matrix element value.
 
-The lambda function `CompressedRowLengthsLambda` is supposed to look like this:
+The lambda function `CompressedRowLengthsLambda` (by compressed row length we mean the number of matrix elements in a row after ignoring/compressing the zero elements) is supposed to be declared like this:
 
-```
-rowLengths( Index rows,
-            Index columns,
-            Index row ) -> Index
-```
+\includelineno snippet_CompressedRowLengthsLambda_declaration.cpp
 
 where the parameters can be described as follows:
 
@@ -1115,27 +1105,29 @@ where the parameters can be described as follows:
 
 The lambda function is supposed to return just the number of the nonzero matrix elements in given matrix row.
 
-### Lambda matrix inititation
+#### Lambda matrix inititation
 
-See the following example which demonstrates how to create the lambda matrix:
+How to put the lambda functions together with the lambda matrix is demonstrated in the following example:
 
 \includelineno LambdaMatrixExample_Constructor.cpp
 
-Here we create two simple diagonal matrices. Therefore thay share the same lambda function `rowLengths` telling the the number of nonzero matrix elements in particular matrix rows which is always one (line 9). The first matrix, defined by the lambda function `matrixElements1`, is identity matrix and so its each diagonal element equals one. We set the matrix element value to `1.0` (line 12) and the column index equals the row index (line 15). The second matrix, defined by the lambda function `matrixElements2`, is also diagonal but not the identity matrix. The values of the diagonal elements equal to row index (line 16).
+Here we create two simple diagonal matrices. Therefore they share the same lambda function `compressedRowLengths` telling the number of nonzero matrix elements in particular matrix rows which is always one (line 9). The first matrix, defined by the lambda function `matrixElements1`, is identity matrix and so its each diagonal element equals one. We set the matrix element value to `1.0` (line 12) and the column index equals the row index (line 15). The second matrix, defined by the lambda function `matrixElements2`, is also diagonal but not the identity matrix. The values of the diagonal elements equal to row index (line 16).
 
-With the same lambda functions we can define matrices with different dimensions. In this example, we set the matrix size to five (line 19). It can be quite difficult to express the lambda matrix type because it depends on the types of the lambda functions. To make this easier, one may use a lambda-matrix factory (\ref TNL::Matrices::LambdaMatrixFactory). Using `decltype` one can deduce even the matrix type (line 24) followed by calling lambda matrix constructor with matrix dimensions and instances of the lambda functions (line 25). Or one can just simply employ the keyword `auto` (line 30) followed by setting the matrix dimensins (line 31).
+With the same lambda functions we can define matrices with different dimensions. In this example, we set the matrix size to five (line 19). It could be quite difficult to express the lambda matrix type because it depends on the types of the lambda functions. To make this easier, one may use the lambda-matrix factory (\ref TNL::Matrices::LambdaMatrixFactory). Using `decltype` one can deduce even the matrix type (line 24) followed by calling lambda matrix constructor with matrix dimensions and instances of the lambda functions (line 25). Or one can just simply employ the keyword `auto` (line 30) followed by setting the matrix dimensions (line 31).
 
 The result looks as follows:
 
 \include LambdaMatrixExample_Constructor.out
 
-Of course, the lambda matrix has the same interface as other matrix types. The following example demonstrates the use of the method `forRows` to copy the lambda matrix into the dense matrix:
+#### Method `forRows`
+
+The lambda matrix has the same interface as other matrix types except of the method `getRow`. The following example demonstrates the use of the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to copy the lambda matrix into the dense matrix:
 
 \includelineno LambdaMatrixExample_forRows.cpp
 
-Here, we treat the lambda matrix as if it was dense matrix. The lambda function `rowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nozero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23).
+Here, we treat the lambda matrix as if it was dense matrix and so the lambda function `compressedRowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nonzero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with a help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23).
 
-Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` woudl do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `rowLengths` (line 13) tells so. The result looks as follows:
+Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` would do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `compressedRowLengths` (line 13) tells so. The result looks as follows:
 
 \include LambdaMatrixExample_forRows.out
 
@@ -1143,7 +1135,7 @@ At the end of this part, we show two more examples, how to express a matrix appr
 
 \includelineno LambdaMatrixExample_Laplace.cpp
 
-The following is another way of doing the same but precomputed supporting vectors:
+The following is another way of doing the same but with precomputed supporting vectors:
 
 \includelineno LambdaMatrixExample_Laplace_2.cpp
 
@@ -1152,6 +1144,9 @@ The result of both examples looks as follows:
 \include LambdaMatrixExample_Laplace.out
 
 ## Flexible reduction in matrix rows <a name="flexible_reduction_in_matrix_rows"></a>
+
+
+
 
 ### Dense matrix
 
