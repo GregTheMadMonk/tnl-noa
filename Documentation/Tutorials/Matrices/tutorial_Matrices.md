@@ -10,6 +10,7 @@
    3. [Tridiagonal matrices](#tridiagonal_matrices_setup)
    4. [Multidiagonal matrices](#multidiagonal_matrices_setup)
    5. [Lambda matrices](#lambda_matrices_setup)
+   6. [Distributed matrices](#distributed-matrices-setup)
 5. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
    1. [Dense matrices example](#dense-matrices-flexible-reduction-example)
    2. [Sparse matrices example](#sparse-matrices-flexible-reduction-example)
@@ -18,6 +19,8 @@
    5. [Lambda matrices example](#lambda-matrices-flexible-reduction-example)
 6. [Matrix-vector product](#matrix_vector_product)
 7. [Matrix I/O operations](#matrix_io_operations)
+   1. [Matrix reader](#matrix-reader)
+   2. [Matrix writer](#matrix-writer)
 8. [Appendix](#appendix)
 
 ## Introduction
@@ -1148,6 +1151,10 @@ The result of both examples looks as follows:
 
 \include LambdaMatrixExample_Laplace.out
 
+### Distributed matrices <a name="distributed-matrices-setup"></a>
+
+TODO: Write documentation on distributed matrices.
+
 ## Flexible reduction in matrix rows <a name="flexible_reduction_in_matrix_rows"></a>
 
 Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, 
@@ -1218,14 +1225,25 @@ Though the interface is the same for all matrix types, in the following part we 
 
 ### Dense matrices example <a name="dense-matrices-flexible-reduction-example"></a>
 
+The following example demonstrates implementation of the dense matrix-vector product \f$ {\bf y} = A \vec {\bf x}\f$, i.e.
+
+\f[
+   y_i = \sum_{j=0}^{columns - 1} a_{ij} x_j \text{ for } i = 0, \ldots, rows-1.
+\f]
+
 \includelineno DenseMatrixExample_rowsReduction_vectorProduct.cpp
 
-The `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]`. The reduction is just sum of particular products and it is represented by by the lambda function `reduce`. Finally, the lambda function `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.
+We set the following lambda functions:
+
+* `fetch` lambda function computes the product \f$ a_{ij}x_j\f$ where \f$ a_{ij} \f$ is represented by `value` and \f$x_j \f$ is represented by `xView[columnIdx]` (line 40).
+* `reduce` - reduction is just sum of particular products and it is represented by \ref std::plus (line 53).
+* `keep` is responsible for storing the results of reduction in each matrix row (which is represented by the variable `value`) into the output vector `y`.
+
 The result looks as:
 
 \include DenseMatrixExample_rowsReduction_vectorProduct.out
 
-We will show one more example which is computation of maximal absolute value in each matrix row. The results will be stored in a vector:
+We will show one more example which is a computation of maximal absolute value in each matrix row. The results will be stored in a vector:
 
 \f[
 y_i = \max_{j=1,\ldots,n} |a_{ij}|.
@@ -1235,15 +1253,19 @@ See the following example:
 
 \includelineno DenseMatrixExample_rowsReduction_maxNorm.cpp
 
-The `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the varibale `value`. The `reduce` lambda function returns larger of given values and the lambda function 'keep' stores the results to the output vector the same way as in the previous example. Of course, if we compute the maximum of all output vector elements we get some kind of maximal matrix norm. The output looks as:
+The lambda functions rare:
+
+* `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the variable `value`.
+* `reduce` lambda function returns larger of given values.
+* `keep` stores the results to the output vector the same way as in the previous example. 
+
+Note, that the idempotent value for the reduction is \ref std::numeric_limits< double >::lowest. Of course, if we compute the maximum of all output vector elements, we get some kind of maximal matrix norm. The output looks as:
 
 \include DenseMatrixExample_rowsReduction_maxNorm.out
 
 ### Sparse matrices example <a name="sparse-matrices-flexible-reduction-example"></a>
 
-The *flexible parallel reduction* in rows for sparse matrices is very simmilar to the one for dense matrices. It consits of three lambda functions:
-
-See the following example:
+The following example demonstrates sparse matrix-vector product:
 
 \includelineno SparseMatrixExample_rowsReduction_vectorProduct.cpp
 
@@ -1261,43 +1283,13 @@ On the lines 11-16 we set the following matrix:
 \right)
 \f]
 
-Next we prepare input (`x`) and output (`y`) vectors on the lines 21 and 22 and set all elements of the input vector to one (line 27). Since we will need to access these vectors in lambda functions we prepare their views on lines 32 and 33. On the lines 39-41, we define the `fetch` lambda function. It receives three arguments:
-
-1. `rowIdx` is a row index of the matrix element being currently processed.
-2. `columnIdx` is a column index of the matrix elements being currently processed.
-3. `value` is a value of the matrix element being currently procesed.
-
-We ommit the row index and take the column index which indicates index of the element of the input vector we need to fetch (`xView[ columnIdx ]`). We take its value and multiply it with the value (`value`) of the current matrix element. We do not need to write lambda function for reduction since it is only summation of the intermediate results from the `fetch` lamda and we can use `std::plus<>{}` (see the line 60). The `keep` lambda function offers two parameters:
-
-1. `rowIdx` tells the index of the matrix row for which we aim to store the result.
-2. `value` is the result obtained in the given matrix row.
-
-In our example, we just write the result into appropriate element of the output vector `y` which is given just by the row index `rowIdx` -- see the line 47.  On the line 53 we start the computation of the matrix-vector product. The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) accepts the following arguments:
-
-1. `begin` is the begining of the matrix rows range on which the reduction will be performed.
-2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
-3. `fetch` is the fetch lambda function.
-4. `reduce` is the the lmabda function performing the reduction.
-5. `keep` is the lambda function responsible for processing the results from particular matrix rows.
-6. `zero` is the "zero" element of given reduction opertation also known as *idempotent*. It is really 0 for summation in our example (adding zero to any number does not change the result).
-
-At the end we print the matrix, the input and the output vector -- lines 55-57. The result looks as follows:
+The lambda functions on the lines 39-48 are the same as in the example with the dense matrix. The result looks as follows:
 
 \include SparseMatrixExample_rowsReduction_vectorProduct.out
 
 ### Tridiagonal matrices example <a name="tridiagonal-matrices-flexible-reduction-example"></a>
 
-The *flexible parallel reduction* in rows for tridiagonal matrices is also simmilar as for dense and sparse matrices. It is represented by three lambda functions:
-
-1. `fetch` reads and preproces data entering the flexible parallel reduction.
-2. `reduce` performs the reduction operation.
-3. `keep` stores the results from each matrix row.
-
-See the following example:
-
-\includelineno TridiagonalMatrixExample_rowsReduction.cpp
-
-Here we first set tridiagonal matrix (lines 10-27) which looks as
+In this example, we will compute maximal absolute value in each row of the following tridiagonal matrix:
 
 \f[
 \left(
@@ -1311,45 +1303,23 @@ Here we first set tridiagonal matrix (lines 10-27) which looks as
 \right).
 \f]
 
-Next we want to compute maximal absolute value of the nonzero matrix elements in each row. We allocate the vector `rowMax` where we will store the results (line 32). The lambda function `fetch` (lines 42-44) is responsible for reading the matrix elements. It receives three arguments:
+The source code reads as follows:
 
-1. `rowIdx` is a row index of the matrix element being currently processed.
-2. `columnIdx` is a column index of the matrix elements being currently processed.
-3. `value` is a value of the matrix element being currently procesed.
+\includelineno TridiagonalMatrixExample_rowsReduction.cpp
 
-In our example, the only thing this function has to do, is to compute the absolute value of each matrix element represented by variable `value`. The next lambda function, `reduce` (lines 49-51), performs reduction operation. In this case, it returns maximum of two input values `a` and `b`. Finaly, the lambda function `keep` (lines 56-58) is defined with the following parameters:
+Here we first set the tridiagonal matrix (lines 10-27). Next we allocate the vector `rowMax` where we will store the results (line 32). The lambda function are:
 
-1. `rowIdx` tells the index of the matrix row for which we aim to store the result.
-2. `value` is the result obtained in the given matrix row.
+* `fetch` (lines 42-44) is responsible for reading the matrix elements. In our example, the only thing this function has to do, is to compute the absolute value of each matrix element represented by variable `value`.
+* `reduce` (lines 49-51), performs reduction operation. In this case, it returns maximum of two input values `a` and `b`.
+* `keep` (lines 56-58) takes the result of the reduction in variable `value` in each row and stores it into the vector `rowMax` via related vector view `rowMaxView`.
 
-In our example, it just takes the result of the reduction in variable `value` in each row and stores it into the vector `rowMax` via related vector view `rowMaxView`.
-
-The method `rowsReduction` (\ref TNL::Matrices::SparseMatrix::rowsReduction) activates all the mantioned lambda functions (line 63). It accepts the following arguments:
-
-1. `begin` is the begining of the matrix rows range on which the reduction will be performed.
-2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
-3. `fetch` is the fetch lambda function.
-4. `reduce` is the the lmabda function performing the reduction.
-5. `keep` is the lambda function responsible for processing the results from particular matrix rows.
-6. `zero` is the "zero" element of given reduction opertation also known as *idempotent*. In our example, the role of this element has the lowest number of given type which we can obtain using function `std::numeric_limits< double >::lowest()` from STL.
-
- The results looks as follows:
+Note, that the idempotent value for the reduction is \ref std::numeric_limits< double >::lowest. The results looks as follows:
 
 \include TridiagonalMatrixExample_rowsReduction.out
 
 ### Multidiagonal matrices example <a name="multidiagonal-matrices-flexible-reduction-example"></a>
 
-The flexible parallel reduction in rows for multidiagonal matrices works the same way as for other matrix types. It consits of three lambda functions:
-
-1. `fetch` reads and preproces data entering the flexible parallel reduction.
-2. `reduce` performs the reduction operation.
-3. `keep` stores the results from each matrix row.
-
-See the following example:
-
-\includelineno MultidiagonalMatrixExample_rowsReduction.cpp
-
-On the lines 10-29, we first create the following matrix
+The next example computes again the maximal absolute value in each row. Now, we do it for multidiagonal matrix the following form:
 
 \f[
 \left(
@@ -1363,23 +1333,37 @@ On the lines 10-29, we first create the following matrix
 \right)
 \f]
 
-and we aim to compute maximal value in each row. We first create vector `rowMax` into which we will store the results and fetch it view `rowMaxView` (line 39). Next we prepare necessary lambda functions:
+We first create vector `rowMax` into which we will store the results and fetch it view `rowMaxView` (line 39). Next we prepare necessary lambda functions:
 
 * `fetch` (lines 44-46) is responsible for reading the matrix element value which is stored in the constant reference `value` and for returning its absolute value. The other parameters `rowIdx` and `columnIdx` correspond to row and column indexes respectively and they are omitted in our example.
 * `reduce` (lines 51-53) returns maximum value of the two input values `a` and `b`.
-* `keep` (line 58-60) stores the input `value` at the corresponding position, given by the row index `rowIdx`, in the ouput vector view `rowMaxView`.
+* `keep` (line 58-60) stores the input `value` at the corresponding position, given by the row index `rowIdx`, in the output vector view `rowMaxView`.
 
-Finaly we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMatrix::rowsReduction) with parameters telling the interval of rows to be processed (the first and second parameter), the lambda functions `fetch`, `reduce` and `keep`, and the idempotent element for the reduction operation which is the lowest number of given type (\ref std::numeric_limits< double >::lowest ). The result looks as follows:
+Finally, we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMatrix::rowsReduction) with parameters telling the interval of rows to be processed (the first and second parameter), the lambda functions `fetch`, `reduce` and `keep`, and the idempotent element for the reduction operation which is the lowest number of given type (\ref std::numeric_limits< double >::lowest ). The result looks as follows:
 
 \include MultidiagonalMatrixExample_rowsReduction.out
 
 ### Lambda matrices example <a name="lambda-matrices-flexible-reduction-example"></a>
 
-The reduction of matrix rows is available for the lambda matrices as well. See the follogin example:
+The reduction of matrix rows is available for the lambda matrices as well. See the following example:
 
 \includelineno LambdaMatrixExample_rowsReduction.cpp
 
-On the lines 14-21, we create the same lower trianguilar lambda matrix as in the previous example. As we did it in similar examples for other matrix types, we want to compute maximal absolute value of matrix elements in each row. For this purpose we define well known lambda functions:
+On the lines 14-21, we create the lower triangular lambda matrix which looks as follows:
+
+\f[
+\left(
+\begin{array}{ccccc}
+1 &   &   &   &   \\
+2 & 1 &   &   &   \\
+3 & 2 & 1 &   &   \\
+4 & 3 & 2 & 1 &   \\
+5 & 4 & 3 & 2 & 1
+\end{array}
+\right)
+\f]
+
+We want to compute maximal absolute value of matrix elements in each row. For this purpose we define well known lambda functions:
 
 * `fetch` takes the value of the lambda matrix element and returns its absolute value.
 * `reduce` computes maximum value of two input variables.
@@ -1391,237 +1375,32 @@ Note that the interface of the lambda functions is the same as for other matrix 
 
 ## Matrix-vector product <a name="matrix_vector_product"></a>
 
-### Dense matrix
+One of the most important matrix operation is the matrix-vector multiplication. It is represented by a method `vectorProduct` (\ref TNL::Matrices::DenseMatrix::vectorProduct, \ref TNL::Matrices::SparseMatrix::vectorProduct, \ref TNL::Matrices::TridiagonalMatrix::vectorProduct, \ref TNL::Matrices::MultidiagonalMatrix::vectorProduct, \ref TNL::Matrices::LambdaMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method accepts the following parameters:
 
-One of the most important matrix operation is the matrix-vector multiplication. It is represented by a method `vectorProduct` (\ref TNL::Matrices::DenseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method accepts the following parameters:
+1. `inVector` is the input vector having the same number of elements as the number of matrix columns.
+2. `outVector` is the output vector having the same number of elements as the number of matrix rows.
+3. `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
+4. `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
+5. `begin` is the beginning of the matrix rows range on which we compute the matrix-vector product.
+6. `end` is the end of the matrix rows range on which the matrix-vector product will be evaluated. The last matrix row which is going to be processed has index `end-1`.
 
-* `inVector` is the input vector having the same number of elements as the number of matrix columns.
-* `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
-* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
-* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
-
-Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
+Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
 
 To summarize, this method computes the following formula:
 
 `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.`
 
-### Sparse matrix
-
-As we mentioned already in the part explaining the dense matrices, matrix-vector multiplication or in this case sparse matrix-vector multiplication ([SpMV](https://en.wikipedia.org/wiki/Sparse_matrix-vector_multiplication)) is one of the most important operations in numerical mathematics and high-performance computing. It is represented by a method `vectorProduct` (\ref TNL::Matrices::SparseMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
-
-```
-outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
-```
-
-and it accepts the following parameters:
-
-* `inVector` is the input vector having the same number of elements as the number of matrix columns.
-* `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
-* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
-* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index of the last matrix row that is involved in the multiplication. It is the last matrix row by default.
-
-Note that the ouput vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
-
-### Tridiagonal matrix
-
-Similar to dense and sparse matrices, matrix-vector multiplication is represented by a method `vectorProduct` (\ref TNL::Matrices::TridiagonalMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
-
-```
-outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
-```
-
-and it accepts the following parameters:
-
-* `inVector` is the input vector having the same number of elements as the number of matrix columns.
-* `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
-* `outVectorMultiplicator` is a number by which the output vector is multiplied before added to the result of matrix-vector product.
-* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
-
-Note that the output vector dimension must be the same as the number of matrix rows no
-matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
-
-### Multidiagonal matrix
-
-
-Similar to matrix types, matrix-vector multiplication is represented by the method `vectorProduct` (\ref TNL::Matrices::MultidiagonalMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of the input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
-
-```
-outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
-```
-
-and it accepts the following parameters:
-
-* `inVector` is the input vector having the same number of elements as the number of matrix columns.
-* `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
-* `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
-* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
-
-Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
-
-### Lambda matrix
-
-The matrix-vector multiplication is represented by the method `vectorProduct` (\ref TNL::Matrices::LambdaMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of the input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method computes the following formula
-
-```
-outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
-```
-
-and it accepts the following parameters:
-
-* `inVector` is the input vector having the same number of elements as the number of matrix columns.
-* `outVector` is the output vector having the same number of elements as the number of matrix rows.
-* `matrixMultiplicator` is a number by which the result of matrix-vector product is multiplied.
-* `outVectorMultiplicator` is a number by which the output vector is multiplied before it is added to the result of matrix-vector product.
-* `begin` is an index of the first matrix row that is involved in the multiplication. It is zero be default.
-* `end` is an index indicating the last matrix row that is involved in the multiplication which is `end - 1`. It is the number of matrix rows.
-
-Note that the output vector dimension must be the same as the number of matrix rows no matter how we set `begin` and `end` parameters. These parameters just say that some matrix rows and the output vector elements are omitted.
-
 ## Matrix I/O operations <a name="matrix_io_operations"></a>
 
-### Dense matrix
+All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used. TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) and matrix writer (\ref TNL::Matrices::MatrixWriter) for import and export of matrices. We describe both in the following sections.
 
-The dense matrix can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print) can be used.
+### Matrix reader <a name="matrix-reader></a>
 
-### Sparse matrix
-The sparse matrix can be saved to a file using a method `save` (\ref TNL::Matrices::SparseMatrix::save) and restored with a method `load` (\ref TNL::Matrices::SparseMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::SparseMatrix::print) can be used.
+TODO: Write documentation on matrix reader.
 
-### Tridiagonal matrix IO
+### Matrix writer <a name="matrix-writer></a>
 
-The tridiagonal matrix can be saved to a file using a method `save` (\ref TNL::Matrices::TridiagonalMatrix::save) and restored with a method `load` (\ref TNL::Matrices::TridiagonalMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::TridiagonalMatrix::print) can be used.
-
-### Multidiagonal matrix IO
-
-The multidiagonal matrix can be saved to a file using a method `save` (\ref TNL::Matrices::MultiidiagonalMatrix::save) and restored with a method `load` (\ref TNL::Matrices::MultidiagonalMatrix::load). For printing the matrix, there is a method `print` (\ref TNL::Matrices::MultidiagonalMatrix::print) can be used.
-
-### Lambda matrix IO
-
-The lambda matrix, can be printed by the means of the method `print` (\ref TNL::Matrices::LambdaMatrix::print). The lambda matrix do not offer the methods `save` and `load` since it does not manage any data. Of course, the lambda function evaluating the matrix elements can use any supporting data containers but it is up these containers to manage the IO operations.
-
-## Matrix view
-
-### Dense matrix view
-
-Similar to array view (\ref TNL::Containers::ArayView) and vector view (\ref TNL::Containers::VectorView), matrices also offer their view for easier use with lambda functions. For the dense matrix there is a `DenseMatrixView` (\ref TNL::Matrices::DenseMatrixView) which is a templated class with the following template arguments (they are the same as for `DenseMatrix` -- \ref TNL::Matrices::DenseMatrix -- except of the allocator):
-
-* `Real` is a type of matrix elements.
-* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
-* `Index` is a type for indexing the matrix elements and also row and column indexes.
-* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
-
-The first main reason for using the dense matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We will demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::DenseMatrix::setElement). However, the `SharedPointer` will be replaced with the `DenseMatrixView`. The code looks as follows:
-
-\includelineno DenseMatrixViewExample_setElement.cpp
-
-You can see that we do not need to use the shared pointer (\ref TNL::Pointers::SharedPointer) as we did in the example demonstrating the method `setElement` for dense matrix.  And the result is:
-
-\include DenseMatrixViewExample_setElement.out
-
-The second reason for using the `DenseMatrixView` is to encapsulate data allocated by some other library or program then TNL. The following example demonstrates how to do it:
-
-\includelineno DenseMatrixViewExample_data_encapsulation.cpp
-
-On the lines 18--34 we create matrix by allocating array `data` and filling the matrix using a formula \f$ a_{ij} = i * size + j + 1\f$. We do it first on the host (lines 18--21) in auxilliary array `host_data` to make initiation of the array `data` easier in case when `Device` is GPU. Next, depending on the argument `Device`, we allocate the array `data` on the host or on GPU and copy data from the arary `host_data` to the array `data`. To insert this array into the dense matrix view, we first need to encapsulate it with vector view (\ref TNL::Conatianers::VectorView) `dataView` on the line 39 which can be then used to create the dense matrix view `matrix` on the line 40. Note that wee must set proper matrix elements organizationa which is `RowMajorOrder` (\ref TNL::Algorithms::Segments::RowMajorOrder) in this example. Next, we print the matrix to see if the encapsulation was succesfull (lines 42 and 43) and finaly we demonstrate manipulation with matrix elements (lines 45--48) and we print the result (lines 50 and 51).
-
-The result looks as follows:
-
-\include DenseMatrixViewExample_data_encapsulation.out
-
-The dense matrix view offers almost all methods which the dense matrix does. So it can be easily used at almost any situation the same way as the dense matrix itself.
-
-### Sparse matrix view
-
-Sparse matrix view serves, simillar to other views in TNL, to data sharing and for use with lambda functions (views can be easily captured since they make only shallow copy). The sparse matrix view (\ref TNL::Matrices::SparseMatrixView) is templated class having the following template arguments (they are the same as for `SparseMatrix` -- \ref TNL::Matrices::SparseMatrix -- except of the allocators):
-
-* `Real` is type if the matrix elements. It is `double` by default.
-* `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for GPU supporting CUDA. It is \ref TNL::Devices::Host by default.
-* `Index` is a type to be used for indexing of the matrix elements. It is `int` by default.
-* `MatrixType` tells if the matrix is symmetric (\ref TNL::Matrices::SymmetricMatrix) or general (\ref TNL::Matrices::GeneralMatrix). It is a \ref TNL::Matrices::GeneralMatrix by default.
-* `Segments` define the format of the sparse matrix. It can be (by default, it is \ref TNL::Algorithms::Segments::CSR):
-   * \ref TNL::Algorithms::Segments::CSR for [CSR format](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)).
-   * \ref TNL::Algorithms::Segments::Ellpack for [Ellpack format](http://mgarland.org/files/papers/nvr-2008-004.pdf).
-   * \ref TNL::Algorithms::Segments::SlicedEllpack for [SlicedEllpack format](https://link.springer.com/chapter/10.1007/978-3-642-11515-8_10) which was also presented as [Row-grouped CSR format](https://arxiv.org/abs/1012.2270).
-   * \ref TNL::Algorithms::Segments::ChunkedEllpack for [ChunkedEllpack format](http://geraldine.fjfi.cvut.cz/~oberhuber/data/vyzkum/publikace/12-heller-oberhuber-improved-rgcsr-format.pdf) which we reffered as Improved Row-grouped CSR and we renamed it to Ellpack format since it uses padding zeros.
-   * \ref TNL::Algorithms::Segments::BiEllpack for [BiEllpack format](https://www.sciencedirect.com/science/article/pii/S0743731514000458?casa_token=2phrEj0Ef1gAAAAA:Lgf6rMBUN6T7TJne6mAgI_CSUJ-jR8jz7Eghdv6L0SJeGm4jfso-x6Wh8zgERk3Si7nFtTAJngg).
-* `ComputeReal` is type which is used for internal computations. By default it is the same as `Real` if `Real` is not `bool`. If `Real` is `bool`, `ComputeReal` is set to `Index` type. This can be changed, of course, by the user.
-
-**If `Real` is set to `bool`, we get *a binary matrix view*.**
-
-The following example shows the use of `SparseMatrixView` with lambda functions:
-
-\includelineno SparseMatrixViewExample_setElement.cpp
-
-The result looks as follows:
-
-\include SparseMatrixViewExample_setElement.out
-
-### Tridiagonal matrix view
-
-Similar to dense and sparse matrix view, tridiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::TridiagonalMatrixView with the following template parameters:
-
-* `Real` is a type of matrix elements.
-* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
-* `Index` is a type for indexing the matrix elements and also row and column indexes.
-* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
-
-The first main reason for using the matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::TridiagonalMatrix::setElement). The code looks as follows:
-
-\includelineno TridiagonalMatrixViewExample_setElement.cpp
-
-The matrix view is obtained by the method `getView` (\ref TNL::Matrices::TridiagonalMatrix::getView) on the line 13. We firsrt show, that the view can be used the same way as common matrix (lines 14 and 15) but it can be used the same way even in lambda functions as we can see on the lines 20-26. Compare it with the same example using shared pointer instead of the matrix view:
-
-\includelineno TridiagonalMatrixExample_setElement.cpp
-
-The main disadventages are:
-
-1. The shared pointer must be created together with the matrix (line 14) and there is no way to get it later. The matrix view can be obtained from any matrix at any time.
-2. We have to synchronize shared pointers explicitly by calling the function \ref TNL::Pointers::synchronizeSmartPointersOnDevice (line 34).
-
-So for the sake of using a matrix in lambda functions, the matrix view is better tool. The result of both examples looks as:
-
-\include TridiagonalMatrixExample_setElement.out
-
-As we mentioned already, the tridiagonal matrix view offers almost all methods which the tridiagonal matrix does. So it can be easily used at almost any situation the same way as the tridiagonal matrix itself.
-
-### Multidiagonal matrix view <a name="multidiagonal_matrix_view"></a>
-
-Multidiagonal matrix also offers its view for easier use with lambda functions. It is represented by a templated class \ref TNL::Matrices::MultidiagonalMatrixView with the following template parameters:
-
-* `Real` is a type of matrix elements.
-* `Device` is a device on which the matrix is allocated. This can be \ref TNL::Devices::Host or \ref TNL::Devices::Cuda.
-* `Index` is a type for indexing the matrix elements and also row and column indexes.
-* `Organization` tells the ordering of matrix elements in memory. It is either RowMajorOrder or ColumnMajorOrder.
-
-The first main reason for using the matrix view is its ability to be captured by lambda functions since the copy constructor makes only shallow copy. We can demonstrate it on the example showing the method `setElement` (\ref TNL::Matrices::MultidiagonalMatrix::setElement). The code looks as follows:
-
-\includelineno MultidiagonalMatrixViewExample_setElement.cpp
-
-The matrix view is obtained by the method `getView` (\ref TNL::Matrices::MultidiagonalMatrix::getView) on the line 13. We firsrt show, that the view can be used the same way as common matrix (lines 14 and 15) but it can be used the same way even in lambda functions as we can see on the lines 20-26. Compare it with the same example using shared pointer instead of the matrix view:
-
-\includelineno MultidiagonalMatrixExample_setElement.cpp
-
-The main disadventages are:
-
-1. The shared pointer must be created together with the matrix (line 14) and there is no way to get it later. The matrix view can be obtained from any matrix at any time.
-2. We have to synchronize shared pointers explicitly by calling the function \ref TNL::Pointers::synchronizeSmartPointersOnDevice (line 34).
-
-So for the sake of using a matrix in lambda functions, the matrix view is better tool. The result of both examples looks as:
-
-\include MultidiagonalMatrixExample_setElement.out
-
-As we mentioned already, the multidiagonal matrix view offers almost all methods which the multidiagonal matrix does. So it can be easily used at almost any situation the same way as the multidiagonal matrix itself.
-
-TODO: Move to explanation of the matrix view to introduction.
-
+TODO: Write documentation on matrix writer.
 
 ## Appendix<a name="appendix"></a>
 
