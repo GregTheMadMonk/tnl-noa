@@ -209,13 +209,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
       /**
-<<<<<<< HEAD
        * \brief Constructor with matrix rows capacities and number of columns.
        *
-=======
-       * \brief Constructor with matrix rows capacities given as an initializer list and a number of columns.
-       * 
->>>>>>> Added SparseMatrix constructor with row capacities vector.
        * The number of matrix rows is given by the size of \e rowCapacities list.
        *
        * \tparam ListIndex is the initializer list values type.
@@ -238,9 +233,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       /**
        * \brief Constructor with matrix rows capacities given as a vector and number of columns.
-       * 
+       *
        * The number of matrix rows is given by the size of \e rowCapacities vector.
-       * 
+       *
        * \tparam RowCapacitiesVector is the row capacities vector type. Usually it is some of
        *    \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or
        *    \ref TNL::Containers::VectorView.
@@ -249,7 +244,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param columns is the number of matrix columns.
        * \param realAllocator is used for allocation of matrix elements values.
        * \param indexAllocator is used for allocation of matrix elements column indexes.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_Constructor_rowCapacities_vector.cpp
        * \par Output
