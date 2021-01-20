@@ -36,10 +36,10 @@ struct ChooseSparseMatrixComputeReal< bool, Index >
  *
  * It serves as an accessor to \ref SparseMatrix for example when passing the
  * matrix to lambda functions. SparseMatrix view can be also created in CUDA kernels.
- * 
- * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated 
+ *
+ * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated
  *    as binary and so the matrix elements values are not stored in the memory since we need
- *    to remember only coordinates of non-zero elements( which equal one). 
+ *    to remember only coordinates of non-zero elements( which equal one).
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
  * \tparam MatrixType specifies a symmetry of matrix. See \ref MatrixType. Symmetric
@@ -50,13 +50,13 @@ struct ChooseSparseMatrixComputeReal< bool, Index >
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
  * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
  *    bu the user, of course.
- * 
+ *
  */
 template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_ > class SegmentsView = Algorithms::Segments::CSRView,
+          template< typename Device_, typename Index_ > class SegmentsView = Algorithms::Segments::CSRViewDefault,
           typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type >
 class SparseMatrixView : public MatrixView< Real, Device, Index >
 {

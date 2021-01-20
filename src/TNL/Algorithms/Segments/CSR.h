@@ -127,6 +127,28 @@ class CSR
 
       OffsetsHolder offsets;
 };
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
+using CSRScalar = CSR< Device, Index, CSRScalarKernel, IndexAllocator >;
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
+using CSRVector = CSR< Device, Index, CSRVectorKernel, IndexAllocator >;
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
+using CSRLight = CSR< Device, Index, CSRLightKernel, IndexAllocator >;
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
+using CSRDefault = CSRScalar< Device, Index, IndexAllocator >;
+
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

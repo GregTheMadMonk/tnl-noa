@@ -126,6 +126,23 @@ class CSRView
 
       OffsetsView offsets;
 };
+
+template< typename Device,
+          typename Index >
+using CSRViewScalar = CSRView< Device, Index, CSRScalarKernel >;
+
+template< typename Device,
+          typename Index >
+using CSRViewVector = CSRView< Device, Index, CSRVectorKernel >;
+
+template< typename Device,
+          typename Index >
+using CSRViewLight = CSRView< Device, Index, CSRLightKernel >;
+
+template< typename Device,
+          typename Index >
+using CSRViewDefault = CSRViewScalar< Device, Index >;
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL
