@@ -1392,15 +1392,11 @@ To summarize, this method computes the following formula:
 
 ## Matrix I/O operations <a name="matrix_io_operations"></a>
 
-All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used. TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) and matrix writer (\ref TNL::Matrices::MatrixWriter) for import and export of matrices. We describe both in the following sections.
+All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used. TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) for import of matrices. We describe it in the following sections.
 
 ### Matrix reader <a name="matrix-reader></a>
 
 TODO: Write documentation on matrix reader.
-
-### Matrix writer <a name="matrix-writer></a>
-
-TODO: Write documentation on matrix writer.
 
 ## Appendix<a name="appendix"></a>
 
