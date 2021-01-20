@@ -19,8 +19,11 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+enum CSRKernelTypes { CSRScalarKernel, CSRVectorKernel, CSRLightKernel };
+
 template< typename Device,
-          typename Index >
+          typename Index,
+          CSRKernelTypes KernelType_ = CSRScalar >
 class CSRView
 {
    public:
@@ -28,12 +31,13 @@ class CSRView
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
-      using ConstOffsetsView = typename Containers::Vector< Index, DeviceType,IndexType >::ConstViewType;
+      using ConstOffsetsView = typename Containers::Vector< Index, DeviceType, IndexType >::ConstViewType;
       using ViewType = CSRView;
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      CSRKernelTypes KernelType = KernelType_;
 
       __cuda_callable__
       CSRView();

@@ -22,6 +22,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
+          CSRKernelTypes KernelType_ = CSRScalar,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class CSR
 {
@@ -36,6 +37,7 @@ class CSR
       using ViewType = CSRView< Device, Index >;
       using ConstViewType = CSRView< Device, std::add_const_t< IndexType > >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+      CSRKernelTypes KernelType = KernelType_;
 
       CSR();
 
@@ -114,8 +116,8 @@ class CSR
 
       CSR& operator=( const CSR& rhsSegments ) = default;
 
-      template< typename Device_, typename Index_, typename IndexAllocator_ >
-      CSR& operator=( const CSR< Device_, Index_, IndexAllocator_ >& source );
+      template< typename Device_, typename Index_, CSRKernelTypes KernelType__, typename IndexAllocator_ >
+      CSR& operator=( const CSR< Device_, Index_, KernelType__, IndexAllocator_ >& source );
 
       void save( File& file ) const;
 
