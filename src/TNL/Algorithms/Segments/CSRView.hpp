@@ -217,7 +217,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    const auto offsetsView = this->offsets.getConstView();
-   if( KernelType == CSRScalar )
+   if( KernelType == CSRScalarKernel )
    {
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType begin = offsetsView[ segmentIdx ];

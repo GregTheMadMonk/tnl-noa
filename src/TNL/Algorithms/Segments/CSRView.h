@@ -23,7 +23,7 @@ enum CSRKernelTypes { CSRScalarKernel, CSRVectorKernel, CSRLightKernel };
 
 template< typename Device,
           typename Index,
-          CSRKernelTypes KernelType_ = CSRScalar >
+          CSRKernelTypes KernelType_ = CSRScalarKernel >
 class CSRView
 {
    public:
