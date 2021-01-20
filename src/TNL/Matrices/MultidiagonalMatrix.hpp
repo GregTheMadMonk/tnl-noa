@@ -41,7 +41,7 @@ MultidiagonalMatrix( const IndexType rows,
                const IndexType columns,
                const Vector& diagonalsOffsets )
 {
-   TNL_ASSERT_GT( diagonalsOffsets.getSize(), 0, "Cannot construct mutltidiagonal matrix with no diagonals shifts." );
+   TNL_ASSERT_GT( diagonalsOffsets.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals offsets." );
    this->setDimensions( rows, columns, diagonalsOffsets );
 }
 
@@ -57,9 +57,9 @@ MultidiagonalMatrix( const IndexType rows,
                      const IndexType columns,
                      const std::initializer_list< ListIndex > diagonalsOffsets )
 {
-   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsOffsets );
-   TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
-   this->setDimensions( rows, columns, shifts );
+   Containers::Vector< IndexType, DeviceType, IndexType > offsets( diagonalsOffsets );
+   TNL_ASSERT_GT( offsets.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals offsets." );
+   this->setDimensions( rows, columns, offsets );
 }
 
 template< typename Real,
@@ -74,9 +74,9 @@ MultidiagonalMatrix( const IndexType columns,
                      const std::initializer_list< ListIndex > diagonalsOffsets,
                      const std::initializer_list< std::initializer_list< ListReal > >& data )
 {
-   Containers::Vector< IndexType, DeviceType, IndexType > shifts( diagonalsOffsets );
-   TNL_ASSERT_GT( shifts.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals shifts." );
-   this->setDimensions( data.size(), columns, shifts );
+   Containers::Vector< IndexType, DeviceType, IndexType > offsets( diagonalsOffsets );
+   TNL_ASSERT_GT( offsets.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals offsets." );
+   this->setDimensions( data.size(), columns, offsets );
    this->setElements( data );
 }
 
@@ -147,6 +147,37 @@ setDimensions( const IndexType rows,
    this->values.setSize( this->indexer.getStorageSize() );
    this->values = 0.0;
    this->view = this->getView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Vector >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+setDiagonalsOffsets( const Vector& diagonalsOffsets )
+{
+   TNL_ASSERT_GT( diagonalsOffsets.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals offsets." );
+   this->setDimensions( this->getRows(), this->getColumns(), diagonalsOffsets );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename ListIndex >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+setDiagonalsOffsets( const std::initializer_list< ListIndex > diagonalsOffsets )
+{
+   Containers::Vector< IndexType, DeviceType, IndexType > offsets( diagonalsOffsets );
+   TNL_ASSERT_GT( offsets.getSize(), 0, "Cannot construct multidiagonal matrix with no diagonals offsets." );
+   this->setDimensions( this->getRows(), this->getColumns(), offsets );
 }
 
 template< typename Real,

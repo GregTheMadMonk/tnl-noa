@@ -10,6 +10,10 @@ template< typename Device >
 void setElements()
 {
    TNL::Matrices::SparseMatrix< double, Device > matrix( { 1, 1, 1, 1, 1 }, 5 );
+
+   /****
+    * Get the matrix view.
+    */
    auto view = matrix.getView();
    for( int i = 0; i < 5; i++ )
       view.setElement( i, i, i );

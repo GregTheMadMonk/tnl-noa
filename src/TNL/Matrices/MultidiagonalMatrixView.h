@@ -427,7 +427,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -436,12 +436,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_allRowsReduction.cpp
        * \par Output
@@ -455,15 +455,27 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * 
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       *
+       * where
+       *
+       * \e rowIdx is an index of the matrix row.
+       *
+       * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
+       *  index of the matrix subdiagonal.
+       *
+       * \e columnIdx is a column index of the matrx element.
+       *
+       * \e value is the matrix element value.
+       *
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
        *  be interrupted.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
        * \par Output
@@ -477,15 +489,27 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * 
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
-       *  be interrupted.
        * 
+       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       *
+       * where
+       *
+       * \e rowIdx is an index of the matrix row.
+       *
+       * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
+       *  index of the matrix subdiagonal.
+       *
+       * \e columnIdx is a column index of the matrx element.
+       *
+       * \e value is a reference to the matrix element value. It can be used even for changing the matrix element value.
+       *
+       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
+       *  be interrupted.
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
        * \par Output

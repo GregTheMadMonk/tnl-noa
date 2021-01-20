@@ -56,7 +56,7 @@ getElement( const IndexType column ) -> RealType&
 
 template< typename SegmentView,
           typename ValuesView >
-__cuda_callable__ void 
+__cuda_callable__ void
 DenseMatrixRowView< SegmentView, ValuesView >::
 setElement( const IndexType column,
             const RealType& value )
@@ -66,6 +66,18 @@ setElement( const IndexType column,
    values[ globalIdx ] = value;
 }
 
+template< typename SegmentView,
+          typename ValuesView >
+__cuda_callable__ void
+DenseMatrixRowView< SegmentView, ValuesView >::
+setElement( const IndexType localIdx,
+            const IndexType column,
+            const RealType& value )
+{
+   TNL_ASSERT_LT( column, this->getSize(), "Column index exceeds matrix row size." );
+   const IndexType globalIdx = segmentView.getGlobalIndex( column );
+   values[ globalIdx ] = value;
+}
 
    } // namespace Matrices
 } // namespace TNL

@@ -10,13 +10,13 @@ void forAllRowsExample()
    auto view = matrix.getView();
 
    auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, double& value, bool& compute ) {
-      if( rowIdx < columnIdx )  // This is important, some matrix formats may allocate more matrix elements
-                                // than we requested. These padding elements are processed here as well.
+      if( rowIdx < localIdx )  // This is important, some matrix formats may allocate more matrix elements
+                               // than we requested. These padding elements are processed here as well.
          compute = false;
       else
       {
          columnIdx = localIdx;
-         value = rowIdx + localIdx;
+         value = rowIdx + localIdx + 1;
       }
    };
 

@@ -14,10 +14,10 @@ void setElements()
    std::cout << "Matrix set from the host:" << std::endl;
    std::cout << matrix << std::endl;
 
-   auto f = [=] __cuda_callable__ ( int i ) mutable {
-      matrixView.setElement( i, i, -i );
+   auto f = [=] __cuda_callable__ ( int i, int j ) mutable {
+      matrixView.addElement( i, j, 5.0 );
    };
-   TNL::Algorithms::ParallelFor< Device >::exec( 0, 5, f );
+   TNL::Algorithms::ParallelFor2D< Device >::exec( 0, 0, 5, 5, f );
 
    std::cout << "Matrix set from its native device:" << std::endl;
    std::cout << matrix << std::endl;

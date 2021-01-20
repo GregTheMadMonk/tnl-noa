@@ -29,8 +29,9 @@ namespace Matrices {
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
- * \tparam MatrixElementsOrganization tells the ordering of matrix elements. It is either RowMajorOrder
- *         or ColumnMajorOrder.
+ * \tparam MatrixElementsOrganization tells the ordering of matrix elements in memory. It is either
+ *         \ref TNL::Algorithms::Segments::RowMajorOrder
+ *         or \ref TNL::Algorithms::Segments::ColumnMajorOrder.
  * 
  * See \ref DenseMatrix.
  */
@@ -564,6 +565,10 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *    is computed. It is zero by default.
        * \param end is the end of the rows range for which the vector product
        *    is computed. It is number if the matrix rows by default.
+       *
+       * Note that the ouput vector dimension must be the same as the number of matrix rows
+       * no matter how we set `begin` and `end` parameters. These parameters just say that
+       * some matrix rows and the output vector elements are omitted.
        */
       template< typename InVector, typename OutVector >
       void vectorProduct( const InVector& inVector,

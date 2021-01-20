@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <TNL/Assert.h>
 #include <TNL/Matrices/TridiagonalMatrixView.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -98,8 +99,8 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
+   auto reduce = [] __cuda_callable__ ( const IndexType& aux, const IndexType a ) -> IndexType {
+      return aux + a;
    };
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
@@ -275,23 +276,23 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       Real_ sum( zero );
       if( rowIdx == 0 )
       {
-         reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
-         reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
+         sum = reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
+         sum = reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
          keep( 0, sum );
          return;
       }
       if( rowIdx + 1 < indexer.getColumns() )
       {
-         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] ) );
          keep( rowIdx, sum );
          return;
       }
       if( rowIdx < indexer.getColumns() )
       {
-         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
          keep( rowIdx, sum );
       }
       else
@@ -319,23 +320,23 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
       Real_ sum( zero );
       if( rowIdx == 0 )
       {
-         reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
-         reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
+         sum = reduce( sum, fetch( 0, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] ) );
+         sum = reduce( sum, fetch( 0, 2, values_view[ indexer.getGlobalIndex( 0, 2 ) ] ) );
          keep( 0, sum );
          return;
       }
       if( rowIdx + 1 < indexer.getColumns() )
       {
-         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] ) );
          keep( rowIdx, sum );
          return;
       }
       if( rowIdx < indexer.getColumns() )
       {
-         reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
-         reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] ) );
+         sum = reduce( sum, fetch( rowIdx, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] ) );
          keep( rowIdx, sum );
       }
       else
@@ -487,8 +488,8 @@ vectorProduct( const InVector& inVector,
    auto fetch = [=] __cuda_callable__ ( const IndexType& row, const IndexType& column, const RealType& value ) -> RealType {
       return value * inVectorView[ column ];
    };
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
+   auto reduction = [] __cuda_callable__ ( const RealType& sum, const RealType& value ) -> RealType {
+      return sum + value;
    };
    auto keeper1 = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = value;
@@ -693,9 +694,13 @@ void TridiagonalMatrixView< Real, Device, Index, Organization >::print( std::ost
       for( IndexType column = row - 1; column < row + 2; column++ )
          if( column >= 0 && column < this->columns )
          {
-            auto v = this->getElement( row, column );
-            if( v )
-               str << " Col:" << column << "->" << v << "\t";
+            auto value = this->getElement( row, column );
+            if( value )
+            {
+               std::stringstream str_;
+               str_ << std::setw( 4 ) << std::right << column << ":" << std::setw( 4 ) << std::left << value;
+               str << std::setw( 10 ) << str_.str();
+            }
          }
       str << std::endl;
    }

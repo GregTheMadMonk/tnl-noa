@@ -15,17 +15,17 @@ namespace TNL {
 
 /**
  * \brief RowView is a simple structure for accessing rows of dense matrix.
- * 
+ *
  * \tparam SegmentView is a segment view of segments representing the matrix format.
  * \tparam ValuesView is a vector view storing the matrix elements values.
- * 
+ *
  * See \ref DenseMatrix and \ref DenseMatrixView.
- * 
+ *
  * \par Example
  * \include Matrices/DenseMatrix/DenseMatrixExample_getRow.cpp
  * \par Output
  * \include DenseMatrixExample_getRow.out
- * 
+ *
  * \par Example
  * \include Matrices/DenseMatrix/DenseMatrixViewExample_getRow.cpp
  * \par Output
@@ -59,7 +59,7 @@ class DenseMatrixRowView
 
       /**
        * \brief Constructor with \e segmentView and \e values
-       * 
+       *
        * \param segmentView instance of SegmentViewType representing matrix row.
        * \param values is a container view for storing the matrix elements values.
        */
@@ -69,7 +69,7 @@ class DenseMatrixRowView
 
       /**
        * \brief Returns size of the matrix row, i.e. number of matrix elements in this row.
-       * 
+       *
        * \return Size of the matrix row.
        */
       __cuda_callable__
@@ -77,9 +77,9 @@ class DenseMatrixRowView
 
       /**
        * \brief Returns constants reference to an element with given column index.
-       * 
+       *
        * \param column is column index of the matrix element.
-       * 
+       *
        * \return constant reference to the matrix element.
        */
       __cuda_callable__
@@ -87,9 +87,9 @@ class DenseMatrixRowView
 
       /**
        * \brief Returns non-constants reference to an element with given column index.
-       * 
+       *
        * \param column is a column index of the matrix element.
-       * 
+       *
        * \return non-constant reference to the matrix element.
        */
       __cuda_callable__
@@ -103,6 +103,20 @@ class DenseMatrixRowView
        */
       __cuda_callable__
       void setElement( const IndexType column,
+                       const RealType& value );
+
+      /**
+       * \brief Sets value of matrix element with given column index
+       *
+       * The \e localIdx parameter is here only for compatibility with
+       * the sparse matrices and it is omitted.
+       *
+       * \param column is a column index of the matrix element.
+       * \param value is a value the matrix element will be set to.
+       */
+      __cuda_callable__
+      void setElement( const IndexType localIdx,
+                       const IndexType column,
                        const RealType& value );
    protected:
 

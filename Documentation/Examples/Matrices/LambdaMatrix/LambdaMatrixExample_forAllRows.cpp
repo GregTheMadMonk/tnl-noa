@@ -10,14 +10,14 @@ void forRowsExample()
    /***
     * Lambda functions defining the matrix.
     */
-   auto rowLengths = [=] __cuda_callable__ ( const int rows, const int columns, const int rowIdx ) -> int { return columns; };
+   auto compressedRowLengths = [=] __cuda_callable__ ( const int rows, const int columns, const int rowIdx ) -> int { return columns; };
    auto matrixElements = [=] __cuda_callable__ ( const int rows, const int columns, const int rowIdx, const int localIdx, int& columnIdx, double& value ) {
          columnIdx = localIdx;
          value = TNL::max( rowIdx - columnIdx + 1, 0 );
    };
 
    using MatrixFactory = TNL::Matrices::LambdaMatrixFactory< double, Device, int >;
-   auto matrix = MatrixFactory::create( 5, 5, matrixElements, rowLengths );
+   auto matrix = MatrixFactory::create( 5, 5, matrixElements, compressedRowLengths );
 
    TNL::Matrices::DenseMatrix< double, Device > denseMatrix( 5, 5 );
    auto denseView = denseMatrix.getView();

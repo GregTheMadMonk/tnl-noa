@@ -12,3 +12,6 @@
 /.settings
 /.project
 /.pydevproject
+
+# VSCode
+/.vscode

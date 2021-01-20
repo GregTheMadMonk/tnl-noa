@@ -76,7 +76,7 @@ stages:
         - cmake ../..
                 -G Ninja
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-                -DCMAKE_INSTALL_PREFIX=$(pwd)/${BUILD_TYPE}_install_prefix
+                -DCMAKE_INSTALL_PREFIX="$(pwd)/${BUILD_TYPE}_install_prefix"
                 -DWITH_OPENMP=${WITH_OPENMP}
                 -DWITH_MPI=${WITH_MPI}
                 -DWITH_CUDA=${WITH_CUDA}
@@ -102,8 +102,6 @@ stages:
     only:
         changes:
             - src/**/*.{h,hpp,cpp,cu}
-            - Documentation/Examples/**/*.{h,hpp,cpp,cu}
-            - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
             - .gitlab-ci.yml
     interruptible: true
@@ -117,11 +115,12 @@ dummy build job:
         - merge_requests
     except:
         changes:
+            # .build_template
             - src/**/*.{h,hpp,cpp,cu}
-            - Documentation/Examples/**/*.{h,hpp,cpp,cu}
-            - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
             - .gitlab-ci.yml
+            # build documentation
+            - Documentation/**/*
 
 # Cuda builds are specified first because they take more time than host-only builds,
 # which can be allocated on hosts whitout GPUs.
@@ -189,12 +188,6 @@ cuda_examples_Debug:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_EXAMPLES: "yes"
-        # build output snippets for documentation
-        WITH_DOC: "yes"
-    # store output snippets for documentation
-    artifacts:
-        paths:
-            - Documentation/output_snippets/
 
 cuda_examples_Release:
     extends: .build_template
@@ -468,6 +461,28 @@ clang_mpi_benchmarks_tools_python_Release:
 
 
 
+documentation examples:
+    extends: .build_template
+    stage: build:cuda
+    tags:
+        - docker
+        - nvidia
+    variables:
+        <<: *default_cmake_flags
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Debug
+        # build output snippets for documentation
+        WITH_DOC: "yes"
+    only:
+        changes:
+            - Documentation/**/*
+            - src/TNL/**/*.{h,hpp}
+            - .gitlab-ci.yml
+    # store output snippets for documentation
+    artifacts:
+        paths:
+            - Documentation/output_snippets/
+
 build documentation:
     stage: build:doc
     only:
@@ -477,16 +492,13 @@ build documentation:
             - .gitlab-ci.yml
     # use "needs" instead of "dependencies" to allow out-of-order start of this job
     needs:
-        # the job which builds Documentation/output_snippets/
-        - job: cuda_examples_Debug
+        - job: documentation examples
           artifacts: true
     script:
         - ./Documentation/build
     artifacts:
         paths:
             - ./Documentation/html/
-#    tags:
-#        - doxygen
 
 deploy documentation:
     stage: deploy
