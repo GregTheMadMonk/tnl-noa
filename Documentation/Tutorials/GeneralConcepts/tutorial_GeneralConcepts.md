@@ -98,7 +98,7 @@ View is a kind of lightweight reference object which makes only a shallow copy o
 
 The differences are on the line 5 where we fetch the view by means of method `getView` and on the line 7 where we work with the `view` and not with the array `a`. The view has very similar interface (see \ref TNL::Containers::ArrayView) as the array (\ref TNL::Containers::Array) and so mostly there is no difference in using array and its view for the programmer. In TNL, each data structure which can be accessed from GPU kernels (it means that it has methods defined as `__cuda_callable__`) provides also a method `getView` for getting appropriate view of the object.
 
-Views are simple objects because they must be transferred to GPU in each kernel call. So there are no smart links between a view and the original object. In fact, the array view contains just a pointer the the data managed by the array and the size of the array. Therefore if the original object get changed, all views obtained from the object before may become invalid. See the following example:
+Views are simple objects because they must be transferred to GPU in each kernel call. So there are no smart links between a view and the original object. In fact, the array view contains just a pointer the data managed by the array and the size of the array. Therefore if the original object get changed, all views obtained from the object before may become invalid. See the following example:
 
 \includelineno snippet_shared_pointers_and_views_capture_view_change.cpp
 
