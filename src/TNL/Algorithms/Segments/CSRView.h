@@ -14,39 +14,39 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/CSRKernels.h>
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
-enum CSRKernelTypes { CSRScalarKernel, CSRVectorKernel, CSRLightKernel };
-
 template< typename Device,
           typename Index,
-          CSRKernelTypes KernelType_ = CSRScalarKernel >
+          typename Kernel = CSRScalarKernel< Index, Device > >
 class CSRView
 {
    public:
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
+      using KernelType = Kernel;
       using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       using ConstOffsetsView = typename Containers::Vector< Index, DeviceType, IndexType >::ConstViewType;
+      using KernelView = typename Kernel::ViewType;
       using ViewType = CSRView;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = CSRView< Device_, Index_ >;
-      using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
+      using ViewTemplate = CSRView< Device_, Index_, Kernel >;
+      using ConstViewType = CSRView< Device, std::add_const_t< Index >, Kernel >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
-      CSRKernelTypes KernelType = KernelType_;
 
       __cuda_callable__
       CSRView();
 
       __cuda_callable__
-      CSRView( const OffsetsView& offsets );
+      CSRView( const OffsetsView& offsets, const KernelView& kernel );
 
       __cuda_callable__
-      CSRView( const OffsetsView&& offsets );
+      CSRView( const OffsetsView&& offsets, const KernelView&& kernel );
 
       __cuda_callable__
       CSRView( const CSRView& csr_view );
@@ -125,19 +125,21 @@ class CSRView
    protected:
 
       OffsetsView offsets;
+
+      KernelView kernel;
 };
 
 template< typename Device,
           typename Index >
-using CSRViewScalar = CSRView< Device, Index, CSRScalarKernel >;
+using CSRViewScalar = CSRView< Device, Index, CSRScalarKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
-using CSRViewVector = CSRView< Device, Index, CSRVectorKernel >;
+using CSRViewVector = CSRView< Device, Index, CSRVectorKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
-using CSRViewLight = CSRView< Device, Index, CSRLightKernel >;
+using CSRViewLight = CSRView< Device, Index, CSRLightKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >

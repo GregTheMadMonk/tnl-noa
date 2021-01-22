@@ -15,7 +15,7 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-const char* saveAndLoadFileName = "test_SparseMatrixTest_CSR_segments";
+const char* saveAndLoadFileName = "test_SparseMatrixTest_CSRVector_segments";
 
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types

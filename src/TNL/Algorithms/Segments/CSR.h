@@ -22,7 +22,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          CSRKernelTypes KernelType_ = CSRScalarKernel,
+          typename Kernel = CSRScalarKernel< Index, Device >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class CSR
 {
@@ -30,14 +30,14 @@ class CSR
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
+      using KernelType = Kernel;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = CSRView< Device_, Index_, KernelType_ >;
-      using ViewType = CSRView< Device, Index, KernelType_ >;
-      using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType_ >;
+      using ViewTemplate = CSRView< Device_, Index_, KernelType >;
+      using ViewType = CSRView< Device, Index, KernelType >;
+      using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
-      CSRKernelTypes KernelType = KernelType_;
 
       CSR();
 
@@ -116,8 +116,8 @@ class CSR
 
       CSR& operator=( const CSR& rhsSegments ) = default;
 
-      template< typename Device_, typename Index_, CSRKernelTypes KernelType__, typename IndexAllocator_ >
-      CSR& operator=( const CSR< Device_, Index_, KernelType__, IndexAllocator_ >& source );
+      template< typename Device_, typename Index_, typename Kernel_, typename IndexAllocator_ >
+      CSR& operator=( const CSR< Device_, Index_, Kernel_, IndexAllocator_ >& source );
 
       void save( File& file ) const;
 
@@ -126,22 +126,24 @@ class CSR
    protected:
 
       OffsetsHolder offsets;
+
+      KernelType kernel;
 };
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRScalar = CSR< Device, Index, CSRScalarKernel, IndexAllocator >;
+using CSRScalar = CSR< Device, Index, CSRScalarKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRVector = CSR< Device, Index, CSRVectorKernel, IndexAllocator >;
+using CSRVector = CSR< Device, Index, CSRVectorKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRLight = CSR< Device, Index, CSRLightKernel, IndexAllocator >;
+using CSRLight = CSR< Device, Index, CSRLightKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
