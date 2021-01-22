@@ -69,7 +69,7 @@ template< typename Matrix >
 void setElement_on_host_and_transfer( const int gridSize, Matrix& matrix )
 {
    using RealType = typename Matrix::RealType;
-   using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
+   using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
 
    const int matrixSize = gridSize * gridSize;
    TNL::Containers::Vector< int, typename HostMatrix::DeviceType, int > rowCapacities( matrixSize, 5 );

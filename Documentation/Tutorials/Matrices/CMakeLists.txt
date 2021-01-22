@@ -104,9 +104,9 @@ ELSE()
 
    ####
    # THe following examples/benchmarks run for very long time
-   ADD_EXECUTABLE( DenseMatrixSetup_Benchmark DenseMatrixSetup_Benchmark_cuda.cpp )
-   ADD_EXECUTABLE( SparseMatrixSetup_Benchmark SparseMatrixSetup_Benchmark_cuda.cpp )
-   ADD_EXECUTABLE( MultidiagonalMatrixSetup_Benchmark MultidiagonalMatrixSetup_Benchmark_cuda.cpp )
+   ADD_EXECUTABLE( DenseMatrixSetup_Benchmark DenseMatrixSetup_Benchmark.cpp )
+   ADD_EXECUTABLE( SparseMatrixSetup_Benchmark SparseMatrixSetup_Benchmark.cpp )
+   ADD_EXECUTABLE( MultidiagonalMatrixSetup_Benchmark MultidiagonalMatrixSetup_Benchmark.cpp )
 ENDIF()
 
 IF( BUILD_CUDA )
