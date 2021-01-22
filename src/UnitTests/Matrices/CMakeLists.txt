@@ -7,6 +7,7 @@ set( COMMON_TESTS
             MultidiagonalMatrixTest
 
             SparseMatrixTest_CSRScalar
+            SparseMatrixTest_CSRVector
             SparseMatrixTest_Ellpack
             SparseMatrixTest_SlicedEllpack
             SparseMatrixTest_ChunkedEllpack
