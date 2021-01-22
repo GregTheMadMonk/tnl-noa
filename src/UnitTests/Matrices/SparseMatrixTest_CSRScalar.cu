@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest_CSR.cu -  description
+                          SparseMatrixTest_CSRScalar.cu -  description
                              -------------------
     begin                : Dec 3, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest_CSR.h"
+#include "SparseMatrixTest_CSRScalar.h"
