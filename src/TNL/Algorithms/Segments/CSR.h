@@ -33,9 +33,9 @@ class CSR
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = CSRView< Device_, Index_ >;
-      using ViewType = CSRView< Device, Index >;
-      using ConstViewType = CSRView< Device, std::add_const_t< IndexType > >;
+      using ViewTemplate = CSRView< Device_, Index_, KernelType_ >;
+      using ViewType = CSRView< Device, Index, KernelType_ >;
+      using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType_ >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
       CSRKernelTypes KernelType = KernelType_;
 

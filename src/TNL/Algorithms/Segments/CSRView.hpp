@@ -14,6 +14,7 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/CSRView.h>
 #include <TNL/Algorithms/Segments/details/CSR.h>
+#include <TNL/Algorithms/Segments/details/CSRKernels.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 
 namespace TNL {
@@ -217,7 +218,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 {
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    const auto offsetsView = this->offsets.getConstView();
-   if( KernelType == CSRScalarKernel )
+   if( KernelType == CSRScalarKernel || std::is_same< DeviceType, TNL::Devices::Host >::value )
    {
       auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType begin = offsetsView[ segmentIdx ];
@@ -229,7 +230,14 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
             aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   }
+   if( KernelType == CSRVectorKernel )
+      details::RowsReductionVectorKernelCaller( offsetsView, first, last, fetch, reduction, keeper, zero, args... );
+   if( KernelType == CSRLightKernel )
+   {
+      const IndexType elementsInSegment = ceil( this->getSize() / this->getSegmentsCount() );
+      details::RowsReductionLightKernelCaller( elementsInSegment, offsetsView, first, last, fetch, reduction, keeper, zero, args... );
    }
 }
 
