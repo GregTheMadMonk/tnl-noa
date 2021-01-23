@@ -17,7 +17,7 @@
 
 namespace TNL {
    namespace Benchmarks {
-      
+
 template< typename Real = double,
    typename Device = Devices::Host,
    typename Index = int >
@@ -27,8 +27,7 @@ struct SimpleProblem
    using DeviceType = Device;
    using IndexType = Index;
    using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-   using CommunicatorType = Communicators::NoDistrCommunicator;
-   
+
    template< typename VectorPointer >
    void getExplicitUpdate( const RealType& time,
       const RealType& tau,
@@ -45,10 +44,10 @@ struct SimpleProblem
       };
       Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, u.getSize(), computeF, u, fu );
    }
-   
+
    template< typename Vector >
    void applyBoundaryConditions( const RealType& t, Vector& u ) {};
-      
+
 };
 
    } // namespace Benchmarks

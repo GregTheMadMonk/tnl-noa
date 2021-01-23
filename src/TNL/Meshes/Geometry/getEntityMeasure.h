@@ -19,6 +19,7 @@
 #include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
+#include <TNL/Meshes/Topologies/Hexahedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -146,6 +147,29 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
     const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
     return getTetrahedronVolume( v3 - v0, v2 - v0, v1 - v0 );
+}
+
+template< typename MeshConfig, typename Device >
+__cuda_callable__
+typename MeshConfig::RealType
+getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
+                  const MeshEntity< MeshConfig, Device, Topologies::Hexahedron > & entity )
+{
+    const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+    const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 3 ) );
+    const auto& v4 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 4 ) );
+    const auto& v5 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 5 ) );
+    const auto& v6 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 6 ) );
+    const auto& v7 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 7 ) );
+    // https://www.cfd-online.com/Forums/main/163122-volume-general-hexahedron.html#post574650
+    return getTetrahedronVolume( v0 - v4, v3 - v4, v1 - v4 )
+         + getTetrahedronVolume( v2 - v4, v3 - v4, v1 - v4 )
+         + getTetrahedronVolume( v1 - v4, v2 - v4, v5 - v4 )
+         + getTetrahedronVolume( v6 - v4, v2 - v4, v5 - v4 )
+         + getTetrahedronVolume( v3 - v4, v2 - v4, v7 - v4 )
+         + getTetrahedronVolume( v6 - v4, v2 - v4, v7 - v4 );
 }
 
 } // namespace Meshes

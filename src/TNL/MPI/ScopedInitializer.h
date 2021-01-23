@@ -12,22 +12,25 @@
 
 #pragma once
 
-namespace TNL {
-namespace Communicators {
+#include "Wrappers.h"
+#include "Utils.h"
 
-template< typename Communicator >
+namespace TNL {
+namespace MPI {
+
 struct ScopedInitializer
 {
-   ScopedInitializer( int& argc, char**& argv )
+   ScopedInitializer( int& argc, char**& argv, int required_thread_level = MPI_THREAD_SINGLE )
    {
-      Communicator::Init( argc, argv );
+      Init( argc, argv );
    }
 
    ~ScopedInitializer()
    {
-      Communicator::Finalize();
+      restoreRedirection();
+      Finalize();
    }
 };
 
-} // namespace Communicators
+} // namespace MPI
 } // namespace TNL

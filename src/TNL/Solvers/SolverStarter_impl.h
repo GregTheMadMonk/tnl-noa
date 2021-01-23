@@ -14,8 +14,7 @@
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Config.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/ODE/Merson.h>
@@ -25,14 +24,14 @@
 #include <TNL/Solvers/PDE/PDESolverTypeResolver.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< typename Problem,
           typename ConfigTag,
           bool TimeDependent = Problem::isTimeDependent() >
 class TimeDependencyResolver
 {};
-   
+
 template< typename Problem,
           typename ConfigTag,
           typename TimeStepper = typename Problem::TimeStepper >
@@ -66,8 +65,7 @@ bool SolverStarter< ConfigTag > :: run( const Config::ParameterContainer& parame
     */
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
-       ! Communicators::NoDistrCommunicator::setup( parameters ) ||
-       ! Communicators::MpiCommunicator::setup( parameters ) 
+       ! MPI::setup( parameters )
     )
       return false;
    Problem problem;
@@ -95,7 +93,7 @@ class TimeDependencyResolver< Problem, ConfigTag, false >
                        const Config::ParameterContainer& parameters )
       {
          // TODO: This should be improved - at least rename to LinearSolverSetter
-         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run( problem, parameters );   
+         return SolverStarterTimeDiscretisationSetter< Problem, SemiImplicitTimeDiscretisationTag, ConfigTag, true >::run( problem, parameters );
       }
 };
 
@@ -338,7 +336,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     */
    this->computeTimer.reset();
    this->ioTimer.reset();
-   
+
    /****
     * Create solver monitor thread
     */

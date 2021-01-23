@@ -109,9 +109,9 @@ computing platform, and (optionally) some libraries.
     - [CUDA](https://docs.nvidia.com/cuda/index.html) 9.0 or later -- for
       computations on Nvidia GPUs.
     - [MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) -- TNL can
-      use an MPI library such as [OpenMPI](https://www.open-mpi.org/) for
-      distributed computing. For distributed CUDA computations, the library must
-      be [CUDA-aware](
+      a library implementing the MPI-3 standard for distributed computing (e.g.
+      [OpenMPI](https://www.open-mpi.org/)). For distributed CUDA computations,
+      the library must be [CUDA-aware](
       https://developer.nvidia.com/blog/introduction-cuda-aware-mpi/).
 
 - __Libraries:__

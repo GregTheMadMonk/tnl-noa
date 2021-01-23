@@ -49,57 +49,58 @@ void
 Diagonal< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
-   ConstVectorViewType diag_view( diagonal );
-
-   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
-   {
-      x[ i ] = b[ i ] / diag_view[ i ];
-   };
-
-   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   x = b / diagonal;
 }
 
 
-template< typename Matrix, typename Communicator >
+template< typename Matrix >
 void
-Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix > >::
 update( const MatrixPointer& matrixPointer )
 {
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
-   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
-
    diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
 
    LocalViewType diag_view( diagonal );
-   const MatrixType* kernel_matrix = &matrixPointer.template getData< DeviceType >();
+   // FIXME: SparseMatrix::getConstView is broken
+//   const auto matrix_view = matrixPointer->getLocalMatrix().getConstView();
+   const auto matrix_view = matrixPointer->getLocalMatrix().getView();
 
-   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
-   {
-      const IndexType gi = kernel_matrix->getLocalRowRange().getGlobalIndex( i );
-      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElement( i, gi );
-   };
-
-   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   if( matrixPointer->getRows() == matrixPointer->getColumns() ) {
+      // square matrix, assume global column indices
+      const auto row_range = matrixPointer->getLocalRowRange();
+      auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+      {
+         const IndexType gi = row_range.getGlobalIndex( i );
+         diag_view[ i ] = matrix_view.getElement( i, gi );
+      };
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   }
+   else {
+      // non-square matrix, assume ghost indexing
+      TNL_ASSERT_LT( matrixPointer->getLocalMatrix().getRows(), matrixPointer->getLocalMatrix().getColumns(), "the local matrix should have more columns than rows" );
+      auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+      {
+         diag_view[ i ] = matrix_view.getElement( i, i );
+      };
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   }
 }
 
-template< typename Matrix, typename Communicator >
+template< typename Matrix >
 void
-Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix > >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
    ConstLocalViewType diag_view( diagonal );
    const auto b_view = b.getConstLocalView();
    auto x_view = x.getLocalView();
 
-   TNL_ASSERT_EQ( b_view.getSize(), diagonal.getSize(), "The size of the vector b does not match the size of the extracted diagonal." );
-   TNL_ASSERT_EQ( x_view.getSize(), diagonal.getSize(), "The size of the vector x does not match the size of the extracted diagonal." );
+   // compute without ghosts (diagonal includes only local rows)
+   x_view = b_view / diag_view;
 
-   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
-   {
-      x_view[ i ] = b_view[ i ] / diag_view[ i ];
-   };
-
-   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   // synchronize ghosts
+   x.startSynchronization();
 }
 
 } // namespace Preconditioners

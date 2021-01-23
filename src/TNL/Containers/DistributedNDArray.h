@@ -12,34 +12,30 @@
 
 #pragma once
 
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/NDArray.h>
-#include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
 
 namespace TNL {
 namespace Containers {
 
 template< typename NDArray,
-          typename Communicator = Communicators::MpiCommunicator,
           typename Overlaps = __ndarray_impl::make_constant_index_sequence< NDArray::getDimension(), 0 > >
 class DistributedNDArray
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
    using ValueType = typename NDArray::ValueType;
    using DeviceType = typename NDArray::DeviceType;
    using IndexType = typename NDArray::IndexType;
+   using AllocatorType = typename NDArray::AllocatorType;
    using SizesHolderType = typename NDArray::SizesHolderType;
    using PermutationType = typename NDArray::PermutationType;
-   using CommunicatorType = Communicator;
    using LocalBeginsType = __ndarray_impl::LocalBeginsHolder< typename NDArray::SizesHolderType >;
    using LocalRangeType = Subrange< IndexType >;
    using OverlapsType = Overlaps;
    using LocalIndexerType = NDArrayIndexer< SizesHolderType, PermutationType, typename NDArray::NDBaseType, typename NDArray::StridesHolderType, Overlaps >;
 
-   using ViewType = DistributedNDArrayView< typename NDArray::ViewType, Communicator, Overlaps >;
-   using ConstViewType = DistributedNDArrayView< typename NDArray::ConstViewType, Communicator, Overlaps >;
+   using ViewType = DistributedNDArrayView< typename NDArray::ViewType, Overlaps >;
+   using ConstViewType = DistributedNDArrayView< typename NDArray::ConstViewType, Overlaps >;
    using LocalViewType = typename NDArray::ViewType;
    using ConstLocalViewType = typename NDArray::ConstViewType;
 
@@ -49,10 +45,17 @@ public:
 
    DistributedNDArray() = default;
 
-   // The copy-constructor of TNL::Containers::Array makes shallow copy so our
-   // copy-constructor cannot be default. Actually, we most likely don't need
-   // it anyway, so let's just delete it.
-   DistributedNDArray( const DistributedNDArray& ) = delete;
+   DistributedNDArray( const AllocatorType& allocator );
+
+   // Copy constructor (makes a deep copy).
+   explicit DistributedNDArray( const DistributedNDArray& ) = default;
+
+   // Copy constructor with a specific allocator (makes a deep copy).
+   explicit DistributedNDArray( const DistributedNDArray& other, const AllocatorType& allocator )
+   : localArray( allocator )
+   {
+      *this = other;
+   }
 
    // Standard copy-semantics with deep copy, just like regular 1D array.
    // Mismatched sizes cause reallocations.
@@ -79,8 +82,13 @@ public:
       return NDArray::getDimension();
    }
 
+   AllocatorType getAllocator() const
+   {
+      return localArray.getAllocator();
+   }
+
    __cuda_callable__
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return group;
    }
@@ -232,8 +240,8 @@ public:
             localEnds == other.localEnds &&
             localArray == other.localArray;
       bool result = true;
-      if( group != CommunicatorType::NullGroup )
-         CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+      if( group != MPI::NullGroup() )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
       return result;
    }
 
@@ -375,7 +383,7 @@ public:
    }
 
    template< std::size_t level >
-   void setDistribution( IndexType begin, IndexType end, CommunicationGroup group = Communicator::AllGroup )
+   void setDistribution( IndexType begin, IndexType end, MPI_Comm group = MPI::AllGroup() )
    {
       static_assert( SizesHolderType::template getStaticSize< level >() == 0, "NDArray cannot be distributed in static dimensions." );
       TNL_ASSERT_GE( begin, 0, "begin must be non-negative" );
@@ -383,7 +391,7 @@ public:
       TNL_ASSERT_LT( begin, end, "begin must be lesser than end" );
       localBegins.template setSize< level >( begin );
       localEnds.template setSize< level >( end );
-      TNL_ASSERT( this->group == Communicator::NullGroup || this->group == group,
+      TNL_ASSERT( this->group == MPI::NullGroup() || this->group == group,
                   std::cerr << "different groups cannot be combined for different dimensions" );
       this->group = group;
    }
@@ -408,7 +416,7 @@ public:
    void reset()
    {
       localArray.reset();
-      group = CommunicatorType::NullGroup;
+      group = MPI::NullGroup();
       globalSizes = SizesHolderType{};
       localBegins = LocalBeginsType{};
       localEnds = SizesHolderType{};
@@ -435,7 +443,7 @@ public:
 
 protected:
    NDArray localArray;
-   CommunicationGroup group = Communicator::NullGroup;
+   MPI_Comm group = MPI::NullGroup();
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

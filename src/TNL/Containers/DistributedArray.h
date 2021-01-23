@@ -21,22 +21,22 @@ namespace Containers {
 template< typename Value,
           typename Device = Devices::Host,
           typename Index = int,
-          typename Communicator = Communicators::MpiCommunicator >
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Value > >
 class DistributedArray
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
-   using LocalArrayType = Containers::Array< Value, Device, Index >;
+   using LocalArrayType = Containers::Array< Value, Device, Index, Allocator >;
 
 public:
    using ValueType = Value;
    using DeviceType = Device;
-   using CommunicatorType = Communicator;
    using IndexType = Index;
+   using AllocatorType = Allocator;
    using LocalRangeType = Subrange< Index >;
    using LocalViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
-   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
-   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index >;
+   using SynchronizerType = typename ViewType::SynchronizerType;
 
    /**
     * \brief A template which allows to quickly obtain a \ref DistributedArray type with changed template parameters.
@@ -44,51 +44,85 @@ public:
    template< typename _Value,
              typename _Device = Device,
              typename _Index = Index,
-             typename _Communicator = Communicator >
-   using Self = DistributedArray< _Value, _Device, _Index, _Communicator >;
+             typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Value > >
+   using Self = DistributedArray< _Value, _Device, _Index, _Allocator >;
 
 
+   ~DistributedArray();
+
+   /**
+    * \brief Constructs an empty array with zero size.
+    */
    DistributedArray() = default;
 
-   DistributedArray( const DistributedArray& ) = default;
+   /**
+    * \brief Constructs an empty array and sets the provided allocator.
+    *
+    * \param allocator The allocator to be associated with this array.
+    */
+   explicit DistributedArray( const AllocatorType& allocator );
 
-   DistributedArray( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   /**
+    * \brief Copy constructor (makes a deep copy).
+    *
+    * \param array The array to be copied.
+    */
+   explicit DistributedArray( const DistributedArray& array );
 
-   void setDistribution( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
+   /**
+    * \brief Copy constructor with a specific allocator (makes a deep copy).
+    *
+    * \param array The array to be copied.
+    * \param allocator The allocator to be associated with this array.
+    */
+   explicit DistributedArray( const DistributedArray& array, const AllocatorType& allocator );
+
+   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup(), const AllocatorType& allocator = AllocatorType() );
+
+   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup() );
 
    const LocalRangeType& getLocalRange() const;
 
-   CommunicationGroup getCommunicationGroup() const;
+   IndexType getGhosts() const;
+
+   MPI_Comm getCommunicationGroup() const;
+
+   AllocatorType getAllocator() const;
 
    /**
     * \brief Returns a modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
     */
    LocalViewType getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
     */
    ConstLocalViewType getConstLocalView() const;
 
+   /**
+    * \brief Returns a modifiable view of the local part of the array,
+    * including ghost values.
+    */
+   LocalViewType getLocalViewWithGhosts();
+
+   /**
+    * \brief Returns a non-modifiable view of the local part of the array,
+    * including ghost values.
+    */
+   ConstLocalViewType getConstLocalViewWithGhosts() const;
+
    void copyFromGlobal( ConstLocalViewType globalArray );
+
+   // synchronizer stuff
+   void setSynchronizer( std::shared_ptr< SynchronizerType > synchronizer, int valuesPerElement = 1 );
+
+   std::shared_ptr< SynchronizerType > getSynchronizer() const;
+
+   int getValuesPerElement() const;
+
+   void startSynchronization();
+
+   void waitForSynchronization() const;
 
 
    // Usual Array methods follow below.
@@ -168,10 +202,17 @@ public:
    // TODO: serialization (save, load)
 
 protected:
-   LocalRangeType localRange;
-   IndexType globalSize = 0;
-   CommunicationGroup group = Communicator::NullGroup;
+   ViewType view;
    LocalArrayType localData;
+
+private:
+   template< typename Array, std::enable_if_t< std::is_same< typename Array::DeviceType, DeviceType >::value, bool > = true >
+   static void setSynchronizerHelper( ViewType& view, const Array& array )
+   {
+      view.setSynchronizer( array.getSynchronizer(), array.getValuesPerElement() );
+   }
+   template< typename Array, std::enable_if_t< ! std::is_same< typename Array::DeviceType, DeviceType >::value, bool > = true >
+   static void setSynchronizerHelper( ViewType& view, const Array& array ) {}
 };
 
 } // namespace Containers

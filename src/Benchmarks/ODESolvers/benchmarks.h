@@ -16,8 +16,6 @@
 #include <TNL/Config/ParameterContainer.h>
 
 #include "../Benchmarks.h"
-#include "SimpleProblem.h"
-
 
 #include <stdexcept>  // std::runtime_error
 
@@ -34,31 +32,6 @@ getPerformer()
       return "GPU";
    return "CPU";
 }
-
-/*template< typename Matrix >
-void barrier( const Matrix& matrix )
-{
-}
-
-template< typename Matrix, typename Communicator >
-void barrier( const Matrices::DistributedMatrix< Matrix, Communicator >& matrix )
-{
-   Communicator::Barrier( matrix.getCommunicationGroup() );
-}*/
-
-template< typename Device >
-bool checkDevice( const Config::ParameterContainer& parameters )
-{
-   const String device = parameters.getParameter< String >( "device" );
-   if( device == "all" )
-      return true;
-   if( std::is_same< Device, Devices::Host >::value && device == "host" )
-      return true;
-   if( std::is_same< Device, Devices::Cuda >::value && device == "cuda" )
-      return true;
-   return false;
-}
-
 
 template< typename Solver, typename VectorPointer >
 void
@@ -90,7 +63,7 @@ benchmarkSolver( Benchmark& benchmark,
    auto compute = [&]() {
       solver.solve( u );
    };
-   
+
    // subclass BenchmarkResult to add extra columns to the benchmark
    // (iterations, preconditioned residue, true residue)
    /*struct MyBenchmarkResult : public BenchmarkResult

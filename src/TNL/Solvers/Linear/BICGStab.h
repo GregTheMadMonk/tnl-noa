@@ -37,6 +37,10 @@ public:
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
+   void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
+
+   void preconditioned_matvec( ConstVectorViewType src, VectorViewType dst );
+
    void setSize( const VectorViewType& x );
 
    bool exact_residue = false;

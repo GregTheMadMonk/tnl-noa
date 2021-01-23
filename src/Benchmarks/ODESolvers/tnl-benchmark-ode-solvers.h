@@ -23,9 +23,8 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/ODE/Merson.h>
 
@@ -38,12 +37,6 @@
 using namespace TNL;
 using namespace TNL::Benchmarks;
 using namespace TNL::Pointers;
-
-#ifdef HAVE_MPI
-using CommunicatorType = Communicators::MpiCommunicator;
-#else
-using CommunicatorType = Communicators::NoDistrCommunicator;
-#endif
 
 
 template< typename Real, typename Index >
@@ -68,7 +61,7 @@ benchmarkODESolvers( Benchmark& benchmark,
 #ifdef HAVE_CUDA
       CudaVectorPointer cuda_u( dofs );
       *cuda_u = 0.0;
-#endif      
+#endif
       if( solver == "euler" || solver == "all" ) {
          using HostSolver = Solvers::ODE::Euler< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Euler");
@@ -118,7 +111,7 @@ struct ODESolversBenchmark
         Benchmark::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
-      const String name = String( (CommunicatorType::isDistributed()) ? "Distributed ODE solvers" : "ODE solvers" );
+      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" );
                           //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
       for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
@@ -127,7 +120,7 @@ struct ODESolversBenchmark
             { "DOFs", convertToString( dofs ) },
          } ));
 
-         if( CommunicatorType::isDistributed() )
+         if( TNL::MPI::GetSize() > 1 )
             runDistributed( benchmark, metadata, parameters, dofs );
          else
             runNonDistributed( benchmark, metadata, parameters, dofs );
@@ -141,7 +134,7 @@ struct ODESolversBenchmark
                    const Config::ParameterContainer& parameters,
                    size_t dofs )
    {
-      //const auto group = CommunicatorType::AllGroup;
+      //const auto group = TNL::MPI::AllGroup();
 
       std::cout << "Iterative solvers:" << std::endl;
       benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
@@ -173,10 +166,10 @@ bool resolveRealTypes( Benchmark& benchmark,
    Config::ParameterContainer& parameters )
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
-   if( ( realType == "float" || realType == "all" ) && 
+   if( ( realType == "float" || realType == "all" ) &&
        ! resolveIndexType< float >( benchmark, metadata, parameters ) )
       return false;
-   if( ( realType == "double" || realType == "all" ) && 
+   if( ( realType == "double" || realType == "all" ) &&
        ! resolveIndexType< double >( benchmark, metadata, parameters ) )
       return false;
    return true;
@@ -209,7 +202,7 @@ configSetup( Config::ConfigDescription& config )
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
    Devices::Cuda::configSetup( config );
-   CommunicatorType::configSetup( config );
+   TNL::MPI::configSetup( config );
 
    config.addDelimiter( "ODE solver settings:" );
    Solvers::IterativeSolver< double, int >::configSetup( config );
@@ -230,14 +223,14 @@ main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
-   const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
+   const int rank = TNL::MPI::GetRank();
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
-       ! CommunicatorType::setup( parameters ) )
+       ! TNL::MPI::setup( parameters ) )
       return EXIT_FAILURE;
 
    const String & logFileName = parameters.getParameter< String >( "log-file" );

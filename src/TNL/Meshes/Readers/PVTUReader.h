@@ -14,7 +14,7 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
@@ -67,13 +67,13 @@ class PVTUReader
          throw MeshReaderError( "PVTUReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = CommunicatorType::GetSize( group );
+      const int nproc = MPI::GetSize( group );
       if( (int) pieceSources.size() != nproc )
          throw MeshReaderError( "PVTUReader", "the number of subdomains does not match the number of MPI ranks ("
                                               + std::to_string(pieceSources.size()) + " vs " + std::to_string(nproc) + ")." );
 
       // read the local piece source
-      const int rank = CommunicatorType::GetRank( group );
+      const int rank = MPI::GetRank( group );
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -100,12 +100,9 @@ class PVTUReader
 #endif
 
 public:
-   using CommunicatorType = Communicators::MpiCommunicator;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-
    PVTUReader() = default;
 
-   PVTUReader( const std::string& fileName, CommunicationGroup group = CommunicatorType::AllGroup )
+   PVTUReader( const std::string& fileName, MPI_Comm group = MPI::AllGroup() )
    : XMLVTK( fileName ), group( group )
    {}
 
@@ -211,6 +208,18 @@ public:
       mesh.setCommunicationGroup( group );
    }
 
+   virtual VariantVector
+   readPointData( std::string arrayName ) override
+   {
+      return localReader.readPointData( arrayName );
+   }
+
+   virtual VariantVector
+   readCellData( std::string arrayName ) override
+   {
+      return localReader.readCellData( arrayName );
+   }
+
    virtual void reset() override
    {
       resetBase();
@@ -221,7 +230,7 @@ public:
    }
 
 protected:
-   CommunicationGroup group;
+   MPI_Comm group;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;

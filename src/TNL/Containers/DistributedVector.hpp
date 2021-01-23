@@ -21,9 +21,19 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::LocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Real, Device, Index, Allocator >::
+DistributedVector( const DistributedVector& vector, const AllocatorType& allocator )
+: BaseType::DistributedArray( vector, allocator )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::LocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getLocalView()
 {
    return BaseType::getLocalView();
@@ -32,41 +42,63 @@ getLocalView()
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType
-DistributedVector< Real, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::ConstLocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
 getConstLocalView() const
 {
    return BaseType::getConstLocalView();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::LocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
+getLocalViewWithGhosts()
+{
+   return BaseType::getLocalViewWithGhosts();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+typename DistributedVector< Real, Device, Index, Allocator >::ConstLocalViewType
+DistributedVector< Real, Device, Index, Allocator >::
+getConstLocalViewWithGhosts() const
+{
+   return BaseType::getConstLocalViewWithGhosts();
+}
+
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Value, Device, Index, Communicator >::ViewType
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Value, Device, Index, Allocator >::ViewType
+DistributedVector< Value, Device, Index, Allocator >::
 getView()
 {
-   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalView() );
+   return BaseType::getView();
 }
 
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+typename DistributedVector< Value, Device, Index, Allocator >::ConstViewType
+DistributedVector< Value, Device, Index, Allocator >::
 getConstView() const
 {
-   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getConstLocalView() );
+   return BaseType::getConstView();
 }
 
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Value, Device, Index, Allocator >::
 operator ViewType()
 {
    return getView();
@@ -75,8 +107,8 @@ operator ViewType()
 template< typename Value,
           typename Device,
           typename Index,
-          typename Communicator >
-DistributedVector< Value, Device, Index, Communicator >::
+          typename Allocator >
+DistributedVector< Value, Device, Index, Allocator >::
 operator ConstViewType() const
 {
    return getConstView();
@@ -90,194 +122,144 @@ operator ConstViewType() const
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator=( const Vector& vector )
 {
    this->setLike( vector );
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = vector.getConstLocalView();
-   }
+   getView() = vector;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator+=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += vector.getConstLocalView();
-   }
+   getView() += vector;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator-=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= vector.getConstLocalView();
-   }
+   getView() -= vector;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator*=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= vector.getConstLocalView();
-   }
+   getView() *= vector;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Vector, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator/=( const Vector& vector )
 {
-   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= vector.getConstLocalView();
-   }
+   getView() /= vector;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = c;
-   }
+   getView() = c;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator+=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += c;
-   }
+   getView() += c;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator-=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= c;
-   }
+   getView() -= c;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator*=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= c;
-   }
+   getView() *= c;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< typename Scalar, typename..., typename >
-DistributedVector< Real, Device, Index, Communicator >&
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
 operator/=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= c;
-   }
+   getView() /= c;
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
-          typename Communicator >
+          typename Allocator >
    template< Algorithms::ScanType Type >
 void
-DistributedVector< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Allocator >::
 scan( IndexType begin, IndexType end )
 {
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   getView().template scan< Type >( begin, end );
 }
 
 } // namespace Containers

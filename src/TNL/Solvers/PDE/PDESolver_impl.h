@@ -11,21 +11,22 @@
 #pragma once
 
 #include <TNL/Solvers/PDE/PDESolver.h>
+#include <TNL/MPI/Utils.h>
 
 namespace TNL {
 namespace Solvers {
-namespace PDE { 
+namespace PDE {
 
 template< typename Real,
-          typename Index >   
-PDESolver< Real, Index >::PDESolver()   
+          typename Index >
+PDESolver< Real, Index >::PDESolver()
 : ioTimer( 0 ),
   computeTimer( 0 ),
   totalTimer( 0 ),
   solverMonitorPointer( 0 )
 {
 }
-   
+
 template< typename Real,
           typename Index >
 void
@@ -65,7 +66,6 @@ getSolverMonitor()
 
 template< typename Real,
           typename Index >
-   template< typename Communicator >
 bool
 PDESolver< Real, Index >::
 writeProlog( Logger& logger,
@@ -84,7 +84,8 @@ writeProlog( Logger& logger,
       else
          logger.writeParameter< String >( "OMP enabled:", "no", 1 );
    }
-   Communicator::writeProlog( logger );
+   if( MPI::isInitialized() )
+      logger.writeParameter( "MPI processes:", MPI::GetSize() );
    logger.writeSeparator();
    const bool printGPUs = parameters.getParameter< String >( "device" ) == "cuda";
    logger.writeSystemInformation( printGPUs );
@@ -116,9 +117,9 @@ void PDESolver< Real, Index >::
 setTotalTimer( Timer& totalTimer )
 {
    this->totalTimer = &totalTimer;
-}  
-   
+}
+
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL
-   
+

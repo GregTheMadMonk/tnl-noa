@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include "ComputeBlockResidue.h"
 
 namespace TNL {
@@ -202,7 +200,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
    }
 
    localResidue /= tau * ( RealType ) size;
-   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
+   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, TNL::MPI::AllGroup() );
    //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 

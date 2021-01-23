@@ -9,9 +9,6 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
 #include <TNL/Containers/ArrayView.h>
@@ -34,7 +31,6 @@ class DistributedNDArray_1D_test
 protected:
    using ValueType = typename DistributedNDArray::ValueType;
    using DeviceType = typename DistributedNDArray::DeviceType;
-   using CommunicatorType = typename DistributedNDArray::CommunicatorType;
    using IndexType = typename DistributedNDArray::IndexType;
    using DistributedNDArrayType = DistributedNDArray;
 
@@ -44,17 +40,17 @@ protected:
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+   const MPI_Comm group = TNL::MPI::AllGroup();
 
    DistributedNDArrayType distributedNDArray;
 
-   const int rank = CommunicatorType::GetRank(group);
-   const int nproc = CommunicatorType::GetSize(group);
+   const int rank = TNL::MPI::GetRank(group);
+   const int nproc = TNL::MPI::GetSize(group);
 
    DistributedNDArray_1D_test()
    {
       using LocalRangeType = typename DistributedNDArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
       distributedNDArray.setSizes( globalSize );
       distributedNDArray.template setDistribution< 0 >( localRange.getBegin(), localRange.getEnd(), group );
       distributedNDArray.allocate();
@@ -69,25 +65,13 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                Devices::Host >,
-                       Communicators::MpiCommunicator >,
-   DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 0 >,
-                                std::index_sequence< 0 >,
-                                Devices::Host >,
-                       Communicators::NoDistrCommunicator >
+                                Devices::Host > >
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                Devices::Cuda >,
-                       Communicators::MpiCommunicator >,
-   DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 0 >,
-                                std::index_sequence< 0 >,
-                                Devices::Cuda >,
-                       Communicators::NoDistrCommunicator >
+                                Devices::Cuda > >
 #endif
 >;
 
@@ -95,12 +79,10 @@ TYPED_TEST_SUITE( DistributedNDArray_1D_test, DistributedNDArrayTypes );
 
 TYPED_TEST( DistributedNDArray_1D_test, checkSumOfLocalSizes )
 {
-   using CommunicatorType = typename TestFixture::CommunicatorType;
-
    const auto localRange = this->distributedNDArray.template getLocalRange< 0 >();
    const int localSize = localRange.getEnd() - localRange.getBegin();
    int sumOfLocalSizes = 0;
-   CommunicatorType::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   TNL::MPI::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedNDArray.template getSize< 0 >(), this->globalSize );
 }

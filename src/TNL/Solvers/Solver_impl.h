@@ -15,12 +15,12 @@
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 
 namespace TNL {
 namespace Solvers {
-   
+
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
           typename MeshConfig >
@@ -35,9 +35,9 @@ run( int argc, char* argv[] )
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
-   Communicators::MpiCommunicator::configSetup( configDescription );
+   MPI::configSetup( configDescription );
 
-   Communicators::ScopedInitializer< Communicators::MpiCommunicator > mpi( argc, argv );
+   TNL::MPI::ScopedInitializer mpi( argc, argv );
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;

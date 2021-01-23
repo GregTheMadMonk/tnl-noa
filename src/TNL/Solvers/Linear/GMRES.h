@@ -23,10 +23,7 @@ class GMRES
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
-
-   // compatibility shortcuts
    using Traits = Linear::Traits< Matrix >;
-   using CommunicatorType = typename Traits::CommunicatorType;
 
 public:
    using RealType = typename Base::RealType;

@@ -45,7 +45,7 @@ public:
    VTKWriter() = delete;
 
    VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::binary )
-   : str(str), format(format)
+   : str(str.rdbuf()), format(format)
    {
       if( format != VTK::FileFormat::ascii && format != VTK::FileFormat::binary )
          throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
@@ -78,7 +78,7 @@ protected:
 
    void writeHeader();
 
-   std::ostream& str;
+   std::ostream str;
 
    VTK::FileFormat format;
 

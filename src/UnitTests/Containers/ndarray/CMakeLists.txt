@@ -58,13 +58,17 @@ if( ${BUILD_MPI} )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArray_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedNDArray_1D_test COMMAND "mpirun" ${mpi_test_parameters})
+   ADD_TEST( NAME DistributedNDArray_1D_test_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArray_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArray_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedNDArray_semi1D_test COMMAND "mpirun" ${mpi_test_parameters})
+   ADD_TEST( NAME DistributedNDArray_semi1D_test_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArray_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArrayOverlaps_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedNDArrayOverlaps_1D_test COMMAND "mpirun" ${mpi_test_parameters})
+   ADD_TEST( NAME DistributedNDArrayOverlaps_1D_test_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArrayOverlaps_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArrayOverlaps_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedNDArrayOverlaps_semi1D_test COMMAND "mpirun" ${mpi_test_parameters})
+   ADD_TEST( NAME DistributedNDArrayOverlaps_semi1D_test_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedNDArrayOverlaps_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
 endif()

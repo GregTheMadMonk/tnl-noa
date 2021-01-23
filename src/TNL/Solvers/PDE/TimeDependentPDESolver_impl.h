@@ -63,7 +63,7 @@ setup( const Config::ParameterContainer& parameters,
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    this->distributedMesh.setup( parameters, prefix );
    if( Problem::CommunicatorType::isDistributed() ) {
-      if( ! Meshes::loadDistributedMesh< typename Problem::CommunicatorType >( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadDistributedMesh( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
          return false;
       if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
          return false;
@@ -165,7 +165,7 @@ writeProlog( Logger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   return BaseType::template writeProlog< typename Problem::CommunicatorType >( logger, parameters );
+   return BaseType::writeProlog( logger, parameters );
 }
 
 template< typename Problem,

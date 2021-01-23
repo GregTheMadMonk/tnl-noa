@@ -2,6 +2,7 @@
 
 #include <TNL/Math.h>
 #include <TNL/TypeTraits.h>
+#include <TNL/Devices/Host.h>
 
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector )
@@ -9,15 +10,17 @@ void setLinearSequence( Vector& deviceVector )
 #ifdef STATIC_VECTOR
    Vector a;
 #else
-   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
    a.setLike( deviceVector );
 #endif
 #ifdef DISTRIBUTED_VECTOR
-   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalRange().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = gi;
    }
+   for( int i = a.getLocalRange().getSize(); i < a.getLocalView().getSize(); i++ )
+      a.getLocalView()[ i ] = -1;  // dummy ghost value
 #else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = i;
@@ -62,10 +65,12 @@ void setNegativeLinearSequence( Vector& deviceVector )
    HostVector a;
    a.setLike( deviceVector );
 #ifdef DISTRIBUTED_VECTOR
-   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalRange().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = -gi;
    }
+   for( int i = a.getLocalRange().getSize(); i < a.getLocalView().getSize(); i++ )
+      a.getLocalView()[ i ] = 1;  // dummy ghost value
 #else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = -i;
@@ -85,10 +90,12 @@ void setOscilatingSequence( Vector& deviceVector,
    a.setLike( deviceVector );
 #endif
 #ifdef DISTRIBUTED_VECTOR
-   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalRange().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = v * std::pow( -1, gi );
    }
+   for( int i = a.getLocalRange().getSize(); i < a.getLocalView().getSize(); i++ )
+      a.getLocalView()[ i ] = 42;  // dummy ghost value
 #else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = v * std::pow( -1, i );

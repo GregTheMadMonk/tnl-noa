@@ -14,6 +14,7 @@
 
 #include <TNL/Algorithms/Scan.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Algorithms {
@@ -32,10 +33,9 @@ struct DistributedScan
    {
       using RealType = typename DistributedVector::RealType;
       using DeviceType = typename DistributedVector::DeviceType;
-      using CommunicatorType = typename DistributedVector::CommunicatorType;
 
       const auto group = v.getCommunicationGroup();
-      if( group != CommunicatorType::NullGroup ) {
+      if( group != MPI::NullGroup() ) {
          // adjust begin and end for the local range
          const auto localRange = v.getLocalRange();
          begin = min( max( begin, localRange.getBegin() ), localRange.getEnd() ) - localRange.getBegin();
@@ -47,18 +47,18 @@ struct DistributedScan
          const RealType localSum = blockShifts.getElement( blockShifts.getSize() - 1 );
 
          // exchange local sums between ranks
-         const int nproc = CommunicatorType::GetSize( group );
+         const int nproc = MPI::GetSize( group );
          RealType dataForScatter[ nproc ];
          for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localSum;
          Containers::Vector< RealType, Devices::Host > rankSums( nproc );
          // NOTE: exchanging general data types does not work with MPI
-         CommunicatorType::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
+         MPI::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
 
          // compute the scan of the per-rank sums
          Scan< Devices::Host, ScanType::Exclusive >::perform( rankSums, 0, nproc, reduction, zero );
 
          // perform second phase: shift by the per-block and per-rank offsets
-         const int rank = CommunicatorType::GetRank( group );
+         const int rank = MPI::GetRank( group );
          Scan< DeviceType, Type >::performSecondPhase( localView, blockShifts, begin, end, reduction, rankSums[ rank ] );
       }
    }

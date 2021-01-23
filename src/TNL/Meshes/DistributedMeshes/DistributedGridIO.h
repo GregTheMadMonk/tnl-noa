@@ -13,7 +13,6 @@
 #include <iostream>
 
 #include <TNL/File.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -21,11 +20,11 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace Meshes {   
+namespace Meshes {
 namespace DistributedMeshes {
 
 enum DistrGridIOTypes { Dummy = 0 , LocalCopy = 1, MpiIO=2 };
-    
+
 template< typename MeshFunction,
           DistrGridIOTypes type = LocalCopy,
           typename Mesh = typename MeshFunction::MeshType,
@@ -34,7 +33,7 @@ class DistributedGridIO
 {
 };
 
-template< typename MeshFunctionType > 
+template< typename MeshFunctionType >
 class DistributedGridIO< MeshFunctionType, Dummy >
 {
     bool save(const String& fileName, MeshFunctionType &meshFunction)

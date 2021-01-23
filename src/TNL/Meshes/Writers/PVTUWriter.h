@@ -31,7 +31,7 @@ public:
    PVTUWriter() = delete;
 
    PVTUWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::zlib_compressed )
-   : str(str), format(format)
+   : str(str.rdbuf()), format(format)
    {}
 
    // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
@@ -65,9 +65,8 @@ public:
 
    // add all pieces and return the source path for the current rank
    // (useful for parallel writing)
-   template< typename Communicator >
    std::string addPiece( const String& mainFileName,
-                         const typename Communicator::CommunicationGroup group );
+                         const MPI_Comm group );
 
    ~PVTUWriter();
 
@@ -79,7 +78,7 @@ protected:
 
    void writeFooter();
 
-   std::ostream& str;
+   std::ostream str;
 
    VTK::FileFormat format;
 

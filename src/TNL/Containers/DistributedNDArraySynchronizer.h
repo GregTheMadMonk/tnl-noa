@@ -15,6 +15,7 @@
 #include <future>
 
 #include <TNL/Containers/ndarray/SynchronizerBuffers.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Containers {
@@ -69,7 +70,6 @@ public:
 
 protected:
    using DistributedNDArrayView = typename DistributedNDArray::ViewType;
-   using Communicator = typename DistributedNDArray::CommunicatorType;
    using Buffers = __ndarray_impl::SynchronizerBuffers< DistributedNDArray >;
 
    DistributedNDArrayView array_view;
@@ -88,12 +88,12 @@ protected:
       Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, true );
 
       // issue all send and receive async operations
-      std::vector< typename Communicator::Request > requests;
-      const typename Communicator::CommunicationGroup group = array_view.getCommunicationGroup();
+      std::vector< MPI_Request > requests;
+      const MPI_Comm group = array_view.getCommunicationGroup();
       Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), SendHelper >::execHost( buffers, requests, group );
 
       // wait until send is done
-      Communicator::WaitAll( requests.data(), requests.size() );
+      MPI::Waitall( requests.data(), requests.size() );
 
       // copy data from receive buffers
       Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, false );
@@ -152,9 +152,9 @@ protected:
          dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() );
 
          // FIXME: set proper neighbor IDs !!!
-         const typename Communicator::CommunicationGroup group = array_view.getCommunicationGroup();
-         const int rank = Communicator::GetRank(group);
-         const int nproc = Communicator::GetSize(group);
+         const MPI_Comm group = array_view.getCommunicationGroup();
+         const int rank = MPI::GetRank(group);
+         const int nproc = MPI::GetSize(group);
          dim_buffers.left_neighbor = (rank + nproc - 1) % nproc;
          dim_buffers.right_neighbor = (rank + 1) % nproc;
       }
@@ -221,32 +221,32 @@ protected:
          auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
          if( LBM_HACK == false ) {
-            requests.push_back( Communicator::ISend( dim_buffers.left_send_view.getData(),
-                                                     dim_buffers.left_send_view.getStorageSize(),
-                                                     dim_buffers.left_neighbor, 0, group ) );
-            requests.push_back( Communicator::IRecv( dim_buffers.left_recv_view.getData(),
-                                                     dim_buffers.left_recv_view.getStorageSize(),
-                                                     dim_buffers.left_neighbor, 1, group ) );
-            requests.push_back( Communicator::ISend( dim_buffers.right_send_view.getData(),
-                                                     dim_buffers.right_send_view.getStorageSize(),
-                                                     dim_buffers.right_neighbor, 1, group ) );
-            requests.push_back( Communicator::IRecv( dim_buffers.right_recv_view.getData(),
-                                                     dim_buffers.right_recv_view.getStorageSize(),
-                                                     dim_buffers.right_neighbor, 0, group ) );
+            requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
+                                            dim_buffers.left_send_view.getStorageSize(),
+                                            dim_buffers.left_neighbor, 0, group ) );
+            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
+                                            dim_buffers.left_recv_view.getStorageSize(),
+                                            dim_buffers.left_neighbor, 1, group ) );
+            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
+                                            dim_buffers.right_send_view.getStorageSize(),
+                                            dim_buffers.right_neighbor, 1, group ) );
+            requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
+                                            dim_buffers.right_recv_view.getStorageSize(),
+                                            dim_buffers.right_neighbor, 0, group ) );
          }
          else {
-            requests.push_back( Communicator::ISend( dim_buffers.left_send_view.getData() + 0,
-                                                     dim_buffers.left_send_view.getStorageSize() / 27 * 9,
-                                                     dim_buffers.left_neighbor, 0, group ) );
-            requests.push_back( Communicator::IRecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                                                     dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
-                                                     dim_buffers.left_neighbor, 1, group ) );
-            requests.push_back( Communicator::ISend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
-                                                     dim_buffers.right_send_view.getStorageSize() / 27 * 9,
-                                                     dim_buffers.right_neighbor, 1, group ) );
-            requests.push_back( Communicator::IRecv( dim_buffers.right_recv_view.getData() + 0,
-                                                     dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
-                                                     dim_buffers.right_neighbor, 0, group ) );
+            requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData() + 0,
+                                            dim_buffers.left_send_view.getStorageSize() / 27 * 9,
+                                            dim_buffers.left_neighbor, 0, group ) );
+            requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
+                                            dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
+                                            dim_buffers.left_neighbor, 1, group ) );
+            requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
+                                            dim_buffers.right_send_view.getStorageSize() / 27 * 9,
+                                            dim_buffers.right_neighbor, 1, group ) );
+            requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData() + 0,
+                                            dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
+                                            dim_buffers.right_neighbor, 0, group ) );
          }
       }
    };

@@ -210,7 +210,7 @@ if( ${WITH_CUDA} )
                set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
             endif()
         endif()
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA --expt-relaxed-constexpr --expt-extended-lambda)
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA --expt-relaxed-constexpr --expt-extended-lambda --default-stream per-thread)
         # disable false compiler warnings
         #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
         #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg

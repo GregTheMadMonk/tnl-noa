@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#pragma once 
+#pragma once
 
 #include <TNL/Solvers/PDE/TimeIndependentPDESolver.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
@@ -23,7 +23,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 
 template< typename Problem >
@@ -54,7 +54,7 @@ setup( const Config::ParameterContainer& parameters,
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    this->distributedMesh.setup( parameters, prefix );
    if( Problem::CommunicatorType::isDistributed() ) {
-      if( ! Meshes::loadDistributedMesh< typename Problem::CommunicatorType >( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadDistributedMesh( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
          return false;
       if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
          return false;
@@ -75,7 +75,7 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    }
    problem->setCommonData( this->commonDataPointer );
-   
+
    /****
     * Setup the problem
     */
@@ -83,7 +83,7 @@ setup( const Config::ParameterContainer& parameters,
    {
       std::cerr << "The problem initiation failed!" << std::endl;
       return false;
-   }   
+   }
 
    /****
     * Set DOFs (degrees of freedom)
@@ -91,9 +91,9 @@ setup( const Config::ParameterContainer& parameters,
    TNL_ASSERT_GT( problem->getDofs(), 0, "number of DOFs must be positive" );
    this->dofs->setSize( problem->getDofs() );
    this->dofs->setValue( 0.0 );
-   this->problem->bindDofs( this->dofs );   
-   
-   
+   this->problem->bindDofs( this->dofs );
+
+
    /***
     * Set-up the initial condition
     */
@@ -102,7 +102,7 @@ setup( const Config::ParameterContainer& parameters,
    if( ! this->problem->setInitialCondition( parameters, this->dofs ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
-   
+
    return true;
 }
 
@@ -128,7 +128,7 @@ writeProlog( Logger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   return BaseType::template writeProlog< typename Problem::CommunicatorType >( logger, parameters );
+   return BaseType::writeProlog( logger, parameters );
 }
 
 template< typename Problem >

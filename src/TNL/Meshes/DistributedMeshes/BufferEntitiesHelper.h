@@ -12,7 +12,6 @@
 
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Communicators/MPIPrint.h>
 
 namespace TNL {
 namespace Meshes {

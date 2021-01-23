@@ -20,10 +20,9 @@ namespace Containers {
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::LocalViewType
-DistributedVectorView< Real, Device, Index, Communicator >::
+          typename Index >
+typename DistributedVectorView< Real, Device, Index >::LocalViewType
+DistributedVectorView< Real, Device, Index >::
 getLocalView()
 {
    return BaseType::getLocalView();
@@ -31,22 +30,39 @@ getLocalView()
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType
-DistributedVectorView< Real, Device, Index, Communicator >::
+          typename Index >
+typename DistributedVectorView< Real, Device, Index >::ConstLocalViewType
+DistributedVectorView< Real, Device, Index >::
 getConstLocalView() const
 {
    return BaseType::getConstLocalView();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+typename DistributedVectorView< Real, Device, Index >::LocalViewType
+DistributedVectorView< Real, Device, Index >::
+getLocalViewWithGhosts()
+{
+   return BaseType::getLocalViewWithGhosts();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename DistributedVectorView< Real, Device, Index >::ConstLocalViewType
+DistributedVectorView< Real, Device, Index >::
+getConstLocalViewWithGhosts() const
+{
+   return BaseType::getConstLocalViewWithGhosts();
+}
+
 template< typename Value,
           typename Device,
-          typename Index,
-          typename Communicator >
-__cuda_callable__
-typename DistributedVectorView< Value, Device, Index, Communicator >::ViewType
-DistributedVectorView< Value, Device, Index, Communicator >::
+          typename Index >
+typename DistributedVectorView< Value, Device, Index >::ViewType
+DistributedVectorView< Value, Device, Index >::
 getView()
 {
    return *this;
@@ -54,11 +70,9 @@ getView()
 
 template< typename Value,
           typename Device,
-          typename Index,
-          typename Communicator >
-__cuda_callable__
-typename DistributedVectorView< Value, Device, Index, Communicator >::ConstViewType
-DistributedVectorView< Value, Device, Index, Communicator >::
+          typename Index >
+typename DistributedVectorView< Value, Device, Index >::ConstViewType
+DistributedVectorView< Value, Device, Index >::
 getConstView() const
 {
    return *this;
@@ -71,201 +85,221 @@ getConstView() const
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Vector, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
                   "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "The local ranges must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "The communication groups of the array views must be equal." );
 
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() = vector.getConstLocalView();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() = vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Vector, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator+=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() += vector.getConstLocalView();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() += vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Vector, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator-=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= vector.getConstLocalView();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() -= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Vector, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator*=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() *= vector.getConstLocalView();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() *= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Vector, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator/=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
                   "Vector sizes must be equal." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
                   "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
                   "Multiary operations are supported only on vectors within the same communication group." );
 
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() /= vector.getConstLocalView();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() /= vector.getConstLocalViewWithGhosts();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Scalar, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
       getLocalView() = c;
+      this->startSynchronization();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Scalar, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator+=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
       getLocalView() += c;
+      this->startSynchronization();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Scalar, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator-=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
       getLocalView() -= c;
+      this->startSynchronization();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Scalar, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator*=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
       getLocalView() *= c;
+      this->startSynchronization();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< typename Scalar, typename..., typename >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
 operator/=( Scalar c )
 {
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
       getLocalView() /= c;
+      this->startSynchronization();
    }
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index,
-          typename Communicator >
+          typename Index >
    template< Algorithms::ScanType Type >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVectorView< Real, Device, Index >::
 scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
    Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   this->startSynchronization();
 }
 
 } // namespace Containers

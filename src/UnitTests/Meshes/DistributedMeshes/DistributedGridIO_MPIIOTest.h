@@ -14,7 +14,6 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
-#include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunctionView.h>
 
@@ -24,12 +23,9 @@
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
-using namespace TNL::Communicators;
 using namespace TNL::Meshes::DistributedMeshes;
 
 //------------------------------------------------------------------------------
-
-typedef MpiCommunicator CommunicatorType;
 
 template <int dim, typename Device>
 class TestDistributedGridMPIIO{
@@ -63,9 +59,9 @@ class TestDistributedGridMPIIO{
         globalGrid->setDomain(globalOrigin,globalProportions);
 
         DistributedGridType distributedGrid;
-        distributedGrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
+        distributedGrid.setGlobalGrid( *globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         ///std::cout << distributedGrid.printProcessDistr() <<std::endl;
@@ -84,7 +80,7 @@ class TestDistributedGridMPIIO{
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(FileName, *meshFunctionptr );
 
        //first process compare results
-       if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
+       if(TNL::MPI::GetRank()==0)
        {
             DofType globalEvaluatedDof(globalGrid->template getEntitiesCount< Cell >());
 
@@ -131,15 +127,15 @@ class TestDistributedGridMPIIO{
         CoordinatesType overlap;
         overlap.setValue(1);
         DistributedGridType distributedGrid;
-        distributedGrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
+        distributedGrid.setGlobalGrid( *globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-        SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
+        SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
         String FileName=String("test-file-mpiio-load.tnl");
 
         //Prepare file
-        if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
+        if(TNL::MPI::GetRank()==0)
         {
             DofType saveDof(globalGrid->template getEntitiesCount< Cell >());
 
@@ -165,7 +161,7 @@ class TestDistributedGridMPIIO{
 
         DistributedMeshSynchronizer< DistributedGridType > synchronizer;
         synchronizer.setDistributedGrid( &distributedGrid );
-        synchronizer.template synchronize<CommunicatorType>( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
+        synchronizer.synchronize( *loadMeshFunctionptr ); //need synchronization for overlaps to be filled corectly in loadDof
 
         Pointers::SharedPointer<MeshType> evalGridPtr;
         Pointers::SharedPointer<MeshFunctionType> evalMeshFunctionptr;
@@ -176,14 +172,14 @@ class TestDistributedGridMPIIO{
         evalMeshFunctionptr->bind(evalGridPtr,evalDof);
 
         linearFunctionEvaluator.evaluateAllEntities(evalMeshFunctionptr , linearFunctionPtr);
-        synchronizer.template synchronize<CommunicatorType>( *evalMeshFunctionptr );
+        synchronizer.synchronize( *evalMeshFunctionptr );
 
         for(int i=0;i<evalDof.getSize();i++)
         {
             EXPECT_EQ( evalDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
         }
 
-        if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
+        if(TNL::MPI::GetRank()==0)
         {
             EXPECT_EQ( std::remove( FileName.getString()) , 0 );
         }

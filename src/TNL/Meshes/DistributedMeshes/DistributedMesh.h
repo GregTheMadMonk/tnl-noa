@@ -13,7 +13,7 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/MPI/Wrappers.h>
 #include <TNL/Meshes/DistributedMeshes/GlobalIndexStorage.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
 
@@ -34,8 +34,6 @@ public:
    using PointType          = typename Mesh::PointType;
    using RealType           = typename PointType::RealType;
    using GlobalIndexArray   = typename Mesh::GlobalIndexArray;
-   using CommunicatorType   = Communicators::MpiCommunicator;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using VTKTypesArrayType  = Containers::Array< std::uint8_t, Devices::Sequential, GlobalIndexType >;
 
    DistributedMesh() = default;
@@ -101,12 +99,12 @@ public:
    /**
     * Methods specific to the distributed mesh
     */
-   void setCommunicationGroup( CommunicationGroup group )
+   void setCommunicationGroup( MPI_Comm group )
    {
       this->group = group;
    }
 
-   CommunicationGroup getCommunicationGroup() const
+   MPI_Comm getCommunicationGroup() const
    {
       return group;
    }
@@ -190,10 +188,10 @@ public:
       const GlobalIndexType verticesCount = localMesh.template getEntitiesCount< 0 >();
       const GlobalIndexType cellsCount = localMesh.template getEntitiesCount< Mesh::getMeshDimension() >();
 
-      CommunicatorType::Barrier();
-      for( int i = 0; i < CommunicatorType::GetSize(); i++ ) {
-         if( i == CommunicatorType::GetRank() ) {
-            str << "MPI rank:\t" << CommunicatorType::GetRank() << "\n"
+      MPI::Barrier();
+      for( int i = 0; i < MPI::GetSize(); i++ ) {
+         if( i == MPI::GetRank() ) {
+            str << "MPI rank:\t" << MPI::GetRank() << "\n"
                 << "\tMesh dimension:\t" << getMeshDimension() << "\n"
                 << "\tCell topology:\t" << getType( typename Cell::EntityTopology{} ) << "\n"
                 << "\tCells count:\t" << cellsCount << "\n"
@@ -230,13 +228,13 @@ public:
             }
             str.flush();
          }
-         CommunicatorType::Barrier();
+         MPI::Barrier();
       }
    }
 
 protected:
    MeshType localMesh;
-   CommunicationGroup group = CommunicatorType::NullGroup;
+   MPI_Comm group = MPI::NullGroup();
    int ghostLevels = 0;
 
    // vtkGhostType arrays for points and cells (cached for output into VTK formats)

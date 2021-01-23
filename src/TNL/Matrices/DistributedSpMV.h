@@ -33,7 +33,7 @@
 namespace TNL {
 namespace Matrices {
 
-template< typename Matrix, typename Communicator >
+template< typename Matrix >
 class DistributedSpMV
 {
 public:
@@ -41,8 +41,6 @@ public:
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   using CommunicatorType = Communicator;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = Containers::Subrange< typename Matrix::IndexType >;
 
    // - communication pattern: vector components whose indices are in the range
@@ -55,10 +53,10 @@ public:
    // - assembly of the i-th row involves traversal of the local matrix stored
    //   in the i-th process
    // - assembly of the full matrix needs all-to-all communication
-   void updateCommunicationPattern( const MatrixType& localMatrix, const LocalRangeType& localRowRange, CommunicationGroup group )
+   void updateCommunicationPattern( const MatrixType& localMatrix, const LocalRangeType& localRowRange, MPI_Comm group )
    {
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
       commPatternStarts.setDimensions( nproc, nproc );
       commPatternEnds.setDimensions( nproc, nproc );
 
@@ -67,9 +65,9 @@ public:
       {
          Containers::Array< IndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( localRowRange.getBegin() );
-         CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                     globalOffsets.getData(), 1,
-                                     group );
+         MPI::Alltoall( sendbuf.getData(), 1,
+                        globalOffsets.getData(), 1,
+                        group );
       }
       const auto globalOffsetsView = globalOffsets.getConstView();
       auto getOwner = [=] __cuda_callable__ ( IndexType global_idx ) -> int
@@ -150,12 +148,12 @@ public:
       }
 
       // assemble the commPattern* matrices
-      CommunicatorType::Alltoall( &preCommPatternStarts(0, 0), nproc,
-                                  &commPatternStarts(0, 0), nproc,
-                                  group );
-      CommunicatorType::Alltoall( &preCommPatternEnds(0, 0), nproc,
-                                  &commPatternEnds(0, 0), nproc,
-                                  group );
+      MPI::Alltoall( &preCommPatternStarts(0, 0), nproc,
+                     &commPatternStarts(0, 0), nproc,
+                     group );
+      MPI::Alltoall( &preCommPatternEnds(0, 0), nproc,
+                     &commPatternEnds(0, 0), nproc,
+                     group );
    }
 
    template< typename InVector,
@@ -164,10 +162,10 @@ public:
                        const MatrixType& localMatrix,
                        const LocalRangeType& localRowRange,
                        const InVector& inVector,
-                       CommunicationGroup group )
+                       MPI_Comm group )
    {
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // handle trivial case
       if( nproc == 1 ) {
@@ -190,14 +188,14 @@ public:
       TNL_ASSERT_EQ( globalBuffer.getSize(), localMatrix.getColumns(), "the global buffer size does not match the number of matrix columns" );
 
       // buffer for asynchronous communication requests
-      std::vector< typename CommunicatorType::Request > commRequests;
+      std::vector< MPI_Request > commRequests;
 
       // send our data to all processes that need it
       for( int i = 0; i < commPatternStarts.getRows(); i++ ) {
          if( i == rank )
              continue;
          if( commPatternStarts( i, rank ) < commPatternEnds( i, rank ) )
-            commRequests.push_back( CommunicatorType::ISend(
+            commRequests.push_back( MPI::Isend(
                      inVector.getConstLocalView().getData() + commPatternStarts( i, rank ) - localRowRange.getBegin(),
                      commPatternEnds( i, rank ) - commPatternStarts( i, rank ),
                      i, 0, group ) );
@@ -208,7 +206,7 @@ public:
          if( j == rank )
              continue;
          if( commPatternStarts( rank, j ) < commPatternEnds( rank, j ) )
-            commRequests.push_back( CommunicatorType::IRecv(
+            commRequests.push_back( MPI::Irecv(
                      globalBuffer.getPointer( commPatternStarts( rank, j ) ),
                      commPatternEnds( rank, j ) - commPatternStarts( rank, j ),
                      j, 0, group ) );
@@ -217,7 +215,7 @@ public:
       // general variant
       if( localOnlySpan.first >= localOnlySpan.second ) {
          // wait for all communications to finish
-         CommunicatorType::WaitAll( commRequests.data(), commRequests.size() );
+         MPI::Waitall( commRequests.data(), commRequests.size() );
 
          // perform matrix-vector multiplication
          auto outVectorView = outVector.getLocalView();
@@ -231,7 +229,7 @@ public:
          localMatrix.vectorProduct( inVector, outVectorView, 1.0, 0.0, localOnlySpan.first, localOnlySpan.second );
 
          // wait for all communications to finish
-         CommunicatorType::WaitAll( commRequests.data(), commRequests.size() );
+         MPI::Waitall( commRequests.data(), commRequests.size() );
 
          // finish the multiplication by adding the non-local entries
          localMatrix.vectorProduct( globalBuffer, outVectorView, 1.0, 0.0, 0, localOnlySpan.first );

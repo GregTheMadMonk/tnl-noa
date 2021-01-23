@@ -90,7 +90,12 @@ protected:
    template< typename M >
    static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
    {
-      return m.getLocalRowRange().getBegin();
+      if( m.getRows() == m.getColumns() )
+         // square matrix, assume global column indices
+         return m.getLocalRowRange().getBegin();
+      else
+         // non-square matrix, assume ghost indexing
+         return 0;
    }
 };
 
@@ -189,11 +194,11 @@ protected:
 #endif
 };
 
-template< typename Matrix, typename Communicator >
-class ILU0_impl< Matrices::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
-: public Preconditioner< Matrices::DistributedMatrix< Matrix, Communicator > >
+template< typename Matrix >
+class ILU0_impl< Matrices::DistributedMatrix< Matrix >, double, Devices::Cuda, int >
+: public Preconditioner< Matrices::DistributedMatrix< Matrix > >
 {
-   using MatrixType = Matrices::DistributedMatrix< Matrix, Communicator >;
+   using MatrixType = Matrices::DistributedMatrix< Matrix >;
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;

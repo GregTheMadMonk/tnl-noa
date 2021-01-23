@@ -49,7 +49,7 @@ class DistributedGridIO_VectorField<
    static bool save(const String& fileName, Functions::VectorField< Size, MeshFunctionType > &vectorField)
    {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+        if(MPI::isInitialized())//i.e. - isUsed
         {
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
@@ -58,9 +58,9 @@ class DistributedGridIO_VectorField<
                                 return true;
 			}
 
-            MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+            MPI_Comm group=distrGrid->getCommunicationGroup();
 
-           //write 
+           //write
            MPI_File file;
            MPI_File_open( group,
                           const_cast< char* >( fileName.getString() ),
@@ -68,12 +68,12 @@ class DistributedGridIO_VectorField<
                           MPI_INFO_NULL,
                           &file);
 
-          
-           int offset=0; //global offset -> every mesh function creates it's own data types we need manage global offset      
-           if(Communicators::MpiCommunicator::GetRank(group)==0)
+
+           int offset=0; //global offset -> every mesh function creates it's own data types we need manage global offset
+           if(MPI::GetRank(group)==0)
                offset+=writeVectorFieldHeader(file,vectorField);
            MPI_Bcast(&offset, 1, MPI_INT,0, group);
-           
+
            for( int i = 0; i < vectorField.getVectorDimension(); i++ )
            {
                typename MeshFunctionType::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
@@ -83,13 +83,13 @@ class DistributedGridIO_VectorField<
                   return false;
            }
 
-           MPI_File_close(&file); 
-           return true;           
+           MPI_File_close(&file);
+           return true;
         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+        std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
         return false;
-      
+
     };
 
 #ifdef HAVE_MPI
@@ -140,7 +140,7 @@ class DistributedGridIO_VectorField<
     static bool load(const String& fileName, Functions::VectorField<Size,MeshFunctionType> &vectorField)
     {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+        if(MPI::isInitialized())//i.e. - isUsed
         {
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
@@ -149,9 +149,9 @@ class DistributedGridIO_VectorField<
                                 return true;
 			}
 
-            MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+            MPI_Comm group=distrGrid->getCommunicationGroup();
 
-           //write 
+           //write
            MPI_File file;
            MPI_File_open( group,
                           const_cast< char* >( fileName.getString() ),
@@ -159,12 +159,12 @@ class DistributedGridIO_VectorField<
                           MPI_INFO_NULL,
                           &file);
 
-          
-           int offset=0; //global offset -> every meshfunctoion creates it's own datatypes we need manage global offset      
-           if(Communicators::MpiCommunicator::GetRank(group)==0)
+
+           int offset=0; //global offset -> every meshfunctoion creates it's own datatypes we need manage global offset
+           if(MPI::GetRank(group)==0)
                offset+=readVectorFieldHeader(file,vectorField);
            MPI_Bcast(&offset, 1, MPI_INT,0, group);
-           
+
            for( int i = 0; i < vectorField.getVectorDimension(); i++ )
            {
                typename MeshFunctionType::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
@@ -174,13 +174,13 @@ class DistributedGridIO_VectorField<
                   return false;
            }
 
-           MPI_File_close(&file); 
-           return true;           
+           MPI_File_close(&file);
+           return true;
         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+        std::cout << "MPIIO can be used only when MPI is initialized." << std::endl;
         return false;
-      
+
     };
 
 };

@@ -17,12 +17,10 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 
 using namespace TNL;
-
-using CommunicatorType = Communicators::MpiCommunicator;
 
 struct MyConfigTag {};
 
@@ -198,8 +196,8 @@ bool runGameOfLife( const Mesh& mesh )
       }
    }
    Index max_count;
-   CommunicatorType::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicationGroup() );
-   std::cout << "Rank " << CommunicatorType::GetRank() << ": count=" << count << ", max_count=" << max_count << std::endl;
+   TNL::MPI::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicationGroup() );
+   std::cout << "Rank " << TNL::MPI::GetRank() << ": count=" << count << ", max_count=" << max_count << std::endl;
    Index reference_cell = 0;
    if( count == max_count ) {
       // find cell which has all points in the central box
@@ -256,7 +254,7 @@ bool runGameOfLife( const Mesh& mesh )
       // create a .pvtu file (only rank 0 actually writes to the file)
       const std::string mainFilePath = "GoL." + std::to_string(iteration) + ".pvtu";
       std::ofstream file;
-      if( CommunicatorType::GetRank() == 0 )
+      if( TNL::MPI::GetRank() == 0 )
          file.open( mainFilePath );
       using PVTU = Meshes::Writers::PVTUWriter< LocalMesh >;
       PVTU pvtu( file );
@@ -266,7 +264,7 @@ bool runGameOfLife( const Mesh& mesh )
       if( mesh.getGhostLevels() > 0 )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       pvtu.template writePCellData< Real >( "function values" );
-      const std::string subfilePath = pvtu.template addPiece< CommunicatorType >( mainFilePath, mesh.getCommunicationGroup() );
+      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
 
       // create a .vtu file for local data
       using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
@@ -292,7 +290,7 @@ bool runGameOfLife( const Mesh& mesh )
    Index iteration = 0;
    do {
       iteration++;
-      if( CommunicatorType::GetRank() == 0 )
+      if( TNL::MPI::GetRank() == 0 )
          std::cout << "Computing iteration " << iteration << "..." << std::endl;
 
       // iterate over all local entities
@@ -338,7 +336,7 @@ bool runGameOfLife( const Mesh& mesh )
 
       // check if finished
       const bool done = max( f_in.getData() ) == 0 || iteration > max_iter || f_in.getData() == f_out.getData();
-      CommunicatorType::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
    }
    while( all_done == false );
 
@@ -351,7 +349,7 @@ void configSetup( Config::ConfigDescription& config )
    config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
    config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addDelimiter( "MPI settings:" );
-   CommunicatorType::configSetup( config );
+   TNL::MPI::configSetup( config );
 }
 
 int main( int argc, char* argv[] )
@@ -361,12 +359,12 @@ int main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   if( ! CommunicatorType::setup( parameters ) )
+   if( ! TNL::MPI::setup( parameters ) )
       return EXIT_FAILURE;
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );

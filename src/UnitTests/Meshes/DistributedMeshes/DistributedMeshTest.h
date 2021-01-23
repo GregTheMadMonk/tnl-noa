@@ -17,8 +17,6 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/distributeSubentities.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/MPIPrint.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>
@@ -33,9 +31,6 @@ using namespace TNL::Meshes::DistributedMeshes;
 
 // cannot be deduced from the grid
 using LocalIndexType = short int;
-// we test only with MPI
-using CommunicatorType = Communicators::MpiCommunicator;
-using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
 template< typename Mesh >
 struct GridDistributor;
@@ -55,9 +50,9 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 
    GridDistributor() = delete;
 
-   GridDistributor( CoordinatesType rank_sizes, CommunicationGroup group )
-      : rank(CommunicatorType::GetRank(group)),
-        nproc(CommunicatorType::GetSize(group)),
+   GridDistributor( CoordinatesType rank_sizes, MPI_Comm group )
+      : rank(TNL::MPI::GetRank(group)),
+        nproc(TNL::MPI::GetSize(group)),
         rank_sizes(rank_sizes),
         group(group)
    {}
@@ -329,7 +324,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
    // input parameters
    int rank, nproc;
    CoordinatesType rank_sizes;
-   CommunicationGroup group;
+   MPI_Comm group;
    // output attributes (byproduct of the decomposition, useful for testing)
    CoordinatesType rank_coordinates, local_size, vert_begin, vert_end, cell_begin, cell_end;
    Index verticesCount, cellsCount, localVerticesCount, localCellsCount;
@@ -342,7 +337,7 @@ void validateMesh( const Mesh& mesh, const Distributor& distributor, int ghostLe
    using Device = typename Mesh::DeviceType;
 
    // check basic interface
-   EXPECT_EQ( mesh.getCommunicationGroup(), CommunicatorType::AllGroup );
+   EXPECT_EQ( mesh.getCommunicationGroup(), TNL::MPI::AllGroup() );
    EXPECT_EQ( mesh.getGhostLevels(), ghostLevels );
    if( ghostLevels > 0 ) {
       EXPECT_EQ( mesh.template getGlobalIndices< 0 >().getSize(), mesh.getLocalMesh().template getEntitiesCount< 0 >() );
@@ -399,12 +394,12 @@ void validateMesh( const Mesh& mesh, const Distributor& distributor, int ghostLe
          Containers::Array< Index, Device > vert_sendbuf( distributor.nproc ), cell_sendbuf( distributor.nproc );
          vert_sendbuf.setValue( distributor.localVerticesCount );
          cell_sendbuf.setValue( distributor.localCellsCount );
-         CommunicatorType::Alltoall( vert_sendbuf.getData(), 1,
-                                     vert_offsets.getData(), 1,
-                                     distributor.group );
-         CommunicatorType::Alltoall( cell_sendbuf.getData(), 1,
-                                     cell_offsets.getData(), 1,
-                                     distributor.group );
+         TNL::MPI::Alltoall( vert_sendbuf.getData(), 1,
+                             vert_offsets.getData(), 1,
+                             distributor.group );
+         TNL::MPI::Alltoall( cell_sendbuf.getData(), 1,
+                             cell_offsets.getData(), 1,
+                             distributor.group );
       }
       vert_offsets.setElement( distributor.nproc, 0 );
       cell_offsets.setElement( distributor.nproc, 0 );
@@ -662,7 +657,7 @@ void testSynchronizerOnDevice_entity_centers( const MeshType& mesh )
          if( received != center ) {
             IndexType cellIndexes[ 2 ] = {0, 0};
             const int numCells = getCellsForFace( mesh.getLocalMesh(), i, cellIndexes );
-            std::cerr << "rank " << CommunicatorType::GetRank()
+            std::cerr << "rank " << TNL::MPI::GetRank()
                       << ": wrong result for entity " << i << " (gid " << mesh.template getGlobalIndices< EntityType::getEntityDimension() >()[i] << ")"
                       << " of dimension = " << EntityType::getEntityDimension()
                       << ": received " << received << ", expected = " << center
@@ -672,7 +667,7 @@ void testSynchronizerOnDevice_entity_centers( const MeshType& mesh )
          }
       }
    if( errors > 0 )
-      FAIL() << "rank " << CommunicatorType::GetRank() << ": " << errors << " errors in total." << std::endl;
+      FAIL() << "rank " << TNL::MPI::GetRank() << ": " << errors << " errors in total." << std::endl;
 }
 
 template< typename Device, typename EntityType, typename MeshType >
@@ -704,10 +699,10 @@ TEST( DistributedMeshTest, 2D_ghostLevel0 )
    using Mesh = DistributedMesh< LocalMesh >;
    GridType grid;
    grid.setDomain( {0, 0}, {1, 1} );
-   const int nproc = CommunicatorType::GetSize();
+   const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), CommunicatorType::AllGroup );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
    const int ghostLevels = 0;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -721,10 +716,10 @@ TEST( DistributedMeshTest, 2D_ghostLevel1 )
    using Mesh = DistributedMesh< LocalMesh >;
    GridType grid;
    grid.setDomain( {0, 0}, {1, 1} );
-   const int nproc = CommunicatorType::GetSize();
+   const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), CommunicatorType::AllGroup );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
    const int ghostLevels = 1;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -739,10 +734,10 @@ TEST( DistributedMeshTest, 2D_ghostLevel2 )
    using Mesh = DistributedMesh< LocalMesh >;
    GridType grid;
    grid.setDomain( {0, 0}, {1, 1} );
-   const int nproc = CommunicatorType::GetSize();
+   const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), CommunicatorType::AllGroup );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
    const int ghostLevels = 2;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -757,10 +752,10 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    using Mesh = DistributedMesh< LocalMesh >;
    GridType grid;
    grid.setDomain( {0, 0}, {1, 1} );
-   const int nproc = CommunicatorType::GetSize();
+   const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), CommunicatorType::AllGroup );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
    const int ghostLevels = 2;
    distributor.decompose( grid, mesh, ghostLevels );
 
@@ -770,7 +765,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    std::string subfilePath;
    {
       std::ofstream file;
-      if( CommunicatorType::GetRank() == 0 )
+      if( TNL::MPI::GetRank() == 0 )
          file.open( mainFilePath );
       using PVTU = Meshes::Writers::PVTUWriter< LocalMesh >;
       PVTU pvtu( file );
@@ -781,7 +776,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
          pvtu.template writePCellData< typename Mesh::GlobalIndexType >( "GlobalIndex" );
       }
-      subfilePath = pvtu.template addPiece< CommunicatorType >( mainFilePath, mesh.getCommunicationGroup() );
+      subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
 
       // create a .vtu file for local data
       using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
@@ -799,7 +794,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    }
 
    // load and test
-   CommunicatorType::Barrier();
+   TNL::MPI::Barrier();
    Readers::PVTUReader reader( mainFilePath );
    reader.detectMesh();
    EXPECT_EQ( reader.getMeshType(), "Meshes::DistributedMesh" );
@@ -813,8 +808,8 @@ TEST( DistributedMeshTest, PVTUWriterReader )
 
    // cleanup
    EXPECT_EQ( fs::remove( subfilePath ), true );
-   CommunicatorType::Barrier();
-   if( CommunicatorType::GetRank() == 0 ) {
+   TNL::MPI::Barrier();
+   if( TNL::MPI::GetRank() == 0 ) {
       EXPECT_EQ( fs::remove( mainFilePath ), true );
       EXPECT_EQ( fs::remove( baseName ), true );
    }

@@ -13,8 +13,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 
 #include "Merson.h"
 
@@ -187,13 +185,13 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
          time += currentTau;
          computeNewTimeLevel( time, currentTau, u, newResidue );
          this->setResidue( newResidue );
- 
+
          /****
           * When time is close to stopTime the new residue
           * may be inaccurate significantly.
           */
          if( abs( time - this->stopTime ) < 1.0e-7 ) this->setResidue( lastResidue );
-         
+
 
          if( ! this->nextIteration() )
             return false;
@@ -209,7 +207,7 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
          currentTau = min( currentTau, this->getMaxTau() );
 #ifdef USE_MPI
          TNLMPI::Bcast( currentTau, 1, 0 );
-#endif        
+#endif
       }
       if( time + currentTau > this->getStopTime() )
          currentTau = this->getStopTime() - time; //we don't want to keep such tau
@@ -405,7 +403,7 @@ typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( con
       }
 #endif
    }
-   Problem::CommunicatorType::Allreduce( &eps, &maxEps, 1, MPI_MAX, Problem::CommunicatorType::AllGroup );
+   TNL::MPI::Allreduce( &eps, &maxEps, 1, MPI_MAX, TNL::MPI::AllGroup() );
    return maxEps;
 }
 
@@ -467,7 +465,7 @@ void Merson< Problem, SolverMonitor >::computeNewTimeLevel( const RealType time,
    }
 
    localResidue /= tau * ( RealType ) size;
-   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup);
+   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, TNL::MPI::AllGroup() );
 /*#ifdef USE_MPI
    TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
 #else

@@ -12,8 +12,10 @@
 
 #pragma once
 
+#include <TNL/Containers/ByteArraySynchronizer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Meshes {
@@ -32,11 +34,22 @@ struct HasMeshType< T, typename Containers::Expressions::enable_if_type< typenam
 template< typename DistributedMesh,
           int EntityDimension = DistributedMesh::getMeshDimension() >
 class DistributedMeshSynchronizer
+: public Containers::ByteArraySynchronizer< typename DistributedMesh::DeviceType, typename DistributedMesh::GlobalIndexType >
 {
+   using Base = Containers::ByteArraySynchronizer< typename DistributedMesh::DeviceType, typename DistributedMesh::GlobalIndexType >;
+
 public:
    using DeviceType = typename DistributedMesh::DeviceType;
    using GlobalIndexType = typename DistributedMesh::GlobalIndexType;
-   using CommunicatorType = typename DistributedMesh::CommunicatorType;
+   using ByteArrayView = typename Base::ByteArrayView;
+   using RequestsVector = typename Base::RequestsVector;
+
+   ~DistributedMeshSynchronizer()
+   {
+      // wait for pending async operation, otherwise it would crash
+      if( this->async_op.valid() )
+         this->async_op.wait();
+   }
 
    DistributedMeshSynchronizer() = default;
 
@@ -47,15 +60,9 @@ public:
       TNL_ASSERT_EQ( mesh.template getGlobalIndices< EntityDimension >().getSize(), mesh.getLocalMesh().template getEntitiesCount< EntityDimension >(),
                      "Global indices are not allocated properly." );
 
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
-      if( std::is_same< DeviceType, Devices::Cuda >::value )
-         cudaGetDevice(&this->gpu_id);
-      #endif
-
       group = mesh.getCommunicationGroup();
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
@@ -64,9 +71,9 @@ public:
       {
          Containers::Array< GlobalIndexType, Devices::Host, int > sendbuf( nproc );
          sendbuf.setValue( ownStart );
-         CommunicatorType::Alltoall( sendbuf.getData(), 1,
-                                     globalOffsets.getData(), 1,
-                                     group );
+         MPI::Alltoall( sendbuf.getData(), 1,
+                        globalOffsets.getData(), 1,
+                        group );
       }
 
       // count local ghost entities for each rank
@@ -103,9 +110,9 @@ public:
          for( int j = 0; j < nproc; j++ )
          for( int i = 0; i < nproc; i++ )
             sendbuf.setElement( j, i, localGhostCounts[ i ] );
-         CommunicatorType::Alltoall( &sendbuf(0, 0), nproc,
-                                     &ghostEntitiesCounts(0, 0), nproc,
-                                     group );
+         MPI::Alltoall( &sendbuf(0, 0), nproc,
+                        &ghostEntitiesCounts(0, 0), nproc,
+                        group );
       }
 
       // allocate ghost offsets
@@ -122,14 +129,14 @@ public:
 
       // send indices of ghost entities - set them as ghost neighbors on the target rank
       {
-         std::vector< typename CommunicatorType::Request > requests;
+         RequestsVector requests;
 
          // send our ghost indices to the neighboring ranks
          GlobalIndexType ghostOffset = mesh.getLocalMesh().template getGhostEntitiesOffset< EntityDimension >();
          ghostOffsets[ 0 ] = ghostOffset;
          for( int i = 0; i < nproc; i++ ) {
             if( ghostEntitiesCounts( rank, i ) > 0 ) {
-               requests.push_back( CommunicatorType::ISend(
+               requests.push_back( MPI::Isend(
                         mesh.template getGlobalIndices< EntityDimension >().getData() + ghostOffset,
                         ghostEntitiesCounts( rank, i ),
                         i, 0, group ) );
@@ -144,7 +151,7 @@ public:
          // receive ghost indices from the neighboring ranks
          for( int j = 0; j < nproc; j++ ) {
             if( ghostEntitiesCounts( j, rank ) > 0 ) {
-               requests.push_back( CommunicatorType::IRecv(
+               requests.push_back( MPI::Irecv(
                         ghostNeighbors.getData() + ghostNeighborOffsets[ j ],
                         ghostEntitiesCounts( j, rank ),
                         j, 0, group ) );
@@ -152,7 +159,7 @@ public:
          }
 
          // wait for all communications to finish
-         CommunicatorType::WaitAll( requests.data(), requests.size() );
+         MPI::Waitall( requests.data(), requests.size() );
 
          // convert received ghost indices from global to local
          ghostNeighbors -= ownStart;
@@ -182,43 +189,53 @@ public:
    template< typename Array >
    void synchronizeArray( Array& array, int valuesPerElement = 1 )
    {
-      TNL_ASSERT_EQ( array.getSize(), valuesPerElement * ghostOffsets[ ghostOffsets.getSize() - 1 ],
-                     "The array does not have the expected size." );
+      static_assert( std::is_same< typename Array::DeviceType, DeviceType >::value,
+                     "mismatched DeviceType of the array" );
       using ValueType = typename Array::ValueType;
 
-      // GOTCHA: https://devblogs.nvidia.com/cuda-pro-tip-always-set-current-device-avoid-multithreading-bugs/
-      #ifdef HAVE_CUDA
-      if( std::is_same< DeviceType, Devices::Cuda >::value )
-         cudaSetDevice(gpu_id);
-      #endif
+      ByteArrayView view;
+      view.bind( reinterpret_cast<std::uint8_t*>( array.getData() ), sizeof(ValueType) * array.getSize() );
+      synchronizeByteArray( view, sizeof(ValueType) * valuesPerElement );
+   }
 
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+   virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
+   {
+      auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
+      MPI::Waitall( requests.data(), requests.size() );
+   }
+
+   virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
+   {
+      TNL_ASSERT_EQ( array.getSize(), bytesPerValue * ghostOffsets[ ghostOffsets.getSize() - 1 ],
+                     "The array does not have the expected size." );
+
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // allocate send buffers (setSize does nothing if the array size is already correct)
-      sendBuffers.setSize( valuesPerElement * ghostNeighborOffsets[ nproc ] * sizeof(ValueType) );
+      sendBuffers.setSize( bytesPerValue * ghostNeighborOffsets[ nproc ] );
 
       // buffer for asynchronous communication requests
-      std::vector< typename CommunicatorType::Request > requests;
+      RequestsVector requests;
 
       // issue all receive async operations
       for( int j = 0; j < nproc; j++ ) {
          if( ghostEntitiesCounts( rank, j ) > 0 ) {
-            requests.push_back( CommunicatorType::IRecv(
-                     array.getData() + valuesPerElement * ghostOffsets[ j ],
-                     valuesPerElement * ghostEntitiesCounts( rank, j ),
+            requests.push_back( MPI::Irecv(
+                     array.getData() + bytesPerValue * ghostOffsets[ j ],
+                     bytesPerValue * ghostEntitiesCounts( rank, j ),
                      j, 0, group ) );
          }
       }
 
-      Containers::ArrayView< ValueType, DeviceType, GlobalIndexType > sendBuffersView;
-      sendBuffersView.bind( reinterpret_cast<ValueType*>( sendBuffers.getData() ), valuesPerElement * ghostNeighborOffsets[ nproc ] );
+      ByteArrayView sendBuffersView;
+      sendBuffersView.bind( sendBuffers.getData(), bytesPerValue * ghostNeighborOffsets[ nproc ] );
       const auto ghostNeighborsView = ghostNeighbors.getConstView();
       const auto arrayView = array.getConstView();
-      auto copy_kernel = [sendBuffersView, arrayView, ghostNeighborsView, valuesPerElement] __cuda_callable__ ( GlobalIndexType k, GlobalIndexType offset ) mutable
+      auto copy_kernel = [sendBuffersView, arrayView, ghostNeighborsView, bytesPerValue] __cuda_callable__ ( GlobalIndexType k, GlobalIndexType offset ) mutable
       {
-         for( int i = 0; i < valuesPerElement; i++ )
-            sendBuffersView[ i + valuesPerElement * (offset + k) ] = arrayView[ i + valuesPerElement * ghostNeighborsView[ offset + k ] ];
+         for( int i = 0; i < bytesPerValue; i++ )
+            sendBuffersView[ i + bytesPerValue * (offset + k) ] = arrayView[ i + bytesPerValue * ghostNeighborsView[ offset + k ] ];
       };
 
       for( int i = 0; i < nproc; i++ ) {
@@ -228,15 +245,14 @@ public:
             Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, ghostEntitiesCounts( i, rank ), copy_kernel, offset );
 
             // issue async send operation
-            requests.push_back( CommunicatorType::ISend(
-                     sendBuffersView.getData() + valuesPerElement * ghostNeighborOffsets[ i ],
-                     valuesPerElement * ghostEntitiesCounts( i, rank ),
+            requests.push_back( MPI::Isend(
+                     sendBuffersView.getData() + bytesPerValue * ghostNeighborOffsets[ i ],
+                     bytesPerValue * ghostEntitiesCounts( i, rank ),
                      i, 0, group ) );
          }
       }
 
-      // wait for all communications to finish
-      CommunicatorType::WaitAll( requests.data(), requests.size() );
+      return requests;
    }
 
    // performs a synchronization of a sparse matrix
@@ -252,11 +268,11 @@ public:
    {
       TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
 
-      const int rank = CommunicatorType::GetRank( group );
-      const int nproc = CommunicatorType::GetSize( group );
+      const int rank = MPI::GetRank( group );
+      const int nproc = MPI::GetSize( group );
 
       // buffer for asynchronous communication requests
-      std::vector< typename CommunicatorType::Request > requests;
+      RequestsVector requests;
 
       Containers::Array< GlobalIndexType, Devices::Host, int > send_rankOffsets( nproc + 1 ), recv_rankOffsets( nproc + 1 );
       Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType > send_rowCapacities, send_rowPointers, send_columnIndices, recv_rowPointers, recv_columnIndices;
@@ -290,7 +306,7 @@ public:
             // send our row sizes to the target rank
             if( ! assumeConsistentRowCapacities )
                // issue async send operation
-               requests.push_back( CommunicatorType::ISend(
+               requests.push_back( MPI::Isend(
                         send_rowCapacities.getData() + send_rankOffsets[ i ],
                         ghostNeighborOffsets[ i + 1 ] - ghostNeighborOffsets[ i ],
                         i, 1, group ) );
@@ -318,7 +334,7 @@ public:
             if( send_rankOffsets[ i + 1 ] == send_rankOffsets[ i ] )
                continue;
             // issue async send operation
-            requests.push_back( CommunicatorType::ISend(
+            requests.push_back( MPI::Isend(
                      send_columnIndices.getData() + send_rowPointers[ send_rankOffsets[ i ] ],
                      send_rowPointers[ send_rankOffsets[ i + 1 ] ] - send_rowPointers[ send_rankOffsets[ i ] ],
                      i, 0, group ) );
@@ -335,7 +351,7 @@ public:
          // allocate row pointers
          recv_rowPointers.setSize( recv_rankOffsets[ nproc ] + 1 );
 
-         std::vector< typename CommunicatorType::Request > row_lengths_requests;
+         RequestsVector row_lengths_requests;
 
          // set row pointers
          GlobalIndexType rowPtr = 0;
@@ -353,7 +369,7 @@ public:
             else {
                // receive row sizes from the sender
                // issue async recv operation
-               row_lengths_requests.push_back( CommunicatorType::IRecv(
+               row_lengths_requests.push_back( MPI::Irecv(
                         recv_rowPointers.getData() + recv_rankOffsets[ i ],
                         ghostOffsets[ i + 1 ] - ghostOffsets[ i ],
                         i, 1, group ) );
@@ -362,7 +378,7 @@ public:
 
          if( ! assumeConsistentRowCapacities ) {
             // wait for all row lengths
-            CommunicatorType::WaitAll( row_lengths_requests.data(), row_lengths_requests.size() );
+            MPI::Waitall( row_lengths_requests.data(), row_lengths_requests.size() );
 
             // scan the rowPointers array to convert
             Containers::VectorView< GlobalIndexType, Devices::Host, GlobalIndexType > rowPointersView;
@@ -377,7 +393,7 @@ public:
             if( recv_rankOffsets[ i + 1 ] == recv_rankOffsets[ i ] )
                continue;
             // issue async recv operation
-            requests.push_back( CommunicatorType::IRecv(
+            requests.push_back( MPI::Irecv(
                      recv_columnIndices.getData() + recv_rowPointers[ recv_rankOffsets[ i ] ],
                      recv_rowPointers[ recv_rankOffsets[ i + 1 ] ] - recv_rowPointers[ recv_rankOffsets[ i ] ],
                      i, 0, group ) );
@@ -385,7 +401,7 @@ public:
       }
 
       // wait for all communications to finish
-      CommunicatorType::WaitAll( requests.data(), requests.size() );
+      MPI::Waitall( requests.data(), requests.size() );
 
       return std::make_tuple( recv_rankOffsets, recv_rowPointers, recv_columnIndices );
    }
@@ -428,11 +444,8 @@ public:
    }
 
 protected:
-   // GOTCHA (see above)
-   int gpu_id = 0;
-
    // communication group taken from the distributed mesh
-   typename CommunicatorType::CommunicationGroup group;
+   MPI_Comm group;
 
    /**
     * Global offsets: array of size nproc where the i-th value is the lowest

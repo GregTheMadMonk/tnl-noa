@@ -19,9 +19,8 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-#include <TNL/Communicators/ScopedInitializer.h>
+#include <TNL/MPI/ScopedInitializer.h>
+#include <TNL/MPI/Config.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
@@ -38,12 +37,6 @@ using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, 
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
-
-#ifdef HAVE_MPI
-using CommunicatorType = Communicators::MpiCommunicator;
-#else
-using CommunicatorType = Communicators::NoDistrCommunicator;
-#endif
 
 
 template< typename Matrix, typename Vector >
@@ -115,7 +108,7 @@ benchmarkDistributedSpmv( Benchmark& benchmark,
    // benchmark function
    auto compute = [&]() {
       matrix.vectorProduct( x, y );
-      Matrix::CommunicatorType::Barrier( matrix.getCommunicationGroup() );
+      TNL::MPI::Barrier( matrix.getCommunicationGroup() );
    };
 
    benchmark.time< typename Matrix::DeviceType >( reset, performer, compute );
@@ -155,9 +148,9 @@ struct SpmvBenchmark
    using IndexType = typename MatrixType::IndexType;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   using Partitioner = Containers::Partitioner< IndexType, CommunicatorType >;
-   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType, CommunicatorType >;
-   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
+   using Partitioner = Containers::Partitioner< IndexType >;
+   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
+   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
    using DistributedRowLengths = typename DistributedMatrix::CompressedRowLengthsVector;
 
    static bool
@@ -174,7 +167,7 @@ struct SpmvBenchmark
       matrix.getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 
-      const String name = String( (CommunicatorType::isDistributed()) ? "DistSpMV" : "SpMV" )
+      const String name = String( (TNL::MPI::GetSize() > 1) ? "DistSpMV" : "SpMV" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -194,13 +187,13 @@ struct SpmvBenchmark
          getTrivialOrdering( matrix, perm, iperm );
          MatrixType matrix_perm;
          Matrices::reorderSparseMatrix( matrix, matrix_perm, perm, iperm );
-         if( CommunicatorType::isDistributed() )
+         if( TNL::MPI::GetSize() > 1 )
             runDistributed( benchmark, metadata, parameters, matrix_perm, vector );
          else
             runNonDistributed( benchmark, metadata, parameters, matrix_perm, vector );
       }
       else {
-         if( CommunicatorType::isDistributed() )
+         if( TNL::MPI::GetSize() > 1 )
             runDistributed( benchmark, metadata, parameters, matrix, vector );
          else
             runNonDistributed( benchmark, metadata, parameters, matrix, vector );
@@ -230,13 +223,13 @@ struct SpmvBenchmark
                    VectorType& vector )
    {
       // set up the distributed matrix
-      const auto group = CommunicatorType::AllGroup;
+      const auto group = TNL::MPI::AllGroup();
       const auto localRange = Partitioner::splitRange( matrix.getRows(), group );
       DistributedMatrix distributedMatrix( localRange, matrix.getRows(), matrix.getColumns(), group );
-      DistributedVector distributedVector( localRange, matrix.getRows(), group );
+      DistributedVector distributedVector( localRange, 0, matrix.getRows(), group );
 
       // copy the row lengths from the global matrix to the distributed matrix
-      DistributedRowLengths distributedRowLengths( localRange, matrix.getRows(), group );
+      DistributedRowLengths distributedRowLengths( localRange, 0, matrix.getRows(), group );
       for( IndexType i = 0; i < distributedMatrix.getLocalMatrix().getRows(); i++ ) {
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrix.getRowCapacity( gi );
@@ -272,8 +265,8 @@ struct SpmvBenchmark
       DistributedVector distributedY;
       distributedY.setLike( distributedVector );
       distributedMatrix.vectorProduct( distributedVector, distributedY );
-      const int rank = CommunicatorType::GetRank( distributedMatrix.getCommunicationGroup() );
-      const int nproc = CommunicatorType::GetSize( distributedMatrix.getCommunicationGroup() );
+      const int rank = TNL::MPI::GetRank( distributedMatrix.getCommunicationGroup() );
+      const int nproc = TNL::MPI::GetSize( distributedMatrix.getCommunicationGroup() );
       typename VectorType::ViewType subY( &y[ Partitioner::getOffset( matrix.getRows(), rank, nproc ) ],
                                           Partitioner::getSizeForRank( matrix.getRows(), rank, nproc ) );
       TNL_ASSERT_EQ( distributedY.getLocalView(), subY, "WRONG RESULT !!!" );
@@ -299,7 +292,7 @@ configSetup( Config::ConfigDescription & config )
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
    Devices::Cuda::configSetup( config );
-   CommunicatorType::configSetup( config );
+   TNL::MPI::configSetup( config );
 }
 
 int
@@ -314,15 +307,15 @@ main( int argc, char* argv[] )
 
    configSetup( conf_desc );
 
-   Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
-   const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   TNL::MPI::ScopedInitializer mpi(argc, argv);
+   const int rank = TNL::MPI::GetRank();
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
-       ! CommunicatorType::setup( parameters ) )
+       ! TNL::MPI::setup( parameters ) )
       return EXIT_FAILURE;
 
    const String & logFileName = parameters.getParameter< String >( "log-file" );

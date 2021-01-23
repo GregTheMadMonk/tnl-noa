@@ -12,25 +12,27 @@
 
 #pragma once
 
+#include <vector>
+
 #include "Subrange.h"
+#include "ByteArraySynchronizer.h"
 
 #include <TNL/Math.h>
 
 namespace TNL {
 namespace Containers {
 
-template< typename Index, typename Communicator >
+template< typename Index >
 class Partitioner
 {
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
    using SubrangeType = Subrange< Index >;
 
-   static SubrangeType splitRange( Index globalSize, CommunicationGroup group )
+   static SubrangeType splitRange( Index globalSize, MPI_Comm group )
    {
-      if( group != Communicator::NullGroup ) {
-         const int rank = Communicator::GetRank( group );
-         const int partitions = Communicator::GetSize( group );
+      if( group != MPI::NullGroup() ) {
+         const int rank = MPI::GetRank( group );
+         const int partitions = MPI::GetSize( group );
          const Index begin = TNL::min( globalSize, rank * globalSize / partitions );
          const Index end = TNL::min( globalSize, (rank + 1) * globalSize / partitions );
          return SubrangeType( begin, end );
@@ -66,13 +68,77 @@ public:
       const Index end = min( globalSize, (rank + 1) * globalSize / partitions );
       return end - begin;
    }
-};
 
-// TODO:
-// - partitioner in deal.II stores also ghost indices:
-//   https://www.dealii.org/8.4.0/doxygen/deal.II/classUtilities_1_1MPI_1_1Partitioner.html
-// - ghost indices are stored in a general IndexMap class (based on collection of subranges):
-//   https://www.dealii.org/8.4.0/doxygen/deal.II/classIndexSet.html
+   template< typename Device >
+   class ArraySynchronizer
+   : public ByteArraySynchronizer< Device, Index >
+   {
+      using Base = ByteArraySynchronizer< Device, Index >;
+
+      SubrangeType localRange;
+      int overlaps;
+      MPI_Comm group;
+
+   public:
+      using ByteArrayView = typename Base::ByteArrayView;
+      using RequestsVector = typename Base::RequestsVector;
+
+      ~ArraySynchronizer()
+      {
+         // wait for pending async operation, otherwise it would crash
+         if( this->async_op.valid() )
+            this->async_op.wait();
+      }
+
+      ArraySynchronizer() = delete;
+
+      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI_Comm group )
+      : localRange(localRange), overlaps(overlaps), group(group)
+      {}
+
+      virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
+      {
+         auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
+         MPI::Waitall( requests.data(), requests.size() );
+      }
+
+      virtual RequestsVector synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
+      {
+         TNL_ASSERT_EQ( array.getSize(), bytesPerValue * (localRange.getSize() + 2 * overlaps),
+                        "unexpected array size" );
+
+         const int rank = MPI::GetRank( group );
+         const int nproc = MPI::GetSize( group );
+         const int left = (rank > 0) ? rank - 1 : nproc - 1;
+         const int right = (rank < nproc - 1) ? rank + 1 : 0;
+
+         // buffer for asynchronous communication requests
+         std::vector< MPI_Request > requests;
+
+         // issue all async receive operations
+         requests.push_back( MPI::Irecv(
+                  array.getData() + bytesPerValue * localRange.getSize(),
+                  bytesPerValue * overlaps,
+                  left, 0, group ) );
+         requests.push_back( MPI::Irecv(
+                  array.getData() + bytesPerValue * (localRange.getSize() + overlaps),
+                  bytesPerValue * overlaps,
+                  right, 0, group ) );
+
+         // issue all async send operations
+         requests.push_back( MPI::Isend(
+                  array.getData(),
+                  bytesPerValue * overlaps,
+                  left, 0, group ) );
+         requests.push_back( MPI::Isend(
+                  array.getData() + bytesPerValue * (localRange.getSize() - overlaps),
+                  bytesPerValue * overlaps,
+                  right, 0, group ) );
+
+         return requests;
+      }
+   };
+};
 
 } // namespace Containers
 } // namespace TNL
