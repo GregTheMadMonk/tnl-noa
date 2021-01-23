@@ -102,7 +102,7 @@ typename CSRView< Device, Index, Kernel >::ViewType
 CSRView< Device, Index, Kernel >::
 getView()
 {
-   return ViewType( this->offsets );
+   return ViewType( this->offsets, this->kernel );
 }
 
 template< typename Device,
@@ -219,30 +219,10 @@ void
 CSRView< Device, Index, Kernel >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   kernel.rowsReduction( this->offsets.getConstView(), first, last, fetch, reduction, keeper, zero, args... );
-   /*using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
-   const auto offsetsView = this->offsets.getConstView();
-   if( KernelType == CSRScalarKernel || std::is_same< DeviceType, TNL::Devices::Host >::value )
-   {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-         const IndexType begin = offsetsView[ segmentIdx ];
-         const IndexType end = offsetsView[ segmentIdx + 1 ];
-         RealType aux( zero );
-         IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
-         keeper( segmentIdx, aux );
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-   }
-   if( KernelType == CSRVectorKernel )
-      details::RowsReductionVectorKernelCaller( offsetsView, first, last, fetch, reduction, keeper, zero, args... );
-   if( KernelType == CSRLightKernel )
-   {
-      const IndexType elementsInSegment = ceil( this->getSize() / this->getSegmentsCount() );
-      details::RowsReductionLightKernelCaller( elementsInSegment, offsetsView, first, last, fetch, reduction, keeper, zero, args... );
-   }*/
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+      TNL::Algorithms::Segments::CSRScalarKernel< IndexType, DeviceType >::segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+   else
+      kernel.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,

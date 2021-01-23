@@ -44,7 +44,7 @@ template< typename Device,
           typename Kernel,
           typename IndexAllocator >
 CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const CSR& csr ) : offsets( csr.offsets )
+CSR( const CSR& csr ) : offsets( csr.offsets ), kernel( csr.kernel )
 {
 }
 
@@ -53,7 +53,7 @@ template< typename Device,
           typename Kernel,
           typename IndexAllocator >
 CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) )
+CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) ), kernel( std::move( csr.kernel ) )
 {
 
 }
@@ -66,7 +66,9 @@ String
 CSR< Device, Index, Kernel, IndexAllocator >::
 getSerializationType()
 {
-   return "CSR< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+   return "CSR< [any_device], " +
+      TNL::getSerializationType< IndexType >() +
+      TNL::getSerializationType< KernelType >() + " >";
 }
 
 template< typename Device,
@@ -256,6 +258,7 @@ CSR< Device, Index, Kernel, IndexAllocator >::
 operator=( const CSR< Device_, Index_, Kernel_, IndexAllocator_ >& source )
 {
    this->offsets = source.offsets;
+   this->kernel = kernel;
    return *this;
 }
 

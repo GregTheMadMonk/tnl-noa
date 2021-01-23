@@ -92,6 +92,7 @@ void test_Constructors()
       EXPECT_EQ( mm.getRow( 4 ).getValue( 0 ), 1 );   // 4th row
    }
 
+   std::cerr << "Values size = " << m2.getValues().getSize() << std::endl;
    m2.getCompressedRowLengths( v1 );
    EXPECT_EQ( v1, v2 );
 

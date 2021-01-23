@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest_CSRScalar.h"
+#include "SparseMatrixTest_CSRVector.h"

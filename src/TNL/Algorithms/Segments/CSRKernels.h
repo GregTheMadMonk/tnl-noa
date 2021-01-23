@@ -42,7 +42,7 @@ struct CSRScalarKernel
               typename ResultKeeper,
               typename Real,
               typename... Args >
-    static void rowsReduction( const OffsetsView& offsets,
+    static void segmentsReduction( const OffsetsView& offsets,
                                Index first,
                                Index last,
                                Fetch& fetch,
@@ -66,7 +66,7 @@ struct CSRScalarKernel
 };
 
 #ifdef HAVE_CUDA
-template< typename Device,
+template< typename Offsets,
           typename Index,
           typename Fetch,
           typename Reduction,
@@ -74,15 +74,15 @@ template< typename Device,
           typename Real,
           typename... Args >
 __global__
-void RowsReductionCSRVectorKernel(
+void segmentsReductionCSRVectorKernel(
     int gridIdx,
-    const TNL::Containers::VectorView< Index, TNL::Devices::Cuda, Index > offsets,
+    const Offsets offsets,
     Index first,
     Index last,
-    Fetch& fetch,
-    const Reduction& reduction,
-    ResultKeeper& keeper,
-    const Real& zero,
+    Fetch fetch,
+    const Reduction reduce,
+    ResultKeeper keep,
+    const Real zero,
     Args... args )
 {
     /***
@@ -92,16 +92,19 @@ void RowsReductionCSRVectorKernel(
     if( segmentIdx >= last )
         return;
 
-    const int laneIdx = threadIdx.x & 31; // & is cheaper than %
-    Index endIdx = offsets[ segmentIdx + 1] ;
+    const int laneIdx = threadIdx.x & ( TNL::Cuda::getWarpSize() - 1 ); // & is cheaper than %
+    TNL_ASSERT_LT( segmentIdx + 1, offsets.getSize(), "" );
+    Index endIdx = offsets[ segmentIdx + 1 ];
 
     Index localIdx( laneIdx );
     Real aux = zero;
     bool compute( true );
     for( Index globalIdx = offsets[ segmentIdx ] + localIdx; globalIdx < endIdx; globalIdx += TNL::Cuda::getWarpSize() )
     {
-      aux = reduce( aux, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
-      localIdx += TNL::Cuda::getWarpSize();
+        //printf( "globalIdx = %d endIdx = %d \n", globalIdx, endIdx );
+        TNL_ASSERT_LT( globalIdx, endIdx, "" );
+        aux = reduce( aux, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
+        localIdx += TNL::Cuda::getWarpSize();
     }
 
    /****
@@ -114,7 +117,7 @@ void RowsReductionCSRVectorKernel(
    aux = reduce( aux, __shfl_down_sync( 0xFFFFFFFF, aux,  1 ) );
 
    if( laneIdx == 0 )
-    keeper( segmentIdx, aux );
+     keep( segmentIdx, aux );
 }
 #endif
 
@@ -141,7 +144,7 @@ struct CSRVectorKernel
               typename ResultKeeper,
               typename Real,
               typename... Args >
-    static void rowsReduction( const OffsetsView& offsets,
+    static void segmentsReduction( const OffsetsView& offsets,
                                Index first,
                                Index last,
                                Fetch& fetch,
@@ -150,7 +153,6 @@ struct CSRVectorKernel
                                const Real& zero,
                                Args... args )
     {
-        abort();
 #ifdef HAVE_CUDA
         const Index warpsCount = last - first;
         const size_t threadsCount = warpsCount * TNL::Cuda::getWarpSize();
@@ -161,7 +163,7 @@ struct CSRVectorKernel
         {
             dim3 gridSize;
             TNL::Cuda::setupGrid( blocksCount, gridsCount, gridIdx, gridSize );
-            RowsReductionCSRVectorKernel< Index, Fetch, Reduction, ResultKeeper, Real, Args... >
+            segmentsReductionCSRVectorKernel< OffsetsView, IndexType, Fetch, Reduction, ResultKeeper, Real, Args... >
             <<< gridSize, blockSize >>>(
                 gridIdx.x, offsets, first, last, fetch, reduction, keeper, zero, args... );
         };
@@ -180,15 +182,15 @@ template< int ThreadsPerSegment,
           typename Real,
           typename... Args >
 __global__
-void RowsReductionCSRLightKernel(
+void segmentsReductionCSRLightKernel(
     int gridIdx,
     const TNL::Containers::VectorView< Index, TNL::Devices::Cuda, Index > offsets,
     Index first,
     Index last,
-    Fetch& fetch,
-    const Reduction& reduction,
-    ResultKeeper& keeper,
-    const Real& zero,
+    Fetch fetch,
+    const Reduction reduction,
+    ResultKeeper keeper,
+    const Real zero,
     Args... args )
 {
     /***
@@ -258,7 +260,7 @@ struct CSRLightKernel
               typename ResultKeeper,
               typename Real,
               typename... Args >
-    void rowsReduction( const OffsetsView& offsets,
+    void segmentsReduction( const OffsetsView& offsets,
                         Index first,
                         Index last,
                         Fetch& fetch,
@@ -278,27 +280,27 @@ struct CSRLightKernel
             switch( this->threadsPerSegment )
             {
                 case 1:
-                    RowsReductionCSRLightKernel<  1, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel<  1, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 case 2:
-                    RowsReductionCSRLightKernel<  2, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel<  2, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 case 4:
-                    RowsReductionCSRLightKernel<  4, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel<  4, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 case 8:
-                    RowsReductionCSRLightKernel<  8, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel<  8, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 case 16:
-                    RowsReductionCSRLightKernel< 16, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel< 16, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 case 32:
-                    RowsReductionCSRLightKernel< 32, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
+                    segmentsReductionCSRLightKernel< 32, Index, Fetch, Reduction, ResultKeeper, Real, Args... ><<< gridSize, blockSize >>>(
                         gridIdx, offsets, first, last, fetch, reduction, keeper, zero, args... );
                         break;
                 default:
@@ -332,7 +334,7 @@ struct CSRAdaptiveKernelView
               typename ResultKeeper,
               typename Real,
               typename... Args >
-    void rowsReduction( const OffsetsView& offsets,
+    void segmentsReduction( const OffsetsView& offsets,
                         Index first,
                         Index last,
                         Fetch& fetch,
@@ -405,7 +407,7 @@ struct CSRAdaptiveKernel
               typename ResultKeeper,
               typename Real,
               typename... Args >
-    void rowsReduction( const OffsetsView& offsets,
+    void segmentsReduction( const OffsetsView& offsets,
                         Index first,
                         Index last,
                         Fetch& fetch,
@@ -414,7 +416,7 @@ struct CSRAdaptiveKernel
                         const Real& zero,
                         Args... args ) const
     {
-        view.rowsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+        view.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
     }
 
     ViewType view;
