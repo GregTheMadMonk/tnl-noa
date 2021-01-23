@@ -22,7 +22,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          typename Kernel = CSRScalarKernel< Index, Device >,
+          typename Kernel = CSRKernelScalar< Index, Device >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class CSR
 {
@@ -133,7 +133,7 @@ class CSR
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRScalar = CSR< Device, Index, CSRScalarKernel< Index, Device >, IndexAllocator >;
+using CSRScalar = CSR< Device, Index, CSRKernelScalar< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,

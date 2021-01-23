@@ -20,53 +20,6 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
-template< typename Index,
-          typename Device >
-struct CSRScalarKernel
-{
-    using IndexType = Index;
-    using DeviceType = Device;
-    using ViewType = CSRScalarKernel< Index, Device >;
-    using ConstViewType = CSRScalarKernel< Index, Device >;
-
-    template< typename Offsets >
-    void init( const Offsets& offsets ) {};
-
-    void reset(){};
-
-    ViewType getView() { return *this; };
-
-    ConstViewType getConstView() const { return *this; };
-
-    template< typename OffsetsView,
-              typename Fetch,
-              typename Reduction,
-              typename ResultKeeper,
-              typename Real,
-              typename... Args >
-    static void segmentsReduction( const OffsetsView& offsets,
-                               Index first,
-                               Index last,
-                               Fetch& fetch,
-                               const Reduction& reduction,
-                               ResultKeeper& keeper,
-                               const Real& zero,
-                               Args... args )
-    {
-        auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-            const IndexType begin = offsets[ segmentIdx ];
-            const IndexType end = offsets[ segmentIdx + 1 ];
-            Real aux( zero );
-            IndexType localIdx( 0 );
-            bool compute( true );
-            for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-                aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
-            keeper( segmentIdx, aux );
-        };
-        Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
-    }
-};
-
 #ifdef HAVE_CUDA
 template< typename Offsets,
           typename Index,
