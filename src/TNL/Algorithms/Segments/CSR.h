@@ -138,7 +138,7 @@ using CSRScalar = CSR< Device, Index, CSRKernelScalar< Index, Device >, IndexAll
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRVector = CSR< Device, Index, CSRVectorKernel< Index, Device >, IndexAllocator >;
+using CSRVector = CSR< Device, Index, CSRKernelVector< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,

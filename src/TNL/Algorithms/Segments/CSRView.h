@@ -15,6 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
 #include <TNL/Algorithms/Segments/CSRKernelScalar.h>
+#include <TNL/Algorithms/Segments/CSRKernelVector.h>
 #include <TNL/Algorithms/Segments/CSRKernels.h>
 
 namespace TNL {
@@ -136,7 +137,7 @@ using CSRViewScalar = CSRView< Device, Index, CSRKernelScalar< Index, Device > >
 
 template< typename Device,
           typename Index >
-using CSRViewVector = CSRView< Device, Index, CSRVectorKernel< Index, Device > >;
+using CSRViewVector = CSRView< Device, Index, CSRKernelVector< Index, Device > >;
 
 template< typename Device,
           typename Index >
