@@ -244,6 +244,7 @@ CSRView< Device, Index, Kernel >::
 operator=( const CSRView& view )
 {
    this->offsets.bind( view.offsets );
+   this->kernel = view.kernel;
    return *this;
 }
 
@@ -265,6 +266,7 @@ CSRView< Device, Index, Kernel >::
 load( File& file )
 {
    file >> this->offsets;
+   this->kernel.init( this->offsets );
 }
 
       } // namespace Segments

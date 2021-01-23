@@ -8,6 +8,7 @@ set( COMMON_TESTS
 
             SparseMatrixTest_CSRScalar
             SparseMatrixTest_CSRVector
+            SparseMatrixTest_CSRLight
             SparseMatrixTest_Ellpack
             SparseMatrixTest_SlicedEllpack
             SparseMatrixTest_ChunkedEllpack

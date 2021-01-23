@@ -105,6 +105,7 @@ reset()
 {
    this->offsets.setSize( 1 );
    this->offsets = 0;
+   this->kernel.reset();
 }
 
 
@@ -282,6 +283,7 @@ CSR< Device, Index, Kernel, IndexAllocator >::
 load( File& file )
 {
    file >> this->offsets;
+   this->kernel.init( this->offsets );
 }
 
       } // namespace Segments
