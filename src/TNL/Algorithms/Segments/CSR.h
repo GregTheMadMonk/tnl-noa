@@ -148,6 +148,11 @@ using CSRHybrid = CSR< Device, Index, CSRKernelHybrid< Index, Device >, IndexAll
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
+using CSRAdaptive = CSR< Device, Index, CSRKernelAdaptive< Index, Device >, IndexAllocator >;
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 using CSRDefault = CSRScalar< Device, Index, IndexAllocator >;
 
 

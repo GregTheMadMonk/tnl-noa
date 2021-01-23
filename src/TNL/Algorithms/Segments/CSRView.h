@@ -17,7 +17,7 @@
 #include <TNL/Algorithms/Segments/CSRKernelScalar.h>
 #include <TNL/Algorithms/Segments/CSRKernelVector.h>
 #include <TNL/Algorithms/Segments/CSRKernelHybrid.h>
-#include <TNL/Algorithms/Segments/CSRKernels.h>
+#include <TNL/Algorithms/Segments/CSRKernelAdaptive.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -143,6 +143,10 @@ using CSRViewVector = CSRView< Device, Index, CSRKernelVector< Index, Device > >
 template< typename Device,
           typename Index >
 using CSRViewHybrid = CSRView< Device, Index, CSRKernelHybrid< Index, Device > >;
+
+template< typename Device,
+          typename Index >
+using CSRViewAdaptive = CSRView< Device, Index, CSRKernelAdaptive< Index, Device > >;
 
 template< typename Device,
           typename Index >
