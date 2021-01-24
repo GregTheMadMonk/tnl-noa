@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest_CSRHybrid.cpp -  description
+                          SparseMatrixTest_CSRAdaptive.cpp -  description
                              -------------------
     begin                : Jan 23, 2021
     copyright            : (C) 2021 by Tomas Oberhuber et al.
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest_CSRHybrid.h"
+#include "SparseMatrixTest_CSRAdaptive.h"
