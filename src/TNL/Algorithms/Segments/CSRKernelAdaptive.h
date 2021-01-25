@@ -16,112 +16,11 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 #include <TNL/Algorithms/Segments/CSRKernelScalar.h>
+#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-
-enum class Type {
-   /* LONG = 0!!! Non zero value rewrites index[1] */
-   LONG = 0,
-   STREAM = 1,
-   VECTOR = 2
-};
-
-/*template< typename Index >
-struct LongBlockDescription
-{
-   uint8_t type;
-}*/
-template< typename Index >
-union Block
-{
-   Block(Index row, Type type = Type::VECTOR, Index index = 0) noexcept
-   {
-      this->index[0] = row;
-      this->index[1] = index;
-      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
-   }
-
-   Block(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept
-   {
-      this->index[0] = row;
-      this->index[1] = 0;
-      this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
-
-      if (type == Type::STREAM)
-         this->twobytes[sizeof(Index) == 4 ? 3 : 5] = nextRow - row;
-
-      if (type == Type::STREAM)
-         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b1000000;
-      else if (type == Type::VECTOR)
-         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;
-   }
-
-   Block() = default;
-
-   __cuda_callable__ Type getType() const
-   {
-      if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b1000000 )
-         return Type::STREAM;
-      if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b10000000 )
-         return Type::VECTOR;
-      return Type::LONG;
-   }
-
-   __cuda_callable__ const Index& getFirstSegment() const
-   {
-      return index[ 0 ];
-   }
-
-   /***
-    * \brief Returns number of elements covered by the block.
-    */
-   __cuda_callable__ const Index getSize() const
-   {
-      return twobytes[ sizeof(Index) == 4 ? 2 : 4 ];
-   }
-
-   /***
-    * \brief Returns number of segments covered by the block.
-    */
-   __cuda_callable__ const Index getSegmentsInBlock() const
-   {
-      return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
-   }
-
-   void print( std::ostream& str ) const
-   {
-      Type type = this->getType();
-      str << "Type: ";
-      switch( type )
-      {
-         case Type::STREAM:
-            str << " Stream ";
-            break;
-         case Type::VECTOR:
-            str << " Vector ";
-            break;
-         case Type::LONG:
-            str << " Long ";
-            break;
-      }
-      str << " first segment: " << getFirstSegment();
-      str << " block end: " << getSize();
-      str << " index in warp: " << index[ 1 ];
-   }
-   Index index[2]; // index[0] is row pointer, index[1] is index in warp
-   uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
-   uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
-                                                //twobytes[3/5] is nextRow - row
-};
-
-template< typename Index >
-std::ostream& operator<< ( std::ostream& str, const Block< Index >& block )
-{
-   block.print( str );
-   return str;
-}
 
 #ifdef HAVE_CUDA
 
@@ -163,12 +62,12 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    Real result = zero;
    bool compute( true );
    const Index laneIdx = threadIdx.x & 31; // & is cheaper than %
-   const Block< Index > block = blocks[ blockIdx ];
+   const details::CSRAdaptiveKernelBlockDescriptor< Index > block = blocks[ blockIdx ];
    const Index& firstSegmentIdx = block.getFirstSegment();
    const Index begin = offsets[ firstSegmentIdx ];
 
    const auto blockType = block.getType();
-   if( blockType == Type::STREAM ) // Stream kernel - many short segments per warp
+   if( blockType == details::Type::STREAM ) // Stream kernel - many short segments per warp
    {
       const Index warpIdx = threadIdx.x / 32;
       const Index end = begin + block.getSize();
@@ -194,7 +93,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
          keep( i, result );
       }
    }
-   else if( blockType == Type::VECTOR ) // Vector kernel - one segment per warp
+   else if( blockType == details::Type::VECTOR ) // Vector kernel - one segment per warp
    {
       const Index end = begin + block.getSize();
       const Index segmentIdx = block.getFirstSegment();
@@ -274,7 +173,7 @@ struct CSRKernelAdaptiveView
    using DeviceType = Device;
    using ViewType = CSRKernelAdaptiveView< Index, Device >;
    using ConstViewType = CSRKernelAdaptiveView< Index, Device >;
-   using BlocksType = TNL::Containers::Vector< Block< Index >, Device, Index >;
+   using BlocksType = TNL::Containers::Vector< details::CSRAdaptiveKernelBlockDescriptor< Index >, Device, Index >;
    using BlocksView = typename BlocksType::ViewType;
 
    CSRKernelAdaptiveView() = default;
@@ -320,10 +219,10 @@ struct CSRKernelAdaptiveView
       static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
       //static constexpr Index THREADS_SCALAR = 128;
       //static constexpr Index THREADS_VECTOR = 128;
-      static constexpr Index THREADS_LIGHT = 128;
+      //static constexpr Index THREADS_LIGHT = 128;
 
       /* Max length of row to process one warp for CSR Light, MultiVector */
-      static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
+      //static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
 
       /* Max length of row to process one warp for CSR Adaptive */
       static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = 512;
@@ -443,7 +342,7 @@ struct CSRKernelAdaptive
    Index findLimit( const Index start,
                     const Offsets& offsets,
                     const Index size,
-                    Type &type,
+                    details::Type &type,
                     Index &sum )
    {
       sum = 0;
@@ -456,21 +355,21 @@ struct CSRKernelAdaptive
          {
             if( current - start > 0 ) // extra row
             {
-               type = Type::STREAM;
+               type = details::Type::STREAM;
                return current;
             }
             else
             {                  // one long row
                if( sum <= 2 * MAX_ELEMENTS_PER_WARP_ADAPT )
-                  type = Type::VECTOR;
+                  type = details::Type::VECTOR;
                else
-                  type = Type::VECTOR; // TODO: Put LONG back
+                  type = details::Type::VECTOR; // TODO: Put LONG back
                   //type = Type::LONG; //
                return current + 1;
             }
          }
       }
-      type = Type::STREAM;
+      type = details::Type::STREAM;
       return size - 1; // return last row pointer
     }
 
@@ -481,17 +380,17 @@ struct CSRKernelAdaptive
         Index sum, start( 0 ), nextStart( 0 );
 
         // Fill blocks
-        std::vector< Block< Index > > inBlock;
+        std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlock;
         inBlock.reserve( rows );
 
         while( nextStart != rows - 1 )
         {
-            Type type;
+            details::Type type;
             nextStart = findLimit( start, offsets, rows, type, sum );
 
-            if( type == Type::LONG )
+            if( type == details::Type::LONG )
             {
-               inBlock.emplace_back( start, Type::LONG, 0 );
+               inBlock.emplace_back( start, details::Type::LONG, 0 );
                const Index blocksCount = inBlock.size();
                const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
                const Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
@@ -553,8 +452,6 @@ struct CSRKernelAdaptive
 
       ViewType view;
 };
-
-
 
       } // namespace Segments
    }  // namespace Algorithms

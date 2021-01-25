@@ -1,0 +1,118 @@
+/***************************************************************************
+                          CSRAdaptiveKernelBlockDescriptor.h -  description
+                             -------------------
+    begin                : Jan 25, 2021 -> Joe Biden inauguration
+    copyright            : (C) 2021 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+namespace TNL {
+   namespace Algorithms {
+      namespace Segments {
+         namespace details {
+
+enum class Type {
+   /* LONG = 0!!! Non zero value rewrites index[1] */
+   LONG = 0,
+   STREAM = 1,
+   VECTOR = 2
+};
+
+
+template< typename Index >
+union CSRAdaptiveKernelBlockDescriptor
+{
+   CSRAdaptiveKernelBlockDescriptor(Index row, Type type = Type::VECTOR, Index index = 0) noexcept
+   {
+      this->index[0] = row;
+      this->index[1] = index;
+      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
+   }
+
+   CSRAdaptiveKernelBlockDescriptor(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept
+   {
+      this->index[0] = row;
+      this->index[1] = 0;
+      this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
+
+      if (type == Type::STREAM)
+         this->twobytes[sizeof(Index) == 4 ? 3 : 5] = nextRow - row;
+
+      if (type == Type::STREAM)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b1000000;
+      else if (type == Type::VECTOR)
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;
+   }
+
+   CSRAdaptiveKernelBlockDescriptor() = default;
+
+   __cuda_callable__ Type getType() const
+   {
+      if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b1000000 )
+         return Type::STREAM;
+      if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b10000000 )
+         return Type::VECTOR;
+      return Type::LONG;
+   }
+
+   __cuda_callable__ const Index& getFirstSegment() const
+   {
+      return index[ 0 ];
+   }
+
+   /***
+    * \brief Returns number of elements covered by the block.
+    */
+   __cuda_callable__ const Index getSize() const
+   {
+      return twobytes[ sizeof(Index) == 4 ? 2 : 4 ];
+   }
+
+   /***
+    * \brief Returns number of segments covered by the block.
+    */
+   __cuda_callable__ const Index getSegmentsInBlock() const
+   {
+      return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
+   }
+
+   void print( std::ostream& str ) const
+   {
+      Type type = this->getType();
+      str << "Type: ";
+      switch( type )
+      {
+         case Type::STREAM:
+            str << " Stream ";
+            break;
+         case Type::VECTOR:
+            str << " Vector ";
+            break;
+         case Type::LONG:
+            str << " Long ";
+            break;
+      }
+      str << " first segment: " << getFirstSegment();
+      str << " block end: " << getSize();
+      str << " index in warp: " << index[ 1 ];
+   }
+   Index index[2]; // index[0] is row pointer, index[1] is index in warp
+   uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
+   uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
+                                                //twobytes[3/5] is nextRow - row
+};
+
+template< typename Index >
+std::ostream& operator<< ( std::ostream& str, const CSRAdaptiveKernelBlockDescriptor< Index >& block )
+{
+   block.print( str );
+   return str;
+}
+         } // namespace details
+      } // namespace Segments
+   }  // namespace Algorithms
+} // namespace TNL
