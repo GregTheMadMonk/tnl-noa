@@ -150,7 +150,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
-   __shared__ Real streamShared[WARPS][SHARED_PER_WARP];
+   __shared__ Real streamShared[ WARPS ][ SHARED_PER_WARP ];
    __shared__ Real multivectorShared[ CudaBlockSize / warpSize ];
    constexpr size_t MAX_X_DIM = 2147483647;
    const Index index = (gridIdx * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -162,72 +162,57 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       multivectorShared[ threadIdx.x ] = zero;
    Real result = zero;
    bool compute( true );
-   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Index laneIdx = threadIdx.x & 31; // & is cheaper than %
    const Block< Index > block = blocks[ blockIdx ];
    const Index& firstSegmentIdx = block.getFirstSegment();
    const Index begin = offsets[ firstSegmentIdx ];
-   //Index to, maxID;
 
    const auto blockType = block.getType();
-   if( blockType == Type::STREAM )
+   if( blockType == Type::STREAM ) // Stream kernel - many short segments per warp
    {
-      const Index warpID = threadIdx.x / 32;
+      const Index warpIdx = threadIdx.x / 32;
       const Index end = begin + block.getSize();
 
       // Stream data to shared memory
-      for( Index globalIdx = laneID + begin; globalIdx < end; globalIdx += warpSize )
+      for( Index globalIdx = laneIdx + begin; globalIdx < end; globalIdx += warpSize )
       {
-         streamShared[warpID][globalIdx - begin ] = //fetch( globalIdx, compute );
+         streamShared[ warpIdx ][ globalIdx - begin ] = //fetch( globalIdx, compute );
             details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute );
          // TODO:: fix this by template specialization so that we can assume fetch lambda
          // with short parameters
       }
 
-      const Index maxRow = firstSegmentIdx + block.getSegmentsInBlock();
-      /* minRow */ //+
-         /* maxRow - minRow *///(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FFF);
-      /// Calculate result 
-      for( Index i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize )
+      const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
+
+      for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += warpSize )
       {
-         const Index to = offsets[i + 1] - begin; // end of preprocessed data
+         const Index sharedEnd = offsets[ i + 1 ] - begin; // end of preprocessed data
          result = zero;
          // Scalar reduction
-         for( Index sharedID = offsets[ i ] - begin; sharedID < to; ++sharedID)
-         {
-            result = reduce( result, streamShared[warpID][sharedID] );
-            //printf( " threadIdx %d is adding %d in segment %d -> %d\n", threadIdx.x, shared[warpID][sharedID], i, result );
-         }
-
-         //printf( "Stream: threadIdx = %d result for segment %d is %d \n", threadIdx.x, i, result );
+         for( Index sharedIdx = offsets[ i ] - begin; sharedIdx < sharedEnd; sharedIdx++ )
+            result = reduce( result, streamShared[ warpIdx ][ sharedIdx ] );
          keep( i, result );
       }
    }
-   else if( blockType == Type::VECTOR )
+   else if( blockType == Type::VECTOR ) // Vector kernel - one segment per warp
    {
-      //printf( "Vector: threadIdx = %d \n", threadIdx );
-      /////////////////////////////////////* CSR VECTOR *//////////////
-      const Index end = begin + block.getSize(); //block.twobytes[sizeof(Index) == 4 ? 2 : 4];
-      const Index segmentIdx = block.index[0];
+      const Index end = begin + block.getSize();
+      const Index segmentIdx = block.getFirstSegment();
 
-      for( Index globalIdx = begin + laneID; globalIdx < end; globalIdx += warpSize )
+      for( Index globalIdx = begin + laneIdx; globalIdx < end; globalIdx += warpSize )
          result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) ); // fix local idx
 
-      /* Parallel reduction */
+      // Parallel reduction
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result, 16 ) );
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result,  8 ) );
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result,  4 ) );
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result,  2 ) );
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result,  1 ) );
-      if( laneID == 0 )
-      {
-         //printf( "Vector: threadIdx = %d result for segment %d is %f \n", threadIdx, segmentIdx, result );
+      if( laneIdx == 0 )
          keep( segmentIdx, result );
-          //outVector[block.index[0]/* minRow */] = result; // Write result
-      }
    }
-   else // blockType == Type::LONG
+   else // blockType == Type::LONG - several warps per segment
    {
-      ///////////////////////////////////// CSR VECTOR L /////////////
       // Number of elements processed by previous warps
       const Index offset = block.index[1] * MAX_ELEM_PER_WARP;
       Index to = begin + (block.index[1]  + 1) * MAX_ELEM_PER_WARP;
@@ -235,12 +220,12 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       //minID = offsets[block.index[0] ];
       const Index end = offsets[block.index[0] + 1];
       const int tid = threadIdx.x;
-      
+
       if( to > end )
          to = end;
       result = zero;
       //printf( "tid %d : start = %d \n", tid, minID + laneID );
-      for( Index globalIdx = begin + laneID + offset; globalIdx < to; globalIdx += warpSize )
+      for( Index globalIdx = begin + laneIdx + offset; globalIdx < to; globalIdx += warpSize )
       {
          result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
          //printf( "tid %d -> %d \n", tid, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
@@ -254,7 +239,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       result += __shfl_down_sync(0xFFFFFFFF, result, 2);
       result += __shfl_down_sync(0xFFFFFFFF, result, 1);
       const Index warpID = threadIdx.x / 32;
-      if( laneID == 0 )
+      if( laneIdx == 0 )
          multivectorShared[ warpID ] = result;
       __syncthreads();
       // Reduction in multivectorShared
@@ -276,8 +261,6 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
             keep( segmentIdx, multivectorShared[ 0 ] );
          }
       }
-
-      //if (laneID == 0) atomicAdd(&outVector[block.index[0] ], result);
    }
 }
 #endif
