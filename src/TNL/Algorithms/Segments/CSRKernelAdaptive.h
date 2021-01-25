@@ -145,41 +145,39 @@ segmentsReductionCSRAdaptiveKernel( const Block< Index > *blocks,
    const Index laneID = threadIdx.x & 31; // & is cheaper than %
    Block<Index> block = blocks[blockIdx];
    const Index minID = offsets[block.index[0]/* minRow */];
-   Index i, to, maxID;
+   Index to, maxID;
 
    if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b1000000)
    {
-      /****
-       * CSR Stream: Copy first all data into shared memory
-       */
-
       const Index warpID = threadIdx.x / 32;
       maxID = minID + /* maxID - minID */block.twobytes[sizeof(Index) == 4 ? 2 : 4];
 
       /* Stream data to shared memory */
       for( Index globalIdx = laneID + minID; globalIdx < maxID; globalIdx += warpSize )
       {
-         shared[warpID][i - minID] = //fetch( globalIdx, compute );
+         shared[warpID][globalIdx - minID] = //fetch( globalIdx, compute );
             details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute );
-         printf( "Stream: Fetch at %d -> %f \n", globalIdx, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute ) );
+         //printf( "Stream: Fetch at %d -> %d \n", globalIdx, shared[warpID][globalIdx - minID] );
+         //details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute ) );
             // TODO:: fix this
-         //values[i] * inVector[columnIndexes[i]];
       }
 
       const Index maxRow = block.index[0]/* minRow */ +
          /* maxRow - minRow */(block.twobytes[sizeof(Index) == 4 ? 3 : 5] & 0x3FFF);
-      /* Calculate result */
-      for (i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize)
+      /// Calculate result 
+      for( Index i = block.index[0]/* minRow */ + laneID; i < maxRow; i += warpSize )
       {
          to = offsets[i + 1] - minID; // end of preprocessed data
          result = zero;
-         /* Scalar reduction */
+         // Scalar reduction
          for( Index sharedID = offsets[ i ] - minID; sharedID < to; ++sharedID)
+         {
             result = reduce( result, shared[warpID][sharedID] );
+            //printf( " threadIdx %d is adding %d in segment %d -> %d\n", threadIdx.x, shared[warpID][sharedID], i, result );
+         }
 
-         printf( "Stream: threadIdx = %d result for segment %d is %f \n", threadIdx, i, result );
+         //printf( "Stream: threadIdx = %d result for segment %d is %d \n", threadIdx.x, i, result );
          keep( i, result );
-         //outVector[i] = result; // Write result
       }
    }
    else //if (block.byte[sizeof(Index) == 4 ? 7 : 15] & 0b10000000)
@@ -201,7 +199,7 @@ segmentsReductionCSRAdaptiveKernel( const Block< Index > *blocks,
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result,  1 ) );
       if( laneID == 0 )
       {
-         printf( "Vector: threadIdx = %d result for segment %d is %f \n", threadIdx, i, result );
+         printf( "Vector: threadIdx = %d result for segment %d is %d \n", threadIdx, segmentIdx, result );
          keep( segmentIdx, result );
           //outVector[block.index[0]/* minRow */] = result; // Write result
       }
