@@ -113,11 +113,12 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    else // blockType == Type::LONG - several warps per segment
    {
       // Number of elements processed by previous warps
-      const Index offset = block.index[1] * MAX_ELEM_PER_WARP;
-      Index to = begin + (block.index[1]  + 1) * MAX_ELEM_PER_WARP;
-      const Index segmentIdx = block.index[0];
+      const Index offset = //block.index[1] * MAX_ELEM_PER_WARP;
+         block.getWarpIdx() * MAX_ELEM_PER_WARP;
+      Index to = begin + (block.getWarpIdx()  + 1) * MAX_ELEM_PER_WARP;
+      const Index segmentIdx = block.getFirstSegment();//block.index[0];
       //minID = offsets[block.index[0] ];
-      const Index end = offsets[block.index[0] + 1];
+      const Index end = offsets[segmentIdx + 1];
       const int tid = threadIdx.x;
 
       if( to > end )
@@ -215,7 +216,7 @@ struct CSRKernelAdaptiveView
          return;
       }
 
-      //this->printBlocks();
+      this->printBlocks();
       static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
       //static constexpr Index THREADS_SCALAR = 128;
       //static constexpr Index THREADS_VECTOR = 128;
@@ -390,15 +391,15 @@ struct CSRKernelAdaptive
 
             if( type == details::Type::LONG )
             {
-               inBlock.emplace_back( start, details::Type::LONG, 0 );
                const Index blocksCount = inBlock.size();
                const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
                const Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
                //Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
-               /*for( Index index = 1; index < warpsLeft; index++ )
+               inBlock.emplace_back( start, details::Type::LONG, 0, warpsLeft );
+               for( Index index = 1; index < warpsLeft; index++ )
                {
-                  inBlock.emplace_back(start, Type::LONG, index);
-               }*/
+                  inBlock.emplace_back( start, details::Type::LONG, index, warpsLeft );
+               }
             }
             else
             {

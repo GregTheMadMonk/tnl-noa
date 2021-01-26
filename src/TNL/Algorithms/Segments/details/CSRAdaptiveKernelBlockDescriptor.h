@@ -108,18 +108,35 @@ union CSRAdaptiveKernelBlockDescriptor
 #else
 
 template< typename Index >
-union CSRAdaptiveKernelBlockDescriptor
+struct CSRAdaptiveKernelBlockDescriptor
 {
-   CSRAdaptiveKernelBlockDescriptor(Index row, Type type = Type::VECTOR, Index index = 0) noexcept
+   CSRAdaptiveKernelBlockDescriptor( Index firstSegmentIdx,
+                                     Type type = Type::VECTOR,
+                                     uint8_t warpIdx = 0,
+                                     uint8_t warpsCount = 0 ) noexcept
    {
-      this->index[0] = row;
+      this->firstSegmentIdx = firstSegmentIdx;
+      this->type = ( uint8_t ) type;
+      this->warpIdx = warpIdx;
+      this->warpsCount = warpsCount;
+      /*this->index[0] = row;
       this->index[1] = index;
-      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;
+      this->byte[sizeof(Index) == 4 ? 7 : 15] = (uint8_t)type;*/
    }
 
-   CSRAdaptiveKernelBlockDescriptor(Index row, Type type, Index nextRow, Index maxID, Index minID) noexcept
+   CSRAdaptiveKernelBlockDescriptor( Index firstSegmentIdx,
+                                     Type type,
+                                     Index lastSegmentIdx,
+                                     Index end,
+                                     Index begin ) noexcept
    {
-      this->index[0] = row;
+      this->firstSegmentIdx = firstSegmentIdx;
+      this->warpIdx = 0;
+      this->blockSize = end - begin;
+      this->segmentsInBlock = lastSegmentIdx - firstSegmentIdx;
+      this->type = ( uint8_t ) type;
+
+      /*this->index[0] = row;
       this->index[1] = 0;
       this->twobytes[sizeof(Index) == 4 ? 2 : 4] = maxID - minID;
 
@@ -129,23 +146,25 @@ union CSRAdaptiveKernelBlockDescriptor
       if (type == Type::STREAM)
          this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b1000000;
       else if (type == Type::VECTOR)
-         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;
+         this->byte[sizeof(Index) == 4 ? 7 : 15] |= 0b10000000;*/
    }
 
    CSRAdaptiveKernelBlockDescriptor() = default;
 
    __cuda_callable__ Type getType() const
    {
-      if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b1000000 )
+      return ( Type ) this->type;
+      /*if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b1000000 )
          return Type::STREAM;
       if( byte[ sizeof( Index ) == 4 ? 7 : 15 ] & 0b10000000 )
          return Type::VECTOR;
-      return Type::LONG;
+      return Type::LONG;*/
    }
 
    __cuda_callable__ const Index& getFirstSegment() const
    {
-      return index[ 0 ];
+      return this->firstSegmentIdx;
+      //return index[ 0 ];
    }
 
    /***
@@ -153,7 +172,8 @@ union CSRAdaptiveKernelBlockDescriptor
     */
    __cuda_callable__ const Index getSize() const
    {
-      return twobytes[ sizeof(Index) == 4 ? 2 : 4 ];
+      return this->blockSize;
+      //return twobytes[ sizeof(Index) == 4 ? 2 : 4 ];
    }
 
    /***
@@ -161,14 +181,19 @@ union CSRAdaptiveKernelBlockDescriptor
     */
    __cuda_callable__ const Index getSegmentsInBlock() const
    {
-      return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
+      return this->segmentsInBlock;
+      //return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
+   }
+
+   __cuda_callable__ const uint8_t getWarpIdx() const
+   {
+      return this->warpIdx;
    }
 
    void print( std::ostream& str ) const
    {
-      Type type = this->getType();
       str << "Type: ";
-      switch( type )
+      switch( this->getType() )
       {
          case Type::STREAM:
             str << " Stream ";
@@ -180,13 +205,18 @@ union CSRAdaptiveKernelBlockDescriptor
             str << " Long ";
             break;
       }
-      str << " first segment: " << getFirstSegment();
-      str << " block end: " << getSize();
-      str << " index in warp: " << index[ 1 ];
+      str << " first segment: " << this->getFirstSegment();
+      str << " block end: " << this->getSize();
+      str << " index in warp: " << this->getWarpIdx();
    }
-   Index index[2]; // index[0] is row pointer, index[1] is index in warp
-   uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
-   uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
+
+   uint8_t type;
+   Index firstSegmentIdx, blockSize, segmentsInBlock;
+   uint8_t warpIdx, warpsCount;
+
+   //Index index[2]; // index[0] is row pointer, index[1] is index in warp
+   //uint8_t byte[sizeof(Index) == 4 ? 8 : 16]; // byte[7/15] is type specificator
+   //uint16_t twobytes[sizeof(Index) == 4 ? 4 : 8]; //twobytes[2/4] is maxID - minID
                                                 //twobytes[3/5] is nextRow - row
 };
 
