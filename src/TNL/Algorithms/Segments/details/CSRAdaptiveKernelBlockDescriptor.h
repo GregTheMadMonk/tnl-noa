@@ -190,6 +190,11 @@ struct CSRAdaptiveKernelBlockDescriptor
       return this->warpIdx;
    }
 
+   __cuda_callable__ uint8_t getWarpsCount() const
+   {
+      return this->warpsCount;
+   }
+
    void print( std::ostream& str ) const
    {
       str << "Type: ";

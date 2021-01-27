@@ -1070,7 +1070,6 @@ void test_VectorProduct()
        outVector_1.setElement( j, 0 );
 
    m_1.vectorProduct( inVector_1, outVector_1 );
-
    EXPECT_EQ( outVector_1.getElement( 0 ),  2 );
    EXPECT_EQ( outVector_1.getElement( 1 ), 10 );
    EXPECT_EQ( outVector_1.getElement( 2 ),  8 );
@@ -1310,7 +1309,7 @@ void test_VectorProduct()
 
    /////
    // Large test
-   const IndexType size( 35 );
+   const IndexType size( 1051 );
    //for( int size = 1; size < 1000; size++ )
    {
       //std::cerr << " size = " << size << std::endl;
@@ -1338,26 +1337,28 @@ void test_VectorProduct()
          EXPECT_EQ( out.getElement( i ), i + 1 );
 
       // Test with large triangular matrix
-      Matrix m2( size, size );
-      rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return i + 1; } );
+      const int rows( size ), columns( size );
+      Matrix m2( rows, columns );
+      rowCapacities.setSize( rows );
+      rowCapacities.evaluate( [=] __cuda_callable__ ( IndexType i ) { return i + 1; } );
       m2.setRowCapacities( rowCapacities );
       auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx <= row )
          {
-            value = row -localIdx + 1;
+            value = localIdx + 1;
             column = localIdx;
          }
       };
       m2.forAllRows( f2 );
       // check that the matrix was initialized
-      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( size );
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( rows );
       m2.getCompressedRowLengths( rowLengths );
       EXPECT_EQ( rowLengths, rowCapacities );
 
+      out.setSize( rows );
       out = 0.0;
       m2.vectorProduct( in, out );
-      //std::cerr << out << std::endl;
-      for( IndexType i = 0; i < size; i++ )
+      for( IndexType i = 0; i < rows; i++ )
          EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
    }
 }

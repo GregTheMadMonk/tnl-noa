@@ -113,51 +113,78 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    else // blockType == Type::LONG - several warps per segment
    {
       // Number of elements processed by previous warps
-      const Index offset = //block.index[1] * MAX_ELEM_PER_WARP;
-         block.getWarpIdx() * MAX_ELEM_PER_WARP;
-      Index to = begin + (block.getWarpIdx()  + 1) * MAX_ELEM_PER_WARP;
+      //const Index offset = //block.index[1] * MAX_ELEM_PER_WARP;
+      ///   block.getWarpIdx() * MAX_ELEM_PER_WARP;
+      //Index to = begin + (block.getWarpIdx()  + 1) * MAX_ELEM_PER_WARP;
       const Index segmentIdx = block.getFirstSegment();//block.index[0];
       //minID = offsets[block.index[0] ];
       const Index end = offsets[segmentIdx + 1];
       const int tid = threadIdx.x;
+      //const int inBlockWarpIdx = block.getWarpIdx();
 
-      if( to > end )
-         to = end;
+      //if( to > end )
+      //   to = end;
+      TNL_ASSERT_GT( block.getWarpsCount(), 0, "" );
       result = zero;
-      //printf( "tid %d : start = %d \n", tid, minID + laneID );
-      for( Index globalIdx = begin + laneIdx + offset; globalIdx < to; globalIdx += warpSize )
+      //printf( "LONG tid %d warpIdx %d: LONG \n", tid, block.getWarpIdx()  );
+      for( Index globalIdx = begin + laneIdx + TNL::Cuda::getWarpSize() * block.getWarpIdx();
+           globalIdx < end;
+           globalIdx += TNL::Cuda::getWarpSize() * block.getWarpsCount() )
       {
          result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
-         //printf( "tid %d -> %d \n", tid, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
+         //if( laneIdx == 0 )
+         //   printf( "LONG warpIdx: %d gid: %d begin: %d end: %d -> %d \n", ( int ) block.getWarpIdx(), globalIdx, begin, end,
+         //    details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, 0, globalIdx, compute ) );
          //result += values[i] * inVector[columnIndexes[i]];
       }
-
+      //printf( "tid %d -> %d \n", tid, result );
 
       result += __shfl_down_sync(0xFFFFFFFF, result, 16);
       result += __shfl_down_sync(0xFFFFFFFF, result, 8);
       result += __shfl_down_sync(0xFFFFFFFF, result, 4);
       result += __shfl_down_sync(0xFFFFFFFF, result, 2);
       result += __shfl_down_sync(0xFFFFFFFF, result, 1);
+
+      //if( laneIdx == 0 )
+      //   printf( "WARP RESULT: tid %d -> %d \n", tid, result );
+
       const Index warpID = threadIdx.x / 32;
       if( laneIdx == 0 )
          multivectorShared[ warpID ] = result;
+
       __syncthreads();
       // Reduction in multivectorShared
-      if( tid < 16 )
+      if( block.getWarpIdx() == 0 && laneIdx < 16 )
       {
-         multivectorShared[ tid ] =  reduce( multivectorShared[ tid ], multivectorShared[ tid + 16 ] );
-         __syncwarp();
-         multivectorShared[ tid ] =  reduce( multivectorShared[ tid ], multivectorShared[ tid +  8 ] );
-         __syncwarp();
-         multivectorShared[ tid ] =  reduce( multivectorShared[ tid ], multivectorShared[ tid +  4 ] );
-         __syncwarp();
-         multivectorShared[ tid ] =  reduce( multivectorShared[ tid ], multivectorShared[ tid +  2 ] );
-         __syncwarp();
-         multivectorShared[ tid ] =  reduce( multivectorShared[ tid ], multivectorShared[ tid +  1 ] );
-         __syncwarp();
-         if( tid == 0 )
+         constexpr int totalWarps = CudaBlockSize / warpSize;
+         if( totalWarps >= 32 )
          {
-            printf( "Long: segmentIdx %d -> %d \n", segmentIdx, multivectorShared[ 0 ] );
+            multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx + 16 ] );
+            __syncwarp();
+         }
+         if( totalWarps >= 16 )
+         {
+            multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx +  8 ] );
+            __syncwarp();
+         }
+         if( totalWarps >= 8 )
+         {
+            multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx +  4 ] );
+            __syncwarp();
+         }
+         if( totalWarps >= 4 )
+         {
+            multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx +  2 ] );
+            __syncwarp();
+         }
+         if( totalWarps >= 2 )
+         {
+            multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx +  1 ] );
+            __syncwarp();
+         }
+         if( laneIdx == 0 )
+         {
+            //printf( "Long: segmentIdx %d -> %d \n", segmentIdx, multivectorShared[ 0 ] );
             keep( segmentIdx, multivectorShared[ 0 ] );
          }
       }
@@ -216,7 +243,6 @@ struct CSRKernelAdaptiveView
          return;
       }
 
-      this->printBlocks();
       static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
       //static constexpr Index THREADS_SCALAR = 128;
       //static constexpr Index THREADS_VECTOR = 128;
@@ -322,7 +348,7 @@ struct CSRKernelAdaptive
     static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
 
    /* How many shared memory use per block in CSR Adaptive kernel */
-   static constexpr Index SHARED_PER_BLOCK = 24576;
+   static constexpr Index SHARED_PER_BLOCK = 20000; //24576; TODO:
 
    /* Number of elements in shared memory */
    static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(double);
@@ -364,7 +390,7 @@ struct CSRKernelAdaptive
                if( sum <= 2 * MAX_ELEMENTS_PER_WARP_ADAPT )
                   type = details::Type::VECTOR;
                else
-                  type = details::Type::VECTOR; // TODO: Put LONG back
+                  type = details::Type::LONG;
                   //type = Type::LONG; //
                return current + 1;
             }
@@ -393,7 +419,9 @@ struct CSRKernelAdaptive
             {
                const Index blocksCount = inBlock.size();
                const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
-               const Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
+               Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
+               if( warpsLeft == 0 )
+                  warpsLeft = warpsPerCudaBlock;
                //Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
                inBlock.emplace_back( start, details::Type::LONG, 0, warpsLeft );
                for( Index index = 1; index < warpsLeft; index++ )
