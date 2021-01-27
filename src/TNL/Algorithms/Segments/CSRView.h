@@ -14,35 +14,42 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/CSRKernelScalar.h>
+#include <TNL/Algorithms/Segments/CSRKernelVector.h>
+#include <TNL/Algorithms/Segments/CSRKernelHybrid.h>
+#include <TNL/Algorithms/Segments/CSRKernelAdaptive.h>
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel = CSRKernelScalar< Index, Device > >
 class CSRView
 {
    public:
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
+      using KernelType = Kernel;
       using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
-      using ConstOffsetsView = typename Containers::Vector< Index, DeviceType,IndexType >::ConstViewType;
+      using ConstOffsetsView = typename Containers::Vector< Index, DeviceType, IndexType >::ConstViewType;
+      using KernelView = typename Kernel::ViewType;
       using ViewType = CSRView;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = CSRView< Device_, Index_ >;
-      using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
+      using ViewTemplate = CSRView< Device_, Index_, Kernel >;
+      using ConstViewType = CSRView< Device, std::add_const_t< Index >, Kernel >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       __cuda_callable__
       CSRView();
 
       __cuda_callable__
-      CSRView( const OffsetsView& offsets );
+      CSRView( const OffsetsView& offsets, const KernelView& kernel );
 
       __cuda_callable__
-      CSRView( const OffsetsView&& offsets );
+      CSRView( const OffsetsView&& offsets, const KernelView&& kernel );
 
       __cuda_callable__
       CSRView( const CSRView& csr_view );
@@ -121,7 +128,30 @@ class CSRView
    protected:
 
       OffsetsView offsets;
+
+      KernelView kernel;
 };
+
+template< typename Device,
+          typename Index >
+using CSRViewScalar = CSRView< Device, Index, CSRKernelScalar< Index, Device > >;
+
+template< typename Device,
+          typename Index >
+using CSRViewVector = CSRView< Device, Index, CSRKernelVector< Index, Device > >;
+
+template< typename Device,
+          typename Index >
+using CSRViewHybrid = CSRView< Device, Index, CSRKernelHybrid< Index, Device > >;
+
+template< typename Device,
+          typename Index >
+using CSRViewAdaptive = CSRView< Device, Index, CSRKernelAdaptive< Index, Device > >;
+
+template< typename Device,
+          typename Index >
+using CSRViewDefault = CSRViewScalar< Device, Index >;
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

@@ -29,11 +29,11 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR, int >,
-    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR, int >
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSRDefault, int >,
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSRDefault, int >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR, int >,
-    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSR, int >
+   ,TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSRDefault, int >,
+    TNL::Matrices::SparseMatrix< bool, TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSRDefault, int >
 #endif
 >;
 

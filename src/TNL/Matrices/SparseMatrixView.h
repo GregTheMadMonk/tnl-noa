@@ -36,10 +36,10 @@ struct ChooseSparseMatrixComputeReal< bool, Index >
  *
  * It serves as an accessor to \ref SparseMatrix for example when passing the
  * matrix to lambda functions. SparseMatrix view can be also created in CUDA kernels.
- * 
- * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated 
+ *
+ * \tparam Real is a type of matrix elements. If \e Real equals \e bool the matrix is treated
  *    as binary and so the matrix elements values are not stored in the memory since we need
- *    to remember only coordinates of non-zero elements( which equal one). 
+ *    to remember only coordinates of non-zero elements( which equal one).
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
  * \tparam MatrixType specifies a symmetry of matrix. See \ref MatrixType. Symmetric
@@ -50,13 +50,13 @@ struct ChooseSparseMatrixComputeReal< bool, Index >
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
  * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
  *    bu the user, of course.
- * 
+ *
  */
 template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_ > class SegmentsView = Algorithms::Segments::CSRView,
+          template< typename Device_, typename Index_ > class SegmentsView = Algorithms::Segments::CSRViewDefault,
           typename ComputeReal = typename ChooseSparseMatrixComputeReal< Real, Index >::type >
 class SparseMatrixView : public MatrixView< Real, Device, Index >
 {
@@ -79,14 +79,14 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Test of symmetric matrix type.
-       * 
+       *
        * \return \e true if the matrix is stored as symmetric and \e false otherwise.
        */
       static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
       /**
        * \brief Test of binary matrix type.
-       * 
+       *
        * \return \e true if the matrix is stored as binary and \e false otherwise.
        */
       static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
@@ -120,7 +120,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using SegmentsViewType = SegmentsView< Device, Index >;
 
       /**
-       * \brief Type of related matrix view. 
+       * \brief Type of related matrix view.
        */
       using ViewType = SparseMatrixView< std::remove_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
 
@@ -158,7 +158,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Constructor with all necessary data and views.
-       * 
+       *
        * \param rows is a number of matrix rows.
        * \param columns is a number of matrix columns.
        * \param values is a vector view with matrix elements values.
@@ -174,7 +174,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param matrix is an input sparse matrix view.
        */
       __cuda_callable__
@@ -182,7 +182,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param matrix is an input sparse matrix view.
        */
       __cuda_callable__
@@ -190,7 +190,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns a modifiable view of the sparse matrix.
-       * 
+       *
        * \return sparse matrix view.
        */
       __cuda_callable__
@@ -198,7 +198,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns a non-modifiable view of the sparse matrix.
-       * 
+       *
        * \return sparse matrix view.
        */
       __cuda_callable__
@@ -206,11 +206,11 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * The string has a form `Matrices::SparseMatrix< RealType,  [any_device], IndexType, General/Symmetric, Format, [any_allocator] >`.
-       * 
+       *
        * \return \ref String with the serialization type.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_getSerializationType.cpp
        * \par Output
@@ -220,11 +220,11 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * See \ref SparseMatrix::getSerializationType.
-       * 
+       *
        * \return \e String with the serialization type.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_getSerializationType.cpp
        * \par Output
@@ -234,10 +234,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Computes number of non-zeros in each row.
-       * 
+       *
        * \param rowLengths is a vector into which the number of non-zeros in each row
        * will be stored.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_getCompressedRowLengths.cpp
        * \par Output
@@ -248,7 +248,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns capacity of given matrix row.
-       * 
+       *
        * \param row index of matrix row.
        * \return number of matrix elements allocated for the row.
        */
@@ -257,26 +257,26 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns number of non-zero matrix elements.
-       * 
+       *
        * This method really counts the non-zero matrix elements and so
        * it returns zero for matrix having all allocated elements set to zero.
-       * 
+       *
        * \return number of non-zero matrix elements.
        */
       IndexType getNonzeroElementsCount() const;
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_getConstRow.cpp
        * \par Output
        * \include SparseMatrixViewExample_getConstRow.out
-       * 
+       *
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
@@ -284,16 +284,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_getRow.cpp
        * \par Output
        * \include SparseMatrixViewExample_getRow.out
-       * 
+       *
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
@@ -301,7 +301,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
-       * 
+       *
        * This method can be called from the host system (CPU) no matter
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
@@ -309,11 +309,11 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
        * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
        * The call may fail if the matrix row capacity is exhausted.
-       * 
+       *
        * \param row is row index of the element.
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
-       * 
+       *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_setElement.cpp
        * \par Output

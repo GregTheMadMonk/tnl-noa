@@ -22,122 +22,140 @@ namespace TNL {
 
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 CSRView()
 {
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-CSRView< Device, Index >::
-CSRView( const OffsetsView& offsets_view )
-   : offsets( offsets_view )
+CSRView< Device, Index, Kernel >::
+CSRView( const OffsetsView& offsets_view,
+         const KernelView& kernel_view )
+   : offsets( offsets_view ), kernel( kernel_view )
 {
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-CSRView< Device, Index >::
-CSRView( const OffsetsView&& offsets_view )
-   : offsets( offsets_view )
+CSRView< Device, Index, Kernel >::
+CSRView( const OffsetsView&& offsets_view,
+         const KernelView&& kernel_view )
+   : offsets( std::move( offsets_view ) ), kernel( std::move( kernel_view ) )
 {
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 CSRView( const CSRView& csr_view )
-   : offsets( csr_view.offsets )
+   : offsets( csr_view.offsets ), kernel( csr_view.kernel )
 {
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 CSRView( const CSRView&& csr_view )
-   : offsets( std::move( csr_view.offsets ) )
+   : offsets( std::move( csr_view.offsets ) ), kernel( std::move( csr_view.kernel ) )
 {
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 String
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 getSerializationType()
 {
-   return "CSR< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+   return "CSR< [any_device], " +
+      TNL::getSerializationType< IndexType >() +
+      TNL::getSerializationType< KernelType >() + " >";
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 String
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 getSegmentsType()
 {
    return "CSR";
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
-typename CSRView< Device, Index >::ViewType
-CSRView< Device, Index >::
+typename CSRView< Device, Index, Kernel >::ViewType
+CSRView< Device, Index, Kernel >::
 getView()
 {
-   return ViewType( this->offsets );
+   return ViewType( this->offsets, this->kernel );
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
 auto
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( this->offsets.getConstView() );
+   return ConstViewType( this->offsets.getConstView(), this->kernel.getConstView() );
 }
 
 template< typename Device,
-          typename Index >
-__cuda_callable__ auto CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+__cuda_callable__ auto CSRView< Device, Index, Kernel >::
 getSegmentsCount() const -> IndexType
 {
    return this->offsets.getSize() - 1;
 }
 
 template< typename Device,
-          typename Index >
-__cuda_callable__ auto CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+__cuda_callable__ auto CSRView< Device, Index, Kernel >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
 
 template< typename Device,
-          typename Index >
-__cuda_callable__ auto CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+__cuda_callable__ auto CSRView< Device, Index, Kernel >::
 getSize() const -> IndexType
 {
    return this->getStorageSize();
 }
 
 template< typename Device,
-          typename Index >
-__cuda_callable__ auto CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+__cuda_callable__ auto CSRView< Device, Index, Kernel >::
 getStorageSize() const -> IndexType
 {
    return details::CSR< Device, Index >::getStorageSize( this->offsets );
 }
 
 template< typename Device,
-          typename Index >
-__cuda_callable__ auto CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+__cuda_callable__ auto CSRView< Device, Index, Kernel >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
@@ -152,20 +170,22 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 __cuda_callable__
 auto
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
    template< typename Function, typename... Args >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto offsetsView = this->offsets;
@@ -181,73 +201,72 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
    template< typename Function, typename... Args >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
-   const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
-      const IndexType begin = offsetsView[ segmentIdx ];
-      const IndexType end = offsetsView[ segmentIdx + 1 ];
-      RealType aux( zero );
-      IndexType localIdx( 0 );
-      bool compute( true );
-      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-         aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
-      keeper( segmentIdx, aux );
-   };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+      TNL::Algorithms::Segments::CSRKernelScalar< IndexType, DeviceType >::segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+   else
+      kernel.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
-          typename Index >
-CSRView< Device, Index >&
-CSRView< Device, Index >::
+          typename Index,
+          typename Kernel >
+CSRView< Device, Index, Kernel >&
+CSRView< Device, Index, Kernel >::
 operator=( const CSRView& view )
 {
    this->offsets.bind( view.offsets );
+   this->kernel = view.kernel;
    return *this;
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 save( File& file ) const
 {
    file << this->offsets;
 }
 
 template< typename Device,
-          typename Index >
+          typename Index,
+          typename Kernel >
 void
-CSRView< Device, Index >::
+CSRView< Device, Index, Kernel >::
 load( File& file )
 {
    file >> this->offsets;
+   this->kernel.init( this->offsets );
 }
 
       } // namespace Segments
