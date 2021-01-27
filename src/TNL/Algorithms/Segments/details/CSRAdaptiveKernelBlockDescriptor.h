@@ -185,7 +185,7 @@ struct CSRAdaptiveKernelBlockDescriptor
       //return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
    }
 
-   __cuda_callable__ const uint8_t getWarpIdx() const
+   __cuda_callable__ uint8_t getWarpIdx() const
    {
       return this->warpIdx;
    }
