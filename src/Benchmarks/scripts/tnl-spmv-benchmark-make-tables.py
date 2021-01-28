@@ -8,24 +8,25 @@ import pandas
 from collections import defaultdict
 from TNL.LogParser import LogParser
 
-""" 
+"""
 Sparse matrix formats as they appear in the log file.
 """
-cpu_matrix_formats = [ 'CSR', 
+cpu_matrix_formats = [ 'CSR',
                        'Ellpack', 'Ellpack Legacy',
                        'SlicedEllpack', 'SlicedEllpack Legacy',
                        'ChunkedEllpack', 'ChunkedEllpack Legacy',
                        'BiEllpack', 'BiEllpack Legacy' ]
 
 gpu_matrix_formats = [ 'CSR Legacy Scalar', 'CSR Legacy Vector', 'CSR Legacy MultiVector',
-                       'CSR Legacy Light', 'CSR Legacy Light2', 'CSR Legacy Light3', 'CSR Legacy Light4', 'CSR Legacy Light5', 'CSR Legacy Light6', 'CSR Legacy LightWithoutAtomic', 
+                       'CSR Legacy Light', 'CSR Legacy Light2', 'CSR Legacy Light3', 'CSR Legacy Light4', 'CSR Legacy Light5', 'CSR Legacy Light6', 'CSR Legacy LightWithoutAtomic',
                        'CSR Legacy Adaptive',
+                       'CSR< Scalar >', 'CSR< Vector >', 'CSR< Hybrid >', 'CSR< Adaptive >',
                        'Ellpack', 'Ellpack Legacy',
                        'SlicedEllpack', 'SlicedEllpack Legacy',
                        'ChunkedEllpack', 'ChunkedEllpack Legacy',
                        'BiEllpack', 'BiEllpack Legacy' ]
 """
-CPU formats to be compared 
+CPU formats to be compared
 """
 cpu_comparison_formats = { 'CSR' : 'CSR Legacy Scalar',
                            'Ellpack' : 'Ellpack Legacy',
@@ -34,9 +35,12 @@ cpu_comparison_formats = { 'CSR' : 'CSR Legacy Scalar',
                           }
 
 """
-GPU formats to be compared 
+GPU formats to be compared
 """
-gpu_comparison_formats = { #'CSR' : 'CSR Legacy Scalar',
+gpu_comparison_formats = { 'CSR< Scalar >' : 'CSR Legacy Scalar',
+                           'CSR< Vector >' : 'CSR Legacy Vector',
+                           'CSR< Hybrid >' : 'CSR Legacy LightWithoutAtomic',
+                           'CSR< Adaptive >' : 'CSR Legacy Adaptive',
                            'Ellpack' : 'Ellpack Legacy',
                            'SlicedEllpack' : 'SlicedEllpack Legacy',
                            'BiEllpack' : 'BiEllpack Legacy'
