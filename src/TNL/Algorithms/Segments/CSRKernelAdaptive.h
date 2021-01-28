@@ -373,10 +373,11 @@ struct CSRKernelAdaptive
                     Index &sum )
    {
       sum = 0;
+      TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >
+         hostOffsets( offsets );
       for (Index current = start; current < size - 1; current++ )
       {
-         Index elements = offsets.getElement(current + 1) -
-                           offsets.getElement(current);
+         Index elements = hostOffsets[ current + 1 ] - hostOffsets[ current ];
          sum += elements;
          if( sum > SHARED_PER_WARP )
          {
@@ -407,8 +408,8 @@ struct CSRKernelAdaptive
         Index sum, start( 0 ), nextStart( 0 );
 
         // Fill blocks
-        std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlock;
-        inBlock.reserve( rows );
+        std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;
+        inBlocks.reserve( rows );
 
         while( nextStart != rows - 1 )
         {
@@ -417,35 +418,30 @@ struct CSRKernelAdaptive
 
             if( type == details::Type::LONG )
             {
-               const Index blocksCount = inBlock.size();
+               const Index blocksCount = inBlocks.size();
                const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
                Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
                if( warpsLeft == 0 )
                   warpsLeft = warpsPerCudaBlock;
                //Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
-               inBlock.emplace_back( start, details::Type::LONG, 0, warpsLeft );
+               inBlocks.emplace_back( start, details::Type::LONG, 0, warpsLeft );
                for( Index index = 1; index < warpsLeft; index++ )
                {
-                  inBlock.emplace_back( start, details::Type::LONG, index, warpsLeft );
+                  inBlocks.emplace_back( start, details::Type::LONG, index, warpsLeft );
                }
             }
             else
             {
-               inBlock.emplace_back(start, type,
+               inBlocks.emplace_back(start, type,
                     nextStart,
                     offsets.getElement(nextStart),
                     offsets.getElement(start) );
             }
             start = nextStart;
         }
-        inBlock.emplace_back(nextStart);
-
-        // Copy values
-        this->blocks.setSize(inBlock.size());
-        for (size_t i = 0; i < inBlock.size(); ++i)
-            this->blocks.setElement(i, inBlock[i]);
-
-         this->view.setBlocks( blocks );
+        inBlocks.emplace_back(nextStart);
+        this->blocks = inBlocks;
+        this->view.setBlocks( blocks );
     };
 
    void reset()
