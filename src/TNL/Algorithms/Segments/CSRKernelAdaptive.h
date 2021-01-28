@@ -220,6 +220,11 @@ struct CSRKernelAdaptiveView
 
    ConstViewType getConstView() const { return *this; };
 
+   static TNL::String getKernelType()
+   {
+      return "Adaptive";
+   };
+
    template< typename OffsetsView,
              typename Fetch,
              typename Reduction,
@@ -344,6 +349,10 @@ struct CSRKernelAdaptive
     using BlocksType = typename ViewType::BlocksType;
     using BlocksView = typename BlocksType::ViewType;
 
+   static TNL::String getKernelType()
+   {
+      return ViewType::getKernelType();
+   };
 
     static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
 
