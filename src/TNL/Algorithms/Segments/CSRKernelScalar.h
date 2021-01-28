@@ -38,6 +38,8 @@ struct CSRKernelScalar
 
     ConstViewType getConstView() const;
 
+    static TNL::String getKernelType();
+
     template< typename OffsetsView,
               typename Fetch,
               typename Reduction,

@@ -91,7 +91,7 @@ String
 CSRView< Device, Index, Kernel >::
 getSegmentsType()
 {
-   return "CSR";
+   return "CSR< " + KernelType::getKernelType() + " >";
 }
 
 template< typename Device,

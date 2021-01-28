@@ -58,6 +58,15 @@ getConstView() const -> ConstViewType
 
 template< typename Index,
           typename Device >
+TNL::String
+CSRKernelScalar< Index, Device >::
+getKernelType()
+{
+    return "Scalar";
+}
+
+template< typename Index,
+          typename Device >
     template< typename OffsetsView,
               typename Fetch,
               typename Reduction,

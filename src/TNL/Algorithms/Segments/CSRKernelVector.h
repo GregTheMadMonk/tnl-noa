@@ -24,35 +24,36 @@ template< typename Index,
           typename Device >
 struct CSRKernelVector
 {
-    using IndexType = Index;
-    using DeviceType = Device;
-    using ViewType = CSRKernelVector< Index, Device >;
-    using ConstViewType = CSRKernelVector< Index, Device >;
+   using IndexType = Index;
+   using DeviceType = Device;
+   using ViewType = CSRKernelVector< Index, Device >;
+   using ConstViewType = CSRKernelVector< Index, Device >;
 
-    template< typename Offsets >
-    void init( const Offsets& offsets );
+   template< typename Offsets >
+   void init( const Offsets& offsets );
 
-    void reset();
+   void reset();
 
-    ViewType getView();
+   ViewType getView();
 
-    ConstViewType getConstView() const;
+   ConstViewType getConstView() const;
 
+   static TNL::String getKernelType();
 
-    template< typename OffsetsView,
-              typename Fetch,
-              typename Reduction,
-              typename ResultKeeper,
-              typename Real,
-              typename... Args >
-    static void segmentsReduction( const OffsetsView& offsets,
-                                   Index first,
-                                   Index last,
-                                   Fetch& fetch,
-                                   const Reduction& reduction,
-                                   ResultKeeper& keeper,
-                                   const Real& zero,
-                                   Args... args );
+   template< typename OffsetsView,
+             typename Fetch,
+             typename Reduction,
+             typename ResultKeeper,
+             typename Real,
+             typename... Args >
+   static void segmentsReduction( const OffsetsView& offsets,
+                                  Index first,
+                                  Index last,
+                                  Fetch& fetch,
+                                  const Reduction& reduction,
+                                  ResultKeeper& keeper,
+                                  const Real& zero,
+                                  Args... args );
 };
 
       } // namespace Segments

@@ -116,6 +116,15 @@ getView() -> ViewType
 
 template< typename Index,
           typename Device >
+TNL::String
+CSRKernelHybrid< Index, Device >::
+getKernelType()
+{
+    return "Hybrid";
+}
+
+template< typename Index,
+          typename Device >
 auto
 CSRKernelHybrid< Index, Device >::
 getConstView() const -> ConstViewType
