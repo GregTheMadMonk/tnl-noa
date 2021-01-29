@@ -156,11 +156,11 @@ navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, 
 setupLinearSystem( Matrix& matrix )
 {
 /*   const IndexType dofs = this->getDofs( mesh );
-   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   CompressedRowLengthsVectorType rowLengths;
+   typedef typename Matrix::RowsCapacitiesType RowsCapacitiesTypeType;
+   RowsCapacitiesTypeType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,

@@ -31,9 +31,9 @@ public:
    using RealType = Real;
    using DeviceType = Device;
    using IndexType = Index;
-   using CompressedRowLengthsVector = Containers::Vector< IndexType, DeviceType, IndexType >;
-   using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
-   using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
+   using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType >;
+   using RowsCapacitiesTypeView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+   using ConstRowsCapacitiesTypeView = typename RowsCapacitiesTypeView::ConstViewType;
    using ValuesView = Containers::VectorView< RealType, DeviceType, IndexType >;
    using ViewType = MatrixView< typename std::remove_const< Real >::type, Device, Index >;
    using ConstViewType = MatrixView< typename std::add_const< Real >::type, Device, Index >;

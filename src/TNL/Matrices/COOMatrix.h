@@ -33,8 +33,8 @@ public:
 	typedef Real RealType;
 	typedef Device DeviceType;
 	typedef Index IndexType;
-	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+	typedef typename Sparse< RealType, DeviceType, IndexType >:: RowsCapacitiesType RowsCapacitiesType;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstRowsCapacitiesTypeView ConstRowsCapacitiesTypeView;
 
    template< typename _Real = Real,
              typename _Device = Device,
@@ -50,7 +50,7 @@ public:
 
 	IndexType getNumberOfUsedValues() const;
 
-	bool setCompressedRowLengths(ConstCompressedRowLengthsVectorView rowLengths);
+	bool setCompressedRowLengths(ConstRowsCapacitiesTypeView rowLengths);
 
 	void getRowLengths(Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths) const;
 

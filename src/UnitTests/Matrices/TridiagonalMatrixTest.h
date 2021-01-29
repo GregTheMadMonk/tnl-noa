@@ -132,10 +132,10 @@ void test_GetCompressedRowLengths()
    for( IndexType i = 8; i < 11; i++ ) // 9th row -> 3 elements
       m.setElement( 9, i, value++ );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths( rows );
+   typename Matrix::RowsCapacitiesType rowLengths( rows );
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 2, 3, 2, 3, 3, 2, 3, 2, 3, 3 };
+   typename Matrix::RowsCapacitiesType correctRowLengths{ 2, 3, 2, 3, 3, 2, 3, 2, 3, 3 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 

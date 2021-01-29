@@ -78,7 +78,7 @@ void test_SetRowCapacities()
    const IndexType cols = 11;
 
    Matrix m( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths { 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3  };
+   typename Matrix::RowsCapacitiesType rowLengths { 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3  };
    m.setRowCapacities( rowLengths );
 
    // Insert values into the rows.
@@ -139,7 +139,7 @@ void test_SetRowCapacities()
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
 
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
+   typename Matrix::RowsCapacitiesType correctRowLengths{ 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 

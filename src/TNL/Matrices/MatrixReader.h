@@ -45,7 +45,7 @@ class MatrixReader
 
    static void readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
-                                      typename Matrix::CompressedRowLengthsVector& rowLengths,
+                                      typename Matrix::RowsCapacitiesType& rowLengths,
                                       bool verbose,
                                       bool symReader );
 

@@ -39,8 +39,8 @@ update( const MatrixPointer& matrixPointer )
    U.setDimensions( N, N );
 
    // copy row lengths
-   typename decltype(L)::CompressedRowLengthsVector L_rowLengths( N );
-   typename decltype(U)::CompressedRowLengthsVector U_rowLengths( N );
+   typename decltype(L)::RowsCapacitiesType L_rowLengths( N );
+   typename decltype(U)::RowsCapacitiesType U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
       IndexType L_entries = 0;
@@ -302,8 +302,8 @@ allocate_LU()
    const CSR* kernel_A = &A.template getData< DeviceType >();
 
    // copy row lengths
-   typename CSR::CompressedRowLengthsVector L_rowLengths( N );
-   typename CSR::CompressedRowLengthsVector U_rowLengths( N );
+   typename CSR::RowsCapacitiesType L_rowLengths( N );
+   typename CSR::RowsCapacitiesType U_rowLengths( N );
    Containers::VectorView< typename decltype(L_rowLengths)::RealType, DeviceType, IndexType > L_rowLengths_view( L_rowLengths );
    Containers::VectorView< typename decltype(U_rowLengths)::RealType, DeviceType, IndexType > U_rowLengths_view( U_rowLengths );
    auto kernel_copy_row_lengths = [=] __cuda_callable__ ( IndexType i ) mutable

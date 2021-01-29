@@ -37,7 +37,7 @@ namespace Matrices {
  *    different matrix formats can perform differently especially on GPUs. By default \ref CSR format is used. See also
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
  * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
- *    bu the user, of course.
+ *    by the user, of course.
  * \tparam RealAllocator is allocator for the matrix elements values.
  * \tparam IndexAllocator is allocator for the matrix elements column indexes.
  */
@@ -878,14 +878,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for saving the matrix to a file.
        *
-       * \param fileName is name of the file.
+       * \param file is the output file.
        */
       virtual void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        *
-       * \param fileName is name of the file.
+       * \param file is the input file.
        */
       virtual void load( File& file ) override;
 

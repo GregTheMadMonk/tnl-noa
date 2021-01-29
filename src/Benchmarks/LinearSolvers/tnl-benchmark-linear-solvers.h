@@ -334,7 +334,7 @@ struct LinearSolversBenchmark
    using Partitioner = Containers::Partitioner< IndexType >;
    using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
    using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
-   using DistributedRowLengths = typename DistributedMatrix::CompressedRowLengthsVector;
+   using DistributedRowLengths = typename DistributedMatrix::RowsCapacitiesType;
 
    static bool
    run( Benchmark& benchmark,
@@ -377,7 +377,7 @@ struct LinearSolversBenchmark
          matrixPointer->vectorProduct( x, b );
       }
 
-      typename MatrixType::CompressedRowLengthsVector rowLengths;
+      typename MatrixType::RowsCapacitiesType rowLengths;
       matrixPointer->getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 

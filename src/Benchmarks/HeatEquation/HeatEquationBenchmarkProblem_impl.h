@@ -156,11 +156,11 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 setupLinearSystem( Matrix& matrix )
 {
    const IndexType dofs = this->getDofs();
-   typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   CompressedRowLengthsVectorType rowLengths;
+   typedef typename Matrix::RowsCapacitiesType RowsCapacitiesTypeType;
+   RowsCapacitiesTypeType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( this->getMesh(),
                                                                           differentialOperatorPointer,
                                                                           boundaryConditionPointer,

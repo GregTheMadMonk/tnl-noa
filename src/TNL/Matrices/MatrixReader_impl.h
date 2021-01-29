@@ -43,11 +43,13 @@ void MatrixReader< Matrix >::readMtxFile( std::istream& file,
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
-                                                       Matrix& matrix,
-                                                       typename Matrix::CompressedRowLengthsVector& rowLengths,
-                                                       bool verbose,
-                                                       bool symReader )
+void
+MatrixReader< Matrix >::
+readMtxFileHostMatrix( std::istream& file,
+                       Matrix& matrix,
+                       typename Matrix::RowsCapacitiesType& rowLengths,
+                       bool verbose,
+                       bool symReader )
 {
    IndexType rows, columns;
    bool symmetricMatrix( false );
@@ -370,7 +372,7 @@ class MatrixReaderDeviceDependentCode< Devices::Host >
                             bool verbose,
                             bool symReader )
    {
-      typename Matrix::CompressedRowLengthsVector rowLengths;
+      typename Matrix::RowsCapacitiesType rowLengths;
       MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
    }
 };
@@ -387,10 +389,10 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
                             bool symReader )
    {
       using HostMatrixType = typename Matrix::template Self< typename Matrix::RealType, Devices::Sequential >;
-      using CompressedRowLengthsVector = typename HostMatrixType::CompressedRowLengthsVector;
+      using RowsCapacitiesType = typename HostMatrixType::RowsCapacitiesType;
 
       HostMatrixType hostMatrix;
-      CompressedRowLengthsVector rowLengths;
+      RowsCapacitiesType rowLengths;
       MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
    }
 };

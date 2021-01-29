@@ -68,7 +68,7 @@ protected:
    using IndexType = typename DistributedMatrix::IndexType;
    using DistributedMatrixType = DistributedMatrix;
 
-   using RowCapacitiesVector = typename DistributedMatrixType::CompressedRowLengthsVector;
+   using RowCapacitiesVector = typename DistributedMatrixType::RowsCapacitiesType;
    using GlobalVector = Containers::Vector< RealType, DeviceType, IndexType >;
    using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
 

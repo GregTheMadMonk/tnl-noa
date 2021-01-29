@@ -200,18 +200,7 @@ void Matrix< Real, Device, Index, RealAllocator >::print( std::ostream& str ) co
 {
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename RealAllocator >
-__cuda_callable__
-const Index&
-Matrix< Real, Device, Index, RealAllocator >::
-getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
+/*
 template< typename Real,
           typename Device,
           typename Index,
@@ -248,7 +237,7 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
             this->numberOfColors++;
         }
     }
-}
+}*/
 
 } // namespace Matrices
 } // namespace TNL

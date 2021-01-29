@@ -84,7 +84,7 @@ template< typename Real,
           typename Device,
           typename Index,
           CSRKernel KernelType >
-void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
+void CSR< Real, Device, Index, KernelType >::setCompressedRowLengths( ConstRowsCapacitiesTypeView rowLengths )
 {
    TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
    TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
@@ -118,7 +118,7 @@ template< typename Real,
           typename Device,
           typename Index,
           CSRKernel KernelType >
-void CSR< Real, Device, Index, KernelType >::setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths )
+void CSR< Real, Device, Index, KernelType >::setRowCapacities( ConstRowsCapacitiesTypeView rowLengths )
 {
    setCompressedRowLengths( rowLengths );
 }
@@ -201,7 +201,7 @@ template< typename Real,
           typename Device,
           typename Index,
           CSRKernel KernelType >
-void CSR< Real, Device, Index, KernelType >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+void CSR< Real, Device, Index, KernelType >::getCompressedRowLengths( RowsCapacitiesTypeView rowLengths ) const
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )

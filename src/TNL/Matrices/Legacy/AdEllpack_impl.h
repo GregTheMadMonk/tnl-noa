@@ -168,7 +168,7 @@ template< typename Real,
           typename Index >
 void
 AdEllpack< Real, Device, Index >::
-setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
+setCompressedRowLengths( ConstRowsCapacitiesTypeView rowLengths )
 {
 
     TNL_ASSERT( this->getRows() > 0, );
@@ -226,7 +226,7 @@ template< typename Real,
           typename Index >
 void
 AdEllpack< Real, Device, Index >::
-setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths )
+setRowCapacities( ConstRowsCapacitiesTypeView rowLengths )
 {
    setCompressedRowLengths( rowLengths );
 }
@@ -234,7 +234,7 @@ setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths )
 template< typename Real,
           typename Device,
           typename Index >
-void AdEllpack< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+void AdEllpack< Real, Device, Index >::getCompressedRowLengths( RowsCapacitiesTypeView rowLengths ) const
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -252,7 +252,7 @@ Index AdEllpack< Real, Device, Index >::getTotalLoad() const
 template< typename Real,
           typename Device,
           typename Index >
-void AdEllpack< Real, Device, Index >::performRowLengthsTest( ConstCompressedRowLengthsVectorView rowLengths )
+void AdEllpack< Real, Device, Index >::performRowLengthsTest( ConstRowsCapacitiesTypeView rowLengths )
 {
     bool found = false;
     for( IndexType row = 0; row < this->getRows(); row++ )
@@ -764,7 +764,7 @@ template< typename Real,
           typename Device,
           typename Index >
 bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
-                                                    ConstCompressedRowLengthsVectorView rowLengths,
+                                                    ConstRowsCapacitiesTypeView rowLengths,
                                                     warpList< AdEllpack >* list )
 {
     IndexType offset, rowOffset, localLoad, reduceMap[ 32 ];

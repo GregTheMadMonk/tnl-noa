@@ -179,10 +179,10 @@ HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, Diffe
 setupLinearSystem( MatrixPointer& matrixPointer )
 {
    const IndexType dofs = this->getDofs();
-   typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   Pointers::SharedPointer<  CompressedRowLengthsVectorType > rowLengthsPointer;
+   typedef typename MatrixPointer::ObjectType::RowsCapacitiesType RowsCapacitiesTypeType;
+   Pointers::SharedPointer<  RowsCapacitiesTypeType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
-   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       this->getMesh(),
       differentialOperatorPointer,

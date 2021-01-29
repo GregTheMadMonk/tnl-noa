@@ -121,9 +121,9 @@ public:
     typedef Real RealType;
     typedef Device DeviceType;
     typedef Index IndexType;
-    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
-    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::RowsCapacitiesType RowsCapacitiesType;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstRowsCapacitiesTypeView ConstRowsCapacitiesTypeView;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::RowsCapacitiesTypeView RowsCapacitiesTypeView;
 
     template< typename _Real = Real,
               typename _Device = Device,
@@ -132,11 +132,11 @@ public:
 
     AdEllpack();
 
-    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+    void setCompressedRowLengths( ConstRowsCapacitiesTypeView rowLengths );
 
-    void setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths );
+    void setRowCapacities( ConstRowsCapacitiesTypeView rowLengths );
 
-    void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+    void getCompressedRowLengths( RowsCapacitiesTypeView rowLengths ) const;
 
     IndexType getWarp( const IndexType row ) const;
 
@@ -212,7 +212,7 @@ public:
     void print( std::ostream& str ) const;
 
     bool balanceLoad( const RealType average,
-                      ConstCompressedRowLengthsVectorView rowLengths,
+                      ConstRowsCapacitiesTypeView rowLengths,
                       warpList< AdEllpack >* list );
 
     void computeWarps( const IndexType SMs,
@@ -223,7 +223,7 @@ public:
 
     void performRowTest();
 
-    void performRowLengthsTest( ConstCompressedRowLengthsVectorView rowLengths );
+    void performRowLengthsTest( ConstRowsCapacitiesTypeView rowLengths );
 
     IndexType getTotalLoad() const;
 
