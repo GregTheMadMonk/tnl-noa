@@ -636,6 +636,18 @@ class Array
       Allocator allocator;
 };
 
+/**
+ * \brief Overloaded insertion operator for printing an array to output stream.
+ *
+ * \tparam Value is a type of the array elements.
+ * \tparam Device is a device where the array is allocated.
+ * \tparam Index is a type used for the indexing of the array elements.
+ *
+ * \param str is a output stream.
+ * \param view is the array to be printed.
+ *
+ * \return a reference on the output stream \ref std::ostream&.
+ */
 template< typename Value, typename Device, typename Index, typename Allocator >
 std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, Allocator >& array );
 

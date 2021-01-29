@@ -489,6 +489,18 @@ protected:
    Index size = 0;
 };
 
+/**
+ * \brief Overloaded insertion operator for printing an array view to output stream.
+ *
+ * \tparam Value is a type of the array view elements.
+ * \tparam Device is a device where the array view is allocated.
+ * \tparam Index is a type used for the indexing of the array view elements.
+ *
+ * \param str is a output stream.
+ * \param view is the array view to be printed.
+ *
+ * \return a reference on the output stream \ref std::ostream&.
+ */
 template< typename Value, typename Device, typename Index >
 std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
 
