@@ -162,21 +162,7 @@ void MatrixView< Real, Device, Index >::print( std::ostream& str ) const
 {
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-const Index&
-MatrixView< Real, Device, Index >::
-getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void
+/*void
 MatrixView< Real, Device, Index >::
 computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 {
@@ -208,7 +194,7 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
             this->numberOfColors++;
         }
     }
-}
+} */
 
-} // namespace Matrices
+   } // namespace Matrices
 } // namespace TNL
