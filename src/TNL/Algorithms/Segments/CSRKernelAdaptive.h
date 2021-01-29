@@ -119,7 +119,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       const Index segmentIdx = block.getFirstSegment();//block.index[0];
       //minID = offsets[block.index[0] ];
       const Index end = offsets[segmentIdx + 1];
-      const int tid = threadIdx.x;
+      //const int tid = threadIdx.x;
       //const int inBlockWarpIdx = block.getWarpIdx();
 
       //if( to > end )
@@ -342,12 +342,12 @@ template< typename Index,
           typename Device >
 struct CSRKernelAdaptive
 {
-    using IndexType = Index;
-    using DeviceType = Device;
-    using ViewType = CSRKernelAdaptiveView< Index, Device >;
-    using ConstViewType = CSRKernelAdaptiveView< Index, Device >;
-    using BlocksType = typename ViewType::BlocksType;
-    using BlocksView = typename BlocksType::ViewType;
+   using IndexType = Index;
+   using DeviceType = Device;
+   using ViewType = CSRKernelAdaptiveView< Index, Device >;
+   using ConstViewType = CSRKernelAdaptiveView< Index, Device >;
+   using BlocksType = typename ViewType::BlocksType;
+   using BlocksView = typename BlocksType::ViewType;
 
    static TNL::String getKernelType()
    {
@@ -382,11 +382,9 @@ struct CSRKernelAdaptive
                     Index &sum )
    {
       sum = 0;
-      TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >
-         hostOffsets( offsets );
       for (Index current = start; current < size - 1; current++ )
       {
-         Index elements = hostOffsets[ current + 1 ] - hostOffsets[ current ];
+         Index elements = offsets[ current + 1 ] - offsets[ current ];
          sum += elements;
          if( sum > SHARED_PER_WARP )
          {
@@ -401,7 +399,6 @@ struct CSRKernelAdaptive
                   type = details::Type::VECTOR;
                else
                   type = details::Type::LONG;
-                  //type = Type::LONG; //
                return current + 1;
             }
          }
@@ -410,48 +407,46 @@ struct CSRKernelAdaptive
       return size - 1; // return last row pointer
     }
 
-    template< typename Offsets >
-    void init( const Offsets& offsets )
-    {
-        const Index rows = offsets.getSize();
-        Index sum, start( 0 ), nextStart( 0 );
+   template< typename Offsets >
+   void init( const Offsets& offsets )
+   {
+      using HostOffsetsType = TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >;
+      HostOffsetsType hostOffsets( offsets );
+      const Index rows = offsets.getSize();
+      Index sum, start( 0 ), nextStart( 0 );
 
-        // Fill blocks
-        std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;
-        inBlocks.reserve( rows );
+      // Fill blocks
+      std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;
+      inBlocks.reserve( rows );
 
-        while( nextStart != rows - 1 )
-        {
-            details::Type type;
-            nextStart = findLimit( start, offsets, rows, type, sum );
+      while( nextStart != rows - 1 )
+      {
+         details::Type type;
+         nextStart = findLimit( start, hostOffsets, rows, type, sum );
 
-            if( type == details::Type::LONG )
-            {
-               const Index blocksCount = inBlocks.size();
-               const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
-               Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
-               if( warpsLeft == 0 )
-                  warpsLeft = warpsPerCudaBlock;
-               //Index parts = roundUpDivision(sum, this->SHARED_PER_WARP);
-               inBlocks.emplace_back( start, details::Type::LONG, 0, warpsLeft );
-               for( Index index = 1; index < warpsLeft; index++ )
-               {
-                  inBlocks.emplace_back( start, details::Type::LONG, index, warpsLeft );
-               }
-            }
-            else
-            {
-               inBlocks.emplace_back(start, type,
-                    nextStart,
-                    offsets.getElement(nextStart),
-                    offsets.getElement(start) );
-            }
-            start = nextStart;
-        }
-        inBlocks.emplace_back(nextStart);
-        this->blocks = inBlocks;
-        this->view.setBlocks( blocks );
-    };
+         if( type == details::Type::LONG )
+         {
+            const Index blocksCount = inBlocks.size();
+            const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
+            Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
+            if( warpsLeft == 0 )
+               warpsLeft = warpsPerCudaBlock;
+            for( Index index = 0; index < warpsLeft; index++ )
+               inBlocks.emplace_back( start, details::Type::LONG, index, warpsLeft );
+         }
+         else
+         {
+            inBlocks.emplace_back(start, type,
+                  nextStart,
+                  offsets.getElement(nextStart),
+                  offsets.getElement(start) );
+         }
+         start = nextStart;
+      }
+      inBlocks.emplace_back(nextStart);
+      this->blocks = inBlocks;
+      this->view.setBlocks( blocks );
+   }
 
    void reset()
    {
