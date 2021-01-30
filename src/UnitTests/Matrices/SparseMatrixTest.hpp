@@ -1361,6 +1361,26 @@ void test_VectorProduct()
       for( IndexType i = 0; i < rows; i++ )
          EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
    }
+
+   /**
+    * Long row test
+    */
+   {
+      const int columns = 3000;
+      const int rows = 1;
+      Matrix m3( rows, columns );
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
+      rowsCapacities = columns;
+      m3.setRowCapacities( rowsCapacities );
+      auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
+         column = localIdx;
+         value = localIdx + 1;
+      };
+      m3.forAllRows( f );
+      TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
+      m3.vectorProduct( in, out );
+      EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );
+   }
 }
 
 template< typename Matrix >
