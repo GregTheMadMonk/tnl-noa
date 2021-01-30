@@ -22,7 +22,7 @@ struct ScopedInitializer
 {
    ScopedInitializer( int& argc, char**& argv, int required_thread_level = MPI_THREAD_SINGLE )
    {
-      Init( argc, argv );
+      Init( argc, argv, required_thread_level );
    }
 
    ~ScopedInitializer()
