@@ -20,7 +20,7 @@
 
 namespace TNL {
 /**
- * \brief Namespace for matrices of different types.
+ * \brief Namespace for different matrix types.
  */
 namespace Matrices {
 

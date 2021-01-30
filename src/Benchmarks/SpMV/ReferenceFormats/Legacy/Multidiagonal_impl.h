@@ -10,14 +10,16 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/Multidiagonal.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Multidiagonal.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 template< typename Device >
 class MultidiagonalDeviceDependentCode;
@@ -813,6 +815,8 @@ class MultidiagonalDeviceDependentCode< Devices::Cuda >
       }
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL

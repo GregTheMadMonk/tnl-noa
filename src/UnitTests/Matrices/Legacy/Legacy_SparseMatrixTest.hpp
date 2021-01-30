@@ -16,7 +16,7 @@
 
 // Temporary, until test_OperatorEquals doesn't work for all formats.
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
-#include <TNL/Matrices/Legacy/AdEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/AdEllpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/BiEllpack.h>
 
 #ifdef HAVE_GTEST
@@ -1657,12 +1657,13 @@ void test_OperatorEquals()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
+   using namespace TNL::Benchmarks::SpMV::ReferenceFormats;
    if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
        return;
    else
    {
-       using AdELL_host = TNL::Matrices::Legacy::AdEllpack< RealType, TNL::Devices::Host, IndexType >;
-       using AdELL_cuda = TNL::Matrices::Legacy::AdEllpack< RealType, TNL::Devices::Cuda, IndexType >;
+       using AdELL_host = Legacy::AdEllpack< RealType, TNL::Devices::Host, IndexType >;
+       using AdELL_cuda = Legacy::AdEllpack< RealType, TNL::Devices::Cuda, IndexType >;
 
        /*
         * Sets up the following 8x8 sparse matrix:

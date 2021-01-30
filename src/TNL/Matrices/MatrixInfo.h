@@ -18,7 +18,7 @@
 #include <TNL/Algorithms/Segments/CSRView.h>
 #include <TNL/Algorithms/Segments/EllpackView.h>
 #include <TNL/Algorithms/Segments/SlicedEllpackView.h>
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
@@ -82,7 +82,7 @@ struct MatrixInfo< SparseMatrix< Real, Device, Index, MatrixType, Segments, Real
 /////
 // Legacy matrices
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::BiEllpack< Real, Device, Index > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::BiEllpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -90,7 +90,7 @@ struct MatrixInfo< Legacy::BiEllpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRScalar > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRScalar > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -98,7 +98,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRScalar > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRVector> >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRVector> >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -106,7 +106,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRVector> >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -114,7 +114,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight2 > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight2 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -122,7 +122,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight2 > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight3 > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight3 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -130,7 +130,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight3 > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight4 > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight4 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -138,7 +138,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight4 > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight5 > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight5 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -146,7 +146,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight5 > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight6 > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLight6 > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -154,7 +154,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLight6 > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRAdaptive > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRAdaptive > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -162,7 +162,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRAdaptive > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRMultiVector > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRMultiVector > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -170,7 +170,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRMultiVector > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLightWithoutAtomic > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, Benchmarks::SpMV::ReferenceFormats::Legacy::CSRLightWithoutAtomic > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -178,7 +178,7 @@ struct MatrixInfo< Legacy::CSR< Real, Device, Index, Legacy::CSRLightWithoutAtom
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::ChunkedEllpack< Real, Device, Index > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::ChunkedEllpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -186,7 +186,7 @@ struct MatrixInfo< Legacy::ChunkedEllpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Legacy::Ellpack< Real, Device, Index > >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::Ellpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -194,7 +194,7 @@ struct MatrixInfo< Legacy::Ellpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index, int SliceSize >
-struct MatrixInfo< Legacy::SlicedEllpack< Real, Device, Index, SliceSize> >
+struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::SlicedEllpack< Real, Device, Index, SliceSize> >
 {
    static String getDensity() { return String( "sparse" ); };
 

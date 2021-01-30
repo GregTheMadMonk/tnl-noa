@@ -25,8 +25,10 @@ protected:
    using SlicedEllpackMatrixType = Matrix;
 };
 
+using namespace TNL::Benchmarks::SpMV::ReferenceFormats;
+
 template< typename Real, typename Device, typename Index >
-using SlicedEllpackType = TNL::Matrices::Legacy::SlicedEllpack< Real, Device, Index, 32 >;
+using SlicedEllpackType = Legacy::SlicedEllpack< Real, Device, Index, 32 >;
 
 
 // types for which MatrixTest is instantiated

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/Legacy/AdEllpack.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/AdEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <TNL/TypeInfo.h>
@@ -16,8 +16,10 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {
-namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+                namespace Legacy {
 
 /*
  * Auxiliary list implementation
@@ -1587,6 +1589,8 @@ public:
 };
 
 
-} //namespace Legacy
-} // namespace Matrices
+                } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL

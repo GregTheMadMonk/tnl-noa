@@ -12,11 +12,13 @@
 
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/Legacy/MultidiagonalRow.h>
+#include <TNL/Benchmarks/SpMV/ReferenceFormats/Legacy/MultidiagonalRow.h>
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 template< typename Device >
 class MultidiagonalDeviceDependentCode;
@@ -223,8 +225,10 @@ protected:
 };
 
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/Multidiagonal_impl.h>
+#include <TNL/Benchmarks/SpMV/ReferenceFormats/Legacy/Multidiagonal_impl.h>

@@ -20,7 +20,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <cusparse.h>
 #endif
 
@@ -136,7 +136,7 @@ public:
 protected:
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   using CSR = Matrices::Legacy::CSR< RealType, DeviceType, IndexType >;
+   using CSR = Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< RealType, DeviceType, IndexType >;
    Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 

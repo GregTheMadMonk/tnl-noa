@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
 #include <TNL/Algorithms/AtomicOperations.h>
@@ -26,8 +26,10 @@
 constexpr size_t MAX_X_DIM = 2147483647;
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 #ifdef HAVE_CUSPARSE
 template< typename Real, typename Index >
@@ -1764,7 +1766,7 @@ void SpMVCSRAdaptivePrepare( const Real *inVector,
 
       SpMVCSRAdaptive< Real, Index, warpSize,
             matrix.WARPS,
-            matrix.SHARED_PER_WARP, 
+            matrix.SHARED_PER_WARP,
             matrix.MAX_ELEMENTS_PER_WARP_ADAPT >
          <<<blocks, threads>>>(
                inVector,
@@ -1972,6 +1974,8 @@ class CSRDeviceDependentCode< Devices::Cuda >
       }
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL

@@ -17,8 +17,10 @@
 #include <TNL/Exceptions/CudaBadAlloc.h>
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 enum class Type {
    /* LONG = 0!!! Non zero value rewrites index[1] */
@@ -332,8 +334,10 @@ protected:
    friend class CusparseCSR< RealType >;
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/CSR_impl.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR_impl.h>

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
 

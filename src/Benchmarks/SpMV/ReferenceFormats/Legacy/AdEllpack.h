@@ -22,8 +22,10 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {
-namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+                namespace Legacy {
 
 template< typename Device >
 class AdEllpackDeviceDependentCode;
@@ -296,8 +298,10 @@ protected:
 
 };
 
-} //namespace Legacy
-} // namespace Matrices
+                } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/AdEllpack_impl.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/AdEllpack_impl.h>

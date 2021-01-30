@@ -11,11 +11,13 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Matrices/Legacy/Multidiagonal.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/Multidiagonal.h>
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 template< typename MeshType >
 class MultidiagonalMatrixSetter
@@ -83,8 +85,10 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > 
                                bool crossStencil = false );
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/MultidiagonalMatrixSetter_impl.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/MultidiagonalMatrixSetter_impl.h>

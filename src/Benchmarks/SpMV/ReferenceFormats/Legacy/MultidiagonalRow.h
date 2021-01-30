@@ -11,8 +11,10 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 template< typename Real, typename Index >
 class MultidiagonalRow
@@ -52,9 +54,11 @@ class MultidiagonalRow
       Index row, columns, maxRowLength, step;
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Matrices/Legacy/MultidiagonalRow_impl.h>
+#include <TNL/Benchmarks/SpMV/ReferenceFormats/Legacy/MultidiagonalRow_impl.h>
 
