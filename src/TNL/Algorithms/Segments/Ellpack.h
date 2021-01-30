@@ -30,7 +30,7 @@ class Ellpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >

@@ -32,7 +32,7 @@ class SlicedEllpack
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;

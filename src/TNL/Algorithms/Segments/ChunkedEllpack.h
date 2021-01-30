@@ -30,7 +30,7 @@ class ChunkedEllpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = ChunkedEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;

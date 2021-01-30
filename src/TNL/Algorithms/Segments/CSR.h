@@ -15,6 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/CSRView.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -38,6 +39,8 @@ class CSR
       using ViewType = CSRView< Device, Index, KernelType >;
       using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+
+      static constexpr ElementsOrganization getOrganization() { return ColumnMajorOrder; }
 
       CSR();
 
