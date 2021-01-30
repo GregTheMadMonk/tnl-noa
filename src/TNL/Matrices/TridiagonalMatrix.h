@@ -89,6 +89,13 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
 
       /**
+       * \brief This is only for compatibility with sparse matrices.
+       *
+       * \return \e  \e false.
+       */
+      static constexpr bool isSymmetric() { return false; };
+
+      /**
        * \brief The allocator for matrix elements values.
        */
       using RealAllocatorType = RealAllocator;

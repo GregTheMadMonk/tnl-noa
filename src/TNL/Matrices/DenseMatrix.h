@@ -63,10 +63,17 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       /**
        * \brief Matrix elements organization getter.
-       * 
+       *
        * \return matrix elements organization - RowMajorOrder of ColumnMajorOrder.
        */
       static constexpr ElementsOrganization getOrganization() { return Organization; };
+
+      /**
+       * \brief This is only for compatibility with sparse matrices.
+       *
+       * \return \e  \e false.
+       */
+      static constexpr bool isSymmetric() { return false; };
 
       /**
        * \brief The allocator for matrix elements.

@@ -21,25 +21,25 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Matrix >
-void MatrixReader< Matrix >::readMtxFile( const String& fileName,
-                                             Matrix& matrix,
-                                             bool verbose,
-                                             bool symReader )
+void
+MatrixReader< Matrix >::readMtxFile( const String& fileName,
+                                     Matrix& matrix,
+                                     bool verbose )
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::in );
    if( ! file )
       throw std::runtime_error( std::string( "I am not able to open the file " ) + fileName.getString() );
-   readMtxFile( file, matrix, verbose, symReader );
+   readMtxFile( file, matrix, verbose );
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::readMtxFile( std::istream& file,
-                                             Matrix& matrix,
-                                             bool verbose,
-                                             bool symReader )
+void
+MatrixReader< Matrix >::readMtxFile( std::istream& file,
+                                     Matrix& matrix,
+                                     bool verbose )
 {
-   MatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose, symReader );
+   MatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
 }
 
 template< typename Matrix >
@@ -48,35 +48,34 @@ MatrixReader< Matrix >::
 readMtxFileHostMatrix( std::istream& file,
                        Matrix& matrix,
                        typename Matrix::RowsCapacitiesType& rowLengths,
-                       bool verbose,
-                       bool symReader )
+                       bool verbose )
 {
    IndexType rows, columns;
-   bool symmetricMatrix( false );
+   bool symmetricSourceMatrix( false );
 
-   readMtxHeader( file, rows, columns, symmetricMatrix, verbose );
+   readMtxHeader( file, rows, columns, symmetricSourceMatrix, verbose );
 
-   if( symReader && !symmetricMatrix )
+   if( Matrix::isSymmetric() && !symmetricSourceMatrix )
       throw std::runtime_error( "Matrix is not symmetric, but flag for symmetric matrix is given. Aborting." );
 
    matrix.setDimensions( rows, columns );
    rowLengths.setSize( rows );
 
-   computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose );
+   computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricSourceMatrix, Matrix::isSymmetric(), verbose );
 
    matrix.setRowCapacities( rowLengths );
 
-   readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose, symReader );
+   readMatrixElementsFromMtxFile( file, matrix, symmetricSourceMatrix, verbose );
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
-                                               const Matrix& matrix,
-                                               bool verbose )
+void
+MatrixReader< Matrix >::
+verifyMtxFile( std::istream& file, const Matrix& matrix, bool verbose )
 {
-   bool symmetricMatrix( false );
+   bool symmetricSourceMatrix( false );
    IndexType rows, columns;
-   readMtxHeader( file, rows, columns, symmetricMatrix, false );
+   readMtxHeader( file, rows, columns, symmetricSourceMatrix, false );
    file.clear();
    file.seekg( 0, std::ios::beg );
    String line;
@@ -96,7 +95,7 @@ void MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
       RealType value;
       parseMtxLineWithElement( line, row, column, value );
       if( value != matrix.getElement( row-1, column-1 ) ||
-          ( symmetricMatrix && value != matrix.getElement( column-1, row-1 ) ) )
+          ( symmetricSourceMatrix && value != matrix.getElement( column-1, row-1 ) ) )
       {
          std::stringstream str;
          str << "*** !!! VERIFICATION ERROR !!! *** " << std::endl
@@ -106,7 +105,7 @@ void MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
          throw std::runtime_error( str.str() );
       }
       processedElements++;
-      if( symmetricMatrix && row != column )
+      if( symmetricSourceMatrix && row != column )
          processedElements++;
       if( verbose )
         std::cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << std::flush;
@@ -121,15 +120,17 @@ void MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
 }
 
 template< typename Matrix >
-bool MatrixReader< Matrix >::findLineByElement( std::istream& file,
-                                                   const IndexType& row,
-                                                   const IndexType& column,
-                                                   String& line,
-                                                   IndexType& lineNumber )
+bool
+MatrixReader< Matrix >::
+findLineByElement( std::istream& file,
+                   const IndexType& row,
+                   const IndexType& column,
+                   String& line,
+                   IndexType& lineNumber )
 {
    file.clear();
    file.seekg( 0, std::ios::beg );
-   bool symmetricMatrix( false );
+   bool symmetricSourceMatrix( false );
    bool dimensionsLine( false );
    lineNumber = 0;
    while( std::getline( file, line ) )
@@ -145,19 +146,19 @@ bool MatrixReader< Matrix >::findLineByElement( std::istream& file,
       RealType value;
       parseMtxLineWithElement( line, currentRow, currentColumn, value );
       if( ( currentRow == row + 1 && currentColumn == column + 1 ) ||
-          ( symmetricMatrix && currentRow == column + 1 && currentColumn == row + 1 ) )
+          ( symmetricSourceMatrix && currentRow == column + 1 && currentColumn == row + 1 ) )
          return true;
    }
    return false;
 }
 
 template< typename Matrix >
-bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
-                                                bool& symmetric )
+void
+MatrixReader< Matrix >::checkMtxHeader( const String& header, bool& symmetric )
 {
    std::vector< String > parsedLine = header.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() < 5 || parsedLine[ 0 ] != "%%MatrixMarket" )
-      return false;
+      throw std::runtime_error( "Unknown format of the source file. We expect line like this: %%MatrixMarket matrix coordinate real general" );
    if( parsedLine[ 1 ] != "matrix" )
       throw std::runtime_error( std::string( "Keyword 'matrix' is expected in the header line: " ) + header.getString() );
    if( parsedLine[ 2 ] != "coordinates" &&
@@ -172,15 +173,15 @@ bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
       else
          throw std::runtime_error(  std::string( "Only 'general' matrices are supported, not "  ) + parsedLine[ 4 ].getString() );
    }
-   return true;
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::readMtxHeader( std::istream& file,
-                                               IndexType& rows,
-                                               IndexType& columns,
-                                               bool& symmetric,
-                                               bool verbose )
+void
+MatrixReader< Matrix >::readMtxHeader( std::istream& file,
+                                       IndexType& rows,
+                                       IndexType& columns,
+                                       bool& symmetric,
+                                       bool verbose )
 {
    file.clear();
    file.seekg( 0, std::ios::beg );
@@ -192,14 +193,13 @@ void MatrixReader< Matrix >::readMtxHeader( std::istream& file,
       std::getline( file, line );
       if( ! headerParsed )
       {
-         headerParsed = checkMtxHeader( line, symmetric );
+         checkMtxHeader( line, symmetric );
+         headerParsed = true;
          if( verbose && symmetric )
            std::cout << "The matrix is SYMMETRIC ... ";
          continue;
       }
       if( line[ 0 ] == '%' ) continue;
-      if( ! headerParsed )
-         throw std::runtime_error( "Unknown format of the file. We expect line like this: %%MatrixMarket matrix coordinate real general" );
 
       parsedLine = line.split( ' ', String::SplitSkip::SkipEmpty );
       if( (int) parsedLine.size() != 3 )
@@ -217,13 +217,15 @@ void MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istream& file,
-                                                              Containers::Vector< int, DeviceType, int >& rowLengths,
-                                                              const int columns,
-                                                              const int rows,
-                                                              bool symmetricMatrix,
-                                                              bool verbose,
-                                                              bool symReader )
+void
+MatrixReader< Matrix >::
+computeCompressedRowLengthsFromMtxFile( std::istream& file,
+                                        Containers::Vector< int, DeviceType, int >& rowLengths,
+                                        const int columns,
+                                        const int rows,
+                                        bool symmetricSourceMatrix,
+                                        bool symmetricTargetMatrix,
+                                        bool verbose )
 {
    file.clear();
    file.seekg( 0,  std::ios::beg );
@@ -254,10 +256,10 @@ void MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
       if( verbose )
          std::cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << std::flush;
 
-      if( !symReader ||
-          ( symReader && row >= column ) )
+      if( !symmetricTargetMatrix ||
+          ( symmetricTargetMatrix && row >= column ) )
          rowLengths[ row - 1 ]++;
-      else if( symReader && row < column )
+      else if( symmetricTargetMatrix && row < column )
          rowLengths[ column - 1 ]++;
 
       if( rowLengths[ row - 1 ] > columns )
@@ -266,7 +268,7 @@ void MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
          str << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << row << ".";
          throw std::runtime_error( str.str() );
       }
-      if( symmetricMatrix && row != column && symReader )
+      if( symmetricSourceMatrix && row != column && symmetricTargetMatrix )
       {
          rowLengths[ column - 1 ]++;
          if( rowLengths[ column - 1 ] > columns )
@@ -277,7 +279,7 @@ void MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
          }
          continue;
       }
-      else if( symmetricMatrix && row != column && !symReader )
+      else if( symmetricSourceMatrix && row != column && !symmetricTargetMatrix )
           rowLengths[ column - 1 ]++;
    }
    file.clear();
@@ -290,11 +292,12 @@ void MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
-                                                               Matrix& matrix,
-                                                               bool symmetricMatrix,
-                                                               bool verbose,
-                                                               bool symReader )
+void
+MatrixReader< Matrix >::
+readMatrixElementsFromMtxFile( std::istream& file,
+                               Matrix& matrix,
+                               bool symmetricSourceMatrix,
+                               bool verbose )
 {
    file.clear();
    file.seekg( 0,  std::ios::beg );
@@ -316,16 +319,15 @@ void MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
       RealType value;
       parseMtxLineWithElement( line, row, column, value );
 
-      if( !symReader ||
-          ( symReader && row >= column ) )
+      if( ! Matrix::isSymmetric() || ( Matrix::isSymmetric() && row >= column ) )
          matrix.setElement( row - 1, column - 1, value );
-      else if( symReader && row < column )
+      else if( Matrix::isSymmetric() && row < column )
          matrix.setElement( column - 1, row - 1, value );
 
       processedElements++;
-      if( symmetricMatrix && row != column && symReader )
+      if( symmetricSourceMatrix && row != column && Matrix::isSymmetric() )
           continue;
-      else if( symmetricMatrix && row != column && !symReader )
+      else if( symmetricSourceMatrix && row != column && ! Matrix::isSymmetric() )
       {
           matrix.setElement( column - 1, row - 1, value );
           processedElements++;
@@ -342,10 +344,12 @@ void MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
-                                                         IndexType& row,
-                                                         IndexType& column,
-                                                         RealType& value )
+void
+MatrixReader< Matrix >::
+parseMtxLineWithElement( const String& line,
+                         IndexType& row,
+                         IndexType& column,
+                         RealType& value )
 {
    std::vector< String > parsedLine = line.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() != 3 )
@@ -369,11 +373,10 @@ class MatrixReaderDeviceDependentCode< Devices::Host >
    template< typename Matrix >
    static void readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose,
-                            bool symReader )
+                            bool verbose )
    {
       typename Matrix::RowsCapacitiesType rowLengths;
-      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
+      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
    }
 };
 
@@ -385,15 +388,14 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
    template< typename Matrix >
    static void readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose,
-                            bool symReader )
+                            bool verbose )
    {
       using HostMatrixType = typename Matrix::template Self< typename Matrix::RealType, Devices::Sequential >;
       using RowsCapacitiesType = typename HostMatrixType::RowsCapacitiesType;
 
       HostMatrixType hostMatrix;
       RowsCapacitiesType rowLengths;
-      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
+      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
    }
 };
 /// \endcond
