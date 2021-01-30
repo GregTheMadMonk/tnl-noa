@@ -5,7 +5,12 @@ set( COMMON_TESTS
             #SparseMatrixTest_AdEllpack
             Legacy_SparseMatrixTest_BiEllpack
             Legacy_SparseMatrixTest_ChunkedEllpack
-            Legacy_SparseMatrixTest_CSR
+            Legacy_SparseMatrixTest_CSRScalar
+            Legacy_SparseMatrixTest_CSRVector
+            Legacy_SparseMatrixTest_CSRMultiVector
+            Legacy_SparseMatrixTest_CSRLight
+            Legacy_SparseMatrixTest_CSRLightWithoutAtomic
+            Legacy_SparseMatrixTest_CSRAdaptive
             Legacy_SparseMatrixTest_Ellpack
             Legacy_SparseMatrixTest_SlicedEllpack
 )
