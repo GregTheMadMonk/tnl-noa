@@ -125,8 +125,10 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename _Real = Real,
                 typename _Device = Device,
-                typename _Index = Index >
-      using Self = TridiagonalMatrix< _Real, _Device, _Index >;
+                typename _Index = Index,
+                ElementsOrganization _Organization = Algorithms::Segments::DefaultElementsOrganization< _Device >::getOrganization(),
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
+      using Self = TridiagonalMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       static constexpr ElementsOrganization getOrganization() { return Organization; };
 

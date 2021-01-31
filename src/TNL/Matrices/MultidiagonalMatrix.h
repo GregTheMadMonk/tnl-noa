@@ -148,8 +148,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Device = Device,
                 typename _Index = Index,
                 ElementsOrganization _Organization = Organization,
-                typename _RealAllocator = RealAllocator,
-                typename _IndexAllocator = IndexAllocator >
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real >,
+                typename _IndexAllocator = typename Allocators::Default< _Device >::template Allocator< _Index > >
       using Self = MultidiagonalMatrix< _Real, _Device, _Index, _Organization, _RealAllocator, _IndexAllocator >;
 
       /**

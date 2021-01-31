@@ -81,15 +81,15 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using RealAllocatorType = RealAllocator;
 
       /**
-       * \brief Type of related matrix view. 
-       * 
+       * \brief Type of related matrix view.
+       *
        * See \ref DenseMatrixView.
        */
       using ViewType = DenseMatrixView< Real, Device, Index, Organization >;
 
       /**
        * \brief Matrix view type for constant instances.
-       * 
+       *
        * See \ref DenseMatrixView.
        */
       using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
@@ -105,8 +105,8 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index,
-                ElementsOrganization _Organization = Organization,
-                typename _RealAllocator = RealAllocator >
+                ElementsOrganization _Organization = Algorithms::Segments::DefaultElementsOrganization< _Device >::getOrganization(),
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
       using Self = DenseMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       /**
