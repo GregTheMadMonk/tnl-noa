@@ -158,7 +158,7 @@ DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns )
 {
-   Matrix< Real, Device, Index >::setDimensions( rows, columns );
+   Matrix< Real, Device, Index, RealAllocator >::setDimensions( rows, columns );
    this->segments.setSegmentsSizes( rows, columns );
    this->values.setSize( rows * columns );
    this->values = 0.0;
@@ -1182,7 +1182,7 @@ template< typename Real,
           typename RealAllocator >
 void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::load( File& file )
 {
-   Matrix< Real, Device, Index >::load( file );
+   Matrix< Real, Device, Index, RealAllocator >::load( file );
    this->segments.load( file );
    this->view = this->getView();
 }
