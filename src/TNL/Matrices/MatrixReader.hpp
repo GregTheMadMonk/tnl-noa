@@ -71,7 +71,6 @@ readMtxFile( std::istream& file,
              Matrix& matrix,
              bool verbose )
 {
-   matrix.setDimensions( 5, 5 );
    IndexType rows, columns;
    bool symmetricSourceMatrix( false );
 
