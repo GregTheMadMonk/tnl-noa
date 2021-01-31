@@ -19,6 +19,8 @@
 namespace TNL {
 namespace Matrices {
 
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
 template< typename Real, typename Index = int >
 struct ChooseSparseMatrixComputeReal
 {
@@ -30,6 +32,7 @@ struct ChooseSparseMatrixComputeReal< bool, Index >
 {
    using type = Index;
 };
+/// \endcond
 
 /**
  * \brief Implementation of sparse matrix view.
