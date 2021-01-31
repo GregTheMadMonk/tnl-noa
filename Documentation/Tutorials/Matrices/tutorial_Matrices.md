@@ -19,8 +19,7 @@
    5. [Lambda matrices example](#lambda-matrices-flexible-reduction-example)
 6. [Matrix-vector product](#matrix_vector_product)
 7. [Matrix I/O operations](#matrix_io_operations)
-   1. [Matrix reader](#matrix-reader)
-   2. [Matrix writer](#matrix-writer)
+   1. [Matrix reader and writer](#matrix-reader-and-writer)
 8. [Appendix](#appendix)
 
 ## Introduction
@@ -1390,13 +1389,21 @@ To summarize, this method computes the following formula:
 
 `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.`
 
-## Matrix I/O operations <a name="matrix_io_operations"></a>
+## Matrix I/O operations<a name="matrix_io_operations"></a>
 
-All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used. TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) for import of matrices. We describe it in the following sections.
+All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used.
 
-### Matrix reader <a name="matrix-reader></a>
+### Matrix reader and writer<a name="matrix-reader-and-writer"></a>
 
-TODO: Write documentation on matrix reader.
+TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) and matrix writer (\ref TNL::Matrices::MatrixWriter) for import and export of matrices respectively. The matrix reader currently supports only [Coordinate MTX file format](https://math.nist.gov/MatrixMarket/formats.html#coord) which is popular mainly for sparse matrices. By the mean of the matrix writer, we can export TNL matrices into coordinate MTX format as well. In addition, the matrices can be exported to a text file suitable for [Gnuplot program](http://www.gnuplot.info/) which can be used for matrix visualization. Finally, a pattern of nonzero matrix elements can be visualized via the EPS format - [Encapsulated PostScript](https://en.wikipedia.org/wiki/Encapsulated_PostScript). We demonstrate both matrix reader and writer in the following example:
+
+\includelineno MatrixWriterReaderExample.cpp
+
+The example consists of two functions - `matrixWriterExample` (lines 10-24) and `matrixReaderExample` (lines 36-54). In the first one, we first create a toy matrix (lines 13-22) which we subsequently export into Gnuplot (line 26), EPS (line 29) and MTX (line 32) formats. In the next step (the `matrixReaderExample` function on lines 36-54), the MTX file is used to import the matrix into sparse (line 43) and dense (line 51) matrices. Both matrices are printed out (lines 45 and 53).
+
+The result looks as follows:
+
+\includelineno MatrixWriterReaderExample.out
 
 ## Appendix<a name="appendix"></a>
 
