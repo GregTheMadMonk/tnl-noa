@@ -12,39 +12,96 @@
 
 #include <ostream>
 #include <iostream>
+#include <TNL/String.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+
+template< typename Matrix, typename Device = typename Matrix::DeviceType >
+class MatrixWriter
+{
+   public:
+
+      using RealType = typename Matrix::RealType;
+      using DeviceType = typename Matrix::RealType;
+      using IndexType = typename Matrix::IndexType;
+      using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
+
+
+      static void writeToGnuplot( const TNL::String& fileName,
+                                 const Matrix& matrix,
+                                 bool verbose = false );
+
+
+      static void writeToGnuplot( std::ostream& str,
+                                 const Matrix& matrix,
+                                 bool verbose = false );
+
+      static void writeToEps( const TNL::String& fileName,
+                                 const Matrix& matrix,
+                                 bool verbose = false );
+
+      static void writeToEps( std::ostream& str,
+                              const Matrix& matrix,
+                              bool verbose = false );
+
+      static void writeToMtx( const TNL::String& fileName,
+                              const Matrix& matrix,
+                              bool verbose = false );
+
+      static void writeToMtx( std::ostream& str,
+                              const Matrix& matrix,
+                              bool verbose = false );
+};
 
 template< typename Matrix >
-class MatrixWriter
+class MatrixWriter< Matrix, TNL::Devices::Host >
 {
    public:
 
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
-   static bool writeToGnuplot( std::ostream& str,
+   static void writeToGnuplot( const TNL::String& fileName,
                                const Matrix& matrix,
                                bool verbose = false );
 
-   static bool writeToEps( std::ostream& str,
+
+   static void writeToGnuplot( std::ostream& str,
+                               const Matrix& matrix,
+                               bool verbose = false );
+
+   static void writeToEps( const TNL::String& fileName,
+                               const Matrix& matrix,
+                               bool verbose = false );
+
+   static void writeToEps( std::ostream& str,
+                           const Matrix& matrix,
+                           bool verbose = false );
+
+   static void writeToMtx( const TNL::String& fileName,
+                           const Matrix& matrix,
+                           bool verbose = false );
+
+   static void writeToMtx( std::ostream& str,
                            const Matrix& matrix,
                            bool verbose = false );
 
    protected:
 
-   static bool writeEpsHeader( std::ostream& str,
+   static void writeEpsHeader( std::ostream& str,
                                const Matrix& matrix,
                                const int elementSize );
 
-   static bool writeEpsBody( std::ostream& str,
+   static void writeEpsBody( std::ostream& str,
                              const Matrix& matrix,
                              const int elementSize,
                              bool verbose );
 };
 
+
+
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MatrixWriter_impl.h>
+#include <TNL/Matrices/MatrixWriter.hpp>

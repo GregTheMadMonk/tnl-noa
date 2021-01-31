@@ -20,11 +20,42 @@
 namespace TNL {
 namespace Matrices {
 
+
+template< typename Matrix, typename Device >
+void
+MatrixReader< Matrix, Device >::
+readMtxFile( const TNL::String& fileName,
+             Matrix& matrix,
+             bool verbose )
+{
+   HostMatrix hostMatrix;
+   MatrixReader< HostMatrix >::readMtxFile( fileName, hostMatrix, verbose );
+   matrix = hostMatrix;
+}
+
+template< typename Matrix, typename Device >
+void
+MatrixReader< Matrix, Device >::
+readMtxFile( std::istream& str,
+             Matrix& matrix,
+             bool verbose )
+{
+   HostMatrix hostMatrix;
+   MatrixReader< HostMatrix >::readMtxFile( str, hostMatrix, verbose );
+   matrix = hostMatrix;
+}
+
+
+/**
+ * MatrixReader specialization for TNL::Devices::Host.
+ */
+
 template< typename Matrix >
 void
-MatrixReader< Matrix >::readMtxFile( const String& fileName,
-                                     Matrix& matrix,
-                                     bool verbose )
+MatrixReader< Matrix, TNL::Devices::Host >::
+readMtxFile( const String& fileName,
+             Matrix& matrix,
+             bool verbose )
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::in );
@@ -35,21 +66,12 @@ MatrixReader< Matrix >::readMtxFile( const String& fileName,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::readMtxFile( std::istream& file,
-                                     Matrix& matrix,
-                                     bool verbose )
+MatrixReader< Matrix, TNL::Devices::Host >::
+readMtxFile( std::istream& file,
+             Matrix& matrix,
+             bool verbose )
 {
-   MatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
-}
-
-template< typename Matrix >
-void
-MatrixReader< Matrix >::
-readMtxFileHostMatrix( std::istream& file,
-                       Matrix& matrix,
-                       typename Matrix::RowsCapacitiesType& rowLengths,
-                       bool verbose )
-{
+   matrix.setDimensions( 5, 5 );
    IndexType rows, columns;
    bool symmetricSourceMatrix( false );
 
@@ -58,8 +80,10 @@ readMtxFileHostMatrix( std::istream& file,
    if( Matrix::isSymmetric() && !symmetricSourceMatrix )
       throw std::runtime_error( "Matrix is not symmetric, but flag for symmetric matrix is given. Aborting." );
 
+   if( verbose )
+      std::cout << "Matrix dimensions are " << rows << " x " << columns << std::endl;
    matrix.setDimensions( rows, columns );
-   rowLengths.setSize( rows );
+   typename Matrix::RowsCapacitiesType rowLengths( rows );
 
    computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricSourceMatrix, Matrix::isSymmetric(), verbose );
 
@@ -70,7 +94,7 @@ readMtxFileHostMatrix( std::istream& file,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::
+MatrixReader< Matrix, TNL::Devices::Host >::
 verifyMtxFile( std::istream& file, const Matrix& matrix, bool verbose )
 {
    bool symmetricSourceMatrix( false );
@@ -121,7 +145,7 @@ verifyMtxFile( std::istream& file, const Matrix& matrix, bool verbose )
 
 template< typename Matrix >
 bool
-MatrixReader< Matrix >::
+MatrixReader< Matrix, TNL::Devices::Host >::
 findLineByElement( std::istream& file,
                    const IndexType& row,
                    const IndexType& column,
@@ -154,7 +178,7 @@ findLineByElement( std::istream& file,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::checkMtxHeader( const String& header, bool& symmetric )
+MatrixReader< Matrix, TNL::Devices::Host >::checkMtxHeader( const String& header, bool& symmetric )
 {
    std::vector< String > parsedLine = header.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() < 5 || parsedLine[ 0 ] != "%%MatrixMarket" )
@@ -177,7 +201,7 @@ MatrixReader< Matrix >::checkMtxHeader( const String& header, bool& symmetric )
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::readMtxHeader( std::istream& file,
+MatrixReader< Matrix, TNL::Devices::Host >::readMtxHeader( std::istream& file,
                                        IndexType& rows,
                                        IndexType& columns,
                                        bool& symmetric,
@@ -218,7 +242,7 @@ MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::
+MatrixReader< Matrix, TNL::Devices::Host >::
 computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                         Containers::Vector< int, DeviceType, int >& rowLengths,
                                         const int columns,
@@ -293,7 +317,7 @@ computeCompressedRowLengthsFromMtxFile( std::istream& file,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::
+MatrixReader< Matrix, TNL::Devices::Host >::
 readMatrixElementsFromMtxFile( std::istream& file,
                                Matrix& matrix,
                                bool symmetricSourceMatrix,
@@ -345,7 +369,7 @@ readMatrixElementsFromMtxFile( std::istream& file,
 
 template< typename Matrix >
 void
-MatrixReader< Matrix >::
+MatrixReader< Matrix, TNL::Devices::Host >::
 parseMtxLineWithElement( const String& line,
                          IndexType& row,
                          IndexType& column,
@@ -362,43 +386,6 @@ parseMtxLineWithElement( const String& line,
    column = atoi( parsedLine[ 1 ].getString() );
    value = ( RealType ) atof( parsedLine[ 2 ].getString() );
 }
-
-/// This is to prevent from appearing in Doxygen documentation.
-/// \cond HIDDEN_CLASS
-template<>
-class MatrixReaderDeviceDependentCode< Devices::Host >
-{
-   public:
-
-   template< typename Matrix >
-   static void readMtxFile( std::istream& file,
-                            Matrix& matrix,
-                            bool verbose )
-   {
-      typename Matrix::RowsCapacitiesType rowLengths;
-      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
-   }
-};
-
-template<>
-class MatrixReaderDeviceDependentCode< Devices::Cuda >
-{
-   public:
-
-   template< typename Matrix >
-   static void readMtxFile( std::istream& file,
-                            Matrix& matrix,
-                            bool verbose )
-   {
-      using HostMatrixType = typename Matrix::template Self< typename Matrix::RealType, Devices::Sequential >;
-      using RowsCapacitiesType = typename HostMatrixType::RowsCapacitiesType;
-
-      HostMatrixType hostMatrix;
-      RowsCapacitiesType rowLengths;
-      MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
-   }
-};
-/// \endcond
 
 } // namespace Matrices
 } // namespace TNL

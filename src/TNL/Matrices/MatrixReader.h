@@ -17,13 +17,6 @@
 namespace TNL {
 namespace Matrices {
 
-/// This is to prevent from appearing in Doxygen documentation.
-/// \cond HIDDEN_CLASS
-template< typename Device >
-class MatrixReaderDeviceDependentCode
-{};
-/// \endcond
-
 /**
  * \brief Helper class for reading of matrices from files.
  *
@@ -32,8 +25,62 @@ class MatrixReaderDeviceDependentCode
  *
  * \tparam Matrix is a type of matrix into which we want to import the MTX file.
  */
-template< typename Matrix >
+template< typename Matrix,
+          typename Device = typename Matrix::DeviceType >
 class MatrixReader
+{
+   public:
+
+      /**
+       * \brief Type of matrix elements values.
+       */
+      using RealType = typename Matrix::RealType;
+
+      /**
+       * \brief Device where the matrix is allocated.
+       */
+      using DeviceType = typename Matrix::RealType;
+
+      /**
+       * \brief Type used for indexing of matrix elements.
+       */
+      using IndexType = typename Matrix::IndexType;
+      using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
+
+      /**
+       * \brief Method for importing matrix from file with given filename.
+       *
+       * \param fileName is the name of the source file.
+       * \param matrix is the target matrix.
+       * \param verbose controls verbosity of the matrix import.
+       *
+       * \par Example
+       * \include Matrices/MatrixWriterReaderExample.cpp
+       * \par Output
+       * \include Matrices/MatrixWriterReaderExample.out
+       *
+       */
+      static void readMtxFile( const String& fileName,
+                               Matrix& matrix,
+                               bool verbose = false );
+
+      /**
+       * \brief Method for importing matrix from STL input stream.
+       *
+       * \param file is the input stream.
+       * \param matrix is the target matrix.
+       * \param verbose controls verbosity of the matrix import.
+       */
+      static void readMtxFile( std::istream& file,
+                               Matrix& matrix,
+                               bool verbose = false );
+};
+
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
+
+template< typename Matrix >
+class MatrixReader< Matrix, TNL::Devices::Host >
 {
    public:
 
@@ -58,6 +105,12 @@ class MatrixReader
        * \param fileName is the name of the source file.
        * \param matrix is the target matrix.
        * \param verbose controls verbosity of the matrix import.
+       *
+       * \par Example
+       * \include Matrices/MatrixWriterReaderExample.cpp
+       * \par Output
+       * \include Matrices/MatrixWriterReaderExample.out
+       *
        */
       static void readMtxFile( const String& fileName,
                               Matrix& matrix,
@@ -75,11 +128,6 @@ class MatrixReader
                               bool verbose = false );
 
    protected:
-      static void readMtxFileHostMatrix( std::istream& file,
-                                       Matrix& matrix,
-                                       typename Matrix::RowsCapacitiesType& rowLengths,
-                                       bool verbose );
-
 
       static void verifyMtxFile( std::istream& file,
                                  const Matrix& matrix,
@@ -118,12 +166,11 @@ class MatrixReader
                                            IndexType& row,
                                            IndexType& column,
                                            RealType& value );
-
-   template< typename Device >
-   friend class MatrixReaderDeviceDependentCode;
 };
+/// \endcond
+
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MatrixReader_impl.h>
+#include <TNL/Matrices/MatrixReader.hpp>
