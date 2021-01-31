@@ -24,27 +24,26 @@ namespace Matrices {
 template< typename Matrix, typename Device >
 void
 MatrixReader< Matrix, Device >::
-readMtxFile( const TNL::String& fileName,
-             Matrix& matrix,
-             bool verbose )
+readMtx( const TNL::String& fileName,
+         Matrix& matrix,
+         bool verbose )
 {
    HostMatrix hostMatrix;
-   MatrixReader< HostMatrix >::readMtxFile( fileName, hostMatrix, verbose );
+   MatrixReader< HostMatrix >::readMtx( fileName, hostMatrix, verbose );
    matrix = hostMatrix;
 }
 
 template< typename Matrix, typename Device >
 void
 MatrixReader< Matrix, Device >::
-readMtxFile( std::istream& str,
-             Matrix& matrix,
-             bool verbose )
+readMtx( std::istream& str,
+         Matrix& matrix,
+         bool verbose )
 {
    HostMatrix hostMatrix;
-   MatrixReader< HostMatrix >::readMtxFile( str, hostMatrix, verbose );
+   MatrixReader< HostMatrix >::readMtx( str, hostMatrix, verbose );
    matrix = hostMatrix;
 }
-
 
 /**
  * MatrixReader specialization for TNL::Devices::Host.
@@ -53,23 +52,23 @@ readMtxFile( std::istream& str,
 template< typename Matrix >
 void
 MatrixReader< Matrix, TNL::Devices::Host >::
-readMtxFile( const String& fileName,
-             Matrix& matrix,
-             bool verbose )
+readMtx( const String& fileName,
+         Matrix& matrix,
+         bool verbose )
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::in );
    if( ! file )
       throw std::runtime_error( std::string( "I am not able to open the file " ) + fileName.getString() );
-   readMtxFile( file, matrix, verbose );
+   readMtx( file, matrix, verbose );
 }
 
 template< typename Matrix >
 void
 MatrixReader< Matrix, TNL::Devices::Host >::
-readMtxFile( std::istream& file,
-             Matrix& matrix,
-             bool verbose )
+readMtx( std::istream& file,
+         Matrix& matrix,
+         bool verbose )
 {
    IndexType rows, columns;
    bool symmetricSourceMatrix( false );

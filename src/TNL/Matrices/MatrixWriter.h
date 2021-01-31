@@ -28,30 +28,30 @@ class MatrixWriter
       using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
 
 
-      static void writeToGnuplot( const TNL::String& fileName,
-                                 const Matrix& matrix,
-                                 bool verbose = false );
+      static void writeGnuplot( const TNL::String& fileName,
+                                const Matrix& matrix,
+                                bool verbose = false );
 
 
-      static void writeToGnuplot( std::ostream& str,
-                                 const Matrix& matrix,
-                                 bool verbose = false );
+      static void writeGnuplot( std::ostream& str,
+                                const Matrix& matrix,
+                                bool verbose = false );
 
-      static void writeToEps( const TNL::String& fileName,
-                                 const Matrix& matrix,
-                                 bool verbose = false );
+      static void writeEps( const TNL::String& fileName,
+                            const Matrix& matrix,
+                            bool verbose = false );
 
-      static void writeToEps( std::ostream& str,
-                              const Matrix& matrix,
-                              bool verbose = false );
+      static void writeEps( std::ostream& str,
+                            const Matrix& matrix,
+                            bool verbose = false );
 
-      static void writeToMtx( const TNL::String& fileName,
-                              const Matrix& matrix,
-                              bool verbose = false );
+      static void writeMtx( const TNL::String& fileName,
+                            const Matrix& matrix,
+                            bool verbose = false );
 
-      static void writeToMtx( std::ostream& str,
-                              const Matrix& matrix,
-                              bool verbose = false );
+      static void writeMtx( std::ostream& str,
+                            const Matrix& matrix,
+                            bool verbose = false );
 };
 
 template< typename Matrix >
@@ -62,30 +62,30 @@ class MatrixWriter< Matrix, TNL::Devices::Host >
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
-   static void writeToGnuplot( const TNL::String& fileName,
-                               const Matrix& matrix,
-                               bool verbose = false );
+   static void writeGnuplot( const TNL::String& fileName,
+                             const Matrix& matrix,
+                             bool verbose = false );
 
 
-   static void writeToGnuplot( std::ostream& str,
-                               const Matrix& matrix,
-                               bool verbose = false );
+   static void writeGnuplot( std::ostream& str,
+                             const Matrix& matrix,
+                             bool verbose = false );
 
-   static void writeToEps( const TNL::String& fileName,
-                               const Matrix& matrix,
-                               bool verbose = false );
+   static void writeEps( const TNL::String& fileName,
+                         const Matrix& matrix,
+                         bool verbose = false );
 
-   static void writeToEps( std::ostream& str,
-                           const Matrix& matrix,
-                           bool verbose = false );
+   static void writeEps( std::ostream& str,
+                         const Matrix& matrix,
+                         bool verbose = false );
 
-   static void writeToMtx( const TNL::String& fileName,
-                           const Matrix& matrix,
-                           bool verbose = false );
+   static void writeMtx( const TNL::String& fileName,
+                         const Matrix& matrix,
+                         bool verbose = false );
 
-   static void writeToMtx( std::ostream& str,
-                           const Matrix& matrix,
-                           bool verbose = false );
+   static void writeMtx( std::ostream& str,
+                         const Matrix& matrix,
+                         bool verbose = false );
 
    protected:
 

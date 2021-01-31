@@ -45,7 +45,6 @@ class MatrixReader
        * \brief Type used for indexing of matrix elements.
        */
       using IndexType = typename Matrix::IndexType;
-      using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
 
       /**
        * \brief Method for importing matrix from file with given filename.
@@ -60,9 +59,9 @@ class MatrixReader
        * \include Matrices/MatrixWriterReaderExample.out
        *
        */
-      static void readMtxFile( const String& fileName,
-                               Matrix& matrix,
-                               bool verbose = false );
+      static void readMtx( const String& fileName,
+                           Matrix& matrix,
+                           bool verbose = false );
 
       /**
        * \brief Method for importing matrix from STL input stream.
@@ -71,9 +70,11 @@ class MatrixReader
        * \param matrix is the target matrix.
        * \param verbose controls verbosity of the matrix import.
        */
-      static void readMtxFile( std::istream& file,
-                               Matrix& matrix,
-                               bool verbose = false );
+      static void readMtx( std::istream& file,
+                           Matrix& matrix,
+                           bool verbose = false );
+
+      using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
 };
 
 /// This is to prevent from appearing in Doxygen documentation.
@@ -112,9 +113,9 @@ class MatrixReader< Matrix, TNL::Devices::Host >
        * \include Matrices/MatrixWriterReaderExample.out
        *
        */
-      static void readMtxFile( const String& fileName,
-                              Matrix& matrix,
-                              bool verbose = false );
+      static void readMtx( const String& fileName,
+                           Matrix& matrix,
+                           bool verbose = false );
 
       /**
        * \brief Method for importing matrix from STL input stream.
@@ -123,9 +124,9 @@ class MatrixReader< Matrix, TNL::Devices::Host >
        * \param matrix is the target matrix.
        * \param verbose controls verbosity of the matrix import.
        */
-      static void readMtxFile( std::istream& file,
-                              Matrix& matrix,
-                              bool verbose = false );
+      static void readMtx( std::istream& file,
+                           Matrix& matrix,
+                           bool verbose = false );
 
    protected:
 
