@@ -66,10 +66,10 @@ inline void Init( int& argc, char**& argv, int required_thread_level = MPI_THREA
 {
 #ifdef HAVE_MPI
    switch( required_thread_level ) {
-      case MPI_THREAD_SINGLE:
-      case MPI_THREAD_FUNNELED:
-      case MPI_THREAD_SERIALIZED:
-      case MPI_THREAD_MULTIPLE:
+      case MPI_THREAD_SINGLE:       // application is single-threaded
+      case MPI_THREAD_FUNNELED:     // application is multithreaded, but all MPI calls will be issued from the master thread only
+      case MPI_THREAD_SERIALIZED:   // application is multithreaded and any thread may issue MPI calls, but different threads will never issue MPI calls at the same time
+      case MPI_THREAD_MULTIPLE:     // application is multithreaded and any thread may issue MPI calls at any time
          break;
       default:
          std::cerr << "ERROR: invalid argument for the 'required' thread level support: " << required_thread_level << std::endl;
