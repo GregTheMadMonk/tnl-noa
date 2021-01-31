@@ -18,12 +18,19 @@ namespace TNL {
 namespace Matrices {
 
 /**
- * \brief Helper class for reading of matrices from files.
+ * \brief Helper class for importing of matrices from different input formats.
  *
- * It supports [MTX format](https://math.nist.gov/MatrixMarket/formats.html).
- * Currently only [Coordinate Format](https://math.nist.gov/MatrixMarket/formats.html#coord) is supported.
+ * Currently it supports:
+ *
+ * 1. [Coordinate MTX Format](https://math.nist.gov/MatrixMarket/formats.html#coord) is supported.
  *
  * \tparam Matrix is a type of matrix into which we want to import the MTX file.
+ * \tparam Device is used only for the purpose of template specialization.
+ *
+ * \par Example
+ * \include Matrices/MatrixWriterReaderExample.cpp
+ * \par Output
+ * \include MatrixWriterReaderExample.out
  */
 template< typename Matrix,
           typename Device = typename Matrix::DeviceType >
@@ -52,12 +59,6 @@ class MatrixReader
        * \param fileName is the name of the source file.
        * \param matrix is the target matrix.
        * \param verbose controls verbosity of the matrix import.
-       *
-       * \par Example
-       * \include Matrices/MatrixWriterReaderExample.cpp
-       * \par Output
-       * \include Matrices/MatrixWriterReaderExample.out
-       *
        */
       static void readMtx( const String& fileName,
                            Matrix& matrix,
@@ -74,6 +75,7 @@ class MatrixReader
                            Matrix& matrix,
                            bool verbose = false );
 
+   protected:
       using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
 };
 
