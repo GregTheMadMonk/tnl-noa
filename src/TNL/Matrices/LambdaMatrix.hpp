@@ -284,7 +284,8 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forAllRows( Function& function ) const
 {
-   const IndexType rows = this->getRows();
+   forRows( 0, this->getRows(), function );
+   /*const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
    auto matrixElements = this->matrixElementsLambda;
@@ -300,7 +301,34 @@ forAllRows( Function& function ) const
             function( rowIdx, localIdx, elementColumn, elementValue, compute );
       }
    };
-   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );*/
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+sequentialForAllRows( Function& function ) const
+{
+   sequentialForRows( 0, this->getRows(), function );
 }
 
 template< typename MatrixElementsLambda,

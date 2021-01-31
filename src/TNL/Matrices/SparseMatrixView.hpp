@@ -324,7 +324,7 @@ template< typename Real,
           typename MatrixType,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
-__cuda_callable__ 
+__cuda_callable__
 Real
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getElement( IndexType row,
@@ -378,7 +378,7 @@ vectorProduct( const InVector& inVector,
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
-   
+
    using OutVectorReal = typename OutVector::RealType;
    static_assert(
          ! MatrixType::isSymmetric() ||
@@ -602,6 +602,64 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 forAllRows( Function& function )
 {
    this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+sequentialForRows( IndexType begin, IndexType end, Function& function )
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+sequentialForAllRows( Function& function ) const
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+sequentialForAllRows( Function& function )
+{
+   this->sequentialForRows( 0, this->getRows(), function );
 }
 
 /*template< typename Real,

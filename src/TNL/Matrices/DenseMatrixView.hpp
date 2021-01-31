@@ -375,6 +375,57 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function& function )
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForAllRows( Function& function ) const
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForAllRows( Function& function )
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
    template< typename InVector,
              typename OutVector >
 void

@@ -436,6 +436,58 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   this->view.sequentialForRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+sequentialForRows( IndexType first, IndexType last, Function& function )
+{
+   this->view.sequentialForRows( first, last, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+sequentialForAllRows( Function& function ) const
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+sequentialForAllRows( Function& function )
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
    template< typename InVector, typename OutVector >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::

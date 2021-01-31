@@ -26,7 +26,7 @@ namespace Matrices {
  * matrix to lambda functions. SparseMatrix view can be also created in CUDA kernels.
  *
  * See \ref MultidiagonalMatrix for more details.
- * 
+ *
  * \tparam Real is a type of matrix elements.
  * \tparam Device is a device where the matrix is allocated.
  * \tparam Index is a type for indexing of the matrix elements.
@@ -64,7 +64,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using IndexType = Index;
 
       /**
-       * \brief Type of related matrix view. 
+       * \brief Type of related matrix view.
        */
       using ViewType = MultidiagonalMatrixView< Real, Device, Index, Organization >;
 
@@ -95,7 +95,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Constructor with all necessary data and views.
-       * 
+       *
        * \param values is a vector view with matrix elements values
        * \param diagonalsOffsets is a vector view with diagonals offsets
        * \param hostDiagonalsOffsets is a vector view with a copy of diagonals offsets on the host
@@ -109,7 +109,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param matrix is an input multidiagonal matrix view.
        */
       __cuda_callable__
@@ -117,7 +117,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param matrix is an input multidiagonal matrix view.
        */
       __cuda_callable__
@@ -125,41 +125,41 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns a modifiable view of the multidiagonal matrix.
-       * 
+       *
        * \return multidiagonal matrix view.
        */
       ViewType getView();
 
       /**
        * \brief Returns a non-modifiable view of the multidiagonal matrix.
-       * 
+       *
        * \return multidiagonal matrix view.
        */
       ConstViewType getConstView() const;
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * The string has a form `Matrices::MultidiagonalMatrix< RealType,  [any_device], IndexType, Organization, [any_allocator], [any_allocator] >`.
-       * 
+       *
        * See \ref MultidiagonalMatrix::getSerializationType.
-       * 
+       *
        * \return \ref String with the serialization type.
        */
       static String getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * See \ref MultidiagonalMatrix::getSerializationType.
-       * 
+       *
        * \return \ref String with the serialization type.
        */
       virtual String getSerializationTypeVirtual() const;
 
       /**
        * \brief Returns number of diagonals.
-       * 
+       *
        * \return Number of diagonals.
        */
       __cuda_callable__
@@ -167,10 +167,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Computes number of non-zeros in each row.
-       * 
+       *
        * \param rowLengths is a vector into which the number of non-zeros in each row
        * will be stored.
-       * 
+       *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getCompressedRowLengths.cpp
        * \par Output
@@ -194,12 +194,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Comparison operator with another multidiagonal matrix.
-       * 
+       *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * 
+       *
        * \return \e true if both matrices are identical and \e false otherwise.
        */
       template< typename Real_,
@@ -210,14 +210,14 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Comparison operator with another multidiagonal matrix.
-       * 
+       *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * 
+       *
        * \param matrix is the source matrix.
-       * 
+       *
        * \return \e true if both matrices are NOT identical and \e false otherwise.
        */
       template< typename Real_,
@@ -228,16 +228,16 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
-       * 
+       *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getRow.cpp
        * \par Output
        * \include MultidiagonalMatrixViewExample_getRow.out
-       * 
+       *
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
@@ -245,16 +245,16 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getConstRow.cpp
        * \par Output
        * \include MultidiagonalMatrixViewExample_getConstRow.out
-       * 
+       *
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
@@ -549,6 +549,62 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        */
       template< typename Function >
       void forAllRows( Function& function );
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for non-constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function );
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
+       *
+       * See \ref MultidiagonalMatrixView::sequentialForRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function ) const;
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows.
+       *
+       * See \ref MultidiagonalMatrixView::sequentialForAllRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function );
 
       /**
        * \brief Computes product of matrix and vector.
