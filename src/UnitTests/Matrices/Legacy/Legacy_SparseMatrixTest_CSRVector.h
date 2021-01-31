@@ -29,8 +29,14 @@ using namespace TNL::Benchmarks::SpMV::ReferenceFormats;
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
+   Legacy::CSR< int,    TNL::Devices::Host, int,  Legacy::CSRVector >,
+   Legacy::CSR< float,  TNL::Devices::Host, int,  Legacy::CSRVector >,
+   Legacy::CSR< double, TNL::Devices::Host, int,  Legacy::CSRVector >,
+   Legacy::CSR< int,    TNL::Devices::Host, long, Legacy::CSRVector >,
+   Legacy::CSR< float,  TNL::Devices::Host, long, Legacy::CSRVector >,
+   Legacy::CSR< double, TNL::Devices::Host, long, Legacy::CSRVector >
 #ifdef HAVE_CUDA
-   Legacy::CSR< int,    TNL::Devices::Cuda, int,  Legacy::CSRVector >,
+  ,Legacy::CSR< int,    TNL::Devices::Cuda, int,  Legacy::CSRVector >,
    Legacy::CSR< float,  TNL::Devices::Cuda, int,  Legacy::CSRVector >,
    Legacy::CSR< double, TNL::Devices::Cuda, int,  Legacy::CSRVector >,
    Legacy::CSR< int,    TNL::Devices::Cuda, long, Legacy::CSRVector >,
