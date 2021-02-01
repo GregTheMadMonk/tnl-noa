@@ -1172,5 +1172,36 @@ getSegments() const -> const SegmentsType&
    return this->segments;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+getColumnIndexes() const -> const ColumnsIndexesVectorType&
+{
+   return this->columnIndexes;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+getColumnIndexes() -> ColumnsIndexesVectorType&
+{
+   return this->columnIndexes;
+}
+
+
 } // namespace Matrices
 } // namespace TNL

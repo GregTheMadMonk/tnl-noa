@@ -983,6 +983,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       const SegmentsType& getSegments() const;
 
+      /**
+       * \brief Getter of column indexes for constant instances.
+       *
+       * \return Constant reference to a vector with matrix elements column indexes.
+       */
+      const ColumnsIndexesVectorType& getColumnIndexes() const;
+
+      /**
+       * \brief Getter of column indexes for nonconstant instances.
+       *
+       * \return Reference to a vector with matrix elements column indexes.
+       */
+      ColumnsIndexesVectorType& getColumnIndexes();
+
    protected:
 
       ColumnsIndexesVectorType columnIndexes;

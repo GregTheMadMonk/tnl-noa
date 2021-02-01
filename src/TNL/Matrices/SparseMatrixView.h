@@ -619,16 +619,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Computes product of matrix and vector.
-       * 
+       *
        * More precisely, it computes:
-       * 
+       *
        * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
-       * 
+       *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
        * \tparam OutVector is type of output vector. It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
-       * 
+       *
        * \param inVector is input vector.
        * \param outVector is output vector.
        * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
@@ -654,20 +654,95 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
+      /**
+       * \brief Assignment of any matrix type.
+       * .
+       * \param matrix is input matrix for the assignment.
+       * \return reference to this matrix.
+       */
       SparseMatrixView& operator=( const SparseMatrixView& matrix );
 
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
       template< typename Matrix >
       bool operator==( const Matrix& m ) const;
 
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
       template< typename Matrix >
       bool operator!=( const Matrix& m ) const;
 
-      void save( File& file ) const;
-
+      /**
+       * \brief Method for saving the matrix to the file with given filename.
+       *
+       * \param fileName is name of the file.
+       */
       void save( const String& fileName ) const;
 
+      /**
+       * \brief Method for saving the matrix to a file.
+       *
+       * \param file is the output file.
+       */
+      void save( File& file ) const;
+
+      /**
+       * \brief Method for printing the matrix to output stream.
+       *
+       * \param str is the output stream.
+       */
       void print( std::ostream& str ) const;
 
+      /**
+       * \brief Getter of segments for non-constant instances.
+       *
+       * \e Segments are a structure for addressing the matrix elements columns and values.
+       * In fact, \e Segments represent the sparse matrix format.
+       *
+       * \return Non-constant reference to segments.
+       */
+      SegmentsViewType& getSegments();
+
+      /**
+       * \brief Getter of segments for constant instances.
+       *
+       * \e Segments are a structure for addressing the matrix elements columns and values.
+       * In fact, \e Segments represent the sparse matrix format.
+       *
+       * \return Constant reference to segments.
+       */
+      const SegmentsViewType& getSegments() const;
+
+      /**
+       * \brief Getter of column indexes for constant instances.
+       *
+       * \return Constant reference to a vector with matrix elements column indexes.
+       */
+      const ColumnsIndexesViewType& getColumnIndexes() const;
+
+      /**
+       * \brief Getter of column indexes for nonconstant instances.
+       *
+       * \return Reference to a vector with matrix elements column indexes.
+       */
+      ColumnsIndexesViewType& getColumnIndexes();
+
+      /**
+       * \brief Returns a padding index value.
+       *
+       * Padding index is used for column indexes of padding zeros. Padding zeros
+       * are used in some sparse matrix formats for better data alignment in memory.
+       *
+       * \return value of the padding index.
+       */
       __cuda_callable__
       IndexType getPaddingIndex() const;
 

@@ -855,5 +855,57 @@ getPaddingIndex() const
    return -1;
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+getSegments() const -> const SegmentsViewType&
+{
+   return this->segments;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+getSegments() -> SegmentsViewType&
+{
+   return this->segments;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+getColumnIndexes() const -> const ColumnsIndexesViewType&
+{
+   return this->columnIndexes;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+getColumnIndexes() -> ColumnsIndexesViewType&
+{
+   return this->columnIndexes;
+}
+
    } //namespace Matrices
 } // namespace  TNL
