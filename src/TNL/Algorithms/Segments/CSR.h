@@ -96,6 +96,10 @@ class CSR
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
+      const OffsetsHolder& getOffsets() const;
+
+      OffsetsHolder& getOffsets();
+
       /***
        * \brief Go over all segments and for each segment element call
        * function 'f' with arguments 'args'. The return type of 'f' is bool.

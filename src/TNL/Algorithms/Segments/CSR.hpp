@@ -205,6 +205,28 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
+auto
+CSR< Device, Index, Kernel, IndexAllocator >::
+getOffsets() const -> const OffsetsHolder&
+{
+   return this->offsets;
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+auto
+CSR< Device, Index, Kernel, IndexAllocator >::
+getOffsets() -> OffsetsHolder&
+{
+   return this->offsets;
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
    template< typename Function, typename... Args >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
