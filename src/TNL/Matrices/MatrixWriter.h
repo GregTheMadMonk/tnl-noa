@@ -123,7 +123,7 @@ class MatrixWriter
                             bool verbose = false );
 
    protected:
-      using HostMatrix = typename Matrix::Self< RealType, TNL::Devices::Host >;
+      using HostMatrix = typename Matrix::template Self< RealType, TNL::Devices::Host >;
 };
 
 /// This is to prevent from appearing in Doxygen documentation.

@@ -81,7 +81,6 @@ class MatrixReader
 
 /// This is to prevent from appearing in Doxygen documentation.
 /// \cond HIDDEN_CLASS
-
 template< typename Matrix >
 class MatrixReader< Matrix, TNL::Devices::Host >
 {
