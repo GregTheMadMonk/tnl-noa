@@ -424,7 +424,10 @@ vectorProduct( const InVector& inVector,
 
    auto keeper = [=] __cuda_callable__ ( IndexType row, const ComputeRealType& value ) mutable {
       if( isSymmetric() )
-         outVectorView[ row ] += matrixMultiplicator * value;
+      {
+         typename OutVector::RealType aux = matrixMultiplicator * value;
+         Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ row ], aux );
+      }
       else
       {
          if( outVectorMultiplicator == 0.0 )
