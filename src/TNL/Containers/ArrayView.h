@@ -72,7 +72,7 @@ public:
 
    /**
     * \brief Device where the array is allocated.
-    * 
+    *
     * See \ref Devices::Host or \ref Devices::Cuda.
     */
    using DeviceType = Device;
