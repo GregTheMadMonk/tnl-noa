@@ -399,6 +399,16 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void setRowCapacities( const RowsCapacitiesVector& rowCapacities );
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief This method sets the sparse matrix elements from initializer list.
        *
        * The number of matrix rows and columns must be set already.
@@ -451,6 +461,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
+
 
       /**
        * \brief Returns capacity of given matrix row.

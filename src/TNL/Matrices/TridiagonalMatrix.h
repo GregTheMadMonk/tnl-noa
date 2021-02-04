@@ -270,6 +270,16 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data );
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief Computes number of non-zeros in each row.
        *
        * \param rowLengths is a vector into which the number of non-zeros in each row

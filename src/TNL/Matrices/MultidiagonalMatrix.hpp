@@ -213,6 +213,20 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename Vector >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   return this->view.getRowCapacities( rowCapacities );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
    template< typename ListReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
@@ -248,7 +262,7 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-const Index&
+const Index
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getDiagonalsCount() const
 {

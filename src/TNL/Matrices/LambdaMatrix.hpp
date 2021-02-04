@@ -95,6 +95,19 @@ template< typename MatrixElementsLambda,
    template< typename Vector >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   this->getCompressedRowLengths( rowCapacities );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    details::set_size_if_resizable( rowLengths, this->getRows() );
@@ -344,7 +357,6 @@ performSORIteration( const Vector1& b,
                           Vector2& x,
                           const RealType& omega ) const
 {
-   
 }
 
 template< typename MatrixElementsLambda,

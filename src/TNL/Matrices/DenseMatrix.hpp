@@ -197,6 +197,19 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
+   template< typename Vector >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+getRowCapacities( Vector& rowLengths ) const
+{
+   this->view.getCompressedRowLengths( rowLengths );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
    template< typename RowLengthsVector >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::

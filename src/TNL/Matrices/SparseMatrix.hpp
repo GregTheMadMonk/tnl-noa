@@ -278,6 +278,22 @@ template< typename Real,
           typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename Vector >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   this->view.getRowCapacities( rowCapacities );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data )
@@ -905,10 +921,10 @@ operator=( const RHSMatrix& matrix )
    using RHSDeviceType = typename RHSMatrix::DeviceType;
    using RHSRealAllocatorType = typename RHSMatrix::RealAllocatorType;
 
-   Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rowLengths;
-   matrix.getCompressedRowLengths( rowLengths );
+   Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rowCapacities;
+   matrix.getRowCapacities( rowCapacities );
    this->setDimensions( matrix.getRows(), matrix.getColumns() );
-   this->setRowCapacities( rowLengths );
+   this->setRowCapacities( rowCapacities );
    Containers::Vector< IndexType, DeviceType, IndexType > rowLocalIndexes( matrix.getRows() );
    rowLocalIndexes = 0;
 
@@ -938,7 +954,7 @@ operator=( const RHSMatrix& matrix )
    }
    else
    {
-      const IndexType maxRowLength = max( rowLengths );
+      const IndexType maxRowLength = max( rowCapacities );
       const IndexType bufferRowsCount( 128 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
@@ -946,7 +962,9 @@ operator=( const RHSMatrix& matrix )
       Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
       Containers::Vector< IndexType, DeviceType, IndexType > thisColumnsBuffer( bufferSize );
       Containers::Vector< IndexType, DeviceType, IndexType > thisRowLengths;
-      thisRowLengths = rowLengths;
+      Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rhsRowLengths;
+      matrix.getCompressedRowLengths( rhsRowLengths );
+      thisRowLengths= rhsRowLengths;
       auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
       auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
       auto thisValuesBuffer_view = thisValuesBuffer.getView();
@@ -966,7 +984,11 @@ operator=( const RHSMatrix& matrix )
          auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
             if( columnIndex != paddingIndex )
             {
+               //printf("SparseMatrix.hpp: localIdx = %d, maxRowLength = %d \n", localIdx, maxRowLength );
+               TNL_ASSERT_LT( rowIdx - baseRow, bufferRowsCount, "" );
+               TNL_ASSERT_LT( localIdx, maxRowLength, "" );
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+               TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
                matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
                matrixValuesBuffer_view[ bufferIdx ] = value;
                //printf( "TO BUFFER: rowIdx = %d localIdx = %d bufferIdx = %d column = %d value = %d \n", rowIdx, localIdx, bufferIdx, columnIndex, value );

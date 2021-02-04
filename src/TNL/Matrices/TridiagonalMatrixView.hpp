@@ -91,6 +91,19 @@ template< typename Real,
    template< typename Vector >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   rowCapacities.setSize( this->getRows() );
+   rowCapacities = 3;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Vector >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );

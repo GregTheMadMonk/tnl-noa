@@ -105,6 +105,20 @@ template< typename Real,
    template< typename Vector >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   rowCapacities.setSize( this->getRows() );
+   rowCapacities = this->getColumns();
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Vector >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );

@@ -140,6 +140,19 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
+   template< typename Vector >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   return this->view.getRowCapacities( rowCapacities );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
    template< typename ListReal >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::

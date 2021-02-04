@@ -143,6 +143,29 @@ template< typename Real,
           typename MatrixType,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
+   template< typename Vector >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
+getRowCapacities( Vector& rowLengths ) const
+{
+   details::set_size_if_resizable( rowLengths, this->getRows() );
+   rowLengths = 0;
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return 1;
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView,
+          typename ComputeReal >
 __cuda_callable__
 Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::

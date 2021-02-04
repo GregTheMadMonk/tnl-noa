@@ -101,11 +101,29 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization >
 __cuda_callable__
-const Index&
+const Index
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
 getDiagonalsCount() const
 {
+#ifdef __CUDA_ARCH__
    return this->diagonalsOffsets.getSize();
+#else
+   return this->hostDiagonalsOffsets.getSize();
+#endif
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Vector >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   rowCapacities.setSize( this->getRows() );
+   auto aux = this->getDiagonalsCount();
+   rowCapacities = aux;
 }
 
 template< typename Real,
