@@ -64,7 +64,13 @@ struct MatrixInfo< SparseMatrixView< Real, Device, Index, MatrixType, SegmentsVi
 {
    static String getDensity() { return String( "sparse" ); };
 
-   static String getFormat() { return SegmentsView< Device, Index >::getSegmentsType(); };
+   static String getFormat()
+   {
+      if( MatrixType::isSymmetric() )
+         return TNL::String( "Symmetric " ) + SegmentsView< Device, Index >::getSegmentsType();
+      else
+         return SegmentsView< Device, Index >::getSegmentsType();
+   };
 };
 
 template< typename Real,
