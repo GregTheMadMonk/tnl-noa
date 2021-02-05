@@ -903,7 +903,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       /**
        * \brief Assignment of any matrix type other then this and dense.
-       * .
+       *
+       * **Warning: Assignment of symmetric sparse matrix to general sparse matrix does not give correct result, currently. Only the diagonal and the lower part of the matrix is assigned.**
+       *
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
        */

@@ -630,6 +630,33 @@ would not make sense. If we pass through this test, the matrix element lies in t
 
 \include SparseMatrixExample_forRows.out
 
+#### Symmetric sparse matrices
+
+For sparse [symmetric matrices](https://en.wikipedia.org/wiki/Symmetric_matrix), TNL offers a format storing only a half of the matrix elements. More precisely, ony the matrix diagonal and the elements bellow are stored in the memory. The matrix elements above the diagonal are deduced from those bellow. If such a symmetric format is used on GPU, atomic operations must be used in some matrix operations. For this reason, symmetric matrices are allowed only for when the matrix elements values are expressed with `float` and `double` type. An advantage of the symmetric formats is lower memory consumption. Since less data need to be transferred from the memory, better performance might be observed. In some cases, however, the use of atomic operations on GPU may cause performance drop. Mostly we can see approximately the same performance compared to general formats but we can profit from lower memory requirements which is appreciated especially on GPU. The following example shows how to create symmetric sparse matrix.
+
+\includelineno SymmetricSparseMatrixExample.cpp
+
+We construct matrix of the following form
+
+\f[
+\left(
+\begin{array}{ccccc}
+ 1  & \color{grey}{2} & \color{grey}{3} & \color{grey}{4} & \color{grey}{5}  \\
+ 2  &  1 &    &    &     \\
+ 3  &    &  1 &    &     \\
+ 4  &    &    &  1 &     \\
+ 5  &    &    &    &  1
+\end{array}
+\right)
+\f]
+
+The elements depicted in grey color are not stored in the memory. The main difference, compared to creation of general sparse matrix, is on line 9 where we state that the matrix is symmetric by setting the matrix type to \ref TNL::Matrices::SymmetricMatrix. Next we set only the diagonal elements and those lying bellow the diagonal (lines 13-17). When we print the matrix (line 19) we can see also the symmetric part above the diagonal. Next we test product of matrix and vector (lines 21-23). The result looks as follows:
+
+\include SymmetricSparseMatrixExample.out
+
+**Warning: Assignment of symmetric sparse matrix to general sparse matrix does not give correct result, currently. Only the diagonal and the lower part of the matrix is assigned.**
+
+
 ### Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
 
 Tridiagonal matrix format serves for specific matrix pattern when the nonzero matrix elements can be placed only at the diagonal and immediately next to the diagonal. Here is an example:

@@ -94,6 +94,10 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_setElement.out
                        OUTPUT SparseMatrixViewExample_setElement.out )
 
+   CUDA_ADD_EXECUTABLE( SymmetricSparseMatrixExample SymmetricSparseMatrixExample.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SymmetricSparseMatrixExample >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SymmetricSparseMatrixExample.out
+                        OUTPUT SymmetricSparseMatrixExample.out )
    ####
    # THe following examples/benchmarks run for very long time
    CUDA_ADD_EXECUTABLE( DenseMatrixSetup_Benchmark_cuda DenseMatrixSetup_Benchmark.cu )
@@ -128,6 +132,7 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
    SparseMatrixViewExample_setElement.out
+   SymmetricSparseMatrixExample.out
  )
 ELSE()
 ADD_CUSTOM_TARGET( TutorialsMatrices ALL DEPENDS
