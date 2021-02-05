@@ -988,7 +988,7 @@ operator=( const RHSMatrix& matrix )
                TNL_ASSERT_LT( rowIdx - baseRow, bufferRowsCount, "" );
                TNL_ASSERT_LT( localIdx, maxRowLength, "" );
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
-               TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
+               TNL_ASSERT_LT( bufferIdx, ( IndexType ) bufferSize, "" );
                matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
                matrixValuesBuffer_view[ bufferIdx ] = value;
                //printf( "TO BUFFER: rowIdx = %d localIdx = %d bufferIdx = %d column = %d value = %d \n", rowIdx, localIdx, bufferIdx, columnIndex, value );
