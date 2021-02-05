@@ -139,14 +139,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * See \ref SparseMatrixView.
        */
-      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate, ComputeRealType >;
 
       /**
        * \brief Matrix view type for constant instances.
        *
        * See \ref SparseMatrixView.
        */
-      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate, ComputeRealType >;
 
       /**
        * \brief Type for accessing matrix rows.

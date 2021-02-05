@@ -100,7 +100,7 @@ There is no change in the dense matrix part of the table. The numbers grow propo
 | Real   | Index  | Dense matrix | Multidiagonal matrix |  Sparse matrix | Fill ratio |
 |:------:|:------:|:------------:|:--------------------:|:--------------:|:----------:|
 | float  | 32-bit |          4 B |                  4 B |            8 B |     << 50% |
-| float  | 32-bit |          4 B |                  4 B |           12 B |     << 30% |
+| float  | 64-bit |          4 B |                  4 B |           12 B |     << 30% |
 | double | 32-bit |          8 B |                  8 B |           12 B |     << 60% |
 | double | 64-bit |          8 B |                  8 B |           16 B |     << 50% |
 
@@ -632,7 +632,7 @@ would not make sense. If we pass through this test, the matrix element lies in t
 
 #### Symmetric sparse matrices
 
-For sparse [symmetric matrices](https://en.wikipedia.org/wiki/Symmetric_matrix), TNL offers a format storing only a half of the matrix elements. More precisely, ony the matrix diagonal and the elements bellow are stored in the memory. The matrix elements above the diagonal are deduced from those bellow. If such a symmetric format is used on GPU, atomic operations must be used in some matrix operations. For this reason, symmetric matrices are allowed only for when the matrix elements values are expressed with `float` and `double` type. An advantage of the symmetric formats is lower memory consumption. Since less data need to be transferred from the memory, better performance might be observed. In some cases, however, the use of atomic operations on GPU may cause performance drop. Mostly we can see approximately the same performance compared to general formats but we can profit from lower memory requirements which is appreciated especially on GPU. The following example shows how to create symmetric sparse matrix.
+For sparse [symmetric matrices](https://en.wikipedia.org/wiki/Symmetric_matrix), TNL offers a format storing only a half of the matrix elements. More precisely, ony the matrix diagonal and the elements bellow are stored in the memory. The matrix elements above the diagonal are deduced from those bellow. If such a symmetric format is used on GPU, atomic operations must be used in some matrix operations. For this reason, symmetric matrices can be combined only with matrix elements values expressed in `float` or `double` type. An advantage of the symmetric formats is lower memory consumption. Since less data need to be transferred from the memory, better performance might be observed. In some cases, however, the use of atomic operations on GPU may cause performance drop. Mostly we can see approximately the same performance compared to general formats but we can profit from lower memory requirements which is appreciated especially on GPU. The following example shows how to create symmetric sparse matrix.
 
 \includelineno SymmetricSparseMatrixExample.cpp
 
@@ -656,6 +656,24 @@ The elements depicted in grey color are not stored in the memory. The main diffe
 
 **Warning: Assignment of symmetric sparse matrix to general sparse matrix does not give correct result, currently. Only the diagonal and the lower part of the matrix is assigned.**
 
+#### Binary sparse matrices
+
+If the matrix element value type (i.e. `Real` type) is set to `bool` the matrix elements can be only `1` or `0`. So in the sparse matrix formats, where we do not store the zero matrix elements, explicitly stored elements can have only one possible value which is `1`.  Therefore we do not need to store the values, only the positions of the nonzero elements. The array `values`, which usualy stores the matrix elements values, can be completely omitted and we can reduce the memory requirements. The following table shows how much we can reduce the memory consumption when using binary matrix instead of common sparse matrix using `float` or `double` types:
+
+| Real   | Index  | Common sparse matrix | Binary sparse matrix | Ratio      |
+|:------:|:------:|:--------------------:|:--------------------:|:----------:|
+| float  | 32-bit |         4 + 4 =  8 B |                  4 B |        50% |
+| float  | 64-bit |         4 + 8 = 12 B |                  8 B |        75% |
+| double | 32-bit |         8 + 4 = 12 B |                  4 B |        33% |
+| double | 64-bit |         8 + 8 = 16 B |                  8 B |        50% |
+
+The following example demonstrates the use of binary matrix:
+
+\includelineno BinarySparseMatrixExample.cpp
+
+All we need to do is set the `Real` type to `bool` as we can see on the line 9. We can see that even though we set different values to different matrix elements (lines 14-18) at the end all of them are turned into ones (printing of the matrix on the line 20). There is an issue, however, which is demonstrated on the product of the matrix with a vector. Nonbinary matrices compute all operations using the `Real` type. If it is set to `bool` operations like [SpMV](https://en.wikipedia.org/wiki/Sparse_matrix-vector_multiplication) would not get correct solution. Therefore sparse matrices use another type called `ComputeReal` which is the 6th template parameter of \ref TNL::Matrices::SparseMatrix. By default it is set to `Index` type but it can be changed by the user. On the lines 26-29 we show how to change this type to `double` and what is the effect of it (correct result of matrix-vector multiplication). The result looks as follows:
+
+\include BinarySparseMatrixExample.out
 
 ### Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
 
