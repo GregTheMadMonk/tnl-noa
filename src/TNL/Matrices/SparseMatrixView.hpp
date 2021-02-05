@@ -510,7 +510,7 @@ rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduc
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
-      TNL_ASSERT_LT( globalIdx, columns_view.getSize(), "" );
+      TNL_ASSERT_LT( globalIdx, ( IndexType ) columns_view.getSize(), "" );
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
       {
