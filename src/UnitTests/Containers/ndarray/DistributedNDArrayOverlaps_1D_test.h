@@ -67,15 +67,17 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                Devices::Host >,
-                       std::index_sequence< 2 > >
+                                Devices::Host,
+                                int,
+                                std::index_sequence< 2 > > >  // overlaps
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                Devices::Cuda >,
-                       std::index_sequence< 2 > >
+                                Devices::Cuda,
+                                int,
+                                std::index_sequence< 2 > > >  // overlaps
 #endif
 >;
 

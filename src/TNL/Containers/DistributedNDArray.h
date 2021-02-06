@@ -18,8 +18,7 @@
 namespace TNL {
 namespace Containers {
 
-template< typename NDArray,
-          typename Overlaps = __ndarray_impl::make_constant_index_sequence< NDArray::getDimension(), 0 > >
+template< typename NDArray >
 class DistributedNDArray
 {
 public:
@@ -31,15 +30,12 @@ public:
    using PermutationType = typename NDArray::PermutationType;
    using LocalBeginsType = __ndarray_impl::LocalBeginsHolder< typename NDArray::SizesHolderType >;
    using LocalRangeType = Subrange< IndexType >;
-   using OverlapsType = Overlaps;
-   using LocalIndexerType = NDArrayIndexer< SizesHolderType, PermutationType, typename NDArray::NDBaseType, typename NDArray::StridesHolderType, Overlaps >;
+   using OverlapsType = typename NDArray::OverlapsType;
 
-   using ViewType = DistributedNDArrayView< typename NDArray::ViewType, Overlaps >;
-   using ConstViewType = DistributedNDArrayView< typename NDArray::ConstViewType, Overlaps >;
+   using ViewType = DistributedNDArrayView< typename NDArray::ViewType >;
+   using ConstViewType = DistributedNDArrayView< typename NDArray::ConstViewType >;
    using LocalViewType = typename NDArray::ViewType;
    using ConstLocalViewType = typename NDArray::ConstViewType;
-
-   static_assert( Overlaps::size() == NDArray::getDimension(), "invalid overlaps" );
 
    // all methods from NDArrayView
 
@@ -134,11 +130,6 @@ public:
       return localArray.getStorageSize();
    }
 
-   LocalIndexerType getLocalIndexer() const
-   {
-      return LocalIndexerType( localEnds - localBegins, typename NDArray::StridesHolderType{} );
-   }
-
    LocalViewType getLocalView()
    {
       return localArray.getView();
@@ -156,12 +147,12 @@ public:
    getStorageIndex( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == SizesHolderType::getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
       auto getStorageIndex = [this]( auto&&... indices )
       {
          return this->localArray.getStorageIndex( std::forward< decltype(indices) >( indices )... );
       };
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
    }
 
    __cuda_callable__
@@ -183,8 +174,8 @@ public:
    operator()( IndexTypes&&... indices )
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, localArray, std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, localArray, std::forward< IndexTypes >( indices )... );
    }
 
    template< typename... IndexTypes >
@@ -193,8 +184,8 @@ public:
    operator()( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, localArray, std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, localArray, std::forward< IndexTypes >( indices )... );
    }
 
    // bracket operator for 1D arrays
@@ -203,8 +194,8 @@ public:
    operator[]( IndexType index )
    {
       static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexType >( index ) );
-      return localArray[ __ndarray_impl::get<0>( Overlaps{} ) + index - localBegins.template getSize< 0 >() ];
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexType >( index ) );
+      return localArray[ index - localBegins.template getSize< 0 >() ];
    }
 
    __cuda_callable__
@@ -212,8 +203,8 @@ public:
    operator[]( IndexType index ) const
    {
       static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexType >( index ) );
-      return localArray[ __ndarray_impl::get<0>( Overlaps{} ) + index - localBegins.template getSize< 0 >() ];
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexType >( index ) );
+      return localArray[ index - localBegins.template getSize< 0 >() ];
    }
 
    __cuda_callable__
@@ -266,14 +257,14 @@ public:
       using Begins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
       // add dynamic sizes
       Begins begins;
-      __ndarray_impl::SetSizesAddHelper< 1, Begins, SizesHolderType, Overlaps >::add( begins, SizesHolderType{} );
+      __ndarray_impl::SetSizesAddHelper< 1, Begins, SizesHolderType, OverlapsType >::add( begins, SizesHolderType{} );
       __ndarray_impl::SetSizesMaxHelper< Begins, LocalBeginsType >::max( begins, localBegins );
 
       // subtract static sizes
       using Ends = typename __ndarray_impl::SubtractedSizesHolder< SizesHolderType, 1 >::type;
       // subtract dynamic sizes
       Ends ends;
-      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolderType, Overlaps >::subtract( ends, globalSizes );
+      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolderType, OverlapsType >::subtract( ends, globalSizes );
       __ndarray_impl::SetSizesMinHelper< Ends, SizesHolderType >::min( ends, localEnds );
 
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
@@ -297,14 +288,14 @@ public:
       using SkipBegins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
       // add dynamic sizes
       SkipBegins skipBegins;
-      __ndarray_impl::SetSizesAddHelper< 1, SkipBegins, SizesHolderType, Overlaps >::add( skipBegins, SizesHolderType{} );
+      __ndarray_impl::SetSizesAddHelper< 1, SkipBegins, SizesHolderType, OverlapsType >::add( skipBegins, SizesHolderType{} );
       __ndarray_impl::SetSizesMaxHelper< SkipBegins, LocalBeginsType >::max( skipBegins, localBegins );
 
       // subtract static sizes
       using SkipEnds = typename __ndarray_impl::SubtractedSizesHolder< SizesHolderType, 1 >::type;
       // subtract dynamic sizes
       SkipEnds skipEnds;
-      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolderType, Overlaps >::subtract( skipEnds, globalSizes );
+      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolderType, OverlapsType >::subtract( skipEnds, globalSizes );
       __ndarray_impl::SetSizesMinHelper< SkipEnds, SizesHolderType >::min( skipEnds, localEnds );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
@@ -326,11 +317,11 @@ public:
    {
       // add overlaps to dynamic sizes
       LocalBeginsType begins;
-      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::add( begins, localBegins );
+      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::add( begins, localBegins );
 
       // subtract overlaps from dynamic sizes
       SizesHolderType ends;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::subtract( ends, localEnds );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( ends, localEnds );
 
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( begins, ends, f );
@@ -342,11 +333,11 @@ public:
    {
       // add overlaps to dynamic sizes
       LocalBeginsType skipBegins;
-      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::add( skipBegins, localBegins );
+      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::add( skipBegins, localBegins );
 
       // subtract overlaps from dynamic sizes
       SizesHolderType skipEnds;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::subtract( skipEnds, localEnds );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::subtract( skipEnds, localEnds );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
@@ -358,11 +349,11 @@ public:
    {
       // subtract overlaps from dynamic sizes
       LocalBeginsType begins;
-      __ndarray_impl::SetSizesSubtractOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::subtract( begins, localBegins );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< LocalBeginsType, SizesHolderType, OverlapsType >::subtract( begins, localBegins );
 
       // add overlaps to dynamic sizes
       SizesHolderType ends;
-      __ndarray_impl::SetSizesAddOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::add( ends, localEnds );
+      __ndarray_impl::SetSizesAddOverlapsHelper< SizesHolderType, SizesHolderType, OverlapsType >::add( ends, localEnds );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( begins, localBegins, localEnds, ends, f );
@@ -428,12 +419,12 @@ public:
    getElement( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, OverlapsType{}, std::forward< IndexTypes >( indices )... );
       auto getElement = [this]( auto&&... indices )
       {
          return this->localArray.getElement( std::forward< decltype(indices) >( indices )... );
       };
-      return __ndarray_impl::host_call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, getElement, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::host_call_with_unshifted_indices< LocalBeginsType >( localBegins, getElement, std::forward< IndexTypes >( indices )... );
    }
 
    void setValue( ValueType value )
@@ -464,8 +455,9 @@ private:
          if( begin == end )
             localSizes.template setSize< level >( globalSizes.template getSize< level >() );
          else {
-            TNL_ASSERT_GE( end - begin, (decltype(end)) __ndarray_impl::get<level>( Overlaps{} ), "local size is less than the size of overlaps" );
-            localSizes.template setSize< level >( end - begin + 2 * __ndarray_impl::get<level>( Overlaps{} ) );
+            TNL_ASSERT_GE( end - begin, (decltype(end)) __ndarray_impl::get<level>( OverlapsType{} ), "local size is less than the size of overlaps" );
+            //localSizes.template setSize< level >( end - begin + 2 * __ndarray_impl::get<level>( OverlapsType{} ) );
+            localSizes.template setSize< level >( end - begin );
          }
       }
    };

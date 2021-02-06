@@ -120,25 +120,28 @@ void setSizesHelper( SizesHolder& holder,
 
 
 // A variadic bounds-checker for indices
-template< typename SizesHolder >
+template< typename SizesHolder, typename Overlaps >
 __cuda_callable__
-void assertIndicesInBounds( const SizesHolder& )
+void assertIndicesInBounds( const SizesHolder&, const Overlaps& overlaps )
 {}
 
 template< typename SizesHolder,
+          typename Overlaps,
           typename Index,
           typename... IndexTypes >
 __cuda_callable__
-void assertIndicesInBounds( const SizesHolder& sizes, Index&& i, IndexTypes&&... indices )
+void assertIndicesInBounds( const SizesHolder& sizes, const Overlaps& overlaps, Index&& i, IndexTypes&&... indices )
 {
 #ifndef NDEBUG
    // sizes.template getSize<...>() cannot be inside the assert macro, but the variables
    // shouldn't be declared when compiling without assertions
    constexpr std::size_t level = SizesHolder::getDimension() - sizeof...(indices) - 1;
    const auto size = sizes.template getSize< level >();
-   TNL_ASSERT_LT( (decltype(size)) i, size, "Input error - some index is out of bounds." );
+   const decltype(size) overlap = get<level>( overlaps );
+   TNL_ASSERT_LE( - overlap, (decltype(size)) i, "Input error - some index is below the lower bound." );
+   TNL_ASSERT_LT( (decltype(size)) i, size + overlap, "Input error - some index is above the upper bound." );
 #endif
-   assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
+   assertIndicesInBounds( sizes, overlaps, std::forward< IndexTypes >( indices )... );
 }
 
 

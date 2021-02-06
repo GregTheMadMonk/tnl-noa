@@ -262,7 +262,7 @@ protected:
       {
          auto& dim_buffers = buffers.template getDimBuffers< dim >();
 
-         constexpr std::size_t overlap = DistributedNDArrayView::LocalIndexerType::template getOverlap< dim >();
+         constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
          if( overlap == 0 ) {
             dim_buffers.reset();
             return;
@@ -320,7 +320,7 @@ protected:
       static void exec( Buffers& buffers, DistributedNDArrayView& array_view, bool to_buffer, SyncDirection mask )
       {
          // skip if there are no overlaps
-         constexpr std::size_t overlap = DistributedNDArrayView::LocalIndexerType::template getOverlap< dim >();
+         constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
          if( overlap == 0 )
             return;
 
@@ -376,7 +376,7 @@ protected:
       template< typename Requests, typename Group >
       static void exec( Buffers& buffers, Requests& requests, Group group, int tag_offset, SyncDirection mask )
       {
-         constexpr std::size_t overlap = DistributedNDArrayView::LocalIndexerType::template getOverlap< dim >();
+         constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
          if( overlap == 0 )
             return;
 

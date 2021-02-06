@@ -18,6 +18,8 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+static constexpr int Q = 9;
+
 /*
  * Light check of DistributedNDArray.
  *
@@ -65,17 +67,19 @@ protected:
 // types for which DistributedNDArrayOverlaps_semi1D_test is instantiated
 using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
+                                SizesHolder< int, Q, 0, 0 >,  // Q, X, Y
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
-                                Devices::Host >,
-                       std::index_sequence< 0, 2, 0 > >
+                                Devices::Host,
+                                int,
+                                std::index_sequence< 0, 2, 0 > > >  // overlaps
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
+                                SizesHolder< int, Q, 0, 0 >,  // Q, X, Y
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
-                                Devices::Cuda >,
-                       std::index_sequence< 0, 2, 0 > >
+                                Devices::Cuda,
+                                int,
+                                std::index_sequence< 0, 2, 0 > > >  // overlaps
 #endif
 >;
 
@@ -90,7 +94,7 @@ TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, checkSumOfLocalSizes )
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedNDArray.template getSize< 1 >(), this->globalSize );
 
-   EXPECT_EQ( this->distributedNDArray.getLocalStorageSize(), 9 * (2 * this->overlaps + localSize) * (this->globalSize / 2) );
+   EXPECT_EQ( this->distributedNDArray.getLocalStorageSize(), Q * (2 * this->overlaps + localSize) * (this->globalSize / 2) );
 }
 
 // separate function because nvcc does not allow __cuda_callable__ lambdas inside
@@ -112,40 +116,40 @@ void test_helper_forLocalInternal( DistributedArray& a )
    a.setValue( 0 );
    a.forLocalInternal( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getBegin() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() + overlaps; gi < localRange.getEnd() - overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd() - overlaps; gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 
    a.setValue( 0 );
    a_view.forLocalInternal( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getBegin() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() + overlaps; gi < localRange.getEnd() - overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd() - overlaps; gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 }
 
 TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, forLocalInternal )
@@ -172,40 +176,40 @@ void test_helper_forLocalBoundary( DistributedArray& a )
    a.setValue( 0 );
    a.forLocalBoundary( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getBegin() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() + overlaps; gi < localRange.getEnd() - overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd() - overlaps; gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 
    a.setValue( 0 );
    a_view.forLocalBoundary( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getBegin() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() + overlaps; gi < localRange.getEnd() - overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd() - overlaps; gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 }
 
 TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, forLocalBoundary )
@@ -232,40 +236,40 @@ void test_helper_forOverlaps( DistributedArray& a )
    a.setValue( 0 );
    a.forOverlaps( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 
    a.setValue( 0 );
    a_view.forOverlaps( setter );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 0 )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), 1 )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 }
 
 TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, forOverlaps )
@@ -286,7 +290,7 @@ void test_helper_synchronize( DistributedArray& a, const int rank, const int npr
 
    auto setter = [=] __cuda_callable__ ( IndexType q, IndexType i, IndexType j ) mutable
    {
-      a_view( i ) = i;
+      a_view( q, i, j ) = i;
    };
 
    a.setValue( -1 );
@@ -294,48 +298,48 @@ void test_helper_synchronize( DistributedArray& a, const int rank, const int npr
    DistributedNDArraySynchronizer< DistributedArray > s1;
    s1.synchronize( a );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi + ((rank == 0) ? 97 : 0) )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi - ((rank == nproc-1) ? 97 : 0) )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 
    a.setValue( -1 );
    a_view.forAll( setter );
    DistributedNDArraySynchronizer< decltype(a_view) > s2;
    s2.synchronize( a_view );
 
-   for( int q = 0; q < 9; q++ )
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi + ((rank == 0) ? 97 : 0) )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi )
-            << "gi = " << gi;
-   for( int q = 0; q < 9; q++ )
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
+   for( int q = 0; q < Q; q++ )
    for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
    for( int j = 0; j < a.template getSize< 2 >(); j++ )
       EXPECT_EQ( a.getElement( q, gi, j ), gi - ((rank == nproc-1) ? 97 : 0) )
-            << "gi = " << gi;
+            << "q = " << q << ", gi = " << gi << ", j = " << j;
 }
 
-//TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, synchronize )
-//{
-//   test_helper_synchronize( this->distributedNDArray, this->rank, this->nproc );
-//}
+TYPED_TEST( DistributedNDArrayOverlaps_semi1D_test, synchronize )
+{
+   test_helper_synchronize( this->distributedNDArray, this->rank, this->nproc );
+}
 
 #endif  // HAVE_GTEST
 
