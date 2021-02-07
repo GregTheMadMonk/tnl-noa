@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRKernelVector.hpp -  description
+                          CSRVectorKernel.hpp -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -15,7 +15,7 @@
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
-#include <TNL/Algorithms/Segments/CSRKernelVector.h>
+#include <TNL/Algorithms/Segments/CSRVectorKernel.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -80,7 +80,7 @@ template< typename Index,
           typename Device >
     template< typename Offsets >
 void
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 init( const Offsets& offsets )
 {
 }
@@ -88,7 +88,7 @@ init( const Offsets& offsets )
 template< typename Index,
           typename Device >
 void
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 reset()
 {
 }
@@ -96,7 +96,7 @@ reset()
 template< typename Index,
           typename Device >
 auto
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 getView() -> ViewType
 {
     return *this;
@@ -105,7 +105,7 @@ getView() -> ViewType
 template< typename Index,
           typename Device >
 auto
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 getConstView() const -> ConstViewType
 {
     return *this;
@@ -114,7 +114,7 @@ getConstView() const -> ConstViewType
 template< typename Index,
           typename Device >
 TNL::String
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 getKernelType()
 {
     return "Vector";
@@ -129,7 +129,7 @@ template< typename Index,
               typename Real,
               typename... Args >
 void
-CSRKernelVector< Index, Device >::
+CSRVectorKernel< Index, Device >::
 segmentsReduction( const OffsetsView& offsets,
                          Index first,
                          Index last,

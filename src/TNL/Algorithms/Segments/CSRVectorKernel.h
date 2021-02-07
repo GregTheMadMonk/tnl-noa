@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRKernelVector.h -  description
+                          CSRVectorKernel.h -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -22,12 +22,12 @@ namespace TNL {
 
 template< typename Index,
           typename Device >
-struct CSRKernelVector
+struct CSRVectorKernel
 {
    using IndexType = Index;
    using DeviceType = Device;
-   using ViewType = CSRKernelVector< Index, Device >;
-   using ConstViewType = CSRKernelVector< Index, Device >;
+   using ViewType = CSRVectorKernel< Index, Device >;
+   using ConstViewType = CSRVectorKernel< Index, Device >;
 
    template< typename Offsets >
    void init( const Offsets& offsets );
@@ -60,4 +60,4 @@ struct CSRKernelVector
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRKernelVector.hpp>
+#include <TNL/Algorithms/Segments/CSRVectorKernel.hpp>
