@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRKernelHybrid.hpp -  description
+                          CSRHybridKernel.hpp -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -15,7 +15,7 @@
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
-#include <TNL/Algorithms/Segments/CSRKernelHybrid.h>
+#include <TNL/Algorithms/Segments/CSRHybridKernel.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -86,7 +86,7 @@ template< typename Index,
           typename Device >
     template< typename Offsets >
 void
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 init( const Offsets& offsets )
 {
     const Index segmentsCount = offsets.getSize() - 1;
@@ -99,7 +99,7 @@ init( const Offsets& offsets )
 template< typename Index,
           typename Device >
 void
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 reset()
 {
     this->threadsPerSegment = 0;
@@ -108,7 +108,7 @@ reset()
 template< typename Index,
           typename Device >
 auto
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 getView() -> ViewType
 {
     return *this;
@@ -117,7 +117,7 @@ getView() -> ViewType
 template< typename Index,
           typename Device >
 TNL::String
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 getKernelType()
 {
     return "Hybrid";
@@ -126,7 +126,7 @@ getKernelType()
 template< typename Index,
           typename Device >
 auto
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 getConstView() const -> ConstViewType
 {
     return *this;
@@ -142,7 +142,7 @@ template< typename Index,
               typename Real,
               typename... Args >
 void
-CSRKernelHybrid< Index, Device >::
+CSRHybridKernel< Index, Device >::
 segmentsReduction( const OffsetsView& offsets,
                          Index first,
                          Index last,

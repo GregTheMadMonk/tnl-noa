@@ -150,7 +150,7 @@ using CSRVector = CSR< Device, Index, CSRVectorKernel< Index, Device >, IndexAll
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRHybrid = CSR< Device, Index, CSRKernelHybrid< Index, Device >, IndexAllocator >;
+using CSRHybrid = CSR< Device, Index, CSRHybridKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,

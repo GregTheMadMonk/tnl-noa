@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRKernelHybrid.h -  description
+                          CSRHybridKernel.h -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -22,12 +22,12 @@ namespace TNL {
 
 template< typename Index,
           typename Device >
-struct CSRKernelHybrid
+struct CSRHybridKernel
 {
    using IndexType = Index;
    using DeviceType = Device;
-   using ViewType = CSRKernelHybrid< Index, Device >;
-   using ConstViewType = CSRKernelHybrid< Index, Device >;
+   using ViewType = CSRHybridKernel< Index, Device >;
+   using ConstViewType = CSRHybridKernel< Index, Device >;
 
    template< typename Offsets >
    void init( const Offsets& offsets );
@@ -63,4 +63,4 @@ struct CSRKernelHybrid
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRKernelHybrid.hpp>
+#include <TNL/Algorithms/Segments/CSRHybridKernel.hpp>
