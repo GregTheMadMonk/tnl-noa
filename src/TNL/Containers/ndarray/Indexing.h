@@ -179,8 +179,10 @@ struct SlicedIndexer< Permutation, Overlaps, Alignment, SliceInfo, level, false 
       static constexpr std::size_t idx = get< level >( Permutation{} );
       static constexpr std::size_t overlap = __ndarray_impl::get< idx >( Overlaps{} );
       const auto alpha = get_from_pack< idx >( std::forward< Indices >( indices )... );
+      const auto size = Alignment::template getAlignedSize< idx >( sizes ) + 2 * overlap;
       const auto previous = SlicedIndexer< Permutation, Overlaps, Alignment, SliceInfo, level - 1 >::getIndex( sizes, strides, std::forward< Indices >( indices )... );
-      return strides.template getStride< idx >( alpha ) * ( alpha + overlap + Alignment::template getAlignedSize< idx >( sizes ) * previous );
+
+      return strides.template getStride< idx >( alpha ) * ( alpha + overlap + size * previous );
    }
 };
 
@@ -205,7 +207,7 @@ struct SlicedIndexer< Permutation, Overlaps, Alignment, SliceInfo, level, true >
       static constexpr std::size_t overlap = __ndarray_impl::get< idx >( Overlaps{} );
       const auto alpha = get_from_pack< idx >( std::forward< Indices >( indices )... );
       static constexpr std::size_t S = SliceInfo::getSliceSize( idx );
-      // TODO: check the calculation with strides
+      // TODO: check the calculation with strides and overlaps
       return strides.template getStride< idx >( alpha ) *
                   ( S * ((alpha + overlap) / S) * StorageSizeGetter< SizesHolder, Alignment, Overlaps, IndexTag< level - 1 > >::getPermuted( sizes, Permutation{} ) +
                     (alpha + overlap) % S ) +
