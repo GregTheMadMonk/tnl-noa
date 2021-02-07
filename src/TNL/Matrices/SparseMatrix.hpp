@@ -984,14 +984,12 @@ operator=( const RHSMatrix& matrix )
          auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
             if( columnIndex != paddingIndex )
             {
-               //printf("SparseMatrix.hpp: localIdx = %d, maxRowLength = %d \n", localIdx, maxRowLength );
                TNL_ASSERT_LT( rowIdx - baseRow, bufferRowsCount, "" );
                TNL_ASSERT_LT( localIdx, maxRowLength, "" );
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                TNL_ASSERT_LT( bufferIdx, ( IndexType ) bufferSize, "" );
                matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
                matrixValuesBuffer_view[ bufferIdx ] = value;
-               //printf( "TO BUFFER: rowIdx = %d localIdx = %d bufferIdx = %d column = %d value = %d \n", rowIdx, localIdx, bufferIdx, columnIndex, value );
             }
          };
          matrix.forRows( baseRow, lastRow, f1 );
@@ -1016,8 +1014,6 @@ operator=( const RHSMatrix& matrix )
                TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
                inValue = thisValuesBuffer_view[ bufferIdx ];
             }
-            //std::cerr << "rowIdx = " << rowIdx << " localIdx = " << localIdx << " bufferLocalIdx = " << bufferLocalIdx
-            //          << " inValue = " << inValue << " bufferIdx = " << bufferIdx << std::endl;
             rowLocalIndexes_view[ rowIdx ] = bufferLocalIdx;
             if( inValue == 0.0 )
             {

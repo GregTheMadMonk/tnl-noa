@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRKernelScalar.h -  description
+                          CSRScalarKernel.h -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -22,12 +22,12 @@ namespace TNL {
 
 template< typename Index,
           typename Device >
-struct CSRKernelScalar
+struct CSRScalarKernel
 {
     using IndexType = Index;
     using DeviceType = Device;
-    using ViewType = CSRKernelScalar< Index, Device >;
-    using ConstViewType = CSRKernelScalar< Index, Device >;
+    using ViewType = CSRScalarKernel< Index, Device >;
+    using ConstViewType = CSRScalarKernel< Index, Device >;
 
     template< typename Offsets >
     void init( const Offsets& offsets );
@@ -60,4 +60,4 @@ struct CSRKernelScalar
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRKernelScalar.hpp>
+#include <TNL/Algorithms/Segments/CSRScalarKernel.hpp>
