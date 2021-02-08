@@ -15,9 +15,9 @@
 namespace TNL {
 namespace Cuda {
 
-inline constexpr int getMaxGridSize()
+inline constexpr size_t getMaxGridSize()
 {
-   return 65535;
+   return 2147483647;//65535;
 }
 
 inline constexpr int getMaxBlockSize()
