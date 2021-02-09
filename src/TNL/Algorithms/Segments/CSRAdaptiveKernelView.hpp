@@ -18,6 +18,7 @@
 #include <TNL/Algorithms/Segments/CSRScalarKernel.h>
 #include <TNL/Algorithms/Segments/CSRAdaptiveKernelView.h>
 #include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -25,8 +26,7 @@ namespace TNL {
 
 #ifdef HAVE_CUDA
 
-template< int CudaBlockSize,
-          int warpSize,
+template< int warpSize,
           int WARPS,
           int SHARED_PER_WARP,
           int MAX_ELEM_PER_WARP,
@@ -50,6 +50,12 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
+   static constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< Real >::CudaBlockSize();
+   constexpr int WarpSize = Cuda::getWarpSize();
+   constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< Real >::WarpsCount();
+   constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< Real >::StreamedSharedElementsPerWarp();
+
+
    __shared__ Real streamShared[ WARPS ][ SHARED_PER_WARP ];
    __shared__ Real multivectorShared[ CudaBlockSize / warpSize ];
    constexpr size_t MAX_X_DIM = 2147483647;
@@ -264,10 +270,7 @@ segmentsReduction( const OffsetsView& offsets,
       return;
    }
 
-   static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
-   //static constexpr Index THREADS_SCALAR = 128;
-   //static constexpr Index THREADS_VECTOR = 128;
-   //static constexpr Index THREADS_LIGHT = 128;
+   static constexpr Index THREADS_ADAPTIVE = details::CSRAdaptiveKernelParameters< Real >::CudaBlockSize(); //sizeof(Index) == 8 ? 128 : 256;
 
    /* Max length of row to process one warp for CSR Light, MultiVector */
    //static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
@@ -311,7 +314,6 @@ segmentsReduction( const OffsetsView& offsets,
       }
 
       segmentsReductionCSRAdaptiveKernel<
-            THREADS_ADAPTIVE,
             warpSize,
             WARPS,
             SHARED_PER_WARP,

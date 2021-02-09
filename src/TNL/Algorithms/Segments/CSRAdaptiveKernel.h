@@ -65,7 +65,7 @@ struct CSRAdaptiveKernel
 
    static TNL::String getKernelType();
 
-    static constexpr Index THREADS_ADAPTIVE = sizeof(Index) == 8 ? 128 : 256;
+   static constexpr Index THREADS_ADAPTIVE = details::CSRAdaptiveKernelParameters< Index >::CudaBlockSize(); //sizeof(Index) == 8 ? 128 : 256;
 
    /* How many shared memory use per block in CSR Adaptive kernel */
    static constexpr Index SHARED_PER_BLOCK = 20000; //24576; TODO:
