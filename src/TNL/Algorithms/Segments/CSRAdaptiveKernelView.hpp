@@ -276,10 +276,10 @@ segmentsReduction( const OffsetsView& offsets,
    //static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
 
    /* Max length of row to process one warp for CSR Adaptive */
-   static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = 512;
+   static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = details::CSRAdaptiveKernelParameters< Real >::MaxAdaptiveElementsPerWarp();
 
    /* How many shared memory use per block in CSR Adaptive kernel */
-   static constexpr Index SHARED_PER_BLOCK = 24576;
+   static constexpr Index SHARED_PER_BLOCK = details::CSRAdaptiveKernelParameters< Real >::StreamedSharedMemory();
 
    /* Number of elements in shared memory */
    static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
@@ -317,7 +317,7 @@ segmentsReduction( const OffsetsView& offsets,
             warpSize,
             WARPS,
             SHARED_PER_WARP,
-            MAX_ELEMENTS_PER_WARP_ADAPT,
+            details::CSRAdaptiveKernelParameters< Real >::MaxAdaptiveElementsPerWarp(),
             BlocksView,
             OffsetsView,
             Index, Fetch, Reduction, ResultKeeper, Real, Args... >

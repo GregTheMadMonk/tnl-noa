@@ -15,10 +15,10 @@ namespace TNL {
       namespace Segments {
          namespace details {
 
-template< typename Value >
+template< typename Value,
+          int StreamedSharedMemory_ = 24576 >
 struct CSRAdaptiveKernelParameters
 {
-   static const int StreamedSharedMemory_ = 20000;
    /**
     * \brief Computes number of CUDA threads per block depending on Value type.
     *
