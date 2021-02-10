@@ -46,6 +46,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
+   using BlockType = details::CSRAdaptiveKernelBlockDescriptor< Index >;
    constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
    constexpr int WarpSize = Cuda::getWarpSize();
    constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
@@ -53,6 +54,8 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
 
    __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
    __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
+   __shared__ BlockType sharedBlocks[ WarpsCount ];
+
    const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
    const Index blockIdx = index / WarpSize;
    if( blockIdx >= blocks.getSize() - 1 )
@@ -63,14 +66,19 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    Real result = zero;
    bool compute( true );
    const Index laneIdx = threadIdx.x & 31; // & is cheaper than %
-   const details::CSRAdaptiveKernelBlockDescriptor< Index > block = blocks[ blockIdx ];
+   const Index warpIdx = threadIdx.x / 32;
+   /*if( laneIdx == 0 )
+      sharedBlocks[ warpIdx ] = blocks[ blockIdx ];
+   __syncthreads();
+   const auto& block = sharedBlocks[ warpIdx ];*/
+   const BlockType block = blocks[ blockIdx ];
    const Index& firstSegmentIdx = block.getFirstSegment();
    const Index begin = offsets[ firstSegmentIdx ];
 
    const auto blockType = block.getType();
    if( blockType == details::Type::STREAM ) // Stream kernel - many short segments per warp
    {
-      const Index warpIdx = threadIdx.x / 32;
+
       const Index end = begin + block.getSize();
 
       // Stream data to shared memory
