@@ -65,6 +65,8 @@ struct CSRAdaptiveKernel
 
    static constexpr int MaxValueSizeLog() { return ViewType::MaxValueSizeLog; };
 
+   static int getSizeValueLog( const int& i ) { return details::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
+
    static TNL::String getKernelType();
 
    template< typename Offsets >

@@ -15,17 +15,26 @@ namespace TNL {
       namespace Segments {
          namespace details {
 
-template< int SizeOfValue,
+static constexpr int CSRAdaptiveKernelParametersCudaBlockSizes[] = { 256, 256, 256, 128, 128, 128 };
+
+template< int SizeOfValue = 1,
           int StreamedSharedMemory_ = 24576 >
 struct CSRAdaptiveKernelParameters
 {
+   static constexpr int MaxValueSizeLog = 6;
+
+   static constexpr int getSizeValueLogConstexpr( const int i );
+
+   static constexpr int SizeOfValueLog = getSizeValueLogConstexpr( SizeOfValue );
+   static_assert( SizeOfValueLog < MaxValueSizeLog, "Parameter SizeOfValue is too large." );
+
    /**
     * \brief Computes number of CUDA threads per block depending on Value type.
     *
     * \return CUDA block size.
     */
-   static constexpr int CudaBlockSize() { return 128; }; //sizeof( Value ) == 8 ? 128 : 256; };
-    //std::max( ( int ) ( 1024 / sizeof( Value ) ), ( int ) Cuda::getWarpSize() ); };
+   static constexpr int CudaBlockSize() { return CSRAdaptiveKernelParametersCudaBlockSizes[ SizeOfValueLog ]; };
+   //{ return SizeOfValue == 8 ? 128 : 256; };
 
    /**
     * \brief Returns amount of shared memory dedicated for stream CSR kernel.
@@ -64,6 +73,32 @@ struct CSRAdaptiveKernelParameters
     * \return Maximum number of elements per warp for adaptive kernel.
     */
    static constexpr int MaxAdaptiveElementsPerWarp() { return 512; };
+
+   static int getSizeValueLog( const int i )
+   {
+      if( i ==  1 ) return 0;
+      if( i ==  2 ) return 1;
+      if( i <=  4 ) return 2;
+      if( i <=  8 ) return 3;
+      if( i <= 16 ) return 4;
+      return 5;
+   }
+};
+
+
+template< int SizeOfValue,
+          int StreamedSharedMemory_ >
+constexpr int 
+CSRAdaptiveKernelParameters< SizeOfValue, StreamedSharedMemory_ >::
+getSizeValueLogConstexpr( const int i )
+{
+   if( i ==  1 ) return 0;
+   if( i ==  2 ) return 1;
+   if( i <=  4 ) return 2;
+   if( i <=  8 ) return 3;
+   if( i <= 16 ) return 4;
+   if( i <= 32 ) return 5;
+   return 6;
 };
 
          } // namespace details

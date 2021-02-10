@@ -165,7 +165,7 @@ initValueSize( const Offsets& offsets )
       if( type == details::Type::LONG )
       {
          const Index blocksCount = inBlocks.size();
-         const Index warpsPerCudaBlock = details::CSRAdaptiveKernelParameters< sizeof( Index ) >::CudaBlockSize() / TNL::Cuda::getWarpSize();
+         const Index warpsPerCudaBlock = details::CSRAdaptiveKernelParameters< SizeOfValue >::CudaBlockSize() / TNL::Cuda::getWarpSize();
          Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
          if( warpsLeft == 0 )
             warpsLeft = warpsPerCudaBlock;
@@ -182,10 +182,7 @@ initValueSize( const Offsets& offsets )
       start = nextStart;
    }
    inBlocks.emplace_back(nextStart);
-   //std::cerr << "Setting blocks to " << std::log2( SizeOfValue ) << std::endl;
-   TNL_ASSERT_LT( std::log2( SizeOfValue ), MaxValueSizeLog(), "" );
-   TNL_ASSERT_GE( std::log2( SizeOfValue ), 0, "" );
-   this->blocksArray[ (int ) std::log2( SizeOfValue ) ] = inBlocks;
+   this->blocksArray[ getSizeValueLog( SizeOfValue ) ] = inBlocks;
 }
 
       } // namespace Segments

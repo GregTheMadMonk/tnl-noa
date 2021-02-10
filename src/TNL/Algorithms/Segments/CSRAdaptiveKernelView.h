@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -28,7 +29,9 @@ struct CSRAdaptiveKernelView
    using BlocksType = TNL::Containers::Vector< details::CSRAdaptiveKernelBlockDescriptor< Index >, Device, Index >;
    using BlocksView = typename BlocksType::ViewType;
 
-   static constexpr int MaxValueSizeLog = 6;
+   static constexpr int MaxValueSizeLog = details::CSRAdaptiveKernelParameters<>::MaxValueSizeLog;
+
+   static int getSizeValueLog( const int& i ) { return details::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
 
    CSRAdaptiveKernelView() = default;
 

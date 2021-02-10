@@ -113,41 +113,23 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    }
    else // blockType == Type::LONG - several warps per segment
    {
-      // Number of elements processed by previous warps
-      //const Index offset = //block.index[1] * MAX_ELEM_PER_WARP;
-      ///   block.getWarpIdx() * MAX_ELEM_PER_WARP;
-      //Index to = begin + (block.getWarpIdx()  + 1) * MAX_ELEM_PER_WARP;
       const Index segmentIdx = block.getFirstSegment();//block.index[0];
-      //minID = offsets[block.index[0] ];
       const Index end = offsets[segmentIdx + 1];
-      //const int tid = threadIdx.x;
-      //const int inBlockWarpIdx = block.getWarpIdx();
 
-      //if( to > end )
-      //   to = end;
       TNL_ASSERT_GT( block.getWarpsCount(), 0, "" );
       result = zero;
-      //printf( "LONG tid %d warpIdx %d: LONG \n", tid, block.getWarpIdx()  );
       for( Index globalIdx = begin + laneIdx + TNL::Cuda::getWarpSize() * block.getWarpIdx();
            globalIdx < end;
            globalIdx += TNL::Cuda::getWarpSize() * block.getWarpsCount() )
       {
          result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
-         //if( laneIdx == 0 )
-         //   printf( "LONG warpIdx: %d gid: %d begin: %d end: %d -> %d \n", ( int ) block.getWarpIdx(), globalIdx, begin, end,
-         //    details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, 0, globalIdx, compute ) );
-         //result += values[i] * inVector[columnIndexes[i]];
       }
-      //printf( "tid %d -> %d \n", tid, result );
 
       result += __shfl_down_sync(0xFFFFFFFF, result, 16);
       result += __shfl_down_sync(0xFFFFFFFF, result, 8);
       result += __shfl_down_sync(0xFFFFFFFF, result, 4);
       result += __shfl_down_sync(0xFFFFFFFF, result, 2);
       result += __shfl_down_sync(0xFFFFFFFF, result, 1);
-
-      //if( laneIdx == 0 )
-      //   printf( "WARP RESULT: tid %d -> %d \n", tid, result );
 
       const Index warpID = threadIdx.x / 32;
       if( laneIdx == 0 )
@@ -249,9 +231,9 @@ segmentsReduction( const OffsetsView& offsets,
                    Args... args ) const
 {
 #ifdef HAVE_CUDA
-   int valueSizeLog = std::ceil( log2f( ( double ) sizeof( Real ) ) );
+   int valueSizeLog = getSizeValueLog( sizeof( Real ) );
 
-   if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog > MaxValueSizeLog )
+   if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog >= MaxValueSizeLog )
    {
       TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
          segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
@@ -261,11 +243,11 @@ segmentsReduction( const OffsetsView& offsets,
    Index blocksCount;
 
    const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
-   constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize(); //2147483647;
+   constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize();
 
-   // Fill blocks 
+   // Fill blocks
    size_t neededThreads = this->blocksArray[ valueSizeLog ].getSize() * TNL::Cuda::getWarpSize(); // one warp per block
-   // Execute kernels on device 
+   // Execute kernels on device
    for (Index gridIdx = 0; neededThreads != 0; gridIdx++ )
    {
       if( maxGridSize * threads >= neededThreads )
