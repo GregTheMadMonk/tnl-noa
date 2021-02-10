@@ -26,11 +26,7 @@ namespace TNL {
 
 #ifdef HAVE_CUDA
 
-template< int warpSize,
-          int WARPS,
-          int SHARED_PER_WARP,
-          int MAX_ELEM_PER_WARP,
-          typename BlocksView,
+template< typename BlocksView,
           typename Offsets,
           typename Index,
           typename Fetch,
@@ -50,21 +46,19 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
-   static constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
-   //constexpr int WarpSize = Cuda::getWarpSize();
-   //constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
-   //constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
+   constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+   constexpr int WarpSize = Cuda::getWarpSize();
+   constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
+   constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
 
-
-   __shared__ Real streamShared[ WARPS ][ SHARED_PER_WARP ];
-   __shared__ Real multivectorShared[ CudaBlockSize / warpSize ];
-   constexpr size_t MAX_X_DIM = 2147483647;
-   const Index index = (gridIdx * MAX_X_DIM) + (blockIdx.x * blockDim.x) + threadIdx.x;
-   const Index blockIdx = index / warpSize;
+   __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
+   __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
+   const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
+   const Index blockIdx = index / WarpSize;
    if( blockIdx >= blocks.getSize() - 1 )
       return;
 
-   if( threadIdx.x < CudaBlockSize / warpSize )
+   if( threadIdx.x < CudaBlockSize / WarpSize )
       multivectorShared[ threadIdx.x ] = zero;
    Real result = zero;
    bool compute( true );
@@ -80,7 +74,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       const Index end = begin + block.getSize();
 
       // Stream data to shared memory
-      for( Index globalIdx = laneIdx + begin; globalIdx < end; globalIdx += warpSize )
+      for( Index globalIdx = laneIdx + begin; globalIdx < end; globalIdx += WarpSize )
       {
          streamShared[ warpIdx ][ globalIdx - begin ] = //fetch( globalIdx, compute );
             details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute );
@@ -90,7 +84,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
 
       const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
 
-      for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += warpSize )
+      for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += WarpSize )
       {
          const Index sharedEnd = offsets[ i + 1 ] - begin; // end of preprocessed data
          result = zero;
@@ -105,7 +99,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       const Index end = begin + block.getSize();
       const Index segmentIdx = block.getFirstSegment();
 
-      for( Index globalIdx = begin + laneIdx; globalIdx < end; globalIdx += warpSize )
+      for( Index globalIdx = begin + laneIdx; globalIdx < end; globalIdx += WarpSize )
          result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) ); // fix local idx
 
       // Parallel reduction
@@ -163,7 +157,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       // Reduction in multivectorShared
       if( block.getWarpIdx() == 0 && laneIdx < 16 )
       {
-         constexpr int totalWarps = CudaBlockSize / warpSize;
+         constexpr int totalWarps = CudaBlockSize / WarpSize;
          if( totalWarps >= 32 )
          {
             multivectorShared[ laneIdx ] =  reduce( multivectorShared[ laneIdx ], multivectorShared[ laneIdx + 16 ] );
@@ -198,14 +192,6 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    }
 }
 #endif
-
-/*template< typename Index,
-          typename Device >
-CSRAdaptiveKernelView< Index, Device >::
-CSRAdaptiveKernelView( BlocksType& blocks )
-{
-   this->blocks.bind( blocks );
-}*/
 
 template< typename Index,
           typename Device >
@@ -272,54 +258,28 @@ segmentsReduction( const OffsetsView& offsets,
       return;
    }
 
-   static constexpr Index THREADS_ADAPTIVE = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize(); //sizeof(Index) == 8 ? 128 : 256;
-
-   /* Max length of row to process one warp for CSR Light, MultiVector */
-   //static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
-
-   /* Max length of row to process one warp for CSR Adaptive */
-   //static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::MaxAdaptiveElementsPerWarp();
-
-   /* How many shared memory use per block in CSR Adaptive kernel */
-   static constexpr Index SHARED_PER_BLOCK = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedMemory();
-
-   /* Number of elements in shared memory */
-   static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
-
-   /* Number of warps in block for CSR Adaptive */
-   static constexpr Index WARPS = THREADS_ADAPTIVE / 32;
-
-   /* Number of elements in shared memory per one warp */
-   static constexpr Index SHARED_PER_WARP = SHARED / WARPS;
-
-   constexpr int warpSize = 32;
-
    Index blocksCount;
 
-   const Index threads = THREADS_ADAPTIVE;
-   constexpr size_t MAX_X_DIM = 2147483647;
+   const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+   constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize(); //2147483647;
 
-   /* Fill blocks */
-   size_t neededThreads = this->blocksArray[ valueSizeLog ].getSize() * warpSize; // one warp per block
-   /* Execute kernels on device */
+   // Fill blocks 
+   size_t neededThreads = this->blocksArray[ valueSizeLog ].getSize() * TNL::Cuda::getWarpSize(); // one warp per block
+   // Execute kernels on device 
    for (Index gridIdx = 0; neededThreads != 0; gridIdx++ )
    {
-      if (MAX_X_DIM * threads >= neededThreads)
+      if( maxGridSize * threads >= neededThreads )
       {
-         blocksCount = roundUpDivision(neededThreads, threads);
+         blocksCount = roundUpDivision( neededThreads, threads );
          neededThreads = 0;
       }
       else
       {
-         blocksCount = MAX_X_DIM;
-         neededThreads -= MAX_X_DIM * threads;
+         blocksCount = maxGridSize;
+         neededThreads -= maxGridSize * threads;
       }
 
       segmentsReductionCSRAdaptiveKernel<
-            warpSize,
-            WARPS,
-            SHARED_PER_WARP,
-            details::CSRAdaptiveKernelParameters< sizeof( Real ) >::MaxAdaptiveElementsPerWarp(),
             BlocksView,
             OffsetsView,
             Index, Fetch, Reduction, ResultKeeper, Real, Args... >
