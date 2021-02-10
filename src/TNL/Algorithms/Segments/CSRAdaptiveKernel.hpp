@@ -165,7 +165,7 @@ initValueSize( const Offsets& offsets )
       if( type == details::Type::LONG )
       {
          const Index blocksCount = inBlocks.size();
-         const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
+         const Index warpsPerCudaBlock = details::CSRAdaptiveKernelParameters< sizeof( Index ) >::CudaBlockSize() / TNL::Cuda::getWarpSize();
          Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
          if( warpsLeft == 0 )
             warpsLeft = warpsPerCudaBlock;

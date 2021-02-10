@@ -24,7 +24,7 @@ struct CSRAdaptiveKernelParameters
     *
     * \return CUDA block size.
     */
-   static constexpr int CudaBlockSize() { return 256; }; //sizeof( Value ) == 8 ? 128 : 256; };
+   static constexpr int CudaBlockSize() { return 128; }; //sizeof( Value ) == 8 ? 128 : 256; };
     //std::max( ( int ) ( 1024 / sizeof( Value ) ), ( int ) Cuda::getWarpSize() ); };
 
    /**
