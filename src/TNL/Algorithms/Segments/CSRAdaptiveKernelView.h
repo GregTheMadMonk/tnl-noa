@@ -28,11 +28,13 @@ struct CSRAdaptiveKernelView
    using BlocksType = TNL::Containers::Vector< details::CSRAdaptiveKernelBlockDescriptor< Index >, Device, Index >;
    using BlocksView = typename BlocksType::ViewType;
 
+   static constexpr int MaxValueSizeLog = 6;
+
    CSRAdaptiveKernelView() = default;
 
    CSRAdaptiveKernelView( BlocksType& blocks );
 
-   void setBlocks( BlocksType& blocks );
+   void setBlocks( BlocksType& blocks, const int idx );
 
    ViewType getView();
 
@@ -57,10 +59,10 @@ struct CSRAdaptiveKernelView
 
    CSRAdaptiveKernelView& operator=( const CSRAdaptiveKernelView< Index, Device >& kernelView );
 
-   void printBlocks() const;
+   void printBlocks( int idx ) const;
 
    protected:
-      BlocksView blocks;
+      BlocksView blocksArray[ MaxValueSizeLog ];
 };
 
       } // namespace Segments

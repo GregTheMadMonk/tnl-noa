@@ -31,44 +31,6 @@ getKernelType()
    return ViewType::getKernelType();
 };
 
-
-template< typename Index,
-          typename Device >
-   template< typename Offsets >
-Index
-CSRAdaptiveKernel< Index, Device >::
-findLimit( const Index start,
-           const Offsets& offsets,
-           const Index size,
-           details::Type &type,
-           Index &sum )
-{
-   sum = 0;
-   for (Index current = start; current < size - 1; current++ )
-   {
-      Index elements = offsets[ current + 1 ] - offsets[ current ];
-      sum += elements;
-      if( sum > SHARED_PER_WARP )
-      {
-         if( current - start > 0 ) // extra row
-         {
-            type = details::Type::STREAM;
-            return current;
-         }
-         else
-         {                  // one long row
-            if( sum <= 2 * MAX_ELEMENTS_PER_WARP_ADAPT )
-               type = details::Type::VECTOR;
-            else
-               type = details::Type::LONG;
-            return current + 1;
-         }
-      }
-   }
-   type = details::Type::STREAM;
-   return size - 1; // return last row pointer
-   }
-
 template< typename Index,
           typename Device >
    template< typename Offsets >
@@ -76,43 +38,16 @@ void
 CSRAdaptiveKernel< Index, Device >::
 init( const Offsets& offsets )
 {
-   using HostOffsetsType = TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >;
-   HostOffsetsType hostOffsets( offsets );
-   const Index rows = offsets.getSize();
-   Index sum, start( 0 ), nextStart( 0 );
-
-   // Fill blocks
-   std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;
-   inBlocks.reserve( rows );
-
-   while( nextStart != rows - 1 )
-   {
-      details::Type type;
-      nextStart = findLimit( start, hostOffsets, rows, type, sum );
-
-      if( type == details::Type::LONG )
-      {
-         const Index blocksCount = inBlocks.size();
-         const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
-         Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
-         if( warpsLeft == 0 )
-            warpsLeft = warpsPerCudaBlock;
-         for( Index index = 0; index < warpsLeft; index++ )
-            inBlocks.emplace_back( start, details::Type::LONG, index, warpsLeft );
-      }
-      else
-      {
-         inBlocks.emplace_back(start, type,
-               nextStart,
-               offsets.getElement(nextStart),
-               offsets.getElement(start) );
-      }
-      start = nextStart;
-   }
-   inBlocks.emplace_back(nextStart);
-   this->blocks = inBlocks;
-   this->view.setBlocks( blocks );
+   this->template initValueSize<  1 >( offsets );
+   this->template initValueSize<  2 >( offsets );
+   this->template initValueSize<  4 >( offsets );
+   this->template initValueSize<  8 >( offsets );
+   this->template initValueSize< 16 >( offsets );
+   this->template initValueSize< 32 >( offsets );
+   for( int i = 0; i < MaxValueSizeLog(); i++ )
+      this->view.setBlocks( blocksArray[ i ], i );
 }
+
 
 template< typename Index,
           typename Device >
@@ -120,8 +55,11 @@ void
 CSRAdaptiveKernel< Index, Device >::
 reset()
 {
-   this->blocks.reset();
-   this->view.setBlocks( blocks );
+   for( int i = 0; i < MaxValueSizeLog(); i++ )
+   {
+      this->blocksArray[ i ].reset();
+      this->view.setBlocks( this->blocksArray[ i ], i );
+   }
 }
 
 template< typename Index,
@@ -162,6 +100,92 @@ segmentsReduction( const OffsetsView& offsets,
                    Args... args ) const
 {
    view.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+}
+
+template< typename Index,
+          typename Device >
+   template< int SizeOfValue,
+             typename Offsets >
+Index
+CSRAdaptiveKernel< Index, Device >::
+findLimit( const Index start,
+           const Offsets& offsets,
+           const Index size,
+           details::Type &type,
+           Index &sum )
+{
+   sum = 0;
+   for (Index current = start; current < size - 1; current++ )
+   {
+      Index elements = offsets[ current + 1 ] - offsets[ current ];
+      sum += elements;
+      if( sum > details::CSRAdaptiveKernelParameters< SizeOfValue >::StreamedSharedElementsPerWarp() )
+      {
+         if( current - start > 0 ) // extra row
+         {
+            type = details::Type::STREAM;
+            return current;
+         }
+         else
+         {                  // one long row
+            if( sum <= 2 * details::CSRAdaptiveKernelParameters< SizeOfValue >::MaxAdaptiveElementsPerWarp() ) //MAX_ELEMENTS_PER_WARP_ADAPT )
+               type = details::Type::VECTOR;
+            else
+               type = details::Type::LONG;
+            return current + 1;
+         }
+      }
+   }
+   type = details::Type::STREAM;
+   return size - 1; // return last row pointer
+}
+
+template< typename Index,
+          typename Device >
+   template< int SizeOfValue,
+             typename Offsets >
+void
+CSRAdaptiveKernel< Index, Device >::
+initValueSize( const Offsets& offsets )
+{
+   using HostOffsetsType = TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >;
+   HostOffsetsType hostOffsets( offsets );
+   const Index rows = offsets.getSize();
+   Index sum, start( 0 ), nextStart( 0 );
+
+   // Fill blocks
+   std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;
+   inBlocks.reserve( rows );
+
+   while( nextStart != rows - 1 )
+   {
+      details::Type type;
+      nextStart = findLimit< SizeOfValue >( start, hostOffsets, rows, type, sum );
+
+      if( type == details::Type::LONG )
+      {
+         const Index blocksCount = inBlocks.size();
+         const Index warpsPerCudaBlock = THREADS_ADAPTIVE / TNL::Cuda::getWarpSize();
+         Index warpsLeft = roundUpDivision( blocksCount, warpsPerCudaBlock ) * warpsPerCudaBlock - blocksCount;
+         if( warpsLeft == 0 )
+            warpsLeft = warpsPerCudaBlock;
+         for( Index index = 0; index < warpsLeft; index++ )
+            inBlocks.emplace_back( start, details::Type::LONG, index, warpsLeft );
+      }
+      else
+      {
+         inBlocks.emplace_back(start, type,
+               nextStart,
+               offsets.getElement(nextStart),
+               offsets.getElement(start) );
+      }
+      start = nextStart;
+   }
+   inBlocks.emplace_back(nextStart);
+   //std::cerr << "Setting blocks to " << std::log2( SizeOfValue ) << std::endl;
+   TNL_ASSERT_LT( std::log2( SizeOfValue ), MaxValueSizeLog(), "" );
+   TNL_ASSERT_GE( std::log2( SizeOfValue ), 0, "" );
+   this->blocksArray[ (int ) std::log2( SizeOfValue ) ] = inBlocks;
 }
 
       } // namespace Segments

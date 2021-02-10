@@ -15,7 +15,7 @@ namespace TNL {
       namespace Segments {
          namespace details {
 
-template< typename Value,
+template< int SizeOfValue,
           int StreamedSharedMemory_ = 24576 >
 struct CSRAdaptiveKernelParameters
 {
@@ -37,7 +37,7 @@ struct CSRAdaptiveKernelParameters
    /**
     * \brief Number of elements fitting into streamed shared memory.
     */
-   static constexpr size_t StreamedSharedElementsCount() { return StreamedSharedMemory() / sizeof( Value ); };
+   static constexpr size_t StreamedSharedElementsCount() { return StreamedSharedMemory() / SizeOfValue; };
 
    /**
     * \brief Computes number of warps in one CUDA block.

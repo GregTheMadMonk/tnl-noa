@@ -50,10 +50,10 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
-   static constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< Real >::CudaBlockSize();
-   constexpr int WarpSize = Cuda::getWarpSize();
-   constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< Real >::WarpsCount();
-   constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< Real >::StreamedSharedElementsPerWarp();
+   static constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+   //constexpr int WarpSize = Cuda::getWarpSize();
+   //constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
+   //constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
 
 
    __shared__ Real streamShared[ WARPS ][ SHARED_PER_WARP ];
@@ -199,21 +199,21 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
 }
 #endif
 
-template< typename Index,
+/*template< typename Index,
           typename Device >
 CSRAdaptiveKernelView< Index, Device >::
 CSRAdaptiveKernelView( BlocksType& blocks )
 {
    this->blocks.bind( blocks );
-}
+}*/
 
 template< typename Index,
           typename Device >
 void
 CSRAdaptiveKernelView< Index, Device >::
-setBlocks( BlocksType& blocks )
+setBlocks( BlocksType& blocks, const int idx )
 {
-   this->blocks.bind( blocks );
+   this->blocksArray[ idx ].bind( blocks );
 }
 
 template< typename Index,
@@ -263,23 +263,25 @@ segmentsReduction( const OffsetsView& offsets,
                    Args... args ) const
 {
 #ifdef HAVE_CUDA
-   if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() )
+   int valueSizeLog = std::ceil( log2f( ( double ) sizeof( Real ) ) );
+
+   if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog > MaxValueSizeLog )
    {
       TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
          segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
       return;
    }
 
-   static constexpr Index THREADS_ADAPTIVE = details::CSRAdaptiveKernelParameters< Real >::CudaBlockSize(); //sizeof(Index) == 8 ? 128 : 256;
+   static constexpr Index THREADS_ADAPTIVE = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize(); //sizeof(Index) == 8 ? 128 : 256;
 
    /* Max length of row to process one warp for CSR Light, MultiVector */
    //static constexpr Index MAX_ELEMENTS_PER_WARP = 384;
 
    /* Max length of row to process one warp for CSR Adaptive */
-   static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = details::CSRAdaptiveKernelParameters< Real >::MaxAdaptiveElementsPerWarp();
+   //static constexpr Index MAX_ELEMENTS_PER_WARP_ADAPT = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::MaxAdaptiveElementsPerWarp();
 
    /* How many shared memory use per block in CSR Adaptive kernel */
-   static constexpr Index SHARED_PER_BLOCK = details::CSRAdaptiveKernelParameters< Real >::StreamedSharedMemory();
+   static constexpr Index SHARED_PER_BLOCK = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedMemory();
 
    /* Number of elements in shared memory */
    static constexpr Index SHARED = SHARED_PER_BLOCK/sizeof(Real);
@@ -298,7 +300,7 @@ segmentsReduction( const OffsetsView& offsets,
    constexpr size_t MAX_X_DIM = 2147483647;
 
    /* Fill blocks */
-   size_t neededThreads = this->blocks.getSize() * warpSize; // one warp per block
+   size_t neededThreads = this->blocksArray[ valueSizeLog ].getSize() * warpSize; // one warp per block
    /* Execute kernels on device */
    for (Index gridIdx = 0; neededThreads != 0; gridIdx++ )
    {
@@ -317,12 +319,12 @@ segmentsReduction( const OffsetsView& offsets,
             warpSize,
             WARPS,
             SHARED_PER_WARP,
-            details::CSRAdaptiveKernelParameters< Real >::MaxAdaptiveElementsPerWarp(),
+            details::CSRAdaptiveKernelParameters< sizeof( Real ) >::MaxAdaptiveElementsPerWarp(),
             BlocksView,
             OffsetsView,
             Index, Fetch, Reduction, ResultKeeper, Real, Args... >
          <<<blocksCount, threads>>>(
-            this->blocks,
+            this->blocksArray[ valueSizeLog ],
             gridIdx,
             offsets,
             first,
@@ -342,7 +344,8 @@ CSRAdaptiveKernelView< Index, Device >&
 CSRAdaptiveKernelView< Index, Device >::
 operator=( const CSRAdaptiveKernelView< Index, Device >& kernelView )
 {
-   this->blocks.bind( kernelView.blocks );
+   for( int i = 0; i < MaxValueSizeLog; i++ )
+      this->blocksArray[ i ].bind( kernelView.blocksArray[ i ] );
    return *this;
 }
 
@@ -350,8 +353,9 @@ template< typename Index,
           typename Device >
 void
 CSRAdaptiveKernelView< Index, Device >::
-printBlocks() const
+printBlocks( int idx ) const
 {
+   auto& blocks = this->blocksArray[ idx ];
    for( Index i = 0; i < this->blocks.getSize(); i++ )
    {
       auto block = blocks.getElement( i );
