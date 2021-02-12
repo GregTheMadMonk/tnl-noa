@@ -38,6 +38,16 @@ void
 CSRAdaptiveKernel< Index, Device >::
 init( const Offsets& offsets )
 {
+   if( max( offsets ) == 0 )
+   {
+      for( int i = 0; i < MaxValueSizeLog(); i++ )
+      {
+         this->blocksArray[ i ].reset();
+         this->view.setBlocks( this->blocksArray[ i ], i );
+      }
+      return;
+   }
+
    this->template initValueSize<  1 >( offsets );
    this->template initValueSize<  2 >( offsets );
    this->template initValueSize<  4 >( offsets );
@@ -45,7 +55,7 @@ init( const Offsets& offsets )
    this->template initValueSize< 16 >( offsets );
    this->template initValueSize< 32 >( offsets );
    for( int i = 0; i < MaxValueSizeLog(); i++ )
-      this->view.setBlocks( blocksArray[ i ], i );
+      this->view.setBlocks( this->blocksArray[ i ], i );
 }
 
 
@@ -115,7 +125,7 @@ findLimit( const Index start,
            Index &sum )
 {
    sum = 0;
-   for (Index current = start; current < size - 1; current++ )
+   for( Index current = start; current < size - 1; current++ )
    {
       Index elements = offsets[ current + 1 ] - offsets[ current ];
       sum += elements;
@@ -161,7 +171,6 @@ initValueSize( const Offsets& offsets )
    {
       details::Type type;
       nextStart = findLimit< SizeOfValue >( start, hostOffsets, rows, type, sum );
-
       if( type == details::Type::LONG )
       {
          const Index blocksCount = inBlocks.size();
