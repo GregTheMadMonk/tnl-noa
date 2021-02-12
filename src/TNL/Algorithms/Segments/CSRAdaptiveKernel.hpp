@@ -122,7 +122,7 @@ findLimit( const Index start,
            const Offsets& offsets,
            const Index size,
            details::Type &type,
-           Index &sum )
+           size_t &sum )
 {
    sum = 0;
    for( Index current = start; current < size - 1; current++ )
@@ -161,7 +161,8 @@ initValueSize( const Offsets& offsets )
    using HostOffsetsType = TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >;
    HostOffsetsType hostOffsets( offsets );
    const Index rows = offsets.getSize();
-   Index sum, start( 0 ), nextStart( 0 );
+   Index start( 0 ), nextStart( 0 );
+   size_t sum;
 
    // Fill blocks
    std::vector< details::CSRAdaptiveKernelBlockDescriptor< Index > > inBlocks;

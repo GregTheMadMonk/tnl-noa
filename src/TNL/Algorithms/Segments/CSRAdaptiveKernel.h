@@ -99,7 +99,7 @@ struct CSRAdaptiveKernel
                      const Offsets& offsets,
                      const Index size,
                      details::Type &type,
-                     Index &sum );
+                     size_t &sum );
 
       template< int SizeOfValue,
                 typename Offsets >
