@@ -42,6 +42,8 @@ class CSR
 
       static constexpr ElementsOrganization getOrganization() { return ColumnMajorOrder; }
 
+      static constexpr bool havePadding() { return false; };
+
       CSR();
 
       CSR( const SegmentsSizes& sizes );
