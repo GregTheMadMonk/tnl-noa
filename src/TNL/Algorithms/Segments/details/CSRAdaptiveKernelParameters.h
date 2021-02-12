@@ -15,7 +15,7 @@ namespace TNL {
       namespace Segments {
          namespace details {
 
-static constexpr int CSRAdaptiveKernelParametersCudaBlockSizes[] = { 256, 256, 256, 128, 128, 128 };
+static constexpr int CSRAdaptiveKernelParametersCudaBlockSizes[] = { 256, 256, 256, 256, 256, 256 };
 
 template< int SizeOfValue = 1,
           int StreamedSharedMemory_ = 24576 >
@@ -25,7 +25,10 @@ struct CSRAdaptiveKernelParameters
 
    static constexpr int getSizeValueLogConstexpr( const int i );
 
+   static constexpr int getSizeOfValue() { return SizeOfValue; };
+
    static constexpr int SizeOfValueLog = getSizeValueLogConstexpr( SizeOfValue );
+
    static_assert( SizeOfValueLog < MaxValueSizeLog, "Parameter SizeOfValue is too large." );
 
    /**

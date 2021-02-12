@@ -53,16 +53,16 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
 
    __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
-   //__shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
-   //__shared__ BlockType sharedBlocks[ WarpsCount ];
+   __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
+   __shared__ BlockType sharedBlocks[ WarpsCount ];
 
    const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
    const Index blockIdx = index / WarpSize;
    if( blockIdx >= blocks.getSize() - 1 )
       return;
 
-   //if( threadIdx.x < CudaBlockSize / WarpSize )
-   //   multivectorShared[ threadIdx.x ] = zero;
+   if( threadIdx.x < CudaBlockSize / WarpSize )
+      multivectorShared[ threadIdx.x ] = zero;
    Real result = zero;
    bool compute( true );
    const Index laneIdx = threadIdx.x & 31; // & is cheaper than %
@@ -71,7 +71,8 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    __syncthreads();
    const auto& block = sharedBlocks[ warpIdx ];*/
    const BlockType block = blocks[ blockIdx ];
-   const Index begin = offsets[ block.getFirstSegment() ];
+   const Index firstSegmentIdx = block.getFirstSegment();
+   const Index begin = offsets[ firstSegmentIdx ];
 
    if( block.getType() == details::Type::STREAM ) // Stream kernel - many short segments per warp
    {
@@ -80,12 +81,10 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
 
       // Stream data to shared memory
       for( Index globalIdx = laneIdx + begin; globalIdx < end; globalIdx += WarpSize )
-      {
          streamShared[ warpIdx ][ globalIdx - begin ] = fetch( globalIdx, compute );
-      }
-      //const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
+      const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
 
-      /*for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += WarpSize )
+      for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += WarpSize )
       {
          const Index sharedEnd = offsets[ i + 1 ] - begin; // end of preprocessed data
          result = zero;
@@ -93,9 +92,9 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
          for( Index sharedIdx = offsets[ i ] - begin; sharedIdx < sharedEnd; sharedIdx++ )
             result = reduce( result, streamShared[ warpIdx ][ sharedIdx ] );
          keep( i, result );
-      }*/
+      }
    }
-   /*else if( block.getType() == details::Type::VECTOR ) // Vector kernel - one segment per warp
+   else if( block.getType() == details::Type::VECTOR ) // Vector kernel - one segment per warp
    {
       const Index end = begin + block.getSize();
       const Index segmentIdx = block.getFirstSegment();
@@ -172,7 +171,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
             keep( segmentIdx, multivectorShared[ 0 ] );
          }
       }
-   }*/
+   }
 }
 #endif
 
