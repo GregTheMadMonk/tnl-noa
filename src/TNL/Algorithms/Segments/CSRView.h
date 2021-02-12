@@ -42,6 +42,8 @@ class CSRView
       using ConstViewType = CSRView< Device, std::add_const_t< Index >, Kernel >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
+      static constexpr bool havePadding() { return false; };
+
       __cuda_callable__
       CSRView();
 

@@ -41,6 +41,8 @@ class ChunkedEllpack
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
 
+      static constexpr bool havePadding() { return true; };
+
       ChunkedEllpack() = default;
 
       ChunkedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );

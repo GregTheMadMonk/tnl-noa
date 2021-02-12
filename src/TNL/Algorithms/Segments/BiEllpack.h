@@ -38,6 +38,8 @@ class BiEllpack
       using ConstViewType = BiEllpackView< Device, std::add_const_t< IndexType >, Organization >;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
+      static constexpr bool havePadding() { return true; };
+
       BiEllpack() = default;
 
       BiEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );

@@ -437,15 +437,18 @@ vectorProduct( const InVector& inVector,
    };
    auto fetch = [=] __cuda_callable__ ( IndexType globalIdx, bool& compute ) mutable -> ComputeRealType {
       const IndexType column = columnIndexesView[ globalIdx ];
-      compute = ( column != paddingIndex );
-      if( ! compute )
-         return 0.0;
+      if( SegmentsViewType::havePadding() )
+      {
+         compute = ( column != paddingIndex );
+         if( ! compute )
+            return 0.0;
+      }
       if( isBinary() )
          return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
 
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const ComputeRealType& value ) mutable {
+   auto keeperGeneral = [=] __cuda_callable__ ( IndexType row, const ComputeRealType& value ) mutable {
       if( isSymmetric() )
       {
          typename OutVector::RealType aux = matrixMultiplicator * value;

@@ -43,6 +43,8 @@ class ChunkedEllpackView
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
 
+      static constexpr bool havePadding() { return true; };
+
       __cuda_callable__
       ChunkedEllpackView() = default;
 

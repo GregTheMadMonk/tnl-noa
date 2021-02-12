@@ -40,6 +40,8 @@ class BiEllpackView
       using ConstViewType = BiEllpackView< Device, std::add_const_t< Index > >;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
+      static constexpr bool havePadding() { return true; };
+
       __cuda_callable__
       BiEllpackView() = default;
 

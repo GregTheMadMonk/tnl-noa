@@ -41,6 +41,8 @@ class EllpackView
       using ConstViewType = ViewType;
       using SegmentViewType = SegmentView< IndexType, Organization >;
 
+      static constexpr bool havePadding() { return true; };
+
       __cuda_callable__
       EllpackView();
 

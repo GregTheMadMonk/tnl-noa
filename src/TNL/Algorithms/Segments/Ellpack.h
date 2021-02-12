@@ -39,6 +39,8 @@ class Ellpack
       using ConstViewType = typename ViewType::ConstViewType;
       using SegmentViewType = SegmentView< IndexType, Organization >;
 
+      static constexpr bool havePadding() { return true; };
+
       Ellpack();
 
       Ellpack( const SegmentsSizes& sizes );

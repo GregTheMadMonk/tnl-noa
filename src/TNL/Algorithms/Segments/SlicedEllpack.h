@@ -39,6 +39,8 @@ class SlicedEllpack
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
       using SegmentViewType = SegmentView< IndexType, Organization >;
 
+      static constexpr bool havePadding() { return true; };
+
       SlicedEllpack();
 
       SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );

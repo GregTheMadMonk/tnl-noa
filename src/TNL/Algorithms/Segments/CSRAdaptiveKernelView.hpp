@@ -53,46 +53,39 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
 
    __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
-   __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
-   __shared__ BlockType sharedBlocks[ WarpsCount ];
+   //__shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
+   //__shared__ BlockType sharedBlocks[ WarpsCount ];
 
    const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
    const Index blockIdx = index / WarpSize;
    if( blockIdx >= blocks.getSize() - 1 )
       return;
 
-   if( threadIdx.x < CudaBlockSize / WarpSize )
-      multivectorShared[ threadIdx.x ] = zero;
+   //if( threadIdx.x < CudaBlockSize / WarpSize )
+   //   multivectorShared[ threadIdx.x ] = zero;
    Real result = zero;
    bool compute( true );
    const Index laneIdx = threadIdx.x & 31; // & is cheaper than %
-   const Index warpIdx = threadIdx.x / 32;
    /*if( laneIdx == 0 )
       sharedBlocks[ warpIdx ] = blocks[ blockIdx ];
    __syncthreads();
    const auto& block = sharedBlocks[ warpIdx ];*/
    const BlockType block = blocks[ blockIdx ];
-   const Index& firstSegmentIdx = block.getFirstSegment();
-   const Index begin = offsets[ firstSegmentIdx ];
+   const Index begin = offsets[ block.getFirstSegment() ];
 
-   const auto blockType = block.getType();
-   if( blockType == details::Type::STREAM ) // Stream kernel - many short segments per warp
+   if( block.getType() == details::Type::STREAM ) // Stream kernel - many short segments per warp
    {
-
+      const Index warpIdx = threadIdx.x / 32;
       const Index end = begin + block.getSize();
 
       // Stream data to shared memory
       for( Index globalIdx = laneIdx + begin; globalIdx < end; globalIdx += WarpSize )
       {
-         streamShared[ warpIdx ][ globalIdx - begin ] = //fetch( globalIdx, compute );
-            details::FetchLambdaAdapter< Index, Fetch >::call( fetch, -1, -1, globalIdx, compute );
-         // TODO:: fix this by template specialization so that we can assume fetch lambda
-         // with short parameters
+         streamShared[ warpIdx ][ globalIdx - begin ] = fetch( globalIdx, compute );
       }
+      //const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
 
-      const Index lastSegmentIdx = firstSegmentIdx + block.getSegmentsInBlock();
-
-      for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += WarpSize )
+      /*for( Index i = firstSegmentIdx + laneIdx; i < lastSegmentIdx; i += WarpSize )
       {
          const Index sharedEnd = offsets[ i + 1 ] - begin; // end of preprocessed data
          result = zero;
@@ -100,15 +93,15 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
          for( Index sharedIdx = offsets[ i ] - begin; sharedIdx < sharedEnd; sharedIdx++ )
             result = reduce( result, streamShared[ warpIdx ][ sharedIdx ] );
          keep( i, result );
-      }
+      }*/
    }
-   else if( blockType == details::Type::VECTOR ) // Vector kernel - one segment per warp
+   /*else if( block.getType() == details::Type::VECTOR ) // Vector kernel - one segment per warp
    {
       const Index end = begin + block.getSize();
       const Index segmentIdx = block.getFirstSegment();
 
       for( Index globalIdx = begin + laneIdx; globalIdx < end; globalIdx += WarpSize )
-         result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) ); // fix local idx
+         result = reduce( result, fetch( globalIdx, compute ) );
 
       // Parallel reduction
       result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result, 16 ) );
@@ -119,7 +112,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
       if( laneIdx == 0 )
          keep( segmentIdx, result );
    }
-   else // blockType == Type::LONG - several warps per segment
+   else // block.getType() == Type::LONG - several warps per segment
    {
       const Index segmentIdx = block.getFirstSegment();//block.index[0];
       const Index end = offsets[segmentIdx + 1];
@@ -130,7 +123,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
            globalIdx < end;
            globalIdx += TNL::Cuda::getWarpSize() * block.getWarpsCount() )
       {
-         result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, -1, globalIdx, compute ) );
+         result = reduce( result, fetch( globalIdx, compute ) );
       }
 
       result += __shfl_down_sync(0xFFFFFFFF, result, 16);
@@ -179,9 +172,110 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
             keep( segmentIdx, multivectorShared[ 0 ] );
          }
       }
-   }
+   }*/
 }
 #endif
+
+template< typename Index,
+          typename Device,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          bool DispatchScalarCSR =
+            details::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
+            std::is_same< Device, Devices::Host >::value >
+struct CSRAdaptiveKernelSegmentsReductionDispatcher;
+
+template< typename Index,
+          typename Device,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper >
+struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, true >
+{
+
+   template< typename BlocksView,
+             typename Offsets,
+             typename Real,
+             typename... Args >
+   static void reduce( const Offsets& offsets,
+                       const BlocksView& blocks,
+                       Index first,
+                       Index last,
+                       Fetch& fetch,
+                       const Reduction& reduction,
+                       ResultKeeper& keeper,
+                       const Real& zero,
+                       Args... args)
+   {
+      TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
+         segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+   }
+};
+
+template< typename Index,
+          typename Device,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper >
+struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, false >
+{
+   template< typename BlocksView,
+             typename Offsets,
+             typename Real,
+             typename... Args >
+   static void reduce( const Offsets& offsets,
+                       const BlocksView& blocks,
+                       Index first,
+                       Index last,
+                       Fetch& fetch,
+                       const Reduction& reduction,
+                       ResultKeeper& keeper,
+                       const Real& zero,
+                       Args... args)
+   {
+#ifdef HAVE_CUDA
+
+      Index blocksCount;
+
+      const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+      constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize();
+
+      // Fill blocks
+      size_t neededThreads = blocks.getSize() * TNL::Cuda::getWarpSize(); // one warp per block
+      // Execute kernels on device
+      for (Index gridIdx = 0; neededThreads != 0; gridIdx++ )
+      {
+         if( maxGridSize * threads >= neededThreads )
+         {
+            blocksCount = roundUpDivision( neededThreads, threads );
+            neededThreads = 0;
+         }
+         else
+         {
+            blocksCount = maxGridSize;
+            neededThreads -= maxGridSize * threads;
+         }
+
+         segmentsReductionCSRAdaptiveKernel<
+               BlocksView,
+               Offsets,
+               Index, Fetch, Reduction, ResultKeeper, Real, Args... >
+            <<<blocksCount, threads>>>(
+               blocks,
+               gridIdx,
+               offsets,
+               first,
+               last,
+               fetch,
+               reduction,
+               keeper,
+               zero,
+               args... );
+      }
+#endif
+   }
+};
 
 template< typename Index,
           typename Device >
@@ -238,7 +332,6 @@ segmentsReduction( const OffsetsView& offsets,
                    const Real& zero,
                    Args... args ) const
 {
-#ifdef HAVE_CUDA
    int valueSizeLog = getSizeValueLog( sizeof( Real ) );
 
    if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog >= MaxValueSizeLog )
@@ -248,44 +341,8 @@ segmentsReduction( const OffsetsView& offsets,
       return;
    }
 
-   Index blocksCount;
-
-   const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
-   constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize();
-
-   // Fill blocks
-   size_t neededThreads = this->blocksArray[ valueSizeLog ].getSize() * TNL::Cuda::getWarpSize(); // one warp per block
-   // Execute kernels on device
-   for (Index gridIdx = 0; neededThreads != 0; gridIdx++ )
-   {
-      if( maxGridSize * threads >= neededThreads )
-      {
-         blocksCount = roundUpDivision( neededThreads, threads );
-         neededThreads = 0;
-      }
-      else
-      {
-         blocksCount = maxGridSize;
-         neededThreads -= maxGridSize * threads;
-      }
-
-      segmentsReductionCSRAdaptiveKernel<
-            BlocksView,
-            OffsetsView,
-            Index, Fetch, Reduction, ResultKeeper, Real, Args... >
-         <<<blocksCount, threads>>>(
-            this->blocksArray[ valueSizeLog ],
-            gridIdx,
-            offsets,
-            first,
-            last,
-            fetch,
-            reduction,
-            keeper,
-            zero,
-            args... );
-   }
-#endif
+   CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper  >::template
+      reduce< BlocksView, OffsetsView, Real, Args... >( offsets, this->blocksArray[ valueSizeLog ], first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Index,
