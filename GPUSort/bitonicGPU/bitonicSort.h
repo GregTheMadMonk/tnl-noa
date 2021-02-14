@@ -53,19 +53,12 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
                             int monotonicSeqLen, int len, int partsInSeq)
 {
     extern __shared__ int sharedMem[];
-    
-    int arrSize = end - begin;
-    int paddedSize = closestPow2(arrSize);
-    //------------------------------------------
 
+
+    int s = begin + blockIdx.x * (2*blockDim.x);
+    int e = s + blockDim.x;
     //copy from globalMem into sharedMem
     {
-        int i = blockIdx.x * blockDim.x + threadIdx.x;
-        int part = i / (len / 2);
-
-        int s = begin + part * len + threadIdx.x;
-        int e = s + blockDim.x/2;
-
         sharedMem[threadIdx.x] = arr[s];
         sharedMem[threadIdx.x + blockDim.x/2] = e < end? arr[e] : -1; //any default value is ok
         __syncthreads();
@@ -106,14 +99,8 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
     //------------------------------------------
     //writeback to global memory
     {
-        int i = blockIdx.x * blockDim.x + threadIdx.x;
-        int part = i / (len / 2);
-
-        int s = begin + part * len + threadIdx.x;
-        int e = s + blockDim.x/2;
-
         arr[s] = sharedMem[threadIdx.x];
-        arr[e] = sharedMem[threadIdx.x + blockDim.x/2];
+        arr[e] = sharedMem[threadIdx.x + blockDim.x];
         __syncthreads();
     }
 }
