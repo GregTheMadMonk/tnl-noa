@@ -72,6 +72,16 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
     }
     
     //------------------------------------------
+    //calculate the direction of swapping
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int part = i / (len / 2);
+    int monotonicSeqIdx = part / partsInSeq;
+    bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+
+    //special case for parts with no "partner"
+    if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
+        ascending = sortAscending;
+    //------------------------------------------
 
     //do bitonic sort
     for (; len > 1; len /= 2, partsInSeq *= 2)
@@ -80,17 +90,10 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
 
         int i = threadIdx.x;
 
+        int part = i/(len/2);
         int s = part * len + (i% (len / 2));
         int e = s + len / 2;
 
-
-        //calculate the direction of swapping
-        int monotonicSeqIdx = part / partsInSeq;
-        bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
-
-        //special case for parts with no "partner"
-        if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
-            ascending = sortAscending;
 
         //swap
         /*
