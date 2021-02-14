@@ -94,14 +94,13 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
         int s = part * len + (i% (len / 2));
         int e = s + len / 2;
 
-
         //swap
-        /*
+        int a = sharedMem[s], b = sharedMem[e];
         if ((ascending && a > b) || (!ascending && a < b))
         {
-            //TNL::swap(a, b);
+            sharedMem[s] = b;
+            sharedMem[e] = a;
         }
-        */
     }
 
     //------------------------------------------
