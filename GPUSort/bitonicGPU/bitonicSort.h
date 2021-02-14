@@ -60,39 +60,42 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
     //copy from globalMem into sharedMem
     {
         sharedMem[threadIdx.x] = arr[s];
-        sharedMem[threadIdx.x + blockDim.x/2] = e < end? arr[e] : -1; //any default value is ok
+        sharedMem[threadIdx.x + blockDim.x] = arr[e];
         __syncthreads();
     }
     
     //------------------------------------------
-    //calculate the direction of swapping
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int part = i / (len / 2);
-    int monotonicSeqIdx = part / partsInSeq;
-    bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+    //bitonic activity
+    {    
+        //calculate the direction of swapping
+        int i = blockIdx.x * blockDim.x + threadIdx.x;
+        int part = i / (len / 2);
+        int monotonicSeqIdx = part / partsInSeq;
+        bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
 
-    //special case for parts with no "partner"
-    if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
-        ascending = sortAscending;
-    //------------------------------------------
+        //special case for parts with no "partner"
+        if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
+            ascending = sortAscending;
+        //------------------------------------------
 
-    //do bitonic sort
-    for (; len > 1; len /= 2, partsInSeq *= 2)
-    {
-        __syncthreads();
-
-        int i = threadIdx.x;
-
-        int part = i/(len/2);
-        int s = part * len + (i% (len / 2));
-        int e = s + len / 2;
-
-        //swap
-        int a = sharedMem[s], b = sharedMem[e];
-        if ((ascending && a > b) || (!ascending && a < b))
+        //do bitonic sort
+        for (; len > 1; len /= 2, partsInSeq *= 2)
         {
-            sharedMem[s] = b;
-            sharedMem[e] = a;
+            __syncthreads();
+
+            int i = threadIdx.x;
+
+            int part = i/(len/2);
+            int s = part * len + (i% (len / 2));
+            int e = s + len / 2;
+
+            //swap
+            int a = sharedMem[s], b = sharedMem[e];
+            if ((ascending && a > b) || (!ascending && a < b))
+            {
+                sharedMem[s] = b;
+                sharedMem[e] = a;
+            }
         }
     }
 
