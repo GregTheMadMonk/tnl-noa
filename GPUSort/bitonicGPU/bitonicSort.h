@@ -127,8 +127,9 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
 __global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int begin, int end, bool sortAscending)
 {
     extern __shared__ int sharedMem[];
+    int sharedMemLen = 2*blockDim.x;
 
-    int s = begin + blockIdx.x * (2 * blockDim.x) + threadIdx.x;
+    int s = begin + blockIdx.x * sharedMemLen + threadIdx.x;
     int e = s + blockDim.x;
     //copy from globalMem into sharedMem
     {
@@ -144,7 +145,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int be
     {
         int i = blockIdx.x * blockDim.x + threadIdx.x;
 
-        for (int monotonicSeqLen = 2; monotonicSeqLen <= blockDim.x * 2 * sizeof(int); monotonicSeqLen *= 2)
+        for (int monotonicSeqLen = 2; monotonicSeqLen <= sharedMemLen; monotonicSeqLen *= 2)
         {
             //calculate the direction of swapping
             int monotonicSeqIdx = i / (monotonicSeqLen/2);
