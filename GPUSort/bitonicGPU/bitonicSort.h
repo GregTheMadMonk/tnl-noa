@@ -142,15 +142,20 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
     {
         for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
         {
-            /*
-            bitonicMergeStep<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
-                                                         monotonicSeqLen, len, partsInSeq);
-            */
-            bitonicMergeSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending,
-                                                                                monotonicSeqLen, len, partsInSeq);
+            if(monotonicSeqLen > sharedMemSize)
+            {
+                bitonicMergeStep<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
+                                                            monotonicSeqLen, len, partsInSeq);
+                cudaDeviceSynchronize();
+            }
+            else
+            {
 
-            cudaDeviceSynchronize();
-            break;
+                bitonicMergeSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending,
+                                                                                    monotonicSeqLen, len, partsInSeq);
+                cudaDeviceSynchronize();
+                break;
+            }
         }
     }
 }
