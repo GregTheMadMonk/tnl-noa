@@ -24,7 +24,7 @@ __host__ __device__ int closestPow2(int x)
 
 //---------------------------------------------
 
-__global__ void bitonicMergeStep(ArrayView<int, Device> arr,
+__global__ void bitonicMergeGlobal(ArrayView<int, Device> arr,
                                  int begin, int end, bool sortAscending,
                                  int monotonicSeqLen, int len, int partsInSeq)
 {
@@ -144,7 +144,7 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
         {
             if(monotonicSeqLen > sharedMemSize)
             {
-                bitonicMergeStep<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
+                bitonicMergeGlobal<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
                                                             monotonicSeqLen, len, partsInSeq);
                 cudaDeviceSynchronize();
             }
