@@ -67,32 +67,37 @@ void test1()
 
 void randomShuffles()
 {
-    int size = 1<<15;
-    std::vector<int> orig(size);
-    std::iota(orig.begin(), orig.end(), 0);
-    std::vector<double> results;
-
-    for (int i = 0; i < 100; i++)
+    int iterations = 100;
+    std::cout << iterations << " random permutations" << std::endl;
+    for(int p = 13; p <= 19; ++p)
     {
-        std::random_shuffle(orig.begin(), orig.end());
+        int size = 1<<p;
+        std::vector<int> orig(size);
+        std::iota(orig.begin(), orig.end(), 0);
+        std::vector<double> results;
 
-        TNL::Containers::Array<int, Device> cudaArr(orig);
-        auto view = cudaArr.getView();
-        std::vector<int> tmp(orig.begin(), orig.end());
-
+        for (int i = 0; i < iterations; i++)
         {
-            TIMER t("random permutation");
+            std::random_shuffle(orig.begin(), orig.end());
 
-            std::sort(tmp.begin(), tmp.end());
-            //bitonicSort(view);
-            
-            results.push_back(t.stop());
-            //t.printTime();
+            TNL::Containers::Array<int, Device> cudaArr(orig);
+            auto view = cudaArr.getView();
+            std::vector<int> tmp(orig.begin(), orig.end());
+
+            {
+                TIMER t("random permutation");
+
+                //std::sort(tmp.begin(), tmp.end());
+                bitonicSort(view);
+                
+                results.push_back(t.stop());
+                //t.printTime();
+            }
+
         }
+        std::cout << "average time for arrSize = 2^" << p << ": " << std::accumulate(results.begin(), results.end(), 0.)/results.size() << " ms" << std::endl;
 
     }
-
-    std::cout << "average time: " << std::accumulate(results.begin(), results.end(), 0.)/results.size() << " ms" << std::endl;
 }
 
 void allPermutations(std::vector<int> orig)
