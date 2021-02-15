@@ -124,6 +124,80 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
 }
 
 //---------------------------------------------
+__global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int begin, int end, bool sortAscending)
+{
+    extern __shared__ int sharedMem[];
+
+    int s = begin + blockIdx.x * (2 * blockDim.x) + threadIdx.x;
+    int e = s + blockDim.x;
+    //copy from globalMem into sharedMem
+    {
+        sharedMem[threadIdx.x] = arr[s];
+        if(e < end)
+            sharedMem[threadIdx.x + blockDim.x] = arr[e];
+
+        __syncthreads();
+    }
+
+    //------------------------------------------
+    //bitonic activity
+    {
+        int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+        for (int monotonicSeqLen = 2; monotonicSeqLen <= blockDim.x * 2 * sizeof(int); monotonicSeqLen *= 2)
+        {
+            //calculate the direction of swapping
+            int monotonicSeqIdx = i / (monotonicSeqLen/2);
+            bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+
+            //special case for parts with no "partner"
+            if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
+                ascending = sortAscending;
+
+            for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+            {
+                __syncthreads();
+                int part = i / (len / 2);
+
+                int arrCmpS = begin + part * len + (i % (len / 2));
+                int arrCmpE = arrCmpS + len / 2;
+                if(arrCmpE >= end)
+                    continue;
+
+
+
+                part = threadIdx.x / (len / 2);
+                int s = part * len + (threadIdx.x % (len / 2));
+                int e = s + len / 2;
+
+                //swap
+                int a = sharedMem[s], b = sharedMem[e];
+                if ((ascending && a > b) || (!ascending && a < b))
+                {
+                    sharedMem[s] = b;
+                    sharedMem[e] = a;
+                }
+            }
+        }
+
+        __syncthreads();
+
+    }
+
+
+
+    //------------------------------------------
+    //writeback to global memory
+    {
+        arr[s] = sharedMem[threadIdx.x];
+        if(e < end)
+            arr[e] = sharedMem[threadIdx.x + blockDim.x];
+        __syncthreads();
+    }
+}
+
+
+//---------------------------------------------
 
 void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscending)
 {
@@ -132,13 +206,19 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
 
     int threadsNeeded = arrSize / 2 + (arrSize %2 !=0);
 
-    const int maxThreadsPerBlock = 256;
+    const int maxThreadsPerBlock = 512;
     int threadPerBlock = min(maxThreadsPerBlock, threadsNeeded);
     int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock == 0 ? 0 : 1);
 
     const int sharedMemSize = threadPerBlock * 2 * sizeof(int);
 
-    for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
+    //---------------------------------------------------------------------------------
+
+    
+    bitoniSort1stStepSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending);
+    cudaDeviceSynchronize();
+    
+    for (int monotonicSeqLen = 2*sharedMemSize; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
         for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
         {
