@@ -62,7 +62,9 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
     //copy from globalMem into sharedMem
     {
         sharedMem[threadIdx.x] = arr[s];
-        sharedMem[threadIdx.x + blockDim.x] = arr[e];
+        if(e < end)
+            sharedMem[threadIdx.x + blockDim.x] = arr[e];
+
         __syncthreads();
     }
 
@@ -85,6 +87,15 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
         {
             __syncthreads();
 
+            {
+                int part = i / (len / 2);
+
+                int arrCmpS = begin + part * len + (i % (len / 2));
+                int arrCmpE = arrCmpS + len / 2;
+                if(arrCmpE >= end)
+                    continue;
+            }
+
             int part = threadIdx.x / (len / 2);
             int s = part * len + (threadIdx.x % (len / 2));
             int e = s + len / 2;
@@ -97,13 +108,17 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
                 sharedMem[e] = a;
             }
         }
+
+        __syncthreads();
+
     }
 
     //------------------------------------------
     //writeback to global memory
     {
         arr[s] = sharedMem[threadIdx.x];
-        arr[e] = sharedMem[threadIdx.x + blockDim.x];
+        if(e < end)
+            arr[e] = sharedMem[threadIdx.x + blockDim.x];
         __syncthreads();
     }
 }
@@ -115,7 +130,7 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
     int arrSize = end - begin;
     int paddedSize = closestPow2(arrSize);
 
-    int threadsNeeded = arrSize / 2;
+    int threadsNeeded = arrSize / 2 + (arrSize %2 !=0);
 
     const int maxThreadsPerBlock = 256;
     int threadPerBlock = min(maxThreadsPerBlock, threadsNeeded);
