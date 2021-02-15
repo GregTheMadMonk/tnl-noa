@@ -210,7 +210,8 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
     int threadPerBlock = min(maxThreadsPerBlock, threadsNeeded);
     int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock == 0 ? 0 : 1);
 
-    const int sharedMemSize = threadPerBlock * 2 * sizeof(int);
+    const int sharedMemLen = threadPerBlock * 2;
+    const int sharedMemSize = sharedMemLen* sizeof(int);
 
     //---------------------------------------------------------------------------------
 
@@ -218,11 +219,11 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
     bitoniSort1stStepSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending);
     cudaDeviceSynchronize();
     
-    for (int monotonicSeqLen = 2*sharedMemSize; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
+    for (int monotonicSeqLen = 2*sharedMemLen; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
         for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
         {
-            if(monotonicSeqLen > sharedMemSize)
+            if(len > sharedMemLen)
             {
                 bitonicMergeGlobal<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
                                                             monotonicSeqLen, len, partsInSeq);
