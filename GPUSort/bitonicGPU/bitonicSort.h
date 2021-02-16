@@ -26,7 +26,8 @@ __host__ __device__ int closestPow2(int x)
 /**
  * this kernel simulates 1 exchange 
  */
-__global__ void bitonicMergeGlobal(ArrayView<int, Device> arr,
+template <typename Value>
+__global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
                                  int begin, int end, bool sortAscending,
                                  int monotonicSeqLen, int len, int partsInSeq)
 {
@@ -58,11 +59,12 @@ __global__ void bitonicMergeGlobal(ArrayView<int, Device> arr,
  * kernel for merging if whole block fits into shared memory
  * will merge all the way down til stride == 2
  * */
-__global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
+template <typename Value>
+__global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
                                          int begin, int end, bool sortAscending,
                                          int monotonicSeqLen, int len, int partsInSeq)
 {
-    extern __shared__ int sharedMem[];
+    extern __shared__ Value sharedMem[];
     int sharedMemLen = 2*blockDim.x;
 
     //1st index and last index of subarray that this threadBlock should merge
@@ -108,7 +110,7 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
                 continue;
 
             //cmp and swap
-            int a = sharedMem[s], b = sharedMem[e];
+            Value a = sharedMem[s], b = sharedMem[e];
             if ((ascending && a > b) || (!ascending && a < b))
             {
                 sharedMem[s] = b;
@@ -138,10 +140,10 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
  *  then trickles down again
  * this continues until whole sharedMem is sorted
  * */
-
-__global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int begin, int end, bool sortAscending)
+template <typename Value>
+__global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int begin, int end, bool sortAscending)
 {
-    extern __shared__ int sharedMem[];
+    extern __shared__ Value sharedMem[];
     int sharedMemLen = 2*blockDim.x;
 
     int myBlockStart = begin + blockIdx.x * sharedMemLen;
@@ -186,7 +188,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int be
                     continue;
 
                 //cmp and swap
-                int a = sharedMem[s], b = sharedMem[e];
+                Value a = sharedMem[s], b = sharedMem[e];
                 if ((ascending && a > b) || (!ascending && a < b))
                 {
                     sharedMem[s] = b;
@@ -211,8 +213,8 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int be
 
 
 //---------------------------------------------
-
-void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscending)
+template <typename Value>
+void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAscending)
 {
     int arrSize = end - begin;
     int paddedSize = closestPow2(arrSize);
@@ -224,7 +226,7 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
     int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock == 0 ? 0 : 1);
 
     const int sharedMemLen = threadPerBlock * 2;
-    const int sharedMemSize = sharedMemLen* sizeof(int);
+    const int sharedMemSize = sharedMemLen* sizeof(Value);
 
     //---------------------------------------------------------------------------------
 
@@ -253,8 +255,8 @@ void bitonicSort(ArrayView<int, Device> arr, int begin, int end, bool sortAscend
 }
 
 //---------------------------------------------
-
-void bitonicSort(ArrayView<int, Device> arr, bool sortAscending = true)
+template <typename Value>
+void bitonicSort(ArrayView<Value, Device> arr, bool sortAscending = true)
 {
     bitonicSort(arr, 0, arr.getSize(), sortAscending);
 }
