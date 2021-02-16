@@ -64,7 +64,9 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
                                          int begin, int end, bool sortAscending,
                                          int monotonicSeqLen, int len, int partsInSeq)
 {
-    extern __shared__ Value sharedMem[];
+    extern __shared__ int externMem[];
+    Value * sharedMem = (Value *)externMem;
+
     int sharedMemLen = 2*blockDim.x;
 
     //1st index and last index of subarray that this threadBlock should merge
@@ -143,7 +145,9 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
 template <typename Value>
 __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int begin, int end, bool sortAscending)
 {
-    extern __shared__ Value sharedMem[];
+    extern __shared__ int externMem[];
+    
+    Value * sharedMem = (Value *)externMem;
     int sharedMemLen = 2*blockDim.x;
 
     int myBlockStart = begin + blockIdx.x * sharedMemLen;
