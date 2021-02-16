@@ -177,6 +177,30 @@ TEST(nonIntegerType, struct)
 }
 */
 
+//error bypassing
+//https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/blob/fbc34f6a97c13ec865ef7969b9704533222ed408/src/UnitTests/Containers/VectorTest-8.h
+void descendingSort(ArrayView<int, Device> view)
+{
+    auto cmpDescending = [] __cuda_callable__ (int a, int b) {return a > b;};
+    bitonicSort(view, cmpDescending);
+}
+
+TEST(sortWithFunction, descending)
+{
+    TNL::Containers::Array<int, Device> cudaArr{6, 9, 4, 2, 3};
+    auto view = cudaArr.getView();
+    descendingSort(view);
+
+    ASSERT_FALSE(is_sorted(view)) << "result " << view << std::endl;
+    
+    ASSERT_TRUE(view.getElement(0) == 9);
+    ASSERT_TRUE(view.getElement(1) == 6);
+    ASSERT_TRUE(view.getElement(2) == 4);
+    ASSERT_TRUE(view.getElement(3) == 3);
+    ASSERT_TRUE(view.getElement(4) == 2);
+}
+
+
 //----------------------------------------------------------------------------------
 
 int main(int argc, char **argv)
