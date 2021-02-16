@@ -9,8 +9,8 @@
 #include "../bitonicSort.h"
 
 //----------------------------------------------------------------------------------
-
-bool is_sorted(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr)
+template <typename Value>
+bool is_sorted(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 {
     for (int i = 1; i < arr.getSize(); i++)
         if (arr.getElement(i - 1) > arr.getElement(i))
@@ -134,6 +134,48 @@ TEST(randomGenerated, bigArray_all0)
         ASSERT_TRUE(true);
     }
 }
+
+TEST(nonIntegerType, float_notPow2)
+{
+    TNL::Containers::Array<float, Device> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
+    auto view = cudaArr.getView();
+    bitonicSort(view);
+    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+}
+
+TEST(nonIntegerType, double_notPow2)
+{
+    TNL::Containers::Array<double, Device> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
+    auto view = cudaArr.getView();
+    bitonicSort(view);
+    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+}
+
+/*
+struct TMPSTRUCT{
+    uint8_t m_data[6];
+    TMPSTRUCT(){m_data[0] = 0;}
+    TMPSTRUCT(int first){m_data[0] = first;};
+    bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
+
+    bool operator ==(const TMPSTRUCT& other) const {return !(*this < other) && !(other < *this); }
+
+    bool operator >=(const TMPSTRUCT& other) const {return !(*this < other); }
+    bool operator >(const TMPSTRUCT& other) const {return !(*this <= other); }
+    bool operator <=(const TMPSTRUCT& other) const {return (*this < other) || (other == *this); }
+
+    std::ostream& operator << (std::ostream & out) { return out << "{ " << m_data[0] << " }";}
+};
+
+TEST(nonIntegerType, struct)
+{
+
+    TNL::Containers::Array<TMPSTRUCT, Device> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
+    auto view = cudaArr.getView();
+    bitonicSort(view);
+    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+}
+*/
 
 //----------------------------------------------------------------------------------
 
