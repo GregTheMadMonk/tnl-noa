@@ -119,7 +119,6 @@ __global__ void bitonicMergeSharedMemory(ArrayView<int, Device> arr,
             arr[copy1] = sharedMem[threadIdx.x];
         if(copy2 < end)
             arr[copy2] = sharedMem[threadIdx.x + blockDim.x];
-        __syncthreads();
     }
 }
 
@@ -192,7 +191,6 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<int, Device> arr, int be
             arr[copy1] = sharedMem[threadIdx.x];
         if(copy2 < end)
             arr[copy2] = sharedMem[threadIdx.x + blockDim.x];
-        __syncthreads();
     }
 }
 
