@@ -22,6 +22,13 @@ __host__ __device__ int closestPow2(int x)
     return ret;
 }
 
+template<typename Value>
+__host__ __device__ void cmpSwap(Value & a, Value &b, bool ascending)
+{
+    if ((ascending && a > b) || (!ascending && a < b))
+        TNL::swap(a, b);
+}
+
 //---------------------------------------------
 /**
  * this kernel simulates 1 exchange 
@@ -48,10 +55,7 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
         ascending = sortAscending;
 
     //cmp and swap
-    auto &a = arr[s];
-    auto &b = arr[e];
-    if ((ascending && a > b) || (!ascending && a < b))
-        TNL::swap(a, b);
+    cmpSwap(arr[s], arr[e], ascending);
 }
 
 //---------------------------------------------
@@ -111,13 +115,7 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
             if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                 continue;
 
-            //cmp and swap
-            Value a = sharedMem[s], b = sharedMem[e];
-            if ((ascending && a > b) || (!ascending && a < b))
-            {
-                sharedMem[s] = b;
-                sharedMem[e] = a;
-            }
+            cmpSwap(sharedMem[s], sharedMem[e], ascending);
         }
 
         __syncthreads();
@@ -191,13 +189,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
                 if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                     continue;
 
-                //cmp and swap
-                Value a = sharedMem[s], b = sharedMem[e];
-                if ((ascending && a > b) || (!ascending && a < b))
-                {
-                    sharedMem[s] = b;
-                    sharedMem[e] = a;
-                }
+                cmpSwap(sharedMem[s], sharedMem[e], ascending);
             }
         }
 
