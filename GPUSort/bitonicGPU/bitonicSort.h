@@ -22,20 +22,20 @@ __host__ __device__ int closestPow2(int x)
     return ret;
 }
 
-template<typename Value>
-__host__ __device__ void cmpSwap(Value & a, Value &b, bool ascending)
+template <typename Value, typename Function>
+__host__ __device__ void cmpSwap(Value & a, Value &b, bool ascending, const Function & Cmp)
 {
-    if ((ascending && a > b) || (!ascending && a < b))
+    if( (ascending && Cmp(b, a))
+    || (!ascending && Cmp(a, b)) )
         TNL::swap(a, b);
 }
-
 //---------------------------------------------
 /**
  * this kernel simulates 1 exchange 
  */
-template <typename Value>
+template <typename Value, typename Function>
 __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
-                                 int begin, int end, bool sortAscending,
+                                 int begin, int end, const Function & Cmp,
                                  int monotonicSeqLen, int len, int partsInSeq)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -50,12 +50,11 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
 
     //calculate the direction of swapping
     int monotonicSeqIdx = part / partsInSeq;
-    bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+    bool ascending = (monotonicSeqIdx % 2) != 0;
     if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for part with no "partner" to be merged with in next phase
-        ascending = sortAscending;
+        ascending = true;
 
-    //cmp and swap
-    cmpSwap(arr[s], arr[e], ascending);
+    cmpSwap(arr[s], arr[e], ascending, Cmp);
 }
 
 //---------------------------------------------
@@ -63,9 +62,9 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
  * kernel for merging if whole block fits into shared memory
  * will merge all the way down til stride == 2
  * */
-template <typename Value>
+template <typename Value, typename Function>
 __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
-                                         int begin, int end, bool sortAscending,
+                                         int begin, int end, const Function & Cmp,
                                          int monotonicSeqLen, int len, int partsInSeq)
 {
     extern __shared__ int externMem[];
@@ -97,10 +96,10 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
         int part = i / (len / 2);
         int monotonicSeqIdx = part / partsInSeq;
 
-        bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+        bool ascending = (monotonicSeqIdx % 2) != 0;
         //special case for parts with no "partner"
         if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
-            ascending = sortAscending;
+            ascending = true;
         //------------------------------------------
 
         //do bitonic merge
@@ -115,7 +114,7 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
             if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                 continue;
 
-            cmpSwap(sharedMem[s], sharedMem[e], ascending);
+            cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
         }
 
         __syncthreads();
@@ -140,8 +139,8 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
  *  then trickles down again
  * this continues until whole sharedMem is sorted
  * */
-template <typename Value>
-__global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int begin, int end, bool sortAscending)
+template <typename Value, typename Function>
+__global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int begin, int end, const Function & Cmp)
 {
     extern __shared__ int externMem[];
     
@@ -174,9 +173,9 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
         {
             //calculate the direction of swapping
             int monotonicSeqIdx = i / (monotonicSeqLen/2);
-            bool ascending = (monotonicSeqIdx % 2) == 0 ? !sortAscending : sortAscending;
+            bool ascending = (monotonicSeqIdx % 2) != 0;
             if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for parts with no "partner"
-                ascending = sortAscending;
+                ascending = true;
 
             for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
             {
@@ -189,7 +188,8 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
                 if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                     continue;
 
-                cmpSwap(sharedMem[s], sharedMem[e], ascending);
+                cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
+
             }
         }
 
@@ -209,8 +209,8 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
 
 
 //---------------------------------------------
-template <typename Value>
-void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAscending)
+template <typename Value, typename Function>
+void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, const Function& Cmp)
 {
     int arrSize = end - begin;
     int paddedSize = closestPow2(arrSize);
@@ -227,7 +227,7 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAsce
     //---------------------------------------------------------------------------------
 
     
-    bitoniSort1stStepSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending);
+    bitoniSort1stStepSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, Cmp);
     
     for (int monotonicSeqLen = 2*sharedMemLen; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
@@ -235,13 +235,13 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAsce
         {
             if(len > sharedMemLen)
             {
-                bitonicMergeGlobal<<<blocks, threadPerBlock>>>(arr, begin, end, sortAscending,
+                bitonicMergeGlobal<<<blocks, threadPerBlock>>>(arr, begin, end, Cmp,
                                                             monotonicSeqLen, len, partsInSeq);
             }
             else
             {
 
-                bitonicMergeSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, sortAscending,
+                bitonicMergeSharedMemory<<<blocks, threadPerBlock, sharedMemSize>>>(arr, begin, end, Cmp,
                                                                                     monotonicSeqLen, len, partsInSeq);
                 break;
             }
@@ -254,7 +254,7 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAsce
 template <typename Value, typename Function>
 void bitonicSort(ArrayView<Value, Device> arr, const Function & cmp)
 {
-    bitonicSort(arr, 0, arr.getSize(), true);
+    bitonicSort(arr, 0, arr.getSize(), cmp);
 }
 
 template <typename Value>
