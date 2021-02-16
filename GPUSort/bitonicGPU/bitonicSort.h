@@ -251,8 +251,14 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, bool sortAsce
 }
 
 //---------------------------------------------
-template <typename Value>
-void bitonicSort(ArrayView<Value, Device> arr, bool sortAscending = true)
+template <typename Value, typename Function>
+void bitonicSort(ArrayView<Value, Device> arr, const Function & cmp)
 {
-    bitonicSort(arr, 0, arr.getSize(), sortAscending);
+    bitonicSort(arr, 0, arr.getSize(), true);
+}
+
+template <typename Value>
+void bitonicSort(ArrayView<Value, Device> arr)
+{
+    bitonicSort(arr, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
 }
