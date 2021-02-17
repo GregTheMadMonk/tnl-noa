@@ -250,6 +250,7 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, const Functio
 }
 
 //---------------------------------------------
+
 template <typename Value, typename Function>
 void bitonicSort(ArrayView<Value, Device> arr, const Function & cmp)
 {
@@ -261,3 +262,21 @@ void bitonicSort(ArrayView<Value, Device> arr)
 {
     bitonicSort(arr, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
 }
+
+//---------------------------------------------
+
+template <typename Value>
+void bitonicSort(std::vector<Value> vec)
+{
+    TNL::Containers::Array<Value, Devices::Cuda> Arr(vec);
+    bitonicSort(Arr.getView());
+}
+
+template <typename Value, typename Function>
+void bitonicSort(std::vector<Value> vec,const Function & cmp)
+{
+    TNL::Containers::Array<Value, Devices::Cuda> Arr(vec);
+    bitonicSort(Arr.getView(), cmp);
+}
+
+//---------------------------------------------
