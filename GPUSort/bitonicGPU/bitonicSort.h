@@ -50,7 +50,7 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
 
     //calculate the direction of swapping
     int monotonicSeqIdx = part / partsInSeq;
-    bool ascending = (monotonicSeqIdx % 2) != 0;
+    bool ascending = (monotonicSeqIdx & 1) != 0;
     if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for part with no "partner" to be merged with in next phase
         ascending = true;
 
@@ -96,7 +96,7 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
         int part = i / (len / 2);
         int monotonicSeqIdx = part / partsInSeq;
 
-        bool ascending = (monotonicSeqIdx % 2) != 0;
+        bool ascending = (monotonicSeqIdx & 1) != 0;
         //special case for parts with no "partner"
         if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end)
             ascending = true;
@@ -173,7 +173,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
         {
             //calculate the direction of swapping
             int monotonicSeqIdx = i / (monotonicSeqLen/2);
-            bool ascending = (monotonicSeqIdx % 2) != 0;
+            bool ascending = (monotonicSeqIdx & 1) != 0;
             if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for parts with no "partner"
                 ascending = true;
 
