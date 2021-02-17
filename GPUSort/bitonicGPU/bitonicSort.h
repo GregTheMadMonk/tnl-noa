@@ -1,5 +1,4 @@
 #include <TNL/Containers/Array.h>
-#include <iostream>
 
 //---------------------------------------------
 
@@ -259,18 +258,21 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 
 //---------------------------------------------
 
-template <typename Value>
-void bitonicSort(std::vector<Value> vec)
+template <typename Value, typename Function>
+void bitonicSort(std::vector<Value> & vec,const Function & cmp)
 {
     TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
-    bitonicSort(Arr.getView());
+    auto view = Arr.getView();
+    bitonicSort(view, cmp);
+
+    for(size_t i = 0; i < vec.size(); ++i)
+        vec[i] = view.getElement(i);
 }
 
-template <typename Value, typename Function>
-void bitonicSort(std::vector<Value> vec,const Function & cmp)
+template <typename Value>
+void bitonicSort(std::vector<Value> & vec)
 {
-    TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
-    bitonicSort(Arr.getView(), cmp);
+    bitonicSort(vec, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
 }
 
 //---------------------------------------------
