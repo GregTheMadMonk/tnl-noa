@@ -43,7 +43,7 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
     int part = i / (len / 2); //computes which sorting block this thread belongs to
 
     //the index of 2 elements that should be compared and swapped
-    int s = begin + part * len + (i % (len / 2));
+    int s = begin + part * len + (i & ((len / 2) - 1) );
     int e = s + len / 2;
     if (e >= end) //arr[e] is virtual padding and will not be exchanged with
         return;
@@ -109,7 +109,7 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
 
             //calculates which 2 indexes will be compared and swap
             int part = threadIdx.x / (len / 2);
-            int s = part * len + (threadIdx.x % (len / 2));
+            int s = part * len + (threadIdx.x & ((len /2) - 1));
             int e = s + len / 2;
             if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                 continue;
@@ -183,7 +183,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
 
                 //calculates which 2 indexes will be compared and swap
                 int part = threadIdx.x / (len / 2);
-                int s = part * len + (threadIdx.x % (len / 2));
+                int s = part * len + (threadIdx.x & ((len / 2) - 1));
                 int e = s + len / 2;
                 if(e >= myBlockEnd - myBlockStart) //touching virtual padding
                     continue;
