@@ -1,13 +1,6 @@
 #include <TNL/Containers/Array.h>
 #include <iostream>
 
-using namespace TNL;
-using namespace TNL::Containers;
-
-typedef Devices::Cuda Device;
-
-#define deb(x) std::cout << #x << " = " << x << std::endl;
-
 //---------------------------------------------
 
 __host__ __device__ int closestPow2(int x)
@@ -33,7 +26,7 @@ __host__ __device__ void cmpSwap(Value & a, Value &b, bool ascending, const Func
  * this kernel simulates 1 exchange 
  */
 template <typename Value, typename Function>
-__global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
+__global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                                  int begin, int end, const Function & Cmp,
                                  int monotonicSeqLen, int len, int partsInSeq)
 {
@@ -62,7 +55,7 @@ __global__ void bitonicMergeGlobal(ArrayView<Value, Device> arr,
  * will merge all the way down til stride == 2
  * */
 template <typename Value, typename Function>
-__global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
+__global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                                          int begin, int end, const Function & Cmp,
                                          int monotonicSeqLen, int len, int partsInSeq)
 {
@@ -139,7 +132,8 @@ __global__ void bitonicMergeSharedMemory(ArrayView<Value, Device> arr,
  * this continues until whole sharedMem is sorted
  * */
 template <typename Value, typename Function>
-__global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int begin, int end, const Function & Cmp)
+__global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
+                                            int begin, int end, const Function & Cmp)
 {
     extern __shared__ int externMem[];
     
@@ -209,7 +203,7 @@ __global__ void bitoniSort1stStepSharedMemory(ArrayView<Value, Device> arr, int 
 
 //---------------------------------------------
 template <typename Value, typename Function>
-void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, const Function& Cmp)
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, int begin, int end, const Function& Cmp)
 {
     int arrSize = end - begin;
     int paddedSize = closestPow2(arrSize);
@@ -252,13 +246,13 @@ void bitonicSort(ArrayView<Value, Device> arr, int begin, int end, const Functio
 //---------------------------------------------
 
 template <typename Value, typename Function>
-void bitonicSort(ArrayView<Value, Device> arr, const Function & cmp)
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function & cmp)
 {
     bitonicSort(arr, 0, arr.getSize(), cmp);
 }
 
 template <typename Value>
-void bitonicSort(ArrayView<Value, Device> arr)
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 {
     bitonicSort(arr, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
 }
@@ -268,14 +262,14 @@ void bitonicSort(ArrayView<Value, Device> arr)
 template <typename Value>
 void bitonicSort(std::vector<Value> vec)
 {
-    TNL::Containers::Array<Value, Devices::Cuda> Arr(vec);
+    TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
     bitonicSort(Arr.getView());
 }
 
 template <typename Value, typename Function>
 void bitonicSort(std::vector<Value> vec,const Function & cmp)
 {
-    TNL::Containers::Array<Value, Devices::Cuda> Arr(vec);
+    TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
     bitonicSort(Arr.getView(), cmp);
 }
 
