@@ -25,8 +25,7 @@ __host__ __device__ int closestPow2(int x)
 template <typename Value, typename Function>
 __host__ __device__ void cmpSwap(Value & a, Value &b, bool ascending, const Function & Cmp)
 {
-    if( (ascending && Cmp(b, a))
-    || (!ascending && Cmp(a, b)) )
+    if( (ascending == Cmp(b, a)))
         TNL::swap(a, b);
 }
 //---------------------------------------------
