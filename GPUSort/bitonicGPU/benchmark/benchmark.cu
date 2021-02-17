@@ -8,6 +8,11 @@
 
 #include "../bitonicSort.h"
 
+using namespace TNL;
+using namespace TNL::Containers;
+
+typedef Devices::Cuda Device;
+
 template <class T>
 std::ostream& operator<< (std::ostream&out, std::vector<T> &arr)
 {
