@@ -15,16 +15,26 @@ std::ostream& operator<< (std::ostream&out, std::vector<int> &arr)
 
 int main( int argc, char* argv[] )
 {
-    TNL::Containers::Array<int, Devices::Cuda> Arr(argc - 1);
-    for(int i = 1; i < argc; i++)
-        Arr.setElement(i-1, std::atoi(argv[i]));
+    if(argc <= 1)
+    {
+        std::cout << "missing argument: N=array size to be tested on" << std::endl;
+        return 1;
+    }
+
+    std::vector<int> a(std::atoi(argv[1]));
+    for(int i = 0; i < a.size(); i++)
+        a[i] = std::rand() % a.size();
+
+
+    TNL::Containers::Array<int, TNL::Devices::Cuda> Arr(a);
 
     auto view = Arr.getView();
 
-    std::cout << "unsorted: " << view << std::endl;
-    bitonicSort(view);
+    
+    //std::cout << "unsorted: " << view << std::endl;
+    bitonicSort(a);
 
-    std::cout << "sorted: " << view << std::endl;
+    //std::cout << "sorted: " << view << std::endl;
 
     return 0;
 }

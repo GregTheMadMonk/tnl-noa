@@ -31,7 +31,7 @@ TEST(permutations, allPermutationSize_3_to_7)
 
         while (std::next_permutation(orig.begin(), orig.end()))
         {
-            TNL::Containers::Array<int, Device> cudaArr(orig);
+            TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
             auto view = cudaArr.getView();
 
             bitonicSort(view);
@@ -55,7 +55,7 @@ TEST(permutations, somePermutationSize8)
         if ((i++) % stride != 0)
             continue;
 
-        TNL::Containers::Array<int, Device> cudaArr(orig);
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
 
         bitonicSort(view);
@@ -78,7 +78,7 @@ TEST(permutations, somePermutationSize9)
         if ((i++) % stride != 0)
             continue;
 
-        TNL::Containers::Array<int, Device> cudaArr(orig);
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
 
         bitonicSort(view);
@@ -89,7 +89,7 @@ TEST(permutations, somePermutationSize9)
 
 TEST(selectedSize, size15)
 {
-    TNL::Containers::Array<int, Device> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
     auto view = cudaArr.getView();
     ASSERT_EQ(15, view.getSize());
     bitonicSort(view);
@@ -98,7 +98,7 @@ TEST(selectedSize, size15)
 
 TEST(multiblock, 32768_decreasingNegative)
 {
-    TNL::Containers::Array<int, Device> cudaArr(1 << 15);
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(1 << 15);
     for (int i = 0; i < cudaArr.getSize(); i++)
         cudaArr.setElement(i, -i);
 
@@ -111,7 +111,7 @@ TEST(randomGenerated, smallArray_randomVal)
 {
     for(int i = 0; i < 100; i++)
     {
-        TNL::Containers::Array<int, Device> cudaArr(std::rand()%(1<<10));
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(std::rand()%(1<<10));
         for (int j = 0; j < cudaArr.getSize(); j++)
             cudaArr.setElement(j, std::rand());
 
@@ -127,7 +127,7 @@ TEST(randomGenerated, bigArray_all0)
     {
         int size = (1<<20) + (std::rand()% (1<<19));
 
-        TNL::Containers::Array<int, Device> cudaArr(size);
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(size);
 
         auto view = cudaArr.getView();
         bitonicSort(view);
@@ -137,7 +137,7 @@ TEST(randomGenerated, bigArray_all0)
 
 TEST(nonIntegerType, float_notPow2)
 {
-    TNL::Containers::Array<float, Device> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
+    TNL::Containers::Array<float, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
     bitonicSort(view);
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
@@ -145,7 +145,7 @@ TEST(nonIntegerType, float_notPow2)
 
 TEST(nonIntegerType, double_notPow2)
 {
-    TNL::Containers::Array<double, Device> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
+    TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
     bitonicSort(view);
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
@@ -170,7 +170,7 @@ struct TMPSTRUCT{
 TEST(nonIntegerType, struct)
 {
 
-    TNL::Containers::Array<TMPSTRUCT, Device> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
+    TNL::Containers::Array<TMPSTRUCT, TNL::Devices::Cuda> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
     auto view = cudaArr.getView();
     bitonicSort(view);
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
@@ -179,7 +179,7 @@ TEST(nonIntegerType, struct)
 
 //error bypassing
 //https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/blob/fbc34f6a97c13ec865ef7969b9704533222ed408/src/UnitTests/Containers/VectorTest-8.h
-void descendingSort(ArrayView<int, Device> view)
+void descendingSort(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> view)
 {
     auto cmpDescending = [] __cuda_callable__ (int a, int b) {return a > b;};
     bitonicSort(view, cmpDescending);
@@ -187,7 +187,7 @@ void descendingSort(ArrayView<int, Device> view)
 
 TEST(sortWithFunction, descending)
 {
-    TNL::Containers::Array<int, Device> cudaArr{6, 9, 4, 2, 3};
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{6, 9, 4, 2, 3};
     auto view = cudaArr.getView();
     descendingSort(view);
 
@@ -199,6 +199,18 @@ TEST(sortWithFunction, descending)
     ASSERT_TRUE(view.getElement(3) == 3);
     ASSERT_TRUE(view.getElement(4) == 2);
 }
+
+TEST(sortstdVector, stdvector)
+{
+    std::vector<int> arr(84561);
+    for(size_t i = 0; i < arr.size(); i++)
+        arr[i] = -i;
+
+    bitonicSort(arr);
+
+    ASSERT_TRUE(std::is_sorted(arr.begin(), arr.end()));
+}
+
 
 
 //----------------------------------------------------------------------------------
