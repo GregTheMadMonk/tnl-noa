@@ -11,25 +11,25 @@ add_subdirectory( TNL/Experimental )
 # Note that it is important to start building examples as soon as possible,
 # because they take the longest time and other stuff can be pipelined before
 # they are finished (at least with Ninja).
-if( ${WITH_EXAMPLES} )
+if( ${BUILD_EXAMPLES} )
    add_subdirectory( Examples )
 endif()
 
-if( ${WITH_BENCHMARKS} )
+if( ${BUILD_BENCHMARKS} )
    add_subdirectory( Benchmarks )
 endif()
 
-if( ${WITH_TOOLS} )
+if( ${BUILD_TOOLS} )
    add_subdirectory( Tools )
 endif()
 
-if( ${WITH_TESTS} )
+if( ${BUILD_TESTS} )
    add_subdirectory( UnitTests )
 endif()
-if( ${WITH_MATRIX_TESTS} )
+if( ${BUILD_MATRIX_TESTS} )
    add_subdirectory( UnitTests/Matrices )
 endif()
 
-if( ${WITH_PYTHON} )
+if( ${BUILD_PYTHON} )
    add_subdirectory( Python )
 endif()
