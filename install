@@ -56,38 +56,23 @@ fi
 
 
 PREFIX=${HOME}/.local
-for option in "$@"
-do
+for option in "$@"; do
     case $option in
-        --prefix=*                     ) PREFIX="${option#*=}" ;;
+        --prefix=*) PREFIX="${option#*=}" ;;
     esac
 done
 
 
-TNL_TEST=`which tnl-bindir`
+if [[ ! "$PATH" =~ "$PREFIX/bin" ]]; then
+    cat << EOF
 
-if test x${TNL_TEST} = x;
-then
-    echo ""
-    echo "WARNING !!!"
-    echo ""
-    echo "Your system does not see TNL which was installed right now."
-    echo "You need to add it to your system variables PATH and LD_LIBRARY_PATH."
-    echo "Add the following to your .bashrc file:"
-    echo ""
-    
-    echo "if test x\${PATH} = x;"
-    echo "then"
-    echo "   PATH=${PREFIX}/bin"
-    echo "else"
-    echo "   PATH=\${PATH}:${PREFIX}/bin"
-    echo "fi"
-    echo "if test x\${LD_LIBRARY_PATH} = x;"
-    echo "then"
-    echo "   LD_LIBRARY_PATH=${PREFIX}/lib"
-    echo "else"
-    echo "   LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:${PREFIX}/lib"
-    echo "fi"
-    echo "export PATH"
-    echo "export LD_LIBRARY_PATH"
+WARNING !!!
+
+Your system does not see TNL which was installed right now.
+You need to add it to your system variables PATH and LD_LIBRARY_PATH.
+Add the following to your .bashrc file:
+
+export PATH="\${PATH}:${PREFIX}/bin"
+export LD_LIBRARY_PATH="\${LD_LIBRARY_PATH}:${PREFIX}/lib"
+EOF
 fi
