@@ -20,15 +20,15 @@ stages:
     WITH_CUDA: "no"
     WITH_CUDA_ARCH: "auto"
     WITH_MPI: "no"
-    # configurations
-    WITH_TESTS: "no"
-    WITH_MATRIX_TESTS: "no"
+    # build targets
+    BUILD_TESTS: "no"
+    BUILD_MATRIX_TESTS: "no"
     WITH_COVERAGE: "no"
-    WITH_DOC: "no"
-    WITH_BENCHMARKS: "no"
-    WITH_EXAMPLES: "no"
-    WITH_TOOLS: "no"
-    WITH_PYTHON: "no"
+    BUILD_DOC: "no"
+    BUILD_BENCHMARKS: "no"
+    BUILD_EXAMPLES: "no"
+    BUILD_TOOLS: "no"
+    BUILD_PYTHON: "no"
 
 # base for OpenMP+MPI builds
 .openmp_mpi:
@@ -81,18 +81,18 @@ stages:
                 -DWITH_MPI=${WITH_MPI}
                 -DWITH_CUDA=${WITH_CUDA}
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
-                -DWITH_TESTS=${WITH_TESTS}
-                -DWITH_MATRIX_TESTS=${WITH_MATRIX_TESTS}
-                -DWITH_DOC=${WITH_DOC}
+                -DBUILD_TESTS=${BUILD_TESTS}
+                -DBUILD_MATRIX_TESTS=${BUILD_MATRIX_TESTS}
+                -DBUILD_DOC=${BUILD_DOC}
                 -DWITH_COVERAGE=${WITH_COVERAGE}
-                -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
-                -DWITH_EXAMPLES=${WITH_EXAMPLES}
-                -DWITH_TOOLS=${WITH_TOOLS}
-                -DWITH_PYTHON=${WITH_PYTHON}
+                -DBUILD_BENCHMARKS=${BUILD_BENCHMARKS}
+                -DBUILD_EXAMPLES=${BUILD_EXAMPLES}
+                -DBUILD_TOOLS=${BUILD_TOOLS}
+                -DBUILD_PYTHON=${BUILD_PYTHON}
                 -DWITH_CI_FLAGS=yes
         # "install" implies the "all" target
         - ninja ${NINJAFLAGS} install
-        - if [[ ${WITH_TESTS} == "yes" ]] || [[ ${WITH_MATRIX_TESTS} == "yes" ]]; then
+        - if [[ ${BUILD_TESTS} == "yes" ]] || [[ ${BUILD_MATRIX_TESTS} == "yes" ]]; then
                 ninja test;
           fi
         - popd
@@ -137,7 +137,7 @@ cuda_tests_Debug:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
-        WITH_TESTS: "yes"
+        BUILD_TESTS: "yes"
 
 cuda_tests_Release:
     extends: .build_template
@@ -149,7 +149,7 @@ cuda_tests_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-        WITH_TESTS: "yes"
+        BUILD_TESTS: "yes"
 
 
 cuda_matrix_tests_Debug:
@@ -162,7 +162,7 @@ cuda_matrix_tests_Debug:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
-        WITH_MATRIX_TESTS: "yes"
+        BUILD_MATRIX_TESTS: "yes"
 
 cuda_matrix_tests_Release:
     extends: .build_template
@@ -174,7 +174,7 @@ cuda_matrix_tests_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-        WITH_MATRIX_TESTS: "yes"
+        BUILD_MATRIX_TESTS: "yes"
 
 
 cuda_examples_Debug:
@@ -187,7 +187,7 @@ cuda_examples_Debug:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
-        WITH_EXAMPLES: "yes"
+        BUILD_EXAMPLES: "yes"
 
 cuda_examples_Release:
     extends: .build_template
@@ -199,7 +199,7 @@ cuda_examples_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-        WITH_EXAMPLES: "yes"
+        BUILD_EXAMPLES: "yes"
 
 
 cuda_benchmarks_tools_python_Debug:
@@ -212,9 +212,9 @@ cuda_benchmarks_tools_python_Debug:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+        BUILD_BENCHMARKS: "yes"
+        BUILD_TOOLS: "yes"
+        BUILD_PYTHON: "yes"
 
 cuda_benchmarks_tools_python_Release:
     extends: .build_template
@@ -226,9 +226,9 @@ cuda_benchmarks_tools_python_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+        BUILD_BENCHMARKS: "yes"
+        BUILD_TOOLS: "yes"
+        BUILD_PYTHON: "yes"
 
 
 cuda_mpi_tests_Debug:
@@ -280,60 +280,60 @@ default_tests_Debug:
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
-        WITH_TESTS: "yes"
+        BUILD_TESTS: "yes"
 
 default_tests_Release:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
-        WITH_TESTS: "yes"
+        BUILD_TESTS: "yes"
 
 default_matrix_tests_Debug:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
-        WITH_MATRIX_TESTS: "yes"
+        BUILD_MATRIX_TESTS: "yes"
 
 default_matrix_tests_Release:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
-        WITH_MATRIX_TESTS: "yes"
+        BUILD_MATRIX_TESTS: "yes"
 
 default_examples_Debug:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
-        WITH_EXAMPLES: "yes"
+        BUILD_EXAMPLES: "yes"
 
 default_examples_Release:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
-        WITH_EXAMPLES: "yes"
+        BUILD_EXAMPLES: "yes"
 
 default_benchmarks_tools_python_Debug:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+        BUILD_BENCHMARKS: "yes"
+        BUILD_TOOLS: "yes"
+        BUILD_PYTHON: "yes"
 
 default_benchmarks_tools_python_Release:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
-        WITH_BENCHMARKS: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+        BUILD_BENCHMARKS: "yes"
+        BUILD_TOOLS: "yes"
+        BUILD_PYTHON: "yes"
 
 
 mpi_tests_Debug:
@@ -472,7 +472,7 @@ documentation examples:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         # build output snippets for documentation
-        WITH_DOC: "yes"
+        BUILD_DOC: "yes"
     only:
         changes:
             - Documentation/**/*

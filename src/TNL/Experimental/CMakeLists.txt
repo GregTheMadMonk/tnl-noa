@@ -1,4 +1,4 @@
 add_subdirectory( Arithmetics )
-if( ${WITH_EXAMPLES} )
+if( ${BUILD_EXAMPLES} )
    add_subdirectory( Hamilton-Jacobi )
 endif()
