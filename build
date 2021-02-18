@@ -6,7 +6,7 @@ set -e
 # get the root directory (i.e. the directory where this script is located)
 ROOT_DIR="$( builtin cd -P "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-BUILD=""
+BUILD="Release"
 BUILD_JOBS=""
 VERBOSE=""
 OFFLINE_BUILD="no"
@@ -27,7 +27,6 @@ WITH_CI_FLAGS="no"
 # flags affecting only tests
 RUN_TESTS="yes"   # whether to run tests if they were compiled (coverage script sets it to no)
 TESTS_JOBS="4"
-WITH_PROFILING="no"
 WITH_COVERAGE="no"
 
 # targets
@@ -79,7 +78,6 @@ Options affecting all targets:
     --with-cuda-arch=all/auto/3.0/3.5/... Chooses CUDA architecture. '$WITH_CUDA_ARCH' by default.
     --with-openmp=yes/no                  Enables OpenMP. '$WITH_OPENMP' by default.
     --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. '$WITH_GMP' by default.
-    --with-profiling=yes/no               Enables code profiling compiler flags. '$WITH_PROFILING' by default.
 
 Options for the 'tests' and 'matrix-tests' targets:
     --run-tests=yes/no                    Runs unit tests if they were compiled. '$RUN_TESTS' by default.
@@ -104,6 +102,7 @@ for option in "$@"; do
         --verbose             ) VERBOSE="VERBOSE=1" ;;
         --offline-build       ) OFFLINE_BUILD="yes" ;;
         --install=*           ) INSTALL="${option#*=}" ;;
+        --install             ) INSTALL="yes" ;;
         --prefix=*            ) PREFIX="${option#*=}" ;;
         --cmake=*             ) CMAKE="${option#*=}" ;;
         --cmake-only=*        ) CMAKE_ONLY="${option#*=}" ;;
@@ -116,7 +115,6 @@ for option in "$@"; do
         --with-gmp=*          ) WITH_GMP="${option#*=}" ;;
         --run-tests=*         ) RUN_TESTS="${option#*=}" ;;
         --tests-jobs=*        ) TESTS_JOBS="${option#*=}" ;;
-        --with-profiling=*    ) WITH_PROFILING="${option#*=}" ;;
         --with-coverage=*     ) WITH_COVERAGE="${option#*=}" ;;
         --with-ci-flags=*     ) WITH_CI_FLAGS="${option#*=}" ;;
         -*                    )
@@ -127,6 +125,12 @@ for option in "$@"; do
     esac
     shift
 done
+
+# check the build type
+if [[ ! "Release Debug RelWithDebInfo" =~ "$BUILD" ]]; then
+    echo "Unknown build type: $BUILD. The available build types are: Release, Debug, RelWithDebInfo." >&2
+    exit 1
+fi
 
 # handle targets
 for target in "$@"; do
@@ -199,7 +203,6 @@ cmake_command=(
          -DWITH_OPENMP=${WITH_OPENMP}
          -DWITH_MPI=${WITH_MPI}
          -DWITH_GMP=${WITH_GMP}
-         -DWITH_PROFILING=${WITH_PROFILING}
          -DWITH_COVERAGE=${WITH_COVERAGE}
          -DWITH_CI_FLAGS=${WITH_CI_FLAGS}
          -DBUILD_BENCHMARKS=${BUILD_BENCHMARKS}
