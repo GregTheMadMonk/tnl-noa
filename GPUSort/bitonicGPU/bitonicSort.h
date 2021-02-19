@@ -94,7 +94,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
         //------------------------------------------
 
         //do bitonic merge
-        for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+        for (int len = monotonicSeqLen; len > 1; len /= 2)
         {
             __syncthreads();
 
@@ -169,7 +169,7 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
             if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for parts with no "partner"
                 ascending = true;
 
-            for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+            for (int len = monotonicSeqLen; len > 1; len /= 2)
             {
                 __syncthreads();
 
