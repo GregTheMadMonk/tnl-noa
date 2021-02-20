@@ -11,13 +11,10 @@
 template <typename Value>
 bool is_sorted(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 {
-    TNL::Containers::Array<Value, TNL::Devices::Host> tmp(arr.getSize());
-    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::copy(tmp.getData(), arr.getData(), arr.getSize());
-    for (int i = 1; i < tmp.getSize(); i++)
-        if (tmp[i - 1] > tmp[i])
-            return false;
+    std::vector<Value> tmp(arr.getSize());
+    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::copy(tmp.data(), arr.getData(), arr.getSize());
 
-    return true;
+    return std::is_sorted(tmp.begin(), tmp.end());
 }
 
 //----------------------------------------------------------------------------------
