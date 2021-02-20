@@ -94,7 +94,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
         //------------------------------------------
 
         //do bitonic merge
-        for (int len = monotonicSeqLen; len > 1; len /= 2)
+        for (; len > 1; len /= 2)
         {
             __syncthreads();
 
