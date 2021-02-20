@@ -5,15 +5,16 @@
 #include <random>
 
 #include <TNL/Containers/Array.h>
-
+#include <TNL/Algorithms/MemoryOperations.h>
 #include "../bitonicSort.h"
 
-//----------------------------------------------------------------------------------
 template <typename Value>
 bool is_sorted(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 {
-    for (int i = 1; i < arr.getSize(); i++)
-        if (arr.getElement(i - 1) > arr.getElement(i))
+    TNL::Containers::Array<Value, TNL::Devices::Host> tmp(arr.getSize());
+    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::copy(tmp.getData(), arr.getData(), arr.getSize());
+    for (int i = 1; i < tmp.getSize(); i++)
+        if (tmp[i - 1] > tmp[i])
             return false;
 
     return true;
