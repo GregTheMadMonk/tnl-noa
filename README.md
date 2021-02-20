@@ -97,6 +97,15 @@ and other documented topics.
 [tutorials]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/Tutorials.html
 [API]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/annotated.html
 
+## Citing
+
+If you use TNL in your scientific projects, please cite the following paper in
+your publications:
+
+- T. Oberhuber, J. Klinkovský, R. Fučík, [TNL: Numerical library for modern
+  parallel architectures](https://ojs.cvut.cz/ojs/index.php/ap/article/view/6075),
+  Acta Polytechnica 61.SI (2021), 122-134.
+
 ## Authors
 
 Project leader: Tomáš Oberhuber
