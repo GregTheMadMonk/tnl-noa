@@ -210,7 +210,7 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, int 
     int threadsNeeded = arrSize / 2 + (arrSize %2 !=0);
 
     const int maxThreadsPerBlock = 512;
-    int threadPerBlock = min(maxThreadsPerBlock, threadsNeeded);
+    int threadPerBlock = maxThreadsPerBlock;
     int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock == 0 ? 0 : 1);
 
     const int sharedMemLen = threadPerBlock * 2;
