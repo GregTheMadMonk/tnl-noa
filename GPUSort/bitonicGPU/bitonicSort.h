@@ -265,8 +265,9 @@ void bitonicSort(std::vector<Value> & vec,const Function & cmp)
     auto view = Arr.getView();
     bitonicSort(view, cmp);
 
-    for(size_t i = 0; i < vec.size(); ++i)
-        vec[i] = view.getElement(i);
+    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::
+    copy(vec.data(), view.getData(), view.getSize());
+
 }
 
 template <typename Value>
