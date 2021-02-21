@@ -102,10 +102,9 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
             int part = threadIdx.x / (len / 2);
             int s = part * len + (threadIdx.x & ((len /2) - 1));
             int e = s + len / 2;
-            if(e >= myBlockEnd - myBlockStart) //touching virtual padding
-                continue;
 
-            cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
+            if(e < myBlockEnd - myBlockStart) //touching virtual padding
+                cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
         }
 
         __syncthreads();
@@ -177,11 +176,9 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
                 int part = threadIdx.x / (len / 2);
                 int s = part * len + (threadIdx.x & ((len / 2) - 1));
                 int e = s + len / 2;
-                if(e >= myBlockEnd - myBlockStart) //touching virtual padding
-                    continue;
 
-                cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
-
+                if(e < myBlockEnd - myBlockStart) //touching virtual padding
+                    cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
             }
         }
 
