@@ -24,11 +24,13 @@ template< typename Value,
           typename Permutation = std::index_sequence< 0, 1 > >  // identity by default
 class StaticMatrix
 : public Containers::StaticNDArray< Value,
-                                    Containers::SizesHolder< std::size_t, Rows, Columns >,
+                                    // note that using std::size_t in SizesHolder does not make sense, since the
+                                    // StaticNDArray is based on StaticArray, which uses int as IndexType
+                                    Containers::SizesHolder< int, Rows, Columns >,
                                     Permutation >
 {
    using Base = Containers::StaticNDArray< Value,
-                                           Containers::SizesHolder< std::size_t, Rows, Columns >,
+                                           Containers::SizesHolder< int, Rows, Columns >,
                                            Permutation >;
 
 public:
