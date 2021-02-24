@@ -3,6 +3,7 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
+#include <functional>
 
 #include <TNL/Containers/Array.h>
 
@@ -21,38 +22,20 @@ std::ostream& operator<< (std::ostream&out, std::vector<T> &arr)
     return out;
 }
 
+
 struct TIMER
 {
-    std::string s;
-    std::chrono::steady_clock::time_point begin;
-    double result = 0;
-    bool stopped = false;
+    std::function<void(double)> f;
+    std::chrono::high_resolution_clock::time_point begin;
 
-    TIMER(const std::string &name = "")
-        : s(name), begin(std::chrono::steady_clock::now()) {}
+    TIMER(std::function<void(double)> func/* = [](double res){std::cout << res << std::endl;}*/)
+        : f(func), begin(std::chrono::high_resolution_clock::now()) {}
 
-    double stop()
-    {
-        auto end = std::chrono::steady_clock::now();
-        result = (std::chrono::duration_cast<std::chrono::microseconds >(end - begin).count() / 1000.);
-        stopped = true;
-        return result;
-    }
-
-    void printTime()
-    {
-        if(!stopped)
-            stop();
-        std::cout << ("Measured " + s + ": ") << result << " ms" << std::endl;
-    }
-    
     ~TIMER()
     {
-        if(!stopped)
-        {
-            stop();
-            printTime();
-        }
+        auto end = std::chrono::high_resolution_clock::now();
+        double result = (std::chrono::duration_cast<std::chrono::microseconds >(end - begin).count() / 1000.);
+        f(result);
     }
 };
 
@@ -65,7 +48,7 @@ void test1()
     auto view = cudaArr.getView();
 
     {
-        TIMER t("sorted sequences");
+        TIMER t([](double res){std::cout << res << std::endl;});
         bitonicSort(view);
     }
 }
@@ -87,16 +70,9 @@ void randomShuffles()
 
             TNL::Containers::Array<int, Device> cudaArr(orig);
             auto view = cudaArr.getView();
-            std::vector<int> tmp(orig.begin(), orig.end());
-
             {
-                TIMER t("random permutation");
-
-                //std::sort(tmp.begin(), tmp.end());
+                TIMER t([&](double res){results.push_back(res);});
                 bitonicSort(view);
-                
-                results.push_back(t.stop());
-                //t.printTime();
             }
 
         }
@@ -114,10 +90,8 @@ void allPermutations(std::vector<int> orig)
         auto view = cudaArr.getView();
 
         {
-            TIMER t("random permutation");
+            TIMER t([&](double res){results.push_back(res);});
             bitonicSort(view);
-            results.push_back(t.stop());
-            //t.printTime();
         }
     }
     std::cout << "average time: " << std::accumulate(results.begin(), results.end(), 0.)/results.size() << " ms" << std::endl;
