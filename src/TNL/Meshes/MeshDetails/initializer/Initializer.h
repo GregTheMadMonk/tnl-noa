@@ -29,15 +29,16 @@
  * not allocated at once, but by parts (by dimensions). The flow is roughly the
  * following:
  *
- *  - Allocate vertices and set their physical coordinates, deallocate input
- *    array of points.
- *  - Allocate cells and set their subvertex indices (but not other subentity
- *    indices), deallocate cell seeds (the cells will be used later).
+ *  - Initialize vertices by copying their physical coordinates from the input
+ *    array, deallocate the input array of points.
+ *  - Initialize cells by copying their subvertex indices from cell seeds (but
+ *    other subentity indices are left uninitialized), deallocate cell seeds
+ *    (the cells will be used later).
  *  - For all dimensions D from (cell dimension - 1) to 1:
  *     - Create intermediate entity seeds, count the number of entities with
  *       current dimension.
- *     - Allocate entities and set their subvertex indices. Create an indexed
- *       set of entity seeds and reference orientations (if applicable).
+ *     - Set their subvertex indices. Create an indexed set of entity seeds and
+ *       reference orientations (if applicable).
  *     - For all superdimensions S > D:
  *        - Iterate over entities with dimension S and initialize their
  *          subentity indices with dimension D. Inverse mapping (D->S) is
@@ -45,7 +46,6 @@
  *        - For entities with dimension D, initialize their superentity indices
  *          with dimension S.
  *     - Deallocate all intermediate data structures.
- *  - For all superdimensions S > 0, repeat the same steps as above.
  *
  * Optimization notes:
  *   - Recomputing the seed key involves sorting all subvertex indices, but the
