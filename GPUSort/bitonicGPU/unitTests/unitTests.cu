@@ -27,7 +27,7 @@ TEST(permutations, allPermutationSize_3_to_7)
         std::vector<int> orig(size);
         std::iota(orig.begin(), orig.end(), 0);
 
-        while (std::next_permutation(orig.begin(), orig.end()))
+        do
         {
             TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
             auto view = cudaArr.getView();
@@ -36,6 +36,7 @@ TEST(permutations, allPermutationSize_3_to_7)
 
             ASSERT_TRUE(is_sorted(view)) << "failed " << i << std::endl;
         } 
+        while (std::next_permutation(orig.begin(), orig.end()));
     }
 }
 
@@ -48,7 +49,7 @@ TEST(permutations, somePermutationSize8)
     std::vector<int> orig(size);
     std::iota(orig.begin(), orig.end(), 0);
 
-    while (std::next_permutation(orig.begin(), orig.end()))
+    do
     {
         if ((i++) % stride != 0)
             continue;
@@ -60,6 +61,7 @@ TEST(permutations, somePermutationSize8)
 
         ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
+    while (std::next_permutation(orig.begin(), orig.end()));
 }
 
 TEST(permutations, somePermutationSize9)
@@ -71,7 +73,7 @@ TEST(permutations, somePermutationSize9)
     std::vector<int> orig(size);
     std::iota(orig.begin(), orig.end(), 0);
 
-    while (std::next_permutation(orig.begin(), orig.end()))
+    do
     {
         if ((i++) % stride != 0)
             continue;
@@ -83,7 +85,10 @@ TEST(permutations, somePermutationSize9)
 
         ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
+    while (std::next_permutation(orig.begin(), orig.end()));
 }
+
+//-----------------------------------------------------------------------
 
 TEST(selectedSize, size15)
 {
