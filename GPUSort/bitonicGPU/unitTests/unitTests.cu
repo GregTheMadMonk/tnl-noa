@@ -154,31 +154,22 @@ TEST(nonIntegerType, double_notPow2)
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
-/*
+
 struct TMPSTRUCT{
     uint8_t m_data[6];
     TMPSTRUCT(){m_data[0] = 0;}
     TMPSTRUCT(int first){m_data[0] = first;};
     bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
-
-    bool operator ==(const TMPSTRUCT& other) const {return !(*this < other) && !(other < *this); }
-
-    bool operator >=(const TMPSTRUCT& other) const {return !(*this < other); }
-    bool operator >(const TMPSTRUCT& other) const {return !(*this <= other); }
-    bool operator <=(const TMPSTRUCT& other) const {return (*this < other) || (other == *this); }
-
-    std::ostream& operator << (std::ostream & out) { return out << "{ " << m_data[0] << " }";}
 };
 
 TEST(nonIntegerType, struct)
 {
-
     TNL::Containers::Array<TMPSTRUCT, TNL::Devices::Cuda> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    ASSERT_TRUE(is_sorted(view));
 }
-*/
+
 
 //error bypassing
 //https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/blob/fbc34f6a97c13ec865ef7969b9704533222ed408/src/UnitTests/Containers/VectorTest-8.h
