@@ -22,24 +22,6 @@ std::ostream& operator<< (std::ostream&out, std::vector<T> &arr)
     return out;
 }
 
-
-struct TIMER
-{
-    std::function<void(double)> f;
-    std::chrono::high_resolution_clock::time_point begin;
-
-    TIMER(std::function<void(double)> func/* = [](double res){std::cout << res << std::endl;}*/)
-        : f(func), begin(std::chrono::high_resolution_clock::now()) {}
-
-    ~TIMER()
-    {
-        auto end = std::chrono::high_resolution_clock::now();
-        double result = (std::chrono::duration_cast<std::chrono::microseconds >(end - begin).count() / 1000.);
-        f(result);
-    }
-};
-
-
 void test1()
 {
     int size = 1<<10;
