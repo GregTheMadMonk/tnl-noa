@@ -1,13 +1,13 @@
 #include <string>
-#include <chrono>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
-#include <functional>
 
 #include <TNL/Containers/Array.h>
 
 #include "../bitonicSort.h"
+#include "../../util/timer.h"
+
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -30,7 +30,7 @@ void test1()
     auto view = cudaArr.getView();
 
     {
-        TIMER t([](double res){std::cout << res << std::endl;});
+        TIMER t;
         bitonicSort(view);
     }
 }
@@ -53,7 +53,7 @@ void randomShuffles()
             TNL::Containers::Array<int, Device> cudaArr(orig);
             auto view = cudaArr.getView();
             {
-                TIMER t([&](double res){results.push_back(res);});
+                TIMER t;
                 bitonicSort(view);
             }
 
@@ -72,7 +72,7 @@ void allPermutations(std::vector<int> orig)
         auto view = cudaArr.getView();
 
         {
-            TIMER t([&](double res){results.push_back(res);});
+            TIMER t;
             bitonicSort(view);
         }
     }
