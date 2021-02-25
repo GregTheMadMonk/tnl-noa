@@ -106,6 +106,7 @@ TEST(multiblock, 32768_decreasingNegative)
 
 TEST(randomGenerated, smallArray_randomVal)
 {
+    std::srand(2006);
     for(int i = 0; i < 100; i++)
     {
         std::vector<int> arr(std::rand()%(1<<10));
@@ -122,6 +123,7 @@ TEST(randomGenerated, smallArray_randomVal)
 
 TEST(randomGenerated, bigArray_all0)
 {
+    std::srand(304);
     for(int i = 0; i < 50; i++)
     {
         int size = (1<<20) + (std::rand()% (1<<19));
