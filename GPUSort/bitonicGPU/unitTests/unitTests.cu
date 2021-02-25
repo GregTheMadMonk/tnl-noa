@@ -101,11 +101,13 @@ TEST(selectedSize, size15)
 
 TEST(multiblock, 32768_decreasingNegative)
 {
-    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(1 << 15);
-    for (int i = 0; i < cudaArr.getSize(); i++)
-        cudaArr.setElement(i, -i);
-
+    std::vector<int> arr(1<<15);
+    for (size_t i = 0; i < arr.size(); i++)
+        arr[i] = -i;
+    
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
     auto view = cudaArr.getView();
+
     bitonicSort(view);
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
@@ -114,9 +116,11 @@ TEST(randomGenerated, smallArray_randomVal)
 {
     for(int i = 0; i < 100; i++)
     {
-        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(std::rand()%(1<<10));
-        for (int j = 0; j < cudaArr.getSize(); j++)
-            cudaArr.setElement(j, std::rand());
+        std::vector<int> arr(std::rand()%(1<<10));
+        for(auto & x : arr)
+            x = std::rand();
+
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
 
         auto view = cudaArr.getView();
         bitonicSort(view);
