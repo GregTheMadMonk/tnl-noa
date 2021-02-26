@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
+#include <set>
+#include <iomanip>
 
 #include <TNL/Containers/Array.h>
 
@@ -14,75 +16,81 @@ using namespace TNL::Containers;
 
 typedef Devices::Cuda Device;
 
-template <class T>
-std::ostream& operator<< (std::ostream&out, std::vector<T> &arr)
-{
-    for (auto x : arr)
-        std::cout << x << " ";
-    return out;
-}
-
-void test1()
-{
-    int size = 1<<10;
-    TNL::Containers::Array<int, Device> cudaArr(size);
-    cudaArr.evaluate([=] __cuda_callable__ (int i) {return i;});
-    auto view = cudaArr.getView();
-
-    {
-        TIMER t;
-        bitonicSort(view);
-    }
-}
-
-void randomShuffles()
-{
-    int iterations = 100;
-    std::cout << iterations << " random permutations" << std::endl;
-    for(int p = 13; p <= 19; ++p)
-    {
-        int size = 1<<p;
-        std::vector<int> orig(size);
-        std::iota(orig.begin(), orig.end(), 0);
-        std::vector<double> results;
-
-        for (int i = 0; i < iterations; i++)
-        {
-            std::random_shuffle(orig.begin(), orig.end());
-
-            TNL::Containers::Array<int, Device> cudaArr(orig);
-            auto view = cudaArr.getView();
-            {
-                TIMER t;
-                bitonicSort(view);
-            }
-
-        }
-        std::cout << "average time for arrSize = 2^" << p << ": " << std::accumulate(results.begin(), results.end(), 0.)/results.size() << " ms" << std::endl;
-
-    }
-}
-
-void allPermutations(std::vector<int> orig)
-{
-    std::vector<double> results;
-    while (std::next_permutation(orig.begin(), orig.end()))
-    {
-        TNL::Containers::Array<int, Device> cudaArr(orig);
-        auto view = cudaArr.getView();
-
-        {
-            TIMER t;
-            bitonicSort(view);
-        }
-    }
-    std::cout << "average time: " << std::accumulate(results.begin(), results.end(), 0.)/results.size() << " ms" << std::endl;
-}
-
-
+using namespace std;
 int main()
 {
-    randomShuffles();
+
+    for(int pow = 10; pow <= 20; pow++)
+    {
+        int size =(1<< pow);
+
+        vector<int> vec(size);
+        iota(vec.begin(), vec.end(), 0);
+
+        Array<int, Device> arr;
+        vector<double> resAcc;
+
+        //sorted sequence
+        {
+            arr = vec;
+            auto view = arr.getView();
+
+            {
+                TIMER t([&](double res){resAcc.push_back(res);});
+                bitonicSort(view);
+            }
+        }
+
+        //almost sorted sequence
+        {
+            for(int i = 0; i < 3; i++)
+            {
+                int s = std::rand() % (size - 3);
+                std::swap(vec[s], vec[s + 1]);
+            }
+
+            arr = vec;
+            auto view = arr.getView();
+
+            {
+                TIMER t([&](double res){resAcc.push_back(res);});
+                bitonicSort(view);
+            }
+        }
+
+        //decreasing sequence
+        {
+            for(size_t i = 0; i < size; i++)
+                vec[i] = -i;
+                
+            arr = vec;
+            auto view = arr.getView();
+
+            {
+                TIMER t([&](double res){resAcc.push_back(res);});
+                bitonicSort(view);
+            }
+        }
+        
+        //random sequence
+        {
+            std::random_shuffle(vec.begin(), vec.end());
+
+            arr = vec;
+            auto view = arr.getView();
+            
+            {
+                TIMER t([&](double res){resAcc.push_back(res);});
+                bitonicSort(view);
+            }
+        }
+
+
+        cout << "2^" << pow << " = ";
+        cout << fixed;
+        cout << setprecision(3);
+        cout << (accumulate(resAcc.begin(), resAcc.end(), 0.0) / resAcc.size()) << " ms" << endl;
+    }
 
     return 0;
 }
