@@ -86,7 +86,7 @@ TEST(selectedSize, size15)
 {
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
     auto view = cudaArr.getView();
-    ASSERT_EQ(15, view.getSize());
+    ASSERT_EQ(15, view.getSize()) << "size not 15" << std::endl;
     bitonicSort(view);
     ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
@@ -158,6 +158,7 @@ struct TMPSTRUCT{
     TMPSTRUCT(){m_data[0] = 0;}
     TMPSTRUCT(int first){m_data[0] = first;};
     bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
+    bool operator <=(const TMPSTRUCT& other) const { return m_data[0] <= other.m_data[0];}
 };
 
 TEST(nonIntegerType, struct)
