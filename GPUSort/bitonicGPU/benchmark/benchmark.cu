@@ -1,8 +1,5 @@
-#include <string>
 #include <iostream>
-#include <algorithm>
 #include <numeric>
-#include <set>
 #include <iomanip>
 
 #include <TNL/Containers/Array.h>
@@ -10,16 +7,15 @@
 #include "../bitonicSort.h"
 #include "../../util/timer.h"
 
-
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace std;
 
 typedef Devices::Cuda Device;
 
-using namespace std;
 int main()
 {
-
+    srand(2021);
     for(int pow = 10; pow <= 20; pow++)
     {
         int size =(1<< pow);
@@ -45,7 +41,7 @@ int main()
         {
             for(int i = 0; i < 3; i++)
             {
-                int s = std::rand() % (size - 3);
+                int s = rand() % (size - 3);
                 std::swap(vec[s], vec[s + 1]);
             }
 
@@ -74,11 +70,11 @@ int main()
         
         //random sequence
         {
-            std::random_shuffle(vec.begin(), vec.end());
+            random_shuffle(vec.begin(), vec.end());
 
             arr = vec;
             auto view = arr.getView();
-            
+
             {
                 TIMER t([&](double res){resAcc.push_back(res);});
                 bitonicSort(view);
