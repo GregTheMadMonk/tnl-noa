@@ -167,6 +167,17 @@ template< typename MeshConfig,
 class DualGraphLayer< MeshConfig, Device, false >
 {
 public:
+   DualGraphLayer& operator=( const DualGraphLayer& other )
+   {
+      return *this;
+   }
+
+   template< typename Device_ >
+   DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
+   {
+      return *this;
+   }
+
    template< typename Mesh >
    void initializeDualGraph( const Mesh& mesh,
                              int minCommon = 0 )
