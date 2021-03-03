@@ -29,5 +29,9 @@ __device__ int blockReduceSum(int val)
     if (wid == 0)
         val = warpReduceSum(val);
 
-    return val;
+    if(threadIdx.x == 0)
+        shared[0] = val;
+    __syncthreads(); 
+
+    return shared[0];
 }
