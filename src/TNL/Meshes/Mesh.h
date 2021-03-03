@@ -126,6 +126,9 @@ class Mesh
       __cuda_callable__
       EntityType< Dimension > getEntity( const GlobalIndexType entityIndex ) const;
 
+      template< int Dimension >
+      void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount );
+
       // duplicated for compatibility with grids
       template< typename EntityType >
       __cuda_callable__
@@ -138,6 +141,10 @@ class Mesh
       /**
        * \brief Returns the spatial coordinates of the vertex with given index.
        */
+      const typename MeshTraitsType::PointArrayType& getPoints() const;
+
+      typename MeshTraitsType::PointArrayType& getPoints();
+
       __cuda_callable__
       const PointType& getPoint( const GlobalIndexType vertexIndex ) const;
 
@@ -268,9 +275,7 @@ class Mesh
       void writeProlog( Logger& logger ) const;
 
    protected:
-      // Methods for the mesh initializer
-      using StorageBaseType::getPoints;
-      using StorageBaseType::setEntitiesCount;
+      typename MeshTraitsType::PointArrayType points;
 
       friend Initializer< MeshConfig >;
 

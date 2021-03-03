@@ -48,9 +48,6 @@ class StorageLayerFamily
    template< int Dimension, int Superdimension >
    using SuperentityTraits = typename MeshTraitsType::template SuperentityTraits< typename EntityTraits< Dimension >::EntityTopology, Superdimension >;
 
-protected:
-   typename MeshTraitsType::PointArrayType points;
-
 public:
    StorageLayerFamily() = default;
 
@@ -67,7 +64,6 @@ public:
 
    StorageLayerFamily& operator=( const StorageLayerFamily& layer )
    {
-      points = layer.getPoints();
       BaseType::operator=( layer );
       DualGraphLayer< MeshConfig, Device >::operator=( layer );
       return *this;
@@ -76,7 +72,6 @@ public:
    template< typename Device_ >
    StorageLayerFamily& operator=( const StorageLayerFamily< MeshConfig, Device_ >& layer )
    {
-      points = layer.getPoints();
       BaseType::operator=( layer );
       DualGraphLayer< MeshConfig, Device >::operator=( layer );
       return *this;
@@ -84,33 +79,8 @@ public:
 
    bool operator==( const StorageLayerFamily& layer ) const
    {
-      return ( points == layer.points &&
-               BaseType::operator==( layer ) &&
+      return ( BaseType::operator==( layer ) &&
                DualGraphLayer< MeshConfig, Device >::operator==( layer ) );
-   }
-
-   void print( std::ostream& str ) const
-   {
-      str << "Vertex coordinates are: " << points << std::endl;
-      BaseType::print( str );
-   }
-
-   const typename MeshTraitsType::PointArrayType& getPoints() const
-   {
-      return points;
-   }
-
-   typename MeshTraitsType::PointArrayType& getPoints()
-   {
-      return points;
-   }
-
-   template< int Dimension >
-   void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
-   {
-      BaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
-      if( Dimension == 0 )
-         points.setSize( entitiesCount );
    }
 
    template< int Dimension, int Subdimension >
@@ -122,8 +92,8 @@ public:
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
                      "You try to get subentities count for subentities which are disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
-                                                   Device,
-                                                   typename EntityTraits< Dimension >::EntityTopology >;
+                                                    Device,
+                                                    DimensionTag< Dimension > >;
       return BaseType::template getSubentitiesCount< Subdimension >();
    }
 
@@ -136,8 +106,8 @@ public:
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
                      "You try to get subentities matrix which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
-                                                   Device,
-                                                   typename EntityTraits< Dimension >::EntityTopology >;
+                                                    Device,
+                                                    DimensionTag< Dimension > >;
       return BaseType::template getSubentitiesMatrix< Subdimension >();
    }
 
@@ -150,8 +120,8 @@ public:
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
                      "You try to get subentities matrix which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
-                                                   Device,
-                                                   typename EntityTraits< Dimension >::EntityTopology >;
+                                                    Device,
+                                                    DimensionTag< Dimension > >;
       return BaseType::template getSubentitiesMatrix< Subdimension >();
    }
 
@@ -165,7 +135,7 @@ public:
                      "You try to get superentities counts array which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
-                                                     typename EntityTraits< Dimension >::EntityTopology >;
+                                                     DimensionTag< Dimension > >;
       return BaseType::template getSuperentitiesCountsArray< Superdimension >();
    }
 
@@ -179,7 +149,7 @@ public:
                      "You try to get superentities counts array which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
-                                                     typename EntityTraits< Dimension >::EntityTopology >;
+                                                     DimensionTag< Dimension > >;
       return BaseType::template getSuperentitiesCountsArray< Superdimension >();
    }
 
@@ -193,7 +163,7 @@ public:
                      "You try to get superentities matrix which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
-                                                     typename EntityTraits< Dimension >::EntityTopology >;
+                                                     DimensionTag< Dimension > >;
       return BaseType::template getSuperentitiesMatrix< Superdimension >();
    }
 
@@ -207,7 +177,7 @@ public:
                      "You try to get superentities matrix which is disabled in the mesh configuration." );
       using BaseType = SuperentityStorageLayerFamily< MeshConfig,
                                                      Device,
-                                                     typename EntityTraits< Dimension >::EntityTopology >;
+                                                     DimensionTag< Dimension > >;
       return BaseType::template getSuperentitiesMatrix< Superdimension >();
    }
 };
@@ -222,10 +192,13 @@ class StorageLayer< MeshConfig,
                     true >
    : public SubentityStorageLayerFamily< MeshConfig,
                                          Device,
-                                         typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+                                         DimensionTag >,
+     public SubentityOrientationsLayerFamily< MeshConfig,
+                                              Device,
+                                              typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public SuperentityStorageLayerFamily< MeshConfig,
                                            Device,
-                                           typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
+                                           DimensionTag >,
      public StorageLayer< MeshConfig, Device, typename DimensionTag::Increment >
 {
 public:
@@ -235,8 +208,9 @@ public:
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
-   using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
-   using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
+   using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, DimensionTag >;
+   using SubentityOrientationsBaseType = SubentityOrientationsLayerFamily< MeshConfig, Device, EntityTopology >;
+   using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, DimensionTag >;
 
    StorageLayer() = default;
 
