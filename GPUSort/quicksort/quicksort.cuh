@@ -2,6 +2,17 @@
 
 #include <TNL/Containers/Array.h>
 
+__device__ void cmpElem(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int myBegin, int myEnd,
+    int pivot, int &smaller, int&bigger)
+{
+    for(int i = myBegin + threadIdx.x; i < myEnd; i+= threadIdx.x)
+    {
+        int data = arr[i];
+        if(data < pivot) smaller++;
+        else bigger++;
+    }
+}
+
 __global__ void cudaPartition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr,
                                 int begin, int end, int pivotIdx, int * newPivotPos,
                                 int elemPerBlock)
@@ -10,14 +21,11 @@ __global__ void cudaPartition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda
     const int myEnd = TNL::min(end - 1, myBegin + elemPerBlock); //important, pivot is at the end
 
     int pivot = arr[pivotIdx];
-    
-    int smaller = 0; bigger = 0;
-    for(int i = myBegin + threadIdx.x; i < myEnd; i+= threadIdx.x)
-    {
-        int data = arr[i];
-        if(data < pivot) smaller++;
-        else bigger++;
-    }
+    int smaller = 0, bigger = 0;
+    cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);    
+
+
+
 }
 
 int partition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int begin, int end, int pivotIdx)
