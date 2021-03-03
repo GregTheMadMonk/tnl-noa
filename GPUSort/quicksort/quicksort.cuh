@@ -2,6 +2,24 @@
 
 #include <TNL/Containers/Array.h>
 
+__global__ void cudaPartition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr,
+                                int begin, int end, int pivotIdx, int * newPivotPos,
+                                int elemPerBlock)
+{
+    const int myBegin = begin + elemPerBlock*blockIdx.x;
+    const int myEnd = TNL::min(end - 1, myBegin + elemPerBlock); //important, pivot is at the end
+
+    int pivot = arr[pivotIdx];
+    
+    int smaller = 0; bigger = 0;
+    for(int i = myBegin + threadIdx.x; i < myEnd; i+= threadIdx.x)
+    {
+        int data = arr[i];
+        if(data < pivot) smaller++;
+        else bigger++;
+    }
+}
+
 int partition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int begin, int end, int pivotIdx)
 {
     int size = end - begin;
@@ -9,7 +27,7 @@ int partition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int begin
     int elemPerBlock, blocks;
     
     int setsNeeded = size/threadsPerBlock + (size % threadsPerBlock != 0);
-    if(setsNeeded <= blocks)
+    if(setsNeeded <= maxBlocks)
     {
         blocks = setsNeeded;
         elemPerBlock = threadsPerBlock;
@@ -22,9 +40,10 @@ int partition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int begin
     }
 
     //------------------------------------
+    TNL::Containers::Array<int, TNL::Devices::Cuda> newPivotPos;
+    cudaPartition<<<blocks, maxBlocks>>>(arr, begin, end, pivotIdx, newPivotPos.getData(), elemPerBlock);
 
-
-
+    return newPivotPos.getElement(0);
 }
 
 //-----------------------------------------------------------------------------------------
