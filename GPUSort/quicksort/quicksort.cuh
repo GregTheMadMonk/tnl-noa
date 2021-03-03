@@ -1,9 +1,10 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
+#include "reduction.cuh"
 
 __device__ void cmpElem(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> arr, int myBegin, int myEnd,
-    int pivot, int &smaller, int&bigger)
+                        int pivot, int &smaller, int&bigger)
 {
     for(int i = myBegin + threadIdx.x; i < myEnd; i+= threadIdx.x)
     {
@@ -24,7 +25,8 @@ __global__ void cudaPartition(TNL::Containers::ArrayView<int, TNL::Devices::Cuda
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);    
 
-
+    smaller = blockReduceSum(smaller);
+    bigger = blockReduceSum(bigger);
 
 }
 
