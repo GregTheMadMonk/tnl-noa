@@ -47,19 +47,17 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);
 
-    int smallerOffset = blockReduceSum(smaller);
-    int biggerOffset = blockReduceSum(bigger);
+    int smallerOffset = blockPrefixSum(smaller);
+    int biggerOffset = blockPrefixSum(bigger);
 
-    if (threadIdx.x == 0)
+    if (threadIdx.x == blockDim.x - 1)
     {
         *smallerStart = atomicAdd(auxBeginIdx, smallerOffset);
         *biggerStart = atomicAdd(auxEndIdx, -biggerOffset) - biggerOffset;
     }
     __syncthreads();
 
-    int auxThreadSmallerBegin = atomicAdd(smallerStart, smaller);
-    int auxThreadBiggerBegin = atomicAdd(biggerStart, bigger);
-    copyData(arr, myBegin, myEnd, pivot, aux, auxThreadSmallerBegin, auxThreadBiggerBegin);
+    copyData(arr, myBegin, myEnd, pivot, aux, (*smallerStart) + smallerOffset - smaller, (*biggerStart) + biggerOffset - bigger);
     __syncthreads();
     
     //inserts pivot
