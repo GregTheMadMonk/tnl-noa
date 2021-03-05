@@ -37,13 +37,16 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
                               int pivotIdx, int *newPivotPos,
                               int elemPerBlock)
 {
-    static __shared__ int sharedMem[2];
-    int *smallerStart = sharedMem, *biggerStart = smallerStart + 1;
+    static __shared__ int smallerStart, biggerStart;
+    static __shared__ int pivot;
 
     const int myBegin = begin + elemPerBlock * blockIdx.x;
     const int myEnd = TNL::min(end - 1, myBegin + elemPerBlock); //important, pivot is at the end
 
-    int pivot = arr[pivotIdx];
+    if(threadIdx.x == 0)
+        pivot = arr[pivotIdx];
+    __syncthreads();
+
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);
 
@@ -52,12 +55,12 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
 
     if (threadIdx.x == blockDim.x - 1)
     {
-        *smallerStart = atomicAdd(auxBeginIdx, smallerOffset);
-        *biggerStart = atomicAdd(auxEndIdx, -biggerOffset) - biggerOffset;
+        smallerStart = atomicAdd(auxBeginIdx, smallerOffset);
+        biggerStart = atomicAdd(auxEndIdx, -biggerOffset) - biggerOffset;
     }
     __syncthreads();
 
-    copyData(arr, myBegin, myEnd, pivot, aux, (*smallerStart) + smallerOffset - smaller, (*biggerStart) + biggerOffset - bigger);
+    copyData(arr, myBegin, myEnd, pivot, aux, smallerStart + smallerOffset - smaller, biggerStart + biggerOffset - bigger);
     __syncthreads();
     
     //inserts pivot
