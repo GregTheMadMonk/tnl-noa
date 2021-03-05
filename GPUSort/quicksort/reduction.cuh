@@ -49,6 +49,25 @@ __device__ int warpInclusivePrefixSum(int value)
     return value;
 }
 
+/*
+template<int it = 32>
+__device__ int warpInclusivePrefixSum(int value)
+{
+    if(it >= 2)
+    {
+        int i = it == 0? 32 : 32/it;
+        int n = __shfl_up_sync(0xffffffff, value, i);
+        int laneId = threadIdx.x & 0x1f;
+        if ((laneId & (warpSize - 1)) >= i)
+            value += n;
+        return warpInclusivePrefixSum<it/2>(value);
+        
+    }
+
+    return value;
+}
+*/
+
 __device__ int blockInclusivePrefixSum(int value)
 {
     static __shared__ int shared[32];
