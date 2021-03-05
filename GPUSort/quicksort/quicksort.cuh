@@ -49,8 +49,8 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);
 
-    int smallerOffset = blockPrefixSum(smaller);
-    int biggerOffset = blockPrefixSum(bigger);
+    int smallerOffset = blockInclusivePrefixSum(smaller);
+    int biggerOffset = blockInclusivePrefixSum(bigger);
 
     if (threadIdx.x == blockDim.x - 1)
     {

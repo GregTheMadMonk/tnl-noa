@@ -36,7 +36,7 @@ __device__ int blockReduceSum(int val)
     return shared[0];
 }
 
-__device__ int warpPrefixSum(int value)
+__device__ int warpInclusivePrefixSum(int value)
 {
     int laneId = threadIdx.x & 0x1f;
     for (int i = 1; i*2 <= warpSize; i *= 2)
@@ -49,13 +49,13 @@ __device__ int warpPrefixSum(int value)
     return value;
 }
 
-__device__ int blockPrefixSum(int value)
+__device__ int blockInclusivePrefixSum(int value)
 {
     static __shared__ int shared[32];
     int lane = threadIdx.x & (warpSize - 1);
     int wid = threadIdx.x / warpSize;
 
-    int tmp = warpPrefixSum(value);
+    int tmp = warpInclusivePrefixSum(value);
 
     if (lane == warpSize-1)
         shared[wid] = tmp;
@@ -63,7 +63,7 @@ __device__ int blockPrefixSum(int value)
 
     int tmp2 = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : 0;
     if (wid == 0)
-        shared[lane] = warpPrefixSum(tmp2) - shared[lane];
+        shared[lane] = warpInclusivePrefixSum(tmp2) - tmp2;
     __syncthreads();
     
     tmp += shared[wid];
