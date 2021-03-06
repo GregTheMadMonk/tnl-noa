@@ -36,37 +36,28 @@ __device__ int blockReduceSum(int val)
     return shared[0];
 }
 
+
+template<int it>
 __device__ int warpInclusivePrefixSum(int value)
 {
-    int laneId = threadIdx.x & 0x1f;
-    for (int i = 1; i*2 <= warpSize; i *= 2)
+    if(it*2 <= 32)
     {
-        int n = __shfl_up_sync(0xffffffff, value, i);
-        if ((laneId & (warpSize - 1)) >= i)
-            value += n;
-    }
-
-    return value;
-}
-
-/*
-template<int it = 32>
-__device__ int warpInclusivePrefixSum(int value)
-{
-    if(it >= 2)
-    {
-        int i = it == 0? 32 : 32/it;
+        int i = it;
         int n = __shfl_up_sync(0xffffffff, value, i);
         int laneId = threadIdx.x & 0x1f;
         if ((laneId & (warpSize - 1)) >= i)
             value += n;
-        return warpInclusivePrefixSum<it/2>(value);
+        return warpInclusivePrefixSum<it*2 >= 32? 32 : it*2>(value);
         
     }
 
     return value;
 }
-*/
+
+__device__ int warpInclusivePrefixSum(int value)
+{
+    return warpInclusivePrefixSum<1>(value);
+}
 
 __device__ int blockInclusivePrefixSum(int value)
 {
