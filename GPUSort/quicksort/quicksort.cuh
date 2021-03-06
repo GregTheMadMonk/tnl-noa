@@ -73,60 +73,6 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
     }
 }
 
-int partition(CudaArrayView arr, int begin, int end, int pivotIdx)
-{
-    int size = end - begin;
-    const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
-    int elemPerBlock, blocks;
-
-    int setsNeeded = size / threadsPerBlock + (size % threadsPerBlock != 0);
-    if (setsNeeded <= maxBlocks)
-    {
-        blocks = setsNeeded;
-        elemPerBlock = threadsPerBlock;
-    }
-    else
-    {
-        int setsPerBlock = setsNeeded / blocks + 1; //+1 to spread out task of the last block
-        elemPerBlock *= setsPerBlock;
-        blocks = size / elemPerBlock + (size % elemPerBlock != 0);
-    }
-
-    //------------------------------------
-    TNL::Containers::Array<int, TNL::Devices::Cuda> aux(arr.getSize());
-    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda >::
-    copy(aux.getData(), arr.getData(), arr.getSize());
-    
-    TNL::Containers::Array<int, TNL::Devices::Cuda> helper({begin, end, 0, blocks});
-    
-    //------------------------------------
-    
-    cudaPartition<<<blocks, threadsPerBlock>>>(arr, begin, end,
-        aux, helper.getData(), helper.getData() + 1,
-        pivotIdx, helper.getData() + 2, elemPerBlock, helper.getData() + 3);
-    
-    //------------------------------------
-
-    TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda >::
-    copy(arr.getData(), aux.getData(), aux.getSize());
-
-    return helper.getElement(2);
-}
-
-//-----------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------
-
-void quicksort(CudaArrayView arr, int begin, int end)
-{
-    if (begin >= end)
-        return;
-    int newPivotPos = partition(arr, begin, end, end - 1);
-    quicksort(arr, begin, newPivotPos);
-    quicksort(arr, newPivotPos + 1, end);
-
-    cudaDeviceSynchronize();
-}
-
 //-----------------------------------------------------------
 class QUICKSORT
 {
@@ -226,12 +172,14 @@ public:
         {
             std::pair<int, int> blocks_elemPerBlock = calcConfig();
             int blocksCnt = initTasks(blocks_elemPerBlock);
+
             /*
             partition(arr, aux.getView(),
                 cuda_tasks.getView(), cuda_blockToTaskMapping.getView()
                 newTasks.getView());
             */
-           processTasks();
+           
+            processTasks();
         }
 
         //2nd phase to finish
