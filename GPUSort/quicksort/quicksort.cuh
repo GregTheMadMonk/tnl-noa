@@ -34,7 +34,7 @@ __device__ void copyData(CudaArrayView arr, int myBegin, int myEnd, int pivot,
 
 __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
                               CudaArrayView aux, int *auxBeginIdx, int *auxEndIdx,
-                              int pivotIdx, int elemPerBlock)
+                              int pivotIdx, int* newPivotIdx, int elemPerBlock, int * blockCount)
 {
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int pivot;
@@ -60,6 +60,15 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
     __syncthreads();
 
     copyData(arr, myBegin, myEnd, pivot, aux, smallerStart + smallerOffset - smaller, biggerStart + biggerOffset - bigger);
+
+    if(threadIdx.x == 0)
+    {
+        if( atomicAdd(blockCount, -1) == 1)
+        {
+            *newPivotIdx = (*auxEndIdx) - 1;
+            aux[*newPivotIdx] = pivot;
+        }
+    }
 }
 
 int partition(CudaArrayView arr, int begin, int end, int pivotIdx)
@@ -86,22 +95,20 @@ int partition(CudaArrayView arr, int begin, int end, int pivotIdx)
     TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda >::
     copy(aux.getData(), arr.getData(), arr.getSize());
     
-    TNL::Containers::Array<int, TNL::Devices::Cuda> cudaAuxBegin({begin}), cudaAuxEnd({end});
+    TNL::Containers::Array<int, TNL::Devices::Cuda> helper({begin, end, 0, blocks});
+    
+    //------------------------------------
+    
+    cudaPartition<<<blocks, threadsPerBlock>>>(arr, begin, end,
+        aux, helper.getData(), helper.getData() + 1,
+        pivotIdx, helper.getData() + 2, elemPerBlock, helper.getData() + 3);
     
     //------------------------------------
 
-    int pivot = arr.getElement(pivotIdx);
-    cudaPartition<<<blocks, threadsPerBlock>>>(arr, begin, end,
-        aux, cudaAuxBegin.getData(), cudaAuxEnd.getData(),
-        pivotIdx, elemPerBlock);
-    cudaDeviceSynchronize();
-
-    pivotIdx = cudaAuxEnd.getElement(0) - 1;
-    aux.setElement(pivotIdx, pivot);
-    //------------------------------------
     TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda >::
     copy(arr.getData(), aux.getData(), aux.getSize());
-    return pivotIdx;
+
+    return helper.getElement(2);
 }
 
 //-----------------------------------------------------------------------------------------
