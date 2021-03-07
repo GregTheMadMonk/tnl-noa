@@ -217,10 +217,12 @@ public:
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
             copy(arr.getData(), aux.getData(), aux.getSize());
 
-        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda>::
-            copy(cuda_tasks.getData(), cuda_newTasks.getData(), cuda_newTasks.getSize());
+        tasksAmount = cuda_newTasksAmount.getElement(0);
 
-        return tasksAmount = cuda_newTasksAmount.getElement(0);
+        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda>::
+            copy(cuda_tasks.getData(), cuda_newTasks.getData(), tasksAmount);
+
+        return tasksAmount;
     }
 
 };
