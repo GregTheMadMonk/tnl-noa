@@ -53,7 +53,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     {
         myTaskIdx = cuda_blockToTaskMapping[blockIdx.x];
         myTask = cuda_tasks[myTaskIdx];
-        pivot = arr[myTask.pivotPos];
+        pivot = myTask.pivot;
         writePivot = false;
     }
     __syncthreads();
@@ -101,7 +101,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
             cuda_newTasks[newTaskIdx] = TASK(
                 myTask.arrBegin, myTask.auxBeginIdx,
                 myTask.arrBegin, myTask.auxBeginIdx,
-                myTask.auxBeginIdx - 1);
+                aux[myTask.auxBeginIdx - 1]);
         }
 
         if (myTask.arrEnd - myTask.auxEndIdx > 1)
@@ -110,7 +110,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
             cuda_newTasks[newTaskIdx] = TASK(
                 myTask.auxEndIdx, myTask.arrEnd,
                 myTask.auxEndIdx, myTask.arrEnd,
-                myTask.arrEnd - 1);
+                aux[myTask.arrEnd - 1]);
         }
     }
 }
@@ -164,8 +164,8 @@ public:
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_newTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping_Cnt(1)
     {
-        int pivotIdx = arr.getSize() - 1;
-        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize(), pivotIdx));
+        int pivot = arr.getElement(arr.getSize() - 1);
+        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize(), pivot));
         tasksAmount = 1;
     }
 
@@ -182,6 +182,8 @@ public:
                 cuda_newTasks.getView(), cuda_newTasksAmount.getData());
             
             tasksAmount = processNewTasks();
+            cudaDeviceSynchronize();
+
         }
     }
 
