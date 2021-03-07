@@ -9,44 +9,58 @@
 
 using CudaArrayView = TNL::Containers::ArrayView<int, TNL::Devices::Cuda>;
 
-__device__ void cmpElem(CudaArrayView arr, int myBegin, int myEnd, int pivot, int &smaller, int &bigger)
+__device__ void cmpElem(CudaArrayView arr, int myBegin, int myEnd,
+                        int &smaller, int &bigger,
+                        int pivot)
 {
     for (int i = myBegin + threadIdx.x; i < myEnd; i += blockDim.x)
     {
         int data = arr[i];
         if (data < pivot)
             smaller++;
-        else
+        else if(data > pivot)
             bigger++;
     }
 }
 
-__device__ void copyData(CudaArrayView arr, int myBegin, int myEnd, int pivot,
-                         CudaArrayView aux, int smallerStart, int biggerStart)
+__device__ void copyData(CudaArrayView arr, int myBegin, int myEnd,
+                         CudaArrayView aux, int smallerStart, int biggerStart,
+                         int pivot)
 {
     for (int i = myBegin + threadIdx.x; i < myEnd; i += blockDim.x)
     {
         int data = arr[i];
         if (data < pivot)
             aux[smallerStart++] = data;
-        else
+        else if(data > pivot)
             aux[biggerStart++] = data;
     }
 }
 
-__global__ void cudaPartition(CudaArrayView arr, int begin, int end,
-                              CudaArrayView aux, int *auxBeginIdx, int *auxEndIdx,
-                              int pivotIdx, int* newPivotIdx, int elemPerBlock, int * blockCount)
+__global__
+void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerBlock,
+                TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
+                TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping,
+                TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_newTasks,
+                int * newTasksCnt)
 {
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int pivot;
-
-    const int myBegin = begin + elemPerBlock * blockIdx.x;
-    const int myEnd = TNL::min(end - 1, myBegin + elemPerBlock); //important, pivot is at the end
+    static __shared__ int myTaskIdx;
+    static __shared__ TASK myTask;
+    static __shared__ bool writePivot;
 
     if(threadIdx.x == 0)
-        pivot = arr[pivotIdx];
+    {
+        myTaskIdx = cuda_blockToTaskMapping[blockIdx.x];
+        myTask = cuda_tasks[myTaskIdx];
+        pivot = arr[myTask.pivotPos];
+        writePivot = false;
+    }
     __syncthreads();
+
+    const int myBegin = myTask.arrBegin + elemPerBlock * (blockIdx.x - myTask.firstBlock);
+    const int myEnd = TNL::min(myTask.arrEnd, myBegin + elemPerBlock);
 
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);
@@ -54,23 +68,52 @@ __global__ void cudaPartition(CudaArrayView arr, int begin, int end,
     int smallerOffset = blockInclusivePrefixSum(smaller);
     int biggerOffset = blockInclusivePrefixSum(bigger);
 
-    if (threadIdx.x == blockDim.x - 1)
+    if (threadIdx.x == blockDim.x - 1) //last thread in block has sum of all values
     {
-        smallerStart = atomicAdd(auxBeginIdx, smallerOffset);
-        biggerStart = atomicAdd(auxEndIdx, -biggerOffset) - biggerOffset;
+        smallerStart = atomicAdd(&(cuda_tasks[myTaskIdx].auxBeginIdx), smallerOffset);
+        biggerStart = atomicAdd(&(cuda_tasks[myTaskIdx].auxEndIdx), -biggerOffset) - biggerOffset;
     }
     __syncthreads();
 
-    copyData(arr, myBegin, myEnd, pivot, aux, smallerStart + smallerOffset - smaller, biggerStart + biggerOffset - bigger);
+    int destSmaller = smallerStart + smallerOffset - smaller;
+    int destBigger = biggerStart + biggerOffset - bigger;
+    copyData(arr, myBegin, myEnd, aux, destSmaller, destBigger, pivot);
 
+    if(threadIdx.x == 0 && atomicAdd(&(cuda_tasks[myTaskIdx].blockCount), -1) == 1)
+    {
+        writePivot = true;
+        myTask = cuda_tasks[myTaskIdx];
+    }
+    __syncthreads();
+
+    if(!writePivot)
+        return;
+    
+    for(int i = myTask.auxBeginIdx + threadIdx.x; i < myTask.auxEndIdx; i+= blockDim.x)
+        aux[i] = pivot;
+
+    //only works if aux array is as big as input array
     if(threadIdx.x == 0)
     {
-        if( atomicAdd(blockCount, -1) == 1)
+        if(myTask.auxBeginIdx - myTask.arrBegin > 1)
         {
-            *newPivotIdx = (*auxEndIdx) - 1;
-            aux[*newPivotIdx] = pivot;
+            int newTaskIdx = atomicAdd(newTasksCnt, 1);
+            cuda_newTasks[newTaskIdx] = TASK(
+                    myTask.arrBegin, myTask.auxBeginIdx, 
+                    myTask.arrBegin, myTask.auxBeginIdx,
+                    myTask.auxBeginIdx - 1);
+        }
+
+        if(myTask.arrEnd - myTask.auxEndIdx > 1)
+        {
+            int newTaskIdx = atomicAdd(newTasksCnt, 1);
+            cuda_newTasks[newTaskIdx] = TASK(
+                    myTask.auxEndIdx, myTask.arrEnd, 
+                    myTask.auxEndIdx, myTask.arrEnd, 
+                    myTask.arrEnd - 1);
         }
     }
+
 }
 
 //-----------------------------------------------------------
@@ -80,8 +123,6 @@ class QUICKSORT
     const int maxTasks = 1<<20;
 
     CudaArrayView arr;
-    int begin, end;
-    int size;
     TNL::Containers::Array<int, TNL::Devices::Cuda> aux;
 
     TNL::Containers::Array<TASK, TNL::Devices::Host> host_tasks;
@@ -93,6 +134,7 @@ class QUICKSORT
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
 
     //--------------------------------------------------------------------------------------
+public:
 
     int getSetsNeeded()
     {
@@ -106,22 +148,19 @@ class QUICKSORT
         return TNL::Algorithms::Reduction<TNL::Devices::Host>::reduce(0, tasksAmount, reduction, fetch, 0);
     }
     
-    std::pair<int, int> calcConfig()
+    int getBlockSize()
     {
         int setsNeeded = getSetsNeeded();
 
         if(setsNeeded <= maxBlocks)
-            return {setsNeeded, threadsPerBlock};
+            return threadsPerBlock;
 
         int setsPerBlock = setsNeeded / maxBlocks + 1; //+1 to spread out task of the last block
-        int elemPerBlock = setsPerBlock * threadsPerBlock;
-        int blocks = size / elemPerBlock + (size % elemPerBlock != 0);
-        return {blocks, elemPerBlock};
+        return setsPerBlock * threadsPerBlock;
     }
 
-    int initTasks(std::pair<int, int> blocks_elemPerBlock)
+    int initTasks(int elemPerBlock)
     {
-        int elemPerBlock = blocks_elemPerBlock.second;
         auto host_tasksView = host_tasks.getView();
         int blockToTaskMapping_Cnt = 0;
 
@@ -144,25 +183,16 @@ class QUICKSORT
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Host >::
         copy(cuda_blockToTaskMapping.getData(), host_blockToTaskMapping.getData(), host_blockToTaskMapping.getSize());
 
-        if(blockToTaskMapping_Cnt != blocks_elemPerBlock.first)
-        {
-            std::cerr << "blockToTaskMapping_Cnt != blocks_elemPerBlock" << std::endl;
-            class INVALID_CONFIG{};
-            throw INVALID_CONFIG();
-        }
-
         return blockToTaskMapping_Cnt;
     }
 
-public:
-    QUICKSORT(CudaArrayView arr, int begin, int end)
-        : arr(arr.getView()), begin(begin), end(end),
-        size(end - begin), aux(size),
+    QUICKSORT(CudaArrayView arr)
+        : arr(arr.getView()), aux(arr.getSize()),
         host_tasks(maxTasks), cuda_tasks(maxTasks), newTasks(maxTasks),
         host_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping(maxBlocks)
     {
-        int pivotIdx = end - 1;
-        host_tasks[0] = TASK(begin, end, 0, size, pivotIdx);
+        int pivotIdx = arr.getSize() - 1;
+        host_tasks[0] = TASK(0, arr.getSize(), 0, arr.getSize(), pivotIdx);
         tasksAmount = 1;
     }
 
@@ -170,8 +200,8 @@ public:
     {
         while(tasksAmount > 0)
         {
-            std::pair<int, int> blocks_elemPerBlock = calcConfig();
-            int blocksCnt = initTasks(blocks_elemPerBlock);
+            int elemPerBlock = getBlockSize();
+            int blocksCnt = initTasks(elemPerBlock);
 
             /*
             partition(arr, aux.getView(),
@@ -179,7 +209,7 @@ public:
                 newTasks.getView());
             */
            
-            processTasks();
+            //processTasks();
         }
 
         //2nd phase to finish
@@ -191,5 +221,6 @@ public:
 
 void quicksort(CudaArrayView arr)
 {
-    quicksort(arr, 0, arr.getSize());
+    //quicksort(arr, 0, arr.getSize());
+    return;
 }

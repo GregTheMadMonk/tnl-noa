@@ -4,12 +4,14 @@
 
 #include <iostream>
 #include <algorithm>
+#include <numeric>
 using namespace std;
 
 int main()
 {
     vector<int> vec(19);
-    for(auto & x : vec) x = rand()%30;
+    iota(vec.begin(), vec.end(), 0);
+    random_shuffle(vec.begin(), vec.end());
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> arr(vec);
     auto view = arr.getView();
