@@ -94,7 +94,27 @@ segmentsReduction( const OffsetsView& offsets,
             aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
         keeper( segmentIdx, aux );
     };
-    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+
+     if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+    {
+#ifdef HAVE_OPENMP
+        #pragma omp parallel for firstprivate( l ) schedule( dynamic, 100 ), if( Devices::Host::isOMPEnabled() )
+#endif
+        for( Index segmentIdx = first; segmentIdx < last; segmentIdx ++ )
+            l( segmentIdx, args... );
+        /*{
+            const IndexType begin = offsets[ segmentIdx ];
+            const IndexType end = offsets[ segmentIdx + 1 ];
+            Real aux( zero );
+            IndexType localIdx( 0 );
+            bool compute( true );
+            for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+                aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+            keeper( segmentIdx, aux );
+        }*/
+    }
+    else
+        Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
 }
       } // namespace Segments
    }  // namespace Algorithms
