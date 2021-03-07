@@ -115,28 +115,37 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     }
 }
 
-__global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks, int *firstAvailBlock, int elemPerBlock,
+__global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
+                        int taskAmount, int elemPerBlock, int *firstAvailBlock,
                         TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping)
 {
     static __shared__ int avail;
 
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-    auto &task = cuda_tasks[i];
-    int size = task.arrEnd - task.arrBegin;
-    int blocksNeeded = size / elemPerBlock + (size % elemPerBlock != 0);
+    int blocksNeeded = 0;
+
+    if(i < taskAmount)
+    {
+        auto task = cuda_tasks[i];
+        int size = task.arrEnd - task.arrBegin;
+        blocksNeeded = size / elemPerBlock + (size % elemPerBlock != 0);
+    }
 
     int blocksNeeded_total = blockInclusivePrefixSum(blocksNeeded);
     if(threadIdx.x == blockDim.x - 1)
         avail = atomicAdd(firstAvailBlock, blocksNeeded_total);
     __syncthreads();
         
-    int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
+    if(i < taskAmount)
+    {
+        int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
 
-    task.firstBlock = myFirstAvailBlock;
-    task.blockCount = blocksNeeded;
+        cuda_tasks[i].firstBlock = myFirstAvailBlock;
+        cuda_tasks[i].blockCount = blocksNeeded;
 
-    for (int set = 0; set < blocksNeeded; set++)
-        cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
+        for (int set = 0; set < blocksNeeded; set++)
+            cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
+    }
 }
 
 //-----------------------------------------------------------
@@ -215,8 +224,11 @@ public:
         int threads = min(tasksAmount, 512);
         int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
         cuda_blockToTaskMapping_Cnt = 0;
-        cudaInitTask<<<blocks,threads>>>(cuda_tasks.getView(), cuda_blockToTaskMapping_Cnt.getData(), 
-            elemPerBlock, cuda_blockToTaskMapping.getView());
+
+        cudaInitTask<<<blocks,threads>>>(
+            cuda_tasks.getView(), tasksAmount, elemPerBlock,
+            cuda_blockToTaskMapping_Cnt.getData(), 
+            cuda_blockToTaskMapping.getView());
 
         cuda_newTasksAmount = 0;
         cudaDeviceSynchronize();
