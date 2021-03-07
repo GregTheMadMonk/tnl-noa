@@ -3,7 +3,7 @@
 #include <TNL/Containers/Array.h>
 #include "reduction.cuh"
 #include "task.h"
-#include <utility>
+#include <iostream>
 
 #define deb(x) std::cout << #x << " = " << x << std::endl;
 
@@ -59,11 +59,12 @@ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerBlock,
     }
     __syncthreads();
 
+    //only works if consecutive blocks work on the same task
     const int myBegin = myTask.arrBegin + elemPerBlock * (blockIdx.x - myTask.firstBlock);
     const int myEnd = TNL::min(myTask.arrEnd, myBegin + elemPerBlock);
 
     int smaller = 0, bigger = 0;
-    cmpElem(arr, myBegin, myEnd, pivot, smaller, bigger);
+    cmpElem(arr, myBegin, myEnd, smaller, bigger, pivot);
 
     int smallerOffset = blockInclusivePrefixSum(smaller);
     int biggerOffset = blockInclusivePrefixSum(bigger);
@@ -117,10 +118,11 @@ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerBlock,
 }
 
 //-----------------------------------------------------------
+const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
+const int maxTasks = 1<<20;
+
 class QUICKSORT
 {
-    static const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
-    const int maxTasks = 1<<20;
 
     CudaArrayView arr;
     TNL::Containers::Array<int, TNL::Devices::Cuda> aux;
@@ -128,6 +130,7 @@ class QUICKSORT
     TNL::Containers::Array<TASK, TNL::Devices::Host> host_tasks;
     TNL::Containers::Array<TASK, TNL::Devices::Cuda> cuda_tasks;
     TNL::Containers::Array<TASK, TNL::Devices::Cuda> newTasks;
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount;
     int tasksAmount;
 
     TNL::Containers::Array<int, TNL::Devices::Host> host_blockToTaskMapping;
@@ -136,9 +139,9 @@ class QUICKSORT
     //--------------------------------------------------------------------------------------
 public:
 
-    int getSetsNeeded()
+    int getSetsNeeded() const
     {
-        auto view = host_tasks.getView();
+        auto view = host_tasks.getConstView();
         auto fetch = [=] __cuda_callable__ (int i) {
             auto task = view.getElement(i);
             int size = task.arrEnd - task.arrBegin;
@@ -148,7 +151,7 @@ public:
         return TNL::Algorithms::Reduction<TNL::Devices::Host>::reduce(0, tasksAmount, reduction, fetch, 0);
     }
     
-    int getBlockSize()
+    int getBlockSize() const
     {
         int setsNeeded = getSetsNeeded();
 
@@ -178,17 +181,31 @@ public:
         }
 
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Host >::
-        copy(cuda_tasks.getData(), host_tasks.getData(), host_tasks.getSize());
+        copy(cuda_tasks.getData(), host_tasks.getData(), tasksAmount);
 
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Host >::
-        copy(cuda_blockToTaskMapping.getData(), host_blockToTaskMapping.getData(), host_blockToTaskMapping.getSize());
-
+        copy(cuda_blockToTaskMapping.getData(), host_blockToTaskMapping.getData(), blockToTaskMapping_Cnt);
+        cuda_newTasksAmount = 0;
         return blockToTaskMapping_Cnt;
     }
 
-    QUICKSORT(CudaArrayView arr)
-        : arr(arr.getView()), aux(arr.getSize()),
-        host_tasks(maxTasks), cuda_tasks(maxTasks), newTasks(maxTasks),
+    int processNewTasks()
+    {
+        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda >::
+        copy(arr.getData(), aux.getData(), aux.getSize());
+
+        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::
+        copy(host_tasks.getData(), newTasks.getData(), newTasks.getSize());
+
+        return tasksAmount = cuda_newTasksAmount.getElement(0);
+    }
+
+    //-----------------------------------------------------
+
+    QUICKSORT(CudaArrayView _arr)
+        : arr(_arr), aux(arr.getSize()),
+        host_tasks(maxTasks), cuda_tasks(maxTasks),
+        newTasks(maxTasks), cuda_newTasksAmount(1),
         host_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping(maxBlocks)
     {
         int pivotIdx = arr.getSize() - 1;
@@ -203,16 +220,13 @@ public:
             int elemPerBlock = getBlockSize();
             int blocksCnt = initTasks(elemPerBlock);
 
-            /*
-            partition(arr, aux.getView(),
-                cuda_tasks.getView(), cuda_blockToTaskMapping.getView()
-                newTasks.getView());
-            */
+            cudaPartition<<<blocksCnt, threadsPerBlock>>>
+                (arr, aux.getView(), elemPerBlock,
+                cuda_tasks.getView(), cuda_blockToTaskMapping.getView(),
+                newTasks.getView(), cuda_newTasksAmount.getData());
            
-            //processTasks();
+           tasksAmount = processNewTasks();
         }
-
-        //2nd phase to finish
     }
 
 };
@@ -221,6 +235,7 @@ public:
 
 void quicksort(CudaArrayView arr)
 {
-    //quicksort(arr, 0, arr.getSize());
+    QUICKSORT sorter(arr);
+    sorter.sort();
     return;
 }
