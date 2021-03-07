@@ -191,9 +191,8 @@ public:
                 cuda_newTasks.getView(), cuda_newTasksAmount.getData());
             
             tasksAmount = processNewTasks();
-            cudaDeviceSynchronize();
-
         }
+        cudaDeviceSynchronize();
     }
 
     int getSetsNeeded() const
@@ -231,7 +230,6 @@ public:
             cuda_blockToTaskMapping.getView());
 
         cuda_newTasksAmount = 0;
-        cudaDeviceSynchronize();
         return cuda_blockToTaskMapping_Cnt.getElement(0);
     }
 
