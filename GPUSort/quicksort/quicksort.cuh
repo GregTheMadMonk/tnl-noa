@@ -118,16 +118,25 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
 __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks, int *firstAvailBlock, int elemPerBlock,
                         TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping)
 {
+    static __shared__ int avail;
+
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     auto &task = cuda_tasks[i];
     int size = task.arrEnd - task.arrBegin;
     int blocksNeeded = size / elemPerBlock + (size % elemPerBlock != 0);
-    int avail = atomicAdd(firstAvailBlock, blocksNeeded);
-    task.firstBlock = avail;
+
+    int blocksNeeded_total = blockInclusivePrefixSum(blocksNeeded);
+    if(threadIdx.x == blockDim.x - 1)
+        avail = atomicAdd(firstAvailBlock, blocksNeeded_total);
+    __syncthreads();
+        
+    int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
+
+    task.firstBlock = myFirstAvailBlock;
     task.blockCount = blocksNeeded;
 
     for (int set = 0; set < blocksNeeded; set++)
-        cuda_blockToTaskMapping[avail++] = i;
+        cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
 }
 
 //-----------------------------------------------------------
