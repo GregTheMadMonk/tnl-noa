@@ -90,12 +90,15 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
         return;
 
     for (int i = myTask.auxBeginIdx + threadIdx.x; i < myTask.auxEndIdx; i += blockDim.x)
+    {
+        arr[i] = pivot;
         aux[i] = pivot;
+    }
 
     //only works if aux array is as big as input array
     if (threadIdx.x == 0)
     {
-        if (myTask.auxBeginIdx - myTask.arrBegin > 1)
+        if (myTask.auxBeginIdx - myTask.arrBegin > 0)
         {
             int newTaskIdx = atomicAdd(newTasksCnt, 1);
             cuda_newTasks[newTaskIdx] = TASK(
@@ -104,7 +107,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
                 aux[myTask.auxBeginIdx - 1]);
         }
 
-        if (myTask.arrEnd - myTask.auxEndIdx > 1)
+        if (myTask.arrEnd - myTask.auxEndIdx > 0)
         {
             int newTaskIdx = atomicAdd(newTasksCnt, 1);
             cuda_newTasks[newTaskIdx] = TASK(
@@ -165,7 +168,7 @@ class QUICKSORT
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
-
+    int iteration = 0;
     //--------------------------------------------------------------------------------------
 public:
     QUICKSORT(CudaArrayView _arr)
@@ -186,18 +189,36 @@ public:
             int elemPerBlock = getBlockSize();
             int blocksCnt = initTasks(elemPerBlock);
 
-            cudaPartition<<<blocksCnt, threadsPerBlock>>>(arr, aux.getView(), elemPerBlock,
-                cuda_tasks.getView(), cuda_blockToTaskMapping.getView(),
-                cuda_newTasks.getView(), cuda_newTasksAmount.getData());
+            if(iteration%2 == 0)
+            {
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(arr, aux.getView(), elemPerBlock,
+                    cuda_tasks.getView(), cuda_blockToTaskMapping.getView(),
+                    cuda_newTasks.getView(), cuda_newTasksAmount.getData());
+            }
+            else
+            {
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(aux.getView(), arr, elemPerBlock,
+                    cuda_newTasks.getView(), cuda_blockToTaskMapping.getView(),
+                    cuda_tasks.getView(), cuda_newTasksAmount.getData());
+            }
             
             tasksAmount = processNewTasks();
+
+            iteration++;
         }
+
+        if(iteration%2)
+        {
+            TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
+            copy(arr.getData(), aux.getData(), aux.getSize());
+        }
+
         cudaDeviceSynchronize();
     }
 
     int getSetsNeeded() const
     {
-        auto view = cuda_tasks.getConstView();
+        auto view = iteration%2 == 0? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
         auto fetch = [=] __cuda_callable__ (int i) {
             auto & task = view[i];
             int size = task.arrEnd - task.arrBegin;
@@ -224,10 +245,20 @@ public:
         int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
         cuda_blockToTaskMapping_Cnt = 0;
 
-        cudaInitTask<<<blocks,threads>>>(
-            cuda_tasks.getView(), tasksAmount, elemPerBlock,
-            cuda_blockToTaskMapping_Cnt.getData(), 
-            cuda_blockToTaskMapping.getView());
+        if(iteration%2 == 0)
+        {
+            cudaInitTask<<<blocks,threads>>>(
+                cuda_tasks.getView(), tasksAmount, elemPerBlock,
+                cuda_blockToTaskMapping_Cnt.getData(), 
+                cuda_blockToTaskMapping.getView());
+        }
+        else
+        {
+            cudaInitTask<<<blocks,threads>>>(
+                cuda_newTasks.getView(), tasksAmount, elemPerBlock,
+                cuda_blockToTaskMapping_Cnt.getData(), 
+                cuda_blockToTaskMapping.getView());
+        }
 
         cuda_newTasksAmount = 0;
         return cuda_blockToTaskMapping_Cnt.getElement(0);
@@ -235,14 +266,16 @@ public:
 
     int processNewTasks()
     {
+        /*
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
             copy(arr.getData(), aux.getData(), aux.getSize());
-
+        */
         tasksAmount = cuda_newTasksAmount.getElement(0);
 
+        /*
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda>::
             copy(cuda_tasks.getData(), cuda_newTasks.getData(), tasksAmount);
-
+        */
         return tasksAmount;
     }
 
