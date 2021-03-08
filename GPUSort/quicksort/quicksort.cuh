@@ -8,6 +8,7 @@
 #define deb(x) std::cout << #x << " = " << x << std::endl;
 
 using CudaArrayView = TNL::Containers::ArrayView<int, TNL::Devices::Cuda>;
+using CudaTaskArray = TNL::Containers::Array<TASK, TNL::Devices::Cuda>;
 
 __device__ void cmpElem(CudaArrayView arr, int myBegin, int myEnd,
                         int &smaller, int &bigger,
@@ -38,10 +39,12 @@ __device__ void copyData(CudaArrayView arr, int myBegin, int myEnd,
 }
 
 __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerBlock,
-                              TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
                               TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping,
+                              TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_newTasks,
-                              int *newTasksCnt)
+                              int *newTasksCnt,
+                              TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_almostDoneTasks,
+                              int *almostDoneTasksCnt, int minElemPerBlock)
 {
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int pivot;
@@ -98,7 +101,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     //only works if aux array is as big as input array
     if (threadIdx.x == 0)
     {
-        if (myTask.auxBeginIdx - myTask.arrBegin > 0)
+        if (myTask.auxBeginIdx - myTask.arrBegin > minElemPerBlock)
         {
             int newTaskIdx = atomicAdd(newTasksCnt, 1);
             cuda_newTasks[newTaskIdx] = TASK(
@@ -106,11 +109,27 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
                 myTask.arrBegin, myTask.auxBeginIdx,
                 aux[myTask.auxBeginIdx - 1]);
         }
+        else if (myTask.auxBeginIdx - myTask.arrBegin > 1)
+        {
+            int newTaskIdx = atomicAdd(almostDoneTasksCnt, 1);
+            cuda_almostDoneTasks[newTaskIdx] = TASK(
+                myTask.arrBegin, myTask.auxBeginIdx,
+                myTask.arrBegin, myTask.auxBeginIdx,
+                aux[myTask.auxBeginIdx - 1]);
+        }
 
-        if (myTask.arrEnd - myTask.auxEndIdx > 0)
+        if (myTask.arrEnd - myTask.auxEndIdx > minElemPerBlock)
         {
             int newTaskIdx = atomicAdd(newTasksCnt, 1);
             cuda_newTasks[newTaskIdx] = TASK(
+                myTask.auxEndIdx, myTask.arrEnd,
+                myTask.auxEndIdx, myTask.arrEnd,
+                aux[myTask.arrEnd - 1]);
+        }
+        else if (myTask.arrEnd - myTask.auxEndIdx > 1)
+        {
+            int newTaskIdx = atomicAdd(almostDoneTasksCnt, 1);
+            cuda_almostDoneTasks[newTaskIdx] = TASK(
                 myTask.auxEndIdx, myTask.arrEnd,
                 myTask.auxEndIdx, myTask.arrEnd,
                 aux[myTask.arrEnd - 1]);
@@ -119,15 +138,15 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
 }
 
 __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
-                        int taskAmount, int elemPerBlock, int *firstAvailBlock,
-                        TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping)
+                             int taskAmount, int elemPerBlock, int *firstAvailBlock,
+                             TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping)
 {
     static __shared__ int avail;
 
     int i = blockDim.x * blockIdx.x + threadIdx.x;
     int blocksNeeded = 0;
 
-    if(i < taskAmount)
+    if (i < taskAmount)
     {
         auto task = cuda_tasks[i];
         int size = task.arrEnd - task.arrBegin;
@@ -135,11 +154,11 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
     }
 
     int blocksNeeded_total = blockInclusivePrefixSum(blocksNeeded);
-    if(threadIdx.x == blockDim.x - 1)
+    if (threadIdx.x == blockDim.x - 1)
         avail = atomicAdd(firstAvailBlock, blocksNeeded_total);
     __syncthreads();
-        
-    if(i < taskAmount)
+
+    if (i < taskAmount)
     {
         int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
 
@@ -154,26 +173,29 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
 const int maxTasks = 1 << 20;
+const int maxBitonicArrSize = 512;
 
 class QUICKSORT
 {
     CudaArrayView arr;
     TNL::Containers::Array<int, TNL::Devices::Cuda> aux;
 
-    TNL::Containers::Array<TASK, TNL::Devices::Cuda> cuda_tasks;
-    TNL::Containers::Array<TASK, TNL::Devices::Cuda> cuda_newTasks;
+    CudaTaskArray cuda_tasks, cuda_newTasks, cuda_AlmostDoneTasks;
 
-    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount; //is in reality 1 integer
-    int tasksAmount;
+    //is in reality 2 integer, [0] is newlyCreatedTasks, [1] are almostDoneTasks
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount;
+    int tasksAmount; //counter for Host
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
+
     int iteration = 0;
     //--------------------------------------------------------------------------------------
 public:
     QUICKSORT(CudaArrayView _arr)
         : arr(_arr), aux(arr.getSize()),
-          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_newTasksAmount(1),
+          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_AlmostDoneTasks(maxTasks), //todo: check size
+          cuda_newTasksAmount(2),
           cuda_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping_Cnt(1)
     {
         int pivot = arr.getElement(arr.getSize() - 1);
@@ -181,36 +203,46 @@ public:
         tasksAmount = 1;
     }
 
-
     void sort()
     {
-        while (tasksAmount > 0)
+        while (tasksAmount > 0 && tasksAmount <= maxTasks)
         {
             int elemPerBlock = getBlockSize();
             int blocksCnt = initTasks(elemPerBlock);
 
-            if(iteration%2 == 0)
+            if (iteration % 2 == 0)
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock>>>(arr, aux.getView(), elemPerBlock,
-                    cuda_tasks.getView(), cuda_blockToTaskMapping.getView(),
-                    cuda_newTasks.getView(), cuda_newTasksAmount.getData());
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
+                    arr, aux.getView(),
+                    elemPerBlock,
+                    cuda_blockToTaskMapping.getView(),
+                    cuda_tasks.getView(), cuda_newTasks.getView(),
+                    cuda_newTasksAmount.getData(),
+                    cuda_AlmostDoneTasks.getView(), cuda_newTasksAmount.getData() + 1, maxBitonicArrSize);
             }
             else
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock>>>(aux.getView(), arr, elemPerBlock,
-                    cuda_newTasks.getView(), cuda_blockToTaskMapping.getView(),
-                    cuda_tasks.getView(), cuda_newTasksAmount.getData());
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
+                    aux.getView(), arr, //swapped order to write back and forth without copying
+                    elemPerBlock,
+                    cuda_blockToTaskMapping.getView(),
+                    cuda_newTasks.getView(), cuda_tasks.getView(), //swapped order to write back and forth without copying
+                    cuda_newTasksAmount.getData(),
+                    cuda_AlmostDoneTasks.getView(), cuda_newTasksAmount.getData() + 1, maxBitonicArrSize);
             }
-            
+
             tasksAmount = processNewTasks();
 
             iteration++;
         }
 
-        if(iteration%2)
+        //insert phase 2 sort for almostDoneTasks
+
+        //todo: is this needed after 2nd phase?
+        if (iteration % 2)
         {
             TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
-            copy(arr.getData(), aux.getData(), aux.getSize());
+                copy(arr.getData(), aux.getData(), aux.getSize());
         }
 
         cudaDeviceSynchronize();
@@ -218,13 +250,13 @@ public:
 
     int getSetsNeeded() const
     {
-        auto view = iteration%2 == 0? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
-        auto fetch = [=] __cuda_callable__ (int i) {
-            auto & task = view[i];
+        auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
+        auto fetch = [=] __cuda_callable__(int i) {
+            auto &task = view[i];
             int size = task.arrEnd - task.arrBegin;
-            return size / threadsPerBlock + (size % threadsPerBlock != 0); 
+            return size / threadsPerBlock + (size % threadsPerBlock != 0);
         };
-        auto reduction = [] __cuda_callable__(int a, int b) {return a + b;};
+        auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
         return TNL::Algorithms::Reduction<TNL::Devices::Cuda>::reduce(0, tasksAmount, reduction, fetch, 0);
     }
 
@@ -245,40 +277,30 @@ public:
         int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
         cuda_blockToTaskMapping_Cnt = 0;
 
-        if(iteration%2 == 0)
+        if (iteration % 2 == 0)
         {
-            cudaInitTask<<<blocks,threads>>>(
+            cudaInitTask<<<blocks, threads>>>(
                 cuda_tasks.getView(), tasksAmount, elemPerBlock,
-                cuda_blockToTaskMapping_Cnt.getData(), 
+                cuda_blockToTaskMapping_Cnt.getData(),
                 cuda_blockToTaskMapping.getView());
         }
         else
         {
-            cudaInitTask<<<blocks,threads>>>(
+            cudaInitTask<<<blocks, threads>>>(
                 cuda_newTasks.getView(), tasksAmount, elemPerBlock,
-                cuda_blockToTaskMapping_Cnt.getData(), 
+                cuda_blockToTaskMapping_Cnt.getData(),
                 cuda_blockToTaskMapping.getView());
         }
 
-        cuda_newTasksAmount = 0;
+        cuda_newTasksAmount.setElement(0, 0);
         return cuda_blockToTaskMapping_Cnt.getElement(0);
     }
 
     int processNewTasks()
     {
-        /*
-        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
-            copy(arr.getData(), aux.getData(), aux.getSize());
-        */
         tasksAmount = cuda_newTasksAmount.getElement(0);
-
-        /*
-        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda>::
-            copy(cuda_tasks.getData(), cuda_newTasks.getData(), tasksAmount);
-        */
         return tasksAmount;
     }
-
 };
 
 //-----------------------------------------------------------
