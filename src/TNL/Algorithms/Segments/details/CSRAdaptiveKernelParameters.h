@@ -15,6 +15,8 @@ namespace TNL {
       namespace Segments {
          namespace details {
 
+// This can be used for tunning the number of CUDA threads per block depending on the size of Value
+// TODO: Perform some tests
 static constexpr int CSRAdaptiveKernelParametersCudaBlockSizes[] = { 256, 256, 256, 256, 256, 256 };
 
 template< int SizeOfValue = 1,
