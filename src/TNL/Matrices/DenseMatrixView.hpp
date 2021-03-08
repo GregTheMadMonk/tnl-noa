@@ -342,7 +342,7 @@ forRows( IndexType begin, IndexType end, Function& function ) const
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
       function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ], compute );
    };
-   this->segments.forSegments( begin, end, f );
+   this->segments.forElements( begin, end, f );
 }
 
 template< typename Real,
@@ -358,7 +358,7 @@ forRows( IndexType begin, IndexType end, Function& function )
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
       function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ], compute );
    };
-   this->segments.forSegments( begin, end, f );
+   this->segments.forElements( begin, end, f );
 }
 
 template< typename Real,

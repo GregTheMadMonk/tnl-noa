@@ -300,7 +300,7 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const IndexType chunksInSlice = this->chunksInSlice;
    auto rowToChunkMapping = this->rowToChunkMapping;
@@ -353,9 +353,9 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forAll( Function& f, Args... args ) const
+forEachElement( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

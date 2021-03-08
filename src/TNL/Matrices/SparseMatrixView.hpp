@@ -601,7 +601,7 @@ forRows( IndexType begin, IndexType end, Function& function ) const
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
       return true;
    };
-   this->segments.forSegments( begin, end, f );
+   this->segments.forElements( begin, end, f );
 }
 
 template< typename Real,
@@ -627,7 +627,7 @@ forRows( IndexType begin, IndexType end, Function& function )
       else
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
-   this->segments.forSegments( begin, end, f );
+   this->segments.forElements( begin, end, f );
 }
 
 template< typename Real,

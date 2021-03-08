@@ -255,9 +255,9 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   this->getConstView().forSegments( first, last, f, args... );
+   this->getConstView().forElements( first, last, f, args... );
 }
 
 template< typename Device,
@@ -268,9 +268,9 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forAll( Function& f, Args... args ) const
+forEachElement( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

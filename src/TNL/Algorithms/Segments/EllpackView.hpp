@@ -183,7 +183,7 @@ template< typename Device,
           int Alignment >
    template< typename Function, typename... Args >
 void EllpackView< Device, Index, Organization, Alignment >::
-forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    if( Organization == RowMajorOrder )
    {
@@ -220,9 +220,9 @@ template< typename Device,
           int Alignment >
    template< typename Function, typename... Args >
 void EllpackView< Device, Index, Organization, Alignment >::
-forAll( Function& f, Args... args ) const
+forEachElement( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

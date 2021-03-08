@@ -186,7 +186,7 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 CSRView< Device, Index, Kernel >::
-forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto offsetsView = this->offsets;
    auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
@@ -206,9 +206,9 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 CSRView< Device, Index, Kernel >::
-forAll( Function& f, Args... args ) const
+forEachElement( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,
