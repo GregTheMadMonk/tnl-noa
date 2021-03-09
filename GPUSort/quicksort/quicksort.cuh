@@ -74,10 +74,13 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
     if(size <= blockDim.x*2 && myTask.blockCount == 1)
     {
         bitoniSort1stStepSharedMemory_device(
-            aux, myTask.arrBegin, myTask.arrEnd,
+            arr, myTask.arrBegin, myTask.arrEnd,
             (int*) externMem,
             Cmp
         );
+
+        for (int i = myBegin + threadIdx.x; i < myEnd; i += blockDim.x)
+            aux[i] = arr[i];
         return;
     }
 
@@ -102,7 +105,7 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
 
     //-----------------------------------------------------------
 
-    if (threadIdx.x == 0 && atomicAdd(&(cuda_tasks[myTaskIdx].blockCount), -1) == 1)
+    if (threadIdx.x == 0 && atomicAdd(&(cuda_tasks[myTaskIdx].stillWorkingCnt), -1) == 1)
     {
         writePivot = true;
         myTask = cuda_tasks[myTaskIdx]; //update auxBeginIdx, auxEndIdx value
@@ -163,7 +166,7 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
         int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
 
         cuda_tasks[i].firstBlock = myFirstAvailBlock;
-        cuda_tasks[i].blockCount = blocksNeeded;
+        cuda_tasks[i].setBlocks(blocksNeeded);
 
         for (int set = 0; set < blocksNeeded; set++)
             cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
