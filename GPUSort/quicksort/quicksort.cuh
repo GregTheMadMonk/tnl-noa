@@ -74,7 +74,7 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
     if(size <= blockDim.x*2 && myTask.blockCount == 1)
     {
         bitonicSort_Block(
-            arr.getView(myBegin, myEnd), 0, size,
+            arr.getView(myBegin, myEnd),
             (int*) externMem,
             Cmp
         );
