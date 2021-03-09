@@ -50,6 +50,23 @@ TEST(randomGenerated, smallArray_randomVal)
     }
 }
 
+
+TEST(randomGenerated, bigArray_randomVal)
+{
+    std::srand(304);
+    for(int i = 0; i < 50; i++)
+    {
+        int size = (1<<20) + (std::rand()% (1<<19));
+        std::vector<int> arr(size);
+        for(auto & x : arr) x = std::rand();
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
+
+        auto view = cudaArr.getView();
+        quicksort(view);
+        ASSERT_TRUE(is_sorted(view));
+    }
+}
+
 //----------------------------------------------------------------------------------
 
 int main(int argc, char **argv)
