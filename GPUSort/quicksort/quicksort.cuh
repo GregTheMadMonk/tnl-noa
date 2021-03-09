@@ -56,7 +56,6 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
     static __shared__ int pivot;
     static __shared__ int myTaskIdx;
     static __shared__ bool writePivot;
-    extern __shared__ int externMem[];
 
     if (threadIdx.x == 0)
     {
@@ -185,13 +184,82 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
 
 //-----------------------------------------------------------
 template<typename Function>
+__device__ void cudaQuickSort_block(CudaArrayView arr, const Function & Cmp,
+                            CudaArrayView aux, int * externMem)
+{
+    static __shared__ int pivotBegin, pivotEnd;
+    static __shared__ int pivot;
+
+    if (threadIdx.x == 0)
+        pivot = arr[arr.getSize() - 1];
+    __syncthreads();
+
+    if(arr.getSize() <= blockDim.x*2)
+    {
+        bitonicSort_Block(arr, (int*) externMem, Cmp);
+        return;
+    }
+
+    int smaller = 0, bigger = 0;
+    cmpElem(arr, 0, arr.getSize(), smaller, bigger, pivot);
+
+    int smallerOffset = blockInclusivePrefixSum(smaller);
+    int biggerOffset = blockInclusivePrefixSum(bigger);
+
+    if (threadIdx.x == blockDim.x - 1)
+    {
+        pivotBegin = smallerOffset;
+        pivotEnd = arr.getSize() - biggerOffset;
+    }
+    __syncthreads();
+
+    int destSmaller = smallerOffset - smaller;
+    int destBigger = pivotEnd  + biggerOffset - bigger;
+    copyData(arr, 0, arr.getSize(), aux, destSmaller, destBigger, pivot);
+    __syncthreads();
+
+    for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
+    {
+        if(i >= pivotBegin && i < pivotEnd)
+            arr[i] = pivot;
+        else
+            arr[i] = aux[i];
+    }
+    __syncthreads();
+
+    if(pivotBegin > 1) //left from pivot are smaller elems
+    {
+        cudaQuickSort_block(arr.getView(0, pivotBegin), Cmp,
+            aux.getView(0, pivotBegin), externMem
+        );
+    }
+
+    if(arr.getSize() - pivotEnd > 1) //right from pivot until arr.size are elem greater than pivot
+    {
+        cudaQuickSort_block(arr.getView(pivotEnd, arr.getSize()), Cmp,
+            aux.getView(pivotEnd, arr.getSize()), externMem
+        );
+    }
+
+}
+
+template<typename Function>
 __global__
 void cudaQuickSort(CudaArrayView arr, const Function & Cmp,
-                    TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
-                    int *TasksCnt)
-                    {}
+                    CudaArrayView aux,
+                    TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks)
+{
+    extern __shared__ int externMem[];
 
+    static __shared__ TASK task;
+    if(threadIdx.x == 0)
+        task = cuda_tasks[blockIdx.x];
+    __syncthreads();
 
+    cudaQuickSort_block(arr.getView(task.arrBegin, task.arrEnd), Cmp, 
+        aux.getView(task.auxBeginIdx, task.auxEndIdx), externMem
+    );
+}
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
@@ -231,7 +299,6 @@ public:
     template<typename Function>
     void sort(const Function & Cmp)
     {
-        const int auxMemByteSize = minElemPerBlock* sizeof(int);
         while (tasksAmount > 0 && totalTask < maxTasks)
         {
             int elemPerBlock = getElemPerBlock();
@@ -239,7 +306,7 @@ public:
 
             if (iteration % 2 == 0)
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock, auxMemByteSize>>>(
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
                     arr, Cmp,
                     aux.getView(), 
                     cuda_blockToTaskMapping.getView(),
@@ -251,7 +318,7 @@ public:
             }
             else
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock, auxMemByteSize>>>(
+                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
                     arr, Cmp,
                     aux.getView(), 
                     cuda_blockToTaskMapping.getView(),
@@ -267,7 +334,7 @@ public:
             iteration++;
         }        
 
-        _2ndPhase();
+        _2ndPhase(Cmp);
 
         cudaDeviceSynchronize();
     }
@@ -330,15 +397,18 @@ public:
         return tasksAmount;
     }
 
-    void _2ndPhase()
+    template<typename Function>
+    void _2ndPhase(const Function & Cmp)
     {
         if(totalTask == 0) return;
 
-        init2ndPhase();
+        int blocks = init2ndPhase();
 
+        int auxMem = threadsPerBlock*2*sizeof(int);
+        cudaQuickSort<<<blocks, threadsPerBlock, auxMem>>>(arr, Cmp, aux.getView(), cuda_2ndPhaseTasks);
     }
 
-    void init2ndPhase()
+    int init2ndPhase()
     {
         TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
             copy(cuda_2ndPhaseTasks.getData() + (totalTask - tasksAmount),
@@ -346,16 +416,7 @@ public:
                 tasksAmount
             );
 
-        int threads = min(totalTask, threadsPerBlock);
-        int blocks = totalTask / threads + (totalTask % threads != 0);
-
-        cuda_blockToTaskMapping_Cnt = 0;
-
-        cudaInitTask<<<blocks, threads>>>(cuda_2ndPhaseTasks.getView(),
-            totalTask, INT_MAX,
-            cuda_blockToTaskMapping_Cnt.getData(),
-            cuda_blockToTaskMapping.getView()
-        );
+        return totalTask;
     }
 };
 
