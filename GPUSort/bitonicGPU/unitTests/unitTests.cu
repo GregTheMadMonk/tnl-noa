@@ -195,6 +195,51 @@ TEST(sortRange, secondHalf)
     ASSERT_TRUE(arr[s-1] == -1); 
 }
 
+TEST(sortRange, middle)
+{
+    std::srand(8705);
+
+    std::vector<int> arr(20);
+    int s = 5, e = 15;
+    for(size_t i = 0; i < s; i++) arr[i] = -1;
+    for(size_t i = e; i < 20; i++) arr[i] = -1;
+
+    for(size_t i = s; i < e; i++) arr[i] = std::rand();
+
+    bitonicSort(arr, s, e);
+
+    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
+    ASSERT_TRUE(arr[0] == -1); 
+    ASSERT_TRUE(arr.back() == -1); 
+    ASSERT_TRUE(arr[s-1] == -1); 
+    ASSERT_TRUE(arr[e] == -1); 
+}
+
+TEST(sortRange, middleMultiBlock)
+{
+    std::srand(4513);
+    int size = 1<<20;
+    int s = 2000, e = size - 1512;
+
+    std::vector<int> arr(size);
+    for(size_t i = 0; i < s; i++) arr[i] = -1;
+    for(size_t i = e; i < size; i++) arr[i] = -1;
+
+    for(size_t i = s; i < e; i++) arr[i] = std::rand();
+
+    bitonicSort(arr, s, e);
+
+    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
+
+    ASSERT_TRUE(arr[0] == -1); 
+    ASSERT_TRUE(arr[std::rand() % s] == -1); 
+    ASSERT_TRUE(arr[s-1] == -1); 
+
+    ASSERT_TRUE(arr[e] == -1);
+    ASSERT_TRUE(arr[e + (std::rand() % (size - e))] == -1);
+    ASSERT_TRUE(arr.back() == -1); 
+}
+
 
 //----------------------------------------------------------------------------------
 
