@@ -42,21 +42,19 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
                               TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_newTasks,
-                              int *newTasksCnt,
-                              TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_almostDoneTasks,
-                              int *almostDoneTasksCnt, int minElemPerBlock)
+                              int *newTasksCnt)
 {
+    static __shared__ TASK myTask;
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int pivot;
     static __shared__ int myTaskIdx;
-    static __shared__ TASK myTask;
     static __shared__ bool writePivot;
 
     if (threadIdx.x == 0)
     {
         myTaskIdx = cuda_blockToTaskMapping[blockIdx.x];
         myTask = cuda_tasks[myTaskIdx];
-        pivot = myTask.pivot;
+        pivot = arr[myTask.arrEnd - 1];
         writePivot = false;
     }
     __syncthreads();
@@ -64,6 +62,8 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     //only works if consecutive blocks work on the same task
     const int myBegin = myTask.arrBegin + elemPerBlock * (blockIdx.x - myTask.firstBlock);
     const int myEnd = TNL::min(myTask.arrEnd, myBegin + elemPerBlock);
+
+    //-------------------------------------------------------------------------
 
     int smaller = 0, bigger = 0;
     cmpElem(arr, myBegin, myEnd, smaller, bigger, pivot);
@@ -82,6 +82,8 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     int destBigger = biggerStart + biggerOffset - bigger;
     copyData(arr, myBegin, myEnd, aux, destSmaller, destBigger, pivot);
 
+    //-----------------------------------------------------------
+
     if (threadIdx.x == 0 && atomicAdd(&(cuda_tasks[myTaskIdx].blockCount), -1) == 1)
     {
         writePivot = true;
@@ -99,41 +101,25 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     }
 
     //only works if aux array is as big as input array
-    if (threadIdx.x == 0)
-    {
-        if (myTask.auxBeginIdx - myTask.arrBegin > minElemPerBlock)
-        {
-            int newTaskIdx = atomicAdd(newTasksCnt, 1);
-            cuda_newTasks[newTaskIdx] = TASK(
-                myTask.arrBegin, myTask.auxBeginIdx,
-                myTask.arrBegin, myTask.auxBeginIdx,
-                aux[myTask.auxBeginIdx - 1]);
-        }
-        else if (myTask.auxBeginIdx - myTask.arrBegin > 1)
-        {
-            int newTaskIdx = atomicAdd(almostDoneTasksCnt, 1);
-            cuda_almostDoneTasks[newTaskIdx] = TASK(
-                myTask.arrBegin, myTask.auxBeginIdx,
-                myTask.arrBegin, myTask.auxBeginIdx,
-                aux[myTask.auxBeginIdx - 1]);
-        }
+    if (threadIdx.x != 0)
+        return;
 
-        if (myTask.arrEnd - myTask.auxEndIdx > minElemPerBlock)
-        {
-            int newTaskIdx = atomicAdd(newTasksCnt, 1);
-            cuda_newTasks[newTaskIdx] = TASK(
-                myTask.auxEndIdx, myTask.arrEnd,
-                myTask.auxEndIdx, myTask.arrEnd,
-                aux[myTask.arrEnd - 1]);
-        }
-        else if (myTask.arrEnd - myTask.auxEndIdx > 1)
-        {
-            int newTaskIdx = atomicAdd(almostDoneTasksCnt, 1);
-            cuda_almostDoneTasks[newTaskIdx] = TASK(
-                myTask.auxEndIdx, myTask.arrEnd,
-                myTask.auxEndIdx, myTask.arrEnd,
-                aux[myTask.arrEnd - 1]);
-        }
+    if (myTask.auxBeginIdx - myTask.arrBegin > 0) //smaller
+    {
+        int newTaskIdx = atomicAdd(newTasksCnt, 1);
+        cuda_newTasks[newTaskIdx] = TASK(
+            myTask.arrBegin, myTask.auxBeginIdx,
+            myTask.arrBegin, myTask.auxBeginIdx
+        );
+    }
+
+    if (myTask.arrEnd - myTask.auxEndIdx > 0) //greater
+    {
+        int newTaskIdx = atomicAdd(newTasksCnt, 1);
+        cuda_newTasks[newTaskIdx] = TASK(
+            myTask.auxEndIdx, myTask.arrEnd,
+            myTask.auxEndIdx, myTask.arrEnd
+        );
     }
 }
 
@@ -171,8 +157,10 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
 }
 
 //-----------------------------------------------------------
+//-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
 const int maxTasks = 1 << 20;
+const int minElemPerBlock = threadsPerBlock*2;
 const int maxBitonicArrSize = 512;
 
 class QUICKSORT
@@ -180,10 +168,9 @@ class QUICKSORT
     CudaArrayView arr;
     TNL::Containers::Array<int, TNL::Devices::Cuda> aux;
 
-    CudaTaskArray cuda_tasks, cuda_newTasks, cuda_AlmostDoneTasks;
+    CudaTaskArray cuda_tasks, cuda_newTasks;
 
-    //is in reality 2 integer, [0] is newlyCreatedTasks, [1] are almostDoneTasks
-    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount;
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount; //is in reality 1 integer
     int tasksAmount; //counter for Host
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
@@ -194,20 +181,18 @@ class QUICKSORT
 public:
     QUICKSORT(CudaArrayView _arr)
         : arr(_arr), aux(arr.getSize()),
-          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_AlmostDoneTasks(maxTasks), //todo: check size
-          cuda_newTasksAmount(2),
+          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_newTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping_Cnt(1)
     {
-        int pivot = arr.getElement(arr.getSize() - 1);
-        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize(), pivot));
+        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize()));
         tasksAmount = 1;
     }
 
     void sort()
     {
-        while (tasksAmount > 0 && tasksAmount <= maxTasks)
+        while (tasksAmount > 0)
         {
-            int elemPerBlock = getBlockSize();
+            int elemPerBlock = getElemPerBlock();
             int blocksCnt = initTasks(elemPerBlock);
 
             if (iteration % 2 == 0)
@@ -217,8 +202,8 @@ public:
                     elemPerBlock,
                     cuda_blockToTaskMapping.getView(),
                     cuda_tasks.getView(), cuda_newTasks.getView(),
-                    cuda_newTasksAmount.getData(),
-                    cuda_AlmostDoneTasks.getView(), cuda_newTasksAmount.getData() + 1, maxBitonicArrSize);
+                    cuda_newTasksAmount.getData()
+                );
             }
             else
             {
@@ -227,8 +212,8 @@ public:
                     elemPerBlock,
                     cuda_blockToTaskMapping.getView(),
                     cuda_newTasks.getView(), cuda_tasks.getView(), //swapped order to write back and forth without copying
-                    cuda_newTasksAmount.getData(),
-                    cuda_AlmostDoneTasks.getView(), cuda_newTasksAmount.getData() + 1, maxBitonicArrSize);
+                    cuda_newTasksAmount.getData()
+                );
             }
 
             tasksAmount = processNewTasks();
@@ -254,26 +239,26 @@ public:
         auto fetch = [=] __cuda_callable__(int i) {
             auto &task = view[i];
             int size = task.arrEnd - task.arrBegin;
-            return size / threadsPerBlock + (size % threadsPerBlock != 0);
+            return size / minElemPerBlock + (size % minElemPerBlock != 0);
         };
         auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
         return TNL::Algorithms::Reduction<TNL::Devices::Cuda>::reduce(0, tasksAmount, reduction, fetch, 0);
     }
 
-    int getBlockSize() const
+    int getElemPerBlock() const
     {
         int setsNeeded = getSetsNeeded();
 
         if (setsNeeded <= maxBlocks)
-            return threadsPerBlock;
+            return minElemPerBlock;
 
         int setsPerBlock = setsNeeded / maxBlocks + 1; //+1 to spread out task of the last block
-        return setsPerBlock * threadsPerBlock;
+        return setsPerBlock * minElemPerBlock;
     }
 
     int initTasks(int elemPerBlock)
     {
-        int threads = min(tasksAmount, 512);
+        int threads = min(tasksAmount, threadsPerBlock);
         int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
         cuda_blockToTaskMapping_Cnt = 0;
 
