@@ -246,9 +246,15 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, int 
 //---------------------------------------------
 
 template <typename Value, typename Function>
-void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function & cmp)
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, int begin, int end)
 {
-    bitonicSort(arr, 0, arr.getSize(), cmp);
+    bitonicSort(arr, begin, end, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
+}
+
+template <typename Value, typename Function>
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function & Cmp)
+{
+    bitonicSort(arr, 0, arr.getSize(), Cmp);
 }
 
 template <typename Value>
@@ -258,17 +264,27 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 }
 
 //---------------------------------------------
-
 template <typename Value, typename Function>
-void bitonicSort(std::vector<Value> & vec,const Function & cmp)
+void bitonicSort(std::vector<Value> & vec, int begin, int end, const Function & Cmp)
 {
     TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
     auto view = Arr.getView();
-    bitonicSort(view, cmp);
+    bitonicSort(view, begin, end, Cmp);
 
     TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Host, TNL::Devices::Cuda >::
     copy(vec.data(), view.getData(), view.getSize());
+}
 
+template <typename Value>
+void bitonicSort(std::vector<Value> & vec, int begin, int end)
+{
+    bitonicSort(vec, begin, end, [] __cuda_callable__ (const Value & a, const Value & b) {return a < b;});
+}
+
+template <typename Value, typename Function>
+void bitonicSort(std::vector<Value> & vec, const Function & Cmp)
+{
+    bitonicSort(vec, 0, vec.size(), Cmp);
 }
 
 template <typename Value>
