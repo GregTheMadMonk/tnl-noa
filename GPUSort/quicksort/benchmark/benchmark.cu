@@ -16,7 +16,7 @@ typedef Devices::Cuda Device;
 int main()
 {
     srand(8151);
-    for(int pow = 5; pow <= 10; pow++)
+    for(int pow = 5; pow <= 23; pow++)
     {
         int size =(1<< pow);
 
