@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <numeric>
 #include <random>
+#include <iostream>
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
@@ -108,7 +109,7 @@ TEST(randomGenerated, bigArray_all0)
 
         auto view = cudaArr.getView();
         bitonicSort(view);
-        ASSERT_TRUE(true);
+        ASSERT_TRUE(is_sorted(view));
     }
 }
 
@@ -180,6 +181,19 @@ TEST(sortstdVector, stdvector)
     ASSERT_TRUE(std::is_sorted(arr.begin(), arr.end()));
 }
 
+TEST(sortRange, secondHalf)
+{
+    std::vector<int> arr(19);
+    int s = 19/2;
+    for(size_t i = 0; i < s; i++) arr[i] = -1;
+    for(size_t i = s; i < 19; i++) arr[i] = -i;
+
+    bitonicSort(arr, s, 19);
+
+    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.end()));
+    ASSERT_TRUE(arr[0] == -1); 
+    ASSERT_TRUE(arr[s-1] == -1); 
+}
 
 
 //----------------------------------------------------------------------------------
