@@ -119,19 +119,12 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
 }
 
 //---------------------------------------------
-/**
- * very similar to bitonicMergeSharedMemory
- * does bitonicMergeSharedMemory but afterwards increases monotoncSeqLen
- *  then trickles down again
- * this continues until whole sharedMem is sorted
- * */
+
 template <typename Value, typename Function>
-__global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
-                                            int begin, int end, const Function & Cmp)
+__device__ void bitoniSort1stStepSharedMemory_device(
+                TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
+                int begin, int end, Value* sharedMem, const Function & Cmp)
 {
-    extern __shared__ int externMem[];
-    
-    Value * sharedMem = (Value *)externMem;
     int sharedMemLen = 2*blockDim.x;
 
     int myBlockStart = begin + blockIdx.x * sharedMemLen;
@@ -186,6 +179,20 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
         if(copy2 < end)
             arr[copy2] = sharedMem[threadIdx.x + blockDim.x];
     }
+}
+/**
+ * very similar to bitonicMergeSharedMemory
+ * does bitonicMergeSharedMemory but afterwards increases monotoncSeqLen
+ *  then trickles down again
+ * this continues until whole sharedMem is sorted
+ * */
+template <typename Value, typename Function>
+__global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
+                                            int begin, int end, const Function & Cmp)
+{
+    extern __shared__ int externMem[];
+    
+    bitoniSort1stStepSharedMemory_device(arr, begin, end, (Value*) externMem, Cmp);
 }
 
 
