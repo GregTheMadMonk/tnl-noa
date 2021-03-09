@@ -73,17 +73,18 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
 
     if(size <= blockDim.x*2 && myTask.blockCount == 1)
     {
-        bitoniSort1stStepSharedMemory_device(
-            arr, myTask.arrBegin, myTask.arrEnd,
+        bitonicSort_Block(
+            arr.getView(myBegin, myEnd), 0, size,
             (int*) externMem,
             Cmp
         );
-
+        __syncthreads();
+        
         for (int i = myBegin + threadIdx.x; i < myEnd; i += blockDim.x)
             aux[i] = arr[i];
+        
         return;
     }
-
     //-------------------------------------------------------------------------
 
     int smaller = 0, bigger = 0;
@@ -175,7 +176,7 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
-const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
+const int threadsPerBlock = 32, maxBlocks = 1 << 14; //16k
 const int maxTasks = maxBlocks;
 const int minElemPerBlock = threadsPerBlock*2;
 
@@ -240,6 +241,7 @@ public:
             tasksAmount = processNewTasks();
 
             iteration++;
+
         }
 
         //insert phase 2 sort for almostDoneTasks
