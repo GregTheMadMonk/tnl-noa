@@ -62,6 +62,17 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     //only works if consecutive blocks work on the same task
     const int myBegin = myTask.arrBegin + elemPerBlock * (blockIdx.x - myTask.firstBlock);
     const int myEnd = TNL::min(myTask.arrEnd, myBegin + elemPerBlock);
+    const int size = myEnd - myBegin;
+
+    //-------------------------------------------------------------------------
+
+    /*
+    if(size <= blockDim.x*2 && myTask.blockCount == 1)
+    {
+        bitonicSort(arr, myTask.arrBegin, myTask.arrEnd, bitonicSortAuxMemory);
+        return;
+    }
+    */
 
     //-------------------------------------------------------------------------
 
@@ -87,7 +98,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     if (threadIdx.x == 0 && atomicAdd(&(cuda_tasks[myTaskIdx].blockCount), -1) == 1)
     {
         writePivot = true;
-        myTask = cuda_tasks[myTaskIdx];
+        myTask = cuda_tasks[myTaskIdx]; //update auxBeginIdx, auxEndIdx value
     }
     __syncthreads();
 
@@ -95,16 +106,12 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
         return;
 
     for (int i = myTask.auxBeginIdx + threadIdx.x; i < myTask.auxEndIdx; i += blockDim.x)
-    {
-        arr[i] = pivot;
         aux[i] = pivot;
-    }
 
-    //only works if aux array is as big as input array
     if (threadIdx.x != 0)
         return;
 
-    if (myTask.auxBeginIdx - myTask.arrBegin > 0) //smaller
+    if (myTask.auxBeginIdx - myTask.arrBegin > 1) //smaller
     {
         int newTaskIdx = atomicAdd(newTasksCnt, 1);
         cuda_newTasks[newTaskIdx] = TASK(
@@ -113,7 +120,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
         );
     }
 
-    if (myTask.arrEnd - myTask.auxEndIdx > 0) //greater
+    if (myTask.arrEnd - myTask.auxEndIdx > 1) //greater
     {
         int newTaskIdx = atomicAdd(newTasksCnt, 1);
         cuda_newTasks[newTaskIdx] = TASK(
@@ -159,9 +166,8 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
-const int maxTasks = 1 << 20;
+const int maxTasks = maxBlocks;
 const int minElemPerBlock = threadsPerBlock*2;
-const int maxBitonicArrSize = 512;
 
 class QUICKSORT
 {
@@ -208,7 +214,7 @@ public:
             else
             {
                 cudaPartition<<<blocksCnt, threadsPerBlock>>>(
-                    aux.getView(), arr, //swapped order to write back and forth without copying
+                    arr, aux.getView(),
                     elemPerBlock,
                     cuda_blockToTaskMapping.getView(),
                     cuda_newTasks.getView(), cuda_tasks.getView(), //swapped order to write back and forth without copying
@@ -222,13 +228,6 @@ public:
         }
 
         //insert phase 2 sort for almostDoneTasks
-
-        //todo: is this needed after 2nd phase?
-        if (iteration % 2)
-        {
-            TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
-                copy(arr.getData(), aux.getData(), aux.getSize());
-        }
 
         cudaDeviceSynchronize();
     }
@@ -283,6 +282,9 @@ public:
 
     int processNewTasks()
     {
+        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
+            copy(arr.getData(), aux.getData(), aux.getSize());
+
         tasksAmount = cuda_newTasksAmount.getElement(0);
         return tasksAmount;
     }
