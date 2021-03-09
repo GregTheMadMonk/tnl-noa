@@ -264,7 +264,7 @@ void cudaQuickSort(CudaArrayView arr, const Function & Cmp,
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
-const int maxTasks = maxBlocks/2;
+const int maxTasks = maxBlocks/4;
 const int minElemPerBlock = threadsPerBlock*2;
 
 class QUICKSORT
@@ -287,7 +287,7 @@ class QUICKSORT
 public:
     QUICKSORT(CudaArrayView _arr)
         : arr(_arr), aux(arr.getSize()),
-          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks*2),
+          cuda_tasks(maxBlocks), cuda_newTasks(maxBlocks), cuda_2ndPhaseTasks(maxBlocks),
           cuda_newTasksAmount(1), cuda_2ndPhaseTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping_Cnt(1)
     {
