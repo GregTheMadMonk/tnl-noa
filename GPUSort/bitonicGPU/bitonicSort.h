@@ -121,23 +121,19 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
 //---------------------------------------------
 
 template <typename Value, typename Function>
-__device__ void bitoniSort1stStepSharedMemory_device(
+__device__ void bitonicSort_Block(
                 TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
-                int begin, int end, Value* sharedMem, const Function & Cmp)
+                int myBlockStart, int myBlockEnd, Value* sharedMem, const Function & Cmp)
 {
-    int sharedMemLen = 2*blockDim.x;
-
-    int myBlockStart = begin + blockIdx.x * sharedMemLen;
-    int myBlockEnd = end < myBlockStart+sharedMemLen? end : myBlockStart+sharedMemLen;
 
     //copy from globalMem into sharedMem
     int copy1 = myBlockStart + threadIdx.x;
     int copy2 = copy1 + blockDim.x;
     {
-        if(copy1 < end)
+        if(copy1 < myBlockEnd)
             sharedMem[threadIdx.x] = arr[copy1];
 
-        if(copy2 < end)
+        if(copy2 < myBlockEnd)
             sharedMem[threadIdx.x + blockDim.x] = arr[copy2];
 
         __syncthreads();
@@ -146,7 +142,7 @@ __device__ void bitoniSort1stStepSharedMemory_device(
     //------------------------------------------
     //bitonic activity
     {
-        int i = blockIdx.x * blockDim.x + threadIdx.x;
+        int i = threadIdx.x;
         int paddedSize = closestPow2(myBlockEnd - myBlockStart);
 
         for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
@@ -154,7 +150,7 @@ __device__ void bitoniSort1stStepSharedMemory_device(
             //calculate the direction of swapping
             int monotonicSeqIdx = i / (monotonicSeqLen/2);
             bool ascending = (monotonicSeqIdx & 1) != 0;
-            if ((monotonicSeqIdx + 1) * monotonicSeqLen >= end) //special case for parts with no "partner"
+            if ((monotonicSeqIdx + 1) * monotonicSeqLen >= myBlockEnd) //special case for parts with no "partner"
                 ascending = true;
 
             for (int len = monotonicSeqLen; len > 1; len /= 2)
@@ -174,9 +170,9 @@ __device__ void bitoniSort1stStepSharedMemory_device(
     //------------------------------------------
     //writeback to global memory
     {
-        if(copy1 < end)
+        if(copy1 < myBlockEnd)
             arr[copy1] = sharedMem[threadIdx.x];
-        if(copy2 < end)
+        if(copy2 < myBlockEnd)
             arr[copy2] = sharedMem[threadIdx.x + blockDim.x];
     }
 }
@@ -191,8 +187,16 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
                                             int begin, int end, const Function & Cmp)
 {
     extern __shared__ int externMem[];
-    
-    bitoniSort1stStepSharedMemory_device(arr, begin, end, (Value*) externMem, Cmp);
+    int sharedMemLen = 2*blockDim.x;
+    int myBlockStart = begin + blockIdx.x * sharedMemLen;
+    int myBlockEnd = end < myBlockStart+sharedMemLen? end : myBlockStart+sharedMemLen;
+
+    if(blockIdx.x%2 == 0)
+        bitonicSort_Block(arr, myBlockStart, myBlockEnd, (Value*) externMem, Cmp);
+    else
+        bitonicSort_Block(arr, myBlockStart, myBlockEnd, (Value*) externMem, 
+            [&] __cuda_callable__ (const Value&a, const Value&b){return Cmp(b, a);}
+    );
 }
 
 
