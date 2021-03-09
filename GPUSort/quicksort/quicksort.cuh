@@ -46,7 +46,10 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
                               int elemPerBlock,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_newTasks,
-                              int *newTasksCnt)
+                              int *newTasksCnt,
+                              TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_2ndPhaseTasks,
+                            int * cuda_2ndPhaseCnt
+)
 {
     static __shared__ TASK myTask;
     static __shared__ int smallerStart, biggerStart;
@@ -67,24 +70,7 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
     //only works if consecutive blocks work on the same task
     const int myBegin = myTask.arrBegin + elemPerBlock * (blockIdx.x - myTask.firstBlock);
     const int myEnd = TNL::min(myTask.arrEnd, myBegin + elemPerBlock);
-    const int size = myEnd - myBegin;
 
-    //-------------------------------------------------------------------------
-
-    if(size <= blockDim.x*2 && myTask.blockCount == 1)
-    {
-        bitonicSort_Block(
-            arr.getView(myBegin, myEnd),
-            (int*) externMem,
-            Cmp
-        );
-        __syncthreads();
-        
-        for (int i = myBegin + threadIdx.x; i < myEnd; i += blockDim.x)
-            aux[i] = arr[i];
-        
-        return;
-    }
     //-------------------------------------------------------------------------
 
     int smaller = 0, bigger = 0;
@@ -121,23 +107,45 @@ __global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
 
     if (threadIdx.x != 0)
         return;
-
-    if (myTask.auxBeginIdx - myTask.arrBegin > 1) //smaller
+        
+    if (myTask.auxBeginIdx - myTask.arrBegin > 0) //smaller
     {
-        int newTaskIdx = atomicAdd(newTasksCnt, 1);
-        cuda_newTasks[newTaskIdx] = TASK(
-            myTask.arrBegin, myTask.auxBeginIdx,
-            myTask.arrBegin, myTask.auxBeginIdx
-        );
+        if(myTask.auxBeginIdx - myTask.arrBegin <= blockDim.x*2)
+        {
+            int newTaskIdx = atomicAdd(cuda_2ndPhaseCnt, 1);
+            cuda_2ndPhaseTasks[newTaskIdx] = TASK(
+                myTask.arrBegin, myTask.auxBeginIdx,
+                myTask.arrBegin, myTask.auxBeginIdx
+            );
+        }
+        else
+        {
+            int newTaskIdx = atomicAdd(newTasksCnt, 1);
+            cuda_newTasks[newTaskIdx] = TASK(
+                myTask.arrBegin, myTask.auxBeginIdx,
+                myTask.arrBegin, myTask.auxBeginIdx
+            );
+        }
     }
 
-    if (myTask.arrEnd - myTask.auxEndIdx > 1) //greater
+    if (myTask.arrEnd - myTask.auxEndIdx > 0) //greater
     {
-        int newTaskIdx = atomicAdd(newTasksCnt, 1);
-        cuda_newTasks[newTaskIdx] = TASK(
-            myTask.auxEndIdx, myTask.arrEnd,
-            myTask.auxEndIdx, myTask.arrEnd
-        );
+        if (myTask.arrEnd - myTask.auxEndIdx <= blockDim.x*2)
+        {
+            int newTaskIdx = atomicAdd(cuda_2ndPhaseCnt, 1);
+            cuda_2ndPhaseTasks[newTaskIdx] = TASK(
+                myTask.auxEndIdx, myTask.arrEnd,
+                myTask.auxEndIdx, myTask.arrEnd
+            );
+        }
+        else
+        {
+            int newTaskIdx = atomicAdd(newTasksCnt, 1);
+            cuda_newTasks[newTaskIdx] = TASK(
+                myTask.auxEndIdx, myTask.arrEnd,
+                myTask.auxEndIdx, myTask.arrEnd
+            );
+        }
     }
 }
 
@@ -174,10 +182,21 @@ __global__ void cudaInitTask(TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda
     }
 }
 
+
+//-----------------------------------------------------------
+template<typename Function>
+__global__
+void cudaQuickSort(CudaArrayView arr, const Function & Cmp,
+                    TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
+                    int *TasksCnt)
+                    {}
+
+
+
 //-----------------------------------------------------------
 //-----------------------------------------------------------
-const int threadsPerBlock = 32, maxBlocks = 1 << 14; //16k
-const int maxTasks = maxBlocks;
+const int threadsPerBlock = 512, maxBlocks = 1 << 14; //16k
+const int maxTasks = maxBlocks/2;
 const int minElemPerBlock = threadsPerBlock*2;
 
 class QUICKSORT
@@ -185,10 +204,11 @@ class QUICKSORT
     CudaArrayView arr;
     TNL::Containers::Array<int, TNL::Devices::Cuda> aux;
 
-    CudaTaskArray cuda_tasks, cuda_newTasks;
+    CudaTaskArray cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
 
-    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount; //is in reality 1 integer
+    TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer
     int tasksAmount; //counter for Host
+    int totalTask;
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
@@ -199,18 +219,20 @@ class QUICKSORT
 public:
     QUICKSORT(CudaArrayView _arr)
         : arr(_arr), aux(arr.getSize()),
-          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_newTasksAmount(1),
+          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks*2),
+          cuda_newTasksAmount(1), cuda_2ndPhaseTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks), cuda_blockToTaskMapping_Cnt(1)
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize()));
-        tasksAmount = 1;
+        totalTask = tasksAmount = 1;
+        cuda_2ndPhaseTasksAmount = 0;
     }
 
     template<typename Function>
     void sort(const Function & Cmp)
     {
         const int auxMemByteSize = minElemPerBlock* sizeof(int);
-        while (tasksAmount > 0)
+        while (tasksAmount > 0 && totalTask < maxTasks)
         {
             int elemPerBlock = getElemPerBlock();
             int blocksCnt = initTasks(elemPerBlock);
@@ -223,7 +245,8 @@ public:
                     cuda_blockToTaskMapping.getView(),
                     elemPerBlock,
                     cuda_tasks.getView(), cuda_newTasks.getView(),
-                    cuda_newTasksAmount.getData()
+                    cuda_newTasksAmount.getData(),
+                    cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData()
                 );
             }
             else
@@ -234,17 +257,17 @@ public:
                     cuda_blockToTaskMapping.getView(),
                     elemPerBlock,
                     cuda_newTasks.getView(), cuda_tasks.getView(), //swapped order to write back and forth without copying
-                    cuda_newTasksAmount.getData()
+                    cuda_newTasksAmount.getData(),
+                    cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData()
                 );
             }
 
             tasksAmount = processNewTasks();
 
             iteration++;
+        }        
 
-        }
-
-        //insert phase 2 sort for almostDoneTasks
+        _2ndPhase();
 
         cudaDeviceSynchronize();
     }
@@ -303,7 +326,36 @@ public:
             copy(arr.getData(), aux.getData(), aux.getSize());
 
         tasksAmount = cuda_newTasksAmount.getElement(0);
+        totalTask = tasksAmount + cuda_2ndPhaseTasksAmount.getElement(0);
         return tasksAmount;
+    }
+
+    void _2ndPhase()
+    {
+        if(totalTask == 0) return;
+
+        init2ndPhase();
+
+    }
+
+    void init2ndPhase()
+    {
+        TNL::Algorithms::MultiDeviceMemoryOperations<TNL::Devices::Cuda, TNL::Devices::Cuda>::
+            copy(cuda_2ndPhaseTasks.getData() + (totalTask - tasksAmount),
+                (iteration%2? cuda_newTasks.getData() :cuda_tasks.getData() ),
+                tasksAmount
+            );
+
+        int threads = min(totalTask, threadsPerBlock);
+        int blocks = totalTask / threads + (totalTask % threads != 0);
+
+        cuda_blockToTaskMapping_Cnt = 0;
+
+        cudaInitTask<<<blocks, threads>>>(cuda_2ndPhaseTasks.getView(),
+            totalTask, INT_MAX,
+            cuda_blockToTaskMapping_Cnt.getData(),
+            cuda_blockToTaskMapping.getView()
+        );
     }
 };
 
