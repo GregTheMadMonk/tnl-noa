@@ -3,6 +3,7 @@
 #include <TNL/Containers/Array.h>
 #include "reduction.cuh"
 #include "task.h"
+#include "../bitonicGPU/bitonicSort.h"
 #include <iostream>
 
 #define deb(x) std::cout << #x << " = " << x << std::endl;
@@ -38,8 +39,11 @@ __device__ void copyData(CudaArrayView arr, int myBegin, int myEnd,
     }
 }
 
-__global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerBlock,
+template <typename Function>
+__global__ void cudaPartition(CudaArrayView arr,const Function & Cmp,
+                                CudaArrayView aux,
                               TNL::Containers::ArrayView<int, TNL::Devices::Cuda> cuda_blockToTaskMapping,
+                              int elemPerBlock,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_tasks,
                               TNL::Containers::ArrayView<TASK, TNL::Devices::Cuda> cuda_newTasks,
                               int *newTasksCnt)
@@ -49,6 +53,7 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
     static __shared__ int pivot;
     static __shared__ int myTaskIdx;
     static __shared__ bool writePivot;
+    extern __shared__ int externMem[];
 
     if (threadIdx.x == 0)
     {
@@ -66,13 +71,15 @@ __global__ void cudaPartition(CudaArrayView arr, CudaArrayView aux, int elemPerB
 
     //-------------------------------------------------------------------------
 
-    /*
     if(size <= blockDim.x*2 && myTask.blockCount == 1)
     {
-        bitonicSort(arr, myTask.arrBegin, myTask.arrEnd, bitonicSortAuxMemory);
+        bitoniSort1stStepSharedMemory_device(
+            aux, myTask.arrBegin, myTask.arrEnd,
+            (int*) externMem,
+            Cmp
+        );
         return;
     }
-    */
 
     //-------------------------------------------------------------------------
 
@@ -183,6 +190,7 @@ class QUICKSORT
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
 
     int iteration = 0;
+
     //--------------------------------------------------------------------------------------
 public:
     QUICKSORT(CudaArrayView _arr)
@@ -194,8 +202,10 @@ public:
         tasksAmount = 1;
     }
 
-    void sort()
+    template<typename Function>
+    void sort(const Function & Cmp)
     {
+        const int auxMemByteSize = minElemPerBlock* sizeof(int);
         while (tasksAmount > 0)
         {
             int elemPerBlock = getElemPerBlock();
@@ -203,20 +213,22 @@ public:
 
             if (iteration % 2 == 0)
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
-                    arr, aux.getView(),
-                    elemPerBlock,
+                cudaPartition<<<blocksCnt, threadsPerBlock, auxMemByteSize>>>(
+                    arr, Cmp,
+                    aux.getView(), 
                     cuda_blockToTaskMapping.getView(),
+                    elemPerBlock,
                     cuda_tasks.getView(), cuda_newTasks.getView(),
                     cuda_newTasksAmount.getData()
                 );
             }
             else
             {
-                cudaPartition<<<blocksCnt, threadsPerBlock>>>(
-                    arr, aux.getView(),
-                    elemPerBlock,
+                cudaPartition<<<blocksCnt, threadsPerBlock, auxMemByteSize>>>(
+                    arr, Cmp,
+                    aux.getView(), 
                     cuda_blockToTaskMapping.getView(),
+                    elemPerBlock,
                     cuda_newTasks.getView(), cuda_tasks.getView(), //swapped order to write back and forth without copying
                     cuda_newTasksAmount.getData()
                 );
@@ -292,9 +304,14 @@ public:
 
 //-----------------------------------------------------------
 
-void quicksort(CudaArrayView arr)
+template<typename Function>
+void quicksort(CudaArrayView arr, const Function & Cmp)
 {
     QUICKSORT sorter(arr);
-    sorter.sort();
-    return;
+    sorter.sort(Cmp);
+}
+
+void quicksort(CudaArrayView arr)
+{
+    quicksort(arr, []__cuda_callable__(int a, int b){return a < b;});
 }
