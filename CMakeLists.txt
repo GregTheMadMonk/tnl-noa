@@ -158,8 +158,19 @@ link_libraries( stdc++fs )
 if( ${BUILD_TESTS} OR ${BUILD_MATRIX_TESTS} )
    enable_testing()
 
-   # build gtest libs
-   include( BuildGtest )
+   if( ${WITH_SYSTEM_GTEST} OR ${OFFLINE_BUILD} )
+      # find gtest installed in the local system
+      find_package(GTest REQUIRED)
+      if( GTEST_FOUND )
+         set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
+         include_directories( ${GTEST_INCLUDE_DIRS} )
+         link_libraries( ${GTEST_LIBRARIES} )
+      endif( GTEST_FOUND )
+   else()
+      # build gtest libs
+      include( BuildGtest )
+   endif()
+
 
    if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
       # enable code coverage reports
