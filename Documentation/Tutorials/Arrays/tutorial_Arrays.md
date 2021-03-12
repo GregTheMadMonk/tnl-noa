@@ -76,7 +76,7 @@ Output:
 
 \include ElementsAccessing-1.out
 
-In general in TNL, each method defined as `__cuda_callable__` can be called from the CUDA kernels. The method `ArrayView::getSize` is another example. We also would like to point the reader to better ways of arrays initiation for example with method `ArrayView::evaluate` or with `ParallelFor`.
+In general in TNL, each method defined as `__cuda_callable__` can be called from the CUDA kernels. The method `ArrayView::getSize` is another example. We also would like to point the reader to better ways of arrays initiation for example with method `ArrayView::forElements` or with `ParallelFor`.
 
 #### Accessing the array elements with `setElement` and `getElement`<a name="accessing-the-array-elements-with-setelement-and-getelement"></a>
 
@@ -96,13 +96,13 @@ Output:
 
 ### Arrays initiation with lambdas<a name="arrays-initiation-with-lambdas"></a>
 
-More efficient and still quite simple method for the arrays initiation is with the use of C++ lambda functions and method `evaluate`. This method is implemented in `ArrayView` only. As an argument a lambda function is passed which is then evaluated for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be evaluated. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the method `evaluate` demonstrates the following example.
+More efficient and still quite simple method for the arrays initiation is with the use of C++ lambda functions and methods `forElements` and `forEachElement`. As an argument a lambda function is passed which is then applied for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be applied. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the methods `forElements` and `forEachElement` is demonstrated in the following example.
 
-\include ArrayViewEvaluate.cpp
+\include ArrayViewForElements.cpp
 
 Output:
 
-\include ArrayViewEvaluate.out
+\include ArrayViewForElements.out
 
 ### Checking the array contents<a name="checking-the-array-contents"></a>
 

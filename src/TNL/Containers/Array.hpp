@@ -609,12 +609,49 @@ template< typename Value,
    template< typename Function >
 void
 Array< Value, Device, Index, Allocator >::
-evaluate( const Function& f,
-          IndexType begin,
-          IndexType end )
+forElements( IndexType begin,
+             IndexType end,
+             const Function& f )
 {
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   this->getView().evaluate( f, begin, end );
+   this->getView().forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forElements( IndexType begin,
+             IndexType end,
+             const Function& f ) const
+{
+   this->getConstView().forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forEachElement( const Function& f )
+{
+   this->getView().forEachElement( f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forEachElement( const Function& f ) const
+{
+   this->getConstView().forEachElement( f );
 }
 
 template< typename Value,

@@ -274,12 +274,8 @@ void ArrayViewEvaluateTest( ArrayType& u )
    using ViewType = ArrayView< ValueType, DeviceType, IndexType >;
    ViewType v( u );
 
-   auto f = [] __cuda_callable__ ( IndexType i )
-   {
-      return 3 * i % 4;
-   };
-
-   v.evaluate( f );
+   v.forEachElement( [] __cuda_callable__ ( IndexType i, ValueType& value ) { value = 3 * i % 4; } );
+   
    for( int i = 0; i < 10; i++ )
    {
       EXPECT_EQ( u.getElement( i ), 3 * i % 4 );

@@ -315,20 +315,55 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-evaluate( const Function& f, const Index begin, Index end )
+forElements( const Index begin, Index end, const Function& f )
 {
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array view." );
+   if( ! this->data )
+      return;
 
    ValueType* d = this->data;
-   auto eval = [=] __cuda_callable__ ( Index i )
+   auto g = [=] __cuda_callable__ ( Index i ) mutable
    {
-      d[ i ] = f( i );
+      f( i, d[ i ] );
    };
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+}
 
-   if( end == 0 )
-      end = this->getSize();
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forElements( const Index begin, Index end, const Function& f ) const
+{
+   if( ! this->data )
+      return;
 
-   Algorithms::ParallelFor< DeviceType >::exec( begin, end, eval );
+   ValueType* d = this->data;
+   auto g = [=] __cuda_callable__ ( Index i )
+   {
+      f( i, d[ i ] );
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forEachElement( const Function& f )
+{
+   this->forElements( 0, this->getSize(), f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forEachElement( const Function& f ) const
+{
+   this->forElements( 0, this->getSize(), f );
 }
 
 template< typename Value,

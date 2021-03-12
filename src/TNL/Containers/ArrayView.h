@@ -412,22 +412,88 @@ public:
                   Index end = 0 );
 
    /**
-    * \brief Sets the array view elements using given lambda function.
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
     *
-    * Evaluates a lambda function \e f on whole array view or just on its
-    * sub-interval `[begin, end)`. This is performed at the same place
-    * where the data is allocated, i.e. it is efficient even on GPU.
+    * The lambda function is supposed to be declared as
     *
-    * \param f The lambda function to be evaluated.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
+    * f( IndexType elementIdx, ValueType& elementValue )
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
     */
    template< typename Function >
-   void evaluate( const Function& f,
-                  const Index begin = 0,
-                  Index end = 0 );
+   void forElements( IndexType begin, IndexType end, const Function& f );
+
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * f( IndexType elementIdx, ValueType& elementValue )
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place
+    * where the array is allocated, i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, const Function& f ) const;
+
+   /**
+    * \brief Process the lambda function \e f for each array element.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * f( IndexType elementIdx, ValueType& elementValue )
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forEachElement( const Function& f );
+
+   /**
+    * \brief Process the lambda function \e f for each array element for constant instances.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * f( IndexType elementIdx, ValueType& elementValue )
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forEachElement( const Function& f ) const;
 
    /**
     * \brief Checks if there is an element with value \e v.

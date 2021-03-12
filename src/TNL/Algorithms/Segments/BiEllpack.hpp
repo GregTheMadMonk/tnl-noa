@@ -131,7 +131,7 @@ performRowBubbleSort( const SizesHolder& segmentsSizes )
    if( segmentsSizes.getSize() == 0 )
       return;
 
-   this->rowPermArray.evaluate( [] __cuda_callable__ ( const IndexType i ) -> IndexType { return i; } );
+   this->rowPermArray.forEachElement( [] __cuda_callable__ ( const IndexType idx, IndexType& value ) { value = idx; } );
 
    //if( std::is_same< DeviceType, Devices::Host >::value )
    {

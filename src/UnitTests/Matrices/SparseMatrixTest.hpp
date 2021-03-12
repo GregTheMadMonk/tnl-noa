@@ -1319,7 +1319,7 @@ void test_VectorProduct()
       // Test with large diagonal matrix
       Matrix m1( size, size );
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
-      rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return 1; } );
+      rowCapacities.forEachElement( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
       m1.setRowCapacities( rowCapacities );
       auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx == 0  )
@@ -1343,7 +1343,7 @@ void test_VectorProduct()
       const int rows( size ), columns( size );
       Matrix m2( rows, columns );
       rowCapacities.setSize( rows );
-      rowCapacities.evaluate( [=] __cuda_callable__ ( IndexType i ) { return i + 1; } );
+      rowCapacities.forEachElement( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
       m2.setRowCapacities( rowCapacities );
       auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx <= row )
