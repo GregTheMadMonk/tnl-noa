@@ -245,23 +245,24 @@ __device__ void cudaQuickSort_block(CudaArrayView arr, const Function & Cmp,
             else
                 arr[i] = aux[i];
         }
+
+        if(threadIdx.x == 0)
+        {
+            if(pivotBegin - begin > 1) //left from pivot are smaller elems
+            {
+                stackArrBegin[stackTop] = begin;
+                stackArrEnd[stackTop] = pivotBegin;
+                stackTop++;
+            }
+            
+            if(end - pivotEnd > 1) //right from pivot until end are elem greater than pivot
+            {
+                stackArrBegin[stackTop] = pivotEnd;
+                stackArrEnd[stackTop] = end;
+                stackTop++;
+            }
+        }
         __syncthreads();
-
-        if(threadIdx.x != 0) continue;
-
-        if(pivotBegin - begin > 1) //left from pivot are smaller elems
-        {
-            stackArrBegin[stackTop] = begin;
-            stackArrEnd[stackTop] = pivotBegin;
-            stackTop++;
-        }
-
-        if(end - pivotEnd > 1) //right from pivot until end are elem greater than pivot
-        {
-            stackArrBegin[stackTop] = pivotEnd;
-            stackArrEnd[stackTop] = end;
-            stackTop++;
-        }
     }
 }
 
@@ -293,7 +294,7 @@ void cudaQuickSort(CudaArrayView arr, const Function & Cmp,
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 15; //32k
-const int maxTasks = maxBlocks/4;
+const int maxTasks = 1<<10;
 const int minElemPerBlock = threadsPerBlock*2;
 
 class QUICKSORT
@@ -304,8 +305,8 @@ class QUICKSORT
     CudaTaskArray cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer
-    int tasksAmount; //counter for Host
-    int totalTask;
+    int tasksAmount; //counter for Host == cuda_newTasksAmount
+    int totalTask; // cuda_newTasksAmount + cuda_2ndPhaseTasksAmount
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping;
     TNL::Containers::Array<int, TNL::Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
@@ -439,7 +440,7 @@ public:
         
         int blocks = totalTask;
 
-        int stackSize = 256, stackMem = stackSize * sizeof(int); 
+        int stackSize = 128, stackMem = stackSize * sizeof(int); 
         int bitonicMem = threadsPerBlock*2*sizeof(int);
         int auxMem = stackMem + bitonicMem;
         cudaQuickSort<<<blocks, threadsPerBlock, auxMem>>>(arr, Cmp, aux.getView(), stackSize, cuda_2ndPhaseTasks.getView());
