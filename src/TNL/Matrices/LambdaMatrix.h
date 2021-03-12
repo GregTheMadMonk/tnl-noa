@@ -267,12 +267,12 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forElements( IndexType first, IndexType last, Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
+       * \brief This method calls \e forElements for all matrix rows (for constant instances).
        *
-       * See \ref LambdaMatrix::forRows.
+       * See \ref LambdaMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -283,7 +283,7 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

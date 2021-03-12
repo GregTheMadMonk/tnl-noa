@@ -61,38 +61,38 @@ protected:
 // types for which ArrayViewTest is instantiated
 using ViewTypes = ::testing::Types<
 #ifndef HAVE_CUDA
-   ArrayView< int,    Devices::Host, short >,
-   ArrayView< long,   Devices::Host, short >,
-   ArrayView< float,  Devices::Host, short >,
-   ArrayView< double, Devices::Host, short >,
-   ArrayView< MyData, Devices::Host, short >,
-   ArrayView< int,    Devices::Host, int >,
-   ArrayView< long,   Devices::Host, int >,
-   ArrayView< float,  Devices::Host, int >,
-   ArrayView< double, Devices::Host, int >,
-   ArrayView< MyData, Devices::Host, int >,
-   ArrayView< int,    Devices::Host, long >,
-   ArrayView< long,   Devices::Host, long >,
-   ArrayView< float,  Devices::Host, long >,
-   ArrayView< double, Devices::Host, long >,
-   ArrayView< MyData, Devices::Host, long >
+    ArrayView< int,    Devices::Host, short >
+   ,ArrayView< long,   Devices::Host, short >
+   ,ArrayView< float,  Devices::Host, short >
+   ,ArrayView< double, Devices::Host, short >
+   ,ArrayView< MyData, Devices::Host, short >
+   ,ArrayView< int,    Devices::Host, int >
+   ,ArrayView< long,   Devices::Host, int >
+   ,ArrayView< float,  Devices::Host, int >
+   ,ArrayView< double, Devices::Host, int >
+   ,ArrayView< MyData, Devices::Host, int >
+   ,ArrayView< int,    Devices::Host, long >
+   ,ArrayView< long,   Devices::Host, long >
+   ,ArrayView< float,  Devices::Host, long >
+   ,ArrayView< double, Devices::Host, long >
+   ,ArrayView< MyData, Devices::Host, long >
 #endif
 #ifdef HAVE_CUDA
-   ArrayView< int,    Devices::Cuda, short >,
-   ArrayView< long,   Devices::Cuda, short >,
-   ArrayView< float,  Devices::Cuda, short >,
-   ArrayView< double, Devices::Cuda, short >,
-   ArrayView< MyData, Devices::Cuda, short >,
-   ArrayView< int,    Devices::Cuda, int >,
-   ArrayView< long,   Devices::Cuda, int >,
-   ArrayView< float,  Devices::Cuda, int >,
-   ArrayView< double, Devices::Cuda, int >,
-   ArrayView< MyData, Devices::Cuda, int >,
-   ArrayView< int,    Devices::Cuda, long >,
-   ArrayView< long,   Devices::Cuda, long >,
-   ArrayView< float,  Devices::Cuda, long >,
-   ArrayView< double, Devices::Cuda, long >,
-   ArrayView< MyData, Devices::Cuda, long >
+    ArrayView< int,    Devices::Cuda, short >
+   ,ArrayView< long,   Devices::Cuda, short >
+   ,ArrayView< float,  Devices::Cuda, short >
+   ,ArrayView< double, Devices::Cuda, short >
+   ,ArrayView< MyData, Devices::Cuda, short >
+   ,ArrayView< int,    Devices::Cuda, int >
+   ,ArrayView< long,   Devices::Cuda, int >
+   ,ArrayView< float,  Devices::Cuda, int >
+   ,ArrayView< double, Devices::Cuda, int >
+   ,ArrayView< MyData, Devices::Cuda, int >
+   ,ArrayView< int,    Devices::Cuda, long >
+   ,ArrayView< long,   Devices::Cuda, long >
+   ,ArrayView< float,  Devices::Cuda, long >
+   ,ArrayView< double, Devices::Cuda, long >
+   ,ArrayView< MyData, Devices::Cuda, long >
 #endif
 
    // all ArrayView tests should also work with VectorView
@@ -240,7 +240,7 @@ __global__ void testSetGetElementKernel( ArrayView< ValueType, Devices::Cuda, In
    if( threadIdx.x < v.getSize() )
       v[ threadIdx.x ] = threadIdx.x;
 }
-#endif /* HAVE_CUDA */
+#endif // HAVE_CUDA
 
 template< typename Value, typename Index >
 void testArrayViewElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )

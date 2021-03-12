@@ -418,7 +418,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -442,7 +442,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -470,7 +470,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -613,7 +613,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over matrix rows for non-constant instances.
@@ -635,7 +635,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function );
+      void forElements( IndexType begin, IndexType end, Function& function );
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
@@ -657,7 +657,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -679,7 +679,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function );
+      void forEachElement( Function& function );
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

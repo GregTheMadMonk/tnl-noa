@@ -266,7 +266,7 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forElements( IndexType first, IndexType last, Function& function ) const
 {
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
@@ -295,9 +295,9 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   forRows( 0, this->getRows(), function );
+   forElements( 0, this->getRows(), function );
    /*const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
@@ -328,7 +328,7 @@ LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, In
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forRows( row, row + 1, function );
+      this->forElements( row, row + 1, function );
 }
 
 template< typename MatrixElementsLambda,

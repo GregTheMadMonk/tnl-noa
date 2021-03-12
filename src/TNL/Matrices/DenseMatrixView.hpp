@@ -336,7 +336,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
@@ -352,7 +352,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType begin, IndexType end, Function& function )
+forElements( IndexType begin, IndexType end, Function& function )
 {
    auto values_view = this->values.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
@@ -368,9 +368,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -380,9 +380,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function& function )
+forEachElement( Function& function )
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -395,7 +395,7 @@ DenseMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forRows( row, row + 1, function );
+      this->forElements( row, row + 1, function );
 }
 
 template< typename Real,
@@ -408,7 +408,7 @@ DenseMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function )
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forRows( row, row + 1, function );
+      this->forElements( row, row + 1, function );
 }
 
 template< typename Real,

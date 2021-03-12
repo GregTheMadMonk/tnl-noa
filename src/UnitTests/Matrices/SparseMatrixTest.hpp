@@ -1328,7 +1328,7 @@ void test_VectorProduct()
             column = row;
          }
       };
-      m1.forAllRows( f1 );
+      m1.forEachElement( f1 );
       // check that the matrix was initialized
       m1.getCompressedRowLengths( rowCapacities );
       EXPECT_EQ( rowCapacities, 1 );
@@ -1352,7 +1352,7 @@ void test_VectorProduct()
             column = localIdx;
          }
       };
-      m2.forAllRows( f2 );
+      m2.forEachElement( f2 );
       // check that the matrix was initialized
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( rows );
       m2.getCompressedRowLengths( rowLengths );
@@ -1384,7 +1384,7 @@ void test_VectorProduct()
          column = localIdx;
          value = localIdx + 1;
       };
-      m3.forAllRows( f );
+      m3.forEachElement( f );
       TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
       m3.vectorProduct( in, out );
       EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );

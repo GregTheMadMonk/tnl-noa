@@ -35,7 +35,7 @@ update( const MatrixPointer& matrixPointer )
 
    const auto kernel_matrix = matrixPointer->getView();
 
-   // TODO: Rewrite this with SparseMatrix::forAllRows
+   // TODO: Rewrite this with SparseMatrix::forEachElement
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       diag_view[ i ] = kernel_matrix.getElement( i, i );

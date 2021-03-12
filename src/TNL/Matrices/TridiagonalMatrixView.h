@@ -272,7 +272,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -297,7 +297,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -325,7 +325,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -465,7 +465,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forElements( IndexType first, IndexType last, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -487,12 +487,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
+      void forElements( IndexType first, IndexType last, Function& function );
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
+       * \brief This method calls \e forElements for all matrix rows (for constant instances).
        *
-       * See \ref TridiagonalMatrix::forRows.
+       * See \ref TridiagonalMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -503,12 +503,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows.
+       * \brief This method calls \e forElements for all matrix rows.
        *
-       * See \ref TridiagonalMatrix::forRows.
+       * See \ref TridiagonalMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -519,7 +519,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function );
+      void forEachElement( Function& function );
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

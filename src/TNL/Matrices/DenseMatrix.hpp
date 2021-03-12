@@ -405,9 +405,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forRows( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function& function ) const
 {
-   this->view.forRows( begin, end, function );
+   this->view.forElements( begin, end, function );
 }
 
 template< typename Real,
@@ -418,9 +418,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forRows( IndexType first, IndexType last, Function& function )
+forElements( IndexType first, IndexType last, Function& function )
 {
-   this->view.forRows( first, last, function );
+   this->view.forElements( first, last, function );
 }
 
 template< typename Real,
@@ -431,9 +431,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -444,9 +444,9 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forAllRows( Function& function )
+forEachElement( Function& function )
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -1048,7 +1048,7 @@ operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHS
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };
-      matrix.forAllRows( f );
+      matrix.forEachElement( f );
    }
    else
    {
@@ -1072,7 +1072,7 @@ operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHS
             const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + columnIdx;
             matrixValuesBuffer_view[ bufferIdx ] = value;
          };
-         matrix.forRows( baseRow, lastRow, f1 );
+         matrix.forElements( baseRow, lastRow, f1 );
 
          ////
          // Copy the source matrix buffer to this matrix buffer
@@ -1124,7 +1124,7 @@ operator=( const RHSMatrix& matrix )
          if( value != 0.0 && columnIdx != padding_index )
             values_view[ segments_view.getGlobalIndex( rowIdx, columnIdx ) ] = value;
       };
-      matrix.forAllRows( f );
+      matrix.forEachElement( f );
    }
    else
    {
@@ -1158,7 +1158,7 @@ operator=( const RHSMatrix& matrix )
                matrixValuesBuffer_view[ bufferIdx ] = value;
             }
          };
-         matrix.forRows( baseRow, lastRow, f1 );
+         matrix.forElements( baseRow, lastRow, f1 );
 
          ////
          // Copy the source matrix buffer to this matrix buffer

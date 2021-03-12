@@ -603,9 +603,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forRows( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function& function ) const
 {
-   this->view.forRows( begin, end, function );
+   this->view.forElements( begin, end, function );
 }
 
 template< typename Real,
@@ -619,9 +619,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forRows( IndexType begin, IndexType end, Function& function )
+forElements( IndexType begin, IndexType end, Function& function )
 {
-   this->view.forRows( begin, end, function );
+   this->view.forElements( begin, end, function );
 }
 
 template< typename Real,
@@ -635,9 +635,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -651,9 +651,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forAllRows( Function& function )
+forEachElement( Function& function )
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -837,7 +837,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
                values_view[ thisGlobalIdx ] = value;
          }
       };
-      matrix.forAllRows( f );
+      matrix.forEachElement( f );
    }
    else
    {
@@ -863,7 +863,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
             const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
             matrixValuesBuffer_view[ bufferIdx ] = value;
          };
-         matrix.forRows( baseRow, lastRow, f1 );
+         matrix.forElements( baseRow, lastRow, f1 );
 
          ////
          // Copy the source matrix buffer to this matrix buffer
@@ -893,7 +893,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
                value = inValue;
             }
          };
-         this->forRows( baseRow, lastRow, f2 );
+         this->forElements( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;
       }
       //std::cerr << "This matrix = " << std::endl << *this << std::endl;
@@ -950,7 +950,7 @@ operator=( const RHSMatrix& matrix )
             rowLocalIndexes_view[ rowIdx ] = localIdx;
          }
       };
-      matrix.forAllRows( f );
+      matrix.forEachElement( f );
    }
    else
    {
@@ -992,7 +992,7 @@ operator=( const RHSMatrix& matrix )
                matrixValuesBuffer_view[ bufferIdx ] = value;
             }
          };
-         matrix.forRows( baseRow, lastRow, f1 );
+         matrix.forElements( baseRow, lastRow, f1 );
 
          ////
          // Copy the source matrix buffer to this matrix buffer
@@ -1026,7 +1026,7 @@ operator=( const RHSMatrix& matrix )
                value = inValue;
             }
          };
-         this->forRows( baseRow, lastRow, f2 );
+         this->forElements( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;
       }
    }

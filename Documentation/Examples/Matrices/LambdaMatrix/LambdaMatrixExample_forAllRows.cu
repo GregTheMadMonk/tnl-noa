@@ -1,1 +1,0 @@
-LambdaMatrixExample_forAllRows.cpp
