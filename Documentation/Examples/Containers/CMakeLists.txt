@@ -1,28 +1,29 @@
-IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( ArrayExampleCuda ArrayExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayExample.out OUTPUT ArrayExample.out )
-ELSE()
-   ADD_EXECUTABLE( ArrayExample ArrayExample.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayExample.out OUTPUT ArrayExample.out )
-ENDIF()
+set( COMMON_EXAMPLES
+         ArrayExample
+         ArrayExample_forElements
+         ArrayExample_reduceElements
+         ArrayViewExample
+         ArrayViewExample_forElements
+         ArrayViewExample_reduceElements
+         VectorExample
+)
+
+if( BUILD_CUDA )
+   foreach( target IN ITEMS ${COMMON_EXAMPLES} )
+      cuda_add_executable( ${target} ${target}.cu OPTIONS )
+      add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${target}.out )
+   endforeach()
+else()
+   foreach( target IN ITEMS ${HOST_EXAMPLES} )
+      add_executable( ${target} ${target}.cpp )
+      add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+   endforeach()
+endif()
 
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( ArrayViewExampleCuda ArrayViewExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayViewExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayViewExample.out OUTPUT ArrayViewExample.out )
+   ADD_CUSTOM_TARGET( RunContainersExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
 ELSE()
-   ADD_EXECUTABLE( ArrayViewExample ArrayViewExample.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND ArrayViewExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ArrayViewExample.out OUTPUT ArrayViewExample.out )
-ENDIF()
-
-ADD_EXECUTABLE( VectorExample VectorExample.cpp )
-
-
-IF( BUILD_CUDA )
-ADD_CUSTOM_TARGET( RunContainersExamples-cuda ALL DEPENDS
-   ArrayExample.out
-   ArrayViewExample.out )
-ELSE()
-ADD_CUSTOM_TARGET( RunContainersExamples ALL DEPENDS
-   ArrayExample.out
-   ArrayViewExample.out )
+   ADD_CUSTOM_TARGET( RunContainersExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()

@@ -373,6 +373,23 @@ TYPED_TEST( ArrayTest, setElement )
    test_setElement< ArrayType >();
 }
 
+TYPED_TEST( ArrayTest, forElements )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using IndexType = typename ArrayType::IndexType;
+   using ValueType = typename ArrayType::ValueType;
+
+#if not defined HAVE_CUDA
+// nvcc does not accept the following code with 
+// error #3068-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
+   ArrayType a( 10 );
+   a.forEachElement( [] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = i; } );
+
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( a.getElement( i ), i );
+#endif      
+}
+
 TYPED_TEST( ArrayTest, containsValue )
 {
    using ArrayType = typename TestFixture::ArrayType;

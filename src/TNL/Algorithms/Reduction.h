@@ -31,7 +31,7 @@ namespace Algorithms {
  * position of the smallest or the largest element, reduction with argument can be used.
  *
  * \tparam Device parameter says on what device the reduction is gonna be performed.
- * 
+ *
  * See \ref Reduction< Devices::Host > and \ref Reduction< Devices::Cuda >.
  */
 template< typename Device >
@@ -89,16 +89,16 @@ struct Reduction< Devices::Sequential >
 
    /**
     * \brief Computes sequentially reduction on CPU and returns position of an element of interest.
-    * 
-    * For example in case of computing minimal or maximal element in array/vector, 
+    *
+    * For example in case of computing minimal or maximal element in array/vector,
     * the position of the element having given value can be obtained. The use of this method
     * is, however, more flexible.
-    * 
+    *
     * \tparam Index is a type for indexing.
     * \tparam Result is a type of the reduction result.
     * \tparam ReductionOperation is a lambda function performing the reduction.
     * \tparam DataFetcher is a lambda function for fetching the input data.
-    * 
+    *
     * \param begin defines range [begin, end) of indexes which will be used for the reduction.
     * \param end defines range [begin, end) of indexes which will be used for the reduction.
     * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
@@ -107,25 +107,25 @@ struct Reduction< Devices::Sequential >
     *             does not change the result of the reduction.
     * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
     *         is the element position and `pair.second` is the reduction result.
-    * 
+    *
     * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
-    * 
+    *
     * ```
     * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
     * ```
-    * 
+    *
     * The reduction lambda function takes two variables which are supposed to be reduced:
-    * 
+    *
     * ```
     * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
     * ```
-    * 
+    *
     * \par Example
-    * 
+    *
     * \include ReductionAndScan/ReductionWithArgument.cpp
-    * 
+    *
     * \par Output
-    * 
+    *
     * \include ReductionWithArgument.out
     */
    template< typename Index,

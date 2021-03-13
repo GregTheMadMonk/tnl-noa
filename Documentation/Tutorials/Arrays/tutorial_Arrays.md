@@ -8,7 +8,8 @@
   - [Accessing the array elements<a name="accessing-the-array-elements"></a>](#accessing-the-array-elements)
     - [Accessing the array elements with `operator[]`<a name="accessing-the-array-elements-with-operator"></a>](#accessing-the-array-elements-with-operator)
     - [Accessing the array elements with `setElement` and `getElement`<a name="accessing-the-array-elements-with-setelement-and-getelement"></a>](#accessing-the-array-elements-with-setelement-and-getelement)
-  - [Arrays initiation with lambdas<a name="arrays-initiation-with-lambdas"></a>](#arrays-initiation-with-lambdas)
+  - [Arrays and parallel for<a name="arrays-initiation-with-lambdas"></a>](#arrays-and-parallel-for)
+  - [Arrays and flexible reduction<a name="arrays-initiation-with-lambdas"></a>](#arrays-and-flexible-reduction)
   - [Checking the array contents<a name="checking-the-array-contents"></a>](#checking-the-array-contents)
   - [IO operations with arrays<a name="io-operations-with-arrays"></a>](#io-operations-with-arrays)
 - [Static arrays<a name="static-arrays"></a>](#static-arrays)
@@ -94,15 +95,26 @@ Output:
 
 \include ElementsAccessing-2.out
 
-### Arrays initiation with lambdas<a name="arrays-initiation-with-lambdas"></a>
+### Arrays and parallel for<a name="arrays-initiation-with-lambdas"></a>
 
-More efficient and still quite simple method for the arrays initiation is with the use of C++ lambda functions and methods `forElements` and `forEachElement`. As an argument a lambda function is passed which is then applied for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be applied. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the methods `forElements` and `forEachElement` is demonstrated in the following example.
+More efficient and still quite simple method for (not only) array elements initiation is with the use of C++ lambda functions and methods `forElements` and `forEachElement`. As an argument a lambda function is passed which is then applied for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be applied. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the methods `forElements` and `forEachElement` is demonstrated in the following example.
 
-\include ArrayViewForElements.cpp
+\include ArrayExample_forElements.cpp
 
 Output:
 
-\include ArrayViewForElements.out
+\include ArrayExample_forElements.out
+
+### Arrays and flexible reduction<a name="arrays-initiation-with-lambdas"></a>
+
+Arrays also offer simpler way to do the flexible parallel reduction. See the section about [the flexible parallel reduction](tutorial_ReductionAndScan.html#flexible_parallel_reduction) to understand how it works. Flexible reduction for arrays just simplifies access to the array elements. See the following example:
+
+\include ArrayExample_reduceElements.cpp
+
+Output:
+
+\include ArrayExample_reduceElements.out
+
 
 ### Checking the array contents<a name="checking-the-array-contents"></a>
 
