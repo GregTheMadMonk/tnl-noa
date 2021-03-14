@@ -70,7 +70,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) 0, (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::max() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) 0, (IndexType) nproc, fetch, reduction, std::numeric_limits< RealType >::max() );
       result.second = gatheredResults[ result.second ].second;
    }
    return result;
@@ -129,7 +129,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( ( IndexType ) 0, (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::lowest() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( ( IndexType ) 0, (IndexType) nproc, fetch, reduction, std::numeric_limits< RealType >::lowest() );
       result.second = gatheredResults[ result.second ].second;
    }
    return result;
