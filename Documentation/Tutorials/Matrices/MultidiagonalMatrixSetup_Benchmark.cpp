@@ -133,11 +133,11 @@ void getRow( const int gridSize, Matrix& matrix )
 }
 
 template< typename Matrix >
-void forRows( const int gridSize, Matrix& matrix )
+void forElements( const int gridSize, Matrix& matrix )
 {
    /***
     * Set  matrix representing approximation of the Laplace operator on regular
-    * grid using the finite difference method by means of forRows method.
+    * grid using the finite difference method by means of forElements method.
     */
 
    const int matrixSize = gridSize * gridSize;
@@ -178,7 +178,7 @@ void forRows( const int gridSize, Matrix& matrix )
          }
       }
    };
-   matrix.forRows( 0, matrixSize, f );
+   matrix.forElements( 0, matrixSize, f );
 }
 
 template< typename Device >
@@ -237,13 +237,13 @@ void laplaceOperatorMultidiagonalMatrix()
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
 
-      std::cout << "   forRows: ";
+      std::cout << "   forElements: ";
       timer.reset();
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
          TNL::Matrices::MultidiagonalMatrix< float, Device, int > matrix;
-         forRows( gridSize, matrix );
+         forElements( gridSize, matrix );
       }
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;

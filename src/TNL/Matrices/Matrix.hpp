@@ -85,7 +85,7 @@ Index Matrix< Real, Device, Index, RealAllocator >::getNonzeroElementsCount() co
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( 0, this->values.getSize(), std::plus<>{}, fetch, 0 );
+   return Algorithms::Reduction< DeviceType >::reduce( 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
 template< typename Real,
@@ -200,18 +200,7 @@ void Matrix< Real, Device, Index, RealAllocator >::print( std::ostream& str ) co
 {
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename RealAllocator >
-__cuda_callable__
-const Index&
-Matrix< Real, Device, Index, RealAllocator >::
-getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
+/*
 template< typename Real,
           typename Device,
           typename Index,
@@ -248,7 +237,7 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
             this->numberOfColors++;
         }
     }
-}
+}*/
 
 } // namespace Matrices
 } // namespace TNL

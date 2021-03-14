@@ -14,10 +14,10 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_setElement.out
                        OUTPUT DenseMatrixExample_setElement.out )
 
-   CUDA_ADD_EXECUTABLE( DenseMatrixExample_forRows DenseMatrixExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_forRows >
-                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
-                       OUTPUT DenseMatrixExample_forRows.out )
+   #CUDA_ADD_EXECUTABLE( DenseMatrixExample_forRows DenseMatrixExample_forRows.cu )
+   #ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_forRows >
+   #                    ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/DenseMatrixExample_forRows.out
+   #                    OUTPUT DenseMatrixExample_forRows.out )
 
    CUDA_ADD_EXECUTABLE( DenseMatrixExample_rowsReduction_vectorProduct DenseMatrixExample_rowsReduction_vectorProduct.cu )
    ADD_CUSTOM_COMMAND( COMMAND DenseMatrixExample_rowsReduction_vectorProduct >
@@ -79,10 +79,10 @@ IF( BUILD_CUDA )
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_addElement.out
                        OUTPUT SparseMatrixExample_addElement.out )
 
-   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forRows SparseMatrixExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forRows >
-                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
-                       OUTPUT SparseMatrixExample_forRows.out )
+#   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forRows SparseMatrixExample_forRows.cu )
+#   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forRows >
+#                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
+#                       OUTPUT SparseMatrixExample_forRows.out )
 
    CUDA_ADD_EXECUTABLE( SparseMatrixExample_rowsReduction_vectorProduct SparseMatrixExample_rowsReduction_vectorProduct.cu )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_rowsReduction_vectorProduct >
@@ -93,6 +93,17 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_setElement >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_setElement.out
                        OUTPUT SparseMatrixViewExample_setElement.out )
+
+   CUDA_ADD_EXECUTABLE( SymmetricSparseMatrixExample SymmetricSparseMatrixExample.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SymmetricSparseMatrixExample >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SymmetricSparseMatrixExample.out
+                        OUTPUT SymmetricSparseMatrixExample.out )
+
+   CUDA_ADD_EXECUTABLE( BinarySparseMatrixExample BinarySparseMatrixExample.cu )
+   ADD_CUSTOM_COMMAND( COMMAND BinarySparseMatrixExample >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/BinarySparseMatrixExample.out
+                        OUTPUT BinarySparseMatrixExample.out )
+
 
    ####
    # THe following examples/benchmarks run for very long time
@@ -114,7 +125,7 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    DenseMatrixExample_Constructor_init_list.out
    DenseMatrixExample_addElement.out
    DenseMatrixExample_setElement.out
-   DenseMatrixExample_forRows.out
+#   DenseMatrixExample_forRows.out
    DenseMatrixExample_rowsReduction_vectorProduct.out
    DenseMatrixExample_rowsReduction_maxNorm.out
    DenseMatrixViewExample_setElement.out
@@ -125,9 +136,11 @@ ADD_CUSTOM_TARGET( TutorialsMatricesCuda ALL DEPENDS
    SparseMatrixExample_setElements.out
    SparseMatrixExample_setElements_map.out
    SparseMatrixExample_setElement.out
-   SparseMatrixExample_forRows.out
+#   SparseMatrixExample_forRows.out
    SparseMatrixExample_rowsReduction_vectorProduct.out
    SparseMatrixViewExample_setElement.out
+   SymmetricSparseMatrixExample.out
+   BinarySparseMatrixExample.out
  )
 ELSE()
 ADD_CUSTOM_TARGET( TutorialsMatrices ALL DEPENDS

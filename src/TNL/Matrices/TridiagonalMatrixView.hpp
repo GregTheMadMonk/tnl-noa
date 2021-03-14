@@ -91,6 +91,19 @@ template< typename Real,
    template< typename Vector >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   rowCapacities.setSize( this->getRows() );
+   rowCapacities = 3;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Vector >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
@@ -120,7 +133,7 @@ getNonzeroElementsCount() const
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->values.getSize(), std::plus<>{}, fetch, 0 );
+   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
 template< typename Real,
@@ -378,7 +391,7 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forElements( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    const auto indexer = this->indexer;
@@ -413,7 +426,7 @@ template< typename Real,
   template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forRows( IndexType first, IndexType last, Function& function )
+forElements( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
    const auto indexer = this->indexer;
@@ -448,9 +461,9 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   this->forRows( 0, this->indxer.getNonEmptyRowsCount(), function );
+   this->forElements( 0, this->indxer.getNonEmptyRowsCount(), function );
 }
 
 template< typename Real,
@@ -460,9 +473,59 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forAllRows( Function& function )
+forEachElement( Function& function )
 {
-   this->forRows( 0, this->indexer.getNonemptyRowsCount(), function );
+   this->forElements( 0, this->indexer.getNonemptyRowsCount(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forElements( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function& function )
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forElements( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+sequentialForAllRows( Function& function ) const
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+sequentialForAllRows( Function& function )
+{
+   this->sequentialForRows( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -554,11 +617,11 @@ addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >&
          value = thisMult * value + matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
       if( thisMult == 0.0 )
-         this->forAllRows( add0 );
+         this->forEachElement( add0 );
       else if( thisMult == 1.0 )
-         this->forAllRows( add1 );
+         this->forEachElement( add1 );
       else
-         this->forAllRows( addGen );
+         this->forEachElement( addGen );
    }
 }
 

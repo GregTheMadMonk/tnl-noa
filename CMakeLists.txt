@@ -24,6 +24,7 @@ option(WITH_OPENMP "Build with OpenMP support" ON)
 option(WITH_MPI "Build with MPI support" ON)
 option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
+option(WITH_SYSTEM_GTEST "Use GTest installed in the local system and do not download the latest version" OFF)
 option(BUILD_BENCHMARKS "Compile the 'src/Benchmarks' directory" OFF)
 option(BUILD_EXAMPLES "Compile the 'src/Examples' directory" OFF)
 option(BUILD_TOOLS "Compile the 'src/Tools' directory" OFF)
@@ -158,8 +159,19 @@ link_libraries( stdc++fs )
 if( ${BUILD_TESTS} OR ${BUILD_MATRIX_TESTS} )
    enable_testing()
 
-   # build gtest libs
-   include( BuildGtest )
+   if( ${WITH_SYSTEM_GTEST} OR ${OFFLINE_BUILD} )
+      # find gtest installed in the local system
+      find_package(GTest REQUIRED)
+      if( GTEST_FOUND )
+         set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
+         include_directories( ${GTEST_INCLUDE_DIRS} )
+         link_libraries( ${GTEST_LIBRARIES} )
+      endif( GTEST_FOUND )
+   else()
+      # build gtest libs
+      include( BuildGtest )
+   endif()
+
 
    if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
       # enable code coverage reports
@@ -372,6 +384,7 @@ message( "   WITH_OPENMP = ${WITH_OPENMP}" )
 message( "   WITH_MPI = ${WITH_MPI}" )
 message( "   WITH_GMP = ${WITH_GMP}" )
 message( "   WITH_COVERAGE = ${WITH_COVERAGE}" )
+message( "   WITH_SYSTEM_GTEST= ${WITH_SYSTEM_GTEST}" )
 message( "   BUILD_BENCHMARKS = ${BUILD_BENCHMARKS}" )
 message( "   BUILD_EXAMPLES = ${BUILD_EXAMPLES}" )
 message( "   BUILD_TOOLS = ${BUILD_TOOLS}" )

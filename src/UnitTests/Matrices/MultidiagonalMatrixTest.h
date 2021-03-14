@@ -217,10 +217,10 @@ void test_GetCompressedRowLengths()
    m.setElement( 0, 0, 0.0 );
    m.setElement( 7, 7, 0.0 );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths( rows );
+   typename Matrix::RowsCapacitiesType rowLengths( rows );
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 2, 3, 4, 3, 3, 2, 2, 1 };
+   typename Matrix::RowsCapacitiesType correctRowLengths{ 2, 3, 4, 3, 3, 2, 2, 1 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 

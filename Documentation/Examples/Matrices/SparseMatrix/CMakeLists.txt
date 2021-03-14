@@ -30,12 +30,12 @@ IF( BUILD_CUDA )
                        OUTPUT SparseMatrixExample_setRowCapacities.out )
 
    CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElements_cuda SparseMatrixExample_setElements.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_cuda > 
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_cuda >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements.out
                        OUTPUT SparseMatrixExample_setElements.out )
 
    CUDA_ADD_EXECUTABLE( SparseMatrixExample_setElements_map_cuda SparseMatrixExample_setElements_map.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_map_cuda > 
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_map_cuda >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements_map.out
                        OUTPUT SparseMatrixExample_setElements_map.out )
 
@@ -79,15 +79,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_allRowsReduction.out
                        OUTPUT SparseMatrixExample_allRowsReduction.out )
 
-   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forRows_cuda SparseMatrixExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
-                       OUTPUT SparseMatrixExample_forRows.out )
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forElements_cuda SparseMatrixExample_forElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forElements.out
+                       OUTPUT SparseMatrixExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forAllRows_cuda SparseMatrixExample_forAllRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forAllRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forAllRows.out
-                       OUTPUT SparseMatrixExample_forAllRows.out )
+   CUDA_ADD_EXECUTABLE( SparseMatrixExample_forEachElement_cuda SparseMatrixExample_forEachElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forEachElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forEachElement.out
+                       OUTPUT SparseMatrixExample_forEachElement.out )
 
    CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_getSerializationType_cuda SparseMatrixViewExample_getSerializationType.cu )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_getSerializationType_cuda >
@@ -134,15 +134,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_allRowsReduction.out
                        OUTPUT SparseMatrixViewExample_allRowsReduction.out )
 
-   CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_forRows_cuda SparseMatrixViewExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forRows.out
-                       OUTPUT SparseMatrixViewExample_forRows.out )
+   CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_forElements_cuda SparseMatrixViewExample_forElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forElements.out
+                       OUTPUT SparseMatrixViewExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_forAllRows_cuda SparseMatrixViewExample_forAllRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forAllRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forAllRows.out
-                       OUTPUT SparseMatrixViewExample_forAllRows.out )
+   CUDA_ADD_EXECUTABLE( SparseMatrixViewExample_forEachElement_cuda SparseMatrixViewExample_forEachElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forEachElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forEachElement.out
+                       OUTPUT SparseMatrixViewExample_forEachElement.out )
 
 ELSE()
    ADD_EXECUTABLE( SparseMatrixExample_Constructor_init_list_1 SparseMatrixExample_Constructor_init_list_1.cpp )
@@ -176,12 +176,12 @@ ELSE()
                        OUTPUT SparseMatrixExample_setRowCapacities.out )
 
    ADD_EXECUTABLE( SparseMatrixExample_setElements SparseMatrixExample_setElements.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements > 
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements.out
                        OUTPUT SparseMatrixExample_setElements.out )
 
    ADD_EXECUTABLE( SparseMatrixExample_setElements_map SparseMatrixExample_setElements_map.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_map > 
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_setElements_map >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_setElements_map.out
                        OUTPUT SparseMatrixExample_setElements_map.out )
 
@@ -225,15 +225,15 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_allRowsReduction.out
                        OUTPUT SparseMatrixExample_allRowsReduction.out )
 
-   ADD_EXECUTABLE( SparseMatrixExample_forRows SparseMatrixExample_forRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forRows.out
-                       OUTPUT SparseMatrixExample_forRows.out )
+   ADD_EXECUTABLE( SparseMatrixExample_forElements SparseMatrixExample_forElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forElements >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forElements.out
+                       OUTPUT SparseMatrixExample_forElements.out )
 
-   ADD_EXECUTABLE( SparseMatrixExample_forAllRows SparseMatrixExample_forAllRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forAllRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forAllRows.out
-                       OUTPUT SparseMatrixExample_forAllRows.out )
+   ADD_EXECUTABLE( SparseMatrixExample_forEachElement SparseMatrixExample_forEachElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixExample_forEachElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixExample_forEachElement.out
+                       OUTPUT SparseMatrixExample_forEachElement.out )
 
    ADD_EXECUTABLE( SparseMatrixViewExample_getSerializationType SparseMatrixViewExample_getSerializationType.cpp )
    ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_getSerializationType >
@@ -280,15 +280,15 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_allRowsReduction.out
                        OUTPUT SparseMatrixViewExample_allRowsReduction.out )
 
-   ADD_EXECUTABLE( SparseMatrixViewExample_forRows SparseMatrixViewExample_forRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forRows.out
-                       OUTPUT SparseMatrixViewExample_forRows.out )
+   ADD_EXECUTABLE( SparseMatrixViewExample_forElements SparseMatrixViewExample_forElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forElements >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forElements.out
+                       OUTPUT SparseMatrixViewExample_forElements.out )
 
-   ADD_EXECUTABLE( SparseMatrixViewExample_forAllRows SparseMatrixViewExample_forAllRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forAllRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forAllRows.out
-                       OUTPUT SparseMatrixViewExample_forAllRows.out )
+   ADD_EXECUTABLE( SparseMatrixViewExample_forEachElement SparseMatrixViewExample_forEachElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND SparseMatrixViewExample_forEachElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SparseMatrixViewExample_forEachElement.out
+                       OUTPUT SparseMatrixViewExample_forEachElement.out )
 
 ENDIF()
 
@@ -309,8 +309,8 @@ ADD_CUSTOM_TARGET( RunSparseMatricesExamples ALL DEPENDS
    SparseMatrixExample_getElement.out
    SparseMatrixExample_rowsReduction.out
    SparseMatrixExample_allRowsReduction.out
-   SparseMatrixExample_forRows.out
-   SparseMatrixExample_forAllRows.out
+   SparseMatrixExample_forElements.out
+   SparseMatrixExample_forEachElement.out
    SparseMatrixViewExample_getSerializationType.out
    SparseMatrixViewExample_getCompressedRowLengths.out
    SparseMatrixViewExample_getConstRow.out
@@ -320,7 +320,7 @@ ADD_CUSTOM_TARGET( RunSparseMatricesExamples ALL DEPENDS
    SparseMatrixViewExample_getElement.out
    SparseMatrixViewExample_rowsReduction.out
    SparseMatrixViewExample_allRowsReduction.out
-   SparseMatrixViewExample_forRows.out
-   SparseMatrixViewExample_forAllRows.out
+   SparseMatrixViewExample_forElements.out
+   SparseMatrixViewExample_forEachElement.out
 )
 

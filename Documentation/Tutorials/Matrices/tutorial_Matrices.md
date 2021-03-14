@@ -19,8 +19,7 @@
    5. [Lambda matrices example](#lambda-matrices-flexible-reduction-example)
 6. [Matrix-vector product](#matrix_vector_product)
 7. [Matrix I/O operations](#matrix_io_operations)
-   1. [Matrix reader](#matrix-reader)
-   2. [Matrix writer](#matrix-writer)
+   1. [Matrix reader and writer](#matrix-reader-and-writer)
 8. [Appendix](#appendix)
 
 ## Introduction
@@ -101,7 +100,7 @@ There is no change in the dense matrix part of the table. The numbers grow propo
 | Real   | Index  | Dense matrix | Multidiagonal matrix |  Sparse matrix | Fill ratio |
 |:------:|:------:|:------------:|:--------------------:|:--------------:|:----------:|
 | float  | 32-bit |          4 B |                  4 B |            8 B |     << 50% |
-| float  | 32-bit |          4 B |                  4 B |           12 B |     << 30% |
+| float  | 64-bit |          4 B |                  4 B |           12 B |     << 30% |
 | double | 32-bit |          8 B |                  8 B |           12 B |     << 60% |
 | double | 64-bit |          8 B |                  8 B |           16 B |     << 50% |
 
@@ -175,7 +174,7 @@ There are several ways how to create a new matrix:
 4. **Methods `setElement` and `addElement` called on the host and copy matrix on GPU** setting particular matrix elements by the methods `setElement` and `addElement` when the matrix is allocated on GPU can be time consuming for large matrices. Setting up the matrix on CPU using the same methods and copying it on GPU at once when the setup is finished can be significantly more efficient. A drawback is that we need to allocate temporarily whole matrix on CPU.
 5. **Methods `setElement` and `addElement` called from native device** allow to do efficient matrix elements setup even on devices (GPUs). In this case, the methods must be called from a GPU kernel or a lambda function combined with the parallel for (\ref TNL::Algorithms::ParallelFor). The user get very good performance even when manipulating matrix allocated on GPU. On the other hand, only data structures allocated on GPUs can be accessed from the kernel or lambda function. The matrix can be accessed in the GPU kernel or lambda function by means of [matrix view](#matrix_view) or the shared pointer (\ref TNL::Pointers::SharedPointer).
 6. **Method `getRow` combined with `ParallelFor`** is very similar to the previous one. The difference is that we first fetch helper object called *matrix row* which is linked to particular matrix row. Using methods of this object, one may change the matrix elements in given matrix row. An advantage is that the access to the matrix row is resolved only once for all elements in the row. In some more sophisticated sparse matrix formats, this can be nontrivial operation and this approach may slightly improve the performance. Another advantage for sparse matrices is that we access the matrix elements based on their *local index* ('localIdx', see [Indexing of nonzero matrix elements in sparse matrices](indexing_of_nonzero_matrix_elements_in_sparse_matrices)) in the row which is something like a rank of the nonzero element in the row. This is more efficient than addressing the matrix elements by the column indexes which requires searching in the matrix row. So this may significantly improve the performance of setup of sparse matrices. When it comes to dense matrices, there should not be great difference in performance compared to use of the methods `setElement` and `getElement`. Note that when the method is called from a GPU kernel or a lambda function, only data structures allocated on GPU can be accessed and the matrix must be made accessible by the means of matrix view.
-7. **Method `forRows`** this approach is very similar to the previous one but it avoids using `ParallelFor` and necessity of passing the matrix to GPU kernels by matrix view or shared pointers.
+7. **Method `forElements`** this approach is very similar to the previous one but it avoids using `ParallelFor` and necessity of passing the matrix to GPU kernels by matrix view or shared pointers.
 
 The following table shows pros and cons of particular methods:
 
@@ -196,7 +195,7 @@ The following table shows pros and cons of particular methods:
 |                                         |           |             |                                                                       | Requires writing GPU kernel or lambda function.                       |
 |                                         |           |             |                                                                       | Allows accessing only data allocated on the same device/memory space. |
 |                                         |           |             |                                                                       | Use of matrix local indexes can be less intuitive.                    |
-| **forRows**                             | *****     | **          | Best efficiency for sparse matrices.                                  | Requires setting of row capacities.                                   |
+| **forElements**                         | *****     | **          | Best efficiency for sparse matrices.                                  | Requires setting of row capacities.                                   |
 |                                         |           |             | Avoid use of matrix view or shared pointer in kernels/lambda function.| Requires writing GPU kernel or lambda function.                       |
 |                                         |           |             |                                                                       | Allows accessing only data allocated on the same device/memory space. |
 |                                         |           |             |                                                                       | Use of matrix local indexes is less intuitive.                        |
@@ -215,18 +214,18 @@ Though it may seem that the later methods come with more cons than pros, they of
 
 In the test of dense matrices, we set each matrix element to value equal to `rowIdx + columnIdx`. The times in seconds obtained on CPU looks as follows:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` |  `getRow`    | `forRows`   |
-|----------------------------:|---------------------:|--------------------------------:|-------------:|------------:|
-|                          16 |           0.00000086 |                       0.0000053 |   0.00000035 |   0.0000023 |
-|                          32 |           0.00000278 |                       0.0000050 |   0.00000201 |   0.0000074 |
-|                          64 |           0.00000703 |                       0.0000103 |   0.00000354 |   0.0000203 |
-|                         128 |           0.00002885 |                       0.0000312 |   0.00000867 |   0.0000709 |
-|                         256 |           0.00017543 |                       0.0000439 |   0.00002490 |   0.0001054 |
-|                         512 |           0.00078153 |                       0.0001683 |   0.00005999 |   0.0002713 |
-|                        1024 |           0.00271989 |                       0.0006691 |   0.00003808 |   0.0003942 |
-|                        2048 |           0.01273520 |                       0.0038295 |   0.00039116 |   0.0017083 |
-|                        4096 |           0.08381450 |                       0.0716542 |   0.00937997 |   0.0116771 |
-|                        8192 |           0.51596800 |                       0.3535530 |   0.03971900 |   0.0467374 |
+| Matrix rows and columns     | `setElement` on host | `setElement` with `ParallelFor` |  `getRow`    | `forElements`   |
+|----------------------------:|---------------------:|--------------------------------:|-------------:|----------------:|
+|                          16 |           0.00000086 |                       0.0000053 |   0.00000035 |       0.0000023 |
+|                          32 |           0.00000278 |                       0.0000050 |   0.00000201 |       0.0000074 |
+|                          64 |           0.00000703 |                       0.0000103 |   0.00000354 |       0.0000203 |
+|                         128 |           0.00002885 |                       0.0000312 |   0.00000867 |       0.0000709 |
+|                         256 |           0.00017543 |                       0.0000439 |   0.00002490 |       0.0001054 |
+|                         512 |           0.00078153 |                       0.0001683 |   0.00005999 |       0.0002713 |
+|                        1024 |           0.00271989 |                       0.0006691 |   0.00003808 |       0.0003942 |
+|                        2048 |           0.01273520 |                       0.0038295 |   0.00039116 |       0.0017083 |
+|                        4096 |           0.08381450 |                       0.0716542 |   0.00937997 |       0.0116771 |
+|                        8192 |           0.51596800 |                       0.3535530 |   0.03971900 |       0.0467374 |
 
 Here:
 
@@ -236,18 +235,18 @@ Here:
 
 And the same on GPU is in the following table:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` on GPU | `getRow`     | `forRows`   |
-|----------------------------:|---------------------:|------------------------------:|--------------------:|-------------:|------------:|
-|                          16 |           0.027835   |                       0.02675 |         0.000101198 | 0.00009903   | 0.000101214 |
-|                          32 |           0.002776   |                       0.00018 |         0.000099197 | 0.00009901   | 0.000100481 |
-|                          64 |           0.010791   |                       0.00015 |         0.000094446 | 0.00009493   | 0.000101796 |
-|                         128 |           0.043014   |                       0.00021 |         0.000099397 | 0.00010024   | 0.000102729 |
-|                         256 |           0.171029   |                       0.00056 |         0.000100469 | 0.00010448   | 0.000105893 |
-|                         512 |           0.683627   |                       0.00192 |         0.000103346 | 0.00011034   | 0.000112752 |
-|                        1024 |           2.736680   |                       0.00687 |         0.000158805 | 0.00016932   | 0.000170302 |
-|                        2048 |          10.930300   |                       0.02474 |         0.000509000 | 0.00050917   | 0.000511183 |
-|                        4096 |          43.728700   |                       0.13174 |         0.001557030 | 0.00156117   | 0.001557930 |
-|                        8192 |         174.923000   |                       0.70602 |         0.005312470 | 0.00526658   | 0.005263870 |
+| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` on GPU | `getRow`     | `forElements`   |
+|----------------------------:|---------------------:|------------------------------:|--------------------:|-------------:|----------------:|
+|                          16 |           0.027835   |                       0.02675 |         0.000101198 | 0.00009903   |     0.000101214 |
+|                          32 |           0.002776   |                       0.00018 |         0.000099197 | 0.00009901   |     0.000100481 |
+|                          64 |           0.010791   |                       0.00015 |         0.000094446 | 0.00009493   |     0.000101796 |
+|                         128 |           0.043014   |                       0.00021 |         0.000099397 | 0.00010024   |     0.000102729 |
+|                         256 |           0.171029   |                       0.00056 |         0.000100469 | 0.00010448   |     0.000105893 |
+|                         512 |           0.683627   |                       0.00192 |         0.000103346 | 0.00011034   |     0.000112752 |
+|                        1024 |           2.736680   |                       0.00687 |         0.000158805 | 0.00016932   |     0.000170302 |
+|                        2048 |          10.930300   |                       0.02474 |         0.000509000 | 0.00050917   |     0.000511183 |
+|                        4096 |          43.728700   |                       0.13174 |         0.001557030 | 0.00156117   |     0.001557930 |
+|                        8192 |         174.923000   |                       0.70602 |         0.005312470 | 0.00526658   |     0.005263870 |
 
 Here:
 
@@ -255,7 +254,7 @@ Here:
 * **setElement on host and copy** tests are much faster because the matrix is copied from CPU to GPU on the whole which is more efficient.
 * **setElement on GPU** tests are even more faster since there is no transfer of data between CPU and GPU.
 * **getRow** tests have the same performance as "`setElement` on GPU".
-* **forRows** tests have the same performance as both "`setElement` on GPU" and "`getRow`".
+* **forElements** tests have the same performance as both "`setElement` on GPU" and "`getRow`".
 
 You can see the source code of the previous benchmark in [Appendix](#benchmark-of-dense-matrix-setup).
 
@@ -263,18 +262,18 @@ You can see the source code of the previous benchmark in [Appendix](#benchmark-o
 
 The sparse matrices are tested on computation of matrix the [discrete Laplace operator in 2D](https://en.wikipedia.org/wiki/Discrete_Laplace_operator). This matrix has at most five nonzero elements in each row. The times for sparse matrix (with CSR format) on CPU in seconds looks as follows:
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forRows`    |
-|----------------------------:|-------------:|---------------------:|--------------------------------:|------------:|-------------:|
-|                         256 |      0.00016 |             0.000017 |                        0.000014 |    0.000013 |     0.000020 |
-|                       1,024 |      0.00059 |             0.000044 |                        0.000021 |    0.000019 |     0.000022 |
-|                       4,096 |      0.00291 |             0.000130 |                        0.000031 |    0.000022 |     0.000031 |
-|                      16,384 |      0.01414 |             0.000471 |                        0.000067 |    0.000031 |     0.000065 |
-|                      65,536 |      0.06705 |             0.001869 |                        0.000218 |    0.000074 |     0.000209 |
-|                     262,144 |      0.31728 |             0.007436 |                        0.000856 |    0.000274 |     0.000799 |
-|                   1,048,576 |      1.46388 |             0.027087 |                        0.006162 |    0.005653 |     0.005904 |
-|                   4,194,304 |      7.46147 |             0.102808 |                        0.028385 |    0.027925 |     0.027937 |
-|                  16,777,216 |     38.95900 |             0.413823 |                        0.125870 |    0.124588 |     0.123858 |
-|                  67,108,864 |    185.75700 |             1.652580 |                        0.505232 |    0.501003 |     0.500927 |
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` with `ParallelFor` | `getRow`    | `forElements`    |
+|----------------------------:|-------------:|---------------------:|--------------------------------:|------------:|-----------------:|
+|                         256 |      0.00016 |             0.000017 |                        0.000014 |    0.000013 |         0.000020 |
+|                       1,024 |      0.00059 |             0.000044 |                        0.000021 |    0.000019 |         0.000022 |
+|                       4,096 |      0.00291 |             0.000130 |                        0.000031 |    0.000022 |         0.000031 |
+|                      16,384 |      0.01414 |             0.000471 |                        0.000067 |    0.000031 |         0.000065 |
+|                      65,536 |      0.06705 |             0.001869 |                        0.000218 |    0.000074 |         0.000209 |
+|                     262,144 |      0.31728 |             0.007436 |                        0.000856 |    0.000274 |         0.000799 |
+|                   1,048,576 |      1.46388 |             0.027087 |                        0.006162 |    0.005653 |         0.005904 |
+|                   4,194,304 |      7.46147 |             0.102808 |                        0.028385 |    0.027925 |         0.027937 |
+|                  16,777,216 |     38.95900 |             0.413823 |                        0.125870 |    0.124588 |         0.123858 |
+|                  67,108,864 |    185.75700 |             1.652580 |                        0.505232 |    0.501003 |         0.500927 |
 
 Here:
 
@@ -282,33 +281,33 @@ Here:
 * **setElement on host** tests are much faster compared to STL map, it does not need to allocate anything else except the sparse matrix. However, matrix row capacities must be known in advance.
 * **setElement with ParallelFor** tests run in parallel in several OpenMP threads and so this can be faster for larger matrices.
 * **getRow** tests perform the same as "setElement with ParallelFor".
-* **forRows** tests perform the same as both "setElement with ParallelFor" and "forRows".
+* **forElements** tests perform the same as both "setElement with ParallelFor" and "forElements".
 
 We see, that the use of STL map makes sense only in situation when it is hard to estimate necessary row capacities. Otherwise very easy setup with `setElement` method is much faster. If the performance is the highest priority, `getRow` method should be preferred. The results for GPU are in the following table:
 
-| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on host and copy |`setElement` on GPU | `getRow`    | `forRows`   |
-|----------------------------:|-------------:|---------------------:|------------------------------:|-------------------:|------------:|------------:|
-|                         256 |       0.002  |                0.036 |                        0.0280 |            0.00017 |     0.00017 |     0.00017 |
-|                       1,024 |       0.001  |                0.161 |                        0.0006 |            0.00017 |     0.00017 |     0.00017 |
-|                       4,096 |       0.003  |                0.680 |                        0.0010 |            0.00020 |     0.00020 |     0.00020 |
-|                      16,384 |       0.015  |                2.800 |                        0.0034 |            0.00021 |     0.00020 |     0.00021 |
-|                      65,536 |       0.074  |               11.356 |                        0.0130 |            0.00048 |     0.00047 |     0.00048 |
-|                     262,144 |       0.350  |               45.745 |                        0.0518 |            0.00088 |     0.00087 |     0.00088 |
-|                   1,048,576 |       1.630  |              183.632 |                        0.2057 |            0.00247 |     0.00244 |     0.00245 |
-|                   4,194,304 |       8.036  |              735.848 |                        0.8119 |            0.00794 |     0.00783 |     0.00788 |
-|                  16,777,216 |      41.057  |             2946.610 |                        3.2198 |            0.02481 |     0.02429 |     0.02211 |
-|                  67,108,864 |     197.581  |            11791.601 |                       12.7775 |            0.07196 |     0.06329 |     0.06308 |
+| Matrix rows and columns     |  STL Map     | `setElement` on host | `setElement` on host and copy |`setElement` on GPU | `getRow`    | `forElements`   |
+|----------------------------:|-------------:|---------------------:|------------------------------:|-------------------:|------------:|----------------:|
+|                         256 |       0.002  |                0.036 |                        0.0280 |            0.00017 |     0.00017 |         0.00017 |
+|                       1,024 |       0.001  |                0.161 |                        0.0006 |            0.00017 |     0.00017 |         0.00017 |
+|                       4,096 |       0.003  |                0.680 |                        0.0010 |            0.00020 |     0.00020 |         0.00020 |
+|                      16,384 |       0.015  |                2.800 |                        0.0034 |            0.00021 |     0.00020 |         0.00021 |
+|                      65,536 |       0.074  |               11.356 |                        0.0130 |            0.00048 |     0.00047 |         0.00048 |
+|                     262,144 |       0.350  |               45.745 |                        0.0518 |            0.00088 |     0.00087 |         0.00088 |
+|                   1,048,576 |       1.630  |              183.632 |                        0.2057 |            0.00247 |     0.00244 |         0.00245 |
+|                   4,194,304 |       8.036  |              735.848 |                        0.8119 |            0.00794 |     0.00783 |         0.00788 |
+|                  16,777,216 |      41.057  |             2946.610 |                        3.2198 |            0.02481 |     0.02429 |         0.02211 |
+|                  67,108,864 |     197.581  |            11791.601 |                       12.7775 |            0.07196 |     0.06329 |         0.06308 |
 
 Here:
 
 * **STL Map** tests show that the times are comparable to CPU times which means the most of the time is spent by creating the matrix on CPU.
 * **setElement on host**  tests are again extremely slow for large matrices. It is even slower than the use of STL map. So in case of GPU, this is another reason for using the STL map.
 * **setElement on host and copy** tests are, similar to the dense matrix, much faster compared to the previous approaches. So it is the best way when you need to use data structures available only on the host system (CPU).
-* **setElement on GPU** tests exhibit the best performance together with `getRow` and `forRows` methods. Note, however, that this method can be slower that `getRow` and `forRows` if there would be more nonzero matrix elements in a row.
-* **getRow** tests exhibit the best performance together with `setElement` on GPU and `forRows` methods.
-* **forRows** tests exhibit the best performance together with `getRow` and `setElement` on GPU methods.
+* **setElement on GPU** tests exhibit the best performance together with `getRow` and `forElements` methods. Note, however, that this method can be slower that `getRow` and `forElements` if there would be more nonzero matrix elements in a row.
+* **getRow** tests exhibit the best performance together with `setElement` on GPU and `forElements` methods.
+* **forElements** tests exhibit the best performance together with `getRow` and `setElement` on GPU methods.
 
-Here we see, that the `setElement` methods performs extremely bad because all matrix elements are transferred to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Setup of the matrix on CPU by the means of `setElement` method and transfer on GPU is even faster. However, the best performance can be obtained only we creating the matrix directly on GPU by methods `setElement`, `getRow` and `forRows`. Note, however, that even if all of them perform the same way, for matrices with more nonzero matrix elements in a row, `setElement` could be slower compared to the `getRow` and `forRows`.
+Here we see, that the `setElement` methods performs extremely bad because all matrix elements are transferred to GPU one-by-one. Even STL map is much faster. Note, that the times for STL map are not much higher compared to CPU which indicates that the transfer of the matrix on GPU is not dominant. Setup of the matrix on CPU by the means of `setElement` method and transfer on GPU is even faster. However, the best performance can be obtained only we creating the matrix directly on GPU by methods `setElement`, `getRow` and `forElements`. Note, however, that even if all of them perform the same way, for matrices with more nonzero matrix elements in a row, `setElement` could be slower compared to the `getRow` and `forElements`.
 
 You can see the source code of the previous benchmark in [Appendix](#benchmark-of-sparse-matrix-setup).
 
@@ -316,46 +315,46 @@ You can see the source code of the previous benchmark in [Appendix](#benchmark-o
 
 Finally, the following tables show the times of the same test performed with multidiagonal matrix. Times on CPU in seconds looks as follows:
 
-| Matrix rows and columns     |  `setElement` on host     | `setElement` with `ParallelFor` | `getRow`    | `forRows`   |
-|----------------------------:|--------------------------:|--------------------------------:|------------:|------------:|
-|                         256 |                  0.000055 |                       0.0000038 |    0.000004 |    0.000009 |
-|                       1,024 |                  0.000002 |                       0.0000056 |    0.000003 |    0.000006 |
-|                       4,096 |                  0.000087 |                       0.0000130 |    0.000005 |    0.000014 |
-|                      16,384 |                  0.000347 |                       0.0000419 |    0.000010 |    0.000046 |
-|                      65,536 |                  0.001378 |                       0.0001528 |    0.000032 |    0.000177 |
-|                     262,144 |                  0.005504 |                       0.0006025 |    0.000131 |    0.000711 |
-|                   1,048,576 |                  0.019392 |                       0.0028773 |    0.001005 |    0.003265 |
-|                   4,194,304 |                  0.072078 |                       0.0162378 |    0.011915 |    0.018065 |
-|                  16,777,216 |                  0.280085 |                       0.0642682 |    0.048876 |    0.072084 |
-|                  67,108,864 |                  1.105120 |                       0.2427610 |    0.181974 |    0.272579 |
+| Matrix rows and columns     |  `setElement` on host     | `setElement` with `ParallelFor` | `getRow`    | `forElements`   |
+|----------------------------:|--------------------------:|--------------------------------:|------------:|----------------:|
+|                         256 |                  0.000055 |                       0.0000038 |    0.000004 |        0.000009 |
+|                       1,024 |                  0.000002 |                       0.0000056 |    0.000003 |        0.000006 |
+|                       4,096 |                  0.000087 |                       0.0000130 |    0.000005 |        0.000014 |
+|                      16,384 |                  0.000347 |                       0.0000419 |    0.000010 |        0.000046 |
+|                      65,536 |                  0.001378 |                       0.0001528 |    0.000032 |        0.000177 |
+|                     262,144 |                  0.005504 |                       0.0006025 |    0.000131 |        0.000711 |
+|                   1,048,576 |                  0.019392 |                       0.0028773 |    0.001005 |        0.003265 |
+|                   4,194,304 |                  0.072078 |                       0.0162378 |    0.011915 |        0.018065 |
+|                  16,777,216 |                  0.280085 |                       0.0642682 |    0.048876 |        0.072084 |
+|                  67,108,864 |                  1.105120 |                       0.2427610 |    0.181974 |        0.272579 |
 
 Here:
 
 * **setElement on host** tests show that this method is fairly efficient.
 * **setElement with ParallelFor** tests run in parallel in several OpenMP threads compared to "setElement on host" tests. For larger matrices, this way of matrix setup performs better.
-* **getRow** tests perform more or less the same as "setElement with ParallelFor" and `forRows`.
-* **forRows** tests perform more or less the same as "setElement with ParallelFor" and `getRow`.
+* **getRow** tests perform more or less the same as "setElement with ParallelFor" and `forElements`.
+* **forElements** tests perform more or less the same as "setElement with ParallelFor" and `getRow`.
 
 Note, that setup of multidiagonal matrix is faster compared to the same matrix stored in general sparse format. Results for GPU are in the following table:
 
-| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` on GPU | `getRow`    | `forRows`   |
-|----------------------------:|---------------------:|------------------------------:|--------------------:|------------:|------------:|
-|                         256 |                0.035 |                       0.02468 |            0.000048 |    0.000045 |   0.000047  |
-|                       1,024 |                0.059 |                       0.00015 |            0.000047 |    0.000045 |   0.000047  |
-|                       4,096 |                0.251 |                       0.00044 |            0.000048 |    0.000045 |   0.000047  |
-|                      16,384 |                1.030 |                       0.00158 |            0.000049 |    0.000046 |   0.000048  |
-|                      65,536 |                4.169 |                       0.00619 |            0.000053 |    0.000048 |   0.000052  |
-|                     262,144 |               16.807 |                       0.02187 |            0.000216 |    0.000214 |   0.000217  |
-|                   1,048,576 |               67.385 |                       0.08043 |            0.000630 |    0.000629 |   0.000634  |
-|                   4,194,304 |              270.025 |                       0.31272 |            0.001939 |    0.001941 |   0.001942  |
-|                  16,777,216 |             1080.741 |                       1.18849 |            0.003212 |    0.004185 |   0.004207  |
-|                  67,108,864 |             4326.120 |                       4.74481 |            0.013672 |    0.022494 |   0.030369  |
+| Matrix rows and columns     | `setElement` on host | `setElement` on host and copy | `setElement` on GPU | `getRow`    | `forElements`   |
+|----------------------------:|---------------------:|------------------------------:|--------------------:|------------:|----------------:|
+|                         256 |                0.035 |                       0.02468 |            0.000048 |    0.000045 |       0.000047  |
+|                       1,024 |                0.059 |                       0.00015 |            0.000047 |    0.000045 |       0.000047  |
+|                       4,096 |                0.251 |                       0.00044 |            0.000048 |    0.000045 |       0.000047  |
+|                      16,384 |                1.030 |                       0.00158 |            0.000049 |    0.000046 |       0.000048  |
+|                      65,536 |                4.169 |                       0.00619 |            0.000053 |    0.000048 |       0.000052  |
+|                     262,144 |               16.807 |                       0.02187 |            0.000216 |    0.000214 |       0.000217  |
+|                   1,048,576 |               67.385 |                       0.08043 |            0.000630 |    0.000629 |       0.000634  |
+|                   4,194,304 |              270.025 |                       0.31272 |            0.001939 |    0.001941 |       0.001942  |
+|                  16,777,216 |             1080.741 |                       1.18849 |            0.003212 |    0.004185 |       0.004207  |
+|                  67,108,864 |             4326.120 |                       4.74481 |            0.013672 |    0.022494 |       0.030369  |
 
 * **setElement on host** tests are extremely slow again, especially for large matrices.
 * **setElement on host and copy** tests are much faster compared to the previous.
-* **setElement with ParallelFor** tests offer the best performance. They are even faster then `getRow` and `forRows` method. This, however, does not have be true for matrices having more nonzero elements in a row.
-* **getRow** tests perform more or less the same as `forRows`. For matrices having more nonzero elements in a row this method could be faster than `setElement`.
-* **forRows** tests perform more or less the same as `getRow`.
+* **setElement with ParallelFor** tests offer the best performance. They are even faster then `getRow` and `forElements` method. This, however, does not have be true for matrices having more nonzero elements in a row.
+* **getRow** tests perform more or less the same as `forElements`. For matrices having more nonzero elements in a row this method could be faster than `setElement`.
+* **forElements** tests perform more or less the same as `getRow`.
 
 Note that multidiagonal matrix performs better compared to general sparse matrix. One reason for it is the fact, that the multidiagonal type does not store explicitly column indexes of all matrix elements. Because of this, less data need to be transferred from the memory.
 
@@ -416,13 +415,13 @@ Here we show an example:
 
 Here we create the matrix on the line 10 and get the matrix view on the line 16. Next we use `ParallelFor` (\ref TNL::Algorithms::ParallelFor) (line 26) to iterate over the matrix rows and the lambda function `f` (lines 18-21) for each of them. In the lambda function, we first fetch the matrix row by means of the merhod `getRow` (\ref TNL::Matrices::DenseMatrixView::getRow) and next we set the matrix elements by using the method `setElement` of the matrix row (\ref TNL::Matrices::DenseMatrixRowView::setElement). For the compatibility with the sparse matrices, use the variant of `setElement` with the parameter `localIdx`. It has no effect here, it is only for compatibility of the interface.
 
-#### Method `forRows`
+#### Method `forElements`
 
- The next example demonstrates the method `forRows` (\ref TNL::Matrices::DenseMatrix::forRows) which works in very similar way as the method `getRow` but it is slightly easier to use. It is also compatible with sparse matrices. See the following example:
+ The next example demonstrates the method `forElements` (\ref TNL::Matrices::DenseMatrix::forElements) which works in very similar way as the method `getRow` but it is slightly easier to use. It is also compatible with sparse matrices. See the following example:
 
-\includelineno DenseMatrixExample_forRows.cpp
+\includelineno DenseMatrixExample_forElements.cpp
 
-We do not need any matrix view and instead of calling `ParallelFor` (\ref TNL::Algorithms::ParallelFor) we call just the method `forRows` (line 18). The lambda function `f` (line 11) must accept the following parameters:
+We do not need any matrix view and instead of calling `ParallelFor` (\ref TNL::Algorithms::ParallelFor) we call just the method `forElements` (line 18). The lambda function `f` (line 11) must accept the following parameters:
 
 * `rowIdx` is the row index of given matrix element.
 * `columnIdx` is the column index of given matrix element.
@@ -431,7 +430,7 @@ We do not need any matrix view and instead of calling `ParallelFor` (\ref TNL::A
 
 The result looks as follows:
 
-\include DenseMatrixExample_forRows.out
+\include DenseMatrixExample_forElements.out
 
 ### Sparse matrices <a name="sparse_matrices_setup"></a>
 
@@ -587,9 +586,9 @@ The result looks as follows:
 
 \include SparseMatrixViewExample_getRow.out
 
-#### Method `forRows`
+#### Method `forElements`
 
-Finally, another efficient way of setting the nonzero matrix elements, is use of the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows). It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each nonzero element. The lambda function provides the following data:
+Finally, another efficient way of setting the nonzero matrix elements, is use of the method `forElements` (\ref TNL::Matrices::SparseMatrix::forElements). It requires indexes of the range of rows (`begin` and `end`) to be processed and a lambda function `function` which is called for each nonzero element. The lambda function provides the following data:
 
 * `rowIdx` is a row index of the matrix element.
 * `localIdx` is an index of the nonzero matrix element within the matrix row.
@@ -599,9 +598,9 @@ Finally, another efficient way of setting the nonzero matrix elements, is use of
 
 See the following example:
 
-\includelineno SparseMatrixExample_forRows.cpp
+\includelineno SparseMatrixExample_forElements.cpp
 
-On the line 9, we allocate a lower triangular matrix byt setting the row capacities as `{1,2,3,4,5}`. On the line 11, we prepare lambda function `f` which we execute on the line 22 just by calling the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows). This method takes the range of matrix rows as the first two parameters and the lambda function as the last parameter. The lambda function receives parameters mentioned above (see the line 11). We first check if the matrix element coordinates (`rowIdx` and `localIdx`) points to an element lying before the matrix diagonal or on the diagonal (line 12). In case of the lower triangular matrix in our example, the local index is in fact the same as the column index
+On the line 9, we allocate a lower triangular matrix byt setting the row capacities as `{1,2,3,4,5}`. On the line 11, we prepare lambda function `f` which we execute on the line 22 just by calling the method `forElements` (\ref TNL::Matrices::SparseMatrix::forElements). This method takes the range of matrix rows as the first two parameters and the lambda function as the last parameter. The lambda function receives parameters mentioned above (see the line 11). We first check if the matrix element coordinates (`rowIdx` and `localIdx`) points to an element lying before the matrix diagonal or on the diagonal (line 12). In case of the lower triangular matrix in our example, the local index is in fact the same as the column index
 
 \f[
 \left(
@@ -615,7 +614,7 @@ On the line 9, we allocate a lower triangular matrix byt setting the row capacit
 \right)
 \f]
 
-If we call the method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows) to setup the matrix elements for the first time, the parameter `columnIdx` has no sense because the matrix elements and their column indexes were not set yet. Therefore it is important that the test on the line 12 reads as
+If we call the method `forElements` (\ref TNL::Matrices::SparseMatrix::forElements) to setup the matrix elements for the first time, the parameter `columnIdx` has no sense because the matrix elements and their column indexes were not set yet. Therefore it is important that the test on the line 12 reads as
 
 ```
 if( rowIdx < localIdx )
@@ -629,7 +628,52 @@ if( rowIdx < columnIdx )
 
 would not make sense. If we pass through this test, the matrix element lies in the lower triangular part of the matrix and we may set the matrix elements which is done on the lines 17 and 18. The column index (`columnIdx`) is set to local index (line 17) and `value` is set on the line 18. The result looks as follows:
 
-\include SparseMatrixExample_forRows.out
+\include SparseMatrixExample_forElements.out
+
+#### Symmetric sparse matrices
+
+For sparse [symmetric matrices](https://en.wikipedia.org/wiki/Symmetric_matrix), TNL offers a format storing only a half of the matrix elements. More precisely, ony the matrix diagonal and the elements bellow are stored in the memory. The matrix elements above the diagonal are deduced from those bellow. If such a symmetric format is used on GPU, atomic operations must be used in some matrix operations. For this reason, symmetric matrices can be combined only with matrix elements values expressed in `float` or `double` type. An advantage of the symmetric formats is lower memory consumption. Since less data need to be transferred from the memory, better performance might be observed. In some cases, however, the use of atomic operations on GPU may cause performance drop. Mostly we can see approximately the same performance compared to general formats but we can profit from lower memory requirements which is appreciated especially on GPU. The following example shows how to create symmetric sparse matrix.
+
+\includelineno SymmetricSparseMatrixExample.cpp
+
+We construct matrix of the following form
+
+\f[
+\left(
+\begin{array}{ccccc}
+ 1  & \color{grey}{2} & \color{grey}{3} & \color{grey}{4} & \color{grey}{5}  \\
+ 2  &  1 &    &    &     \\
+ 3  &    &  1 &    &     \\
+ 4  &    &    &  1 &     \\
+ 5  &    &    &    &  1
+\end{array}
+\right)
+\f]
+
+The elements depicted in grey color are not stored in the memory. The main difference, compared to creation of general sparse matrix, is on line 9 where we state that the matrix is symmetric by setting the matrix type to \ref TNL::Matrices::SymmetricMatrix. Next we set only the diagonal elements and those lying bellow the diagonal (lines 13-17). When we print the matrix (line 19) we can see also the symmetric part above the diagonal. Next we test product of matrix and vector (lines 21-23). The result looks as follows:
+
+\include SymmetricSparseMatrixExample.out
+
+**Warning: Assignment of symmetric sparse matrix to general sparse matrix does not give correct result, currently. Only the diagonal and the lower part of the matrix is assigned.**
+
+#### Binary sparse matrices
+
+If the matrix element value type (i.e. `Real` type) is set to `bool` the matrix elements can be only `1` or `0`. So in the sparse matrix formats, where we do not store the zero matrix elements, explicitly stored elements can have only one possible value which is `1`.  Therefore we do not need to store the values, only the positions of the nonzero elements. The array `values`, which usualy stores the matrix elements values, can be completely omitted and we can reduce the memory requirements. The following table shows how much we can reduce the memory consumption when using binary matrix instead of common sparse matrix using `float` or `double` types:
+
+| Real   | Index  | Common sparse matrix | Binary sparse matrix | Ratio      |
+|:------:|:------:|:--------------------:|:--------------------:|:----------:|
+| float  | 32-bit |         4 + 4 =  8 B |                  4 B |        50% |
+| float  | 64-bit |         4 + 8 = 12 B |                  8 B |        75% |
+| double | 32-bit |         8 + 4 = 12 B |                  4 B |        33% |
+| double | 64-bit |         8 + 8 = 16 B |                  8 B |        50% |
+
+The following example demonstrates the use of binary matrix:
+
+\includelineno BinarySparseMatrixExample.cpp
+
+All we need to do is set the `Real` type to `bool` as we can see on the line 9. We can see that even though we set different values to different matrix elements (lines 14-18) at the end all of them are turned into ones (printing of the matrix on the line 20). There is an issue, however, which is demonstrated on the product of the matrix with a vector. Nonbinary matrices compute all operations using the `Real` type. If it is set to `bool` operations like [SpMV](https://en.wikipedia.org/wiki/Sparse_matrix-vector_multiplication) would not get correct solution. Therefore sparse matrices use another type called `ComputeReal` which is the 6th template parameter of \ref TNL::Matrices::SparseMatrix. By default it is set to `Index` type but it can be changed by the user. On the lines 26-29 we show how to change this type to `double` and what is the effect of it (correct result of matrix-vector multiplication). The result looks as follows:
+
+\include BinarySparseMatrixExample.out
 
 ### Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
 
@@ -802,17 +846,17 @@ The result looks as follows:
 
 \include TridiagonalMatrixViewExample_getRow.out
 
-#### Method `forRows`
+#### Method `forElements`
 
-Finally, even a bit more simple way of matrix elements manipulation with the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) is demonstrated in the following example:
+Finally, even a bit more simple way of matrix elements manipulation with the method `forElements` (\ref TNL::Matrices::TridiagonalMatrix::forElements) is demonstrated in the following example:
 
-\includelineno TridiagonalMatrixViewExample_forRows.cpp
+\includelineno TridiagonalMatrixViewExample_forElements.cpp
 
-On the line 41, we call the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) instead of parallel for (\ref TNL::Algorithms::ParallelFor). This method iterates over all matrix rows and all nonzero matrix elements. The lambda function on the line 24 therefore do not receive only the matrix row index but also local index of the matrix element (`localIdx`) which is a rank of the nonzero matrix element in given row  - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). Next parameter, `columnIdx` received by the lambda function, is the column index of the matrix element. The fourth parameter `value` is a reference on the matrix element which we use for its modification. If the last parameter `compute` is set to false, the iterations over the matrix rows is terminated.
+On the line 41, we call the method `forElements` (\ref TNL::Matrices::TridiagonalMatrix::forElements) instead of parallel for (\ref TNL::Algorithms::ParallelFor). This method iterates over all matrix rows and all nonzero matrix elements. The lambda function on the line 24 therefore do not receive only the matrix row index but also local index of the matrix element (`localIdx`) which is a rank of the nonzero matrix element in given row  - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). Next parameter, `columnIdx` received by the lambda function, is the column index of the matrix element. The fourth parameter `value` is a reference on the matrix element which we use for its modification. If the last parameter `compute` is set to false, the iterations over the matrix rows is terminated.
 
 The result looks as follows:
 
-\include TridiagonalMatrixViewExample_forRows.out
+\include TridiagonalMatrixViewExample_forElements.out
 
 ### Multidiagonal matrices <a name="multidiagonal_matrices_setup"></a>
 
@@ -1058,13 +1102,13 @@ We use `ParallelFor2D` (\ref TNL::Algorithms::ParallelFor2D) to iterate over all
 
 \include MultidiagonalMatrixExample_Constructor.out
 
-#### Method `forRows`
+#### Method `forElements`
 
-Similar and even a bit simpler way of setting the matrix elements is offered by the method `forRows` (\ref TNL::Matrices::MultidiagonalMatrix::forRows, \ref TNL::Matrices::MultidiagonalMatrixView::forRows) as demonstrated in the following example:
+Similar and even a bit simpler way of setting the matrix elements is offered by the method `forElements` (\ref TNL::Matrices::MultidiagonalMatrix::forElements, \ref TNL::Matrices::MultidiagonalMatrixView::forElements) as demonstrated in the following example:
 
-\includelineno MultidiagonalMatrixViewExample_forRows.cpp
+\includelineno MultidiagonalMatrixViewExample_forElements.cpp
 
-In this case, we need to provide a lambda function `f` (lines 27-43) which is called for each matrix row just by the method `forRows` (line 44). The lambda function `f` provides the following parameters
+In this case, we need to provide a lambda function `f` (lines 27-43) which is called for each matrix row just by the method `forElements` (line 44). The lambda function `f` provides the following parameters
 
 * `rowIdx` is an index iof the matrix row.
 * `localIdx` is in index of the matrix subdiagonal.
@@ -1074,7 +1118,7 @@ In this case, we need to provide a lambda function `f` (lines 27-43) which is ca
 
 In this example, the matrix element value depends only on the subdiagonal index `localIdx` (see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices)) as we can see on the line 42. The result looks as follows:
 
-\include MultidiagonalMatrixExample_forRows.out
+\include MultidiagonalMatrixExample_forElements.out
 
 ### Lambda matrices <a name="lambda_matrices_setup"></a>
 
@@ -1127,17 +1171,17 @@ The result looks as follows:
 
 \include LambdaMatrixExample_Constructor.out
 
-#### Method `forRows`
+#### Method `forElements`
 
-The lambda matrix has the same interface as other matrix types except of the method `getRow`. The following example demonstrates the use of the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to copy the lambda matrix into the dense matrix:
+The lambda matrix has the same interface as other matrix types except of the method `getRow`. The following example demonstrates the use of the method `forElements` (\ref TNL::Matrices::LambdaMatrix::forElements) to copy the lambda matrix into the dense matrix:
 
-\includelineno LambdaMatrixExample_forRows.cpp
+\includelineno LambdaMatrixExample_forElements.cpp
 
 Here, we treat the lambda matrix as if it was dense matrix and so the lambda function `compressedRowLengths` returns the number of the nonzero elements equal to the number of matrix columns (line 13). However, the lambda function `matrixElements` (lines 14-17), sets nonzero values only to lower triangular part of the matrix. The elements in the upper part are equal to zero (line 16). Next we create an instance of the lambda matrix with a help of the lambda matrix factory (\ref TNL::Matrices::LambdaMatrixFactory) (lines 19-20) and an instance of the dense matrix (\ref TNL::Matrices::DenseMatrix) (lines 22-23).
 
-Next we call the lambda function `f` by the method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` would do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `compressedRowLengths` (line 13) tells so. The result looks as follows:
+Next we call the lambda function `f` by the method `forElements` (\ref TNL::Matrices::LambdaMatrix::forElements) to set the matrix elements of the dense matrix `denseMatrix` (line 26) via the dense matrix view (`denseView`) (\ref TNL::Matrices::DenseMatrixView). Note, that in the lambda function `f` we get the matrix element value already evaluated in the variable `value` as we are used to from other matrix types. So in fact, the same lambda function `f` would do the same job even for sparse matrix or any other. Also note, that in this case we iterate even over all zero matrix elements because the lambda function `compressedRowLengths` (line 13) tells so. The result looks as follows:
 
-\include LambdaMatrixExample_forRows.out
+\include LambdaMatrixExample_forElements.out
 
 At the end of this part, we show two more examples, how to express a matrix approximating the Laplace operator:
 
@@ -1157,8 +1201,8 @@ TODO: Write documentation on distributed matrices.
 
 ## Flexible reduction in matrix rows <a name="flexible_reduction_in_matrix_rows"></a>
 
-Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, 
-\ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) and similar to the method `forRows` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
+Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction,
+\ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) and similar to the method `forElements` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
 
 \f[
 y_1 = a_{11} x_1 + a_{12} x_2 + \ldots + a_{1n} x_n = \sum_{j=1}^n a_{1j}x_j
@@ -1390,13 +1434,21 @@ To summarize, this method computes the following formula:
 
 `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.`
 
-## Matrix I/O operations <a name="matrix_io_operations"></a>
+## Matrix I/O operations<a name="matrix_io_operations"></a>
 
-All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used. TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) for import of matrices. We describe it in the following sections.
+All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used.
 
-### Matrix reader <a name="matrix-reader></a>
+### Matrix reader and writer<a name="matrix-reader-and-writer"></a>
 
-TODO: Write documentation on matrix reader.
+TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) and matrix writer (\ref TNL::Matrices::MatrixWriter) for import and export of matrices respectively. The matrix reader currently supports only [Coordinate MTX file format](https://math.nist.gov/MatrixMarket/formats.html#coord) which is popular mainly for sparse matrices. By the mean of the matrix writer, we can export TNL matrices into coordinate MTX format as well. In addition, the matrices can be exported to a text file suitable for [Gnuplot program](http://www.gnuplot.info/) which can be used for matrix visualization. Finally, a pattern of nonzero matrix elements can be visualized via the EPS format - [Encapsulated PostScript](https://en.wikipedia.org/wiki/Encapsulated_PostScript). We demonstrate both matrix reader and writer in the following example:
+
+\includelineno MatrixWriterReaderExample.cpp
+
+The example consists of two functions - `matrixWriterExample` (lines 10-24) and `matrixReaderExample` (lines 36-54). In the first one, we first create a toy matrix (lines 13-22) which we subsequently export into Gnuplot (line 26), EPS (line 29) and MTX (line 32) formats. In the next step (the `matrixReaderExample` function on lines 36-54), the MTX file is used to import the matrix into sparse (line 43) and dense (line 51) matrices. Both matrices are printed out (lines 45 and 53).
+
+The result looks as follows:
+
+\includelineno MatrixWriterReaderExample.out
 
 ## Appendix<a name="appendix"></a>
 

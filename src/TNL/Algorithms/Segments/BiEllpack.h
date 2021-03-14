@@ -31,12 +31,14 @@ class BiEllpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = BiEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = BiEllpackView< Device_, Index_, Organization >;
       using ConstViewType = BiEllpackView< Device, std::add_const_t< IndexType >, Organization >;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
+
+      static constexpr bool havePadding() { return true; };
 
       BiEllpack() = default;
 
@@ -92,10 +94,10 @@ class BiEllpack
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
 
       /***

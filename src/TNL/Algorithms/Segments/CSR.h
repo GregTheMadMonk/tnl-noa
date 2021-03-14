@@ -15,6 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/CSRView.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/ElementsOrganization.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -22,7 +23,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          typename Kernel = CSRKernelScalar< Index, Device >,
+          typename Kernel = CSRScalarKernel< Index, Device >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class CSR
 {
@@ -38,6 +39,10 @@ class CSR
       using ViewType = CSRView< Device, Index, KernelType >;
       using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+
+      static constexpr ElementsOrganization getOrganization() { return ColumnMajorOrder; }
+
+      static constexpr bool havePadding() { return false; };
 
       CSR();
 
@@ -93,6 +98,10 @@ class CSR
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
+      const OffsetsHolder& getOffsets() const;
+
+      OffsetsHolder& getOffsets();
+
       /***
        * \brief Go over all segments and for each segment element call
        * function 'f' with arguments 'args'. The return type of 'f' is bool.
@@ -100,10 +109,10 @@ class CSR
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
@@ -133,22 +142,22 @@ class CSR
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRScalar = CSR< Device, Index, CSRKernelScalar< Index, Device >, IndexAllocator >;
+using CSRScalar = CSR< Device, Index, CSRScalarKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRVector = CSR< Device, Index, CSRKernelVector< Index, Device >, IndexAllocator >;
+using CSRVector = CSR< Device, Index, CSRVectorKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRHybrid = CSR< Device, Index, CSRKernelHybrid< Index, Device >, IndexAllocator >;
+using CSRHybrid = CSR< Device, Index, CSRHybridKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-using CSRAdaptive = CSR< Device, Index, CSRKernelAdaptive< Index, Device >, IndexAllocator >;
+using CSRAdaptive = CSR< Device, Index, CSRAdaptiveKernel< Index, Device >, IndexAllocator >;
 
 template< typename Device,
           typename Index,

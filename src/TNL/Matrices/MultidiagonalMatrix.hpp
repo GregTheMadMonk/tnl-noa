@@ -213,6 +213,20 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename Vector >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   return this->view.getRowCapacities( rowCapacities );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
    template< typename ListReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
@@ -248,7 +262,7 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-const Index&
+const Index
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 getDiagonalsCount() const
 {
@@ -519,9 +533,9 @@ template< typename Real,
    template< typename Function >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forElements( IndexType first, IndexType last, Function& function ) const
 {
-   this->view.forRows( first, last, function );
+   this->view.forElements( first, last, function );
 }
 
 template< typename Real,
@@ -533,9 +547,9 @@ template< typename Real,
   template< typename Function >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-forRows( IndexType first, IndexType last, Function& function )
+forElements( IndexType first, IndexType last, Function& function )
 {
-   this->view.forRows( first, last, function );
+   this->view.forElements( first, last, function );
 }
 
 template< typename Real,
@@ -547,9 +561,9 @@ template< typename Real,
    template< typename Function >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   this->view.forRows( 0, this->getRows(), function );
+   this->view.forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -561,9 +575,65 @@ template< typename Real,
    template< typename Function >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-forAllRows( Function& function )
+forEachElement( Function& function )
 {
-   this->view.forRows( 0, this->getRows(), function );
+   this->view.forElements( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   this->view.sequentialForRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+sequentialForRows( IndexType first, IndexType last, Function& function )
+{
+   this->view.sequentialForRows( first, last, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+sequentialForAllRows( Function& function ) const
+{
+   this->sequentialForRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
+sequentialForAllRows( Function& function )
+{
+   this->sequentialForRows( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -750,7 +820,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
          auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
-         this->forAllRows( f );
+         this->forEachElement( f );
       }
       else
       {
@@ -776,7 +846,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
                   const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                   matrixValuesBuffer_view[ bufferIdx ] = value;
             };
-            matrix.forRows( baseRow, lastRow, f1 );
+            matrix.forElements( baseRow, lastRow, f1 );
 
             ////
             // Copy the source matrix buffer to this matrix buffer
@@ -788,7 +858,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                   value = thisValuesBuffer_view[ bufferIdx ];
             };
-            this->forRows( baseRow, lastRow, f2 );
+            this->forElements( baseRow, lastRow, f2 );
             baseRow += bufferRowsCount;
          }
       }

@@ -43,6 +43,8 @@ class ChunkedEllpackView
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
 
+      static constexpr bool havePadding() { return true; };
+
       __cuda_callable__
       ChunkedEllpackView() = default;
 
@@ -123,10 +125,10 @@ class ChunkedEllpackView
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
 
       /***

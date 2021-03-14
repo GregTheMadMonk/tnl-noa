@@ -55,15 +55,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_allRowsReduction.out
                        OUTPUT TridiagonalMatrixExample_allRowsReduction.out )
 
-   CUDA_ADD_EXECUTABLE( TridiagonalMatrixExample_forRows_cuda TridiagonalMatrixExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forRows.out
-                       OUTPUT TridiagonalMatrixExample_forRows.out )
+   CUDA_ADD_EXECUTABLE( TridiagonalMatrixExample_forElements_cuda TridiagonalMatrixExample_forElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forElements.out
+                       OUTPUT TridiagonalMatrixExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( TridiagonalMatrixExample_forAllRows_cuda TridiagonalMatrixExample_forAllRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forAllRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forAllRows.out
-                       OUTPUT TridiagonalMatrixExample_forAllRows.out )
+   CUDA_ADD_EXECUTABLE( TridiagonalMatrixExample_forEachElement_cuda TridiagonalMatrixExample_forEachElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forEachElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forEachElement.out
+                       OUTPUT TridiagonalMatrixExample_forEachElement.out )
 
    CUDA_ADD_EXECUTABLE( TridiagonalMatrixViewExample_getCompressedRowLengths_cuda TridiagonalMatrixViewExample_getCompressedRowLengths.cu )
    ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_getCompressedRowLengths_cuda >
@@ -105,15 +105,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_allRowsReduction.out
                        OUTPUT TridiagonalMatrixViewExample_allRowsReduction.out )
 
-   CUDA_ADD_EXECUTABLE( TridiagonalMatrixViewExample_forRows_cuda TridiagonalMatrixViewExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forRows.out
-                       OUTPUT TridiagonalMatrixViewExample_forRows.out )
+   CUDA_ADD_EXECUTABLE( TridiagonalMatrixViewExample_forElements_cuda TridiagonalMatrixViewExample_forElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forElements.out
+                       OUTPUT TridiagonalMatrixViewExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( TridiagonalMatrixViewExample_forAllRows_cuda TridiagonalMatrixViewExample_forAllRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forAllRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forAllRows.out
-                       OUTPUT TridiagonalMatrixViewExample_forAllRows.out )
+   CUDA_ADD_EXECUTABLE( TridiagonalMatrixViewExample_forEachElement_cuda TridiagonalMatrixViewExample_forEachElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forEachElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forEachElement.out
+                       OUTPUT TridiagonalMatrixViewExample_forEachElement.out )
 
 ELSE()
 
@@ -123,12 +123,12 @@ ELSE()
                        OUTPUT TridiagonalMatrixExample_Constructor_init_list_1.out )
 
    ADD_EXECUTABLE( TridiagonalMatrixExample_getSerializationType TridiagonalMatrixExample_getSerializationType.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_getSerializationType > 
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_getSerializationType >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_getSerializationType.out
                        OUTPUT TridiagonalMatrixExample_getSerializationType.out )
 
    ADD_EXECUTABLE( TridiagonalMatrixExample_setElements TridiagonalMatrixExample_setElements.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_setElements > 
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_setElements >
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_setElements.out
                        OUTPUT TridiagonalMatrixExample_setElements.out )
 
@@ -173,15 +173,15 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_allRowsReduction.out
                        OUTPUT TridiagonalMatrixExample_allRowsReduction.out )
 
-   ADD_EXECUTABLE( TridiagonalMatrixExample_forRows TridiagonalMatrixExample_forRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forRows >
-                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forRows.out
-                       OUTPUT TridiagonalMatrixExample_forRows.out )
+   ADD_EXECUTABLE( TridiagonalMatrixExample_forElements TridiagonalMatrixExample_forElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forElements >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forElements.out
+                       OUTPUT TridiagonalMatrixExample_forElements.out )
 
-   ADD_EXECUTABLE( TridiagonalMatrixExample_forAllRows TridiagonalMatrixExample_forAllRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forAllRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forAllRows.out
-                       OUTPUT TridiagonalMatrixExample_forAllRows.out )
+   ADD_EXECUTABLE( TridiagonalMatrixExample_forEachElement TridiagonalMatrixExample_forEachElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixExample_forEachElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixExample_forEachElement.out
+                       OUTPUT TridiagonalMatrixExample_forEachElement.out )
 
    ADD_EXECUTABLE( TridiagonalMatrixViewExample_getCompressedRowLengths TridiagonalMatrixViewExample_getCompressedRowLengths.cpp )
    ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_getCompressedRowLengths >
@@ -223,15 +223,15 @@ ELSE()
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_allRowsReduction.out
                        OUTPUT TridiagonalMatrixViewExample_allRowsReduction.out )
 
-   ADD_EXECUTABLE( TridiagonalMatrixViewExample_forRows TridiagonalMatrixViewExample_forRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forRows >
-                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forRows.out
-                       OUTPUT TridiagonalMatrixViewExample_forRows.out )
+   ADD_EXECUTABLE( TridiagonalMatrixViewExample_forElements TridiagonalMatrixViewExample_forElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forElements >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forElements.out
+                       OUTPUT TridiagonalMatrixViewExample_forElements.out )
 
-   ADD_EXECUTABLE( TridiagonalMatrixViewExample_forAllRows TridiagonalMatrixViewExample_forAllRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forAllRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forAllRows.out
-                       OUTPUT TridiagonalMatrixViewExample_forAllRows.out )
+   ADD_EXECUTABLE( TridiagonalMatrixViewExample_forEachElement TridiagonalMatrixViewExample_forEachElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND TridiagonalMatrixViewExample_forEachElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TridiagonalMatrixViewExample_forEachElement.out
+                       OUTPUT TridiagonalMatrixViewExample_forEachElement.out )
 
 ENDIF()
 
@@ -253,8 +253,8 @@ ADD_CUSTOM_TARGET( RunTridiagonalMatricesExamples ALL DEPENDS
    TridiagonalMatrixExample_getElement.out
    TridiagonalMatrixExample_rowsReduction.out
    TridiagonalMatrixExample_allRowsReduction.out
-   TridiagonalMatrixExample_forRows.out
-   TridiagonalMatrixExample_forAllRows.out
+   TridiagonalMatrixExample_forElements.out
+   TridiagonalMatrixExample_forEachElement.out
    TridiagonalMatrixViewExample_getCompressedRowLengths.out
    TridiagonalMatrixViewExample_getConstRow.out
    TridiagonalMatrixViewExample_getRow.out
@@ -263,7 +263,7 @@ ADD_CUSTOM_TARGET( RunTridiagonalMatricesExamples ALL DEPENDS
    TridiagonalMatrixViewExample_getElement.out
    TridiagonalMatrixViewExample_rowsReduction.out
    TridiagonalMatrixViewExample_allRowsReduction.out
-   TridiagonalMatrixViewExample_forRows.out
-   TridiagonalMatrixViewExample_forAllRows.out
+   TridiagonalMatrixViewExample_forElements.out
+   TridiagonalMatrixViewExample_forEachElement.out
 )
 

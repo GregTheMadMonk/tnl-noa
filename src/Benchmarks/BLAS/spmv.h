@@ -15,7 +15,7 @@
 #include "../Benchmarks.h"
 
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/ChunkedEllpack.h>
@@ -25,11 +25,11 @@ namespace Benchmarks {
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
-using SlicedEllpack = Matrices::Legacy::SlicedEllpack< Real, Device, Index >;
+using SlicedEllpack = SpMV::ReferenceFormats::Legacy::SlicedEllpack< Real, Device, Index >;
 
 // Legacy formats
 template< typename Real, typename Device, typename Index >
-using SparseMatrixLegacy_CSR_Scalar = Matrices::Legacy::CSR< Real, Device, Index, Matrices::Legacy::CSRScalar >;
+using SparseMatrixLegacy_CSR_Scalar = SpMV::ReferenceFormats::Legacy::CSR< Real, Device, Index, SpMV::ReferenceFormats::Legacy::CSRScalar >;
 
 
 template< typename Matrix >
@@ -180,9 +180,9 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
    // NOTE: CSR is disabled because it is very slow on GPU
    //benchmarkSpMV< Real, SparseMatrixLegacy_CSR_Scalar >( benchmark, size, elementsPerRow );
-   benchmarkSpMV< Real, Matrices::Legacy::Ellpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Benchmarks::SpMV::ReferenceFormats::Legacy::Ellpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
-   benchmarkSpMV< Real, Matrices::Legacy::ChunkedEllpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Benchmarks::SpMV::ReferenceFormats::Legacy::ChunkedEllpack >( benchmark, size, elementsPerRow );
 }
 
 } // namespace Benchmarks

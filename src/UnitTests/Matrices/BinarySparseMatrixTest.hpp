@@ -68,7 +68,7 @@ void test_SetRowCapacities()
    const IndexType cols = 11;
 
    Matrix m( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( rows );
    rowLengths.setValue( 3 );
 
@@ -111,7 +111,7 @@ void test_SetRowCapacities()
 
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
+   typename Matrix::RowsCapacitiesType correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 
@@ -161,7 +161,7 @@ void test_GetNumberOfNonzeroMatrixElements()
 
    Matrix m( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( rows );
    rowLengths.setElement( 0, 1 );
    rowLengths.setElement( 1, 1 );
@@ -250,7 +250,7 @@ void test_GetRow()
 
    Matrix m( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( rows );
    rowLengths.setElement( 0, 4 );
    rowLengths.setElement( 1, 3 );
@@ -447,7 +447,7 @@ void test_SetElement()
 
    Matrix m( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( rows );
    rowLengths.setElement( 0, 4 );
    rowLengths.setElement( 1, 3 );
@@ -612,7 +612,7 @@ void test_VectorProduct()
    const IndexType m_cols_1 = 4;
 
    Matrix m_1( m_rows_1, m_cols_1 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_1;
+   typename Matrix::RowsCapacitiesType rowLengths_1;
    rowLengths_1.setSize( m_rows_1 );
    rowLengths_1.setElement( 0, 1 );
    rowLengths_1.setElement( 1, 2 );
@@ -656,7 +656,7 @@ void test_VectorProduct()
    const IndexType m_cols_2 = 4;
 
    Matrix m_2( m_rows_2, m_cols_2 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_2;
+   typename Matrix::RowsCapacitiesType rowLengths_2;
    rowLengths_2.setSize( m_rows_2 );
    rowLengths_2.setValue( 3 );
    rowLengths_2.setElement( 1, 1 );
@@ -699,7 +699,7 @@ void test_VectorProduct()
    const IndexType m_cols_3 = 4;
 
    Matrix m_3( m_rows_3, m_cols_3 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_3;
+   typename Matrix::RowsCapacitiesType rowLengths_3;
    rowLengths_3.setSize( m_rows_3 );
    rowLengths_3.setValue( 3 );
    m_3.setRowCapacities( rowLengths_3 );
@@ -746,7 +746,7 @@ void test_VectorProduct()
    const IndexType m_cols_4 = 8;
 
    Matrix m_4( m_rows_4, m_cols_4 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_4;
+   typename Matrix::RowsCapacitiesType rowLengths_4;
    rowLengths_4.setSize( m_rows_4 );
    rowLengths_4.setValue( 4 );
    rowLengths_4.setElement( 2, 5 );
@@ -816,7 +816,7 @@ void test_VectorProduct()
    const IndexType m_cols_5 = 8;
 
    Matrix m_5( m_rows_5, m_cols_5 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_5;
+   typename Matrix::RowsCapacitiesType rowLengths_5;
    rowLengths_5.setSize( m_rows_5 );
    rowLengths_5.setElement(0, 6);
    rowLengths_5.setElement(1, 3);
@@ -995,7 +995,7 @@ void test_PerformSORIteration()
    const IndexType m_cols = 4;
 
    Matrix m( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( m_rows );
    rowLengths.setValue( 3 );
    m.setRowCapacities( rowLengths );
@@ -1073,7 +1073,7 @@ void test_SaveAndLoad( const char* filename )
    const IndexType m_cols = 4;
 
    Matrix savedMatrix( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
+   typename Matrix::RowsCapacitiesType rowLengths( m_rows, 3 );
    savedMatrix.setRowCapacities( rowLengths );
 
    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row

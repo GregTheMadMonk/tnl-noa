@@ -127,10 +127,10 @@ setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
    const IndexType dofs = this->getDofs( mesh );
-   typedef typename MatrixType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   CompressedRowLengthsVectorType rowLengths;
+   typedef typename MatrixType::RowsCapacitiesType RowsCapacitiesTypeType;
+   RowsCapacitiesTypeType rowLengths;
    rowLengths.setSize( dofs );
-   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
       mesh,
       differentialOperator,

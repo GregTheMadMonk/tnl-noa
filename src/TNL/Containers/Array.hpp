@@ -609,12 +609,106 @@ template< typename Value,
    template< typename Function >
 void
 Array< Value, Device, Index, Allocator >::
-evaluate( const Function& f,
-          IndexType begin,
-          IndexType end )
+forElements( IndexType begin,
+             IndexType end,
+             Function&& f )
 {
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   this->getView().evaluate( f, begin, end );
+   this->getView().forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forElements( IndexType begin,
+             IndexType end,
+             Function&& f ) const
+{
+   this->getConstView().forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forEachElement( Function&& f )
+{
+   this->getView().forEachElement( f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+Array< Value, Device, Index, Allocator >::
+forEachElement( Function&& f ) const
+{
+   const auto view = this->getConstView();
+   view.forEachElement( f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Fetch,
+         typename Reduce,
+         typename Result >
+Result
+Array< Value, Device, Index, Allocator >::
+reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
+{
+   return this->getView().reduceElements( begin, end, fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Fetch,
+         typename Reduce,
+         typename Result >
+Result
+Array< Value, Device, Index, Allocator >::
+reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+{
+   return this->getConstView().reduceElements( begin, end, fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+Result
+Array< Value, Device, Index, Allocator >::
+reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
+{
+   return this->getView().reduceEachElement( fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Fetch,
+         typename Reduce,
+         typename Result >
+Result
+Array< Value, Device, Index, Allocator >::
+reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+{
+   return this->getConstView().reduceEachElement( fetch, reduce, zero );
 }
 
 template< typename Value,

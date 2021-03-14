@@ -149,6 +149,16 @@ class LambdaMatrix
       IndexType getColumns() const;
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief Computes number of non-zeros in each row.
        *
        * \param rowLengths is a vector into which the number of non-zeros in each row
@@ -257,12 +267,12 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forElements( IndexType first, IndexType last, Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
+       * \brief This method calls \e forElements for all matrix rows (for constant instances).
        *
-       * See \ref LambdaMatrix::forRows.
+       * See \ref LambdaMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -273,7 +283,35 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
+       *
+       * See \ref LambdaMatrix::sequentialForRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function ) const;
 
       /**
        * \brief Computes product of matrix and vector.

@@ -8,5 +8,5 @@ void scalarProduct( double* u1, double* u2,
     }
     auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) {
         return a + b; };
-    TNL::Algorithms::Reduction< Device >::reduce( 0, size, reduce, fetch, 0.0 );
+    TNL::Algorithms::Reduction< Device >::reduce( 0, size, fetch, reduce, 0.0 );
 }

@@ -80,6 +80,29 @@ TYPED_TEST( VectorTest, constructors )
 
 }
 
+TYPED_TEST( VectorTest, reduceElements )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using IndexType = typename VectorType::IndexType;
+   using ValueType = typename VectorType::ValueType;
+
+#if not defined HAVE_CUDA
+// nvcc does not accept the following code with
+// error #3068-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
+   VectorType a( 10 );
+   a.forEachElement( [=] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = 1; } );
+   auto fetch = [] __cuda_callable__ ( IndexType i, ValueType& v ) -> ValueType { return v; };
+   auto reduce = [] __cuda_callable__ ( const ValueType v1, const ValueType v2 ) { return v1 + v2; };
+   EXPECT_EQ( a.reduceEachElement( fetch, reduce, ( ValueType ) 0.0 ),
+              a.getSize() );
+
+   const VectorType b( a );
+   auto const_fetch = [] __cuda_callable__ ( IndexType i, const ValueType& v ) -> ValueType { return v; };
+   EXPECT_EQ( b.reduceEachElement( const_fetch, reduce, ( ValueType ) 0.0 ),
+              b.getSize() );
+#endif
+}
+
 TEST( VectorSpecialCasesTest, defaultConstructors )
 {
    using ArrayType = Containers::Array< int, Devices::Host >;

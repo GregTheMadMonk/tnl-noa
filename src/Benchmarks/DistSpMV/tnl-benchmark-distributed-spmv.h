@@ -151,7 +151,7 @@ struct SpmvBenchmark
    using Partitioner = Containers::Partitioner< IndexType >;
    using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
    using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
-   using DistributedRowLengths = typename DistributedMatrix::CompressedRowLengthsVector;
+   using DistributedRowLengths = typename DistributedMatrix::RowsCapacitiesType;
 
    static bool
    run( Benchmark& benchmark,
@@ -163,7 +163,7 @@ struct SpmvBenchmark
       matrix.load( parameters.getParameter< String >( "input-matrix" ) );
       File( parameters.getParameter< String >( "input-vector" ), std::ios_base::in ) >> vector;
 
-      typename MatrixType::CompressedRowLengthsVector rowLengths;
+      typename MatrixType::RowsCapacitiesType rowLengths;
       matrix.getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 

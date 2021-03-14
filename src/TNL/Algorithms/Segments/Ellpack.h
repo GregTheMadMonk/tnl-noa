@@ -30,7 +30,7 @@ class Ellpack
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
@@ -38,6 +38,8 @@ class Ellpack
       using ViewType = EllpackView< Device, Index, Organization, Alignment >;
       using ConstViewType = typename ViewType::ConstViewType;
       using SegmentViewType = SegmentView< IndexType, Organization >;
+
+      static constexpr bool havePadding() { return true; };
 
       Ellpack();
 
@@ -95,10 +97,10 @@ class Ellpack
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
 
       /***

@@ -23,7 +23,6 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_Laplace_2_cuda >
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_Laplace_2.out
                        OUTPUT LambdaMatrixExample_Laplace_2.out )
-                  
 
                      CUDA_ADD_EXECUTABLE( LambdaMatrixExample_rowsReduction_cuda LambdaMatrixExample_rowsReduction.cu )
    ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_rowsReduction_cuda >
@@ -35,15 +34,15 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_allRowsReduction.out
                        OUTPUT LambdaMatrixExample_allRowsReduction.out )
 
-   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forRows_cuda LambdaMatrixExample_forRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forRows.out
-                       OUTPUT LambdaMatrixExample_forRows.out )
+   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forElements_cuda LambdaMatrixExample_forElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forElements.out
+                       OUTPUT LambdaMatrixExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forAllRows_cuda LambdaMatrixExample_forAllRows.cu )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forAllRows_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forAllRows.out
-                       OUTPUT LambdaMatrixExample_forAllRows.out )
+   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forEachElement_cuda LambdaMatrixExample_forEachElement.cu )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forEachElement_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forEachElement.out
+                       OUTPUT LambdaMatrixExample_forEachElement.out )
 
 ELSE()
    ADD_EXECUTABLE( LambdaMatrixExample_Laplace LambdaMatrixExample_Laplace.cpp )
@@ -66,15 +65,15 @@ ELSE()
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_allRowsReduction.out
                        OUTPUT LambdaMatrixExample_allRowsReduction.out )
 
-   ADD_EXECUTABLE( LambdaMatrixExample_forRows LambdaMatrixExample_forRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forRows >
-                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forRows.out
-                       OUTPUT LambdaMatrixExample_forRows.out )
+   ADD_EXECUTABLE( LambdaMatrixExample_forElements LambdaMatrixExample_forElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forElements >
+                       ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forElements.out
+                       OUTPUT LambdaMatrixExample_forElements.out )
 
-   ADD_EXECUTABLE( LambdaMatrixExample_forAllRows LambdaMatrixExample_forAllRows.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forAllRows >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forAllRows.out
-                       OUTPUT LambdaMatrixExample_forAllRows.out )
+   ADD_EXECUTABLE( LambdaMatrixExample_forEachElement LambdaMatrixExample_forEachElement.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forEachElement >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forEachElement.out
+                       OUTPUT LambdaMatrixExample_forEachElement.out )
 ENDIF()
 
 ADD_CUSTOM_TARGET( RunLambdaMatricesExamples ALL DEPENDS
@@ -85,7 +84,7 @@ ADD_CUSTOM_TARGET( RunLambdaMatricesExamples ALL DEPENDS
    LambdaMatrixExample_getNonzeroElementsCount.out
    LambdaMatrixExample_rowsReduction.out
    LambdaMatrixExample_allRowsReduction.out
-   LambdaMatrixExample_forRows.out
-   LambdaMatrixExample_forAllRows.out
+   LambdaMatrixExample_forElements.out
+   LambdaMatrixExample_forEachElement.out
 )
 

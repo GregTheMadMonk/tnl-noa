@@ -258,7 +258,7 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto segmentsPermutationView = this->rowPermArray.getConstView();
    const auto groupPointersView = this->groupPointers.getConstView();
@@ -308,9 +308,9 @@ template< typename Device,
    template< typename Function, typename... Args >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forAll( Function& f, Args... args ) const
+forEachElement( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

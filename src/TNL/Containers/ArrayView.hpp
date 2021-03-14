@@ -315,20 +315,113 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-evaluate( const Function& f, const Index begin, Index end )
+forElements( const Index begin, Index end, Function&& f )
 {
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array view." );
+   if( ! this->data )
+      return;
 
-   ValueType* d = this->data;
-   auto eval = [=] __cuda_callable__ ( Index i )
+   ValueType* d = this->getData();
+   auto g = [=] __cuda_callable__ ( Index i ) mutable
    {
-      d[ i ] = f( i );
+      f( i, d[ i ] );
    };
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+}
 
-   if( end == 0 )
-      end = this->getSize();
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forElements( const Index begin, Index end, Function&& f ) const
+{
+   if( ! this->data )
+      return;
 
-   Algorithms::ParallelFor< DeviceType >::exec( begin, end, eval );
+   const ValueType* d = this->getData();
+   auto g = [=] __cuda_callable__ ( Index i )
+   {
+      f( i, d[ i ] );
+   };
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forEachElement( Function&& f )
+{
+   this->forElements( 0, this->getSize(), f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void ArrayView< Value, Device, Index >::
+forEachElement( Function&& f ) const
+{
+   this->forElements( 0, this->getSize(), f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+Result ArrayView< Value, Device, Index >::
+reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
+{
+   if( ! this->data )
+      return zero;
+
+   ValueType* d = this->getData();
+   auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
+   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+Result ArrayView< Value, Device, Index >::
+reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+{
+   if( ! this->data )
+      return;
+
+   const ValueType* d = this->getData();
+   auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
+   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+Result ArrayView< Value, Device, Index >::
+reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
+{
+   return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+Result ArrayView< Value, Device, Index >::
+reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+{
+   return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
 }
 
 template< typename Value,

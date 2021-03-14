@@ -95,6 +95,19 @@ template< typename MatrixElementsLambda,
    template< typename Vector >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+getRowCapacities( Vector& rowCapacities ) const
+{
+   this->getCompressedRowLengths( rowCapacities );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    details::set_size_if_resizable( rowLengths, this->getRows() );
@@ -253,7 +266,7 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forRows( IndexType first, IndexType last, Function& function ) const
+forElements( IndexType first, IndexType last, Function& function ) const
 {
    const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
@@ -282,9 +295,10 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forAllRows( Function& function ) const
+forEachElement( Function& function ) const
 {
-   const IndexType rows = this->getRows();
+   forElements( 0, this->getRows(), function );
+   /*const IndexType rows = this->getRows();
    const IndexType columns = this->getColumns();
    auto rowLengths = this->compressedRowLengthsLambda;
    auto matrixElements = this->matrixElementsLambda;
@@ -300,7 +314,34 @@ forAllRows( Function& function ) const
             function( rowIdx, localIdx, elementColumn, elementValue, compute );
       }
    };
-   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );
+   Algorithms::ParallelFor< DeviceType >::exec( 0, this->getRows(), processRow );*/
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forElements( row, row + 1, function );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void
+LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
+sequentialForAllRows( Function& function ) const
+{
+   sequentialForRows( 0, this->getRows(), function );
 }
 
 template< typename MatrixElementsLambda,
@@ -316,7 +357,6 @@ performSORIteration( const Vector1& b,
                           Vector2& x,
                           const RealType& omega ) const
 {
-   
 }
 
 template< typename MatrixElementsLambda,

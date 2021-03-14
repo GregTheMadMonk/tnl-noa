@@ -57,8 +57,8 @@ update( const MatrixPointer& matrixPointer )
 
    // compute row lengths
 //   timer_rowlengths.start();
-   typename decltype(L)::CompressedRowLengthsVector L_rowLengths( N );
-   typename decltype(U)::CompressedRowLengthsVector U_rowLengths( N );
+   typename decltype(L)::RowsCapacitiesType L_rowLengths( N );
+   typename decltype(U)::RowsCapacitiesType U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
       IndexType L_entries = 0;

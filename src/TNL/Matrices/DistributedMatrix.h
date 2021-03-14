@@ -34,7 +34,7 @@ public:
    using IndexType = typename Matrix::IndexType;
    using LocalRangeType = Containers::Subrange< typename Matrix::IndexType >;
 
-   using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType >;
+   using RowsCapacitiesType = Containers::DistributedVector< IndexType, DeviceType, IndexType >;
 
    using MatrixRow = typename Matrix::RowView;
    using ConstMatrixRow = typename Matrix::ConstRowView;

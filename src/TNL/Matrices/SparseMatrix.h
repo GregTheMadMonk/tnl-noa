@@ -37,7 +37,7 @@ namespace Matrices {
  *    different matrix formats can perform differently especially on GPUs. By default \ref CSR format is used. See also
  *    \ref Ellpack, \ref SlicedEllpack, \ref ChunkedEllpack or \ref BiEllpack.
  * \tparam ComputeReal is the same as \e Real mostly but for binary matrices it is set to \e Index type. This can be changed
- *    bu the user, of course.
+ *    by the user, of course.
  * \tparam RealAllocator is allocator for the matrix elements values.
  * \tparam IndexAllocator is allocator for the matrix elements column indexes.
  */
@@ -139,14 +139,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * See \ref SparseMatrixView.
        */
-      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate, ComputeRealType >;
 
       /**
        * \brief Matrix view type for constant instances.
        *
        * See \ref SparseMatrixView.
        */
-      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate, ComputeRealType >;
 
       /**
        * \brief Type for accessing matrix rows.
@@ -399,6 +399,16 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void setRowCapacities( const RowsCapacitiesVector& rowCapacities );
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief This method sets the sparse matrix elements from initializer list.
        *
        * The number of matrix rows and columns must be set already.
@@ -451,6 +461,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
+
 
       /**
        * \brief Returns capacity of given matrix row.
@@ -518,7 +529,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -543,7 +554,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -572,7 +583,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forRows and \ref SparseMatrix::forAllRows.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -713,7 +724,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -735,12 +746,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function );
+      void forElements( IndexType begin, IndexType end, Function& function );
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
+       * \brief This method calls \e forElements for all matrix rows (for constant instances).
        *
-       * See \ref SparseMatrix::forRows.
+       * See \ref SparseMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -751,12 +762,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows.
+       * \brief This method calls \e forElements for all matrix rows.
        *
-       * See \ref SparseMatrix::forRows.
+       * See \ref SparseMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -767,7 +778,63 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function );
+      void forEachElement( Function& function );
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for non-constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function );
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
+       *
+       * See \ref SparseMatrix::sequentialForRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function ) const;
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows.
+       *
+       * See \ref SparseMatrix::sequentialForAllRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function );
 
       /**
        * \brief Computes product of matrix and vector.
@@ -836,7 +903,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       /**
        * \brief Assignment of any matrix type other then this and dense.
-       * .
+       *
+       * **Warning: Assignment of symmetric sparse matrix to general sparse matrix does not give correct result, currently. Only the diagonal and the lower part of the matrix is assigned.**
+       *
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
        */
@@ -878,14 +947,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for saving the matrix to a file.
        *
-       * \param fileName is name of the file.
+       * \param file is the output file.
        */
       virtual void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        *
-       * \param fileName is name of the file.
+       * \param file is the input file.
        */
       virtual void load( File& file ) override;
 
@@ -926,6 +995,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return Constant reference to segments.
        */
       const SegmentsType& getSegments() const;
+
+      /**
+       * \brief Getter of column indexes for constant instances.
+       *
+       * \return Constant reference to a vector with matrix elements column indexes.
+       */
+      const ColumnsIndexesVectorType& getColumnIndexes() const;
+
+      /**
+       * \brief Getter of column indexes for nonconstant instances.
+       *
+       * \return Reference to a vector with matrix elements column indexes.
+       */
+      ColumnsIndexesVectorType& getColumnIndexes();
 
    protected:
 

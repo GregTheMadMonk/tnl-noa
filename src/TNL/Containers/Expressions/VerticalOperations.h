@@ -43,7 +43,7 @@ auto ExpressionMin( const Expression& expression )
    };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, reduction, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
@@ -65,7 +65,7 @@ auto ExpressionArgMin( const Expression& expression )
    };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), fetch, reduction, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
@@ -85,7 +85,7 @@ auto ExpressionMax( const Expression& expression )
    };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, reduction, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
@@ -107,7 +107,7 @@ auto ExpressionArgMax( const Expression& expression )
    };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( ( IndexType ) 0, expression.getSize(), fetch, reduction, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
@@ -119,7 +119,7 @@ auto ExpressionSum( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::plus<>{}, fetch, (ResultType) 0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::plus<>{}, (ResultType) 0 );
 }
 
 template< typename Expression >
@@ -131,7 +131,7 @@ auto ExpressionProduct( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::multiplies<>{}, fetch, (ResultType) 1 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::multiplies<>{}, (ResultType) 1 );
 }
 
 template< typename Expression >
@@ -145,7 +145,7 @@ auto ExpressionLogicalAnd( const Expression& expression )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::logical_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::logical_and<>{}, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
@@ -157,7 +157,7 @@ auto ExpressionLogicalOr( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::logical_or<>{}, fetch, (ResultType) 0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::logical_or<>{}, (ResultType) 0 );
 }
 
 template< typename Expression >
@@ -171,7 +171,7 @@ auto ExpressionBinaryAnd( const Expression& expression )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::bit_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::bit_and<>{}, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
@@ -183,7 +183,7 @@ auto ExpressionBinaryOr( const Expression& expression )
 
    const auto view = expression.getConstView();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), std::bit_or<>{}, fetch, (ResultType) 0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( ( IndexType ) 0, expression.getSize(), fetch, std::bit_or<>{}, (ResultType) 0 );
 }
 
 } // namespace Expressions

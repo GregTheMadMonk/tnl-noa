@@ -25,8 +25,10 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {
-   namespace Legacy {
+    namespace Benchmarks {
+        namespace SpMV {
+            namespace ReferenceFormats {
+               namespace Legacy {
 
 template< typename Device >
 class SlicedEllpackDeviceDependentCode;
@@ -42,7 +44,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                          typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
+                                                                          typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::ConstRowsCapacitiesTypeView rowLengths,
                                                                           int gridIdx );
 #endif
 
@@ -65,9 +67,9 @@ public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
+   using RowsCapacitiesType = typename Sparse< RealType, DeviceType, IndexType >::RowsCapacitiesType;
+   using RowsCapacitiesTypeView = typename Sparse< RealType, DeviceType, IndexType >::RowsCapacitiesView;
+   using ConstRowsCapacitiesTypeView = typename Sparse< RealType, DeviceType, IndexType >::ConstRowsCapacitiesView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -80,6 +82,8 @@ public:
              int _SliceSize = SliceSize >
    using Self = SlicedEllpack< _Real, _Device, _Index, _SliceSize >;
 
+   static constexpr bool isSymmetric() { return false; };
+
    SlicedEllpack();
 
    static String getSerializationType();
@@ -89,11 +93,11 @@ public:
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+   void setCompressedRowLengths( ConstRowsCapacitiesTypeView rowLengths );
 
-   void setRowCapacities( ConstCompressedRowLengthsVectorView rowLengths );
+   void setRowCapacities( ConstRowsCapacitiesTypeView rowLengths );
 
-   void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+   void getCompressedRowLengths( RowsCapacitiesTypeView rowLengths ) const;
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -227,19 +231,21 @@ protected:
    friend class SlicedEllpackDeviceDependentCode< DeviceType >;
 #ifdef HAVE_CUDA
    /*friend __global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                      const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::CompressedRowLengthsVector* rowLengths,
+                                                                                      const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::RowsCapacitiesType* rowLengths,
                                                                                       int gridIdx );
     */
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
 
 public:
-   __device__ void computeMaximalRowLengthInSlicesCuda( ConstCompressedRowLengthsVectorView rowLengths,
+   __device__ void computeMaximalRowLengthInSlicesCuda( ConstRowsCapacitiesTypeView rowLengths,
                                                         const IndexType sliceIdx );
 #endif
 };
 
-} //namespace Legacy
-} // namespace Matrices
+               } //namespace Legacy
+            } //namespace ReferenceFormats
+        } //namespace SpMV
+    } //namespace Benchmarks
 } // namespace TNL
 
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack_impl.h>

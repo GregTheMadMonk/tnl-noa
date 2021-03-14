@@ -95,7 +95,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 
    if( std::is_same< DeviceType, Devices::Host >::value ) {
       // set row lengths
-      typename Matrix1::CompressedRowLengthsVector rowLengths;
+      typename Matrix1::RowsCapacitiesType rowLengths;
       rowLengths.setSize( rows );
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
@@ -131,7 +131,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
       const IndexType desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
       gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( rows, blockSize.x ) );
 
-      typename Matrix1::CompressedRowLengthsVector rowLengths;
+      typename Matrix1::RowsCapacitiesType rowLengths;
       rowLengths.setSize( rows );
 
       Pointers::DevicePointer< Matrix1 > Apointer( A );
@@ -222,7 +222,7 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
    B.setDimensions( N, N );
 
    // set row lengths
-   typename AdjacencyMatrix::CompressedRowLengthsVector rowLengths;
+   typename AdjacencyMatrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( N );
    rowLengths.setValue( 0 );
    for( IndexType i = 0; i < A.getRows(); i++ ) {
@@ -275,7 +275,7 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
    matrix2.setDimensions( matrix1.getRows(), matrix1.getColumns() );
 
    // set row lengths
-   typename Matrix2::CompressedRowLengthsVector rowLengths;
+   typename Matrix2::RowsCapacitiesType rowLengths;
    rowLengths.setSize( matrix1.getRows() );
    for( IndexType i = 0; i < matrix1.getRows(); i++ ) {
       const auto row = matrix1.getRow( perm[ i ] );

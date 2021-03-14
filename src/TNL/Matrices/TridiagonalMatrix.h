@@ -89,6 +89,13 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
 
       /**
+       * \brief This is only for compatibility with sparse matrices.
+       *
+       * \return \e  \e false.
+       */
+      static constexpr bool isSymmetric() { return false; };
+
+      /**
        * \brief The allocator for matrix elements values.
        */
       using RealAllocatorType = RealAllocator;
@@ -118,8 +125,10 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename _Real = Real,
                 typename _Device = Device,
-                typename _Index = Index >
-      using Self = TridiagonalMatrix< _Real, _Device, _Index >;
+                typename _Index = Index,
+                ElementsOrganization _Organization = Algorithms::Segments::DefaultElementsOrganization< _Device >::getOrganization(),
+                typename _RealAllocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
+      using Self = TridiagonalMatrix< _Real, _Device, _Index, _Organization, _RealAllocator >;
 
       static constexpr ElementsOrganization getOrganization() { return Organization; };
 
@@ -261,6 +270,16 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void setElements( const std::initializer_list< std::initializer_list< ListReal > >& data );
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief Computes number of non-zeros in each row.
        *
        * \param rowLengths is a vector into which the number of non-zeros in each row
@@ -399,7 +418,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -423,7 +442,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -451,7 +470,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -594,7 +613,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over matrix rows for non-constant instances.
@@ -616,7 +635,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType begin, IndexType end, Function& function );
+      void forElements( IndexType begin, IndexType end, Function& function );
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
@@ -638,7 +657,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -660,12 +679,63 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function );
+      void forEachElement( Function& function );
 
-      /*template< typename Vector >
-      __cuda_callable__
-      typename Vector::RealType rowVectorProduct( const IndexType row,
-                                                  const Vector& vector ) const;*/
+      /**
+       * \brief Method for sequential iteration over all matrix rows for constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for non-constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function );
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
+       *
+       * See \ref TridiagonalMatrix::sequentialForRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function ) const;
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows.
+       *
+       * See \ref TridiagonalMatrix::sequentialForAllRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function );
 
       /**
        * \brief Computes product of matrix and vector.

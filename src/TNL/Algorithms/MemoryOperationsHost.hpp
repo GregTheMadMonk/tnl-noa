@@ -113,7 +113,7 @@ compare( const DestinationElement* destination,
 
    if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
       auto fetch = [destination, source] ( Index i ) -> bool { return destination[ i ] == source[ i ]; };
-      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, std::logical_and<>{}, fetch, true );
+      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, fetch, std::logical_and<>{}, true );
    }
    else {
       // sequential algorithm can return as soon as it finds a mismatch
@@ -135,7 +135,7 @@ containsValue( const Element* data,
 
    if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
       auto fetch = [=] ( Index i ) -> bool { return data[ i ] == value; };
-      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, std::logical_or<>{}, fetch, false );
+      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, fetch, std::logical_or<>{}, false );
    }
    else {
       // sequential algorithm can return as soon as it finds a match
@@ -157,7 +157,7 @@ containsOnlyValue( const Element* data,
 
    if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
       auto fetch = [data, value] ( Index i ) -> bool { return data[ i ] == value; };
-      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, std::logical_and<>{}, fetch, true );
+      return Reduction< Devices::Host >::reduce( ( Index ) 0, size, fetch, std::logical_and<>{}, true );
    }
    else {
       // sequential algorithm can return as soon as it finds a mismatch

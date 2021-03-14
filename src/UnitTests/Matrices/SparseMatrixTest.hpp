@@ -18,6 +18,9 @@
 #include <iostream>
 #include <sstream>
 
+// Just for ChunkedEllpack vectorProduct test exception
+#include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
+
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
@@ -253,7 +256,7 @@ void test_SetRowCapacities()
    const IndexType cols = 11;
 
    Matrix m( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
+   typename Matrix::RowsCapacitiesType rowLengths( rows, 3 );
 
    IndexType rowLength = 1;
    for( IndexType i = 2; i < rows; i++ )
@@ -296,7 +299,7 @@ void test_SetRowCapacities()
 
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
+   typename Matrix::RowsCapacitiesType correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 
@@ -346,7 +349,7 @@ void test_GetNonzeroElementsCount()
 
    Matrix m( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
+   typename Matrix::RowsCapacitiesType rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
    m.setRowCapacities( rowLengths );
 
    RealType value = 1;
@@ -538,7 +541,7 @@ void test_GetRow()
 
    Matrix m( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
+   typename Matrix::RowsCapacitiesType rowLengths{ 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
    m.setRowCapacities( rowLengths );
 
    auto matrixView = m.getView();
@@ -735,7 +738,7 @@ void test_SetElement()
 
    m.setDimensions( rows, cols );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths { 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
+   typename Matrix::RowsCapacitiesType rowLengths { 4, 3, 8, 2, 1, 1, 1, 1, 10, 10 };
    m.setRowCapacities( rowLengths );
 
    RealType value = 1;
@@ -897,7 +900,7 @@ void test_AddElement()
       { 3, 0, 10 }, { 3, 1,  1 }, { 3, 2, 1 },
                     { 4, 1, 11 }, { 4, 2, 1 }, { 4, 3,  1 },
                                   { 5, 2, 1 }, { 5, 3, 12 }, { 5, 4, 1 } } );
-   /*typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
+   /*typename Matrix::RowsCapacitiesType rowLengths( rows, 3 );
    m.setRowCapacities( rowLengths );
 
    RealType value = 1;
@@ -1046,7 +1049,7 @@ void test_VectorProduct()
    Matrix m_1;
    m_1.reset();
    m_1.setDimensions( m_rows_1, m_cols_1 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_1{ 1, 2, 1, 1 };
+   typename Matrix::RowsCapacitiesType rowLengths_1{ 1, 2, 1, 1 };
    m_1.setRowCapacities( rowLengths_1 );
 
    RealType value_1 = 1;
@@ -1088,7 +1091,7 @@ void test_VectorProduct()
    const IndexType m_cols_2 = 4;
 
    Matrix m_2( m_rows_2, m_cols_2 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_2{ 3, 1, 3, 1 };
+   typename Matrix::RowsCapacitiesType rowLengths_2{ 3, 1, 3, 1 };
    m_2.setRowCapacities( rowLengths_2 );
 
    RealType value_2 = 1;
@@ -1133,7 +1136,7 @@ void test_VectorProduct()
    const IndexType m_cols_3 = 4;
 
    Matrix m_3( m_rows_3, m_cols_3 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_3{ 3, 3, 3, 3 };
+   typename Matrix::RowsCapacitiesType rowLengths_3{ 3, 3, 3, 3 };
    m_3.setRowCapacities( rowLengths_3 );
 
    RealType value_3 = 1;
@@ -1183,7 +1186,7 @@ void test_VectorProduct()
    const IndexType m_cols_4 = 8;
 
    Matrix m_4( m_rows_4, m_cols_4 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_4{ 4, 4, 5, 4, 4, 4, 5, 5 };
+   typename Matrix::RowsCapacitiesType rowLengths_4{ 4, 4, 5, 4, 4, 4, 5, 5 };
    m_4.setRowCapacities( rowLengths_4 );
 
    RealType value_4 = 1;
@@ -1251,7 +1254,7 @@ void test_VectorProduct()
    const IndexType m_cols_5 = 8;
 
    Matrix m_5( m_rows_5, m_cols_5 );
-   typename Matrix::CompressedRowLengthsVector rowLengths_5{ 6, 3, 4, 5, 2, 7, 8, 8 };
+   typename Matrix::RowsCapacitiesType rowLengths_5{ 6, 3, 4, 5, 2, 7, 8, 8 };
    m_5.setRowCapacities( rowLengths_5 );
 
    RealType value_5 = 1;
@@ -1316,7 +1319,7 @@ void test_VectorProduct()
       // Test with large diagonal matrix
       Matrix m1( size, size );
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
-      rowCapacities.evaluate( [] __cuda_callable__ ( IndexType i ) { return 1; } );
+      rowCapacities.forEachElement( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
       m1.setRowCapacities( rowCapacities );
       auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx == 0  )
@@ -1325,7 +1328,7 @@ void test_VectorProduct()
             column = row;
          }
       };
-      m1.forAllRows( f1 );
+      m1.forEachElement( f1 );
       // check that the matrix was initialized
       m1.getCompressedRowLengths( rowCapacities );
       EXPECT_EQ( rowCapacities, 1 );
@@ -1340,7 +1343,7 @@ void test_VectorProduct()
       const int rows( size ), columns( size );
       Matrix m2( rows, columns );
       rowCapacities.setSize( rows );
-      rowCapacities.evaluate( [=] __cuda_callable__ ( IndexType i ) { return i + 1; } );
+      rowCapacities.forEachElement( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
       m2.setRowCapacities( rowCapacities );
       auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx <= row )
@@ -1349,7 +1352,7 @@ void test_VectorProduct()
             column = localIdx;
          }
       };
-      m2.forAllRows( f2 );
+      m2.forEachElement( f2 );
       // check that the matrix was initialized
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( rows );
       m2.getCompressedRowLengths( rowLengths );
@@ -1360,6 +1363,31 @@ void test_VectorProduct()
       m2.vectorProduct( in, out );
       for( IndexType i = 0; i < rows; i++ )
          EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
+   }
+
+   /**
+    * Long row test
+    */
+   using MatrixSegmentsType = typename Matrix::SegmentsType;
+   constexpr TNL::Algorithms::Segments::ElementsOrganization organization = MatrixSegmentsType::getOrganization();
+   using ChunkedEllpackView_ = TNL::Algorithms::Segments::ChunkedEllpackView< DeviceType, IndexType, organization >;
+   if( ! std::is_same< typename Matrix::SegmentsViewType, ChunkedEllpackView_ >::value )
+   {
+      // TODO: Fix ChunkedEllpack for this test - seems that it allocates too much memory
+      const int columns = 3000;
+      const int rows = 1;
+      Matrix m3( rows, columns );
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
+      rowsCapacities = columns;
+      m3.setRowCapacities( rowsCapacities );
+      auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
+         column = localIdx;
+         value = localIdx + 1;
+      };
+      m3.forEachElement( f );
+      TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
+      m3.vectorProduct( in, out );
+      EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );
    }
 }
 
@@ -1473,7 +1501,7 @@ void test_PerformSORIteration()
    const IndexType m_cols = 4;
 
    Matrix m( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
+   typename Matrix::RowsCapacitiesType rowLengths( m_rows, 3 );
    m.setRowCapacities( rowLengths );
 
    m.setElement( 0, 0, 4.0 );        // 0th row
@@ -1545,7 +1573,7 @@ void test_SaveAndLoad( const char* filename )
    const IndexType m_cols = 4;
 
    Matrix savedMatrix( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
+   typename Matrix::RowsCapacitiesType rowLengths( m_rows, 3 );
    savedMatrix.setRowCapacities( rowLengths );
 
    RealType value = 1;

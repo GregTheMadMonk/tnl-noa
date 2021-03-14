@@ -22,11 +22,13 @@ enum class Type {
    VECTOR = 2
 };
 
+//#define CSR_ADAPTIVE_UNION
+
 #ifdef CSR_ADAPTIVE_UNION
 template< typename Index >
 union CSRAdaptiveKernelBlockDescriptor
 {
-   CSRAdaptiveKernelBlockDescriptor(Index row, Type type = Type::VECTOR, Index index = 0) noexcept
+   CSRAdaptiveKernelBlockDescriptor(Index row, Type type = Type::VECTOR, Index index = 0, uint8_t warpsCount = 0) noexcept
    {
       this->index[0] = row;
       this->index[1] = index;
@@ -78,6 +80,16 @@ union CSRAdaptiveKernelBlockDescriptor
    __cuda_callable__ const Index getSegmentsInBlock() const
    {
       return ( twobytes[ sizeof( Index ) == 4 ? 3 : 5 ] & 0x3FFF );
+   }
+
+   __cuda_callable__ uint8_t getWarpIdx() const
+   {
+      return index[ 1 ];
+   }
+
+   __cuda_callable__ uint8_t getWarpsCount() const
+   {
+      return 1;
    }
 
    void print( std::ostream& str ) const

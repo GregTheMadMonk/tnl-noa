@@ -86,7 +86,7 @@ Index COOMatrix< Real, Device, Index >::getNumberOfUsedValues() const
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::setCompressedRowLengths(ConstCompressedRowLengthsVectorView rowLengths)
+bool COOMatrix< Real, Device, Index >::setCompressedRowLengths(ConstRowsCapacitiesTypeView rowLengths)
 {
 	IndexType size = 0;
 	for(IndexType row = 0; row < this->getRows(); row++)

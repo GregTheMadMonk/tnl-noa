@@ -13,7 +13,7 @@ int main( int argc, char* argv[] )
    const int size = 10;
    Array< float, Devices::Cuda > a( size ), b( size );
    a = 0;
-   b.getView().evaluate( [=] __cuda_callable__ ( int i ) -> float { return i; } );
+   b.forEachElement( [=] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Test the values stored in the arrays
@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
    /****
     * Change the first half of b and test it again
     */
-   b.getView().evaluate( [=] __cuda_callable__ ( int i ) -> float { return 0.0; }, 0, 5 );
+   b.forElements( 0, 5, [=] __cuda_callable__ ( int i, float& value ) { value = 0.0; } );
    if( b.containsOnlyValue( 0.0, 0, 5 ) )
       std::cout << "First five elements of b contains only 0" << std::endl;
 }

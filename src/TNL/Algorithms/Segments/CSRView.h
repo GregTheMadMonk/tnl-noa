@@ -14,10 +14,10 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
-#include <TNL/Algorithms/Segments/CSRKernelScalar.h>
-#include <TNL/Algorithms/Segments/CSRKernelVector.h>
-#include <TNL/Algorithms/Segments/CSRKernelHybrid.h>
-#include <TNL/Algorithms/Segments/CSRKernelAdaptive.h>
+#include <TNL/Algorithms/Segments/CSRScalarKernel.h>
+#include <TNL/Algorithms/Segments/CSRVectorKernel.h>
+#include <TNL/Algorithms/Segments/CSRHybridKernel.h>
+#include <TNL/Algorithms/Segments/CSRAdaptiveKernel.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -25,7 +25,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
-          typename Kernel = CSRKernelScalar< Index, Device > >
+          typename Kernel = CSRScalarKernel< Index, Device > >
 class CSRView
 {
    public:
@@ -41,6 +41,8 @@ class CSRView
       using ViewTemplate = CSRView< Device_, Index_, Kernel >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index >, Kernel >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
+
+      static constexpr bool havePadding() { return false; };
 
       __cuda_callable__
       CSRView();
@@ -104,10 +106,10 @@ class CSRView
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
 
       /***
@@ -134,19 +136,19 @@ class CSRView
 
 template< typename Device,
           typename Index >
-using CSRViewScalar = CSRView< Device, Index, CSRKernelScalar< Index, Device > >;
+using CSRViewScalar = CSRView< Device, Index, CSRScalarKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
-using CSRViewVector = CSRView< Device, Index, CSRKernelVector< Index, Device > >;
+using CSRViewVector = CSRView< Device, Index, CSRVectorKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
-using CSRViewHybrid = CSRView< Device, Index, CSRKernelHybrid< Index, Device > >;
+using CSRViewHybrid = CSRView< Device, Index, CSRHybridKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
-using CSRViewAdaptive = CSRView< Device, Index, CSRKernelAdaptive< Index, Device > >;
+using CSRViewAdaptive = CSRView< Device, Index, CSRAdaptiveKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >

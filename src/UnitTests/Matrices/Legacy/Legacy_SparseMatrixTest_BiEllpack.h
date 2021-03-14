@@ -24,26 +24,27 @@ protected:
    using BiEllpackMatrixType = Matrix;
 };
 
+using namespace TNL::Benchmarks::SpMV::ReferenceFormats;
 // types for which MatrixTest is instantiated
 using BiEllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Legacy::BiEllpack< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::BiEllpack< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::BiEllpack< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::BiEllpack< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Legacy::BiEllpack< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::BiEllpack< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::BiEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Legacy::BiEllpack< double, TNL::Devices::Host, long >
+    Legacy::BiEllpack< int,    TNL::Devices::Host, int >,
+    Legacy::BiEllpack< long,   TNL::Devices::Host, int >,
+    Legacy::BiEllpack< float,  TNL::Devices::Host, int >,
+    Legacy::BiEllpack< double, TNL::Devices::Host, int >,
+    Legacy::BiEllpack< int,    TNL::Devices::Host, long >,
+    Legacy::BiEllpack< long,   TNL::Devices::Host, long >,
+    Legacy::BiEllpack< float,  TNL::Devices::Host, long >,
+    Legacy::BiEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Legacy::BiEllpack< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::BiEllpack< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::BiEllpack< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::BiEllpack< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Legacy::BiEllpack< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::BiEllpack< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::BiEllpack< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Legacy::BiEllpack< double, TNL::Devices::Cuda, long >
+   ,Legacy::BiEllpack< int,    TNL::Devices::Cuda, int >,
+    Legacy::BiEllpack< long,   TNL::Devices::Cuda, int >,
+    Legacy::BiEllpack< float,  TNL::Devices::Cuda, int >,
+    Legacy::BiEllpack< double, TNL::Devices::Cuda, int >,
+    Legacy::BiEllpack< int,    TNL::Devices::Cuda, long >,
+    Legacy::BiEllpack< long,   TNL::Devices::Cuda, long >,
+    Legacy::BiEllpack< float,  TNL::Devices::Cuda, long >,
+    Legacy::BiEllpack< double, TNL::Devices::Cuda, long >
 #endif
 >;
 

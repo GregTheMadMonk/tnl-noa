@@ -32,12 +32,14 @@ class SlicedEllpack
       using IndexType = std::remove_const_t< Index >;
       using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
       using SegmentViewType = SegmentView< IndexType, Organization >;
+
+      static constexpr bool havePadding() { return true; };
 
       SlicedEllpack();
 
@@ -92,10 +94,10 @@ class SlicedEllpack
        * is terminated.
        */
       template< typename Function, typename... Args >
-      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args... args ) const;
+      void forEachElement( Function& f, Args... args ) const;
 
 
       /***

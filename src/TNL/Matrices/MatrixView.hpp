@@ -63,7 +63,7 @@ getNonzeroElementsCount() const
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->values.getSize(), std::plus<>{}, fetch, 0 );
+   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
 template< typename Real,
@@ -162,21 +162,7 @@ void MatrixView< Real, Device, Index >::print( std::ostream& str ) const
 {
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-const Index&
-MatrixView< Real, Device, Index >::
-getNumberOfColors() const
-{
-   return this->numberOfColors;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void
+/*void
 MatrixView< Real, Device, Index >::
 computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 {
@@ -208,7 +194,7 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
             this->numberOfColors++;
         }
     }
-}
+} */
 
-} // namespace Matrices
+   } // namespace Matrices
 } // namespace TNL

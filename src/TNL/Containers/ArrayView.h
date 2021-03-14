@@ -72,7 +72,7 @@ public:
 
    /**
     * \brief Device where the array is allocated.
-    * 
+    *
     * See \ref Devices::Host or \ref Devices::Cuda.
     */
    using DeviceType = Device;
@@ -412,22 +412,267 @@ public:
                   Index end = 0 );
 
    /**
-    * \brief Sets the array view elements using given lambda function.
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
     *
-    * Evaluates a lambda function \e f on whole array view or just on its
-    * sub-interval `[begin, end)`. This is performed at the same place
-    * where the data is allocated, i.e. it is efficient even on GPU.
+    * The lambda function is supposed to be declared as
     *
-    * \param f The lambda function to be evaluated.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_forElements.cpp
+    * \par Output
+    * \include ArrayViewExample_forElements.out
+    *
     */
    template< typename Function >
-   void evaluate( const Function& f,
-                  const Index begin = 0,
-                  Index end = 0 );
+   void forElements( IndexType begin, IndexType end, Function&& f );
+
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place
+    * where the array is allocated, i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_forElements.cpp
+    * \par Output
+    * \include ArrayViewExample_forElements.out
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, Function&& f ) const;
+
+   /**
+    * \brief Process the lambda function \e f for each array element.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param f The lambda function to be processed.
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_forElements.cpp
+    * \par Output
+    * \include ArrayViewExample_forElements.out
+    *
+    */
+   template< typename Function >
+   void forEachElement( Function&& f );
+
+   /**
+    * \brief Process the lambda function \e f for each array element for constant instances.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * \param elementIdx is an index of the array element being currently processed
+    * \param elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param f The lambda function to be processed.
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_forElements.cpp
+    * \par Output
+    * \include ArrayViewExample_forElements.out
+    *
+    */
+   template< typename Function >
+   void forEachElement( Function&& f ) const;
+
+   /**
+    * \brief Computes reduction with array view elements on interval [ \e begin, \e end).
+    *
+    * \tparam Fetche is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    * \tparam Result is a type of the reduction result.
+    *
+    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
+    * \param end defines range [begin, end) of indexes which will be used for the reduction.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction
+    *
+    * The \e Fetch lambda function takes two arguments which are index and value of the element
+    * being currently processed:
+    *
+    * ```
+    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * ```
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_reduceElements.cpp
+    * \par Output
+    * \include ArrayViewExample_reduceElements.out
+    */
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+   Result reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
+
+   /**
+    * \brief Computes reduction with array view elements on interval [ \e begin, \e end) for constant instances.
+    *
+    * \tparam Fetche is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    * \tparam Result is a type of the reduction result.
+    *
+    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
+    * \param end defines range [begin, end) of indexes which will be used for the reduction.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction
+    *
+    * The \e Fetch lambda function takes two arguments which are index and value of the element
+    * being currently processed:
+    *
+    * ```
+    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * ```
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_reduceElements.cpp
+    * \par Output
+    * \include ArrayViewExample_reduceElements.out
+    */
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+   Result reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
+
+   /**
+    * \brief Computes reduction with all array view elements.
+    *
+    * \tparam Fetche is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    * \tparam Result is a type of the reduction result.
+    *
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction
+    *
+    * The \e Fetch lambda function takes two arguments which are index and value of the element
+    * being currently processed:
+    *
+    * ```
+    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * ```
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_reduceElements.cpp
+    * \par Output
+    * \include ArrayViewExample_reduceElements.out
+    */
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+   Result reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero );
+
+   /**
+    * \brief Computes reduction with all array view elements for constant instances.
+    *
+    * \tparam Fetche is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    * \tparam Result is a type of the reduction result.
+    *
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction
+    *
+    * The \e Fetch lambda function takes two arguments which are index and value of the element
+    * being currently processed:
+    *
+    * ```
+    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * ```
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    * \include Containers/ArrayViewExample_reduceElements.cpp
+    * \par Output
+    * \include ArrayViewExample_reduceElements.out
+    */
+   template< typename Fetch,
+             typename Reduce,
+             typename Result >
+   Result reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
 
    /**
     * \brief Checks if there is an element with value \e v.
@@ -489,6 +734,18 @@ protected:
    Index size = 0;
 };
 
+/**
+ * \brief Overloaded insertion operator for printing an array view to output stream.
+ *
+ * \tparam Value is a type of the array view elements.
+ * \tparam Device is a device where the array view is allocated.
+ * \tparam Index is a type used for the indexing of the array view elements.
+ *
+ * \param str is a output stream.
+ * \param view is the array view to be printed.
+ *
+ * \return a reference on the output stream \ref std::ostream&.
+ */
 template< typename Value, typename Device, typename Index >
 std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
 

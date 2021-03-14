@@ -58,14 +58,14 @@ void getRow( const int matrixSize, Matrix& matrix )
 }
 
 template< typename Matrix >
-void forRows( const int matrixSize, Matrix& matrix )
+void forElements( const int matrixSize, Matrix& matrix )
 {
    matrix.setDimensions( matrixSize, matrixSize );
 
    auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value, bool& compute ) mutable {
       value = rowIdx + columnIdx;
    };
-   matrix.forRows( 0, matrixSize, f );
+   matrix.forElements( 0, matrixSize, f );
 }
 
 template< typename Device >
@@ -124,13 +124,13 @@ void setupDenseMatrix()
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;
 
-      std::cout << "   forRows: ";
+      std::cout << "   forElements: ";
       timer.reset();
       timer.start();
       for( int i = 0; i < testsCount; i++ )
       {
          TNL::Matrices::DenseMatrix< float, Device, int > matrix;
-         forRows( matrixSize, matrix );
+         forElements( matrixSize, matrix );
       }
       timer.stop();
       std::cout << timer.getRealTime() / ( double ) testsCount << " sec." << std::endl;

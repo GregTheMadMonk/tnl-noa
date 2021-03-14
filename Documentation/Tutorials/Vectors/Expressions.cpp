@@ -20,7 +20,7 @@ void expressions()
    ViewType a = a_v.getView();
    ViewType b = b_v.getView();
    ViewType c = c_v.getView();
-   a.evaluate( [] __cuda_callable__ ( int i )->RealType { return 3.14 * ( i - 5.0 ) / 5.0; } );
+   a.forEachElement( [] __cuda_callable__ ( int i, RealType& value ) { value = 3.14 * ( i - 5.0 ) / 5.0; } );
    b = a * a;
    c = 3 * a + sign( a ) * sin( a );
    std::cout << "a = " << a << std::endl;

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/Legacy/CSR.h>
+#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/Ellpack.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/SlicedEllpack.h>
 
@@ -58,7 +58,7 @@ void setupUnevenRowSizeMatrix( Matrix& m )
     const int rows = 10;
     const int cols = 6;
     m.setDimensions( rows, cols );
-    typename Matrix::CompressedRowLengthsVector rowLengths;
+    typename Matrix::RowsCapacitiesType rowLengths;
     rowLengths.setSize( rows );
     rowLengths.setValue( 5 );
     rowLengths.setElement( 0, 2 );
@@ -194,7 +194,7 @@ void setupAntiTriDiagMatrix( Matrix& m )
     const int cols = 6;
     m.reset();
     m.setDimensions( rows, cols );
-    typename Matrix::CompressedRowLengthsVector rowLengths;
+    typename Matrix::RowsCapacitiesType rowLengths;
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
     rowLengths.setElement( 0, 4);
@@ -282,7 +282,7 @@ void setupTriDiagMatrix( Matrix& m )
    const int cols = 6;
    m.reset();
    m.setDimensions( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::RowsCapacitiesType rowLengths;
    rowLengths.setSize( rows );
    rowLengths.setValue( 3 );
    rowLengths.setElement( 0 , 4 );

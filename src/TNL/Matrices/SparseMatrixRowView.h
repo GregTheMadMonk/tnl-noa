@@ -19,19 +19,19 @@ namespace Matrices {
 
 /**
  * \brief RowView is a simple structure for accessing rows of sparse matrix.
- * 
+ *
  * \tparam SegmentView is a segment view of segments representing the matrix format.
  * \tparam ValuesView is a vector view storing the matrix elements values.
  * \tparam ColumnsIndexesView is a vector view storing the column indexes of the matrix element.
  * \tparam isBinary tells if the the parent matrix is a binary matrix.
- * 
+ *
  * See \ref SparseMatrix and \ref SparseMatrixView.
- * 
+ *
  * \par Example
  * \include Matrices/SparseMatrix/SparseMatrixExample_getRow.cpp
  * \par Output
  * \include SparseMatrixExample_getRow.out
- * 
+ *
  * \par Example
  * \include Matrices/SparseMatrix/SparseMatrixViewExample_getRow.cpp
  * \par Output
@@ -87,13 +87,13 @@ class SparseMatrixRowView
 
       /**
        * \brief Tells whether the parent matrix is a binary matrix.
-       * @return 
+       * @return `true` if the matrix is binary.
        */
       static constexpr bool isBinary() { return isBinary_; };
 
       /**
        * \brief Constructor with \e segmentView, \e values and \e columnIndexes.
-       * 
+       *
        * \param segmentView instance of SegmentViewType representing matrix row.
        * \param values is a container view for storing the matrix elements values.
        * \param columnIndexes is a container view for storing the column indexes of the matrix elements.
@@ -105,7 +105,7 @@ class SparseMatrixRowView
 
       /**
        * \brief Returns size of the matrix row, i.e. number of matrix elements in this row.
-       * 
+       *
        * \return Size of the matrix row.
        */
       __cuda_callable__
@@ -113,9 +113,9 @@ class SparseMatrixRowView
 
       /**
        * \brief Returns constants reference to a column index of an element with given rank in the row.
-       * 
+       *
        * \param localIdx is the rank of the non-zero element in given row.
-       * 
+       *
        * \return constant reference to the matrix element column index.
        */
       __cuda_callable__
@@ -123,9 +123,9 @@ class SparseMatrixRowView
 
       /**
        * \brief Returns non-constants reference to a column index of an element with given rank in the row.
-       * 
+       *
        * \param localIdx is the rank of the non-zero element in given row.
-       * 
+       *
        * \return non-constant reference to the matrix element column index.
        */
       __cuda_callable__
@@ -133,9 +133,9 @@ class SparseMatrixRowView
 
       /**
        * \brief Returns constants reference to value of an element with given rank in the row.
-       * 
+       *
        * \param localIdx is the rank of the non-zero element in given row.
-       * 
+       *
        * \return constant reference to the matrix element value.
        */
       __cuda_callable__
@@ -143,9 +143,9 @@ class SparseMatrixRowView
 
       /**
        * \brief Returns non-constants reference to value of an element with given rank in the row.
-       * 
+       *
        * \param localIdx is the rank of the non-zero element in given row.
-       * 
+       *
        * \return non-constant reference to the matrix element value.
        */
       __cuda_callable__
@@ -153,7 +153,7 @@ class SparseMatrixRowView
 
       /**
        * \brief Sets a value of matrix element with given rank in the matrix row.
-       * 
+       *
        * \param localIdx is the rank of the matrix element in the row.
        * \param value is the new value of the matrix element.
        */
@@ -163,7 +163,7 @@ class SparseMatrixRowView
 
       /**
        * \brief Sets a column index of matrix element with given rank in the matrix row.
-       * 
+       *
        * \param localIdx is the rank of the matrix element in the row.
        * \param columnIndex is the new column index of the matrix element.
        */
@@ -173,7 +173,7 @@ class SparseMatrixRowView
 
       /**
        * \brief Sets both a value and a column index of matrix element with given rank in the matrix row.
-       * 
+       *
        * \param localIdx is the rank of the matrix element in the row.
        * \param columnIndex is the new column index of the matrix element.
        * \param value is the new value of the matrix element.
@@ -185,9 +185,9 @@ class SparseMatrixRowView
 
       /**
        * \brief Comparison of two matrix rows.
-       * 
+       *
        * The other matrix row can be from any other matrix.
-       * 
+       *
        * \param other is another matrix row.
        * \return \e true if both rows are the same, \e false otherwise.
        */
@@ -209,7 +209,7 @@ class SparseMatrixRowView
 
 /**
  * \brief Insertion operator for a sparse matrix row.
- * 
+ *
  * \param str is an output stream.
  * \param row is an input sparse matrix row.
  * \return  reference to the output stream.

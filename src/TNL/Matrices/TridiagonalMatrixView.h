@@ -63,7 +63,6 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       using IndexType = Index;
 
       /**
-       * \brief Type of related matrix view. 
        */
       using ViewType = TridiagonalMatrixView< Real, Device, Index, Organization >;
 
@@ -94,7 +93,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Constructor with all necessary data and views.
-       * 
+       *
        * \param values is a vector view with matrix elements values
        * \param indexer is an indexer of matrix elements
        */
@@ -103,7 +102,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param matrix is an input tridiagonal matrix view.
        */
       __cuda_callable__
@@ -111,7 +110,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param matrix is an input tridiagonal matrix view.
        */
       __cuda_callable__
@@ -119,44 +118,54 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns a modifiable view of the tridiagonal matrix.
-       * 
+       *
        * \return tridiagonal matrix view.
        */
       ViewType getView();
 
       /**
        * \brief Returns a non-modifiable view of the tridiagonal matrix.
-       * 
+       *
        * \return tridiagonal matrix view.
        */
       ConstViewType getConstView() const;
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * The string has a form `Matrices::TridiagonalMatrix< RealType,  [any_device], IndexType, Organization, [any_allocator] >`.
-       * 
+       *
        * See \ref TridiagonalMatrix::getSerializationType.
-       * 
+       *
        * \return \ref String with the serialization type.
        */
       static String getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
-       * 
+       *
        * See \ref TridiagonalMatrix::getSerializationType.
-       * 
+       *
        * \return \ref String with the serialization type.
        */
       virtual String getSerializationTypeVirtual() const;
 
       /**
+       * \brief Compute capacities of all rows.
+       *
+       * The row capacities are not stored explicitly and must be computed.
+       *
+       * \param rowCapacities is a vector where the row capacities will be stored.
+       */
+      template< typename Vector >
+      void getRowCapacities( Vector& rowCapacities ) const;
+
+      /**
        * \brief Computes number of non-zeros in each row.
-       * 
+       *
        * \param rowLengths is a vector into which the number of non-zeros in each row
        * will be stored.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_getCompressedRowLengths.cpp
        * \par Output
@@ -182,12 +191,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Comparison operator with another tridiagonal matrix.
-       * 
+       *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * 
+       *
        * \return \e true if both matrices are identical and \e false otherwise.
        */
       template< typename Real_,
@@ -198,14 +207,14 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Comparison operator with another multidiagonal matrix.
-       * 
+       *
        * \tparam Real_ is \e Real type of the source matrix.
        * \tparam Device_ is \e Device type of the source matrix.
        * \tparam Index_ is \e Index type of the source matrix.
        * \tparam Organization_ is \e Organization of the source matrix.
-       * 
+       *
        * \param matrix is the source matrix.
-       * 
+       *
        * \return \e true if both matrices are NOT identical and \e false otherwise.
        */
       template< typename Real_,
@@ -216,16 +225,16 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_getRow.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_getRow.out
-       * 
+       *
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
@@ -233,16 +242,16 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
-       * 
+       *
        * \param rowIdx is matrix row index.
-       * 
+       *
        * \return RowView for accessing given matrix row.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_getConstRow.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_getConstRow.out
-       * 
+       *
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
@@ -250,26 +259,26 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Set all matrix elements to given value.
-       * 
+       *
        * \param value is the new value of all matrix elements.
        */
       void setValue( const RealType& v );
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
-       * 
+       *
        * This method can be called from the host system (CPU) no matter
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
-       * 
+       *
        * \param row is row index of the element.
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_setElement.cpp
        * \par Output
@@ -282,26 +291,25 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Add element at given \e row and \e column to given \e value.
-       * 
+       *
        * This method can be called from the host system (CPU) no matter
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
        * The call may fail if the matrix row capacity is exhausted.
-       * 
+       *
        * \param row is row index of the element.
        * \param column is columns index of the element.
        * \param value is the value the element will be set to.
        * \param thisElementMultiplicator is multiplicator the original matrix element
        *   value is multiplied by before addition of given \e value.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_addElement.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_addElement.out
-       * 
        */
       __cuda_callable__
       void addElement( const IndexType row,
@@ -311,24 +319,23 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
-       * 
+       *
        * This method can be called from the host system (CPU) no matter
        * where the matrix is allocated. If the matrix is allocated on GPU this method
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forRows and \ref TridiagonalMatrix::forAllRows.
-       * 
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
-       * 
+       *
        * \return value of given matrix element.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_getElement.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_getElement.out
-       * 
        */
       __cuda_callable__
       RealType getElement( const IndexType row,
@@ -336,7 +343,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -345,14 +352,14 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_rowsReduction.cpp
        * \par Output
@@ -363,7 +370,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for performing general reduction on matrix rows.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -372,14 +379,14 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_rowsReduction.cpp
        * \par Output
@@ -390,7 +397,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -399,12 +406,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_allRowsReduction.cpp
        * \par Output
@@ -415,7 +422,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
-       * 
+       *
        * \tparam Fetch is a type of lambda function for data fetch declared as
        *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
        *          The return type of this lambda can be any non void.
@@ -424,12 +431,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
-       * 
+       *
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
        * \param zero is zero of given reduction operation also known as idempotent element.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_allRowsReduction.cpp
        * \par Output
@@ -440,92 +447,148 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
-       * 
+       *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
        *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function ) const;
+      void forElements( IndexType first, IndexType last, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
-       * 
+       *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
        *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
-       * 
+       *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forRows( IndexType first, IndexType last, Function& function );
+      void forElements( IndexType first, IndexType last, Function& function );
 
       /**
-       * \brief This method calls \e forRows for all matrix rows (for constant instances).
-       * 
-       * See \ref TridiagonalMatrix::forRows.
-       * 
+       * \brief This method calls \e forElements for all matrix rows (for constant instances).
+       *
+       * See \ref TridiagonalMatrix::forElements.
+       *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forAllRows.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function ) const;
+      void forEachElement( Function& function ) const;
 
       /**
-       * \brief This method calls \e forRows for all matrix rows.
-       * 
-       * See \ref TridiagonalMatrix::forRows.
-       * 
+       * \brief This method calls \e forElements for all matrix rows.
+       *
+       * See \ref TridiagonalMatrix::forElements.
+       *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
-       * 
+       *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forAllRows.cpp
        * \par Output
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forAllRows( Function& function );
+      void forEachElement( Function& function );
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+
+      /**
+       * \brief Method for sequential iteration over all matrix rows for non-constant instances.
+       *
+       * \tparam Function is type of lambda function that will operate on matrix elements.
+       *    It is should have form like
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param function is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForRows( IndexType begin, IndexType end, Function& function );
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
+       *
+       * See \ref TridiagonalMatrixView::sequentialForRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function ) const;
+
+      /**
+       * \brief This method calls \e sequentialForRows for all matrix rows.
+       *
+       * See \ref TridiagonalMatrixView::sequentialForAllRows.
+       *
+       * \tparam Function is a type of lambda function that will operate on matrix elements.
+       * \param function  is an instance of the lambda function to be called in each row.
+       */
+      template< typename Function >
+      void sequentialForAllRows( Function& function );
 
       /**
        * \brief Computes product of matrix and vector.
-       * 
+       *
        * More precisely, it computes:
-       * 
+       *
        * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
-       * 
+       *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
        * \tparam OutVector is type of output vector. It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
-       * 
+       *
        * \param inVector is input vector.
        * \param outVector is output vector.
        * \param matrixMultiplicator is a factor by which the matrix is multiplied. It is one by default.
@@ -563,7 +626,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Assignment of exactly the same matrix type.
-       * 
+       *
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
        */
@@ -571,28 +634,28 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for saving the matrix to a file.
-       * 
+       *
        * \param file is the output file.
        */
       void save( File& file ) const;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
-       * 
+       *
        * \param fileName is name of the file.
        */
       void save( const String& fileName ) const;
 
       /**
        * \brief Method for printing the matrix to output stream.
-       * 
+       *
        * \param str is the output stream.
        */
       void print( std::ostream& str ) const;
 
       /**
        * \brief This method returns matrix elements indexer used by this matrix.
-       * 
+       *
        * \return constant reference to the indexer.
        */
       __cuda_callable__
@@ -600,7 +663,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief This method returns matrix elements indexer used by this matrix.
-       * 
+       *
        * \return non-constant reference to the indexer.
        */
       __cuda_callable__
@@ -608,9 +671,9 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Returns padding index denoting padding zero elements.
-       * 
+       *
        * These elements are used for efficient data alignment in memory.
-       * 
+       *
        * \return value of the padding index.
        */
       __cuda_callable__
