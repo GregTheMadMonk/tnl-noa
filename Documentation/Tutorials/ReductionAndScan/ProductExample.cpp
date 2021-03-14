@@ -17,7 +17,7 @@ double product( const Vector< double, Device >& v )
    /***
     * Since we compute the product of all elements, the reduction must be initialized by 1.0 not by 0.0.
     */
-   return Reduction< Device >::reduce( 0, view.getSize(), reduce, fetch, 1.0 );
+   return Reduction< Device >::reduce( 0, view.getSize(), fetch, reduce, 1.0 );
 }
 
 int main( int argc, char* argv[] )

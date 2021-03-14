@@ -30,7 +30,7 @@ double sum( const Vector< double, Device >& v )
     * lambdas defined above and finally value of idempotent element, zero in this case, which serve for the
     * reduction initiation.
     */
-   return Reduction< Device >::reduce( 0, view.getSize(), reduce, fetch, 0.0 );
+   return Reduction< Device >::reduce( 0, view.getSize(), fetch, reduce, 0.0 );
 }
 
 int main( int argc, char* argv[] )

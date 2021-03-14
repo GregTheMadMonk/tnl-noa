@@ -30,7 +30,7 @@ void getRowExample()
    /***
     * Compute the matrix trace.
     */
-   int trace = TNL::Algorithms::Reduction< Device >::reduce( 0, view.getRows(), std::plus<>{}, fetch, 0 );
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( 0, view.getRows(), fetch, std::plus<>{}, 0 );
    std::cout << "Matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Matrix trace is: " << trace << "." << std::endl;
 }

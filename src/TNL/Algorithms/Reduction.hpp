@@ -37,14 +37,14 @@ static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//25
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 constexpr Result
 Reduction< Devices::Sequential >::
 reduce( const Index begin,
         const Index end,
-        const ReductionOperation& reduction,
-        DataFetcher& dataFetcher,
+        Fetch&& fetch,
+        Reduce&& reduce,
         const Result& zero )
 {
    constexpr int block_size = 128;
@@ -55,45 +55,45 @@ reduce( const Index begin,
       // initialize array for unrolled results
       Result r[ 4 ] = { zero, zero, zero, zero };
 
-      // main reduction (explicitly unrolled loop)
+      // main reduce (explicitly unrolled loop)
       for( Index b = 0; b < blocks; b++ ) {
          const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
-            r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
-            r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-            r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-            r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
+            r[ 0 ] = reduce( r[ 0 ], fetch( offset + i ) );
+            r[ 1 ] = reduce( r[ 1 ], fetch( offset + i + 1 ) );
+            r[ 2 ] = reduce( r[ 2 ], fetch( offset + i + 2 ) );
+            r[ 3 ] = reduce( r[ 3 ], fetch( offset + i + 3 ) );
          }
       }
 
-      // reduction of the last, incomplete block (not unrolled)
+      // reduce of the last, incomplete block (not unrolled)
       for( Index i = begin + blocks * block_size; i < end; i++ )
-         r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
+         r[ 0 ] = reduce( r[ 0 ], fetch( i ) );
 
-      // reduction of unrolled results
-      r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
-      r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
-      r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
+      // reduce of unrolled results
+      r[ 0 ] = reduce( r[ 0 ], r[ 2 ] );
+      r[ 1 ] = reduce( r[ 1 ], r[ 3 ] );
+      r[ 0 ] = reduce( r[ 0 ], r[ 1 ] );
       return r[ 0 ];
    }
    else {
       Result result = zero;
       for( Index i = begin; i < end; i++ )
-         result = reduction( result, dataFetcher( i ) );
+         result = reduce( result, fetch( i ) );
       return result;
    }
 }
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 constexpr std::pair< Result, Index >
 Reduction< Devices::Sequential >::
 reduceWithArgument( const Index begin,
                     const Index end,
-                    const ReductionOperation& reduction,
-                    DataFetcher& dataFetcher,
+                    Fetch&& fetch,
+                    Reduce&& reduce,
                     const Result& zero )
 {
    constexpr int block_size = 128;
@@ -106,7 +106,7 @@ reduceWithArgument( const Index begin,
       Result r[ 4 ] = { zero, zero, zero, zero };
       bool initialized( false );
 
-      // main reduction (explicitly unrolled loop)
+      // main reduce (explicitly unrolled loop)
       for( Index b = 0; b < blocks; b++ ) {
          const Index offset = begin + b * block_size;
          for( int i = 0; i < block_size; i += 4 ) {
@@ -116,48 +116,48 @@ reduceWithArgument( const Index begin,
                arg[ 1 ] = offset + i + 1;
                arg[ 2 ] = offset + i + 2;
                arg[ 3 ] = offset + i + 3;
-               r[ 0 ] = dataFetcher( offset + i );
-               r[ 1 ] = dataFetcher( offset + i + 1 );
-               r[ 2 ] = dataFetcher( offset + i + 2 );
-               r[ 3 ] = dataFetcher( offset + i + 3 );
+               r[ 0 ] = fetch( offset + i );
+               r[ 1 ] = fetch( offset + i + 1 );
+               r[ 2 ] = fetch( offset + i + 2 );
+               r[ 3 ] = fetch( offset + i + 3 );
                initialized = true;
                continue;
             }
-            reduction( r[ 0 ], dataFetcher( offset + i ),     arg[ 0 ], offset + i );
-            reduction( r[ 1 ], dataFetcher( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
-            reduction( r[ 2 ], dataFetcher( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
-            reduction( r[ 3 ], dataFetcher( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
+            reduce( r[ 0 ], fetch( offset + i ),     arg[ 0 ], offset + i );
+            reduce( r[ 1 ], fetch( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
+            reduce( r[ 2 ], fetch( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
+            reduce( r[ 3 ], fetch( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
          }
       }
 
-      // reduction of the last, incomplete block (not unrolled)
+      // reduce of the last, incomplete block (not unrolled)
       for( Index i = begin + blocks * block_size; i < size; i++ )
-         reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
+         reduce( r[ 0 ], fetch( i ), arg[ 0 ], i );
 
-      // reduction of unrolled results
-      reduction( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
-      reduction( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
-      reduction( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
+      // reduce of unrolled results
+      reduce( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
+      reduce( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
+      reduce( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
       return std::make_pair( r[ 0 ], arg[ 0 ] );
    }
    else {
-      std::pair< Result, Index > result( dataFetcher( begin ), begin );
+      std::pair< Result, Index > result( fetch( begin ), begin );
       for( Index i = begin + 1; i < end; i++ )
-         reduction( result.first, dataFetcher( i ), result.second, i );
+         reduce( result.first, fetch( i ), result.second, i );
       return result;
    }
 }
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 Result
 Reduction< Devices::Host >::
 reduce( const Index begin,
         const Index end,
-        const ReductionOperation& reduction,
-        DataFetcher& dataFetcher,
+        Fetch&& fetch,
+        Reduce&& reduce,
         const Result& zero )
 {
 #ifdef HAVE_OPENMP
@@ -178,10 +178,10 @@ reduce( const Index begin,
          for( Index b = 0; b < blocks; b++ ) {
             const Index offset = begin + b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
-               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
+               r[ 0 ] = reduce( r[ 0 ], fetch( offset + i ) );
+               r[ 1 ] = reduce( r[ 1 ], fetch( offset + i + 1 ) );
+               r[ 2 ] = reduce( r[ 2 ], fetch( offset + i + 2 ) );
+               r[ 3 ] = reduce( r[ 3 ], fetch( offset + i + 3 ) );
             }
          }
 
@@ -189,37 +189,37 @@ reduce( const Index begin,
          #pragma omp single nowait
          {
             for( Index i = begin + blocks * block_size; i < end; i++ )
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
+               r[ 0 ] = reduce( r[ 0 ], fetch( i ) );
          }
 
-         // local reduction of unrolled results
-         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
-         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
-         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
+         // local reduce of unrolled results
+         r[ 0 ] = reduce( r[ 0 ], r[ 2 ] );
+         r[ 1 ] = reduce( r[ 1 ], r[ 3 ] );
+         r[ 0 ] = reduce( r[ 0 ], r[ 1 ] );
 
-         // inter-thread reduction of local results
+         // inter-thread reduce of local results
          #pragma omp critical
          {
-            result = reduction( result, r[ 0 ] );
+            result = reduce( result, r[ 0 ] );
          }
       }
       return result;
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduce( begin, end, reduction, dataFetcher, zero );
+      return Reduction< Devices::Sequential >::reduce( begin, end, fetch, reduce, zero );
 }
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 std::pair< Result, Index >
 Reduction< Devices::Host >::
 reduceWithArgument( const Index begin,
                     const Index end,
-                    const ReductionOperation& reduction,
-                    DataFetcher& dataFetcher,
+                    Fetch&& fetch,
+                    Reduce&& reduce,
                     const Result& zero )
 {
 #ifdef HAVE_OPENMP
@@ -247,17 +247,17 @@ reduceWithArgument( const Index begin,
                   arg[ 1 ] = offset + i + 1;
                   arg[ 2 ] = offset + i + 2;
                   arg[ 3 ] = offset + i + 3;
-                  r[ 0 ] = dataFetcher( offset + i );
-                  r[ 1 ] = dataFetcher( offset + i + 1 );
-                  r[ 2 ] = dataFetcher( offset + i + 2 );
-                  r[ 3 ] = dataFetcher( offset + i + 3 );
+                  r[ 0 ] = fetch( offset + i );
+                  r[ 1 ] = fetch( offset + i + 1 );
+                  r[ 2 ] = fetch( offset + i + 2 );
+                  r[ 3 ] = fetch( offset + i + 3 );
                   initialized = true;
                   continue;
                }
-               reduction( r[ 0 ], dataFetcher( offset + i ),     arg[ 0 ], offset + i );
-               reduction( r[ 1 ], dataFetcher( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
-               reduction( r[ 2 ], dataFetcher( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
-               reduction( r[ 3 ], dataFetcher( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
+               reduce( r[ 0 ], fetch( offset + i ),     arg[ 0 ], offset + i );
+               reduce( r[ 1 ], fetch( offset + i + 1 ), arg[ 1 ], offset + i + 1 );
+               reduce( r[ 2 ], fetch( offset + i + 2 ), arg[ 2 ], offset + i + 2 );
+               reduce( r[ 3 ], fetch( offset + i + 3 ), arg[ 3 ], offset + i + 3 );
             }
          }
 
@@ -265,44 +265,44 @@ reduceWithArgument( const Index begin,
          #pragma omp single nowait
          {
             for( Index i = begin + blocks * block_size; i < end; i++ )
-               reduction( r[ 0 ], dataFetcher( i ), arg[ 0 ], i );
+               reduce( r[ 0 ], fetch( i ), arg[ 0 ], i );
          }
 
-         // local reduction of unrolled results
-         reduction( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
-         reduction( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
-         reduction( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
+         // local reduce of unrolled results
+         reduce( r[ 0 ], r[ 2 ], arg[ 0 ], arg[ 2 ] );
+         reduce( r[ 1 ], r[ 3 ], arg[ 1 ], arg[ 3 ] );
+         reduce( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
 
-         // inter-thread reduction of local results
+         // inter-thread reduce of local results
          #pragma omp critical
          {
             if( result.second == -1 )
                result.second = arg[ 0 ];
-            reduction( result.first, r[ 0 ], result.second, arg[ 0 ] );
+            reduce( result.first, r[ 0 ], result.second, arg[ 0 ] );
          }
       }
       return result;
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduceWithArgument( begin, end, reduction, dataFetcher, zero );
+      return Reduction< Devices::Sequential >::reduceWithArgument( begin, end, fetch, reduce, zero );
 }
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 Result
 Reduction< Devices::Cuda >::
 reduce( const Index begin,
         const Index end,
-        const ReductionOperation& reduction,
-        DataFetcher& dataFetcher,
+        Fetch&& fetch,
+        Reduce&& reduce,
         const Result& zero )
 {
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
-   // in which case reduction on host might fail.
+   // in which case reduce on host might fail.
    constexpr bool can_reduce_later_on_host = std::is_fundamental< Result >::value || std::is_pointer< Result >::value;
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -313,11 +313,11 @@ reduce( const Index begin,
 
    CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
-   // start the reduction on the GPU
+   // start the reduce on the GPU
    Result* deviceAux1( 0 );
    const int reducedSize = reductionLauncher.start(
-      reduction,
-      dataFetcher,
+      reduce,
+      fetch,
       zero,
       deviceAux1 );
 
@@ -353,9 +353,9 @@ reduce( const Index begin,
          timer.start();
       #endif
 
-      // finish the reduction on the host
+      // finish the reduce on the host
       auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-      const Result result = Reduction< Devices::Sequential >::reduce( 0, reducedSize, reduction, fetch, zero );
+      const Result result = Reduction< Devices::Sequential >::reduce( 0, reducedSize, fetch, reduce, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -364,8 +364,8 @@ reduce( const Index begin,
       return result;
    }
    else {
-      // data can't be safely reduced on host, so continue with the reduction on the GPU
-      auto result = reductionLauncher.finish( reduction, zero );
+      // data can't be safely reduced on host, so continue with the reduce on the GPU
+      auto result = reductionLauncher.finish( reduce, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -380,19 +380,19 @@ reduce( const Index begin,
 
 template< typename Index,
           typename Result,
-          typename ReductionOperation,
-          typename DataFetcher >
+          typename Fetch,
+          typename Reduce >
 std::pair< Result, Index >
 Reduction< Devices::Cuda >::
 reduceWithArgument( const Index begin,
                     const Index end,
-                    const ReductionOperation& reduction,
-                    DataFetcher& dataFetcher,
+                    Fetch&& fetch,
+                    Reduce&& reduce,
                     const Result& zero )
 {
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
-   // in which case reduction on host might fail.
+   // in which case reduce on host might fail.
    constexpr bool can_reduce_later_on_host = std::is_fundamental< Result >::value || std::is_pointer< Result >::value;
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -403,12 +403,12 @@ reduceWithArgument( const Index begin,
 
    CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
-   // start the reduction on the GPU
+   // start the reduce on the GPU
    Result* deviceAux1( nullptr );
    Index* deviceIndexes( nullptr );
    const int reducedSize = reductionLauncher.startWithArgument(
-      reduction,
-      dataFetcher,
+      reduce,
+      fetch,
       zero,
       deviceAux1,
       deviceIndexes );
@@ -460,11 +460,11 @@ reduceWithArgument( const Index begin,
          timer.start();
       #endif
 
-      // finish the reduction on the host
+      // finish the reduce on the host
 //      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-//      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduction, fetch, zero );
+//      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduce, fetch, zero );
       for( Index i = 1; i < reducedSize; i++ )
-         reduction( resultArray[ 0 ], resultArray[ i ], indexArray[ 0 ], indexArray[ i ]  );
+         reduce( resultArray[ 0 ], resultArray[ i ], indexArray[ 0 ], indexArray[ i ]  );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -473,8 +473,8 @@ reduceWithArgument( const Index begin,
       return std::make_pair( resultArray[ 0 ], indexArray[ 0 ] );
    }
    else {
-      // data can't be safely reduced on host, so continue with the reduction on the GPU
-      auto result = reductionLauncher.finishWithArgument( reduction, zero );
+      // data can't be safely reduced on host, so continue with the reduce on the GPU
+      auto result = reductionLauncher.finishWithArgument( reduce, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();

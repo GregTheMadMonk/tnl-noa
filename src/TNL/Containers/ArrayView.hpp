@@ -380,7 +380,7 @@ reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Re
 
    ValueType* d = this->getData();
    auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::Reduction< DeviceType >::reduce( begin, end, reduce, main_fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
 }
 
 template< typename Value,
@@ -397,7 +397,7 @@ reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Re
 
    const ValueType* d = this->getData();
    auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::Reduction< DeviceType >::reduce( begin, end, reduce, main_fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
 }
 
 template< typename Value,

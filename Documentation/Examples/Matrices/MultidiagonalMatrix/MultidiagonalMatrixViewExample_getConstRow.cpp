@@ -13,7 +13,7 @@ void getRowExample()
    using MatrixType = TNL::Matrices::MultidiagonalMatrix< double, Device >;
    MatrixType matrix (
       matrixSize,           // number of matrix columns
-      diagonalsOffsets,    
+      diagonalsOffsets,
       {  { 0.0, 0.0, 1.0 }, // matrix elements
          { 0.0, 2.0, 1.0 },
          { 3.0, 2.0, 1.0 },
@@ -32,7 +32,7 @@ void getRowExample()
    /***
     * Compute the matrix trace.
     */
-   int trace = TNL::Algorithms::Reduction< Device >::reduce( 0, matrix.getRows(), std::plus<>{}, fetch, 0 );
+   int trace = TNL::Algorithms::Reduction< Device >::reduce( 0, matrix.getRows(), fetch, std::plus<>{}, 0 );
    std::cout << "Matrix reads as: " << std::endl << matrix << std::endl;
    std::cout << "Matrix trace is: " << trace << "." << std::endl;
 }

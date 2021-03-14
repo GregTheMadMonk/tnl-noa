@@ -448,7 +448,7 @@ void test_SetElement()
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool {
       return ( v_view[ i ] == m_view.getElement( i, i ) );
    };
-   EXPECT_TRUE( TNL::Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, m.getRows(), std::logical_and<>{}, fetch, true ) );
+   EXPECT_TRUE( TNL::Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, m.getRows(), fetch, std::logical_and<>{}, true ) );
 
 }
 

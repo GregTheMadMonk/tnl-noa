@@ -18,7 +18,7 @@ double scalarProduct( const Vector< double, Device >& u, const Vector< double, D
     */
    auto fetch = [=] __cuda_callable__ ( int i ) { return u_view[ i ] * v_view[ i ]; };
    auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
-   return Reduction< Device >::reduce( 0, v_view.getSize(), reduce, fetch, 0.0 );
+   return Reduction< Device >::reduce( 0, v_view.getSize(), fetch, reduce, 0.0 );
 }
 
 int main( int argc, char* argv[] )

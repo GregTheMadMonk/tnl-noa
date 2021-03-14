@@ -22,7 +22,7 @@ bool comparison( const Vector< double, Device >& u, const Vector< double, Device
     * Reduce performs logical AND on intermediate results obtained by fetch.
     */
    auto reduce = [] __cuda_callable__ ( const bool& a, const bool& b ) { return a && b; };
-   return Reduction< Device >::reduce( 0, v_view.getSize(), reduce, fetch, true );
+   return Reduction< Device >::reduce( 0, v_view.getSize(), fetch, reduce, true );
 }
 
 int main( int argc, char* argv[] )

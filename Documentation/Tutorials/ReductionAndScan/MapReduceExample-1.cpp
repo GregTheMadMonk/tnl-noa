@@ -14,7 +14,7 @@ double mapReduce( Vector< double, Device >& u )
    auto fetch = [=] __cuda_callable__ ( int i )->double {
       return u_view[ i ] > 0 ? u_view[ i ] : 0.0; };
    auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
-   return Reduction< Device >::reduce( 0, u_view.getSize(), reduce, fetch, 0.0 );
+   return Reduction< Device >::reduce( 0, u_view.getSize(), fetch, reduce, 0.0 );
 }
 
 int main( int argc, char* argv[] )

@@ -45,27 +45,27 @@ struct Reduction< Devices::Sequential >
     *
     * \tparam Index is a type for indexing.
     * \tparam Result is a type of the reduction result.
-    * \tparam ReductionOperation is a lambda function performing the reduction.
-    * \tparam DataFetcher is a lambda function for fetching the input data.
+    * \tparam Fetch is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
     *
     * \param begin defines range [begin, end) of indexes which will be used for the reduction.
     * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation.
-    * \param dataFetcher is a lambda function fetching the input data.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
     * \param zero is the idempotent element for the reduction operation, i.e. element which
     *             does not change the result of the reduction.
     * \return result of the reduction
     *
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
     * ```
     *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
     *
     * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
     * ```
     *
     * \par Example
@@ -78,17 +78,120 @@ struct Reduction< Devices::Sequential >
     */
    template< typename Index,
              typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
+             typename Fetch,
+             typename Reduce >
    static constexpr Result
    reduce( const Index begin,
            const Index end,
-           const ReductionOperation& reduction,
-           DataFetcher& dataFetcher,
+           Fetch&& fetch,
+           Reduce&& reduce,
            const Result& zero );
 
    /**
     * \brief Computes sequentially reduction on CPU and returns position of an element of interest.
+    *
+    * For example in case of computing minimal or maximal element in array/vector,
+    * the position of the element having given value can be obtained. The use of this method
+    * is, however, more flexible.
+    *
+    * \tparam Index is a type for indexing.
+    * \tparam Result is a type of the reduction result.
+    * \tparam Fetch is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    *
+    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
+    * \param end defines range [begin, end) of indexes which will be used for the reduction.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation and managing the elements positions.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
+    *         is the element position and `pair.second` is the reduction result.
+    *
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
+    *
+    * ```
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
+    * ```
+    *
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
+    * ```
+    *
+    * \par Example
+    *
+    * \include ReductionAndScan/ReductionWithArgument.cpp
+    *
+    * \par Output
+    *
+    * \include ReductionWithArgument.out
+    */
+   template< typename Index,
+             typename Result,
+             typename Fetch,
+             typename Reduce >
+   static constexpr std::pair< Result, Index >
+   reduceWithArgument( const Index begin,
+                       const Index end,
+                       Fetch&& fetch,
+                       Reduce&& reduce,
+                       const Result& zero );
+};
+
+template<>
+struct Reduction< Devices::Host >
+{
+   /**
+    * \brief Computes reduction on CPU.
+    *
+    * \tparam Index is a type for indexing.
+    * \tparam Result is a type of the reduction result.
+    * \tparam Fetch is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
+    *
+    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
+    * \param end defines range [begin, end) of indexes which will be used for the reduction.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    * \return result of the reduction
+    *
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
+    *
+    * ```
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
+    * ```
+    *
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    *
+    * \include ReductionAndScan/SumExample.cpp
+    *
+    * \par Output
+    *
+    * \include SumExample.out
+    */
+   template< typename Index,
+             typename Result,
+             typename Fetch,
+             typename Reduce >
+   static Result
+   reduce( const Index begin,
+           const Index end,
+           Fetch&& fetch,
+           Reduce&& reduce,
+           const Result& zero );
+
+   /**
+    * \brief Computes reduction on CPU and returns position of an element of interest.
     *
     * For example in case of computing minimal or maximal element in array/vector,
     * the position of the element having given value can be obtained. The use of this method
@@ -101,23 +204,23 @@ struct Reduction< Devices::Sequential >
     *
     * \param begin defines range [begin, end) of indexes which will be used for the reduction.
     * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
-    * \param dataFetcher is a lambda function fetching the input data.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation and managing the elements positions.
     * \param zero is the idempotent element for the reduction operation, i.e. element which
     *             does not change the result of the reduction.
     * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
     *         is the element position and `pair.second` is the reduction result.
     *
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
     * ```
     *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
     *
     * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
     * ```
     *
     * \par Example
@@ -130,116 +233,13 @@ struct Reduction< Devices::Sequential >
     */
    template< typename Index,
              typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
-   static constexpr std::pair< Result, Index >
-   reduceWithArgument( const Index begin,
-                       const Index end,
-                       const ReductionOperation& reduction,
-                       DataFetcher& dataFetcher,
-                       const Result& zero );
-};
-
-template<>
-struct Reduction< Devices::Host >
-{
-   /**
-    * \brief Computes reduction on CPU.
-    *
-    * \tparam Index is a type for indexing.
-    * \tparam Result is a type of the reduction result.
-    * \tparam ReductionOperation is a lambda function performing the reduction.
-    * \tparam DataFetcher is a lambda function for fetching the input data.
-    *
-    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
-    * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation.
-    * \param dataFetcher is a lambda function fetching the input data.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction
-    *
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
-    *
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
-    * ```
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    *
-    * \include ReductionAndScan/SumExample.cpp
-    *
-    * \par Output
-    *
-    * \include SumExample.out
-    */
-   template< typename Index,
-             typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
-   static Result
-   reduce( const Index begin,
-           const Index end,
-           const ReductionOperation& reduction,
-           DataFetcher& dataFetcher,
-           const Result& zero );
-
-   /**
-    * \brief Computes reduction on CPU and returns position of an element of interest.
-    * 
-    * For example in case of computing minimal or maximal element in array/vector, 
-    * the position of the element having given value can be obtained. The use of this method
-    * is, however, more flexible.
-    * 
-    * \tparam Index is a type for indexing.
-    * \tparam Result is a type of the reduction result.
-    * \tparam ReductionOperation is a lambda function performing the reduction.
-    * \tparam DataFetcher is a lambda function for fetching the input data.
-    * 
-    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
-    * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
-    * \param dataFetcher is a lambda function fetching the input data.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
-    *         is the element position and `pair.second` is the reduction result.
-    * 
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
-    * 
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
-    * ```
-    * 
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    * 
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
-    * ```
-    * 
-    * \par Example
-    * 
-    * \include ReductionAndScan/ReductionWithArgument.cpp
-    * 
-    * \par Output
-    * 
-    * \include ReductionWithArgument.out
-    */
-   template< typename Index,
-             typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
+             typename Fetch,
+             typename Reduce >
    static std::pair< Result, Index >
    reduceWithArgument( const Index begin,
                        const Index end,
-                       const ReductionOperation& reduction,
-                       DataFetcher& dataFetcher,
+                       Fetch&& fetch,
+                       Reduce&& reduce,
                        const Result& zero );
 };
 
@@ -251,27 +251,27 @@ struct Reduction< Devices::Cuda >
     *
     * \tparam Index is a type for indexing.
     * \tparam Result is a type of the reduction result.
-    * \tparam ReductionOperation is a lambda function performing the reduction.
-    * \tparam DataFetcher is a lambda function for fetching the input data.
+    * \tparam Fetch is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
     *
     * \param begin defines range [begin, end) of indexes which will be used for the reduction.
     * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation.
-    * \param dataFetcher is a lambda function fetching the input data.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation.
     * \param zero is the idempotent element for the reduction operation, i.e. element which
     *             does not change the result of the reduction.
     * \return result of the reduction
     *
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
     * ```
     *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
     *
     * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
     * ```
     *
     * \par Example
@@ -284,46 +284,46 @@ struct Reduction< Devices::Cuda >
     */
    template< typename Index,
              typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
+             typename Fetch,
+             typename Reduce >
    static Result
    reduce( const Index begin,
            const Index end,
-           const ReductionOperation& reduction,
-           DataFetcher& dataFetcher,
+           Fetch&& fetch,
+           Reduce&& reduce,
            const Result& zero );
 
    /**
     * \brief Computes reduction on GPU and returns position of an element of interest.
     *
-    * For example in case of computing minimal or maximal element in array/vector, 
+    * For example in case of computing minimal or maximal element in array/vector,
     * the position of the element having given value can be obtained. The use of this method
     * is, however, more flexible.
     *
     * \tparam Index is a type for indexing.
     * \tparam Result is a type of the reduction result.
-    * \tparam ReductionOperation is a lambda function performing the reduction.
-    * \tparam DataFetcher is a lambda function for fetching the input data.
+    * \tparam Fetch is a lambda function for fetching the input data.
+    * \tparam Reduce is a lambda function performing the reduction.
     *
     * \param begin defines range [begin, end) of indexes which will be used for the reduction.
     * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
-    * \param dataFetcher is a lambda function fetching the input data.
+    * \param fetch is a lambda function fetching the input data.
+    * \param reduce is a lambda function defining the reduction operation and managing the elements positions.
     * \param zero is the idempotent element for the reduction operation, i.e. element which
     *             does not change the result of the reduction.
     * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
     *         is the element position and `pair.second` is the reduction result.
     *
-    * The dataFetcher lambda function takes one argument which is index of the element to be fetched:
+    * The `fetch` lambda function takes one argument which is index of the element to be fetched:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index i ) { return ... };
+    * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
     * ```
     *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
+    * The `reduce` lambda function takes two variables which are supposed to be reduced:
     *
     * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
+    * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
     * ```
     *
     * \par Example
@@ -336,13 +336,13 @@ struct Reduction< Devices::Cuda >
     */
    template< typename Index,
              typename Result,
-             typename ReductionOperation,
-             typename DataFetcher >
+             typename Fetch,
+             typename Reduce >
    static std::pair< Result, Index >
    reduceWithArgument( const Index begin,
                        const Index end,
-                       const ReductionOperation& reduction,
-                       DataFetcher& dataFetcher,
+                       Fetch&& fetch,
+                       Reduce&& reduce,
                        const Result& zero );
 };
 
