@@ -142,7 +142,7 @@ typename ChunkedEllpackView< Device, Index, Organization >::ViewType
 ChunkedEllpackView< Device, Index, Organization >::
 getView()
 {
-   return ViewType( size, chunksInSlice, desiredChunkSize,
+   return ViewType( size, storageSize, chunksInSlice, desiredChunkSize,
                     rowToChunkMapping.getView(),
                     rowToSliceMapping.getView(),
                     chunksToSegmentsMapping.getView(),
@@ -157,12 +157,13 @@ template< typename Device,
 __cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( size, chunksInSlice, desiredChunkSize,
-                         rowToChunkMapping.getConstView(),
-                         rowToSliceMapping.getConstView(),
-                         chunksToSegmentsMapping.getConstView(),
-                         rowPointers.getConstView(),
-                         slices.getConstView(),
+   ChunkedEllpackView* this_ptr = const_cast< ChunkedEllpackView* >( this );
+   return ConstViewType( size, storageSize, chunksInSlice, desiredChunkSize,
+                         this_ptr->rowToChunkMapping.getView(),
+                         this_ptr->rowToSliceMapping.getView(),
+                         this_ptr->chunksToSegmentsMapping.getView(),
+                         this_ptr->rowPointers.getView(),
+                         this_ptr->slices.getView(),
                          numberOfSlices );
 }
 
@@ -297,16 +298,16 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
    const IndexType chunksInSlice = this->chunksInSlice;
    auto rowToChunkMapping = this->rowToChunkMapping;
    auto rowToSliceMapping = this->rowToSliceMapping;
    auto slices = this->slices;
-   auto work = [=] __cuda_callable__ ( IndexType segmentIdx, Args... args ) mutable {
+   auto work = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
       const IndexType sliceIdx = rowToSliceMapping[ segmentIdx ];
 
       IndexType firstChunkOfSegment( 0 );
@@ -328,7 +329,7 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
          IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
          for( IndexType j = begin; j < end && compute; j++ )
-            f( segmentIdx, localIdx++, j, compute, args...);
+            f( segmentIdx, localIdx++, j, compute );
       }
       else
       {
@@ -339,24 +340,54 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
             IndexType end = begin + chunksInSlice * chunkSize;
             for( IndexType j = begin; j < end && compute; j += chunksInSlice )
             {
-               f( segmentIdx, localIdx++, j, compute, args...);
+               f( segmentIdx, localIdx++, j, compute );
             }
          }
       }
    };
-   Algorithms::ParallelFor< DeviceType >::exec( first, last , work, args... );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last, work );
 }
 
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forEachElement( Function& f, Args... args ) const
+forEachElement( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
 }
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+ChunkedEllpackView< Device, Index, Organization >::
+forSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = this->getConstView();
+   using SVType = decltype( view.getSegmentView( IndexType() ) );
+   static_assert( std::is_same< SVType, SegmentViewType >::value, "" );
+   auto f = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
+      auto segment = view.getSegmentView( segmentIdx );
+      function( segment );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+ChunkedEllpackView< Device, Index, Organization >::
+forEachSegment( Function&& f ) const
+{
+   this->forSegments( 0, this->getSegmentsCount(), f );
+}
+
 
 template< typename Device,
           typename Index,
@@ -371,7 +402,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
    {
       //segmentsReductionKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
       //return;
-      
+
       for( IndexType segmentIdx = first; segmentIdx < last; segmentIdx++ )
       {
          const IndexType& sliceIndex = rowToSliceMapping[ segmentIdx ];

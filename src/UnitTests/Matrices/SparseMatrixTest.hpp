@@ -1392,6 +1392,72 @@ void test_VectorProduct()
 }
 
 template< typename Matrix >
+void test_ForElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 8x3 sparse matrix:
+    *
+    *    /  1  1  1  \
+    *    |  2  2  2  |
+    *    |  3  3  3  |
+    *    |  4  4  4  |
+    *    |  5  5  5  |
+    *    |  6  6  6  |
+    *    |  7  7  7  |
+    *    \  8  8  8  /
+    */
+
+   const IndexType cols = 3;
+   const IndexType rows = 8;
+
+   Matrix m( { 3, 3, 3, 3, 3, 3, 3, 3, 3 }, cols  );
+   m.forEachElement( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
+      value = rowIdx + 1.0;
+      columnIdx = localIdx;
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+         EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx + 1.0 );
+}
+
+template< typename Matrix >
+void test_ForRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /////
+   // Setup lower triangular matrix
+   const IndexType cols = 3;
+   const IndexType rows = 8;
+
+   Matrix m( { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, cols  );
+   using RowViewType = typename Matrix::RowViewType;
+   m.forEachRow( [] __cuda_callable__ ( RowViewType& row ) mutable {
+      for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
+      {
+         row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );
+         row.setColumnIndex( localIdx, localIdx );
+      }
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+}
+
+template< typename Matrix >
 void test_RowsReduction()
 {
    using RealType = typename Matrix::RealType;
@@ -1414,8 +1480,7 @@ void test_RowsReduction()
    const IndexType rows = 8;
    const IndexType cols = 8;
 
-   Matrix m;
-   m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
    typename Matrix::RowsCapacitiesType rowsCapacities{ 6, 3, 4, 5, 2, 7, 8, 8 };
    m.setRowCapacities( rowsCapacities );
 

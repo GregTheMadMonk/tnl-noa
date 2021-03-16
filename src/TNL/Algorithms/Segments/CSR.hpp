@@ -198,7 +198,7 @@ auto
 CSR< Device, Index, Kernel, IndexAllocator >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
+   return SegmentViewType( segmentIdx, offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
 }
 
 template< typename Device,
@@ -227,24 +227,48 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType begin, IndexType end, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( begin, end, f );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel,
-          typename IndexAllocator>
-   template< typename Function, typename... Args >
+          typename IndexAllocator >
+   template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-forEachElement( Function& f, Args... args ) const
+forEachElement( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename Function >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename Function >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
 }
 
 template< typename Device,

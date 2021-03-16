@@ -35,11 +35,11 @@ class ChunkedEllpack
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
-      using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
+      using SegmentViewType = typename ViewType::SegmentViewType;
+      using ChunkedEllpackSliceInfoType = typename ViewType::ChunkedEllpackSliceInfoType; // details::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
+      using ChunkedEllpackSliceInfoAllocator = typename ViewType::ChunkedEllpackSliceInfoAllocator; // typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
+      using ChunkedEllpackSliceInfoContainer = typename ViewType::ChunkedEllpackSliceInfoContainer; // Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
 
       static constexpr bool havePadding() { return true; };
 
@@ -96,12 +96,17 @@ class ChunkedEllpack
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType first, IndexType last, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forEachElement( Function&& f ) const;
 
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

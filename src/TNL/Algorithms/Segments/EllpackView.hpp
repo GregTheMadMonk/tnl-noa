@@ -172,23 +172,23 @@ __cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( Organization == RowMajorOrder )
-      return SegmentViewType( segmentIdx * this->segmentSize, this->segmentSize, 1 );
+      return SegmentViewType( segmentIdx, segmentIdx * this->segmentSize, this->segmentSize, 1 );
    else
-      return SegmentViewType( segmentIdx, this->segmentSize, this->alignedSize );
+      return SegmentViewType( segmentIdx, segmentIdx, this->segmentSize, this->alignedSize );
 }
 
 template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void EllpackView< Device, Index, Organization, Alignment >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
    if( Organization == RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType begin = segmentIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
@@ -196,21 +196,21 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
             f( segmentIdx, localIdx++, globalIdx, compute );
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
    else
    {
       const IndexType storageSize = this->getStorageSize();
       const IndexType alignedSize = this->alignedSize;
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType begin = segmentIdx;
          const IndexType end = storageSize;
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += alignedSize )
-            f( segmentIdx, localIdx++, globalIdx, compute, args... );
+            f( segmentIdx, localIdx++, globalIdx, compute );
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
 }
 
@@ -218,11 +218,38 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void EllpackView< Device, Index, Organization, Alignment >::
-forEachElement( Function& f, Args... args ) const
+forEachElement( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename Function >
+void EllpackView< Device, Index, Organization, Alignment >::
+forSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = this->getConstView();
+   auto f = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
+      auto segment = view.getSegmentView( segmentIdx );
+      function( segment );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename Function >
+void EllpackView< Device, Index, Organization, Alignment >::
+forEachSegment( Function&& f ) const
+{
+   this->forSegments( 0, this->getSegmentsCount(), f );
 }
 
 template< typename Device,

@@ -36,7 +36,7 @@ class SlicedEllpackView
       template< typename Device_, typename Index_ >
       using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
       using ViewType = SlicedEllpackView;
-      using ConstViewType = ViewType;
+      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, Organization, SliceSize >;
       using SegmentViewType = SegmentView< IndexType, Organization >;
 
       static constexpr bool havePadding() { return true; };
@@ -94,12 +94,17 @@ class SlicedEllpackView
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType first, IndexType last, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forEachElement( Function&& f ) const;
 
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

@@ -95,6 +95,20 @@ TYPED_TEST( MatrixTest, vectorProductTest )
     test_VectorProduct< MatrixType >();
 }
 
+TYPED_TEST( MatrixTest, forElements )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForElements< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forRows )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForRows< MatrixType >();
+}
+
 TYPED_TEST( MatrixTest, rowsReduction )
 {
     using MatrixType = typename TestFixture::MatrixType;

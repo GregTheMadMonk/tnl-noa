@@ -44,6 +44,18 @@ template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
           bool isBinary_ >
+__cuda_callable__
+auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+getRowIndex() -> const IndexType&
+{
+   return segmentView.getSegmentIndex();
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType&
@@ -104,6 +116,20 @@ setValue( const IndexType localIdx,
       const IndexType globalIdx = segmentView.getGlobalIndex( localIdx );
       values[ globalIdx ] = value;
    }
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ void
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+setColumnIndex( const IndexType localIdx,
+                const IndexType& columnIndex )
+{
+   TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
+   const IndexType globalIdx = segmentView.getGlobalIndex( localIdx );
+   this->columnIndexes[ globalIdx ] = columnIndex;
 }
 
 template< typename SegmentView,

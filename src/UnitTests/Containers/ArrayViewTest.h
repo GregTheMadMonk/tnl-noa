@@ -48,7 +48,6 @@ std::ostream& operator<<( std::ostream& str, const MyData& v )
    return str << v.data;
 }
 
-
 // test fixture for typed tests
 template< typename View >
 class ArrayViewTest : public ::testing::Test

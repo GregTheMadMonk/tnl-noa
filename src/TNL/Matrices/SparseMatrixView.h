@@ -135,12 +135,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using RowViewType = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = typename RowView::ConstViewType;
+      using ConstRowViewType = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary() >;;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -293,7 +293,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      ConstRowView getRow( const IndexType& rowIdx ) const;
+      ConstRowViewType getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
@@ -310,7 +310,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      RowView getRow( const IndexType& rowIdx );
+      RowViewType getRow( const IndexType& rowIdx );
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
@@ -569,6 +569,18 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        */
       template< typename Function >
       void forEachElement( Function& function );
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      template< typename Function >
+      void forEachRow( Function&& function );
+
+      template< typename Function >
+      void forEachRow( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

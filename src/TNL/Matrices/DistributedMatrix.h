@@ -36,8 +36,8 @@ public:
 
    using RowsCapacitiesType = Containers::DistributedVector< IndexType, DeviceType, IndexType >;
 
-   using MatrixRow = typename Matrix::RowView;
-   using ConstMatrixRow = typename Matrix::ConstRowView;
+   using MatrixRow = typename Matrix::RowViewType;
+   using ConstMatrixRow = typename Matrix::ConstRowViewType;
 
    template< typename _Real = RealType,
              typename _Device = DeviceType,

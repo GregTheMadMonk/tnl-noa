@@ -151,12 +151,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = SparseMatrixRowView< typename SegmentsType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using RowViewType = typename ViewType::RowViewType;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = typename RowView::ConstViewType;
+      using ConstRowViewType = typename ViewType::ConstRowViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -502,7 +502,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      const ConstRowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
@@ -519,7 +519,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      RowView getRow( const IndexType& rowIdx );
+      RowViewType getRow( const IndexType& rowIdx );
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
@@ -708,15 +708,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for iteration over all matrix rows for constant instances.
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
+       *
+       * The lambda function `function` should be declared like follows:
+       *
+       * ```
+       * function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )
+       * ```
+       *
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
@@ -724,21 +729,26 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function&& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The \e localIdx parameter is a rank of the non-zero element in given row.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
+       *
+       * The lambda function `function` should be declared like follows:
+       *
+       * ```
+       * function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )
+       * ```
+       *
+       *  The \e localIdx parameter is a rank of the non-zero element in given row.
+       *  If the 'compute' variable is set to false the iteration over the row can
+       *  be interrupted.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
@@ -746,7 +756,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function& function );
+      void forElements( IndexType begin, IndexType end, Function&& function );
 
       /**
        * \brief This method calls \e forElements for all matrix rows (for constant instances).
@@ -762,7 +772,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forEachElement( Function&& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -778,7 +788,19 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forEachElement( Function&& function );
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      template< typename Function >
+      void forEachRow( Function&& function );
+
+      template< typename Function >
+      void forEachRow( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

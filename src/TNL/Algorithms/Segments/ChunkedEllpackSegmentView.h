@@ -26,15 +26,16 @@ class ChunkedEllpackSegmentView< Index, ColumnMajorOrder >
       using IndexType = Index;
 
       __cuda_callable__
-      ChunkedEllpackSegmentView( const IndexType offset,
+      ChunkedEllpackSegmentView( const IndexType segmentIdx,
+                                 const IndexType offset,
                                  const IndexType size,
                                  const IndexType chunkSize,      // this is only for compatibility with the following specialization
                                  const IndexType chunksInSlice ) // this one as well - both can be replaced when we could use constexprif in C++17
-      : segmentOffset( offset ), segmentSize( size ){};
+      : segmentIdx( segmentIdx ), segmentOffset( offset ), segmentSize( size ){};
 
       __cuda_callable__
       ChunkedEllpackSegmentView( const ChunkedEllpackSegmentView& view )
-      : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ){};
+      : segmentIdx( view.segmentIdx ), segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ){};
 
       __cuda_callable__
       IndexType getSize() const
@@ -49,9 +50,15 @@ class ChunkedEllpackSegmentView< Index, ColumnMajorOrder >
          return segmentOffset + localIndex;
       };
 
+      __cuda_callable__
+      const IndexType& getSegmentIndex() const
+      {
+         return this->segmentIdx;
+      };
+
       protected:
-         
-         IndexType segmentOffset, segmentSize;
+
+         IndexType segmentIdx, segmentOffset, segmentSize;
 };
 
 template< typename Index >
@@ -62,12 +69,18 @@ class ChunkedEllpackSegmentView< Index, RowMajorOrder >
       using IndexType = Index;
 
       __cuda_callable__
-      ChunkedEllpackSegmentView( const IndexType offset,
+      ChunkedEllpackSegmentView( const IndexType segmentIdx,
+                                 const IndexType offset,
                                  const IndexType size,
                                  const IndexType chunkSize,
                                  const IndexType chunksInSlice )
-      : segmentOffset( offset ), segmentSize( size ),
+      : segmentIdx( segmentIdx ), segmentOffset( offset ), segmentSize( size ),
         chunkSize( chunkSize ), chunksInSlice( chunksInSlice ){};
+
+      __cuda_callable__
+      ChunkedEllpackSegmentView( const ChunkedEllpackSegmentView& view )
+      : segmentIdx( view.segmentIdx ), segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ),
+        chunkSize( view.chunkSize ), chunksInSlice( view.chunksInSlice ){};
 
       __cuda_callable__
       IndexType getSize() const
@@ -84,9 +97,26 @@ class ChunkedEllpackSegmentView< Index, RowMajorOrder >
          return segmentOffset + inChunkOffset * chunksInSlice + chunkIdx;
       };
 
+      __cuda_callable__
+      const IndexType& getSegmentIndex() const
+      {
+         return this->segmentIdx;
+      };
+
+      __cuda_callable__
+      ChunkedEllpackSegmentView& operator = ( const ChunkedEllpackSegmentView& view ) const
+      {
+         this->segmentIdx = view.segmentIdx;
+         this->segmentOffset = view.segmentOffset;
+         this->segmentSize = view.segmentSize;
+         this->chunkSize = view.chunkSize;
+         this->chunksInSlice = view.chunksInSlice;
+         return *this;
+      }
+
       protected:
-         
-         IndexType segmentOffset, segmentSize, chunkSize, chunksInSlice;
+
+         IndexType segmentIdx, segmentOffset, segmentSize, chunkSize, chunksInSlice;
 };
 
       } //namespace Segments

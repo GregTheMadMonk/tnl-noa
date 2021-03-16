@@ -443,12 +443,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( first, last, f );
 }
 
 template< typename Device,
@@ -456,13 +456,40 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forEachElement( Function& f, Args... args ) const
+forEachElement( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
 }
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
+}
+
 
 template< typename Device,
           typename Index,

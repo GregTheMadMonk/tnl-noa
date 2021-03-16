@@ -434,7 +434,7 @@ template< typename Real,
           typename IndexAllocator >
 __cuda_callable__ auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getRow( const IndexType& rowIdx ) const -> const ConstRowView
+getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
 {
    return this->view.getRow( rowIdx );
 }
@@ -449,7 +449,7 @@ template< typename Real,
           typename IndexAllocator >
 __cuda_callable__ auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getRow( const IndexType& rowIdx ) -> RowView
+getRow( const IndexType& rowIdx ) -> RowViewType
 {
    return this->view.getRow( rowIdx );
 }
@@ -603,7 +603,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forElements( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.forElements( begin, end, function );
 }
@@ -619,7 +619,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forElements( IndexType begin, IndexType end, Function& function )
+forElements( IndexType begin, IndexType end, Function&& function )
 {
    this->view.forElements( begin, end, function );
 }
@@ -635,7 +635,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachElement( Function& function ) const
+forEachElement( Function&& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -651,9 +651,73 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachElement( Function& function )
+forEachElement( Function&& function )
 {
    this->forElements( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   this->getView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   this->getConstView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+forEachRow( Function&& function )
+{
+   this->getView().forEachRow( function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+forEachRow( Function&& function ) const
+{
+   this->getConsView().forEachRow( function );
 }
 
 template< typename Real,

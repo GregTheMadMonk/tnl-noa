@@ -32,13 +32,13 @@ class BiEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = BiEllpackView;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = BiEllpackView< Device_, Index_ >;
-      using ConstViewType = BiEllpackView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
+      using ViewTemplate = BiEllpackView< Device_, Index_, Organization, WarpSize >;
+      using ConstViewType = BiEllpackView< Device, std::add_const_t< Index >, Organization, WarpSize >;
+      using SegmentViewType = BiEllpackSegmentView< IndexType, Organization, WarpSize >;
 
       static constexpr bool havePadding() { return true; };
 
@@ -111,12 +111,17 @@ class BiEllpackView
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType first, IndexType last, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forEachElement( Function&& f ) const;
 
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

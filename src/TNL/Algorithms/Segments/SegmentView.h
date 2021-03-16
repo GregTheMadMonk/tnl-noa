@@ -28,17 +28,18 @@ class SegmentView< Index, ColumnMajorOrder >
       using IndexType = Index;
 
       __cuda_callable__
-      SegmentView( const IndexType offset,
+      SegmentView( const IndexType segmentIdx,
+                   const IndexType offset,
                    const IndexType size,
                    const IndexType step )
-      : segmentOffset( offset ), segmentSize( size ), step( step ){};
+      : segmentIdx( segmentIdx ), segmentOffset( offset ), segmentSize( size ), step( step ){};
 
       __cuda_callable__
       SegmentView( const SegmentView& view )
-      : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ), step( view.step ){};
+      : segmentIdx( view.segmentIdx ), segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ), step( view.step ){};
 
       __cuda_callable__
-      IndexType getSize() const
+      const IndexType& getSize() const
       {
          return this->segmentSize;
       };
@@ -50,9 +51,15 @@ class SegmentView< Index, ColumnMajorOrder >
          return segmentOffset + localIndex * step;
       };
 
+      __cuda_callable__
+      const IndexType& getSegmentIndex() const
+      {
+         return this->segmentIdx;
+      };
+
       protected:
-         
-         IndexType segmentOffset, segmentSize, step;
+
+         IndexType segmentIdx, segmentOffset, segmentSize, step;
 };
 
 template< typename Index >
@@ -63,13 +70,14 @@ class SegmentView< Index, RowMajorOrder >
       using IndexType = Index;
 
       __cuda_callable__
-      SegmentView( const IndexType offset,
+      SegmentView( const IndexType segmentIdx,
+                   const IndexType offset,
                    const IndexType size,
                    const IndexType step = 1 ) // For compatibility with previous specialization
-      : segmentOffset( offset ), segmentSize( size ){};
+      : segmentIdx( segmentIdx ), segmentOffset( offset ), segmentSize( size ){};
 
       __cuda_callable__
-      IndexType getSize() const
+      const IndexType& getSize() const
       {
          return this->segmentSize;
       };
@@ -81,9 +89,15 @@ class SegmentView< Index, RowMajorOrder >
          return segmentOffset + localIndex;
       };
 
+      __cuda_callable__
+      const IndexType& getSegmentIndex() const
+      {
+         return this->segmentIdx;
+      };
+
       protected:
-         
-         IndexType segmentOffset, segmentSize;
+
+         IndexType segmentIdx, segmentOffset, segmentSize;
 };
 
       } //namespace Segments
