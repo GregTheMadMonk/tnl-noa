@@ -705,18 +705,18 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
-       * \brief Method for iteration over all matrix rows for constant instances.
+       * \brief Method for parallel iteration over matrix elements of given rows for constant instances.
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
-       * \param function is an instance of the lambda function to be called in each row.
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for element of given rows.
        *
        * The lambda function `function` should be declared like follows:
        *
        * ```
-       * function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )
+       * auto function = [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute ) { ... };
        * ```
        *
        *  The \e localIdx parameter is a rank of the non-zero element in given row.
@@ -724,26 +724,26 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *  be interrupted.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forElements.cpp
        * \par Output
-       * \include SparseMatrixExample_forRows.out
+       * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
       void forElements( IndexType begin, IndexType end, Function&& function ) const;
 
       /**
-       * \brief Method for iteration over all matrix rows for non-constant instances.
+       * \brief Method for parallel iteration over all matrix elements of given rows for non-constant instances.
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
-       * \param function is an instance of the lambda function to be called in each row.
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each element of given rows.
        *
        * The lambda function `function` should be declared like follows:
        *
        * ```
-       * function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )
+       * auto function = [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute ) mutable { ... }
        * ```
        *
        *  The \e localIdx parameter is a rank of the non-zero element in given row.
@@ -751,54 +751,138 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *  be interrupted.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forElements.cpp
        * \par Output
-       * \include SparseMatrixExample_forRows.out
+       * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
       void forElements( IndexType begin, IndexType end, Function&& function );
 
       /**
-       * \brief This method calls \e forElements for all matrix rows (for constant instances).
+       * \brief Method for parallel iteration over all matrix elements for constant instances.
        *
        * See \ref SparseMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
-       * \param function  is an instance of the lambda function to be called in each row.
+       * \param function  is an instance of the lambda function to be called for each matrix element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_forAllRows.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forElements.cpp
        * \par Output
-       * \include SparseMatrixExample_forAllRows.out
+       * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
       void forEachElement( Function&& function ) const;
 
       /**
-       * \brief This method calls \e forElements for all matrix rows.
+       * \brief Method for parallel iteration over all matrix elements for non-constant instances.
        *
        * See \ref SparseMatrix::forElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
-       * \param function  is an instance of the lambda function to be called in each row.
+       * \param function  is an instance of the lambda function to be called for each matrix element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_forAllRows.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forElements.cpp
        * \par Output
-       * \include SparseMatrixExample_forAllRows.out
+       * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
       void forEachElement( Function&& function );
 
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function&& function );
 
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function&& function ) const;
 
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forEachRow( Function&& function );
 
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixExample_forRows.out
+       */
       template< typename Function >
       void forEachRow( Function&& function ) const;
 

@@ -17,6 +17,7 @@ set( COMMON_EXAMPLES
    SparseMatrixExample_allRowsReduction
    SparseMatrixExample_forElements
    SparseMatrixExample_forEachElement
+   SparseMatrixExample_forRows
    SparseMatrixViewExample_getSerializationType
    SparseMatrixViewExample_getCompressedRowLengths
    SparseMatrixViewExample_getConstRow
@@ -27,6 +28,7 @@ set( COMMON_EXAMPLES
    SparseMatrixViewExample_rowsReduction
    SparseMatrixViewExample_allRowsReduction
    SparseMatrixViewExample_forElements
+   SparseMatrixViewExample_forRows
    SparseMatrixViewExample_forEachElement
 )
 

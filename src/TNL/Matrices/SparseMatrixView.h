@@ -570,15 +570,99 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Function >
       void forEachElement( Function& function );
 
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function&& function );
 
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forRows( IndexType begin, IndexType end, Function&& function ) const;
 
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forEachRow( Function&& function );
 
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
       template< typename Function >
       void forEachRow( Function&& function ) const;
 
