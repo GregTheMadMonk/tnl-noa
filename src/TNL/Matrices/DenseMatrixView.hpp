@@ -455,7 +455,7 @@ DenseMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+      this->forRows( row, row + 1, function );
 }
 
 template< typename Real,
@@ -468,7 +468,7 @@ DenseMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function )
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+      this->forRows( row, row + 1, function );
 }
 
 template< typename Real,
