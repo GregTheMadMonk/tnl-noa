@@ -16,7 +16,7 @@ set( COMMON_EXAMPLES
    SparseMatrixExample_rowsReduction
    SparseMatrixExample_allRowsReduction
    SparseMatrixExample_forElements
-   SparseMatrixExample_forEachElement
+   SparseMatrixExample_forAllElements
    SparseMatrixExample_forRows
    SparseMatrixViewExample_getSerializationType
    SparseMatrixViewExample_getCompressedRowLengths
@@ -29,7 +29,7 @@ set( COMMON_EXAMPLES
    SparseMatrixViewExample_allRowsReduction
    SparseMatrixViewExample_forElements
    SparseMatrixViewExample_forRows
-   SparseMatrixViewExample_forEachElement
+   SparseMatrixViewExample_forAllElements
 )
 
 if( BUILD_CUDA )

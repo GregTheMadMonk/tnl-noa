@@ -36,7 +36,7 @@ int main( int argc, char* argv[] )
     */
    Vector< double, Devices::Host > host_v1( 10 ), host_v2( 10 ), host_result( 10 );
    host_v1 = 1.0;
-   host_v2.forEachElement( []__cuda_callable__ ( int i, double& v ) { v = i; } );
+   host_v2.forAllElements( []__cuda_callable__ ( int i, double& v ) { v = i; } );
    vectorSum( host_v1, host_v2, 2.0, host_result );
    std::cout << "host_v1 = " << host_v1 << std::endl;
    std::cout << "host_v2 = " << host_v2 << std::endl;
@@ -48,7 +48,7 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    Vector< double, Devices::Cuda > cuda_v1( 10 ), cuda_v2( 10 ), cuda_result( 10 );
    cuda_v1 = 1.0;
-   cuda_v2.forEachElement( []__cuda_callable__ ( int i, double& v ) { v = i; } );
+   cuda_v2.forAllElements( []__cuda_callable__ ( int i, double& v ) { v = i; } );
    vectorSum( cuda_v1, cuda_v2, 2.0, cuda_result );
    std::cout << "cuda_v1 = " << cuda_v1 << std::endl;
    std::cout << "cuda_v2 = " << cuda_v2 << std::endl;

@@ -635,7 +635,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachElement( Function&& function ) const
+forAllElements( Function&& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -651,7 +651,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachElement( Function&& function )
+forAllElements( Function&& function )
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -901,7 +901,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
                values_view[ thisGlobalIdx ] = value;
          }
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {
@@ -1014,7 +1014,7 @@ operator=( const RHSMatrix& matrix )
             rowLocalIndexes_view[ rowIdx ] = localIdx;
          }
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {

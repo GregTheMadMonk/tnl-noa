@@ -84,7 +84,7 @@ Output:
 
 ### Arrays and parallel for
 
-More efficient and still quite simple method for (not only) array elements initiation is with the use of C++ lambda functions and methods `forElements` and `forEachElement`. As an argument a lambda function is passed which is then applied for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be applied. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the methods `forElements` and `forEachElement` is demonstrated in the following example.
+More efficient and still quite simple method for (not only) array elements initiation is with the use of C++ lambda functions and methods `forElements` and `forAllElements`. As an argument a lambda function is passed which is then applied for all elements. Optionally one may define only subinterval of element indexes where the lambda shall be applied. If the underlying array is allocated on GPU, the lambda function is called from CUDA kernel. This is why it is more efficient than use of `setElement`. On the other hand, one must be careful to use only `__cuda_callable__` methods inside the lambda. The use of the methods `forElements` and `forAllElements` is demonstrated in the following example.
 
 \include ArrayExample_forElements.cpp
 

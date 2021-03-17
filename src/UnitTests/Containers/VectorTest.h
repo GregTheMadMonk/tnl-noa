@@ -89,7 +89,7 @@ void testVectorReduceElements()
    using ValueType = typename VectorType::ValueType;
 
    VectorType a( 10 );
-   a.forEachElement( [=] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = 1; } );
+   a.forAllElements( [=] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = 1; } );
    auto fetch = [] __cuda_callable__ ( IndexType i, ValueType& v ) -> ValueType { return v; };
    auto reduce = [] __cuda_callable__ ( const ValueType v1, const ValueType v2 ) { return v1 + v2; };
    EXPECT_EQ( a.reduceEachElement( fetch, reduce, ( ValueType ) 0.0 ),

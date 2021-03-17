@@ -639,7 +639,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -653,7 +653,7 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->forElements( 0, this->getRows(), function );
 }

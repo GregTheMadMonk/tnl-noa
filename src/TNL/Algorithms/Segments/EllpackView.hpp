@@ -220,7 +220,7 @@ template< typename Device,
           int Alignment >
    template< typename Function >
 void EllpackView< Device, Index, Organization, Alignment >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

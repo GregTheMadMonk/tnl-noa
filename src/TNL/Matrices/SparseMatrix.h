@@ -529,7 +529,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -554,7 +554,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -583,7 +583,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -772,7 +772,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
-      void forEachElement( Function&& function ) const;
+      void forAllElements( Function&& function ) const;
 
       /**
        * \brief Method for parallel iteration over all matrix elements for non-constant instances.
@@ -788,7 +788,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forElements.out
        */
       template< typename Function >
-      void forEachElement( Function&& function );
+      void forAllElements( Function&& function );
 
       /**
        * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).

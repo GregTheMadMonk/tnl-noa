@@ -96,7 +96,7 @@ class EllpackView
       void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachElement( Function&& f ) const;
+      void forAllElements( Function&& f ) const;
 
       template< typename Function >
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;

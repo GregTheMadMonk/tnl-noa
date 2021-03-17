@@ -268,7 +268,7 @@ template< typename Device,
    template< typename Function >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

@@ -426,7 +426,7 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->view.forElements( 0, this->getRows(), function );
 }
@@ -439,7 +439,7 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->view.forElements( 0, this->getRows(), function );
 }
@@ -668,7 +668,7 @@ operator=( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealA
          auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
-         this->forEachElement( f );
+         this->forAllElements( f );
       }
       else
       {
@@ -678,7 +678,7 @@ operator=( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealA
          auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
-         this->forEachElement( f );
+         this->forAllElements( f );
       }
    }
    return *this;

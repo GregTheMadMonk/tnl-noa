@@ -295,7 +295,7 @@ template< typename MatrixElementsLambda,
    template< typename Function >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    forElements( 0, this->getRows(), function );
    /*const IndexType rows = this->getRows();

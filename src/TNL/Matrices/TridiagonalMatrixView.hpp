@@ -461,7 +461,7 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->forElements( 0, this->indxer.getNonEmptyRowsCount(), function );
 }
@@ -473,7 +473,7 @@ template< typename Real,
    template< typename Function >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->forElements( 0, this->indexer.getNonemptyRowsCount(), function );
 }
@@ -617,11 +617,11 @@ addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >&
          value = thisMult * value + matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
       if( thisMult == 0.0 )
-         this->forEachElement( add0 );
+         this->forAllElements( add0 );
       else if( thisMult == 1.0 )
-         this->forEachElement( add1 );
+         this->forAllElements( add1 );
       else
-         this->forEachElement( addGen );
+         this->forAllElements( addGen );
    }
 }
 

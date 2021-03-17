@@ -18,7 +18,7 @@ void reduceElementsExample()
    /****
     * Initiate the elements of array `a`
     */
-   a_view.forEachElement( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   a_view.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Sum all elements of array `a`

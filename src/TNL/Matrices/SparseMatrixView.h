@@ -320,7 +320,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -345,7 +345,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -373,7 +373,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -552,7 +552,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \include SparseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -568,7 +568,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \include SparseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
 
       /**
        * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).

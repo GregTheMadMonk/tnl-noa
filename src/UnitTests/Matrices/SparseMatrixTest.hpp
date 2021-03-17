@@ -1319,7 +1319,7 @@ void test_VectorProduct()
       // Test with large diagonal matrix
       Matrix m1( size, size );
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
-      rowCapacities.forEachElement( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
+      rowCapacities.forAllElements( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
       m1.setRowCapacities( rowCapacities );
       auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx == 0  )
@@ -1328,7 +1328,7 @@ void test_VectorProduct()
             column = row;
          }
       };
-      m1.forEachElement( f1 );
+      m1.forAllElements( f1 );
       // check that the matrix was initialized
       m1.getCompressedRowLengths( rowCapacities );
       EXPECT_EQ( rowCapacities, 1 );
@@ -1343,7 +1343,7 @@ void test_VectorProduct()
       const int rows( size ), columns( size );
       Matrix m2( rows, columns );
       rowCapacities.setSize( rows );
-      rowCapacities.forEachElement( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
+      rowCapacities.forAllElements( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
       m2.setRowCapacities( rowCapacities );
       auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx <= row )
@@ -1352,7 +1352,7 @@ void test_VectorProduct()
             column = localIdx;
          }
       };
-      m2.forEachElement( f2 );
+      m2.forAllElements( f2 );
       // check that the matrix was initialized
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( rows );
       m2.getCompressedRowLengths( rowLengths );
@@ -1384,7 +1384,7 @@ void test_VectorProduct()
          column = localIdx;
          value = localIdx + 1;
       };
-      m3.forEachElement( f );
+      m3.forAllElements( f );
       TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
       m3.vectorProduct( in, out );
       EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );
@@ -1415,7 +1415,7 @@ void test_ForElements()
    const IndexType rows = 8;
 
    Matrix m( { 3, 3, 3, 3, 3, 3, 3, 3, 3 }, cols  );
-   m.forEachElement( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
       value = rowIdx + 1.0;
       columnIdx = localIdx;
    } );

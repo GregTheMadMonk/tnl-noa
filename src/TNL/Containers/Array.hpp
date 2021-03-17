@@ -715,9 +715,9 @@ template< typename Value,
    template< typename Function >
 void
 Array< Value, Device, Index, Allocator >::
-forEachElement( Function&& f )
+forAllElements( Function&& f )
 {
-   this->getView().forEachElement( f );
+   this->getView().forAllElements( f );
 }
 
 template< typename Value,
@@ -727,10 +727,10 @@ template< typename Value,
    template< typename Function >
 void
 Array< Value, Device, Index, Allocator >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    const auto view = this->getConstView();
-   view.forEachElement( f );
+   view.forAllElements( f );
 }
 
 template< typename Value,

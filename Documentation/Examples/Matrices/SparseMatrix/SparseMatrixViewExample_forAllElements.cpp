@@ -4,9 +4,10 @@
 #include <TNL/Devices/Cuda.h>
 
 template< typename Device >
-void forEachElementExample()
+void forAllElementsExample()
 {
    TNL::Matrices::SparseMatrix< double, Device > matrix( { 1, 2, 3, 4, 5 }, 5 );
+   auto view = matrix.getView();
 
    auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, double& value, bool& compute ) {
       if( rowIdx < localIdx )  // This is important, some matrix formats may allocate more matrix elements
@@ -19,17 +20,17 @@ void forEachElementExample()
       }
    };
 
-   matrix.forEachElement( f );
+   view.forAllElements( f );
    std::cout << matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )
 {
    std::cout << "Creating matrix on host: " << std::endl;
-   forEachElementExample< TNL::Devices::Host >();
+   forAllElementsExample< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << "Creating matrix on CUDA device: " << std::endl;
-   forEachElementExample< TNL::Devices::Cuda >();
+   forAllElementsExample< TNL::Devices::Cuda >();
 #endif
 }

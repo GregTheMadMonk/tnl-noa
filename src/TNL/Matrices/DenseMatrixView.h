@@ -305,7 +305,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
-       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forEachElement.
+       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forAllElements.
        *
        * \param row is row index of the element.
        * \param column is columns index of the element.
@@ -329,7 +329,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
-       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forEachElement.
+       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forAllElements.
        *
        * \param row is row index of the element.
        * \param column is columns index of the element.
@@ -357,7 +357,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref DenseMatrix::getRow
-       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forEachElement.
+       * or \ref DenseMatrix::forElements and \ref DenseMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -536,12 +536,12 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
        *
-       * See \ref DenseMatrix::forEachElement.
+       * See \ref DenseMatrix::forAllElements.
        *
        * \tparam Function is a type of lambda function that will operate on matrix elements.
        * \param function  is an instance of the lambda function to be called in each row.
@@ -552,7 +552,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

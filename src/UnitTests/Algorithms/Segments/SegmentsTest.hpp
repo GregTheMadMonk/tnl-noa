@@ -132,7 +132,7 @@ void test_AllReduction_MaximumInSegments()
       view[ globalIdx ] =  segmentIdx * 5 + localIdx + 1;
       return true;
    };
-   segments.forEachElement( init );
+   segments.forAllElements( init );
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType >result( segmentsCount );
 

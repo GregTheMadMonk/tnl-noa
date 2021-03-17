@@ -283,7 +283,7 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

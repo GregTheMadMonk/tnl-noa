@@ -313,7 +313,7 @@ template< typename Device,
    template< typename Function >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

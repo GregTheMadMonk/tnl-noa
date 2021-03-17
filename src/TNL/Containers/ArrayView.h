@@ -496,7 +496,7 @@ public:
     *
     */
    template< typename Function >
-   void forEachElement( Function&& f );
+   void forAllElements( Function&& f );
 
    /**
     * \brief Process the lambda function \e f for each array element for constant instances.
@@ -524,7 +524,7 @@ public:
     *
     */
    template< typename Function >
-   void forEachElement( Function&& f ) const;
+   void forAllElements( Function&& f ) const;
 
    /**
     * \brief Computes reduction with array view elements on interval [ \e begin, \e end).

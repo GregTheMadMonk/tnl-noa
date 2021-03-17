@@ -242,7 +242,7 @@ template< typename Device,
    template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

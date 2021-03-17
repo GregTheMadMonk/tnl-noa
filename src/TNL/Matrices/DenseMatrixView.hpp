@@ -368,7 +368,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -380,7 +380,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->forElements( 0, this->getRows(), function );
 }

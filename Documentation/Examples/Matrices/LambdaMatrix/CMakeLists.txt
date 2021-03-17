@@ -39,10 +39,10 @@ IF( BUILD_CUDA )
                         ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forElements.out
                        OUTPUT LambdaMatrixExample_forElements.out )
 
-   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forEachElement_cuda LambdaMatrixExample_forEachElement.cu )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forEachElement_cuda >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forEachElement.out
-                       OUTPUT LambdaMatrixExample_forEachElement.out )
+   CUDA_ADD_EXECUTABLE( LambdaMatrixExample_forAllElements_cuda LambdaMatrixExample_forAllElements.cu )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forAllElements_cuda >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forAllElements.out
+                       OUTPUT LambdaMatrixExample_forAllElements.out )
 
 ELSE()
    ADD_EXECUTABLE( LambdaMatrixExample_Laplace LambdaMatrixExample_Laplace.cpp )
@@ -70,10 +70,10 @@ ELSE()
                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forElements.out
                        OUTPUT LambdaMatrixExample_forElements.out )
 
-   ADD_EXECUTABLE( LambdaMatrixExample_forEachElement LambdaMatrixExample_forEachElement.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forEachElement >
-                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forEachElement.out
-                       OUTPUT LambdaMatrixExample_forEachElement.out )
+   ADD_EXECUTABLE( LambdaMatrixExample_forAllElements LambdaMatrixExample_forAllElements.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND LambdaMatrixExample_forAllElements >
+                        ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/LambdaMatrixExample_forAllElements.out
+                       OUTPUT LambdaMatrixExample_forAllElements.out )
 ENDIF()
 
 ADD_CUSTOM_TARGET( RunLambdaMatricesExamples ALL DEPENDS
@@ -85,6 +85,6 @@ ADD_CUSTOM_TARGET( RunLambdaMatricesExamples ALL DEPENDS
    LambdaMatrixExample_rowsReduction.out
    LambdaMatrixExample_allRowsReduction.out
    LambdaMatrixExample_forElements.out
-   LambdaMatrixExample_forEachElement.out
+   LambdaMatrixExample_forAllElements.out
 )
 

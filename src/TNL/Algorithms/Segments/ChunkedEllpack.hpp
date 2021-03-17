@@ -406,7 +406,7 @@ template< typename Device,
    template< typename Function >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

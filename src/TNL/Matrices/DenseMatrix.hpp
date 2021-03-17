@@ -431,7 +431,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -444,7 +444,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -1048,7 +1048,7 @@ operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHS
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {
@@ -1124,7 +1124,7 @@ operator=( const RHSMatrix& matrix )
          if( value != 0.0 && columnIdx != padding_index )
             values_view[ segments_view.getGlobalIndex( rowIdx, columnIdx ) ] = value;
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {

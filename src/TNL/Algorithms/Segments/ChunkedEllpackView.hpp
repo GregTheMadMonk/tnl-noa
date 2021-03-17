@@ -354,7 +354,7 @@ template< typename Device,
    template< typename Function >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

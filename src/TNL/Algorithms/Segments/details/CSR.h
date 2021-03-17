@@ -97,7 +97,7 @@ class CSR
       void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
 
       template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      void forAllElements( Function& f, Args... args ) const;
 
 
       /***

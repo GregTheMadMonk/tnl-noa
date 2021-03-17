@@ -20,7 +20,7 @@ double mapReduce( Vector< double, Device >& u )
 int main( int argc, char* argv[] )
 {
    Vector< double, Devices::Host > host_u( 10 );
-   host_u.forEachElement( [] __cuda_callable__ ( int i, double& value ) { value = sin( ( double ) i ); } );
+   host_u.forAllElements( [] __cuda_callable__ ( int i, double& value ) { value = sin( ( double ) i ); } );
    double result = mapReduce( host_u );
    std::cout << "host_u = " << host_u << std::endl;
    std::cout << "Sum of the positive numbers is:" << result << std::endl;

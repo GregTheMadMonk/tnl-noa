@@ -272,7 +272,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -297,7 +297,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -325,7 +325,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -503,7 +503,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -519,7 +519,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include TridiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

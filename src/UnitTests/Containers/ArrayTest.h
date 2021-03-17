@@ -445,7 +445,7 @@ void testArrayForEachElement()
    using ValueType = typename ArrayType::ValueType;
 
    ArrayType a( 10 );
-   a.forEachElement( [] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = i; } );
+   a.forAllElements( [] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = i; } );
 
    for( int i = 0; i < 10; i++ )
       EXPECT_EQ( a.getElement( i ), i );

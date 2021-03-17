@@ -285,7 +285,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -310,7 +310,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -338,7 +338,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -540,7 +540,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -556,7 +556,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

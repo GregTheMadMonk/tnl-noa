@@ -4,7 +4,7 @@
 #include <TNL/Devices/Cuda.h>
 
 template< typename Device >
-void forEachElementExample()
+void forAllElementsExample()
 {
    /***
     * Set the following matrix (dots represent zero matrix elements and zeros are
@@ -19,6 +19,7 @@ void forEachElementExample()
    TNL::Matrices::TridiagonalMatrix< double, Device > matrix(
       5,      // number of matrix rows
       5 );    // number of matrix columns
+   auto view = matrix.getView();
 
    auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, double& value, bool& compute ) {
       /***
@@ -37,17 +38,17 @@ void forEachElementExample()
        */
       value = 3 - localIdx;
    };
-   matrix.forEachElement( f );
+   view.forAllElements( f );
    std::cout << matrix << std::endl;
 }
 
 int main( int argc, char* argv[] )
 {
    std::cout << "Creating matrix on host: " << std::endl;
-   forEachElementExample< TNL::Devices::Host >();
+   forAllElementsExample< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << "Creating matrix on CUDA device: " << std::endl;
-   forEachElementExample< TNL::Devices::Cuda >();
+   forAllElementsExample< TNL::Devices::Cuda >();
 #endif
 }

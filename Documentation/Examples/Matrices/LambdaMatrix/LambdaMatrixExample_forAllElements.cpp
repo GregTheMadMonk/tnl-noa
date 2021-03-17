@@ -5,7 +5,7 @@
 #include <TNL/Devices/Cuda.h>
 
 template< typename Device >
-void forEachElementExample()
+void forAllElementsExample()
 {
    /***
     * Lambda functions defining the matrix.
@@ -26,7 +26,7 @@ void forEachElementExample()
       denseView.setElement( rowIdx, columnIdx, value );
    };
 
-   matrix.forEachElement( f );
+   matrix.forAllElements( f );
    std::cout << "Original lambda matrix:" << std::endl << matrix << std::endl;
    std::cout << "Dense matrix:" << std::endl << denseMatrix << std::endl;
 }
@@ -34,10 +34,10 @@ void forEachElementExample()
 int main( int argc, char* argv[] )
 {
    std::cout << "Copying matrix on host: " << std::endl;
-   forEachElementExample< TNL::Devices::Host >();
+   forAllElementsExample< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << "Copying matrix on CUDA device: " << std::endl;
-   forEachElementExample< TNL::Devices::Cuda >();
+   forAllElementsExample< TNL::Devices::Cuda >();
 #endif
 }

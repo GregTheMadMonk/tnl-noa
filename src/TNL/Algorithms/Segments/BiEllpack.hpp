@@ -131,7 +131,7 @@ performRowBubbleSort( const SizesHolder& segmentsSizes )
    if( segmentsSizes.getSize() == 0 )
       return;
 
-   this->rowPermArray.forEachElement( [] __cuda_callable__ ( const IndexType idx, IndexType& value ) { value = idx; } );
+   this->rowPermArray.forAllElements( [] __cuda_callable__ ( const IndexType idx, IndexType& value ) { value = idx; } );
 
    //if( std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -459,7 +459,7 @@ template< typename Device,
    template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSegmentsCount(), f );
 }

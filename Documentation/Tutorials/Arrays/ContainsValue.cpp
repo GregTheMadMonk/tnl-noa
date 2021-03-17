@@ -13,7 +13,7 @@ int main( int argc, char* argv[] )
    const int size = 10;
    Array< float, Devices::Cuda > a( size ), b( size );
    a = 0;
-   b.forEachElement( [=] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   b.forAllElements( [=] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Test the values stored in the arrays
