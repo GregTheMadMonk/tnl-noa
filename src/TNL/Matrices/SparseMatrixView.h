@@ -573,7 +573,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
        *
-       * In each row, given lambda function is performed.
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forElements where more than one thread can be mapped to each row.
+
        *
        * \tparam Function is type of the lambda function.
        *
@@ -598,7 +600,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
        *
-       * In each row, given lambda function is performed.
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forElements where more than one thread can be mapped to each row.
        *
        * \tparam Function is type of the lambda function.
        *
@@ -623,7 +626,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for parallel iteration over all matrix rows.
        *
-       * In each row, given lambda function is performed.
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forAllElements where more than one thread can be mapped to each row.
        *
        * \tparam Function is type of the lambda function.
        *
@@ -646,7 +650,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for parallel iteration over all matrix rows for constant instances.
        *
-       * In each row, given lambda function is performed.
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forAllElements where more than one thread can be mapped to each row.
        *
        * \tparam Function is type of the lambda function.
        *
