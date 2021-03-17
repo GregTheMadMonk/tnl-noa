@@ -20,7 +20,7 @@ void forRowsExample()
          row.setColumnIndex( localIdx, localIdx );
       }
    };
-   matrix.forEachRow( f );
+   matrix.forAllRows( f );
 
    std::cout << matrix << std::endl;
 }

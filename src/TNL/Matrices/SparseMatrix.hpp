@@ -699,9 +699,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachRow( Function&& function )
+forAllRows( Function&& function )
 {
-   this->getView().forEachRow( function );
+   this->getView().forAllRows( function );
 }
 
 template< typename Real,
@@ -715,9 +715,9 @@ template< typename Real,
    template< typename Function >
 void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-forEachRow( Function&& function ) const
+forAllRows( Function&& function ) const
 {
-   this->getConsView().forEachRow( function );
+   this->getConsView().forAllRows( function );
 }
 
 template< typename Real,

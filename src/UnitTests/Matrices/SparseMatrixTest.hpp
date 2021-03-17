@@ -1439,7 +1439,7 @@ void test_ForRows()
 
    Matrix m( { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, cols  );
    using RowViewType = typename Matrix::RowViewType;
-   m.forEachRow( [] __cuda_callable__ ( RowViewType& row ) mutable {
+   m.forAllRows( [] __cuda_callable__ ( RowViewType& row ) mutable {
       for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
       {
          row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );

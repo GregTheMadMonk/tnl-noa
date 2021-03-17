@@ -864,7 +864,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forEachRow( Function&& function );
+      void forAllRows( Function&& function );
 
       /**
        * \brief Method for parallel iteration over all matrix rows for constant instances.
@@ -888,7 +888,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include SparseMatrixExample_forRows.out
        */
       template< typename Function >
-      void forEachRow( Function&& function ) const;
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

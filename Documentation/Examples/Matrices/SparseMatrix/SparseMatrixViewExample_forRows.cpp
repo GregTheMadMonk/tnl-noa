@@ -21,7 +21,7 @@ void forRowsExample()
          row.setColumnIndex( localIdx, localIdx );
       }
    };
-   view.forEachRow( f );
+   view.forAllRows( f );
 
    std::cout << matrix << std::endl;
 }
