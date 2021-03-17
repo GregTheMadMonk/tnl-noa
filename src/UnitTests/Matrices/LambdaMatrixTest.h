@@ -89,6 +89,14 @@ TYPED_TEST( LambdaMatrixTest, getElementTest )
    test_GetElement< LambdaMatrixParametersType >();
 }
 
+TYPED_TEST( LambdaMatrixTest, getRowTest )
+{
+    using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
+
+    test_GetRow< LambdaMatrixParametersType >();
+}
+
+
 TYPED_TEST( LambdaMatrixTest, vectorProductTest )
 {
     using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
