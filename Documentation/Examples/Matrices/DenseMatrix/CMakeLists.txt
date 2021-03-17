@@ -43,8 +43,8 @@ else()
 endif()
 
 IF( BUILD_CUDA )
-   ADD_CUSTOM_TARGET( Run DenseMatricesExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
+   ADD_CUSTOM_TARGET( RunDenseMatricesExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
 ELSE()
-   ADD_CUSTOM_TARGET( Run DenseMatricesExamples ALL DEPENDS ${HOST_OUTPUTS} )
+   ADD_CUSTOM_TARGET( RunDenseMatricesExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()
 
