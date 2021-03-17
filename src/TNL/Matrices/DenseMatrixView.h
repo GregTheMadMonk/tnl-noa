@@ -555,6 +555,106 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       void forAllElements( Function& function );
 
       /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref DenseMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref DenseMatrixView::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref DenseMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref DenseMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrixView::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
+
+      /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.

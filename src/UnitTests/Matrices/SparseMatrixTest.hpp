@@ -1434,7 +1434,7 @@ void test_ForRows()
 
    /////
    // Setup lower triangular matrix
-   const IndexType cols = 3;
+   const IndexType cols = 8;
    const IndexType rows = 8;
 
    Matrix m( { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, cols  );

@@ -392,6 +392,66 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   auto values_view = this->values.getView();
+   using SegmentViewType = typename SegmentsViewType::SegmentViewType;
+   auto f = [=] __cuda_callable__ ( SegmentViewType& segmentView ) mutable {
+      auto rowView = RowViewType( segmentView, values_view );
+      function( rowView );
+   };
+   this->segments.forSegments( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   const auto values_view = this->values.getConstView();
+   using SegmentViewType = typename SegmentsViewType::SegmentViewType;
+   auto f = [=] __cuda_callable__ ( SegmentViewType&& segmentView ) mutable {
+      const auto rowView = RowViewType( segmentView, values_view );
+      function( rowView );
+   };
+   this->segments.forSegments( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function )
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    for( IndexType row = begin; row < end; row ++ )
