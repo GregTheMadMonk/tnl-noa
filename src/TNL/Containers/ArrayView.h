@@ -143,7 +143,8 @@ public:
    template< typename Value_ >
    __cuda_callable__
    ArrayView( const ArrayView< Value_, Device, Index >& view )
-   : data(view.getData()), size(view.getSize()) {}
+   : data( const_cast< Value* >( view.getData()) ), size(view.getSize()) {}
+   //      ^ TODO: Is it correct? Check implementation of recursive constant proxy.
 
    /**
     * \brief Move constructor for initialization from \e rvalues.
