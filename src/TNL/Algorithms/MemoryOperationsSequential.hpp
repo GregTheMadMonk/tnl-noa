@@ -15,6 +15,48 @@
 namespace TNL {
 namespace Algorithms {
 
+template< typename Element, typename Index >
+__cuda_callable__
+void
+MemoryOperations< Devices::Sequential >::
+construct( Element* data,
+           const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   for( Index i = 0; i < size; i++ )
+      // placement-new
+      ::new( (void*) (data + i) ) Element();
+}
+
+template< typename Element, typename Index, typename... Args >
+__cuda_callable__
+void
+MemoryOperations< Devices::Sequential >::
+construct( Element* data,
+           const Index size,
+           const Args&... args )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   for( Index i = 0; i < size; i++ )
+      // placement-new
+      // (note that args are passed by reference to the constructor, not via
+      // std::forward since move-semantics does not apply for the construction
+      // of multiple elements)
+      ::new( (void*) (data + i) ) Element( args... );
+}
+
+template< typename Element, typename Index >
+__cuda_callable__
+void
+MemoryOperations< Devices::Sequential >::
+destruct( Element* data,
+          const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to destroy elements through a nullptr." );
+   for( Index i = 0; i < size; i++ )
+      (data + i)->~Element();
+}
+
 template< typename Element >
 __cuda_callable__
 void

@@ -23,6 +23,56 @@
 namespace TNL {
 namespace Algorithms {
 
+template< typename Element, typename Index >
+void
+MemoryOperations< Devices::Cuda >::
+construct( Element* data,
+           const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   auto kernel = [data] __cuda_callable__ ( Index i )
+   {
+      // placement-new
+      ::new( (void*) (data + i) ) Element();
+   };
+   ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
+}
+
+template< typename Element, typename Index, typename... Args >
+void
+MemoryOperations< Devices::Cuda >::
+construct( Element* data,
+           const Index size,
+           const Args&... args )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   // NOTE: nvcc does not allow __cuda_callable__ lambdas with a variadic capture
+   auto kernel = [data] __cuda_callable__ ( Index i, Args... args )
+   {
+      // placement-new
+      // (note that args are passed by value to the constructor, not via
+      // std::forward or even by reference, since move-semantics does not apply for
+      // the construction of multiple elements and pass-by-reference cannot be used
+      // with CUDA kernels)
+      ::new( (void*) (data + i) ) Element( args... );
+   };
+   ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel, args... );
+}
+
+template< typename Element, typename Index >
+void
+MemoryOperations< Devices::Cuda >::
+destruct( Element* data,
+          const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to destroy data through a nullptr." );
+   auto kernel = [data] __cuda_callable__ ( Index i )
+   {
+      (data + i)->~Element();
+   };
+   ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
+}
+
 template< typename Element >
 __cuda_callable__ void
 MemoryOperations< Devices::Cuda >::
@@ -57,7 +107,7 @@ getElement( const Element* data )
    return *data;
 #else
    // TODO: For some reason the following does not work after adding
-   // #ifdef __CUDA_ARCH__ to Array::getElement and ArrayView::getElement 
+   // #ifdef __CUDA_ARCH__ to Array::getElement and ArrayView::getElement
    // Probably it might be a problem with lambda function 'kernel' which
    // nvcc probably does not handle properly.
    //MultiDeviceMemoryOperations< void, Devices::Cuda >::template copy< Element, Element, int >( &result, data, 1 );

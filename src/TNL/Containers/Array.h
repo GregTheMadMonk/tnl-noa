@@ -41,9 +41,9 @@ template< int, typename > class StaticArray;
  *
  * Memory management handled by constructors and destructors according to the
  * [RAII](https://en.wikipedia.org/wiki/RAII) principle and by methods
- * \ref setSize, \ref setLike, \ref swap, and \ref reset. You can also use
- * methods \ref getSize and \ref empty to check the current array size and
- * \ref getData to access the raw pointer.
+ * \ref resize \ref setSize, \ref setLike, \ref swap, and \ref reset. You can
+ * also use methods \ref getSize and \ref empty to check the current array size
+ * and \ref getData to access the raw pointer.
  *
  * Methods annotated as \ref \_\_cuda_callable\_\_ can be called either from
  * host or from kernels executing on a device according to the \e Device
@@ -263,14 +263,58 @@ class Array
       virtual String getSerializationTypeVirtual() const;
 
       /**
-       * \brief Method for setting the array size.
+       * \brief Method for resizing the array.
        *
-       * If the array shares data with other arrays, the data is unbound. If the
-       * current data is not shared and the current size is the same as the new
-       * one, nothing happens.
+       * The method resizes the array to the given size:
+       *
+       * - If the current size is greater than count, the array is reduced to
+       *   its first \e size elements.
+       * - If the current size is less than \e size, additional elements are
+       *   appended (see the note below on initialization).
+       * - If the current size is equal to \e size, nothing happens.
        *
        * If the array size changes, the current data will be deallocated, thus
        * all pointers and views to the array alements will become invalid.
+       *
+       * Note that this method differs from \ref std::vector::resize with respect
+       * to the initialization of array elements:
+       *
+       * - if \e ValueType is a [fundamental type](https://en.cppreference.com/w/cpp/types/is_fundamental),
+       *   the elements are [default-initialized](https://en.cppreference.com/w/cpp/language/default_initialization)
+       *   (i.e., the elements are initialized to indeterminate values).
+       * - otherwise, the elements are [value-initialized](https://en.cppreference.com/w/cpp/language/value_initialization)
+       *   (like in \ref std::vector::resize).
+       *
+       * \param size The new size of the array.
+       */
+      void resize( Index size );
+
+      /**
+       * \brief Method for resizing the array with an initial value.
+       *
+       * The method resizes the array to the given size:
+       *
+       * - If the current size is greater than count, the array is reduced to
+       *   its first \e size elements.
+       * - If the current size is less than \e size, additional copies of
+       *   \e value are appended.
+       * - If the current size is equal to \e size, nothing happens.
+       *
+       * If the array size changes, the current data will be deallocated, thus
+       * all pointers and views to the array alements will become invalid.
+       *
+       * \param size The new size of the array.
+       * \param value The value to initialize new elements with.
+       */
+      void resize( Index size, const ValueType& value );
+
+      /**
+       * \brief Method for setting the array size.
+       *
+       * This method behaves almost like \ref resize, but when the array size
+       * is changed, old elements are not copied to the new memory location.
+       * Hence, this is a shortcut for deallocating the array with \e resize(0)
+       * followed by setting the new size with \e resize(size)
        *
        * \param size The new size of the array.
        */
@@ -288,6 +332,8 @@ class Array
        *
        * If the array size changes, the current data will be deallocated, thus
        * all pointers and views to the array alements will become invalid.
+       *
+       * Note that this method uses \ref setSize rather than \ref resize.
        *
        * \tparam ArrayT The type of the parameter can be any type which provides
        *         the method \ref getSize() with the same signature as \e Array.
@@ -867,8 +913,13 @@ class Array
 
    protected:
 
-      /** \brief Method for releasing (deallocating) array data. */
+      /** \brief Internal method for releasing (deallocating) array data. */
       void releaseData();
+
+      /** \brief Internal method for reallocating array elements. Used only
+       * from the two overloads of \ref resize.
+       */
+      void reallocate( Index size );
 
       /** \brief Pointer to the data. */
       Value* data = nullptr;

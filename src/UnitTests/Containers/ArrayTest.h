@@ -222,6 +222,69 @@ TYPED_TEST( ArrayTest, constructorsWithAllocators )
    EXPECT_EQ( a3.getElement( 1 ), 8 );
    EXPECT_EQ( a3.getElement( 2 ), 9 );
    EXPECT_EQ( a3.getAllocator(), allocator );
+
+   // test value-initialization of non-fundamental types
+   if( ! std::is_fundamental< typename ArrayType::ValueType >::value )
+   {
+      const typename ArrayType::ValueType init{};
+      ArrayType a( 42 );
+      ASSERT_EQ( a.getSize(), 42 );
+      for( int i = 0; i < a.getSize(); i++ )
+         EXPECT_EQ( a.getElement( i ), init ) << "i = " << i;
+   }
+}
+
+TYPED_TEST( ArrayTest, resize )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+
+   ArrayType u( 42 );
+   ASSERT_EQ( u.getSize(), 42 );
+   for( int i = 0; i < u.getSize(); i++ )
+      u.setElement( i, i );
+
+   // no change test
+   const typename ArrayType::ValueType* old_data = u.getData();
+   u.resize( u.getSize() );
+   EXPECT_EQ( u.getData(), old_data );
+
+   // shrink test
+   u.resize( 20 );
+   ASSERT_EQ( u.getSize(), 20 );
+   EXPECT_NE( u.getData(), old_data );
+   for( int i = 0; i < u.getSize(); i++ )
+      EXPECT_EQ( u.getElement( i ), i );
+
+   // expand test
+   const typename ArrayType::IndexType old_size = u.getSize();
+   old_data = u.getData();
+   u.resize( old_size * 2 );
+   ASSERT_EQ( u.getSize(), old_size * 2 );
+   EXPECT_NE( u.getData(), old_data );
+   for( int i = 0; i < old_size; i++ )
+      EXPECT_EQ( u.getElement( i ), i );
+
+   // expand test with initial value
+   const typename ArrayType::ValueType init = 3;
+   ArrayType v( 10 );
+   v.setValue( 0 );
+   v.resize( 42, init );
+   ASSERT_EQ( v.getSize(), 42 );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), 0 ) << "i = " << i;
+   for( int i = 10; i < v.getSize(); i++ )
+      EXPECT_EQ( v.getElement( i ), init ) << "i = " << i;
+
+   // test value-initialization of non-fundamental types
+   if( ! std::is_fundamental< typename ArrayType::ValueType >::value )
+   {
+      const typename ArrayType::ValueType init{};
+      ArrayType w;
+      w.resize( 42 );
+      ASSERT_EQ( w.getSize(), 42 );
+      for( int i = 0; i < w.getSize(); i++ )
+         EXPECT_EQ( w.getElement( i ), init ) << "i = " << i;
+   }
 }
 
 TYPED_TEST( ArrayTest, setSize )
@@ -380,14 +443,14 @@ TYPED_TEST( ArrayTest, forElements )
    using ValueType = typename ArrayType::ValueType;
 
 #if not defined HAVE_CUDA
-// nvcc does not accept the following code with 
+// nvcc does not accept the following code with
 // error #3068-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
    ArrayType a( 10 );
    a.forEachElement( [] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = i; } );
 
    for( int i = 0; i < 10; i++ )
       EXPECT_EQ( a.getElement( i ), i );
-#endif      
+#endif
 }
 
 TYPED_TEST( ArrayTest, containsValue )

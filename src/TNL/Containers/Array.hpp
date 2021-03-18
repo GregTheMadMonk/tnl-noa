@@ -228,10 +228,93 @@ void
 Array< Value, Device, Index, Allocator >::
 releaseData()
 {
-   if( this->data )
+   if( this->data ) {
+      if( ! std::is_fundamental< ValueType >::value )
+         // call the destructor of each element
+         Algorithms::MemoryOperations< Device >::destruct( this->data, this->size );
       allocator.deallocate( this->data, this->size );
+   }
    this->data = nullptr;
    this->size = 0;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+void
+Array< Value, Device, Index, Allocator >::
+reallocate( Index size )
+{
+   TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
+
+   if( this->size == size )
+      return;
+
+   // Allocating zero bytes is useless. Moreover, the allocators don't behave the same way:
+   // "operator new" returns some non-zero address, the latter returns a null pointer.
+   if( size == 0 ) {
+      this->releaseData();
+      return;
+   }
+
+   // handle initial allocations
+   if( this->size == 0 ) {
+      this->data = allocator.allocate( size );
+      if( ! std::is_fundamental< ValueType >::value )
+         // call the constructor of each element
+         Algorithms::MemoryOperations< Device >::construct( this->data, size );
+
+      this->size = size;
+      TNL_ASSERT_TRUE( this->data,
+                       "This should never happen - allocator did not throw on an error." );
+      return;
+   }
+
+   // allocate an array with the correct size
+   Array aux( size );
+
+   // copy the old elements into aux
+   Algorithms::MemoryOperations< Device >::
+         copy( aux.getData(), this->getData(), TNL::min( this->size, size ) );
+
+   // swap *this with aux, old data will be released
+   this->swap( aux );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+void
+Array< Value, Device, Index, Allocator >::
+resize( Index size )
+{
+   // remember the old size and reallocate the array
+   const Index old_size = this->size;
+   reallocate( size );
+
+   if( old_size < size )
+      if( ! std::is_fundamental< ValueType >::value )
+         // initialize the appended elements
+         Algorithms::MemoryOperations< Device >::construct( this->data + old_size, size - old_size );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+void
+Array< Value, Device, Index, Allocator >::
+resize( Index size, const ValueType& value )
+{
+   // remember the old size and reallocate the array
+   const Index old_size = this->size;
+   reallocate( size );
+
+   if( old_size < size )
+      // copy value into the appended elements
+      Algorithms::MemoryOperations< Device >::construct( this->data + old_size, size - old_size, value );
 }
 
 template< typename Value,
@@ -246,16 +329,11 @@ setSize( Index size )
 
    if( this->size == size )
       return;
-   this->releaseData();
 
-   // Allocating zero bytes is useless. Moreover, the allocators don't behave the same way:
-   // "operator new" returns some non-zero address, the latter returns a null pointer.
-   if( size > 0 ) {
-      this->data = allocator.allocate( size );
-      this->size = size;
-      TNL_ASSERT_TRUE( this->data,
-                       "This should never happen - allocator did not throw on an error." );
-   }
+   // release data to avoid copying the elements to the new memory location
+   this->releaseData();
+   // resize from size 0 does not copy anything, initialization is done as intended
+   this->resize( size );
 }
 
 template< typename Value,
