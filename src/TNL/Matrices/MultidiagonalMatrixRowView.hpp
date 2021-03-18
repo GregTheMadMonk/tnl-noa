@@ -11,7 +11,7 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
 __cuda_callable__
@@ -31,6 +31,16 @@ MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
 getSize() const -> IndexType
 {
    return diagonalsOffsets.getSize();//indexer.getRowSize( rowIdx );
+}
+
+
+template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >
+__cuda_callable__
+auto
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsOffsetsView >::
+getRowIndex() const -> const IndexType&
+{
+   return this->rowIdx;
 }
 
 template< typename ValuesView, typename Indexer, typename DiagonalsOffsetsView >

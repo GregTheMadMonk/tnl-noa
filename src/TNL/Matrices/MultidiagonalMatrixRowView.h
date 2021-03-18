@@ -11,24 +11,24 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 /**
  * \brief RowView is a simple structure for accessing rows of multidiagonal matrix.
- * 
+ *
  * \tparam ValuesView is a vector view storing the matrix elements values.
  * \tparam Indexer is type of object responsible for indexing and organization of
  *    matrix elements.
  * \tparam DiagonalsOffsetsView_ is a container view holding offsets of
  *    diagonals of multidiagonal matrix.
- * 
+ *
  * See \ref MultidiagonalMatrix and \ref MultidiagonalMatrixView.
- * 
+ *
  * \par Example
  * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getRow.cpp
  * \par Output
  * \include MultidiagonalatrixExample_getRow.out
- * 
+ *
  * \par Example
  * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getRow.cpp
  * \par Output
@@ -90,7 +90,7 @@ class MultidiagonalMatrixRowView
 
       /**
        * \brief Constructor with all necessary data.
-       * 
+       *
        * \param rowIdx is index of the matrix row this RowView refer to.
        * \param diagonalsOffsets is a vector view holding offsets of matrix diagonals,
        * \param values is a vector view holding values of matrix elements.
@@ -104,17 +104,25 @@ class MultidiagonalMatrixRowView
 
       /**
        * \brief Returns number of diagonals of the multidiagonal matrix.
-       * 
+       *
        * \return number of diagonals of the multidiagonal matrix.
        */
       __cuda_callable__
       IndexType getSize() const;
 
       /**
+       * \brief Returns the matrix row index.
+       *
+       * \return matrix row index.
+       */
+      __cuda_callable__
+      const IndexType& getRowIndex() const;
+
+      /**
        * \brief Computes column index of matrix element on given subdiagonal.
-       * 
+       *
        * \param localIdx is an index of the subdiagonal.
-       * 
+       *
        * \return column index of matrix element on given subdiagonal.
        */
       __cuda_callable__
@@ -122,9 +130,9 @@ class MultidiagonalMatrixRowView
 
       /**
        * \brief Returns value of matrix element on given subdiagonal.
-       * 
+       *
        * \param localIdx is an index of the subdiagonal.
-       * 
+       *
        * \return constant reference to matrix element value.
        */
       __cuda_callable__
@@ -132,9 +140,9 @@ class MultidiagonalMatrixRowView
 
       /**
        * \brief Returns value of matrix element on given subdiagonal.
-       * 
+       *
        * \param localIdx is an index of the subdiagonal.
-       * 
+       *
        * \return non-constant reference to matrix element value.
        */
       __cuda_callable__
@@ -142,7 +150,7 @@ class MultidiagonalMatrixRowView
 
       /**
        * \brief Changes value of matrix element on given subdiagonal.
-       * 
+       *
        * \param localIdx is an index of the matrix subdiagonal.
        * \param value is the new value of the matrix element.
        */

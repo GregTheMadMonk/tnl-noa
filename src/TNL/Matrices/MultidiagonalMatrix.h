@@ -134,12 +134,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
+      using RowViewType = typename ViewType::RowViewType;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = typename RowView::ConstViewType;
+      using ConstRowViewType = typename ViewType::ConstViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -492,7 +492,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
-      RowView getRow( const IndexType& rowIdx );
+      RowViewType getRow( const IndexType& rowIdx );
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -509,7 +509,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -800,6 +800,106 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Function >
       void forAllElements( Function& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
