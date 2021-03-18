@@ -16,7 +16,7 @@ set( COMMON_EXAMPLES
     MultidiagonalMatrixExample_allRowsReduction
     MultidiagonalMatrixExample_forElements
     MultidiagonalMatrixExample_forAllElements
-    #MultidiagonalMatrixExample_forRows
+    MultidiagonalMatrixExample_forRows
 #    MultidiagonalMatrixViewExample_constructor
     MultidiagonalMatrixViewExample_getCompressedRowLengths
 #    MultidiagonalMatrixViewExample_getElementsCount
@@ -29,7 +29,7 @@ set( COMMON_EXAMPLES
     MultidiagonalMatrixViewExample_allRowsReduction
     MultidiagonalMatrixViewExample_forElements
     MultidiagonalMatrixViewExample_forAllElements
-    #MultidiagonalMatrixViewExample_forRows
+    MultidiagonalMatrixViewExample_forRows
 )
 
 if( BUILD_CUDA )
