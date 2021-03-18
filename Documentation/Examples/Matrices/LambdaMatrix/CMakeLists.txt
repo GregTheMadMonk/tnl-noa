@@ -8,7 +8,7 @@ set( COMMON_EXAMPLES
    LambdaMatrixExample_allRowsReduction
    LambdaMatrixExample_forElements
    LambdaMatrixExample_forAllElements
-   #LambdaMatrixExample_forRows
+   LambdaMatrixExample_forRows
 )
 
 if( BUILD_CUDA )
