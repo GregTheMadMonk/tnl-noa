@@ -1,5 +1,4 @@
 ADD_SUBDIRECTORY( ndarray )
-ADD_SUBDIRECTORY( Segments )
 
 set( CPP_TESTS
          ArrayTest
