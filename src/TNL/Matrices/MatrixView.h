@@ -38,7 +38,7 @@ class MatrixView : public Object
       using RowsCapacitiesType = Containers::Vector< Index, Device, Index >;
       using RowsCapacitiesTypeView = Containers::VectorView< Index, Device, Index >;
       using ConstRowsCapacitiesTypeView = typename RowsCapacitiesTypeView::ConstViewType;
-      using ValuesView = Containers::VectorView< Real, Device, Index >;
+      using ValuesView = Containers::VectorView< std::remove_const_t< Real >, Device, Index >;
 
       /**
        * \brief The type of matrix elements.

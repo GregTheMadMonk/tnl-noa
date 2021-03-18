@@ -348,10 +348,10 @@ template< typename Real,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
 __cuda_callable__
-Real
+auto
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getElement( IndexType row,
-            IndexType column ) const
+            IndexType column ) const -> RealType
 {
    TNL_ASSERT_GE( row, 0, "Sparse matrix row index cannot be negative." );
    TNL_ASSERT_LT( row, this->getRows(), "Sparse matrix row index is larger than number of matrix rows." );
@@ -693,8 +693,8 @@ forRows( IndexType begin, IndexType end, Function&& function ) const
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
-   auto f = [=] __cuda_callable__ ( SegmentViewType&& segmentView ) mutable {
-      const auto rowView = RowViewType( segmentView, values_view, columns_view );
+   auto f = [=] __cuda_callable__ ( const SegmentViewType& segmentView ) mutable {
+      const auto rowView = ConstRowViewType( segmentView, values_view, columns_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );

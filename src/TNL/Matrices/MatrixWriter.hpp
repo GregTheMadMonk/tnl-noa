@@ -152,12 +152,18 @@ writeMtx( std::ostream& str,
    str << std::setw( 9 ) << matrix.getRows() << " " << std::setw( 9 ) << matrix.getColumns() << " " << std::setw( 12 ) << matrix.getNonzeroElementsCount() << std::endl;
    std::ostream* str_ptr = &str;
    auto cout_ptr = &std::cout;
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, RealType value, bool& compute ) mutable {
-      if( value != 0 )
+   auto f = [=] __cuda_callable__ ( const typename Matrix::ConstRowViewType& row ) mutable {
+      auto rowIdx = row.getRowIndex();
+      for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
       {
-         *str_ptr << std::setw( 9 ) << rowIdx + 1 << std::setw( 9 ) << columnIdx + 1 << std::setw( 12 ) << value << std::endl;
-         if( verbose )
-            *cout_ptr << "Drawing the row " << rowIdx << "      \r" << std::flush;
+         IndexType columnIdx = row.getColumnIndex( localIdx );
+         RealType value = row.getValue( localIdx );
+         if( value != 0 )
+         {
+            *str_ptr << std::setw( 9 ) << rowIdx + 1 << std::setw( 9 ) << columnIdx + 1 << std::setw( 12 ) << value << std::endl;
+            if( verbose )
+               *cout_ptr << "Drawing the row " << rowIdx << "      \r" << std::flush;
+         }
       }
    };
    matrix.sequentialForAllRows( f );

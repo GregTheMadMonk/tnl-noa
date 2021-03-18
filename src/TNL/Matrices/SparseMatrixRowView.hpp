@@ -47,7 +47,7 @@ template< typename SegmentView,
 __cuda_callable__
 auto
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
-getRowIndex() -> const IndexType&
+getRowIndex() const -> const IndexType&
 {
    return segmentView.getSegmentIndex();
 }

@@ -123,7 +123,7 @@ class SparseMatrixRowView
        * \return matrix row index.
        */
       __cuda_callable__
-      const IndexType& getRowIndex();
+      const IndexType& getRowIndex() const;
 
       /**
        * \brief Returns constants reference to a column index of an element with given rank in the row.

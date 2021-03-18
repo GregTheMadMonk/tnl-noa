@@ -61,14 +61,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType;
+      using ValuesVectorType = typename Matrix< std::remove_const_t< Real >, Device, Index, RealAllocator >::ValuesVectorType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
-      using ColumnsIndexesVectorType = Containers::Vector< Index, Device, Index, IndexAllocator >;
+      using ColumnsIndexesVectorType = Containers::Vector< std::remove_const_t< Index >, Device, Index, IndexAllocator >;
       using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
-      using RowsCapacitiesType = Containers::Vector< Index, Device, Index, IndexAllocator >;
-      using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
+      using RowsCapacitiesType = Containers::Vector< std::remove_const_t< Index >, Device, Index, IndexAllocator >;
+      using RowsCapacitiesView = Containers::VectorView< std::remove_const_t< Index >, Device, Index >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
 
       /**
@@ -88,7 +88,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief The type of matrix elements.
        */
-      using RealType = Real;
+      using RealType = std::remove_const_t< Real >;
 
       using ComputeRealType = ComputeReal;
 

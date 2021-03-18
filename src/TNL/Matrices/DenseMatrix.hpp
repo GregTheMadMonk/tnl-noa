@@ -119,9 +119,10 @@ auto
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getConstView() const -> ConstViewType
 {
+   DenseMatrix* this_ptr = const_cast< DenseMatrix* >( this );
    return ConstViewType( this->getRows(),
                          this->getColumns(),
-                         this->getValues().getConstView() );
+                         this_ptr->getValues().getView() );
 }
 
 template< typename Real,

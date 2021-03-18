@@ -498,10 +498,10 @@ template< typename Real,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
-Real
+auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 getElement( const IndexType row,
-            const IndexType column ) const
+            const IndexType column ) const -> RealType
 {
    return this->view.getElement( row, column );
 }

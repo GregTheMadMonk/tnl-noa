@@ -97,7 +97,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief The type of matrix elements.
        */
-      using RealType = Real;
+      using RealType = std::remove_const_t< Real >;
 
       using ComputeRealType = ComputeReal;
 
