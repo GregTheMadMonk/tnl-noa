@@ -169,15 +169,16 @@ void test_GetRow()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   /////
-   // Prepare lambda matrix of the following form:
-   //
-   // /  1   0   0   0   0 \
-   // | -2   1  -2   0   0 |
-   // |  0  -2   1  -2   0 |
-   // |  0   0  -2   1  -2 |
-   // |  0   0   0  -2   1 |
-   // \  0   0   0   0   1 /
+   /**
+    * Prepare lambda matrix of the following form:
+    *
+    * /  1   0   0   0   0 \
+    * | -2   1  -2   0   0 |
+    * |  0  -2   1  -2   0 |
+    * |  0   0  -2   1  -2 |
+    * |  0   0   0  -2   1 |
+    * \  0   0   0   0   1 /
+    */
 
    IndexType size = 5;
    auto rowLengths = [=] __cuda_callable__ ( const IndexType rows, const IndexType columns, const IndexType rowIdx ) -> IndexType {
