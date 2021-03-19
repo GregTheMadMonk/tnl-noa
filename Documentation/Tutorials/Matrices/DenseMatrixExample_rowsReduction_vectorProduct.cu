@@ -1,1 +1,0 @@
-DenseMatrixExample_rowsReduction_vectorProduct.cpp
