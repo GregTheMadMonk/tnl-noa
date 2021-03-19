@@ -27,7 +27,7 @@ template< typename Device,
 __cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::
 EllpackView()
-   : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
+   : segmentSize( 0 ), segmentsCount( 0 ), alignedSize( 0 )
 {
 }
 
@@ -37,8 +37,8 @@ template< typename Device,
           int Alignment >
 __cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::
-EllpackView( IndexType segmentSize, IndexType size, IndexType alignedSize )
-   : segmentSize( segmentSize ), size( size ), alignedSize( alignedSize )
+EllpackView( IndexType segmentSize, IndexType segmentsCount, IndexType alignedSize )
+   : segmentSize( segmentSize ), segmentsCount( segmentsCount ), alignedSize( alignedSize )
 {
 }
 
@@ -49,7 +49,7 @@ template< typename Device,
 __cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::
 EllpackView( const EllpackView& ellpack )
-   : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
+   : segmentSize( ellpack.segmentSize ), segmentsCount( ellpack.segmentsCount ), alignedSize( ellpack.alignedSize )
 {
 }
 
@@ -60,7 +60,7 @@ template< typename Device,
 __cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::
 EllpackView( const EllpackView&& ellpack )
-   : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
+   : segmentSize( ellpack.segmentSize ), segmentsCount( ellpack.segmentsCount ), alignedSize( ellpack.alignedSize )
 {
 }
 
@@ -95,7 +95,7 @@ typename EllpackView< Device, Index, Organization, Alignment >::ViewType
 EllpackView< Device, Index, Organization, Alignment >::
 getView()
 {
-   return ViewType( segmentSize, size, alignedSize );
+   return ViewType( segmentSize, segmentsCount, alignedSize );
 }
 
 template< typename Device,
@@ -107,7 +107,7 @@ auto
 EllpackView< Device, Index, Organization, Alignment >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( segmentSize, size, alignedSize );
+   return ConstViewType( segmentSize, segmentsCount, alignedSize );
 }
 
 template< typename Device,
@@ -117,7 +117,7 @@ template< typename Device,
 __cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSegmentsCount() const -> IndexType
 {
-   return this->size;
+   return this->segmentsCount;
 }
 
 template< typename Device,
@@ -137,7 +137,7 @@ template< typename Device,
 __cuda_callable__ auto EllpackView< Device, Index, Organization, Alignment >::
 getSize() const -> IndexType
 {
-   return this->size * this->segmentSize;
+   return this->segmentsCount * this->segmentSize;
 }
 
 
@@ -315,7 +315,7 @@ EllpackView< Device, Index, Organization, Alignment >::
 operator=( const EllpackView< Device, Index, Organization, Alignment >& view )
 {
    this->segmentSize = view.segmentSize;
-   this->size = view.size;
+   this->segmentsCount = view.segmentsCount;
    this->alignedSize = view.alignedSize;
    return *this;
 }
@@ -328,7 +328,7 @@ void EllpackView< Device, Index, Organization, Alignment >::
 save( File& file ) const
 {
    file.save( &segmentSize );
-   file.save( &size );
+   file.save( &segmentsCount );
    file.save( &alignedSize );
 }
 
@@ -340,7 +340,7 @@ void EllpackView< Device, Index, Organization, Alignment >::
 load( File& file )
 {
    file.load( &segmentSize );
-   file.load( &size );
+   file.load( &segmentsCount );
    file.load( &alignedSize );
 }
 
