@@ -109,7 +109,7 @@ auto
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getView() -> ViewType
 {
-   return ViewType( segmentSize, size, alignedSize );
+   return ViewType( size, segmentSize, alignedSize );
 }
 
 template< typename Device,
@@ -121,7 +121,7 @@ auto
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( segmentSize, size, alignedSize );
+   return ConstViewType( size, segmentSize, alignedSize );
 }
 
 template< typename Device,

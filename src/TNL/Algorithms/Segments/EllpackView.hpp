@@ -37,9 +37,24 @@ template< typename Device,
           int Alignment >
 __cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::
-EllpackView( IndexType segmentSize, IndexType segmentsCount, IndexType alignedSize )
+EllpackView( IndexType segmentsCount, IndexType segmentSize, IndexType alignedSize )
    : segmentSize( segmentSize ), segmentsCount( segmentsCount ), alignedSize( alignedSize )
 {
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+__cuda_callable__
+EllpackView< Device, Index, Organization, Alignment >::
+EllpackView( IndexType segmentsCount, IndexType segmentSize )
+   : segmentSize( segmentSize ), segmentsCount( segmentsCount )
+{
+   if( Organization == RowMajorOrder )
+      this->alignedSize = this->segmentsCount;
+   else
+      this->alignedSize = roundUpDivision( segmentsCount, this->getAlignment() ) * this->getAlignment();
 }
 
 template< typename Device,
@@ -107,7 +122,7 @@ auto
 EllpackView< Device, Index, Organization, Alignment >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( segmentSize, segmentsCount, alignedSize );
+   return ConstViewType( segmentsCount, segmentSize, alignedSize );
 }
 
 template< typename Device,

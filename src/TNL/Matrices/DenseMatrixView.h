@@ -511,8 +511,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
        *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -533,8 +533,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
        *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices. 
-       *  If the 'compute' variable is set to false the iteration over the row can 
+       *  The column index repeats twice only for compatibility with sparse matrices.
+       *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -794,7 +794,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Assignment operator with DenseMatrix.
-       * 
+       *
        * \param matrix is the right-hand side matrix.
        * \return reference to this matrix.
        */
@@ -802,25 +802,25 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 
       /**
        * \brief Method for saving the matrix view to the file with given filename.
-       * 
+       *
        * The ouput file can be loaded by \ref DenseMatrix.
-       * 
+       *
        * \param fileName is name of the file.
        */
       void save( const String& fileName ) const;
 
       /**
        * \brief Method for saving the matrix view to a file.
-       * 
+       *
        * The ouput file can be loaded by \ref DenseMatrix.
-       * 
+       *
        * \param fileName is name of the file.
        */
       void save( File& file ) const;
 
       /**
        * \brief Method for printing the matrix to output stream.
-       * 
+       *
        * \param str is the output stream.
        */
       void print( std::ostream& str ) const;

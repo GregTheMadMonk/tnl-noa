@@ -38,10 +38,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 DenseMatrixView( const IndexType rows,
                  const IndexType columns,
                  const ValuesViewType& values )
- : MatrixView< Real, Device, Index >( rows, columns, values )
+ : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns )
 {
-   SegmentsType a( rows, columns );
-   segments = a.getView();
 }
 
 template< typename Real,
@@ -54,10 +52,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 DenseMatrixView( const IndexType rows,
                  const IndexType columns,
                  const Containers::VectorView< Value_, Device, Index >& values )
- : MatrixView< Real, Device, Index >( rows, columns, values )
+ : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns, true )
 {
-   SegmentsType a( rows, columns );
-   segments = a.getView();
 }
 
 template< typename Real,

@@ -47,7 +47,10 @@ class EllpackView
       EllpackView();
 
       __cuda_callable__
-      EllpackView( IndexType segmentSize, IndexType segmentsCount, IndexType alignedSize );
+      EllpackView( IndexType segmentsCount, IndexType segmentSize, IndexType alignedSize );
+
+      __cuda_callable__
+      EllpackView( IndexType segmentsCount, IndexType segmentSize );
 
       __cuda_callable__
       EllpackView( const EllpackView& ellpackView );
