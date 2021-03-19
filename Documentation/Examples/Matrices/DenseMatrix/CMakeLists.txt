@@ -8,8 +8,8 @@ set( COMMON_EXAMPLES
     DenseMatrixExample_setElement
     DenseMatrixExample_addElement
     DenseMatrixExample_getElement
-    DenseMatrixExample_rowsReduction
-    DenseMatrixExample_allRowsReduction
+    DenseMatrixExample_reduceRows
+    DenseMatrixExample_reduceAllRows
     DenseMatrixExample_forElements
     DenseMatrixExample_forAllElements
     DenseMatrixExample_forRows
@@ -21,8 +21,8 @@ set( COMMON_EXAMPLES
     DenseMatrixViewExample_setElement
     DenseMatrixViewExample_addElement
     DenseMatrixViewExample_getElement
-    DenseMatrixViewExample_rowsReduction
-    DenseMatrixViewExample_allRowsReduction
+    DenseMatrixViewExample_reduceRows
+    DenseMatrixViewExample_reduceAllRows
     DenseMatrixViewExample_forElements
     DenseMatrixViewExample_forRows
     DenseMatrixViewExample_forAllElements

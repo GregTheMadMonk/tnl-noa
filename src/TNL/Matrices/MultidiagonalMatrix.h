@@ -617,12 +617,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_rowsReduction.out
+       * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -644,12 +644,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_rowsReduction.out
+       * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -669,12 +669,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_allRowsReduction.out
+       * \include MultidiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -694,12 +694,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixExample_allRowsReduction.out
+       * \include MultidiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over matrix rows for constant instances.

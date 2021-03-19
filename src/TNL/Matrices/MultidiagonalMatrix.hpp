@@ -477,9 +477,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
+   this->view.reduceRows( first, last, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -491,9 +491,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
+   this->view.reduceRows( first, last, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -505,9 +505,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->view.rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -519,9 +519,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->view.rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,

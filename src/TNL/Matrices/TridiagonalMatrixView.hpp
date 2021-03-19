@@ -118,7 +118,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, reduce, keep, 0 );
+   this->reduceAllRows( fetch, reduce, keep, 0 );
 }
 
 template< typename Real,
@@ -279,7 +279,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
@@ -323,7 +323,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    auto values_view = this->values.getConstView();
@@ -367,9 +367,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -379,9 +379,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -621,9 +621,9 @@ vectorProduct( const InVector& inVector,
    if( end == 0 )
       end = this->getRows();
    if( matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 )
-      this->rowsReduction( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
+      this->reduceRows( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
    else
-      this->rowsReduction( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
+      this->reduceRows( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
 }
 
 template< typename Real,

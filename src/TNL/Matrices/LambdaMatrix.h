@@ -391,12 +391,12 @@ class LambdaMatrix
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/LambdaMatrix/LambdaMatrixExample_rowsReduction.cpp
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceRows.cpp
        * \par Output
-       * \include LambdaMatrixExample_rowsReduction.out
+       * \include LambdaMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -416,12 +416,12 @@ class LambdaMatrix
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/LambdaMatrix/LambdaMatrixExample_allRowsReduction.cpp
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include LambdaMatrixExample_allRowsReduction.out
+       * \include LambdaMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Computes product of matrix and vector.

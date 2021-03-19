@@ -620,12 +620,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixExample_rowsReduction.out
+       * \include SparseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -647,12 +647,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixExample_rowsReduction.out
+       * \include SparseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -672,12 +672,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixExample_allRowsReduction.out
+       * \include SparseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -697,12 +697,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixExample_allRowsReduction.out
+       * \include SparseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for parallel iteration over matrix elements of given rows for constant instances.

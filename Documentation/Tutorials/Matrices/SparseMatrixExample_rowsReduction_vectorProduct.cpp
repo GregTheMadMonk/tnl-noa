@@ -6,7 +6,7 @@
 #include <TNL/Devices/Cuda.h>
 
 template< typename Device >
-void rowsReduction()
+void reduceRows()
 {
    TNL::Matrices::SparseMatrix< double, Device > matrix { 5, 5, {
       { 0, 0, 1 },
@@ -50,7 +50,7 @@ void rowsReduction()
    /***
     * Compute matrix-vector product.
     */
-   matrix.rowsReduction( 0, matrix.getRows(), fetch, std::plus<>{}, keep, 0.0 );
+   matrix.reduceRows( 0, matrix.getRows(), fetch, std::plus<>{}, keep, 0.0 );
 
    std::cout << "The matrix reads as:" << std::endl << matrix << std::endl;
    std::cout << "The input vector is:" << x << std::endl;
@@ -60,11 +60,11 @@ void rowsReduction()
 int main( int argc, char* argv[] )
 {
    std::cout << "Rows reduction on host:" << std::endl;
-   rowsReduction< TNL::Devices::Host >();
+   reduceRows< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << std::endl;
    std::cout << "Rows reduction on CUDA device:" << std::endl;
-   rowsReduction< TNL::Devices::Cuda >();
+   reduceRows< TNL::Devices::Cuda >();
 #endif
 }

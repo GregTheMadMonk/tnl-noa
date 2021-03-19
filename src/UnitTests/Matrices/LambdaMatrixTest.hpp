@@ -259,7 +259,7 @@ void test_VectorProduct()
 }
 
 template< typename Matrix >
-void test_RowsReduction()
+void test_reduceRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -300,7 +300,7 @@ void test_RowsReduction()
    auto keep = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       vView[ row ] = value;
    };
-   A.allRowsReduction( fetch, reduce, keep, 0.0 );
+   A.reduceAllRows( fetch, reduce, keep, 0.0 );
 
    EXPECT_EQ( v.getElement( 0 ),  1.0 );
    EXPECT_EQ( v.getElement( 1 ),  0.0 );

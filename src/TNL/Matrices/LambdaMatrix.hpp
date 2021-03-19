@@ -145,7 +145,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
+   this->reduceAllRows( fetch, std::plus<>{}, keep, 0 );
 }
 
 template< typename MatrixElementsLambda,
@@ -251,7 +251,7 @@ vectorProduct( const InVector& inVector,
    };
    if( ! end )
       end = this->getRows();
-   this->rowsReduction( begin, end, fetch, reduce, keep, 0.0 );
+   this->reduceRows( begin, end, fetch, reduce, keep, 0.0 );
 }
 
 template< typename MatrixElementsLambda,
@@ -262,7 +262,7 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
    using FetchType = decltype( fetch( IndexType(), IndexType(), RealType() ) );
 
@@ -296,9 +296,9 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename MatrixElementsLambda,

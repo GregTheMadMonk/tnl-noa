@@ -13,8 +13,8 @@ set( COMMON_EXAMPLES
    SparseMatrixExample_setElement
    SparseMatrixExample_addElement
    SparseMatrixExample_getElement
-   SparseMatrixExample_rowsReduction
-   SparseMatrixExample_allRowsReduction
+   SparseMatrixExample_reduceRows
+   SparseMatrixExample_reduceAllRows
    SparseMatrixExample_forElements
    SparseMatrixExample_forAllElements
    SparseMatrixExample_forRows
@@ -25,8 +25,8 @@ set( COMMON_EXAMPLES
    SparseMatrixViewExample_setElement
    SparseMatrixViewExample_addElement
    SparseMatrixViewExample_getElement
-   SparseMatrixViewExample_rowsReduction
-   SparseMatrixViewExample_allRowsReduction
+   SparseMatrixViewExample_reduceRows
+   SparseMatrixViewExample_reduceAllRows
    SparseMatrixViewExample_forElements
    SparseMatrixViewExample_forRows
    SparseMatrixViewExample_forAllElements

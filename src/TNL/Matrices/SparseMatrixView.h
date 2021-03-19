@@ -411,12 +411,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_rowsReduction.out
+       * \include SparseMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -438,12 +438,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_rowsReduction.out
+       * \include SparseMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -463,12 +463,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_allRowsReduction.out
+       * \include SparseMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -488,12 +488,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_allRowsReduction.out
+       * \include SparseMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.

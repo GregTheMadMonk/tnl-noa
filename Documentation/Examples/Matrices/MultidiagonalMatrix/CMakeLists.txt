@@ -12,8 +12,8 @@ set( COMMON_EXAMPLES
 #    MultidiagonalMatrixExample_setElement
     MultidiagonalMatrixExample_addElement
     MultidiagonalMatrixExample_getElement
-    MultidiagonalMatrixExample_rowsReduction
-    MultidiagonalMatrixExample_allRowsReduction
+    MultidiagonalMatrixExample_reduceRows
+    MultidiagonalMatrixExample_reduceAllRows
     MultidiagonalMatrixExample_forElements
     MultidiagonalMatrixExample_forAllElements
     MultidiagonalMatrixExample_forRows
@@ -25,8 +25,8 @@ set( COMMON_EXAMPLES
     MultidiagonalMatrixViewExample_setElement
     MultidiagonalMatrixViewExample_addElement
     MultidiagonalMatrixViewExample_getElement
-    MultidiagonalMatrixViewExample_rowsReduction
-    MultidiagonalMatrixViewExample_allRowsReduction
+    MultidiagonalMatrixViewExample_reduceRows
+    MultidiagonalMatrixViewExample_reduceAllRows
     MultidiagonalMatrixViewExample_forElements
     MultidiagonalMatrixViewExample_forAllElements
     MultidiagonalMatrixViewExample_forRows

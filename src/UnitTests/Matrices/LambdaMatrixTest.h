@@ -104,11 +104,11 @@ TYPED_TEST( LambdaMatrixTest, vectorProductTest )
     test_VectorProduct< LambdaMatrixParametersType >();
 }
 
-TYPED_TEST( LambdaMatrixTest, rowsReduction )
+TYPED_TEST( LambdaMatrixTest, reduceRows )
 {
     using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
 
-    test_RowsReduction< LambdaMatrixParametersType >();
+    test_reduceRows< LambdaMatrixParametersType >();
 }
 #endif
 

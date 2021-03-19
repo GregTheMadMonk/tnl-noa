@@ -89,11 +89,11 @@ TYPED_TEST( BinaryMatrixTest_CSR, vectorProductTest )
     test_VectorProduct< CSRMatrixType >();
 }
 
-TYPED_TEST( BinaryMatrixTest_CSR, rowsReduction )
+TYPED_TEST( BinaryMatrixTest_CSR, reduceRows )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_RowsReduction< CSRMatrixType >();
+    test_reduceRows< CSRMatrixType >();
 }
 
 TYPED_TEST( BinaryMatrixTest_CSR, saveAndLoadTest )

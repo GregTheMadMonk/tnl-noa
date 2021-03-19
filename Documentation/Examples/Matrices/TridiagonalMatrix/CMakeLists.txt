@@ -10,8 +10,8 @@ set( COMMON_EXAMPLES
 #   TridiagonalMatrixExample_setElement
     TridiagonalMatrixExample_addElement
     TridiagonalMatrixExample_getElement
-    TridiagonalMatrixExample_rowsReduction
-    TridiagonalMatrixExample_allRowsReduction
+    TridiagonalMatrixExample_reduceRows
+    TridiagonalMatrixExample_reduceAllRows
     TridiagonalMatrixExample_forElements
     TridiagonalMatrixExample_forAllElements
     TridiagonalMatrixExample_forRows
@@ -23,8 +23,8 @@ set( COMMON_EXAMPLES
     TridiagonalMatrixViewExample_setElement
     TridiagonalMatrixViewExample_addElement
     TridiagonalMatrixViewExample_getElement
-    TridiagonalMatrixViewExample_rowsReduction
-    TridiagonalMatrixViewExample_allRowsReduction
+    TridiagonalMatrixViewExample_reduceRows
+    TridiagonalMatrixViewExample_reduceAllRows
     TridiagonalMatrixViewExample_forElements
     TridiagonalMatrixViewExample_forAllElements
     TridiagonalMatrixViewExample_forRows

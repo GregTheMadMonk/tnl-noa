@@ -704,12 +704,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixExample_rowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_reduceRows.cpp
        * \par Output
-       * \include DenseMatrixExample_rowsReduction.out
+       * \include DenseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -731,12 +731,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixExample_rowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_reduceRows.cpp
        * \par Output
-       * \include DenseMatrixExample_rowsReduction.out
+       * \include DenseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -756,12 +756,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixExample_allRowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include DenseMatrixExample_allRowsReduction.out
+       * \include DenseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows for constant instances.
@@ -781,12 +781,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/DenseMatrix/DenseMatrixExample_allRowsReduction.cpp
+       * \include Matrices/DenseMatrix/DenseMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include DenseMatrixExample_allRowsReduction.out
+       * \include DenseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Computes product of matrix and vector.

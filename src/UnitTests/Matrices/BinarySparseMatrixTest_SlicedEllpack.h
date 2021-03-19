@@ -100,11 +100,11 @@ TYPED_TEST( BinaryMatrixTest_SlicedEllpack, vectorProductTest )
     test_VectorProduct< SlicedEllpackMatrixType >();
 }
 
-TYPED_TEST( BinaryMatrixTest_SlicedEllpack, rowsReduction )
+TYPED_TEST( BinaryMatrixTest_SlicedEllpack, reduceRows )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
 
-    test_RowsReduction< SlicedEllpackMatrixType >();
+    test_reduceRows< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( BinaryMatrixTest_SlicedEllpack, saveAndLoadTest )

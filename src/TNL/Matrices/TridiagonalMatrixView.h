@@ -366,12 +366,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include TridiagonalMatrixViewExample_rowsReduction.out
+       * \include TridiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on matrix rows.
@@ -393,12 +393,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include TridiagonalMatrixViewExample_rowsReduction.out
+       * \include TridiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -418,12 +418,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include TridiagonalMatrixViewExample_allRowsReduction.out
+       * \include TridiagonalMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -443,12 +443,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include TridiagonalMatrixViewExample_allRowsReduction.out
+       * \include TridiagonalMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.

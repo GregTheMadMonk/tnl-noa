@@ -1183,8 +1183,8 @@ TODO: Write documentation on distributed matrices.
 
 ## Flexible reduction in matrix rows
 
-Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction,
-\ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) and similar to the method `forElements` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
+Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `reduceRows` (\ref TNL::Matrices::DenseMatrix::reduceRows,
+\ref TNL::Matrices::SparseMatrix::reduceRows, \ref TNL::Matrices::TridiagonalMatrix::reduceRows, \ref TNL::Matrices::MultidiagonalMatrix::reduceRows, \ref TNL::Matrices::LambdaMatrix::reduceRows) and similar to the method `forElements` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
 
 \f[
 y_1 = a_{11} x_1 + a_{12} x_2 + \ldots + a_{1n} x_n = \sum_{j=1}^n a_{1j}x_j
@@ -1238,7 +1238,7 @@ The meaning of the particular parameters is as follows:
 1. `rowIdx` is an index of the matrix row related to given result of flexible reduction.
 2. `value`is the result of the flexible reduction in given matrix row.
 
-The method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, \ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) accepts the following arguments:
+The method `reduceRows` (\ref TNL::Matrices::DenseMatrix::reduceRows, \ref TNL::Matrices::SparseMatrix::reduceRows, \ref TNL::Matrices::TridiagonalMatrix::reduceRows, \ref TNL::Matrices::MultidiagonalMatrix::reduceRows, \ref TNL::Matrices::LambdaMatrix::reduceRows) accepts the following arguments:
 
 1. `begin` is the beginning of the matrix rows range on which the reduction will be performed.
 2. `end` is the end of the matrix rows range on which the reduction will be performed. The last matrix row which is going to be processed has index `end-1`.
@@ -1257,7 +1257,7 @@ The following example demonstrates implementation of the dense matrix-vector pro
    y_i = \sum_{j=0}^{columns - 1} a_{ij} x_j \text{ for } i = 0, \ldots, rows-1.
 \f]
 
-\includelineno DenseMatrixExample_rowsReduction_vectorProduct.cpp
+\includelineno DenseMatrixExample_reduceRows_vectorProduct.cpp
 
 We set the following lambda functions:
 
@@ -1267,7 +1267,7 @@ We set the following lambda functions:
 
 The result looks as:
 
-\include DenseMatrixExample_rowsReduction_vectorProduct.out
+\include DenseMatrixExample_reduceRows_vectorProduct.out
 
 We will show one more example which is a computation of maximal absolute value in each matrix row. The results will be stored in a vector:
 
@@ -1277,7 +1277,7 @@ y_i = \max_{j=1,\ldots,n} |a_{ij}|.
 
 See the following example:
 
-\includelineno DenseMatrixExample_rowsReduction_maxNorm.cpp
+\includelineno DenseMatrixExample_reduceRows_maxNorm.cpp
 
 The lambda functions rare:
 
@@ -1287,13 +1287,13 @@ The lambda functions rare:
 
 Note, that the idempotent value for the reduction is \ref std::numeric_limits< double >::lowest. Of course, if we compute the maximum of all output vector elements, we get some kind of maximal matrix norm. The output looks as:
 
-\include DenseMatrixExample_rowsReduction_maxNorm.out
+\include DenseMatrixExample_reduceRows_maxNorm.out
 
 ### Sparse matrices example
 
 The following example demonstrates sparse matrix-vector product:
 
-\includelineno SparseMatrixExample_rowsReduction_vectorProduct.cpp
+\includelineno SparseMatrixExample_reduceRows_vectorProduct.cpp
 
 On the lines 11-16 we set the following matrix:
 
@@ -1311,7 +1311,7 @@ On the lines 11-16 we set the following matrix:
 
 The lambda functions on the lines 39-48 are the same as in the example with the dense matrix. The result looks as follows:
 
-\include SparseMatrixExample_rowsReduction_vectorProduct.out
+\include SparseMatrixExample_reduceRows_vectorProduct.out
 
 ### Tridiagonal matrices example
 
@@ -1331,7 +1331,7 @@ In this example, we will compute maximal absolute value in each row of the follo
 
 The source code reads as follows:
 
-\includelineno TridiagonalMatrixExample_rowsReduction.cpp
+\includelineno TridiagonalMatrixExample_reduceRows.cpp
 
 Here we first set the tridiagonal matrix (lines 10-27). Next we allocate the vector `rowMax` where we will store the results (line 32). The lambda function are:
 
@@ -1341,7 +1341,7 @@ Here we first set the tridiagonal matrix (lines 10-27). Next we allocate the vec
 
 Note, that the idempotent value for the reduction is \ref std::numeric_limits< double >::lowest. The results looks as follows:
 
-\include TridiagonalMatrixExample_rowsReduction.out
+\include TridiagonalMatrixExample_reduceRows.out
 
 ### Multidiagonal matrices example
 
@@ -1365,15 +1365,15 @@ We first create vector `rowMax` into which we will store the results and fetch i
 * `reduce` (lines 51-53) returns maximum value of the two input values `a` and `b`.
 * `keep` (line 58-60) stores the input `value` at the corresponding position, given by the row index `rowIdx`, in the output vector view `rowMaxView`.
 
-Finally, we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMatrix::rowsReduction) with parameters telling the interval of rows to be processed (the first and second parameter), the lambda functions `fetch`, `reduce` and `keep`, and the idempotent element for the reduction operation which is the lowest number of given type (\ref std::numeric_limits< double >::lowest ). The result looks as follows:
+Finally, we call the method `reduceRows` (\ref TNL::Matrices::MultidiagonalMatrix::reduceRows) with parameters telling the interval of rows to be processed (the first and second parameter), the lambda functions `fetch`, `reduce` and `keep`, and the idempotent element for the reduction operation which is the lowest number of given type (\ref std::numeric_limits< double >::lowest ). The result looks as follows:
 
-\include MultidiagonalMatrixExample_rowsReduction.out
+\include MultidiagonalMatrixExample_reduceRows.out
 
 ### Lambda matrices example
 
 The reduction of matrix rows is available for the lambda matrices as well. See the following example:
 
-\includelineno LambdaMatrixExample_rowsReduction.cpp
+\includelineno LambdaMatrixExample_reduceRows.cpp
 
 On the lines 14-21, we create the lower triangular lambda matrix which looks as follows:
 
@@ -1397,7 +1397,7 @@ We want to compute maximal absolute value of matrix elements in each row. For th
 
 Note that the interface of the lambda functions is the same as for other matrix types. The result looks as follows:
 
-\include LambdaMatrixExample_rowsReduction.out
+\include LambdaMatrixExample_reduceRows.out
 
 ## Matrix-vector product
 
