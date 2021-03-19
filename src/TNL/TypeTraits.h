@@ -270,4 +270,19 @@ public:
     static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
+/**
+ * \brief Copy const qualifier from Source type to Target type.
+ */
+template< typename Target >
+struct copy_const
+{
+   template< typename Source >
+   struct from
+   {
+      using type = typename std::conditional<
+       std::is_const< Source >::value,
+       std::add_const_t< Target >, Target >::type;
+   };
+};
+
 } //namespace TNL
