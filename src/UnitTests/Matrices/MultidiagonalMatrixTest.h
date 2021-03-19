@@ -779,21 +779,21 @@ void test_AddRow()
 }
 
 template< typename Matrix >
-void test_GetRow()
+void test_ForRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   /////
-   // Prepare lambda matrix of the following form:
-   //
-   // /  1  -2   0   0   0 \
-   // | -2   1  -2   0   0 |
-   // |  0  -2   1  -2   0 |
-   // |  0   0  -2   1  -2 |
-   // |  0   0   0  -2   1 |
-   // \  0   0   0   0   1 /
+   /**
+    * Prepare lambda matrix of the following form:
+    *
+    * /  1  -2   0   0   0 \
+    * | -2   1  -2   0   0 |
+    * |  0  -2   1  -2   0 |
+    * |  0   0  -2   1  -2 |
+    * \  0   0   0  -2   1 /
+    */
 
    const IndexType size( 5 );
    Matrix m( size, size, { -1, 0, 1 } );
@@ -821,9 +821,7 @@ void test_GetRow()
          else
             EXPECT_EQ( m.getElement( row, column ), 0.0 );
       }
-
 }
-
 
 template< typename Matrix >
 void test_VectorProduct()
@@ -1496,13 +1494,12 @@ TYPED_TEST( MatrixTest, addRowTest )
     test_AddRow< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getRowTest )
+TYPED_TEST( MatrixTest, forRowsTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetRow< MatrixType >();
+    test_ForRows< MatrixType >();
 }
-
 
 TYPED_TEST( MatrixTest, vectorProductTest )
 {
