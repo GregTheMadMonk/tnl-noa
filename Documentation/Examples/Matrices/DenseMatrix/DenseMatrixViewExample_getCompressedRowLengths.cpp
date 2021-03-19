@@ -6,19 +6,19 @@
 template< typename Device >
 void getCompressedRowLengthsExample()
 {
-   TNL::Matrices::DenseMatrix< double, Device > triangularMatrix {
+   TNL::Matrices::DenseMatrix< double, Device > denseMatrix {
       {  1 },
       {  2,  3 },
       {  4,  5,  6 },
       {  7,  8,  9, 10 },
       { 11, 12, 13, 14, 15 }
    };
-   auto triangularMatrixView = triangularMatrix.getConstView();
+   auto denseMatrixView = denseMatrix.getConstView();
 
-   std::cout << triangularMatrixView << std::endl;
+   std::cout << denseMatrixView << std::endl;
 
    TNL::Containers::Vector< int, Device > rowLengths;
-   triangularMatrixView.getCompressedRowLengths( rowLengths );
+   denseMatrixView.getCompressedRowLengths( rowLengths );
 
    std::cout << "Compressed row lengths are: " << rowLengths << std::endl;
 }
