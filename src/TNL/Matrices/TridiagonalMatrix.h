@@ -70,7 +70,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using IndexerType = details::TridiagonalMatrixIndexer< Index, Organization >;
-      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesVectorType = typename BaseType::ValuesType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
 
       /**

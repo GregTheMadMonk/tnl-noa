@@ -46,7 +46,7 @@ public:
 
    /**
     * \brief Device where the vector is allocated.
-    * 
+    *
     * See \ref Devices::Host or \ref Devices::Cuda.
     */
    using DeviceType = Device;

@@ -77,8 +77,8 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using ValuesVectorType = typename BaseType::ValuesVectorType;
-      using ValuesViewType = typename ValuesVectorType::ViewType;
+      using ValuesType = typename BaseType::ValuesType;
+      using ValuesView = typename ValuesType::ViewType;
       using IndexerType = details::MultidiagonalMatrixIndexer< Index, Organization >;
       using DiagonalsOffsetsType = Containers::Vector< Index, Device, Index, IndexAllocator >;
       using DiagonalsOffsetsView = typename DiagonalsOffsetsType::ViewType;

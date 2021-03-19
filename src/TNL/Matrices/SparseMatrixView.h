@@ -15,6 +15,7 @@
 #include <TNL/Allocators/Default.h>
 #include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
+#include <TNL/TypeTraits.h>
 
 namespace TNL {
 namespace Matrices {
@@ -75,7 +76,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using BaseType = MatrixView< Real, Device, Index >;
       using ValuesViewType = typename BaseType::ValuesView;
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
-      using ColumnsIndexesViewType = Containers::VectorView< Index, Device, Index >;
+      using ColumnsIndexesViewType = Containers::VectorView< typename TNL::copy_const< Index >::template from< Real >::type, Device, Index >;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
@@ -97,7 +98,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief The type of matrix elements.
        */
-      using RealType = std::remove_const_t< Real >;
+      using RealType = Real;
 
       using ComputeRealType = ComputeReal;
 
@@ -125,12 +126,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type of related matrix view.
        */
-      using ViewType = SparseMatrixView< std::remove_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       /**
        * \brief Matrix view type for constant instances.
        */
-      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, std::add_const_t< Index >, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       /**
        * \brief Type for accessing matrix rows.

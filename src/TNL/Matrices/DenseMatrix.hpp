@@ -105,9 +105,11 @@ auto
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getView() -> ViewType
 {
+   ValuesView values_view = this->getValues().getView();
+   // note this is improtant here to avoid const qualifier to appear in - somehow :(
    return ViewType( this->getRows(),
                     this->getColumns(),
-                    this->getValues().getView() );
+                    values_view );
 }
 
 template< typename Real,
@@ -119,10 +121,9 @@ auto
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getConstView() const -> ConstViewType
 {
-   DenseMatrix* this_ptr = const_cast< DenseMatrix* >( this );
    return ConstViewType( this->getRows(),
                          this->getColumns(),
-                         this_ptr->getValues().getView() );
+                         this->getValues().getConstView() );
 }
 
 template< typename Real,

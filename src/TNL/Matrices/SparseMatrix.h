@@ -61,10 +61,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using ValuesVectorType = typename Matrix< std::remove_const_t< Real >, Device, Index, RealAllocator >::ValuesVectorType;
+      using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
-      using ColumnsIndexesVectorType = Containers::Vector< std::remove_const_t< Index >, Device, Index, IndexAllocator >;
+      using ColumnsIndexesVectorType = Containers::Vector< typename TNL::copy_const< Index >::template from< Real >::type, Device, Index, IndexAllocator >;
       using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using RowsCapacitiesType = Containers::Vector< std::remove_const_t< Index >, Device, Index, IndexAllocator >;

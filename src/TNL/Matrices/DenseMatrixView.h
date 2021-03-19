@@ -43,7 +43,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
 {
    protected:
       using BaseType = Matrix< Real, Device, Index >;
-      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesType = typename BaseType::ValuesType;
       using SegmentsType = Algorithms::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
@@ -77,7 +77,14 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * Use this for embedding of the matrix elements values.
        */
-      using ValuesViewType = typename ValuesVectorType::ViewType;
+      using ValuesViewType = typename ValuesType::ViewType;
+
+      /**
+       * \brief Matrix elements container view type.
+       *
+       * Use this for embedding of the matrix elements values.
+       */
+      using ConstValuesViewType = typename ValuesType::ConstViewType;
 
       /**
        * \brief Matrix view type.
@@ -91,7 +98,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * See \ref DenseMatrixView.
        */
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
+      using ConstViewType = DenseMatrixView< std::add_const_t< Real >, Device, Index, Organization >;
 
       /**
        * \brief Type for accessing matrix row.
@@ -125,12 +132,32 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include Matrices/DenseMatrix/DenseMatrixViewExample_constructor.cpp
        * \par Output
        * \include DenseMatrixViewExample_constructor.out
-
        */
       __cuda_callable__
       DenseMatrixView( const IndexType rows,
                        const IndexType columns,
                        const ValuesViewType& values );
+
+      /**
+       * \brief Constructor with matrix dimensions and values.
+       *
+       * Organization of matrix elements values in
+       *
+       * \param rows number of matrix rows.
+       * \param columns number of matrix columns.
+       * \param values is vector view with matrix elements values.
+       *
+       * \par Example
+       * \include Matrices/DenseMatrix/DenseMatrixViewExample_constructor.cpp
+       * \par Output
+       * \include DenseMatrixViewExample_constructor.out
+       */
+       template< typename Real_ >
+      __cuda_callable__
+      DenseMatrixView( const IndexType rows,
+                       const IndexType columns,
+                       const Containers::VectorView< Real_, Device, Index >& values );
+
 
       /**
        * \brief Copy constructor.

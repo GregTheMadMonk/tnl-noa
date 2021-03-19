@@ -37,11 +37,10 @@ using Algorithms::Segments::ElementsOrganization;
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< std::remove_const_t< Real > > >
 class Matrix : public Object
 {
    public:
-      using ValuesVectorType = Containers::Vector< Real, Device, Index, RealAllocator >;
       using RealAllocatorType = RealAllocator;
       using RowsCapacitiesType = Containers::Vector< Index, Device, Index >;
       using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
@@ -72,7 +71,27 @@ class Matrix : public Object
        * \brief Type of base matrix view for constant instances.
        *
        */
-      using ConstViewType = MatrixView< std::add_const_t< Real >, Device, Index >;
+      using ConstViewType = typename MatrixView< Real, Device, Index >::ConstViewType;
+
+      /**
+       * \brief Type of vector holding values of matrix elements.
+       */
+      using ValuesType = Containers::Vector< Real, Device, Index, RealAllocator >;
+
+      /**
+       * \brief Type of constant vector holding values of matrix elements.
+       */
+      using ConstValuesType = Containers::Vector< std::add_const_t< Real >, Device, Index, RealAllocator >;
+
+      /**
+       * \brief Type of vector view holding values of matrix elements.
+       */
+      using ValuesView = typename ViewType::ValuesView;
+
+      /**
+       * \brief Type of constant vector view holding values of matrix elements.
+       */
+      using ConstValuesView = typename ViewType::ConstValuesView;
 
       /**
        * \brief Construct a new Matrix object possibly with user defined allocator of the matrix values.
@@ -155,14 +174,14 @@ class Matrix : public Object
        *
        * \return constant reference to a vector with the matrix elements values.
        */
-      const ValuesVectorType& getValues() const;
+      const ValuesType& getValues() const;
 
       /**
        * \brief Returns a reference to a vector with the matrix elements values.
        *
        * \return constant reference to a vector with the matrix elements values.
        */
-      ValuesVectorType& getValues();
+      ValuesType& getValues();
 
       /**
        * \brief Comparison operator with another arbitrary matrix type.
@@ -220,7 +239,7 @@ class Matrix : public Object
       // TODO: remove
       //IndexType numberOfColors;
 
-      ValuesVectorType values;
+      ValuesType values;
 };
 
 /**

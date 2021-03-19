@@ -48,6 +48,22 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+   template< typename Value_ >
+__cuda_callable__
+DenseMatrixView< Real, Device, Index, Organization >::
+DenseMatrixView( const IndexType rows,
+                 const IndexType columns,
+                 const Containers::VectorView< Value_, Device, Index >& values )
+ : MatrixView< Real, Device, Index >( rows, columns, values )
+{
+   SegmentsType a( rows, columns );
+   segments = a.getView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
 __cuda_callable__
 auto
 DenseMatrixView< Real, Device, Index, Organization >::

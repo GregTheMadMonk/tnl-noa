@@ -39,7 +39,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
    protected:
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesVectorType = typename BaseType::ValuesType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
       using SegmentsType = Algorithms::Segments::Ellpack< Device, Index, typename Allocators::Default< Device >::template Allocator< Index >, Organization, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
@@ -92,12 +92,32 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * See \ref DenseMatrixView.
        */
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, Organization >;
+      using ConstViewType = typename DenseMatrixView< Real, Device, Index, Organization >::ConstViewType;
 
       /**
        * \brief Type for accessing matrix rows.
        */
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
+
+      /**
+       * \brief Type of vector holding values of matrix elements.
+       */
+      using typename Matrix< Real, Device, Index, RealAllocator >::ValuesType;
+
+      /**
+       * \brief Type of constant vector holding values of matrix elements.
+       */
+      using typename Matrix< Real, Device, Index, RealAllocator >::ConstValuesType;
+
+      /**
+       * \brief Type of vector view holding values of matrix elements.
+       */
+      using typename Matrix< Real, Device, Index, RealAllocator >::ValuesView;
+
+      /**
+       * \brief Type of constant vector view holding values of matrix elements.
+       */
+      using typename Matrix< Real, Device, Index, RealAllocator >::ConstValuesView;
 
       /**
        * \brief Helper type for getting self type or its modifications.
