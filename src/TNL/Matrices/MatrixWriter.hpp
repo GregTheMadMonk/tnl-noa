@@ -151,7 +151,8 @@ writeMtx( std::ostream& str,
    str << "%%" << std::setw( 9 ) << " ROWS " << std::setw( 9 ) << " COLUMNS " << std::setw( 12 ) << " ELEMENTS " << std::endl;
    str << std::setw( 9 ) << matrix.getRows() << " " << std::setw( 9 ) << matrix.getColumns() << " " << std::setw( 12 ) << matrix.getNonzeroElementsCount() << std::endl;
    std::ostream* str_ptr = &str;
-   auto f = [&] ( const typename Matrix::ConstRowViewType& row ) mutable {
+   auto cout_ptr = &std::cout;
+   auto f = [=] __cuda_callable__ ( const typename Matrix::ConstRowViewType& row ) mutable {
       auto rowIdx = row.getRowIndex();
       for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
       {
@@ -161,7 +162,7 @@ writeMtx( std::ostream& str,
          {
             *str_ptr << std::setw( 9 ) << rowIdx + 1 << std::setw( 9 ) << columnIdx + 1 << std::setw( 12 ) << value << std::endl;
             if( verbose )
-               std::cout << "Drawing the row " << rowIdx << "      \r" << std::flush;
+               *cout_ptr << "Drawing the row " << rowIdx << "      \r" << std::flush;
          }
       }
    };
