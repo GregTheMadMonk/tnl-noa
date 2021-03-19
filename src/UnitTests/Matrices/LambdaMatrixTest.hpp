@@ -172,12 +172,11 @@ void test_GetRow()
    /**
     * Prepare lambda matrix of the following form:
     *
-    * /  1   0   0   0   0 \
+    * /  1   0   0   0   0 \.
     * | -2   1  -2   0   0 |
     * |  0  -2   1  -2   0 |
     * |  0   0  -2   1  -2 |
-    * |  0   0   0  -2   1 |
-    * \  0   0   0   0   1 /
+    * \  0   0   0   0   1 /.
     */
 
    IndexType size = 5;
