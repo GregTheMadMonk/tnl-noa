@@ -568,7 +568,6 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
        * \ref MultidiagonalMatrixView::forElements where more than one thread can be mapped to each row.
-
        *
        * \tparam Function is type of the lambda function.
        *
