@@ -54,7 +54,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
 
    __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
    __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
-   __shared__ BlockType sharedBlocks[ WarpsCount ];
+   //__shared__ BlockType sharedBlocks[ WarpsCount ];
 
    const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
    const Index blockIdx = index / WarpSize;
