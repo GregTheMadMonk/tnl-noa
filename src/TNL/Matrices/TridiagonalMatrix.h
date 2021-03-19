@@ -117,8 +117,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using RowViewType = typename ViewType::RowViewType;
 
+      /**
+       * \brief Type for accessing constant matrix rows.
+       */
+      using ConstRowViewType = typename ViewType::ConstRowViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -384,7 +388,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
-      RowView getRow( const IndexType& rowIdx );
+      RowViewType getRow( const IndexType& rowIdx );
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -401,7 +405,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -680,6 +684,106 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Function >
       void forAllElements( Function& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * ```
+       *
+       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowViewType.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

@@ -183,9 +183,9 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) const -> const RowView
+getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
 {
-   return RowView( rowIdx, this->values.getView(), this->indexer );
+   return ConstRowViewType( rowIdx, this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -195,9 +195,9 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) -> RowView
+getRow( const IndexType& rowIdx ) -> RowViewType
 {
-   return RowView( rowIdx, this->values.getView(), this->indexer );
+   return RowViewType( rowIdx, this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -476,6 +476,64 @@ TridiagonalMatrixView< Real, Device, Index, Organization >::
 forAllElements( Function& function )
 {
    this->forElements( 0, this->indexer.getNonemptyRowsCount(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   auto view = *this;
+   auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
+      auto rowView = view.getRow( rowIdx );
+      function( rowView );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = *this;
+   auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
+      auto rowView = view.getRow( rowIdx );
+      function( rowView );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function )
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+TridiagonalMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
 }
 
 template< typename Real,

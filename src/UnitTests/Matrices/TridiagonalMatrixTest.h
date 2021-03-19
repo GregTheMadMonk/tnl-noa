@@ -730,6 +730,52 @@ void test_AddRow()
 }
 
 template< typename Matrix >
+void test_forRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /**
+    * Prepare lambda matrix of the following form:
+    *
+    * /  1  -2   0   0   0 \
+    * | -2   1  -2   0   0 |
+    * |  0  -2   1  -2   0 |
+    * |  0   0  -2   1  -2 |
+    * \  0   0   0  -2   1 /
+    */
+
+   const IndexType size( 5 );
+   Matrix m( size, size );
+
+   auto f = [=] __cuda_callable__ ( typename Matrix::RowViewType& row ) mutable {
+      const IndexType rowIdx = row.getRowIndex();
+      if( rowIdx > 0 )
+         row.setElement( 0, -2.0 );
+      row.setElement( 1, 1.0 );
+      if( rowIdx < size -1 )
+         row.setElement( 2, -2.0 );
+   };
+   m.forAllRows( f );
+
+   for( IndexType row = 0; row < size; row++ )
+      for( IndexType column = 0; column < size; column++ )
+      {
+         const IndexType diff = row - column;
+         if( diff == 0 )
+            EXPECT_EQ( m.getElement( row, column ), 1.0 );
+         else if( diff == 1 && row > 0 )
+            EXPECT_EQ( m.getElement( row, column ), -2.0 );
+         else if( diff == -1 && row < size - 1 )
+            EXPECT_EQ( m.getElement( row, column ), -2.0 );
+         else
+            EXPECT_EQ( m.getElement( row, column ), 0.0 );
+      }
+}
+
+
+template< typename Matrix >
 void test_VectorProduct()
 {
    using RealType = typename Matrix::RealType;
@@ -1385,6 +1431,13 @@ TYPED_TEST( MatrixTest, addRowTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_AddRow< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forRowsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_forRows< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, vectorProductTest )

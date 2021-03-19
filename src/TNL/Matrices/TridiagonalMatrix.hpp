@@ -283,7 +283,7 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-getRow( const IndexType& rowIdx ) const -> const RowView
+getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
 {
    return this->view.getRow( rowIdx );
 }
@@ -296,7 +296,7 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-getRow( const IndexType& rowIdx ) -> RowView
+getRow( const IndexType& rowIdx ) -> RowViewType
 {
    return this->view.getRow( rowIdx );
 }
@@ -442,6 +442,58 @@ TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllElements( Function& function )
 {
    this->view.forElements( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   this->getView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   this->getConstView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+forAllRows( Function&& function )
+{
+   this->getView().forAllRows( function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
+forAllRows( Function&& function ) const
+{
+   this->getConsView().forAllRows( function );
 }
 
 template< typename Real,
