@@ -160,7 +160,7 @@ class LambdaMatrixRowView
 
       const CompressedRowLengthsLambda& compressedRowLengthsLambda;
 
-      IndexType rowIdx, rows, columns;
+      IndexType rows, columns, rowIdx;
 };
 
 /**
