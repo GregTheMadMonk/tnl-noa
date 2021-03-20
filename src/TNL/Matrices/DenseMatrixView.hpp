@@ -409,7 +409,7 @@ forRows( IndexType begin, IndexType end, Function&& function )
    auto values_view = this->values.getView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
    auto f = [=] __cuda_callable__ ( SegmentViewType& segmentView ) mutable {
-      auto rowView = RowViewType( segmentView, values_view );
+      auto rowView = RowView( segmentView, values_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );

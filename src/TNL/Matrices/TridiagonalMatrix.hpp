@@ -283,7 +283,7 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
+getRow( const IndexType& rowIdx ) const -> const ConstRowView
 {
    return this->view.getRow( rowIdx );
 }
@@ -296,7 +296,7 @@ template< typename Real,
 __cuda_callable__
 auto
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
-getRow( const IndexType& rowIdx ) -> RowViewType
+getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
 }

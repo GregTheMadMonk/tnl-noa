@@ -163,7 +163,7 @@ void test_GetElement()
 }
 
 template< typename Matrix >
-void test_GetRow()
+void test_ForRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;

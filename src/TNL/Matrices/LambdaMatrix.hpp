@@ -205,13 +205,13 @@ template< typename MatrixElementsLambda,
 __cuda_callable__
 auto
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-getRow( const IndexType& rowIdx ) const -> const RowViewType
+getRow( const IndexType& rowIdx ) const -> const RowView
 {
-   return RowViewType( this->getMatrixElementsLambda(),
-                       this->getCompressedRowLengthsLambda(),
-                       this->getRows(),
-                       this->getColumns(),
-                       rowIdx );
+   return RowView( this->getMatrixElementsLambda(),
+                   this->getCompressedRowLengthsLambda(),
+                   this->getRows(),
+                   this->getColumns(),
+                   rowIdx );
 }
 
 template< typename MatrixElementsLambda,

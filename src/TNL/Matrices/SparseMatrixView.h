@@ -136,12 +136,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowViewType = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using RowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowViewType = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary() >;;
+      using ConstRowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary() >;;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -294,7 +294,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      ConstRowViewType getRow( const IndexType& rowIdx ) const;
+      ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
@@ -311,7 +311,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      RowViewType getRow( const IndexType& rowIdx );
+      RowView getRow( const IndexType& rowIdx );
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
@@ -585,10 +585,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
@@ -611,10 +611,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
@@ -635,10 +635,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
@@ -659,10 +659,10 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp

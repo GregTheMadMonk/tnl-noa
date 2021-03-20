@@ -434,7 +434,7 @@ template< typename Real,
           typename IndexAllocator >
 __cuda_callable__ auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
+getRow( const IndexType& rowIdx ) const -> const ConstRowView
 {
    return this->view.getRow( rowIdx );
 }
@@ -449,7 +449,7 @@ template< typename Real,
           typename IndexAllocator >
 __cuda_callable__ auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getRow( const IndexType& rowIdx ) -> RowViewType
+getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
 }

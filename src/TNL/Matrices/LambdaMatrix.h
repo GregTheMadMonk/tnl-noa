@@ -88,12 +88,12 @@ class LambdaMatrix
       /**
        * \brief Type of Lambda matrix row view.
        */
-      using RowViewType = LambdaMatrixRowView< MatrixElementsLambdaType, CompressedRowLengthsLambdaType, RealType, IndexType >;
+      using RowView = LambdaMatrixRowView< MatrixElementsLambdaType, CompressedRowLengthsLambdaType, RealType, IndexType >;
 
       /**
        * \brief Type of constant Lambda matrix row view.
        */
-      using ConstRowViewType = RowViewType;
+      using ConstRowView = RowView;
 
       static constexpr bool isSymmetric() { return false; };
       static constexpr bool isBinary() { return false; };
@@ -242,7 +242,7 @@ class LambdaMatrix
        * See \ref LambdaMatrixRowView.
        */
       __cuda_callable__
-      const RowViewType getRow( const IndexType& rowIdx ) const;
+      const RowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Returns value of matrix element at position given by its row and column index.
@@ -306,10 +306,10 @@ class LambdaMatrix
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowView.
        *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_forRows.cpp
@@ -330,10 +330,10 @@ class LambdaMatrix
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowView.
        *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_forRows.cpp

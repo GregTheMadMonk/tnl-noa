@@ -223,10 +223,10 @@ template< typename Real,
           typename ComputeReal >
 __cuda_callable__ auto
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-getRow( const IndexType& rowIdx ) const -> ConstRowViewType
+getRow( const IndexType& rowIdx ) const -> ConstRowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return ConstRowViewType( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
+   return ConstRowView( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
 }
 
 template< typename Real,
@@ -237,10 +237,10 @@ template< typename Real,
           typename ComputeReal >
 __cuda_callable__ auto
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-getRow( const IndexType& rowIdx ) -> RowViewType
+getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowViewType( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values, this->columnIndexes );
 }
 
 template< typename Real,
@@ -673,7 +673,7 @@ forRows( IndexType begin, IndexType end, Function&& function )
    auto values_view = this->values.getView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
    auto f = [=] __cuda_callable__ ( SegmentViewType& segmentView ) mutable {
-      auto rowView = RowViewType( segmentView, values_view, columns_view );
+      auto rowView = RowView( segmentView, values_view, columns_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );
@@ -694,7 +694,7 @@ forRows( IndexType begin, IndexType end, Function&& function ) const
    const auto values_view = this->values.getConstView();
    using SegmentViewType = typename SegmentsViewType::SegmentViewType;
    auto f = [=] __cuda_callable__ ( const SegmentViewType& segmentView ) mutable {
-      const auto rowView = ConstRowViewType( segmentView, values_view, columns_view );
+      const auto rowView = ConstRowView( segmentView, values_view, columns_view );
       function( rowView );
    };
    this->segments.forSegments( begin, end, f );

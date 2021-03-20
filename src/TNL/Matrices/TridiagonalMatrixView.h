@@ -74,12 +74,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowViewType = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowViewType = typename RowViewType::ConstViewType;
+      using ConstRowView = typename RowView::ConstViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -243,7 +243,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
-      RowViewType getRow( const IndexType& rowIdx );
+      RowView getRow( const IndexType& rowIdx );
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -260,7 +260,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
-      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -539,10 +539,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp
@@ -565,10 +565,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp
@@ -589,10 +589,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp
@@ -613,10 +613,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixViewExample_forRows.cpp

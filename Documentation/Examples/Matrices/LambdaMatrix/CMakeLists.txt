@@ -4,6 +4,7 @@ set( COMMON_EXAMPLES
    LambdaMatrixExample_getNonzeroElementsCount
    LambdaMatrixExample_Laplace
    LambdaMatrixExample_Laplace_2
+   LambdaMatrixExample_getRow
    LambdaMatrixExample_reduceRows
    LambdaMatrixExample_reduceAllRows
    LambdaMatrixExample_forElements

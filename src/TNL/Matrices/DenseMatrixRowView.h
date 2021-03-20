@@ -76,6 +76,14 @@ class DenseMatrixRowView
       IndexType getSize() const;
 
       /**
+       * \brief Returns the matrix row index.
+       *
+       * \return matrix row index.
+       */
+      __cuda_callable__
+      const IndexType& getRowIndex() const;
+
+      /**
        * \brief Returns constants reference to an element with given column index.
        *
        * \param column is column index of the matrix element.

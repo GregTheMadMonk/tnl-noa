@@ -89,11 +89,11 @@ TYPED_TEST( LambdaMatrixTest, getElementTest )
    test_GetElement< LambdaMatrixParametersType >();
 }
 
-TYPED_TEST( LambdaMatrixTest, getRowTest )
+TYPED_TEST( LambdaMatrixTest, forRowsTest )
 {
     using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
 
-    test_GetRow< LambdaMatrixParametersType >();
+    test_ForRows< LambdaMatrixParametersType >();
 }
 
 

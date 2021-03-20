@@ -11,11 +11,11 @@ void forRowsExample()
     * Set the following matrix (dots represent zero matrix elements and zeros are
     * padding zeros for memory alignment):
     *
-    *    0 /  1 -2  .  .  . \  -> { 0, 0, 1 }
-    *      | -2  1 -2  .  . |  -> { 0, 2, 1 }
-    *      |  . -2  1 -2. . |  -> { 3, 2, 1 }
-    *      |  .  . -2  1 -2 |  -> { 3, 2, 1 }
-    *      \  .  .  . -2  1 /  -> { 3, 2, 1 }
+    *    0 /  2  .  .  .  . \  -> { 0, 0, 1 }
+    *      | -1  2 -1  .  . |  -> { 0, 2, 1 }
+    *      |  . -1  2 -1. . |  -> { 3, 2, 1 }
+    *      |  .  . -1  2 -1 |  -> { 3, 2, 1 }
+    *      \  .  .  .  .  2 /  -> { 3, 2, 1 }
     *
     * The diagonals offsets are { -1, 0, 1 }.
     */
@@ -23,29 +23,16 @@ void forRowsExample()
     MatrixType matrix(
       size,            // number of matrix rows
       size,            // number of matrix columns
-      { -2, -1, 0 } ); // matrix diagonals offsets
+      { -1, -0, 1 } ); // matrix diagonals offsets
 
-   auto f = [=] __cuda_callable__ ( typename MatrixType::RowViewType& row ) {
-      /***
-       * 'forElements' method iterates only over matrix elements lying on given subdiagonals
-       * and so we do not need to check anything. The element value can be expressed
-       * by the 'localIdx' variable, see the following figure:
-       *
-       *                                0  1  2  <- localIdx values
-       *                              ----------
-       *    0 /  1 -2  .  .  . \  -> {  0, 1, -2 }
-       *      | -2  1 -2  .  . |  -> { -2, 1, -2 }
-       *      |  . -2  1 -2. . |  -> { -2, 1, -2 }
-       *      |  .  . -2  1 -2 |  -> { -2, 1, -2 }
-       *      \  .  .  . -2  1 /  -> { -2, 1,  0 }
-       *
-       */
+   auto f = [=] __cuda_callable__ ( typename MatrixType::RowView& row ) {
       const int& rowIdx = row.getRowIndex();
-      row.setElement( 1, 1.0 );
       if( rowIdx > 0 )
-         row.setElement( 0, -2.0 );
-      if( rowIdx < size - 1 )
-         row.setElement( 2, -2.0 );
+         row.setElement( 0, -1.0 );  // elements below the diagonal
+      row.setElement( 1, 2.0 );      // elements on the diagonal
+      if( rowIdx < size - 1 )  // elements above the diagonal
+         row.setElement( 2, -1.0 );
+
    };
    matrix.forAllRows( f );
    std::cout << matrix << std::endl;

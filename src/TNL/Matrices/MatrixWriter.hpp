@@ -152,7 +152,7 @@ writeMtx( std::ostream& str,
    str << std::setw( 9 ) << matrix.getRows() << " " << std::setw( 9 ) << matrix.getColumns() << " " << std::setw( 12 ) << matrix.getNonzeroElementsCount() << std::endl;
    std::ostream* str_ptr = &str;
    auto cout_ptr = &std::cout;
-   auto f = [=] __cuda_callable__ ( const typename Matrix::ConstRowViewType& row ) mutable {
+   auto f = [=] __cuda_callable__ ( const typename Matrix::ConstRowView& row ) mutable {
       auto rowIdx = row.getRowIndex();
       for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
       {

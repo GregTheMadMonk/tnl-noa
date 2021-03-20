@@ -6,7 +6,7 @@
 
 
 template< typename Device >
-void forRowsExample()
+void getRowExample()
 {
    /***
     * Set  matrix representing approximation of the Laplace operator on regular
@@ -66,12 +66,13 @@ void forRowsExample()
    TNL::Matrices::DenseMatrix< double, Device > denseMatrix( matrixSize, matrixSize );
    denseMatrix.setValue( 0.0 );
    auto dense_view = denseMatrix.getView();
-   auto f = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
-      auto dense_row = dense_view.getRow( row.getRowIndex() );
+   auto f = [=] __cuda_callable__ ( const int& rowIdx ) mutable {
+      auto row = matrix.getRow( rowIdx );
+      auto dense_row = dense_view.getRow( rowIdx );
       for( int localIdx = 0; localIdx < row.getSize(); localIdx++ )
          dense_row.setElement( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
    };
-   matrix.forAllRows( f );
+   TNL::Algorithms::ParallelFor< Device >::exec( 0, matrixSize, f );
 
    std::cout << "Laplace operator lambda matrix: " << std::endl << matrix << std::endl;
    std::cout << "Laplace operator dense matrix: " << std::endl << denseMatrix << std::endl;
@@ -80,10 +81,10 @@ void forRowsExample()
 int main( int argc, char* argv[] )
 {
    std::cout << "Running example on CPU ... " << std::endl;
-   forRowsExample< TNL::Devices::Host >();
+   getRowExample< TNL::Devices::Host >();
 
 #ifdef HAVE_CUDA
    std::cout << "Running example on CUDA GPU ... " << std::endl;
-   forRowsExample< TNL::Devices::Cuda >();
+   getRowExample< TNL::Devices::Cuda >();
 #endif
 }

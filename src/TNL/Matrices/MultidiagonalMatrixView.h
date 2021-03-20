@@ -76,12 +76,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowViewType = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowViewType = typename RowViewType::ConstViewType;
+      using ConstRowView = typename RowView::ConstViewType;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -256,7 +256,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
-      RowViewType getRow( const IndexType& rowIdx );
+      RowView getRow( const IndexType& rowIdx );
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -273,7 +273,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
-      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -576,10 +576,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
@@ -602,10 +602,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
@@ -626,10 +626,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
@@ -650,10 +650,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp

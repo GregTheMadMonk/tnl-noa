@@ -151,12 +151,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowViewType = typename ViewType::RowViewType;
+      using RowView = typename ViewType::RowView;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowViewType = typename ViewType::ConstRowViewType;
+      using ConstRowView = typename ViewType::ConstRowView;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -502,7 +502,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      const ConstRowViewType getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Non-constant getter of simple structure for accessing given matrix row.
@@ -519,7 +519,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref SparseMatrixRowView.
        */
       __cuda_callable__
-      RowViewType getRow( const IndexType& rowIdx );
+      RowView getRow( const IndexType& rowIdx );
 
       /**
        * \brief Sets element at given \e row and \e column to given \e value.
@@ -803,10 +803,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
@@ -829,10 +829,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
@@ -853,10 +853,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp
@@ -877,10 +877,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/SparseMatrix/SparseMatrixExample_forRows.cpp

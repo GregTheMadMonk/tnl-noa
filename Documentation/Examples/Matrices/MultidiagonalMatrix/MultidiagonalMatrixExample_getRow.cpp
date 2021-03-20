@@ -19,8 +19,8 @@ void getRowExample()
       diagonalsOffsets );
 
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
-      //auto row = matrix->getRow( rowIdx );    
-      // For some reason the previous line of code is not accepted by nvcc 10.1 
+      //auto row = matrix->getRow( rowIdx );
+      // For some reason the previous line of code is not accepted by nvcc 10.1
       // so we replace it with the following two lines.
       auto ref = matrix.modifyData();
       auto row = ref.getRow( rowIdx );

@@ -229,9 +229,9 @@ template< typename Real,
 __cuda_callable__
 auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) const -> const ConstRowViewType
+getRow( const IndexType& rowIdx ) const -> const ConstRowView
 {
-   return ConstRowViewType( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
+   return ConstRowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -241,9 +241,9 @@ template< typename Real,
 __cuda_callable__
 auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) -> RowViewType
+getRow( const IndexType& rowIdx ) -> RowView
 {
-   return RowViewType( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
+   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
