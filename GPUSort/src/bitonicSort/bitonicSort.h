@@ -124,17 +124,19 @@ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cu
 
 template <typename Value, typename Function>
 __device__
-void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, Value* sharedMem, const Function & Cmp)
+void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, 
+                        TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> dst,
+                        Value* sharedMem, const Function & Cmp)
 {
     //copy from globalMem into sharedMem
     int copy1 = threadIdx.x;
     int copy2 = copy1 + blockDim.x;
     {
-        if(copy1 < arr.getSize())
-            sharedMem[copy1] = arr[copy1];
+        if(copy1 < src.getSize())
+            sharedMem[copy1] = src[copy1];
 
-        if(copy2 < arr.getSize())
-            sharedMem[copy2] = arr[copy2];
+        if(copy2 < src.getSize())
+            sharedMem[copy2] = src[copy2];
 
         __syncthreads();
     }
@@ -143,14 +145,14 @@ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr
     //bitonic activity
     {
         int i = threadIdx.x;
-        int paddedSize = closestPow2(arr.getSize());
+        int paddedSize = closestPow2(src.getSize());
 
         for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
         {
             //calculate the direction of swapping
             int monotonicSeqIdx = i / (monotonicSeqLen/2);
             bool ascending = (monotonicSeqIdx & 1) != 0;
-            if ((monotonicSeqIdx + 1) * monotonicSeqLen >= arr.getSize()) //special case for parts with no "partner"
+            if ((monotonicSeqIdx + 1) * monotonicSeqLen >= src.getSize()) //special case for parts with no "partner"
                 ascending = true;
 
             for (int len = monotonicSeqLen; len > 1; len /= 2)
@@ -160,7 +162,7 @@ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr
                 int s = part * len + (i & ((len / 2) - 1));
                 int e = s + len / 2;
 
-                if(e < arr.getSize()) //not touching virtual padding
+                if(e < src.getSize()) //not touching virtual padding
                     cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
                 __syncthreads();
             }
@@ -170,10 +172,10 @@ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr
     //------------------------------------------
     //writeback to global memory
     {
-        if(copy1 < arr.getSize())
-            arr[copy1] = sharedMem[copy1];
-        if(copy2 < arr.getSize())
-            arr[copy2] = sharedMem[copy2];
+        if(copy1 < src.getSize())
+            dst[copy1] = sharedMem[copy1];
+        if(copy2 < src.getSize())
+            dst[copy2] = sharedMem[copy2];
     }
 }
 /**
@@ -191,9 +193,9 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
     int myBlockEnd = TNL::min(arr.getSize(), myBlockStart + sharedMemLen);
 
     if(blockIdx.x%2 || blockIdx.x + 1 == gridDim.x)
-        bitonicSort_Block(arr.getView(myBlockStart, myBlockEnd), (Value*) externMem, Cmp);
+        bitonicSort_Block(arr.getView(myBlockStart, myBlockEnd), arr.getView(myBlockStart, myBlockEnd), (Value*) externMem, Cmp);
     else
-        bitonicSort_Block(arr.getView(myBlockStart, myBlockEnd), (Value*) externMem, 
+        bitonicSort_Block(arr.getView(myBlockStart, myBlockEnd), arr.getView(myBlockStart, myBlockEnd), (Value*) externMem, 
             [&] __cuda_callable__ (const Value&a, const Value&b){return Cmp(b, a);}
         );
 }
