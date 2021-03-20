@@ -25,7 +25,7 @@ clean:
 $(TARGET): quicksort.o quicksort_link.o $(TARGET).o
 	$(CXX) $(TNL_INCLUDE_DIRS) $(CUDA_LDFLAGS) -o $@ $^ $(CUDA_LDLIBS)
 
-$(TARGET).o: $(SRC_FOLDER)/$(TARGET).cu
+$(TARGET).o: $(TARGET).cu
 	$(CUDA_CXX) $(CUDA_CXXFLAGS) -c -o $@ $<
 
 quicksort.o: $(SRC_FOLDER)/quicksort.cu
