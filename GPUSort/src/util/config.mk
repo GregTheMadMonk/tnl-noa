@@ -1,7 +1,7 @@
 # configure the include path(s) according to your TNL installation
 TNL_INCLUDE_DIRS := -I ~/.local/include
 
-WITH_OPENMP := yes
+WITH_OPENMP := no
 WITH_DEBUG := no
 
 # If TNL is installed on your system, the CUDA architecture can be detected
