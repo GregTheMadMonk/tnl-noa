@@ -216,7 +216,7 @@ __device__ void cudaQuickSort_block(CudaArrayView arr, const Function & Cmp,
         int size = end - begin;
         if(size<= blockDim.x*2)
         {
-            bitonicSort_Block(arr.getView(begin, end), bitonicMem, Cmp);
+            bitonicSort_Block(arr.getView(begin, end), arr.getView(begin, end), bitonicMem, Cmp);
             continue;
         }
 
