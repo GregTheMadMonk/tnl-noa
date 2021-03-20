@@ -49,6 +49,17 @@ void encapsulation()
 
    std::cout << "Dense matrix view after elements manipulation:" << std::endl;
    std::cout << matrix << std::endl;
+
+   /***
+    * Do not forget to free allocated memory :)
+    */
+   delete[] host_data;
+   if( std::is_same< Device, TNL::Devices::Host >::value )
+      delete[] data;
+#ifdef HAVE_CUDA
+   else if( std::is_same< Device, TNL::Devices::Cuda >::value )
+      cudaFree( data );
+#endif
 }
 
 int main( int argc, char* argv[] )
