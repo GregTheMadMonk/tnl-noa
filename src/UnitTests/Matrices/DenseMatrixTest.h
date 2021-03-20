@@ -816,8 +816,8 @@ void test_ForRows()
    const IndexType rows = 8;
 
    Matrix m( rows, cols  );
-   using RowViewType = typename Matrix::RowViewType;
-   m.forAllRows( [] __cuda_callable__ ( RowViewType& row ) mutable {
+   using RowView = typename Matrix::RowView;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
       for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
       {
          row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );

@@ -31,7 +31,7 @@ class SubentitySeedsCreator
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowViewType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionTag::value >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
@@ -82,7 +82,7 @@ class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
    using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
    using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowViewType;
+   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 

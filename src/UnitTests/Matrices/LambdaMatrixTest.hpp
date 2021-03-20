@@ -206,7 +206,7 @@ void test_ForRows()
    TNL::Matrices::DenseMatrix< RealType, DeviceType, IndexType > denseMatrix( size, size );
    denseMatrix.setValue( 0.0 );
    auto dense_view = denseMatrix.getView();
-   auto f = [=] __cuda_callable__ ( const typename MatrixType::RowViewType& row ) mutable {
+   auto f = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
       auto dense_row = dense_view.getRow( row.getRowIndex() );
       for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
          dense_row.setElement( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );

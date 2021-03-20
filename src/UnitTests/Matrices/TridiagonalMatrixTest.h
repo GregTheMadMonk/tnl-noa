@@ -749,7 +749,7 @@ void test_forRows()
    const IndexType size( 5 );
    Matrix m( size, size );
 
-   auto f = [=] __cuda_callable__ ( typename Matrix::RowViewType& row ) mutable {
+   auto f = [=] __cuda_callable__ ( typename Matrix::RowView& row ) mutable {
       const IndexType rowIdx = row.getRowIndex();
       if( rowIdx > 0 )
          row.setElement( 0, -2.0 );
