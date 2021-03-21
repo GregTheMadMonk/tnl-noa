@@ -1,8 +1,10 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
+#include "cassert"
 #include "../bitonicSort/bitonicSort.h"
 #include "../util/reduction.cuh"
+#include "cudaPartition.cuh"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -116,7 +118,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         }
 
         int smaller = 0, bigger = 0;
-        countElem(src, 0, size, smaller, bigger, pivot);
+        countElem(src, smaller, bigger, pivot);
 
         int smallerOffset = blockInclusivePrefixSum(smaller);
         int biggerOffset = blockInclusivePrefixSum(bigger);
@@ -131,7 +133,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         int destSmaller = 0 + smallerOffset - smaller;
         int destBigger = pivotEnd  + (biggerOffset - bigger);
 
-        copyData(src, 0, size, dst, destSmaller, destBigger, pivot);
+        copyData(src, dst, destSmaller, destBigger, pivot);
         __syncthreads();
 
         for (int i = pivotBegin + threadIdx.x; i < pivotEnd; i += blockDim.x)

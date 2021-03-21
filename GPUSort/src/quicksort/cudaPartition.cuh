@@ -10,8 +10,14 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+template <typename Value, typename Device, typename Function>
+__device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const Function & Cmp)
+{
+    return src[0];
+}
+
 __device__
-void cmpElem(ArrayView<int, Devices::Cuda> arr,
+void countElem(ArrayView<int, Devices::Cuda> arr,
              int &smaller, int &bigger,
              const int &pivot)
 {
@@ -33,11 +39,11 @@ void copyData(ArrayView<int, Devices::Cuda> src,
 {
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
     {
-        int data = arr[i];
+        int data = src[i];
         if (data < pivot)
-            aux[smallerStart++] = data;
+            dst[smallerStart++] = data;
         else if (data > pivot)
-            aux[biggerStart++] = data;
+            dst[biggerStart++] = data;
     }
 }
 
@@ -57,7 +63,7 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
     if (threadIdx.x == 0)
     {
         myBegin = elemPerBlock * (blockIdx.x - task.firstBlock);
-        myEnd = TNL::min(myBegin + elemPerBlock, arr.getSize());
+        myEnd = TNL::min(myBegin + elemPerBlock, src.getSize());
     }
     __syncthreads();
 
@@ -66,7 +72,7 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
     //-------------------------------------------------------------------------
 
     int smaller = 0, bigger = 0;
-    cmpElem(srcView, smaller, bigger, pivot);
+    countElem(srcView, smaller, bigger, pivot);
 
     int smallerOffset = blockInclusivePrefixSum(smaller);
     int biggerOffset = blockInclusivePrefixSum(bigger);
@@ -88,7 +94,7 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
     //-----------------------------------------------------------
 
     if (threadIdx.x == 0)
-        writePivot = atomicAdd(&(task.tillWorkingCnt), -1) == 1;
+        writePivot = atomicAdd(&(task.stillWorkingCnt), -1) == 1;
     __syncthreads();
 
     return writePivot;
