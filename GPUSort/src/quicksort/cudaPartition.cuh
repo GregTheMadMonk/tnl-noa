@@ -44,22 +44,20 @@ void copyData(ArrayView<int, Devices::Cuda> src,
 //----------------------------------------------------------------------------------
 
 template <typename Function>
-__global__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
+__device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
                               ArrayView<int, Devices::Cuda> dst,
-                              const Function &Cmp, 
-                              int elemPerBlock, TASK * task
+                              const Function &Cmp, const int & pivot,
+                              int elemPerBlock, TASK & task
                               )
 {
     static __shared__ int myBegin, myEnd;
     static __shared__ int smallerStart, biggerStart;
-    static __shared__ int pivot;
     static __shared__ bool writePivot;
 
     if (threadIdx.x == 0)
     {
-        myBegin = elemPerBlock * (blockIdx.x - task->firstBlock);
+        myBegin = elemPerBlock * (blockIdx.x - task.firstBlock);
         myEnd = TNL::min(myBegin + elemPerBlock, arr.getSize());
-        pivot = src[src.getSize() - 1];
     }
     __syncthreads();
 
@@ -75,8 +73,8 @@ __global__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
 
     if (threadIdx.x == blockDim.x - 1) //last thread in block has sum of all values
     {
-        smallerStart = atomicAdd(&(task->dstBegin), smallerOffset);
-        biggerStart = atomicAdd(&(task->dstEnd), -biggerOffset) - biggerOffset;
+        smallerStart = atomicAdd(&(task.dstBegin), smallerOffset);
+        biggerStart = atomicAdd(&(task.dstEnd), -biggerOffset) - biggerOffset;
     }
     __syncthreads();
 
@@ -90,7 +88,7 @@ __global__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
     //-----------------------------------------------------------
 
     if (threadIdx.x == 0)
-        writePivot = atomicAdd(&(task->tillWorkingCnt), -1) == 1;
+        writePivot = atomicAdd(&(task.tillWorkingCnt), -1) == 1;
     __syncthreads();
 
     return writePivot;

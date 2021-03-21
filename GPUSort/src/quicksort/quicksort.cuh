@@ -14,36 +14,38 @@ using namespace TNL::Containers;
 
 //-----------------------------------------------------------
 
-__device__ void writeNewTask(int begin, int end,
+__device__ void writeNewTask(int begin, int end, int depth
                              ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                              ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     int size = end - begin;
-    if(size == 0) return;
-    if(size <= blockDim.x*2)
+    if (size == 0)
+        return;
+    if (size <= blockDim.x * 2)
     {
         int idx = atomicAdd(secondPhaseTasksCnt, 1);
-        secondPhaseTasks[idx] = TASK(begin, end);
+        secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
     }
     else
     {
         int idx = atomicAdd(newTasksCnt, 1);
-        newTasks[idx] = TASK(begin, end);
+        newTasks[idx] = TASK(begin, end, depth + 1);
     }
 }
 
 __device__ void writeNewTasks(int leftBegin, int leftEnd, int rightBegin, int rightEnd,
+                                int depth,
                               ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                               ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
-    writeNewTask(leftBegin, leftEnd, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
-    writeNewTask(rightBegin, rightEnd, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+    writeNewTask(leftBegin, leftEnd, depth, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+    writeNewTask(rightBegin, rightEnd, depth, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
 }
 //----------------------------------------------------
 
 template <typename Function>
-__global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> src, ArrayView<int, Devices::Cuda> dst,
-                                      const Function &Cmp, int elemPerBlock,
+__global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+                                      const Function &Cmp, int elemPerBlock, int depth,
                                       ArrayView<TASK, Devices::Cuda> tasks,
                                       ArrayView<int, Devices::Cuda> taskMapping, int *tasksAmount,
                                       ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
@@ -53,13 +55,26 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> src, ArrayVi
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
 
     if (threadIdx.x == 0)
-        pivot = src[myTask.partitionEnd - 1];
+        pivot = depth % 2 == 0 ? arr[myTask.partitionEnd - 1] : aux[myTask.partitionEnd - 1];
     __syncthreads();
 
-    bool isLast = cudaPartition(
-        src.getView(myTask.partitionBegin, myTask.partitionEnd),
-        dst.getView(myTask.partitionBegin, myTask.partitionEnd),
-        Cmp, pivot, elemPerBlock, myTask);
+    bool isLast;
+
+    if (depth % 2 == 0)
+    {
+        isLast = cudaPartition(
+            arr.getView(myTask.partitionBegin, myTask.partitionEnd),
+            aux.getView(myTask.partitionBegin, myTask.partitionEnd),
+            Cmp, pivot, elemPerBlock, myTask);
+    }
+    else
+    {
+        isLast = cudaPartition(
+            aux.getView(myTask.partitionBegin, myTask.partitionEnd),
+            arr.getView(myTask.partitionBegin, myTask.partitionEnd),
+            Cmp, pivot, elemPerBlock, myTask);
+    }
+
     if (!isLast)
         return;
 
@@ -69,16 +84,39 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> src, ArrayVi
     int rightBegin = myTask.partitionBegin + myTask.dstEnd, rightEnd = myTask.partitionEnd;
 
     for (int i = leftEnd + threadIdx.x; i < rightBegin; i += blockDim.x)
-        src[i] = dst[i] = pivot;
+    {
+        /*
+        #ifdef DEBUG
+        aux[i] = -1;
+        #endif
+        */
+        arr[i] = pivot;
+    }
 
     if (threadIdx.x != 0)
         return;
 
     writeNewTasks(leftBegin, leftEnd, rightBegin, rightEnd,
+                    depth,
                   newTasks, newTasksCnt,
                   secondPhaseTasks, secondPhaseTasksCnt);
 }
+
 //-----------------------------------------------------------
+
+template <typename Function>
+__global__ void cudaQuickSort2ndPhase(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+                                      const Function &Cmp,
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks)
+{
+    TASK & myTask = secondPhaseTasks[blockIdx.x];
+    auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
+    auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
+
+    singleBlockQuickSort(arrView, auxView, Cmp, myTask.depth);
+}
+//-----------------------------------------------------------
+
 __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              int taskAmount, int elemPerBlock, int *firstAvailBlock,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping)
@@ -91,7 +129,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
     if (i < taskAmount)
     {
         auto task = cuda_tasks[i];
-        int size = task.arrEnd - task.arrBegin;
+        int size = task.partitionEnd - task.partitionBegin;
         blocksNeeded = size / elemPerBlock + (size % elemPerBlock != 0);
     }
 
@@ -104,8 +142,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
     {
         int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
 
-        cuda_tasks[i].firstBlock = myFirstAvailBlock;
-        cuda_tasks[i].setBlocks(blocksNeeded);
+        cuda_tasks[i].initTask(myFirstAvailBlock, blocksNeeded);
 
         for (int set = 0; set < blocksNeeded; set++)
             cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
