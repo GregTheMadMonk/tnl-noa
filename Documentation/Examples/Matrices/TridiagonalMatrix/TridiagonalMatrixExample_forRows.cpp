@@ -29,7 +29,6 @@ void forRowsExample()
       row.setElement( 1, 2.0 );      // elements on the diagonal
       if( rowIdx < size - 1 )        // elements above the diagonal
          row.setElement( 2, -1.0 );
-
    };
    matrix.forAllRows( f );
    std::cout << matrix << std::endl;

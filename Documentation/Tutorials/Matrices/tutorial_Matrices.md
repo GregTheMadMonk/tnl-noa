@@ -395,7 +395,23 @@ Here we show an example:
 
 \includelineno DenseMatrixViewExample_getRow.cpp
 
-Here we create the matrix on the line 10 and get the matrix view on the line 16. Next we use `ParallelFor` (\ref TNL::Algorithms::ParallelFor) (line 26) to iterate over the matrix rows and the lambda function `f` (lines 18-21) for each of them. In the lambda function, we first fetch the matrix row by means of the merhod `getRow` (\ref TNL::Matrices::DenseMatrixView::getRow) and next we set the matrix elements by using the method `setElement` of the matrix row (\ref TNL::Matrices::DenseMatrixRowView::setElement). For the compatibility with the sparse matrices, use the variant of `setElement` with the parameter `localIdx`. It has no effect here, it is only for compatibility of the interface.
+Here we create the matrix on the line 10 and get the matrix view on the line 16. Next we use `ParallelFor` (\ref TNL::Algorithms::ParallelFor) (line 26) to iterate over the matrix rows and the lambda function `f` (lines 18-21) for each of them. In the lambda function, we first fetch the matrix row by means of the method `getRow` (\ref TNL::Matrices::DenseMatrixView::getRow) and next we set the matrix elements by using the method `setElement` of the matrix row (\ref TNL::Matrices::DenseMatrixRowView::setElement). For the compatibility with the sparse matrices, use the variant of `setElement` with the parameter `localIdx`. It has no effect here, it is only for compatibility of the interface.
+
+The result looks as follows:
+
+\include DenseMatrixViewExample_getRow.out
+
+#### Method `forRows`
+
+This method iterates in parallel over all matrix rows. In fact, it combines \ref TNL::Algorithms::ParallelFor and \ref TNL::Matrices:::DenseMatrix::getRow method in one. See the following example. It is even a bit simpler compared to the previous one:
+
+\includelineno DenseMatrixViewExample_forRows.cpp
+
+The lambda function, which is called for each matrix row (lines 15-17), have to accept parameter `row` with type `RowView`. This type is defined inside each TNL matrix and in the case of the dense matrix, it is \ref TNL::Matrices::DenseMatrixRowView. We use the method \ref TNL::Matrices::DenseMatrixRowView::getRowIndex to get the index of the matrix row being currently processed and method \ref TNL::Matrices::DenseMatrixRowView::setElement which sets the value of the element with given column index (the first parameter).
+
+The result looks as follows:
+
+\include DenseMatrixViewExample_forRows.out
 
 #### Method `forElements`
 
@@ -418,7 +434,7 @@ The result looks as follows:
 
 [Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possibly some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. See the [Overview of matrix types](#overview_of_matrix_types) for the differences in memory requirements.
 
-Major disadvantage of sparse matrices is that there are a lot of different formats for their storage in memory. Though [CSR (Compressed Sparse Row)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs, there are many other formats. Often their performance differ significantly for various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing general sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template paramaters is as follows:
+Major disadvantage of sparse matrices is that there are a lot of different formats for their storage in memory. Though [CSR (Compressed Sparse Row)](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) format is the most popular of all, especially for GPUs, there are many other formats. Often their performance differ significantly for various matrices. So it is a good idea to test several sparse matrix formats if you want to get the best performance. In TNL, there is one templated class \ref TNL::Matrices::SparseMatrix representing general sparse matrices. The change of underlying matrix format can be done just by changing one template parameter. The list of the template parameters is as follows:
 
 * `Real` is type if the matrix elements. It is `double` by default.
 * `Device` is a device where the matrix is allocated. Currently it can be either \ref TNL::Devices::Host for CPU or \ref TNL::Devices::Cuda for CUDA supporting GPUs. It is \ref TNL::Devices::Host by default.
@@ -476,7 +492,6 @@ The second one uses an initializer list:
 The result of both examples looks as follows:
 
 \include SparseMatrixExample_Constructor_init_list_1.out
-
 
 #### Initializer list
 
@@ -558,7 +573,7 @@ More efficient method, especially for GPUs, is to combine `getRow` (\ref TNL::Ma
 
 \includelineno SparseMatrixViewExample_getRow.cpp
 
-On the line 11, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one (particular elements of the initializer list). On the line 22, we call `ParallelFor` (\ref TNL::Algorithms::ParallelFor) to iterate over all matrix elements. Each row is processed by the lambda function `f` (lines 14-17). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) which serves for accessing particular matrix rows. This object has a method `setElement` (\ref TNL::Matrices::SparseMatrixRowView::setElement) accepting three parameters:
+On the line 21, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one or three (particular elements of the initializer list). On the line 41, we call `ParallelFor` (\ref TNL::Algorithms::ParallelFor) to iterate over all matrix rows. Each row is processed by the lambda function `f` (lines 24-36). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) (line 25) which serves for accessing particular matrix elements in the matrix row. This object has a method `setElement` (\ref TNL::Matrices::SparseMatrixRowView::setElement) accepting three parameters:
 
 1. `localIdx` is a rank of the nonzero element in given matrix row.
 2. `columnIdx` is the new column index of the matrix element.
@@ -567,6 +582,22 @@ On the line 11, we create small matrix having five rows (number of rows is given
 The result looks as follows:
 
 \include SparseMatrixViewExample_getRow.out
+
+#### Method `forRows`
+
+The method `forRows` (\ref TNL::Matrices::SparseMatrix::forRows) calls the method `getRow` (\ref TNL::Matrices::SparseMatrix::getRow) in parallel. See the following example which has the same effect as the previous one but it is slightly simpler:
+
+\includelineno SparseMatrixExample_forRows.cpp
+
+The differences are:
+
+1. We do not need to get the matrix view as we did in the previous example.
+2. We call the method `forAllRows` (\ref TNL::Matrices::SparseMatrix::forAllRows) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither.
+3. The lambda function `f` (lines 23-35) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::SparseMatrix::RowView which is \ref TNL::Matrices::SparseMatrixRowView) instead of the index of the matrix row. Therefore we do not need to call the method `getRow` (\ref TNL::Matrices::SparseMatrix::getRow). On the other hand, we need the method `geRowIndex` (\ref TNL::Matrices::SparseMatrixRowView::getRowIndex) to get the index of the matrix row (line 24).
+
+The rest of the lambda function remains the same. The result looks as follows:
+
+\include SparseMatrixExample_forRows.out
 
 #### Method `forElements`
 
@@ -818,7 +849,7 @@ The result looks as follows:
 
 #### Method `getRow`
 
- A bit different way how to do the same is the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
+ A bit different way of setting up the matrix, is the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
 
 \includelineno TridiagonalMatrixViewExample_getRow.cpp
 
@@ -827,6 +858,22 @@ We create a matrix with the same size (line 10-15). Next, we fetch the tridiagon
 The result looks as follows:
 
 \include TridiagonalMatrixViewExample_getRow.out
+
+### Method `forRows`
+
+As in the case of other matrix types, the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) calls the method `getRow` (\ref TNL::Matrices::TridiagonalMatrix::getRow) in parallel. It is demonstrated by the following example which we may directly compare with the previous one:
+
+\includelineno TridiagonalMatrixExample_forRows.cpp
+
+The differences are:
+
+1. We do not need to get the matrix view as we did in the previous example.
+2. We call the method `forAllRows` (\ref TNL::Matrices::TridiagonalMatrix::forAllRows) (line 33) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither.
+3. The lambda function `f` (lines 25-31) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::TridiagonalMatrix::RowView which is \ref TNL::Matrices::TridiagonalMatrixRowView) instead of the index of the matrix row. Therefore we do not need to call the method `getRow` (\ref TNL::Matrices::TridiagonalMatrix::getRow). On the other hand, we need the method `geRowIndex` (\ref TNL::Matrices::TridiagonalMatrixRowView::getRowIndex) to get the index of the matrix row (line 24).
+
+The rest of the lambda function remains the same. The result looks as follows:
+
+\include TridiagonalMatrixExample_forRows.out
 
 #### Method `forElements`
 
@@ -1084,6 +1131,18 @@ We use `ParallelFor2D` (\ref TNL::Algorithms::ParallelFor2D) to iterate over all
 
 \include MultidiagonalMatrixExample_Constructor.out
 
+### Method `forRows`
+
+As in the case of other matrix types, the method `forRows` (\ref TNL::Matrices::MultidiagonalMatrix::forRows) calls the method `getRow` (\ref TNL::Matrices::MultidiagonalMatrix::getRow) in parallel. It is demonstrated by the following example:
+
+\includelineno MultidiagonalMatrixExample_forRows.cpp
+
+ We call the method `forAllRows` (\ref TNL::Matrices::MultidiagonalMatrix::forAllRows) (line 36) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither. The lambda function `f` (lines 28-35) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::MultidiagonalMatrix::RowView which is \ref TNL::Matrices::MultidiagonalMatrixRowView). At the beginning of the lambda function, we call the method `geRowIndex` (\ref TNL::Matrices::MultidiagonalMatrixRowView::getRowIndex) to get the index of the matrix row (line 29).
+
+The result looks as follows:
+
+\include MultidiagonalMatrixExample_forRows.out
+
 #### Method `forElements`
 
 Similar and even a bit simpler way of setting the matrix elements is offered by the method `forElements` (\ref TNL::Matrices::MultidiagonalMatrix::forElements, \ref TNL::Matrices::MultidiagonalMatrixView::forElements) as demonstrated in the following example:
@@ -1152,6 +1211,18 @@ With the same lambda functions we can define matrices with different dimensions.
 The result looks as follows:
 
 \include LambdaMatrixExample_Constructor.out
+
+#### Method `forRows`
+
+Method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices::LambdaMatrix::forAllRows) iterates in parallel over all matrix rows. In the case of lambda matrices, it cannot be used for changing the matrix elements since they cannot be changed. In the following example, we show how to use this method to copy the matrix elements values to the dense matrix:
+
+\includelineno LambdaMatrixExample_forRows.cpp
+
+We start with the lambda functions (lines 17-61) defining the elements of the lambda matrix. Next, we create the lambda matrix `matrix` (lines 62-64) and the dense matrix `denseMatrix` (lines 66-67) together with the dense matrix view (line 68). The lambda function `f` (lines 69-73) serves for copying matrix elements from the lambda matrix to the dense matrix. The process of matrix elements copying is started by calling the method `forAllRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices::LambdaMatrix::forAllRows) (line 74).
+
+Note, however, that use of `forElements` method (\ref TNL::Matrices::LambdaMatrix::forElements) would be more convenient. The result looks as follows:
+
+\include LambdaMatrixExample_forRows.out
 
 #### Method `forElements`
 
