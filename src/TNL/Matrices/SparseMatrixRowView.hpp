@@ -185,6 +185,50 @@ template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
           bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+begin() -> IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+end() -> IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+cbegin() const -> const IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+cend() const -> const IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row )
 {
    using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::IndexType >;
@@ -196,6 +240,7 @@ std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentV
          str << " [ " << row.getColumnIndex( i ) << " ] = " << row.getValue( i ) << ", ";
    return str;
 }
+
 
 } // namespace Matrices
 } // namespace TNL

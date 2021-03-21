@@ -13,6 +13,7 @@
 #include <ostream>
 
 #include <TNL/Cuda/CudaCallable.h>
+#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
 
 namespace TNL {
 namespace Matrices {
@@ -83,13 +84,14 @@ class SparseMatrixRowView
       /**
        * \brief Type of sparse matrix row view.
        */
-      using RowViewType = SparseMatrixRowView< SegmentView, ValuesViewType, ColumnsIndexesViewType, isBinary_ >;
-
+      using RowView = SparseMatrixRowView< SegmentView, ValuesViewType, ColumnsIndexesViewType, isBinary_ >;
 
       /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstRowViewType = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
+      using ConstView = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
+
+      using IteratorType = SparseMatrixRowViewIterator< RowView >;
 
       /**
        * \brief Tells whether the parent matrix is a binary matrix.
@@ -211,6 +213,18 @@ class SparseMatrixRowView
                 bool _isBinary >
       __cuda_callable__
       bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
+
+      __cuda_callable__
+      IteratorType begin();
+
+      __cuda_callable__
+      IteratorType end();
+
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      __cuda_callable__
+      const IteratorType cend() const;
 
 
    protected:

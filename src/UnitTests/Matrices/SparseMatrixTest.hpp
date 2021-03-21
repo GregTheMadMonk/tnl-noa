@@ -1437,6 +1437,8 @@ void test_ForRows()
    const IndexType cols = 8;
    const IndexType rows = 8;
 
+   /////
+   // Test without iterator
    Matrix m( { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, cols  );
    using RowView = typename Matrix::RowView;
    m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
@@ -1444,6 +1446,29 @@ void test_ForRows()
       {
          row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );
          row.setColumnIndex( localIdx, localIdx );
+      }
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+
+   ////
+   // Test with iterator
+   m.getValues() = 0.0;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( auto element : row )
+      {
+         if( element.localIndex() <= element.rowIndex() )
+         {
+            element.value() = element.rowIndex() - element.localIndex() + 1.0;
+            element.columnIndex() = element.localIndex();
+         }
       }
    } );
 
