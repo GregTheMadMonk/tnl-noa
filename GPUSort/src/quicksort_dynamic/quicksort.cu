@@ -1,7 +1,7 @@
 #include "quicksort.cuh"
 
 #include <TNL/Containers/Array.h>
-#include "reduction.cuh"
+#include "../util/reduction.cuh"
 #include "task.h"
 #include "../bitonicSort/bitonicSort.h"
 #include "helper.cuh"
@@ -145,6 +145,8 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 {
     int sizeL = pivotBegin - begin, sizeR = end - pivotEnd;
     
+    //push the bigger one 1st and then smaller one 2nd
+    //in next iteration, the smaller part will be handled 1st
     if(sizeL > sizeR)
     {
         if(sizeL > 0) //left from pivot are smaller elems

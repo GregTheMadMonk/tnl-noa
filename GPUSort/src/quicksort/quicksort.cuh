@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include "reduction.cuh"
+#include "../util/reduction.cuh"
 #include "task.h"
 #include "../bitonicSort/bitonicSort.h"
 #include <iostream>
