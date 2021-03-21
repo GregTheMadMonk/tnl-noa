@@ -62,7 +62,6 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
                             aux.getView(myTask.partitionBegin, myTask.partitionEnd ),
                         Cmp
                     );
-        printf("pivot %d\n", pivot);
     }
     __syncthreads();
 
@@ -98,6 +97,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
         aux[i] = -1;
         #endif
         */
+        aux[i] = -1;
         arr[i] = pivot;
     }
 
@@ -159,7 +159,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
-const int threadsPerBlock = 32, maxBlocks = 1 << 15; //32k
+const int threadsPerBlock = 4, maxBlocks = 1 << 15; //32k
 const int maxTasks = 1 << 10;
 const int minElemPerBlock = threadsPerBlock;
 
@@ -203,37 +203,45 @@ public:
      * returns the amount of blocks needed
      * */
     int initTasks(int elemPerBlock);
+
+    void processNewTasks();
 };
 
 template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
-    int elemPerBlock = getElemPerBlock();
-    int blocksCnt = initTasks(elemPerBlock);
+    while(tasksAmount > 0)
+    {
+        int elemPerBlock = getElemPerBlock();
+        int blocksCnt = initTasks(elemPerBlock);
+        if (iteration % 2 == 0)
+        {
+            cudaQuickSort1stPhase<Function>
+            <<<blocksCnt, threadsPerBlock>>>(
+                arr, aux.getView(), Cmp, elemPerBlock,
+                cuda_tasks.getView(),
+                cuda_blockToTaskMapping.getView(),
+                cuda_newTasks.getView(),
+                cuda_newTasksAmount.getData(),
+                cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData());
+        }
+        else
+        {
+            cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock>>>(
+                arr, aux.getView(), Cmp, elemPerBlock,
+                cuda_newTasks.getView(),
+                cuda_blockToTaskMapping.getView(),
+                cuda_tasks.getView(),
+                cuda_newTasksAmount.getData(),
+                cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData());
+        }
+        processNewTasks();
+        iteration++;
+    }
 
-    if (iteration % 2 == 0)
-    {
-        cudaQuickSort1stPhase<Function>
-        <<<blocksCnt, threadsPerBlock>>>(
-            arr, aux.getView(), Cmp, elemPerBlock,
-            cuda_tasks.getView(),
-            cuda_blockToTaskMapping.getView(),
-            cuda_newTasks.getView(),
-            cuda_newTasksAmount.getData(),
-            cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData());
-    }
-    
-    else
-    {
-        cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock>>>(
-            arr, aux.getView(), Cmp, elemPerBlock,
-            cuda_newTasks.getView(),
-            cuda_blockToTaskMapping.getView(),
-            cuda_tasks.getView(),
-            cuda_newTasksAmount.getData(),
-            cuda_2ndPhaseTasks.getView(), cuda_2ndPhaseTasksAmount.getData());
-    }
-    
+    cudaQuickSort2ndPhase<Function, 128>
+        <<<cuda_2ndPhaseTasksAmount.getElement(0), threadsPerBlock>>>
+        (arr, aux, Cmp, cuda_2ndPhaseTasks.getView());
 
     cudaDeviceSynchronize();
     return;
@@ -286,6 +294,13 @@ int QUICKSORT::initTasks(int elemPerBlock)
     cuda_newTasksAmount.setElement(0, 0);
     return cuda_blockToTaskMapping_Cnt.getElement(0);
 }
+
+void QUICKSORT::processNewTasks()
+{
+    tasksAmount = cuda_newTasksAmount.getElement(0);
+    totalTask = tasksAmount + cuda_2ndPhaseTasksAmount.getElement(0);
+}
+
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 //-----------------------------------------------------------
