@@ -80,15 +80,14 @@ TYPED_TEST( VectorTest, constructors )
 
 }
 
-TYPED_TEST( VectorTest, reduceElements )
+// test must be in a plain function because nvcc sucks (extended lambdas are
+// not allowed to be defined in protected class member functions)
+template< typename VectorType >
+void testVectorReduceElements()
 {
-   using VectorType = typename TestFixture::VectorType;
    using IndexType = typename VectorType::IndexType;
    using ValueType = typename VectorType::ValueType;
 
-#if not defined HAVE_CUDA
-// nvcc does not accept the following code with
-// error #3068-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
    VectorType a( 10 );
    a.forEachElement( [=] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = 1; } );
    auto fetch = [] __cuda_callable__ ( IndexType i, ValueType& v ) -> ValueType { return v; };
@@ -100,7 +99,10 @@ TYPED_TEST( VectorTest, reduceElements )
    auto const_fetch = [] __cuda_callable__ ( IndexType i, const ValueType& v ) -> ValueType { return v; };
    EXPECT_EQ( b.reduceEachElement( const_fetch, reduce, ( ValueType ) 0.0 ),
               b.getSize() );
-#endif
+}
+TYPED_TEST( VectorTest, reduceElements )
+{
+   testVectorReduceElements< typename TestFixture::VectorType >();
 }
 
 TEST( VectorSpecialCasesTest, defaultConstructors )

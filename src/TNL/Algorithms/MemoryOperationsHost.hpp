@@ -21,6 +21,54 @@
 namespace TNL {
 namespace Algorithms {
 
+template< typename Element, typename Index >
+void
+MemoryOperations< Devices::Host >::
+construct( Element* data,
+           const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   auto kernel = [data]( Index i )
+   {
+      // placement-new
+      ::new( (void*) (data + i) ) Element();
+   };
+   ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
+}
+
+template< typename Element, typename Index, typename... Args >
+void
+MemoryOperations< Devices::Host >::
+construct( Element* data,
+           const Index size,
+           const Args&... args )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
+   auto kernel = [data, &args...]( Index i )
+   {
+      // placement-new
+      // (note that args are passed by reference to the constructor, not via
+      // std::forward since move-semantics does not apply for the construction
+      // of multiple elements)
+      ::new( (void*) (data + i) ) Element( args... );
+   };
+   ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
+}
+
+template< typename Element, typename Index >
+void
+MemoryOperations< Devices::Host >::
+destruct( Element* data,
+          const Index size )
+{
+   TNL_ASSERT_TRUE( data, "Attempted to destroy data through a nullptr." );
+   auto kernel = [data]( Index i )
+   {
+      (data + i)->~Element();
+   };
+   ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
+}
+
 template< typename Element >
 __cuda_callable__ // only to avoid nvcc warning
 void

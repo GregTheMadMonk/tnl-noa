@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( Segments )
+
 set( COMMON_TESTS
          MemoryOperationsTest
          MultireductionTest
