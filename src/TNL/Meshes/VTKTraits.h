@@ -19,6 +19,7 @@
 #include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
+#include <TNL/Meshes/Topologies/Polygon.h>
 
 namespace TNL {
 namespace Meshes {
@@ -122,12 +123,13 @@ inline int getEntityDimension( EntityShape shape )
 
 // static mapping of TNL entity topologies to EntityShape
 template< typename Topology > struct TopologyToEntityShape {};
-template<> struct TopologyToEntityShape< Topologies::Vertex >         { static constexpr EntityShape shape = EntityShape::Vertex; };
-template<> struct TopologyToEntityShape< Topologies::Edge >           { static constexpr EntityShape shape = EntityShape::Line; };
-template<> struct TopologyToEntityShape< Topologies::Triangle >       { static constexpr EntityShape shape = EntityShape::Triangle; };
+template<> struct TopologyToEntityShape< Topologies::Vertex >      { static constexpr EntityShape shape = EntityShape::Vertex; };
+template<> struct TopologyToEntityShape< Topologies::Edge >        { static constexpr EntityShape shape = EntityShape::Line; };
+template<> struct TopologyToEntityShape< Topologies::Triangle >    { static constexpr EntityShape shape = EntityShape::Triangle; };
 template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad; };
-template<> struct TopologyToEntityShape< Topologies::Tetrahedron >    { static constexpr EntityShape shape = EntityShape::Tetra; };
-template<> struct TopologyToEntityShape< Topologies::Hexahedron >     { static constexpr EntityShape shape = EntityShape::Hexahedron; };
+template<> struct TopologyToEntityShape< Topologies::Tetrahedron > { static constexpr EntityShape shape = EntityShape::Tetra; };
+template<> struct TopologyToEntityShape< Topologies::Hexahedron >  { static constexpr EntityShape shape = EntityShape::Hexahedron; };
+template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon; };
 
 // mapping used in VTKWriter
 template< typename GridEntity >

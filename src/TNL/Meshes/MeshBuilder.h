@@ -92,7 +92,7 @@ private:
       assignedPoints.setValue( false );
 
       for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
-         const auto cornerIds = this->cellSeeds[ i ].getCornerIds();
+         const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
          for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
             assignedPoints[ cornerIds[ j ] ] = true;
             if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] ) {
