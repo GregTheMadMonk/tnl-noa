@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+#include <TNL/Matrices/MultidiagonalMatrixElement.h>
+
 namespace TNL {
 namespace Matrices {
 
@@ -72,7 +75,22 @@ class TridiagonalMatrixRowView
       /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstViewType = TridiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType >;
+      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
+
+      /**
+       * \brief Type of constant sparse matrix row view.
+       */
+      using ConstRowView = TridiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType >;
+
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = MultidiagonalMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
+      using IteratorType = SparseMatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with all necessary data.
@@ -141,6 +159,39 @@ class TridiagonalMatrixRowView
       __cuda_callable__
       void setElement( const IndexType localIdx,
                        const RealType& value );
+
+      /**
+       * \brief Returns iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin();
+
+      /**
+       * \brief Returns iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end();
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const;
+
    protected:
 
       IndexType rowIdx;

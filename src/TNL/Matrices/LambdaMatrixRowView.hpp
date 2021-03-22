@@ -122,6 +122,50 @@ template< typename MatrixElementsLambda,
           typename CompressedRowLengthsLambda,
           typename Real,
           typename Index >
+__cuda_callable__ auto
+LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >::
+begin() const -> const IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Index >
+__cuda_callable__ auto
+LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >::
+end() const -> const IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Index >
+__cuda_callable__ auto
+LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >::
+cbegin() const -> const IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Index >
+__cuda_callable__ auto
+LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >::
+cend() const -> const IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename MatrixElementsLambda,
+          typename CompressedRowLengthsLambda,
+          typename Real,
+          typename Index >
 std::ostream& operator<<( std::ostream& str, const LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >& row )
 {
    using NonConstIndex = std::remove_const_t< typename LambdaMatrixRowView< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Index >::IndexType >;

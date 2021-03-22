@@ -608,7 +608,7 @@ void test_SetRow()
          { 2, 3, 4, 5, 6 } };
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
-        row.setElement( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
+        row.setValue( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
    };
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
 
@@ -725,7 +725,7 @@ void test_AddRow()
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
       {
-         RealType& val = row.getElement( i );
+         RealType& val = row.getValue( i );
          val = rowIdx * val + values[ rowIdx ][ i ];
       }
    };
@@ -793,9 +793,8 @@ void test_ForElements()
    const IndexType rows = 8;
 
    Matrix m( rows, cols  );
-   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value, bool compute ) mutable {
       value = rowIdx + 1.0;
-      columnIdx = localIdx;
    } );
 
    for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
@@ -815,14 +814,13 @@ void test_ForRows()
    const IndexType cols = 8;
    const IndexType rows = 8;
 
+   /////
+   // Test without iterator
    Matrix m( rows, cols  );
    using RowView = typename Matrix::RowView;
    m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
       for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
-      {
          row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );
-         row.setColumnIndex( localIdx, localIdx );
-      }
    } );
 
    for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
@@ -833,6 +831,26 @@ void test_ForRows()
          else
             EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
       }
+
+   /////
+   // Test without iterator
+   m.getValues() = 0.0;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( auto element : row )
+         if( element.columnIndex() <= element.rowIndex() )
+            element.value() = element.rowIndex() - element.columnIndex() + 1.0;
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+
+
 }
 
 template< typename Matrix >
@@ -1583,6 +1601,20 @@ TYPED_TEST( MatrixTest, addRowTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_AddRow< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forElementsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForElements< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forRowsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForRows< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, vectorProductTest )

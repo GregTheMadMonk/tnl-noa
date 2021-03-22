@@ -407,7 +407,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forElements( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.forElements( begin, end, function );
 }
@@ -420,7 +420,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forElements( IndexType first, IndexType last, Function& function )
+forElements( IndexType first, IndexType last, Function&& function )
 {
    this->view.forElements( first, last, function );
 }
@@ -433,7 +433,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forAllElements( Function& function ) const
+forAllElements( Function&& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -446,7 +446,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forAllElements( Function& function )
+forAllElements( Function&& function )
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -511,7 +511,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+sequentialForRows( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.sequentialForRows( begin, end, function );
 }
@@ -524,7 +524,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForRows( IndexType first, IndexType last, Function& function )
+sequentialForRows( IndexType first, IndexType last, Function&& function )
 {
    this->view.sequentialForRows( first, last, function );
 }
@@ -537,7 +537,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForAllRows( Function& function ) const
+sequentialForAllRows( Function&& function ) const
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }
@@ -550,7 +550,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForAllRows( Function& function )
+sequentialForAllRows( Function&& function )
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }

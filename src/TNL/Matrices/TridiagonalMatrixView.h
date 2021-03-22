@@ -79,7 +79,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = typename RowView::ConstViewType;
+      using ConstRowView = typename RowView::ConstRowView;
 
       /**
        * \brief Helper type for getting self type or its modifications.

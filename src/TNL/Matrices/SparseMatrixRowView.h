@@ -91,6 +91,14 @@ class SparseMatrixRowView
        */
       using ConstView = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
 
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = SparseMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
       using IteratorType = SparseMatrixRowViewIterator< RowView >;
 
       /**
@@ -214,18 +222,37 @@ class SparseMatrixRowView
       __cuda_callable__
       bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
 
+      /**
+       * \brief Returns iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
       __cuda_callable__
       IteratorType begin();
 
+      /**
+       * \brief Returns iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
       __cuda_callable__
       IteratorType end();
 
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
       __cuda_callable__
       const IteratorType cbegin() const;
 
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
       __cuda_callable__
       const IteratorType cend() const;
-
 
    protected:
 

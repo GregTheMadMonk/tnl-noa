@@ -72,12 +72,48 @@ getValue( const IndexType localIdx ) -> RealType&
 
 template< typename ValuesView, typename Indexer >
 __cuda_callable__
-void 
+void
 TridiagonalMatrixRowView< ValuesView, Indexer >::
 setElement( const IndexType localIdx,
             const RealType& value )
 {
    this->values[ indexer.getGlobalIndex( rowIdx, localIdx ) ] = value;
+}
+
+template< typename ValuesView, typename Indexer >
+__cuda_callable__
+auto
+TridiagonalMatrixRowView< ValuesView, Indexer >::
+begin() -> IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename ValuesView, typename Indexer >
+__cuda_callable__
+auto
+TridiagonalMatrixRowView< ValuesView, Indexer >::
+end() -> IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename ValuesView, typename Indexer >
+__cuda_callable__
+auto
+TridiagonalMatrixRowView< ValuesView, Indexer >::
+cbegin() const -> const IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename ValuesView, typename Indexer >
+__cuda_callable__
+auto
+TridiagonalMatrixRowView< ValuesView, Indexer >::
+cend() const -> const IteratorType
+{
+   return IteratorType( *this, this->getSize() );
 }
 
 } // namespace Matrices

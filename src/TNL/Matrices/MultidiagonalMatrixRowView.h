@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include <TNL/Matrices/MultidiagonalMatrixElement.h>
+#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+
 namespace TNL {
 namespace Matrices {
 
@@ -27,7 +30,7 @@ namespace Matrices {
  * \par Example
  * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_getRow.cpp
  * \par Output
- * \include MultidiagonalatrixExample_getRow.out
+ * \include MultidiagonalMatrixExample_getRow.out
  *
  * \par Example
  * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_getRow.cpp
@@ -76,17 +79,32 @@ class MultidiagonalMatrixRowView
       /**
        * \brief Type of constant container view used for storing the column indexes of the matrix elements.
        */
-      using ConstDiagonalsOffsetsViewType = typename DiagonalsOffsetsView::ConstViewType;
+      using ConstDiagonalsOffsetsView = typename DiagonalsOffsetsView::ConstViewType;
 
       /**
        * \brief Type of constant indexer view.
        */
-      using ConstIndexerViewType = typename Indexer::ConstType;
+      using ConstIndexerViewType = typename IndexerType::ConstType;
 
       /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstViewType = MultidiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType, ConstDiagonalsOffsetsViewType >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
+
+      /**
+       * \brief Type of constant sparse matrix row view.
+       */
+      using ConstRowView = MultidiagonalMatrixRowView< ConstValuesViewType, ConstIndexerViewType, ConstDiagonalsOffsetsView >;
+
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = MultidiagonalMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
+      using IteratorType = SparseMatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with all necessary data.
@@ -157,6 +175,39 @@ class MultidiagonalMatrixRowView
       __cuda_callable__
       void setElement( const IndexType localIdx,
                        const RealType& value );
+
+      /**
+       * \brief Returns iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin();
+
+      /**
+       * \brief Returns iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end();
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const;
+
    protected:
 
       IndexType rowIdx;

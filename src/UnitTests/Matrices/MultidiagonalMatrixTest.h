@@ -798,6 +798,8 @@ void test_ForRows()
    const IndexType size( 5 );
    Matrix m( size, size, { -1, 0, 1 } );
 
+   /////
+   // Test without iterator
    auto f = [=] __cuda_callable__ ( typename Matrix::RowView& row ) mutable {
       const IndexType rowIdx = row.getRowIndex();
       if( rowIdx > 0 )
@@ -821,6 +823,37 @@ void test_ForRows()
          else
             EXPECT_EQ( m.getElement( row, column ), 0.0 );
       }
+
+   /////
+   // Test with iterator
+   m.getValues() = 0.0;
+   auto f_iter = [=] __cuda_callable__ ( typename Matrix::RowView& row ) mutable {
+      for( auto element : row )
+      {
+         if( element.rowIndex() > 0 && element.localIndex() == 0 )
+            element.value() = -2.0;
+         if( element.localIndex() == 1 )
+            element.value() = 1.0;
+         if( element.rowIndex() < size - 1 && element.localIndex() == 2 )
+            element.value() = -2.0;
+      }
+   };
+   m.forAllRows( f_iter );
+
+   for( IndexType row = 0; row < size; row++ )
+      for( IndexType column = 0; column < size; column++ )
+      {
+         const IndexType diff = row - column;
+         if( diff == 0 )
+            EXPECT_EQ( m.getElement( row, column ), 1.0 );
+         else if( diff == 1 && row > 0 )
+            EXPECT_EQ( m.getElement( row, column ), -2.0 );
+         else if( diff == -1 && row < size - 1 )
+            EXPECT_EQ( m.getElement( row, column ), -2.0 );
+         else
+            EXPECT_EQ( m.getElement( row, column ), 0.0 );
+      }
+
 }
 
 template< typename Matrix >

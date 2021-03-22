@@ -13,6 +13,9 @@
 #include <ostream>
 
 #include <TNL/Cuda/CudaCallable.h>
+#include <TNL/Matrices/LambdaMatrixRowViewIterator.h>
+#include <TNL/Matrices/LambdaMatrixElement.h>
+
 
 namespace TNL {
 namespace Matrices {
@@ -80,12 +83,22 @@ class LambdaMatrixRowView
       /**
        * \brief Type of Lambda matrix row view.
        */
-      using RowViewType = LambdaMatrixRowView< MatrixElementsLambdaType, CompressedRowLengthsLambdaType, RealType, IndexType >;
+      using RowView = LambdaMatrixRowView< MatrixElementsLambdaType, CompressedRowLengthsLambdaType, RealType, IndexType >;
 
       /**
        * \brief Type of constant Lambda matrix row view.
        */
-      using ConstRowViewType = RowViewType;
+      using ConstRowView = RowView;
+
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = LambdaMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
+      using IteratorType = LambdaMatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with related lambda functions, matrix dimensions and row index.
@@ -153,6 +166,39 @@ class LambdaMatrixRowView
                 typename Index_ >
       __cuda_callable__
       bool operator==( const LambdaMatrixRowView< MatrixElementsLambda_, CompressedRowLengthsLambda_, Real_, Index_ >& other ) const;
+
+      /**
+       * \brief Returns non-constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType begin() const;
+
+      /**
+       * \brief Returns non-constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType end() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const;
+
 
    protected:
 

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          SparseMatrixRowView.hpp -  description
+                          LambdaMatrixRowView.hpp -  description
                              -------------------
-    begin                : Mar 20, 2021
+    begin                : Mar 21, 2021
     copyright            : (C) 2021 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/SparseMatrixRowView.h>
+#include <TNL/Matrices/LambdaMatrixRowView.h>
 #include <TNL/Assert.h>
 
 namespace TNL {
@@ -18,8 +18,8 @@ namespace Matrices {
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >::
-SparseMatrixRowViewIterator( RowViewType& rowView,
+LambdaMatrixRowViewIterator< RowView >::
+LambdaMatrixRowViewIterator( const RowViewType& rowView,
                              const IndexType& localIdx )
 : rowView( rowView ), localIdx( localIdx )
 {
@@ -27,8 +27,8 @@ SparseMatrixRowViewIterator( RowViewType& rowView,
 
 template< typename RowView >
 __cuda_callable__ bool
-SparseMatrixRowViewIterator< RowView >::
-operator==( const SparseMatrixRowViewIterator& other ) const
+LambdaMatrixRowViewIterator< RowView >::
+operator==( const LambdaMatrixRowViewIterator& other ) const
 {
    if( &this->rowView == &other.rowView &&
        localIdx == other.localIdx )
@@ -38,16 +38,16 @@ operator==( const SparseMatrixRowViewIterator& other ) const
 
 template< typename RowView >
 __cuda_callable__ bool
-SparseMatrixRowViewIterator< RowView >::
-operator!=( const SparseMatrixRowViewIterator& other ) const
+LambdaMatrixRowViewIterator< RowView >::
+operator!=( const LambdaMatrixRowViewIterator& other ) const
 {
    return ! ( other == *this );
 }
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >&
-SparseMatrixRowViewIterator< RowView >::
+LambdaMatrixRowViewIterator< RowView >&
+LambdaMatrixRowViewIterator< RowView >::
 operator++()
 {
    if( localIdx < rowView.getSize() )
@@ -57,8 +57,8 @@ operator++()
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >&
-SparseMatrixRowViewIterator< RowView >::
+LambdaMatrixRowViewIterator< RowView >&
+LambdaMatrixRowViewIterator< RowView >::
 operator--()
 {
    if( localIdx > 0 )
@@ -68,7 +68,7 @@ operator--()
 
 template< typename RowView >
 __cuda_callable__ auto
-SparseMatrixRowViewIterator< RowView >::
+LambdaMatrixRowViewIterator< RowView >::
 operator*() -> MatrixElementType
 {
    return MatrixElementType(
@@ -80,7 +80,7 @@ operator*() -> MatrixElementType
 
 template< typename RowView >
 __cuda_callable__ auto
-SparseMatrixRowViewIterator< RowView >::
+LambdaMatrixRowViewIterator< RowView >::
 operator*() const -> const MatrixElementType
 {
    return MatrixElementType(

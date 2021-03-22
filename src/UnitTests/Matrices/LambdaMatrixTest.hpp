@@ -203,15 +203,31 @@ void test_ForRows()
 
    MatrixType m( size, size, matrixElements, rowLengths );
 
+   ////
+   // Test without iterator
    TNL::Matrices::DenseMatrix< RealType, DeviceType, IndexType > denseMatrix( size, size );
    denseMatrix.setValue( 0.0 );
    auto dense_view = denseMatrix.getView();
    auto f = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
       auto dense_row = dense_view.getRow( row.getRowIndex() );
       for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
-         dense_row.setElement( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
+         dense_row.setValue( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
    };
    m.forAllRows( f );
+
+   for( IndexType row = 0; row < size; row++ )
+      for( IndexType column = 0; column < size; column++ )
+         EXPECT_EQ( m.getElement( row, column ), denseMatrix.getElement( row, column ) );
+
+   ////
+   // Test with iterator
+   denseMatrix.getValues() = 0.0;
+   auto f_iter = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
+      auto dense_row = dense_view.getRow( row.getRowIndex() );
+      for( const auto element : row )
+         dense_row.setValue( element.columnIndex(), element.value() );
+   };
+   m.forAllRows( f_iter );
 
    for( IndexType row = 0; row < size; row++ )
       for( IndexType column = 0; column < size; column++ )

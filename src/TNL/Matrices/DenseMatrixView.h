@@ -525,7 +525,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function&& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -547,7 +547,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function& function );
+      void forElements( IndexType begin, IndexType end, Function&& function );
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -563,7 +563,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forAllElements( Function& function ) const;
+      void forAllElements( Function&& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -579,7 +579,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \include DenseMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forAllElements( Function& function );
+      void forAllElements( Function&& function );
 
       /**
        * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
@@ -696,7 +696,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+      void sequentialForRows( IndexType begin, IndexType end, Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for non-constant instances.
@@ -713,7 +713,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForRows( IndexType begin, IndexType end, Function& function );
+      void sequentialForRows( IndexType begin, IndexType end, Function&& function );
 
       /**
        * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
@@ -724,7 +724,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \param function  is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForAllRows( Function& function ) const;
+      void sequentialForAllRows( Function&& function ) const;
 
       /**
        * \brief This method calls \e sequentialForRows for all matrix rows.
@@ -735,7 +735,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \param function  is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForAllRows( Function& function );
+      void sequentialForAllRows( Function&& function );
 
       /**
        * \brief Computes product of matrix and vector.

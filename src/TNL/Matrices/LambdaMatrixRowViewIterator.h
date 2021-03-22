@@ -1,7 +1,7 @@
  /***************************************************************************
-                          SparseMatrixRowViewIterator.h -  description
+                          LambdaMatrixRowView.h -  description
                              -------------------
-    begin                : Mar 20, 2021
+    begin                : Mar 21, 2021
     copyright            : (C) 2021 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -13,19 +13,19 @@
 #include <ostream>
 
 #include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/SparseMatrixElement.h>
+#include <TNL/Matrices/LambdaMatrixElement.h>
 
 namespace TNL {
 namespace Matrices {
 
 template< typename RowView >
-class SparseMatrixRowViewIterator
+class LambdaMatrixRowViewIterator
 {
 
    public:
 
       /**
-       * \brief Type of SparseMatrixRowView
+       * \brief Type of LambdaMatrixRowView
        */
       using RowViewType = RowView;
 
@@ -51,7 +51,7 @@ class SparseMatrixRowViewIterator
       static constexpr bool isBinary() { return RowViewType::isBinary(); };
 
       __cuda_callable__
-      SparseMatrixRowViewIterator( RowViewType& rowView,
+      LambdaMatrixRowViewIterator( const RowViewType& rowView,
                                    const IndexType& localIdx );
 
       /**
@@ -61,7 +61,7 @@ class SparseMatrixRowViewIterator
        * \return \e true if both iterators points at the same point of the same matrix, \e false otherwise.
        */
       __cuda_callable__
-      bool operator==( const SparseMatrixRowViewIterator& other ) const;
+      bool operator==( const LambdaMatrixRowViewIterator& other ) const;
 
       /**
        * \brief Comparison of two matrix row iterators.
@@ -70,13 +70,13 @@ class SparseMatrixRowViewIterator
        * \return \e false if both iterators points at the same point of the same matrix, \e true otherwise.
        */
       __cuda_callable__
-      bool operator!=( const SparseMatrixRowViewIterator& other ) const;
+      bool operator!=( const LambdaMatrixRowViewIterator& other ) const;
 
       __cuda_callable__
-      SparseMatrixRowViewIterator& operator++();
+      LambdaMatrixRowViewIterator& operator++();
 
       __cuda_callable__
-      SparseMatrixRowViewIterator& operator--();
+      LambdaMatrixRowViewIterator& operator--();
 
       __cuda_callable__
       MatrixElementType operator*();
@@ -86,7 +86,7 @@ class SparseMatrixRowViewIterator
 
    protected:
 
-      RowViewType& rowView;
+      const RowViewType& rowView;
 
       IndexType localIdx = 0;
 };
@@ -95,4 +95,4 @@ class SparseMatrixRowViewIterator
    } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SparseMatrixRowViewIterator.hpp>
+#include <TNL/Matrices/LambdaMatrixRowViewIterator.hpp>
