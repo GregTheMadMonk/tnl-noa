@@ -70,7 +70,7 @@ void getRowExample()
       auto row = matrix.getRow( rowIdx );
       auto dense_row = dense_view.getRow( rowIdx );
       for( int localIdx = 0; localIdx < row.getSize(); localIdx++ )
-         dense_row.setElement( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
+         dense_row.setValue( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
    };
    TNL::Algorithms::ParallelFor< Device >::exec( 0, matrixSize, f );
 

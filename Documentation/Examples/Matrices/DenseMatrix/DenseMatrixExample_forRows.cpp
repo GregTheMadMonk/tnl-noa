@@ -13,7 +13,7 @@ void forRowsExample()
 
    auto f = [=] __cuda_callable__ ( RowView& row ) mutable {
       const int& rowIdx = row.getRowIndex();
-      row.setElement( rowIdx, 10 * ( rowIdx + 1 ) );
+      row.setValue( rowIdx, 10 * ( rowIdx + 1 ) );
    };
 
    /***

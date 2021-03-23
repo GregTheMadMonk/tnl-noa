@@ -52,7 +52,7 @@ void getRow( const int matrixSize, Matrix& matrix )
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
       auto row = matrixView.getRow( rowIdx );
       for( int i = 0; i < matrixSize; i++ )
-         row.setElement( i, rowIdx + i );
+         row.setValue( i, rowIdx + i );
    };
    TNL::Algorithms::ParallelFor< typename Matrix::DeviceType >::exec( 0, matrixSize, f );
 }
