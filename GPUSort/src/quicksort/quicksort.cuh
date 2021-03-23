@@ -156,7 +156,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 15; //32k
-const int g_maxTasks = 1 << 10;
+const int g_maxTasks = 1 << 14;
 const int minElemPerBlock = threadsPerBlock;
 
 class QUICKSORT
@@ -212,7 +212,8 @@ public:
 template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
-    while (tasksAmount > 0)
+    
+    while (tasksAmount > 0 && tasksAmount*2 < maxTasks)
     {
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock);
@@ -240,10 +241,21 @@ void QUICKSORT::sort(const Function &Cmp)
         processNewTasks();
         iteration++;
     }
+    
+    if(tasksAmount > 0)
+    {
+        cudaQuickSort2ndPhase<Function, 128>
+            <<<tasksAmount, threadsPerBlock>>>(arr, aux, Cmp,
+            iteration % 2 == 0? cuda_newTasks : cuda_tasks
+        );
+    }
 
-    cudaQuickSort2ndPhase<Function, 128>
-        <<<cuda_2ndPhaseTasksAmount.getElement(0), threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
-
+    if(totalTask - tasksAmount > 0)
+    {
+        cudaQuickSort2ndPhase<Function, 128>
+            <<<totalTask - tasksAmount, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
+    }
+        
     cudaDeviceSynchronize();
     return;
 }
