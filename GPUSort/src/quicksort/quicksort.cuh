@@ -182,11 +182,11 @@ public:
     QUICKSORT(ArrayView<int, Devices::Cuda> _arr)
         : arr(_arr), aux(arr.getSize()),
           maxTasks(min(arr.getSize(), g_maxTasks)),
-          cuda_tasks(maxBlocks), cuda_newTasks(maxBlocks), cuda_2ndPhaseTasks(maxBlocks),
+          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
           cudaCounters(3),
           cuda_newTasksAmount(cudaCounters.getView(0, 1)),
           cuda_2ndPhaseTasksAmount(cudaCounters.getView(1, 2)),
-          cuda_blockToTaskMapping(maxBlocks),
+          cuda_blockToTaskMapping(maxTasks),
           cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
