@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
 #include <TNL/Matrices/MultidiagonalMatrixElement.h>
 
 namespace TNL {
@@ -90,7 +90,7 @@ class TridiagonalMatrixRowView
       /**
        * \brief Type of iterator for the matrix row.
        */
-      using IteratorType = SparseMatrixRowViewIterator< RowView >;
+      using IteratorType = MatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with all necessary data.

@@ -18,8 +18,8 @@ namespace Matrices {
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >::
-SparseMatrixRowViewIterator( RowViewType& rowView,
+MatrixRowViewIterator< RowView >::
+MatrixRowViewIterator( RowViewType& rowView,
                              const IndexType& localIdx )
 : rowView( rowView ), localIdx( localIdx )
 {
@@ -27,8 +27,8 @@ SparseMatrixRowViewIterator( RowViewType& rowView,
 
 template< typename RowView >
 __cuda_callable__ bool
-SparseMatrixRowViewIterator< RowView >::
-operator==( const SparseMatrixRowViewIterator& other ) const
+MatrixRowViewIterator< RowView >::
+operator==( const MatrixRowViewIterator& other ) const
 {
    if( &this->rowView == &other.rowView &&
        localIdx == other.localIdx )
@@ -38,16 +38,16 @@ operator==( const SparseMatrixRowViewIterator& other ) const
 
 template< typename RowView >
 __cuda_callable__ bool
-SparseMatrixRowViewIterator< RowView >::
-operator!=( const SparseMatrixRowViewIterator& other ) const
+MatrixRowViewIterator< RowView >::
+operator!=( const MatrixRowViewIterator& other ) const
 {
    return ! ( other == *this );
 }
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >&
-SparseMatrixRowViewIterator< RowView >::
+MatrixRowViewIterator< RowView >&
+MatrixRowViewIterator< RowView >::
 operator++()
 {
    if( localIdx < rowView.getSize() )
@@ -57,8 +57,8 @@ operator++()
 
 template< typename RowView >
 __cuda_callable__
-SparseMatrixRowViewIterator< RowView >&
-SparseMatrixRowViewIterator< RowView >::
+MatrixRowViewIterator< RowView >&
+MatrixRowViewIterator< RowView >::
 operator--()
 {
    if( localIdx > 0 )
@@ -68,7 +68,7 @@ operator--()
 
 template< typename RowView >
 __cuda_callable__ auto
-SparseMatrixRowViewIterator< RowView >::
+MatrixRowViewIterator< RowView >::
 operator*() -> MatrixElementType
 {
    return MatrixElementType(
@@ -80,7 +80,7 @@ operator*() -> MatrixElementType
 
 template< typename RowView >
 __cuda_callable__ auto
-SparseMatrixRowViewIterator< RowView >::
+MatrixRowViewIterator< RowView >::
 operator*() const -> const MatrixElementType
 {
    return MatrixElementType(

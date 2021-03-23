@@ -13,7 +13,7 @@
 #include <ostream>
 
 #include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
 
 namespace TNL {
 namespace Matrices {
@@ -99,7 +99,7 @@ class SparseMatrixRowView
       /**
        * \brief Type of iterator for the matrix row.
        */
-      using IteratorType = SparseMatrixRowViewIterator< RowView >;
+      using IteratorType = MatrixRowViewIterator< RowView >;
 
       /**
        * \brief Tells whether the parent matrix is a binary matrix.

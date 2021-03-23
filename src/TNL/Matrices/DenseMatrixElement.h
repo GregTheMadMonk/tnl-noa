@@ -56,7 +56,7 @@ class DenseMatrixElement
 
       const IndexType& rowIdx;
 
-      const IndexType& columnIdx;
+      const IndexType columnIdx;
 };
 
    } // namespace Matrices

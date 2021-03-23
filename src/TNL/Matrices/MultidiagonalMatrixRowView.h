@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/MultidiagonalMatrixElement.h>
-#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
 
 namespace TNL {
 namespace Matrices {
@@ -104,7 +104,7 @@ class MultidiagonalMatrixRowView
       /**
        * \brief Type of iterator for the matrix row.
        */
-      using IteratorType = SparseMatrixRowViewIterator< RowView >;
+      using IteratorType = MatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with all necessary data.

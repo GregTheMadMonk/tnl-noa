@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Matrices/SparseMatrixRowViewIterator.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
 #include <TNL/Matrices/DenseMatrixElement.h>
 
 namespace TNL {
@@ -84,7 +84,7 @@ class DenseMatrixRowView
       /**
        * \brief Type of iterator for the matrix row.
        */
-      using IteratorType = SparseMatrixRowViewIterator< RowView >;
+      using IteratorType = MatrixRowViewIterator< RowView >;
 
       /**
        * \brief Constructor with \e segmentView and \e values

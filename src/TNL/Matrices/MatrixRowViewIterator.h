@@ -1,5 +1,5 @@
  /***************************************************************************
-                          SparseMatrixRowViewIterator.h -  description
+                          MatrixRowViewIterator.h -  description
                              -------------------
     begin                : Mar 20, 2021
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -19,7 +19,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename RowView >
-class SparseMatrixRowViewIterator
+class MatrixRowViewIterator
 {
 
    public:
@@ -51,7 +51,7 @@ class SparseMatrixRowViewIterator
       static constexpr bool isBinary() { return RowViewType::isBinary(); };
 
       __cuda_callable__
-      SparseMatrixRowViewIterator( RowViewType& rowView,
+      MatrixRowViewIterator( RowViewType& rowView,
                                    const IndexType& localIdx );
 
       /**
@@ -61,7 +61,7 @@ class SparseMatrixRowViewIterator
        * \return \e true if both iterators points at the same point of the same matrix, \e false otherwise.
        */
       __cuda_callable__
-      bool operator==( const SparseMatrixRowViewIterator& other ) const;
+      bool operator==( const MatrixRowViewIterator& other ) const;
 
       /**
        * \brief Comparison of two matrix row iterators.
@@ -70,13 +70,13 @@ class SparseMatrixRowViewIterator
        * \return \e false if both iterators points at the same point of the same matrix, \e true otherwise.
        */
       __cuda_callable__
-      bool operator!=( const SparseMatrixRowViewIterator& other ) const;
+      bool operator!=( const MatrixRowViewIterator& other ) const;
 
       __cuda_callable__
-      SparseMatrixRowViewIterator& operator++();
+      MatrixRowViewIterator& operator++();
 
       __cuda_callable__
-      SparseMatrixRowViewIterator& operator--();
+      MatrixRowViewIterator& operator--();
 
       __cuda_callable__
       MatrixElementType operator*();
@@ -95,4 +95,4 @@ class SparseMatrixRowViewIterator
    } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SparseMatrixRowViewIterator.hpp>
+#include <TNL/Matrices/MatrixRowViewIterator.hpp>

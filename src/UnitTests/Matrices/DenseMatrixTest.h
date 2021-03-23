@@ -36,8 +36,6 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 void test_GetSerializationType()
 {
    using namespace TNL::Algorithms::Segments;
-   std::cerr << TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() << std::endl;
-   std::cerr << TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() << std::endl;
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, RowMajorOrder >" ) );
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, RowMajorOrder >" ) );
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, RowMajorOrder >" ) );
