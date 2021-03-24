@@ -10,7 +10,9 @@ cuda: $(CUDA_TARGETS)
 
 run: cuda
 	./$(CUDA_TARGETS)
-	
+
+measure: cuda
+	./$(CUDA_TARGETS) ../bitonic.csv
 
 .PHONY: clean
 clean:

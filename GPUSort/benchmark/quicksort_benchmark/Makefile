@@ -11,6 +11,8 @@ cuda: $(CUDA_TARGETS)
 run: cuda
 	./$(CUDA_TARGETS)
 	
+measure: cuda
+	./$(CUDA_TARGETS) ../quicksort.csv
 
 .PHONY: clean
 clean:

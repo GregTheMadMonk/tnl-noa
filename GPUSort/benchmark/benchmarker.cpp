@@ -16,7 +16,7 @@ using namespace TNL;
 using namespace TNL::Containers;
 using namespace std;
 
-const int lowPow = 15, highLow = 22;
+const int lowPow = 15, highLow = 25;
 const int tries = 50;
 
 double measure(const vector<int>&vec)
@@ -79,28 +79,40 @@ double decreasing(int size)
     return measure(vec);
 }
 
-int main()
+void start(ostream & out, string delim)
 {
-    string delim = "\t";
-    cout << "size" << delim;
-    cout << "random" << delim;
-    cout << "sorted" << delim;
-    cout << "almost" << delim;
-    cout << "decreasing" << delim;
-    cout << endl;
+    out << "size" << delim;
+    out << "random" << delim;
+    out << "sorted" << delim;
+    out << "almost" << delim;
+    out << "decreasing";
+    out << endl;
     
     for(int pow = lowPow; pow <= highLow; pow++)
     {
         int size =(1<< pow);
         vector<int> vec(size);
 
-        cout << "2^" << pow << delim;
-        cout << fixed << setprecision(3);
-        cout << random(size) << delim;
-        cout << sorted(size) << delim;
-        cout << almostSorted(size) << delim;
-        cout << decreasing(size) << delim;
-        cout << endl;
+        out << "2^" << pow << delim;
+        out << fixed << setprecision(3);
+        out << random(size) << delim;
+        out << sorted(size) << delim;
+        out << almostSorted(size) << delim;
+        out << decreasing(size);
+        out << endl;
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc == 1)
+    {
+        start(cout, "\t");
+    }
+    else
+    {
+        ofstream out(argv[1]);
+        start(out, ",");
     }
     return 0;
 }
