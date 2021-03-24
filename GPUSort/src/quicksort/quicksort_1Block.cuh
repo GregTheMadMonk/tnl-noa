@@ -99,7 +99,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
             end = stackArrEnd[stackTop-1];
             depth = stackDepth[stackTop-1];
             stackTop--;
-            pivot = pickPivot(depth%2 == 0? 
+            pivot = pickPivot((depth&1) == 0? 
                                     arr.getView(begin, end) :
                                     aux.getView(begin, end),
                                 Cmp
@@ -108,8 +108,8 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         __syncthreads();
 
         int size = end - begin;
-        auto src = depth%2 == 0 ? arr.getView(begin, end) : aux.getView(begin, end);
-        auto dst = depth%2 == 0 ? aux.getView(begin, end) : arr.getView(begin, end);
+        auto src = (depth&1) == 0 ? arr.getView(begin, end) : aux.getView(begin, end);
+        auto dst = (depth&1) == 0 ? aux.getView(begin, end) : arr.getView(begin, end);
 
         if(size <= blockDim.x*2)
         {

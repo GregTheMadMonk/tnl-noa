@@ -56,14 +56,14 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 
     if (threadIdx.x == 0)
     {
-        pivot = pickPivot(myTask.depth % 2 == 0 ? arr.getView(myTask.partitionBegin, myTask.partitionEnd) : aux.getView(myTask.partitionBegin, myTask.partitionEnd),
+        pivot = pickPivot( (myTask.depth&1) == 0 ? arr.getView(myTask.partitionBegin, myTask.partitionEnd) : aux.getView(myTask.partitionBegin, myTask.partitionEnd),
                           Cmp);
     }
     __syncthreads();
 
     bool isLast;
 
-    if (myTask.depth % 2 == 0)
+    if ( (myTask.depth&1) == 0)
     {
         isLast = cudaPartition(
             arr.getView(myTask.partitionBegin, myTask.partitionEnd),
