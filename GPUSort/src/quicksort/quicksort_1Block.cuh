@@ -138,7 +138,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         __syncthreads();
 
         for (int i = pivotBegin + threadIdx.x; i < pivotEnd; i += blockDim.x)
-            src[i] = dst[i] = pivot;
+            arr[begin + i] = pivot;
 
         if(threadIdx.x == 0)
         {

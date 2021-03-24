@@ -56,8 +56,11 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 
     if (threadIdx.x == 0)
     {
-        pivot = pickPivot( (myTask.depth&1) == 0 ? arr.getView(myTask.partitionBegin, myTask.partitionEnd) : aux.getView(myTask.partitionBegin, myTask.partitionEnd),
-                          Cmp);
+        if((myTask.depth&1) == 0)
+            pivot = pickPivot(arr.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+        else
+            pivot = pickPivot(aux.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+
     }
     __syncthreads();
 
@@ -81,8 +84,6 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     if (!isLast)
         return;
 
-    myTask = tasks[taskMapping[blockIdx.x]];
-
     int leftBegin = myTask.partitionBegin, leftEnd = myTask.partitionBegin + myTask.dstBegin;
     int rightBegin = myTask.partitionBegin + myTask.dstEnd, rightEnd = myTask.partitionEnd;
 
@@ -93,7 +94,6 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
         aux[i] = -1;
         #endif
         */
-        //aux[i] = -1;
         arr[i] = pivot;
     }
 
@@ -242,18 +242,17 @@ void QUICKSORT::sort(const Function &Cmp)
         iteration++;
     }
 
-    if(tasksAmount > 0)
+    Algorithms::MultiDeviceMemoryOperations<Devices::Cuda, Devices::Cuda>::copy(
+        cuda_2ndPhaseTasks.getData() + host_2ndPhaseTasksAmount,
+        iteration % 2 == 0? cuda_tasks.getData() : cuda_newTasks.getData(),
+        tasksAmount
+    );
+
+    int total = tasksAmount + host_2ndPhaseTasksAmount;
+    if(total > 0)
     {
         cudaQuickSort2ndPhase<Function, 128>
-            <<<tasksAmount, threadsPerBlock>>>(arr, aux, Cmp,
-            iteration % 2 == 0? cuda_tasks : cuda_newTasks
-        );
-    }
-    
-    if(host_2ndPhaseTasksAmount > 0)
-    {
-        cudaQuickSort2ndPhase<Function, 128>
-            <<<host_2ndPhaseTasksAmount, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
+            <<<total, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
     }
         
     cudaDeviceSynchronize();
