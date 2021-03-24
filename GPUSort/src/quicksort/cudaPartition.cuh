@@ -13,7 +13,33 @@ using namespace TNL::Containers;
 template <typename Value, typename Device, typename Function>
 __device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const Function & Cmp)
 {
-    return src[0];
+    //return src[0];
+    //return src[src.getSize()-1];
+
+    if(src.getSize() ==1)
+        return src[0];
+    
+    Value a = src[0], b = src[src.getSize()/2], c = src[src.getSize() - 1];
+
+    if(Cmp(a, b)) // ..a..b..
+    {
+        if(Cmp(b, c))// ..a..b..c
+            return b;
+        else if(Cmp(c, a))//..c..a..b..
+            return a;
+        else //..a..c..b..
+            return c;
+    }
+    else //..b..a..
+    {
+        if(Cmp(a, c))//..b..a..c
+            return a;
+        else if(Cmp(c, b))//..c..b..a..
+            return b;
+        else //..b..c..a..
+            return c;
+    }
+    
 }
 
 __device__
