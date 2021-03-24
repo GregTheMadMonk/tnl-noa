@@ -114,6 +114,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         if(size <= blockDim.x*2)
         {
             externSort<Function, 2048>(src, arr.getView(begin, end), Cmp);
+            __syncthreads();
             continue;
         }
 

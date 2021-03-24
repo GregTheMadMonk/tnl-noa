@@ -93,7 +93,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
         aux[i] = -1;
         #endif
         */
-        aux[i] = -1;
+        //aux[i] = -1;
         arr[i] = pivot;
     }
 
@@ -170,7 +170,7 @@ class QUICKSORT
     ArrayView<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer
 
     int tasksAmount; //counter for Host == cuda_newTasksAmount
-    int totalTask;   // cuda_newTasksAmount + cuda_2ndPhaseTasksAmount
+    int host_2ndPhaseTasksAmount;   // cuda_2ndPhaseTasksAmount
 
     Array<int, Devices::Cuda> cuda_blockToTaskMapping;
     ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
@@ -186,11 +186,12 @@ public:
           cudaCounters(3),
           cuda_newTasksAmount(cudaCounters.getView(0, 1)),
           cuda_2ndPhaseTasksAmount(cudaCounters.getView(1, 2)),
-          cuda_blockToTaskMapping(maxTasks),
+          cuda_blockToTaskMapping(maxBlocks),
           cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
-        totalTask = tasksAmount = 1;
+        tasksAmount = 1;
+        host_2ndPhaseTasksAmount = 0;
         cuda_2ndPhaseTasksAmount = 0;
         iteration = 0;
     }
@@ -212,8 +213,7 @@ public:
 template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
-    
-    while (tasksAmount > 0 && tasksAmount*2 < maxTasks)
+    while (tasksAmount > 0 && tasksAmount*2 < maxTasks && host_2ndPhaseTasksAmount + tasksAmount*2 < maxTasks)
     {
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock);
@@ -241,19 +241,19 @@ void QUICKSORT::sort(const Function &Cmp)
         processNewTasks();
         iteration++;
     }
-    
+
     if(tasksAmount > 0)
     {
         cudaQuickSort2ndPhase<Function, 128>
             <<<tasksAmount, threadsPerBlock>>>(arr, aux, Cmp,
-            iteration % 2 == 0? cuda_newTasks : cuda_tasks
+            iteration % 2 == 0? cuda_tasks : cuda_newTasks
         );
     }
-
-    if(totalTask - tasksAmount > 0)
+    
+    if(host_2ndPhaseTasksAmount > 0)
     {
         cudaQuickSort2ndPhase<Function, 128>
-            <<<totalTask - tasksAmount, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
+            <<<host_2ndPhaseTasksAmount, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
     }
         
     cudaDeviceSynchronize();
@@ -311,7 +311,8 @@ int QUICKSORT::initTasks(int elemPerBlock)
 void QUICKSORT::processNewTasks()
 {
     tasksAmount = cuda_newTasksAmount.getElement(0);
-    totalTask = tasksAmount + cuda_2ndPhaseTasksAmount.getElement(0);
+    cuda_newTasksAmount = 0;
+    host_2ndPhaseTasksAmount = cuda_2ndPhaseTasksAmount.getElement(0);
 }
 
 //-----------------------------------------------------------
