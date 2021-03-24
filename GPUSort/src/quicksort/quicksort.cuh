@@ -186,7 +186,7 @@ public:
           cudaCounters(3),
           cuda_newTasksAmount(cudaCounters.getView(0, 1)),
           cuda_2ndPhaseTasksAmount(cudaCounters.getView(1, 2)),
-          cuda_blockToTaskMapping(maxBlocks),
+          cuda_blockToTaskMapping(maxBlocks*2),
           cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
