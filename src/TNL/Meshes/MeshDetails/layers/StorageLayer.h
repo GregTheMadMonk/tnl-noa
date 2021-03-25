@@ -89,8 +89,6 @@ public:
    setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts )
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
-      static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
-                     "You try to set subentitiesCounts for subentities which are disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                     Device,
                                                     typename EntityTraits< Dimension >::EntityTopology >;

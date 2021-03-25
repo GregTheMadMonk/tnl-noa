@@ -173,26 +173,6 @@ struct EntitySeedHash
       // Note that we must use an associative function to combine the hashes,
       // because we *want* to ignore the order of the corner IDs.
       std::size_t hash = 0;
-      for( LocalIndexType i = 0; i < EntitySeed::getCornersCount(); i++ )
-//         hash ^= std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
-         hash += std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
-      return hash;
-   }
-};
-
-template< typename MeshConfig >
-struct EntitySeedHash< EntitySeed< MeshConfig, Topologies::Polygon > >
-{
-   using Seed = EntitySeed< MeshConfig, Topologies::Polygon >;
-
-   std::size_t operator()( const Seed& seed ) const
-   {
-      using LocalIndexType = typename Seed::LocalIndexType;
-      using GlobalIndexType = typename Seed::GlobalIndexType;
-
-      // Note that we must use an associative function to combine the hashes,
-      // because we *want* to ignore the order of the corner IDs.
-      std::size_t hash = 0;
       for( LocalIndexType i = 0; i < seed.getCornersCount(); i++ )
 //         hash ^= std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
          hash += std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );

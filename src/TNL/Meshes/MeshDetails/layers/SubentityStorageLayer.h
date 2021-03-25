@@ -343,7 +343,7 @@ protected:
    void save( File& file ) const {}
    void load( File& file ) {}
 
-   void setSubentitiesCounts( SubdimensionTag, const typename MeshTraitsType::NeighborCountsArray& );
+   void setSubentitiesCounts( SubdimensionTag, const typename MeshTraitsType::NeighborCountsArray& ) {}
    void getSubentitiesCount( SubdimensionTag ) {}
    void getSubentitiesMatrix( SubdimensionTag ) {}
 };
