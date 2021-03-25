@@ -19,6 +19,7 @@
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
+#include <TNL/Meshes/Topologies/Polygon.h>
 
 namespace TNL {
 namespace Meshes {
@@ -42,6 +43,9 @@ public:
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
 
+   // container for storing the subentity indices
+   using SubentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, EllpackSegments >;
+
    template< LocalIndexType subentityIndex,
              LocalIndexType subentityVertexIndex >
    struct Vertex
@@ -52,6 +56,29 @@ public:
                   subentityIndex,
                   subentityVertexIndex >::index;
    };
+};
+
+// Specialization for Polygons
+template< typename MeshConfig,
+          typename Device,
+          int Dimension >
+class MeshSubentityTraits<MeshConfig, Device, Topologies::Polygon, Dimension>
+{
+   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
+   using LocalIndexType  = typename MeshConfig::LocalIndexType;
+   using EntityTopology = Topologies::Polygon;
+
+public:
+   static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
+   static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
+
+   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology::dimension, Dimension );
+
+   using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
+   using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
+
+   // container for storing the subentity indices
+   using SubentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
 };
 
 } // namespace Meshes

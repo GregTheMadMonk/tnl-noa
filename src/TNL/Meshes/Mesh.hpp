@@ -180,6 +180,14 @@ getPoint( const GlobalIndexType vertexIndex )
    return this->points[ vertexIndex ];
 }
 
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SubentityDimension >
+void
+Mesh< MeshConfig, Device >::
+setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts )
+{
+   StorageBaseType::template setSubentitiesCounts< EntityDimension, SubentityDimension >( counts );
+}
 
 template< typename MeshConfig, typename Device >
    template< int EntityDimension, int SubentityDimension >
@@ -188,7 +196,7 @@ constexpr typename Mesh< MeshConfig, Device >::LocalIndexType
 Mesh< MeshConfig, Device >::
 getSubentitiesCount( const GlobalIndexType entityIndex ) const
 {
-   return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >();
+   return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >( entityIndex );
 }
 
 template< typename MeshConfig, typename Device >

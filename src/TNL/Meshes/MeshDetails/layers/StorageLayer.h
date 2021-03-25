@@ -38,6 +38,7 @@ class StorageLayerFamily
      public DualGraphLayer< MeshConfig, Device >
 {
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
+   using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
    using BaseType       = StorageLayer< MeshConfig, Device, DimensionTag< 0 > >;
    template< int Dimension >
    using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
@@ -84,22 +85,35 @@ public:
    }
 
    template< int Dimension, int Subdimension >
+   void
+   setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts )
+   {
+      static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
+                     "You try to set subentitiesCounts for subentities which are disabled in the mesh configuration." );
+      using BaseType = SubentityStorageLayerFamily< MeshConfig,
+                                                    Device,
+                                                    typename EntityTraits< Dimension >::EntityTopology >;
+      BaseType::template setSubentitiesCounts< Subdimension >( counts );
+   }
+
+   template< int Dimension, int Subdimension >
    __cuda_callable__
    typename MeshTraitsType::LocalIndexType
-   getSubentitiesCount() const
+   getSubentitiesCount( const GlobalIndexType entityIndex ) const
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
       static_assert( SubentityTraits< Dimension, Subdimension >::storageEnabled,
                      "You try to get subentities count for subentities which are disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                     Device,
-                                                    DimensionTag< Dimension > >;
-      return BaseType::template getSubentitiesCount< Subdimension >();
+                                                    typename EntityTraits< Dimension >::EntityTopology >;
+      return BaseType::template getSubentitiesCount< Subdimension >( entityIndex );
    }
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   typename MeshTraitsType::SubentityMatrixType&
+   typename MeshTraitsType::template SubentityMatrixType< Dimension, Subdimension >&
    getSubentitiesMatrix()
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
@@ -107,13 +121,13 @@ public:
                      "You try to get subentities matrix which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                     Device,
-                                                    DimensionTag< Dimension > >;
+                                                    typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSubentitiesMatrix< Subdimension >();
    }
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   const typename MeshTraitsType::SubentityMatrixType&
+   const typename MeshTraitsType::template SubentityMatrixType< Dimension, Subdimension >&
    getSubentitiesMatrix() const
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
@@ -121,7 +135,7 @@ public:
                      "You try to get subentities matrix which is disabled in the mesh configuration." );
       using BaseType = SubentityStorageLayerFamily< MeshConfig,
                                                     Device,
-                                                    DimensionTag< Dimension > >;
+                                                    typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSubentitiesMatrix< Subdimension >();
    }
 
@@ -192,7 +206,7 @@ class StorageLayer< MeshConfig,
                     true >
    : public SubentityStorageLayerFamily< MeshConfig,
                                          Device,
-                                         DimensionTag >,
+                                         typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public SubentityOrientationsLayerFamily< MeshConfig,
                                               Device,
                                               typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
@@ -208,7 +222,7 @@ public:
    using EntityTraitsType = typename MeshTraitsType::template EntityTraits< DimensionTag::value >;
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
-   using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, DimensionTag >;
+   using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
    using SubentityOrientationsBaseType = SubentityOrientationsLayerFamily< MeshConfig, Device, EntityTopology >;
    using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, DimensionTag >;
 

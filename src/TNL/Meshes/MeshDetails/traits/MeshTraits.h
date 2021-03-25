@@ -75,7 +75,8 @@ public:
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
 
    // container for storing the subentity indices
-   using SubentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, EllpackSegments >;
+   template< int Dimension, int Subdimension >
+   using SubentityMatrixType = typename SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::SubentityMatrixType;
 
    // container for storing the superentity indices
    using SuperentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;

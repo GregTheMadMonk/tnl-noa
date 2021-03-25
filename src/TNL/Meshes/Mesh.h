@@ -281,6 +281,9 @@ class Mesh
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;
+
+      template< int EntityDimension, int SubentityDimension >
+      void setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts );
 };
 
 template< typename MeshConfig, typename Device >
