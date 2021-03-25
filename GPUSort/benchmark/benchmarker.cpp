@@ -150,5 +150,10 @@ int main(int argc, char *argv[])
         ofstream out(argv[1]);
         start(out, ",");
     }
+    
+    if(notCorrectCounters > 0)
+    {
+        std::cerr << notCorrectCounters << " tries were sorted incorrectly" << std::endl;
+    }
     return 0;
 }
