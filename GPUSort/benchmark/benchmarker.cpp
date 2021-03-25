@@ -1,8 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <numeric>
 #include <iomanip>
+#include <vector>
+#include <algorithm>
+using namespace std;
 
-#include <TNL/Containers/Array.h>
 #include "../src/util/timer.h"
 
 //---------------------------
@@ -12,27 +15,49 @@
  * */
 //---------------------------
 
+#ifdef HAVE_CUDA
+
+#include <TNL/Containers/Array.h>
+#include "../src/util/algorithm.h"
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace std;
 
-const int lowPow = 15, highLow = 25;
+#endif
+
+static int notCorrectCounters = 0;
+
+const int lowPow = 13, highLow = 25;
 const int tries = 50;
 
 double measure(const vector<int>&vec)
 {
-    Array<int, Devices::Cuda> arr(vec.size());
     vector<double> resAcc;
+
 
     for(int i = 0; i < tries; i++)
     {
-        arr = vec;
+    #ifdef HAVE_CUDA
+        Array<int, Devices::Cuda> arr(vec);
         auto view = arr.getView();
 
         {
             TIMER t([&](double res){resAcc.push_back(res);});
             SORTERFUNCTION(view);
         }
+
+        if(!is_sorted(view))
+            notCorrectCounters++;
+    #else
+        vector<int> tmp = vec;
+
+        {
+            TIMER t([&](double res){resAcc.push_back(res);});
+            SORTERFUNCTION(tmp);
+        }
+
+        if(!std::is_sorted(tmp.begin(), tmp.end()))
+            notCorrectCounters++;
+    #endif
     }
 
     return accumulate(resAcc.begin(), resAcc.end(), 0.0) / resAcc.size();
@@ -79,13 +104,23 @@ double decreasing(int size)
     return measure(vec);
 }
 
+double zero_entropy(int size)
+{
+    vector<int> vec(size);
+    for(auto & x : vec)
+        x = size;
+                
+    return measure(vec);
+}
+
 void start(ostream & out, string delim)
 {
     out << "size" << delim;
     out << "random" << delim;
     out << "sorted" << delim;
     out << "almost" << delim;
-    out << "decreasing";
+    out << "decreas" << delim;
+    out << "zero_entropy";
     out << endl;
     
     for(int pow = lowPow; pow <= highLow; pow++)
@@ -98,7 +133,8 @@ void start(ostream & out, string delim)
         out << random(size) << delim;
         out << sorted(size) << delim;
         out << almostSorted(size) << delim;
-        out << decreasing(size);
+        out << decreasing(size) << delim;
+        out << zero_entropy(size);
         out << endl;
     }
 }
