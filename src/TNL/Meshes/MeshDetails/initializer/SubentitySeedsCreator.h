@@ -18,20 +18,20 @@
 
 #include <TNL/Algorithms/staticFor.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/Topologies/Polygon.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig,
-          typename EntityDimensionTag,
+          typename EntityTopology,
           typename SubentityDimensionTag >
 class SubentitySeedsCreator
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
-   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityTopology::dimension >;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubentityDimensionTag::value >::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, SubentityDimensionTag::value >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
@@ -57,17 +57,66 @@ public:
 
       return subentitySeeds;
    }
+
+   static LocalIndexType getSubentitiesCount( const SubvertexAccessorType& subvertices )
+   {
+      return SubentityTraits::count;
+   }
+};
+
+template< typename MeshConfig >
+class SubentitySeedsCreator< MeshConfig, Topologies::Polygon, DimensionTag< 1 > >
+{
+   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using DeviceType            = typename MeshTraitsType::DeviceType;
+   using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
+   using EntityTopology        = Topologies::Polygon;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityTopology::dimension >;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, 1 >::RowView;
+   using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 1 >;
+   using SubentityTopology     = typename SubentityTraits::SubentityTopology;
+
+public:
+   using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
+   using SubentitySeedArray = Containers::Array< SubentitySeed, DeviceType, LocalIndexType >;
+   
+   static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
+   {
+      SubentitySeedArray seeds;
+      LocalIndexType verticesCount = getVerticesCount( subvertices );
+      seeds.setSize( verticesCount );
+
+      for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
+      {
+         SubentitySeed& seed = seeds[ i ];
+         seed.setCornerId( 0, subvertices.getColumnIndex( i ) );
+         seed.setCornerId( 1, subvertices.getColumnIndex( (i + 1) % verticesCount ) );
+      }
+
+      return seeds;
+   }
+
+   static LocalIndexType getSubentitiesCount( const SubvertexAccessorType& subvertices )
+   {
+      return getVerticesCount( subvertices );
+   }
+private:
+   static LocalIndexType getVerticesCount( const SubvertexAccessorType& subvertices )
+   {
+      LocalIndexType i;
+      for( i = 0; i < subvertices.getSize() && subvertices.getColumnIndex( i ) >= 0; i++ ) {}
+      return i;
+   }
 };
 
 template< typename MeshConfig,
-          typename EntityDimensionTag >
-class SubentitySeedsCreator< MeshConfig, EntityDimensionTag, DimensionTag< 0 > >
+          typename EntityTopology >
+class SubentitySeedsCreator< MeshConfig, EntityTopology, DimensionTag< 0 > >
 {
    using MeshTraitsType        = MeshTraits< MeshConfig >;
    using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
-   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityDimensionTag::value >;
-   using EntityTopology        = typename EntityTraitsType::EntityTopology;
-   using SubvertexAccessorType = typename MeshTraitsType::SubentityMatrixType::RowView;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityTopology::dimension >;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, 0 >::RowView;
    using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
    using SubentityTopology     = typename SubentityTraits::SubentityTopology;
 
@@ -80,6 +129,50 @@ public:
       for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
          seeds[ i ].setCornerId( 0, subvertices.getColumnIndex( i ) );
       return seeds;
+   }
+
+   static LocalIndexType getSubentitiesCount( const SubvertexAccessorType& subvertices )
+   {
+      return subvertices.getSize();
+   }
+};
+
+template< typename MeshConfig >
+class SubentitySeedsCreator< MeshConfig, Topologies::Polygon, DimensionTag< 0 > >
+{
+   using MeshTraitsType        = MeshTraits< MeshConfig >;
+   using DeviceType            = typename MeshTraitsType::DeviceType;
+   using LocalIndexType        = typename MeshTraitsType::LocalIndexType;
+   using EntityTopology        = Topologies::Polygon;
+   using EntityTraitsType      = typename MeshTraitsType::template EntityTraits< EntityTopology::dimension >;
+   using SubvertexAccessorType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, 0 >::RowView;
+   using SubentityTraits       = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
+   using SubentityTopology     = typename SubentityTraits::SubentityTopology;
+
+public:
+   using SubentitySeedArray = Containers::Array< EntitySeed< MeshConfig, SubentityTopology >, DeviceType, LocalIndexType >;
+
+   static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
+   {
+      SubentitySeedArray seeds;
+      seeds.setSize( getVerticesCount( subvertices ) );
+
+      for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
+         seeds[ i ].setCornerId( 0, subvertices.getColumnIndex( i ) );
+
+      return seeds;
+   }
+
+   static LocalIndexType getSubentitiesCount( const SubvertexAccessorType& subvertices )
+   {
+      return getVerticesCount( subvertices );
+   }
+private:
+   static LocalIndexType getVerticesCount( const SubvertexAccessorType& subvertices )
+   {
+      LocalIndexType i;
+      for( i = 0; i < subvertices.getSize() && subvertices.getColumnIndex( i ) >= 0; i++ ) {}
+      return i;
    }
 };
 
