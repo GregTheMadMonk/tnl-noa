@@ -14,6 +14,7 @@
 #include <TNL/Meshes/Topologies/Quadrangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
+#include <TNL/Meshes/Topologies/Polygon.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
 #include "EntityTests.h"
@@ -49,6 +50,13 @@ public:
 };
 
 class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+class TestPolygonMeshConfig : public DefaultConfig< Topologies::Polygon >
 {
 public:
    static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
@@ -967,6 +975,197 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
 
    testFinishedMesh( mesh );
 }
+
+TEST( MeshTest, PolygonTest )
+{
+   using PolygonMeshEntityType = MeshEntity< TestPolygonMeshConfig, Devices::Host, Topologies::Polygon >;
+   using EdgeMeshEntityType = typename PolygonMeshEntityType::SubentityTraits< 1 >::SubentityType;
+   using VertexMeshEntityType = typename PolygonMeshEntityType::SubentityTraits< 0 >::SubentityType;
+
+   static_assert( PolygonMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing polygon entity does not store edges as required." );
+   static_assert( PolygonMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing polygon entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
+   static_assert( EdgeMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing edge entity does not store polygons as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 2 >::storageEnabled, "Testing vertex entity does not store polygons as required." );
+   static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
+
+   using PointType = typename VertexMeshEntityType::PointType;
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
+   /****
+    * We set-up the following situation
+
+                     point4
+                       /\
+                      /  \
+                     /    \
+                    /      \
+                 edge5    edge4
+                  /          \
+                 /  polygon1  \
+                /  (triangle)  \
+               /                \
+              /                  \
+      point3 /________edge2_______\ point2
+             |                    |
+             |                    |
+             |      polygon0      |
+             |     (rectangle)    |
+           edge3                edge1
+             |                    |
+             |____________________|
+      point0         edge0          point1
+
+   */
+
+   PointType point0( 0.0, 0.0 ),
+             point1( 1.0, 0.0 ),
+             point2( 0.0, 0.5 ),
+             point3( 1.0, 0.5 ),
+             point4( 0.5, 1.0 );
+
+   typedef Mesh< TestPolygonMeshConfig > PolygonTestMesh;
+   PolygonTestMesh mesh;
+   MeshBuilder< PolygonTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+   meshBuilder.setPoint( 4, point4 );
+
+   meshBuilder.setCellsCount( 2 );
+
+   meshBuilder.getCellSeed( 0 ).setCornersCount( 4 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornersCount(), 4 );
+
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 0 ], 0 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 1 ], 1 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 2 ], 2 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 3 ], 3 );
+
+   meshBuilder.getCellSeed( 1 ).setCornersCount( 3 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornersCount(), 3 );
+
+   meshBuilder.getCellSeed( 1 ).setCornerId( 0, 3 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
+   meshBuilder.getCellSeed( 1 ).setCornerId( 2, 4 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 0 ], 3 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 1 ], 2 );
+   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 2 ], 4 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   // tests for entities counts
+   EXPECT_EQ( mesh.getEntitiesCount< 2 >(), 2 );
+   EXPECT_EQ( mesh.getEntitiesCount< 1 >(), 6 );
+   EXPECT_EQ( mesh.getEntitiesCount< 0 >(), 5 );
+
+   // tests for points
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).getPoint(), point0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).getPoint(), point1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).getPoint(), point2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).getPoint(), point3 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 4 ).getPoint(), point4 );
+
+   // tests for the subentities layer
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSubentityIndex< 0 >( 1 ), 1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 0 ), 1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSubentityIndex< 0 >( 1 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 0 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSubentityIndex< 0 >( 1 ), 3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 0 ), 3 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSubentityIndex< 0 >( 1 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 0 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSubentityIndex< 0 >( 1 ), 4 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 5 ).template getSubentityIndex< 0 >( 0 ), 4 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 5 ).template getSubentityIndex< 0 >( 1 ), 3 );
+
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 1 ), 1 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 2 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 0 >( 3 ), 3 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 1 ), 1 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 2 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 0 ).template getSubentityIndex< 1 >( 3 ), 3 );
+
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 0 ), 3 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 1 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 0 >( 2 ), 4 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 0 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 1 ), 4 );
+   EXPECT_EQ( mesh.template getEntity< 2 >( 1 ).template getSubentityIndex< 1 >( 2 ), 5 );
+
+   // tests for the superentities layer
+   ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentitiesCount< 1 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 1 >( 1 ), 3 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 0 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentitiesCount< 1 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 1 >( 1 ), 1 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 1 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentitiesCount< 1 >(),  3 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentityIndex< 1 >( 0 ), 1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentityIndex< 1 >( 1 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentityIndex< 1 >( 2 ), 4 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentitiesCount< 2 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 2 ).template getSuperentityIndex< 2 >( 1 ), 1 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentitiesCount< 1 >(),  3 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentityIndex< 1 >( 0 ), 2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentityIndex< 1 >( 1 ), 3 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentityIndex< 1 >( 2 ), 5 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentitiesCount< 2 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 3 ).template getSuperentityIndex< 2 >( 1 ), 1 );
+
+   ASSERT_EQ( mesh.template getEntity< 0 >( 4 ).template getSuperentitiesCount< 1 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 4 ).template getSuperentityIndex< 1 >( 0 ), 4 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 4 ).template getSuperentityIndex< 1 >( 1 ), 5 );
+   ASSERT_EQ( mesh.template getEntity< 0 >( 4 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 0 >( 4 ).template getSuperentityIndex< 2 >( 0 ), 1 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 0 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 1 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 1 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 2 ).template getSuperentitiesCount< 2 >(),  2 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 2 ).template getSuperentityIndex< 2 >( 1 ), 1 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 3 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 3 ).template getSuperentityIndex< 2 >( 0 ), 0 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 4 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 4 ).template getSuperentityIndex< 2 >( 0 ), 1 );
+
+   ASSERT_EQ( mesh.template getEntity< 1 >( 5 ).template getSuperentitiesCount< 2 >(),  1 );
+   EXPECT_EQ( mesh.template getEntity< 1 >( 5 ).template getSuperentityIndex< 2 >( 0 ), 1 );
+
+   // tests for the dual graph layer
+   ASSERT_EQ( mesh.getCellNeighborsCount( 0 ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( 0, 0 ), 1 );
+
+   ASSERT_EQ( mesh.getCellNeighborsCount( 1 ), 1 );
+   EXPECT_EQ( mesh.getCellNeighborIndex( 1, 0 ), 0 );
+
+   testFinishedMesh( mesh );
+};
 
 } // namespace MeshTest
 
