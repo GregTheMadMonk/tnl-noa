@@ -58,6 +58,34 @@ void countElem(ArrayView<int, Devices::Cuda> arr,
 }
 
 __device__
+void copyDataShared(ArrayView<int, Devices::Cuda> src,
+              ArrayView<int, Devices::Cuda> dst,
+              int *sharedMem,
+              int smallerStart, int biggerStart,
+              int smallerTotal, int biggerTotal,
+              int smallerOffset, int biggerOffset, //exclusive prefix sum of elements
+              const int &pivot)
+{
+
+    for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
+    {
+        int data = src[i];
+        if (data < pivot)
+            sharedMem[smallerOffset++] = data;
+        else if (data > pivot)
+            sharedMem[smallerTotal + biggerOffset++] = data;
+
+    }
+    __syncthreads();
+
+    for (int i = threadIdx.x; i < smallerTotal; i += blockDim.x)
+            dst[smallerStart + i] = sharedMem[i];
+
+    for (int i = threadIdx.x; i < biggerTotal; i += blockDim.x)
+            dst[biggerStart + i] = sharedMem[smallerTotal + i];
+}
+
+__device__
 void copyData(ArrayView<int, Devices::Cuda> src,
               ArrayView<int, Devices::Cuda> dst,
               int smallerStart, int biggerStart,
@@ -78,12 +106,14 @@ void copyData(ArrayView<int, Devices::Cuda> src,
 template <typename Function>
 __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
                               ArrayView<int, Devices::Cuda> dst,
+                              int * sharedMem,
                               const Function &Cmp, const int & pivot,
                               int elemPerBlock, TASK & task
                               )
 {
     static __shared__ int myBegin, myEnd;
     static __shared__ int smallerStart, biggerStart;
+    static __shared__ int smallerTotal, biggerTotal;
     static __shared__ bool writePivot;
 
     if (threadIdx.x == 0)
@@ -100,21 +130,31 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
     int smaller = 0, bigger = 0;
     countElem(srcView, smaller, bigger, pivot);
 
-    int smallerOffset = blockInclusivePrefixSum(smaller);
-    int biggerOffset = blockInclusivePrefixSum(bigger);
+    int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
+    int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
 
     if (threadIdx.x == blockDim.x - 1) //last thread in block has sum of all values
     {
-        smallerStart = atomicAdd(&(task.dstBegin), smallerOffset);
-        biggerStart = atomicAdd(&(task.dstEnd), -biggerOffset) - biggerOffset;
+        smallerStart = atomicAdd(&(task.dstBegin), smallerPrefSumInc);
+        biggerStart = atomicAdd(&(task.dstEnd), -biggerPrefSumInc) - biggerPrefSumInc;
+        smallerTotal = smallerPrefSumInc;
+        biggerTotal = biggerPrefSumInc;
     }
     __syncthreads();
 
     //-----------------------------------------------------------
 
-    int destSmaller = smallerStart + smallerOffset - smaller;
-    int destBigger = biggerStart + biggerOffset - bigger;
+    /*
+    int destSmaller = smallerStart + smallerPrefSumInc - smaller;
+    int destBigger = biggerStart + biggerPrefSumInc - bigger;
     copyData(srcView, dst, destSmaller, destBigger, pivot);
+    */
+
+    copyDataShared(srcView, dst, sharedMem,
+                    smallerStart, biggerStart,
+                    smallerTotal, biggerTotal,
+                    smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
+                    pivot);
     __syncthreads();
 
     //-----------------------------------------------------------

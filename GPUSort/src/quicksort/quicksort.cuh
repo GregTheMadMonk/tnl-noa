@@ -51,6 +51,8 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
                                       ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
+    extern __shared__ int externMem[];
+    int * sharedMem = externMem;
     static __shared__ int pivot;
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
 
@@ -71,6 +73,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
         isLast = cudaPartition(
             arr.getView(myTask.partitionBegin, myTask.partitionEnd),
             aux.getView(myTask.partitionBegin, myTask.partitionEnd),
+            sharedMem,
             Cmp, pivot, elemPerBlock, myTask);
     }
     else
@@ -78,6 +81,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
         isLast = cudaPartition(
             aux.getView(myTask.partitionBegin, myTask.partitionEnd),
             arr.getView(myTask.partitionBegin, myTask.partitionEnd),
+            sharedMem,
             Cmp, pivot, elemPerBlock, myTask);
     }
 
@@ -217,10 +221,11 @@ void QUICKSORT::sort(const Function &Cmp)
     {
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock);
+        int externMemByteSize = elemPerBlock*sizeof(int);
         if (iteration % 2 == 0)
         {
             cudaQuickSort1stPhase<Function>
-                <<<blocksCnt, threadsPerBlock>>>(
+                <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                     arr, aux, Cmp, elemPerBlock,
                     cuda_tasks,
                     cuda_blockToTaskMapping,
@@ -230,13 +235,14 @@ void QUICKSORT::sort(const Function &Cmp)
         }
         else
         {
-            cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock>>>(
-                arr, aux, Cmp, elemPerBlock,
-                cuda_newTasks,
-                cuda_blockToTaskMapping,
-                cuda_tasks,
-                cuda_newTasksAmount.getData(),
-                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
+            cudaQuickSort1stPhase
+                <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
+                    arr, aux, Cmp, elemPerBlock,
+                    cuda_newTasks,
+                    cuda_blockToTaskMapping,
+                    cuda_tasks,
+                    cuda_newTasksAmount.getData(),
+                    cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
         }
         processNewTasks();
         iteration++;
