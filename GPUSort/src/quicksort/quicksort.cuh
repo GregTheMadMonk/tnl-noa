@@ -24,12 +24,24 @@ __device__ void writeNewTask(int begin, int end, int depth, ArrayView<TASK, Devi
     if (size <= blockDim.x * 2)
     {
         int idx = atomicAdd(secondPhaseTasksCnt, 1);
-        secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
+        if(idx < secondPhaseTasks.getSize())
+            secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
+        else
+            printf("ran out of memory for second phase task, part of array may stay unsorted!!!\n");
     }
     else
     {
         int idx = atomicAdd(newTasksCnt, 1);
-        newTasks[idx] = TASK(begin, end, depth + 1);
+        if(idx < newTasks.getSize())
+            newTasks[idx] = TASK(begin, end, depth + 1);
+        else
+        {
+            int idx = atomicAdd(secondPhaseTasksCnt, 1);
+            if(idx < secondPhaseTasks.getSize())
+                secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
+            else
+                printf("ran out of memory for newtask, there isnt even space in second phase task list\nPart of array may stay unsorted!!!\n");
+        }
     }
 }
 
