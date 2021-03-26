@@ -183,7 +183,7 @@ class InitializerLayer< MeshConfig, typename MeshTraits< MeshConfig >::Dimension
          for( LocalIndexType i = 0; i < capacities.getSize(); i++ )
             capacities[ i ] = cellSeeds[ i ].getCornersCount();
 
-         initializer.template initSubentityMatrix< EntityTopology::dimension, 0 >( capacities );
+         EntityInitializerType::initSubvertexMatrix( capacities, initializer );
 
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
             EntityInitializerType::initEntity( i, cellSeeds[ i ], initializer );
@@ -252,7 +252,7 @@ class InitializerLayer
          NeighborCountsArray capacities( numberOfEntities );
          int vertexCount = MeshTraitsType::template SubentityTraits< EntityTopology, 0 >::count;
          capacities.setValue( vertexCount );
-         initializer.template initSubentityMatrix< EntityTopology::dimension, 0 >( capacities );
+         EntityInitializerType::initSubvertexMatrix( capacities, initializer );
 
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, typename MeshTraitsType::CellTopology, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )

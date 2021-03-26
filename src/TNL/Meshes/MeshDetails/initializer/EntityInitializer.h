@@ -54,8 +54,14 @@ class EntityInitializer
 
    using SeedType         = EntitySeed< MeshConfig, EntityTopology >;
    using InitializerType  = Initializer< MeshConfig >;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
 public:
+   static void initSubvertexMatrix( const NeighborCountsArray& capacities, InitializerType& initializer )
+   {
+      initializer.template initSubentityMatrix< EntityTopology::dimension, 0 >( capacities );
+   }
+
    static void initEntity( const GlobalIndexType entityIndex, const SeedType& entitySeed, InitializerType& initializer )
    {
       // this is necessary if we want to use existing entities instead of intermediate seeds to create subentity seeds
@@ -76,7 +82,9 @@ class EntityInitializer< MeshConfig, EntityTopology, false >
 
    using SeedType         = EntitySeed< MeshConfig, EntityTopology >;
    using InitializerType  = Initializer< MeshConfig >;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 public:
+   static void initSubvertexMatrix( const NeighborCountsArray& capacities, InitializerType& initializer ) {}
    static void initEntity( const GlobalIndexType entityIndex, const SeedType& entitySeed, InitializerType& initializer ) {}
 };
 
