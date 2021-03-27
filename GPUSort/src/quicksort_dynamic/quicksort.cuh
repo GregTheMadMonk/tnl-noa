@@ -3,8 +3,14 @@
 #include <TNL/Containers/Array.h>
 #include "task.h"
 
-using CudaArrayView = TNL::Containers::ArrayView<int, TNL::Devices::Cuda>;
-template<typename Function>
-void quicksort(CudaArrayView arr, const Function & Cmp);
+using namespace TNL;
+using namespace TNL::Containers;
 
-void quicksort(TNL::Containers::ArrayView<int, TNL::Devices::Cuda>arr);
+template <typename Function>
+__global__ void cudaQuickSort(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+                              const Function &Cmp, int availBlocks, int depth);
+
+template<typename Function>
+void quicksort(ArrayView<int, Devices::Cuda> arr, const Function & Cmp);
+
+void quicksort(ArrayView<int, Devices::Cuda>arr);

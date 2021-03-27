@@ -3,11 +3,10 @@
 struct TASK
 {
     int begin, end;
-    int stillWorkingCnt;
     
     __cuda_callable__
-    TASK(int _begin, int _end, int blocks)
-        : begin(_begin), end(_end), stillWorkingCnt(blocks){}
+    TASK(int _begin, int _end)
+        : begin(_begin), end(_end){}
 
     __cuda_callable__
     TASK(){};
