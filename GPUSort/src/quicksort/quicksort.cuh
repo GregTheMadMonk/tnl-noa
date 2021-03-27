@@ -313,7 +313,7 @@ int QUICKSORT::getSetsNeeded() const
         return size / minElemPerBlock + (size % minElemPerBlock != 0);
     };
     auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
-    return Algorithms::Reduction<Devices::Cuda>::reduce(0, tasksAmount, reduction, fetch, 0);
+    return Algorithms::Reduction<Devices::Cuda>::reduce(0, tasksAmount, fetch, reduction, 0);
 }
 
 int QUICKSORT::getElemPerBlock() const
