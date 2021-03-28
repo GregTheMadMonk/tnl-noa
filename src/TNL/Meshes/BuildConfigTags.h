@@ -22,11 +22,14 @@
 
 namespace TNL {
 namespace Meshes {
+/**
+ * \brief Namespace for the configuration of the \ref GridTypeResolver and
+ * \ref MeshTypeResolver using so-called build config tags and partial class
+ * template specializations.
+ */
 namespace BuildConfigTags {
 
-/****
- * Configuration for structured grids
- */
+// Configuration for structured grids
 
 // 1, 2, and 3 dimensions are enabled by default
 template< typename ConfigTag, int Dimension > struct GridDimensionTag { enum { enabled = ( Dimension > 0 && Dimension <= 3 ) }; };
@@ -48,7 +51,7 @@ template< typename ConfigTag > struct GridIndexTag< ConfigTag, int > { enum { en
 template< typename ConfigTag > struct GridIndexTag< ConfigTag, long int > { enum { enabled = true }; };
 
 // The Grid is enabled for allowed dimensions and Real, Device and Index types.
-// 
+//
 // By specializing this tag you can enable or disable custom combinations of
 // the grid template parameters. The default configuration is identical to the
 // individual per-type tags.
@@ -65,9 +68,7 @@ struct GridTag< ConfigTag, Grid< Dimension, Real, Device, Index > >
 };
 
 
-/****
- * Configuration for unstructured meshes
- */
+// Configuration for unstructured meshes
 
 // Meshes are enabled on all available devices by default.
 template< typename ConfigTag, typename Device > struct MeshDeviceTag { enum { enabled = false }; };
