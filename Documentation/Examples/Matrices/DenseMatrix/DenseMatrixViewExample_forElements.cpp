@@ -10,7 +10,7 @@ void forElementsExample()
    auto matrixView = matrix.getView();
 
    auto f = [=] __cuda_callable__ ( int rowIdx, int columnIdx, int globalIdx, double& value, bool& compute ) {
-      if( rowIdx < columnIdx )
+      if( columnIdx > rowIdx )
          compute = false;
       else
          value = rowIdx + columnIdx;

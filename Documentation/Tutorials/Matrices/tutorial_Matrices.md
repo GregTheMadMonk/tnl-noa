@@ -395,7 +395,7 @@ Here we show an example:
 
 \includelineno DenseMatrixViewExample_getRow.cpp
 
-Here we create the matrix on the line 10 and get the matrix view on the line 16. Next we use `ParallelFor` (\ref TNL::Algorithms::ParallelFor) (line 26) to iterate over the matrix rows and the lambda function `f` (lines 18-21) for each of them. In the lambda function, we first fetch the matrix row by means of the method `getRow` (\ref TNL::Matrices::DenseMatrixView::getRow) and next we set the matrix elements by using the method `setElement` of the matrix row (\ref TNL::Matrices::DenseMatrixRowView::setElement). For the compatibility with the sparse matrices, use the variant of `setElement` with the parameter `localIdx`. It has no effect here, it is only for compatibility of the interface.
+Here we create the matrix on the line 10 and get the matrix view on the line 16. Next we use `ParallelFor` (\ref TNL::Algorithms::ParallelFor) (line 31) to iterate over the matrix rows and call the lambda function `f` (lines 19-26) for each of them. In the lambda function, we first fetch the matrix row by means of the method `getRow` (\ref TNL::Matrices::DenseMatrixView::getRow) and next we set the matrix elements by using the method `setElement` of the matrix row (\ref TNL::Matrices::DenseMatrixRowView::setElement). For the compatibility with the sparse matrices, use the variant of `setElement` with the parameter `localIdx`. It has no effect here, it is only for compatibility of the interface.
 
 The result looks as follows:
 
@@ -405,13 +405,15 @@ The result looks as follows:
 
 This method iterates in parallel over all matrix rows. In fact, it combines \ref TNL::Algorithms::ParallelFor and \ref TNL::Matrices:::DenseMatrix::getRow method in one. See the following example. It is even a bit simpler compared to the previous one:
 
-\includelineno DenseMatrixViewExample_forRows.cpp
+\includelineno DenseMatrixExample_forRows.cpp
 
-The lambda function, which is called for each matrix row (lines 15-17), have to accept parameter `row` with type `RowView`. This type is defined inside each TNL matrix and in the case of the dense matrix, it is \ref TNL::Matrices::DenseMatrixRowView. We use the method \ref TNL::Matrices::DenseMatrixRowView::getRowIndex to get the index of the matrix row being currently processed and method \ref TNL::Matrices::DenseMatrixRowView::setElement which sets the value of the element with given column index (the first parameter).
+The lambda function `f`, which is called for each matrix row (lines 18-25), have to accept parameter `row` with type `RowView`. This type is defined inside each TNL matrix and in the case of the dense matrix, it is \ref TNL::Matrices::DenseMatrixRowView. We use the method \ref TNL::Matrices::DenseMatrixRowView::getRowIndex to get the index of the matrix row being currently processed and method \ref TNL::Matrices::DenseMatrixRowView::setElement which sets the value of the element with given column index (the first parameter).
+
+Next, on the lines 32-38, we call another lambda function which firstly find the largest element in each row (lines 33-35) and then it divides the matrix row by its value (lines 36-37).
 
 The result looks as follows:
 
-\include DenseMatrixViewExample_forRows.out
+\include DenseMatrixExample_forRows.out
 
 #### Method `forElements`
 
@@ -571,7 +573,7 @@ The result looks as follows:
 
 More efficient method, especially for GPUs, is to combine `getRow` (\ref TNL::Matrices::SparseMatrix::getRow) method with `ParallelFor` (\ref TNL::Algorithms::ParallelFor) and lambda function as the following example demonstrates:
 
-\includelineno SparseMatrixViewExample_getRow.cpp
+\includelineno SparseMatrixExample_getRow.cpp
 
 On the line 21, we create small matrix having five rows (number of rows is given by the size of the [initializer list](https://en.cppreference.com/w/cpp/utility/initializer_list) ) and columns (number of columns is given by the second parameter) and we set each row capacity to one or three (particular elements of the initializer list). On the line 41, we call `ParallelFor` (\ref TNL::Algorithms::ParallelFor) to iterate over all matrix rows. Each row is processed by the lambda function `f` (lines 24-36). In the lambda function, we first fetch a sparse matrix row (\ref TNL::Matrices::SparseMatrixRowView) (line 25) which serves for accessing particular matrix elements in the matrix row. This object has a method `setElement` (\ref TNL::Matrices::SparseMatrixRowView::setElement) accepting three parameters:
 
@@ -581,7 +583,7 @@ On the line 21, we create small matrix having five rows (number of rows is given
 
 The result looks as follows:
 
-\include SparseMatrixViewExample_getRow.out
+\include SparseMatrixExample_getRow.out
 
 #### Method `forRows`
 
@@ -593,9 +595,11 @@ The differences are:
 
 1. We do not need to get the matrix view as we did in the previous example.
 2. We call the method `forAllRows` (\ref TNL::Matrices::SparseMatrix::forAllRows) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither.
-3. The lambda function `f` (lines 23-35) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::SparseMatrix::RowView which is \ref TNL::Matrices::SparseMatrixRowView) instead of the index of the matrix row. Therefore we do not need to call the method `getRow` (\ref TNL::Matrices::SparseMatrix::getRow). On the other hand, we need the method `geRowIndex` (\ref TNL::Matrices::SparseMatrixRowView::getRowIndex) to get the index of the matrix row (line 24).
+3. The lambda function `f` (lines 27-39) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::SparseMatrix::RowView which is \ref TNL::Matrices::SparseMatrixRowView) instead of the index of the matrix row. Therefore we do not need to call the method `getRow` (\ref TNL::Matrices::SparseMatrix::getRow). On the other hand, we need the method `geRowIndex` (\ref TNL::Matrices::SparseMatrixRowView::getRowIndex) to get the index of the matrix row (line 28).
 
-The rest of the lambda function remains the same. The result looks as follows:
+On the lines 46-52, we call a lambda function which computes sum of all elements in a row (lines 47-49) and it divides the row by the `sum` then (lines 50-51).
+
+ The result looks as follows:
 
 \include SparseMatrixExample_forRows.out
 
@@ -853,7 +857,7 @@ The result looks as follows:
 
 \includelineno TridiagonalMatrixViewExample_getRow.cpp
 
-We create a matrix with the same size (line 10-15). Next, we fetch the tridiagonal matrix view (ef TNL::Matrices::TridiagonalMatrixView ,line 16) which we use in the lambda function for matrix elements modification (lines 18-26). Inside the lambda function, we first get a matrix row by calling the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) using which we can access the matrix elements (lines 21-25). We would like to stress that the method `setElement` addresses the matrix elements with the `localIdx` parameter which is a rank of the nonzero element in the matrix row - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). The lambda function is called by the `ParallelFor` (\ref TNL::Algorithms::ParallelFor).
+We create a matrix with the same size (line 22-27). Next, we fetch the tridiagonal matrix view (ef TNL::Matrices::TridiagonalMatrixView ,line 28) which we use in the lambda function for matrix elements modification (lines 30-38). Inside the lambda function, we first get a matrix row by calling the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) using which we can access the matrix elements (lines 33-37). We would like to stress that the method `setElement` addresses the matrix elements with the `localIdx` parameter which is a rank of the nonzero element in the matrix row - see [Indexing of nonzero matrix elements in sparse matrices](#indexing-of-nonzero-matrix-elements-in-sparse-matrices). The lambda function is called by the `ParallelFor` (\ref TNL::Algorithms::ParallelFor).
 
 The result looks as follows:
 
@@ -871,7 +875,9 @@ The differences are:
 2. We call the method `forAllRows` (\ref TNL::Matrices::TridiagonalMatrix::forAllRows) (line 33) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither.
 3. The lambda function `f` (lines 25-31) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::TridiagonalMatrix::RowView which is \ref TNL::Matrices::TridiagonalMatrixRowView) instead of the index of the matrix row. Therefore we do not need to call the method `getRow` (\ref TNL::Matrices::TridiagonalMatrix::getRow). On the other hand, we need the method `geRowIndex` (\ref TNL::Matrices::TridiagonalMatrixRowView::getRowIndex) to get the index of the matrix row (line 24).
 
-The rest of the lambda function remains the same. The result looks as follows:
+Next, we compute sum of absolute values of matrix elements in each row and store it in a vector (lines 39-46). Firstly we create the vector `sum_vector` for storing the sums (line 39) and get a vector view `sum_view` to get access to the vector from a lambda function. On the lines 41-46, we call lambda function for each matrix row which iterates over all matrix elements and sum their absolute values. Finally we store the result to the output vector (line 45).
+
+The result looks as follows:
 
 \include TridiagonalMatrixExample_forRows.out
 
@@ -1139,6 +1145,8 @@ As in the case of other matrix types, the method `forRows` (\ref TNL::Matrices::
 
  We call the method `forAllRows` (\ref TNL::Matrices::MultidiagonalMatrix::forAllRows) (line 36) instead of `ParallelFor` (\ref TNL::Algorithms::ParallelFor) which is simpler since we do not have to state the device type explicitly. The method `forAllRows` calls the method `forRows` for all matrix rows so we do not have to state explicitly the interval of matrix rows neither. The lambda function `f` (lines 28-35) accepts one parameter `row` of the type `RowView` (\ref TNL::Matrices::MultidiagonalMatrix::RowView which is \ref TNL::Matrices::MultidiagonalMatrixRowView). At the beginning of the lambda function, we call the method `geRowIndex` (\ref TNL::Matrices::MultidiagonalMatrixRowView::getRowIndex) to get the index of the matrix row (line 29).
 
+Next, we compute sum of absolute values of matrix elements in each row and store it in a vector (lines 39-46). Firstly we create the vector `sum_vector` for storing the sums (line 39) and get a vector view `sum_view` to get access to the vector from a lambda function. On the lines 41-46, we call lambda function for each matrix row which iterates over all matrix elements and sum their absolute values. Finally we store the result to the output vector (line 45).
+
 The result looks as follows:
 
 \include MultidiagonalMatrixExample_forRows.out
@@ -1218,9 +1226,15 @@ Method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices:
 
 \includelineno LambdaMatrixExample_forRows.cpp
 
-We start with the lambda functions (lines 17-61) defining the elements of the lambda matrix. Next, we create the lambda matrix `matrix` (lines 62-64) and the dense matrix `denseMatrix` (lines 66-67) together with the dense matrix view (line 68). The lambda function `f` (lines 69-73) serves for copying matrix elements from the lambda matrix to the dense matrix. The process of matrix elements copying is started by calling the method `forAllRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices::LambdaMatrix::forAllRows) (line 74).
+We start with the lambda functions (lines 17-61) defining the elements of the lambda matrix. Next, we create the lambda matrix `matrix` (lines 62-64) and the dense matrix `denseMatrix` (lines 67-68) together with the dense matrix view (line 69). The lambda function `f` (lines 70-74) serves for copying matrix elements from the lambda matrix to the dense matrix. The process of matrix elements copying is started by calling the method `forAllRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices::LambdaMatrix::forAllRows) (line 75).
 
-Note, however, that use of `forElements` method (\ref TNL::Matrices::LambdaMatrix::forElements) would be more convenient. The result looks as follows:
+Note, however, that use of `forElements` method (\ref TNL::Matrices::LambdaMatrix::forElements) would be more convenient.
+
+Next, we compute sum of absolute values of matrix elements in each row and store it in a vector (lines 83-90). Firstly we create the vector `sum_vector` for storing the sums (line 83) and get a vector view `sum_view` to get access to the vector from a lambda function. On the lines 85-90, we call lambda function for each matrix row which iterates over all matrix elements and sum their absolute values. Finally we store the result to the output vector (line 92).
+
+
+
+The result looks as follows:
 
 \include LambdaMatrixExample_forRows.out
 

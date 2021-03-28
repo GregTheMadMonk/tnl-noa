@@ -62,11 +62,12 @@ void forRowsExample()
    auto matrix = TNL::Matrices::LambdaMatrixFactory< double, Device, int >::create(
       matrixSize, matrixSize, matrixElements, rowLengths );
    using MatrixType = decltype( matrix );
+   using RowView = typename MatrixType::RowView;
 
    TNL::Matrices::DenseMatrix< double, Device > denseMatrix( matrixSize, matrixSize );
    denseMatrix.setValue( 0.0 );
    auto dense_view = denseMatrix.getView();
-   auto f = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
+   auto f = [=] __cuda_callable__ ( const RowView& row ) mutable {
       auto dense_row = dense_view.getRow( row.getRowIndex() );
       for( int localIdx = 0; localIdx < row.getSize(); localIdx++ )
          dense_row.setValue( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
@@ -75,6 +76,20 @@ void forRowsExample()
 
    std::cout << "Laplace operator lambda matrix: " << std::endl << matrix << std::endl;
    std::cout << "Laplace operator dense matrix: " << std::endl << denseMatrix << std::endl;
+
+   /***
+    * Compute sum of elements in each row and store it into a vector.
+    */
+   TNL::Containers::Vector< double, Device > sum_vector( matrixSize );
+   auto sum_view = sum_vector.getView();
+   matrix.forAllRows( [=] __cuda_callable__ ( const RowView& row ) mutable {
+      double sum( 0.0 );
+      for( auto element : row )
+         sum += TNL::abs( element.value() );
+      sum_view[ row.getRowIndex() ] = sum;
+   } );
+
+   std::cout << "Sums in matrix rows = " << sum_vector << std::endl;
 }
 
 int main( int argc, char* argv[] )

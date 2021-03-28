@@ -7,7 +7,8 @@
 template< typename Device >
 void getRowExample()
 {
-   TNL::Matrices::DenseMatrix< double, Device > matrix( 5, 5 );
+   const int size = 5;
+   TNL::Matrices::DenseMatrix< double, Device > matrix( size, size );
 
    /***
     * Create dense matrix view which can be captured by the following lambda
@@ -17,7 +18,11 @@ void getRowExample()
 
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
       auto row = matrixView.getRow( rowIdx );
-      row.setValue( rowIdx, 10 * ( rowIdx + 1 ) );
+      if( rowIdx > 0 )
+         row.setValue( rowIdx - 1, -1.0 );
+      row.setValue( rowIdx, rowIdx + 1.0 );
+      if( rowIdx < size - 1 )
+         row.setValue( rowIdx + 1, -1.0 );
    };
 
    /***

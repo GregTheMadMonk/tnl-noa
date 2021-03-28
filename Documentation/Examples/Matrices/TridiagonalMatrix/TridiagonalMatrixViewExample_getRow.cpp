@@ -7,11 +7,23 @@
 template< typename Device >
 void getRowExample()
 {
+   /***
+    * Set the following matrix (dots represent zero matrix elements and zeros are
+    * padding zeros for memory alignment):
+    *
+    *    0 /  2 -1  .  .  . \  -> { 0, 0, 1 }
+    *      | -1  2 -1  .  . |  -> { 0, 2, 1 }
+    *      |  . -1  2 -1. . |  -> { 3, 2, 1 }
+    *      |  .  . -1  2 -1 |  -> { 3, 2, 1 }
+    *      \  .  .  . -1  2 /  -> { 3, 2, 1 }
+    *
+    */
+
    const int matrixSize( 5 );
    using MatrixType = TNL::Matrices::TridiagonalMatrix< double, Device >;
    MatrixType matrix(
       matrixSize,  // number of matrix rows
-      matrixSize  // number of matrix columns
+      matrixSize   // number of matrix columns
    );
    auto view = matrix.getView();
 
@@ -19,7 +31,7 @@ void getRowExample()
       auto row = view.getRow( rowIdx );
 
       if( rowIdx > 0 )
-         row.setElement( 0, -1.0 );  // elements below the diagonal
+         row.setElement( 0, -1.0 );   // elements below the diagonal
       row.setElement( 1, 2.0 );      // elements on the diagonal
       if( rowIdx < matrixSize - 1 )  // elements above the diagonal
          row.setElement( 2, -1.0 );
