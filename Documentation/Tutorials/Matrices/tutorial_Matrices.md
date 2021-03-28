@@ -1,33 +1,13 @@
 \page tutorial_Matrices  Matrices tutorial
 
-## Table of Contents
-1. [Overview of matrix types](#overview_of_matrix_types)
-2. [Indexing of nonzero matrix elements in sparse matrices](#indexing_of_nonzero_matrix_elements_in_sparse_matrices)
-3. [Matrix view](#matrix_view)
-4. [Allocation and setup of different matrix types](#allocation_and_setup_of_different_matrix_types)
-   1. [Dense matrices](#dense_matrices_setup)
-   2. [Sparse matrices](#sparse_matrices_setup)
-   3. [Tridiagonal matrices](#tridiagonal_matrices_setup)
-   4. [Multidiagonal matrices](#multidiagonal_matrices_setup)
-   5. [Lambda matrices](#lambda_matrices_setup)
-   6. [Distributed matrices](#distributed-matrices-setup)
-5. [Flexible reduction in matrix rows](#flexible_reduction_in_matrix_rows)
-   1. [Dense matrices example](#dense-matrices-flexible-reduction-example)
-   2. [Sparse matrices example](#sparse-matrices-flexible-reduction-example)
-   3. [Tridiagonal matrices example](#tridiagonal-matrices-flexible-reduction-example)
-   4. [Multidiagonal matrices example](#multidiagonal-matrices-flexible-reduction-example)
-   5. [Lambda matrices example](#lambda-matrices-flexible-reduction-example)
-6. [Matrix-vector product](#matrix_vector_product)
-7. [Matrix I/O operations](#matrix_io_operations)
-   1. [Matrix reader and writer](#matrix-reader-and-writer)
-8. [Appendix](#appendix)
+[TOC]
 
 ## Introduction
 
 TNL offers several types of matrices like dense (\ref TNL::Matrices::DenseMatrix), sparse (\ref TNL::Matrices::SparseMatrix), tridiagonal (\ref TNL::Matrices::TridiagonalMatrix), multidiagonal (\ref TNL::Matrices::MultidiagonalMatrix) and lambda matrices (\ref TNL::Matrices::LambdaMatrix). The sparse matrices can be symmetric to lower the memory requirements. The interfaces of given matrix types are designed to be as unified as possible to ensure that the user can easily switch between different matrix types while making no or only a little changes in the source code. All matrix types allows traversing all matrix elements and manipulate them using lambda functions as well as performing flexible reduction in matrix rows. The following text describes particular matrix types and their unified interface in details.
 
 
-## Overview of matrix types <a name="overview_of_matrix_types"></a>
+## Overview of matrix types
 
 In a lot of numerical algorithms either dense or sparse matrices are used. The dense matrix (\ref TNL::Matrices::DenseMatrix) is such that all or at least most of its matrix elements are nonzero. On the other hand [sparse matrix](https://en.wikipedia.org/wiki/Sparse_matrix) (\ref TNL::Matrices::SparseMatrix) is a matrix which has most of the matrix elements equal to zero. From the implementation point of view, the data structures for the dense matrices allocates all matrix elements while formats for the sparse matrices aim to store explicitly only the nonzero matrix elements. The most popular format for storing the sparse matrices is [CSR format](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)). However, especially for better data alignment in memory of GPUs, many other formats were designed. In TNL, the user may choose between several different sparse matrix formats. There are also sparse matrices with specific pattern of the nonzero elements like [tridiagonal matrices](https://en.wikipedia.org/wiki/Tridiagonal_matrix) (\ref TNL::Matrices::TridiagonalMatrix) which "has nonzero elements on the main diagonal, the first diagonal below this, and the first diagonal above the main diagonal only". An example of such matrix may look as follows:
 
@@ -115,7 +95,7 @@ In this table:
 
 The multidiagonal matrix type is especially suitable for the finite difference method or similar numerical methods for solution of the partial differential equations.
 
-## Indexing of nonzero matrix elements in sparse matrices<a name="indexing-of-nonzero-matrix-elements-in-sparse-matrices"></a>
+## Indexing of nonzero matrix elements in sparse matrices
 
 The sparse matrix formats usually, in the first step, compress the matrix rows by omitting the zero matrix elements as follows
 
@@ -155,7 +135,7 @@ In such a form, it is more efficient to refer the nonzero matrix elements in giv
 \right)
 \f]
 
-## Matrix view <a name="matrix_view"></a>
+## Matrix view
 
 Matrix views are small reference objects which help accessing the matrix in GPU kernels or lambda functions being executed on GPUs. We describe this in details in section about [Shared pointers and views](tutorial_GeneralConcepts.html#shared-pointers-and-views). The problem lies in fact that we cannot pass references to GPU kernels and we do not want to pass there deep copies of matrices. Matrix view is some kind of reference to a matrix. A copy of matrix view is always shallow and so it behaves like a reference.  The following example shows how to obtain the matrix view by means of method `getView` and pass it to a lambda function:
 
@@ -164,7 +144,7 @@ Matrix views are small reference objects which help accessing the matrix in GPU 
 Here we create sparse matrix `matrix` on the line 11, and use the method `getView` to get the matrix view on the line 12. The view is then used in the lambda function on the line 15 where it is captured by value (see `[=]` in the definition of the lambda function `f` on the line 14).
 
 
-## Allocation and setup of different matrix types <a name="allocation_and_setup_of_different_matrix_types"></a>
+## Allocation and setup of different matrix types
 
 There are several ways how to create a new matrix:
 
@@ -362,7 +342,7 @@ You can see the source code of the previous benchmark in [Appendix](#benchmark-o
 
 In the following parts we will describe hoe to setup particular matrix types by means of the methods mentioned above.
 
-### Dense matrices <a name="dense_matrices_setup"></a>
+### Dense matrices
 
 Dense matrix (\ref TNL::Matrices::DenseMatrix) is a templated class defined in the namespace \ref TNL::Matrices. It has five template parameters:
 
@@ -432,7 +412,7 @@ The result looks as follows:
 
 \include DenseMatrixExample_forElements.out
 
-### Sparse matrices <a name="sparse_matrices_setup"></a>
+### Sparse matrices
 
 [Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possibly some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. See the [Overview of matrix types](#overview_of_matrix_types) for the differences in memory requirements.
 
@@ -456,7 +436,7 @@ Major disadvantage of sparse matrices is that there are a lot of different forma
 
 In the following text we will show how to create and setup sparse matrices.
 
-#### Setting of row capacities<a name="setting-of-matrix-row-capacities"></a>
+#### Setting of row capacities
 
 Larger sparse matrices are created in two steps:
 
@@ -530,7 +510,7 @@ In this example, we create the matrix in two steps. Firstly we use constructor w
 
 \include SparseMatrixExample_Constructor_init_list_2.out
 
-#### STL map<a name="sparse-matrix-stl-map"></a>
+#### STL map
 
 The constructor which creates the sparse matrix from [`std::map`](https://en.cppreference.com/w/cpp/container/map) is useful especially in situations when you cannot estimate the [matrix row capacities](#setting-of-matrix-row-capacities) in advance. You can first store the matrix elements in [`std::map`](https://en.cppreference.com/w/cpp/container/map) data structure in a [COO](https://en.wikipedia.org/wiki/Sparse_matrix#Coordinate_list_(COO)) format manner. It means that each entry of the `map` is the following pair:
 
@@ -675,7 +655,7 @@ All we need to do is set the `Real` type to `bool` as we can see on the line 9. 
 
 \include BinarySparseMatrixExample.out
 
-### Tridiagonal matrices <a name="tridiagonal_matrices_setup"></a>
+### Tridiagonal matrices
 
 Tridiagonal matrix format serves for specific matrix pattern when the nonzero matrix elements can be placed only at the diagonal and immediately next to the diagonal. Here is an example:
 
@@ -858,7 +838,7 @@ The result looks as follows:
 
 \include TridiagonalMatrixViewExample_forElements.out
 
-### Multidiagonal matrices <a name="multidiagonal_matrices_setup"></a>
+### Multidiagonal matrices
 
 Multidiagonal matrices are generalization of the tridiagonal ones. It is a special type of sparse matrices with specific pattern of the nonzero matrix elements which are positioned only parallel along diagonal. See the following example:
 
@@ -1120,7 +1100,7 @@ In this example, the matrix element value depends only on the subdiagonal index 
 
 \include MultidiagonalMatrixExample_forElements.out
 
-### Lambda matrices <a name="lambda_matrices_setup"></a>
+### Lambda matrices
 
 Lambda matrix (\ref TNL::Matrices::LambdaMatrix) is a special type of matrix which could be also called *matrix-free matrix*. The matrix elements are not stored in memory explicitly but they are evaluated **on-the-fly** by means of user defined lambda functions. If the matrix elements can be expressed by computationally not expansive formula, we can significantly reduce the memory consumption which is appreciated especially on GPUs. Since the memory accesses are quite expensive even on both CPU and GPU, we can get, at the end, even much faster code.
 
@@ -1195,11 +1175,11 @@ The result of both examples looks as follows:
 
 \include LambdaMatrixExample_Laplace.out
 
-### Distributed matrices <a name="distributed-matrices-setup"></a>
+### Distributed matrices
 
 TODO: Write documentation on distributed matrices.
 
-## Flexible reduction in matrix rows <a name="flexible_reduction_in_matrix_rows"></a>
+## Flexible reduction in matrix rows
 
 Flexible reduction in matrix rows is a powerful tool for many different matrix operations. It is represented by the method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction,
 \ref TNL::Matrices::SparseMatrix::rowsReduction, \ref TNL::Matrices::TridiagonalMatrix::rowsReduction, \ref TNL::Matrices::MultidiagonalMatrix::rowsReduction, \ref TNL::Matrices::LambdaMatrix::rowsReduction) and similar to the method `forElements` it iterates over particular matrix rows. However, it performs *flexible paralell reduction* in addition. For example, the matrix-vector product can be seen as a reduction of products of matrix elements with the input vector in particular matrix rows. The first element of the result vector ios obtained as:
@@ -1267,7 +1247,7 @@ The method `rowsReduction` (\ref TNL::Matrices::DenseMatrix::rowsReduction, \ref
 
 Though the interface is the same for all matrix types, in the following part we will show several examples for different matrix types to better demonstrate possible ways of use of the flexible reduction for matrices.
 
-### Dense matrices example <a name="dense-matrices-flexible-reduction-example"></a>
+### Dense matrices example
 
 The following example demonstrates implementation of the dense matrix-vector product \f$ {\bf y} = A \vec {\bf x}\f$, i.e.
 
@@ -1301,13 +1281,13 @@ The lambda functions rare:
 
 * `fetch` lambda function just returns absolute value of \f$a_{ij} \f$ which is represented again by the variable `value`.
 * `reduce` lambda function returns larger of given values.
-* `keep` stores the results to the output vector the same way as in the previous example. 
+* `keep` stores the results to the output vector the same way as in the previous example.
 
 Note, that the idempotent value for the reduction is \ref std::numeric_limits< double >::lowest. Of course, if we compute the maximum of all output vector elements, we get some kind of maximal matrix norm. The output looks as:
 
 \include DenseMatrixExample_rowsReduction_maxNorm.out
 
-### Sparse matrices example <a name="sparse-matrices-flexible-reduction-example"></a>
+### Sparse matrices example
 
 The following example demonstrates sparse matrix-vector product:
 
@@ -1331,7 +1311,7 @@ The lambda functions on the lines 39-48 are the same as in the example with the 
 
 \include SparseMatrixExample_rowsReduction_vectorProduct.out
 
-### Tridiagonal matrices example <a name="tridiagonal-matrices-flexible-reduction-example"></a>
+### Tridiagonal matrices example
 
 In this example, we will compute maximal absolute value in each row of the following tridiagonal matrix:
 
@@ -1361,7 +1341,7 @@ Note, that the idempotent value for the reduction is \ref std::numeric_limits< d
 
 \include TridiagonalMatrixExample_rowsReduction.out
 
-### Multidiagonal matrices example <a name="multidiagonal-matrices-flexible-reduction-example"></a>
+### Multidiagonal matrices example
 
 The next example computes again the maximal absolute value in each row. Now, we do it for multidiagonal matrix the following form:
 
@@ -1387,7 +1367,7 @@ Finally, we call the method `rowsReduction` (\ref TNL::Matrices::MultidiagonalMa
 
 \include MultidiagonalMatrixExample_rowsReduction.out
 
-### Lambda matrices example <a name="lambda-matrices-flexible-reduction-example"></a>
+### Lambda matrices example
 
 The reduction of matrix rows is available for the lambda matrices as well. See the following example:
 
@@ -1417,7 +1397,7 @@ Note that the interface of the lambda functions is the same as for other matrix 
 
 \include LambdaMatrixExample_rowsReduction.out
 
-## Matrix-vector product <a name="matrix_vector_product"></a>
+## Matrix-vector product
 
 One of the most important matrix operation is the matrix-vector multiplication. It is represented by a method `vectorProduct` (\ref TNL::Matrices::DenseMatrix::vectorProduct, \ref TNL::Matrices::SparseMatrix::vectorProduct, \ref TNL::Matrices::TridiagonalMatrix::vectorProduct, \ref TNL::Matrices::MultidiagonalMatrix::vectorProduct, \ref TNL::Matrices::LambdaMatrix::vectorProduct). It is templated method with two template parameters `InVector` and `OutVector` telling the types of input and output vector respectively. Usually one will substitute some of \ref TNL::Containers::Array, \ref TNL::Containers::ArrayView, \ref TNL::Containers::Vector or \ref TNL::Containers::VectorView for these types. The method accepts the following parameters:
 
@@ -1434,11 +1414,11 @@ To summarize, this method computes the following formula:
 
 `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector.`
 
-## Matrix I/O operations<a name="matrix_io_operations"></a>
+## Matrix I/O operations
 
 All  matrices can be saved to a file using a method `save` (\ref TNL::Matrices::DenseMatrix::save, \ref TNL::Matrices::SparseMatrix::save, \ref TNL::Matrices::TridiagonalMatrix::save, \ref TNL::Matrices::MultidiagonalMatrix::save, \ref TNL::Matrices::LambdaMatrix::save) and restored with a method `load` (\ref TNL::Matrices::DenseMatrix::load, \ref TNL::Matrices::SparseMatrix::load, \ref TNL::Matrices::TridiagonalMatrix::load, \ref TNL::Matrices::MultidiagonalMatrix::load, \ref TNL::Matrices::LambdaMatrix::load). To print the matrix, there is a method `print` (\ref TNL::Matrices::DenseMatrix::print, \ref TNL::Matrices::SparseMatrix::print, \ref TNL::Matrices::TridiagonalMatrix::print, \ref TNL::Matrices::MultidiagonalMatrix::print, \ref TNL::Matrices::LambdaMatrix::print) can be used.
 
-### Matrix reader and writer<a name="matrix-reader-and-writer"></a>
+### Matrix reader and writer
 
 TNL also offers matrix reader (\ref TNL::Matrices::MatrixReader) and matrix writer (\ref TNL::Matrices::MatrixWriter) for import and export of matrices respectively. The matrix reader currently supports only [Coordinate MTX file format](https://math.nist.gov/MatrixMarket/formats.html#coord) which is popular mainly for sparse matrices. By the mean of the matrix writer, we can export TNL matrices into coordinate MTX format as well. In addition, the matrices can be exported to a text file suitable for [Gnuplot program](http://www.gnuplot.info/) which can be used for matrix visualization. Finally, a pattern of nonzero matrix elements can be visualized via the EPS format - [Encapsulated PostScript](https://en.wikipedia.org/wiki/Encapsulated_PostScript). We demonstrate both matrix reader and writer in the following example:
 
@@ -1450,19 +1430,16 @@ The result looks as follows:
 
 \includelineno MatrixWriterReaderExample.out
 
-## Appendix<a name="appendix"></a>
+## Appendix
 
-### Benchmark of dense matrix setup<a name="benchmark-of-dense-matrix-setup"></a>
+### Benchmark of dense matrix setup
 
 \includelineno DenseMatrixSetup_Benchmark.cpp
 
-### Benchmark of sparse matrix setup<a name="benchmark-of-sparse-matrix-setup"></a>
+### Benchmark of sparse matrix setup
 
 \includelineno SparseMatrixSetup_Benchmark.cpp
 
-### Benchmark of multidiagonal matrix setup<a name="benchmark-of-multidiagonal-matrix-setup"></a>
+### Benchmark of multidiagonal matrix setup
 
 \includelineno MultidiagonalMatrixSetup_Benchmark.cpp
-
-
-

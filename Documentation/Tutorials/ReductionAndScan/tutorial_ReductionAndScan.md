@@ -1,28 +1,16 @@
 \page tutorial_ReductionAndScan Flexible (parallel) reduction and prefix-sum tutorial
 
+[TOC]
+
 ## Introduction
 
 This tutorial introduces flexible parallel reduction in TNL. It shows how to easily implement parallel reduction with user defined operations which may run on both CPU and GPU. Parallel reduction is a programming pattern appering very often in different kind of algorithms for example in scalar product, vector norms or mean value evaluation but also in sequences or strings comparison.
 
-## Table of Contents
-1. [Flexible Parallel Reduction](#flexible_parallel_reduction)
-   1. [Sum](#flexible_parallel_reduction_sum)
-   2. [Product](#flexible_parallel_reduction_product)
-   3. [Scalar product](#flexible_parallel_reduction_scalar_product)
-   4. [Maxium norm](#flexible_parallel_reduction_maximum_norm)
-   5. [Vectors comparison](#flexible_parallel_reduction_vector_comparison)
-   6. [Update and Residue](#flexible_parallel_reduction_update_and_residue)
-   7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
-   8. [Reduction with argument](#flexible_parallel_reduction_with_argument)
-2. [Flexible Scan](#flexible_scan)
-   1. [Inclusive and exclusive scna](#inclusive_and_exclusive_scan)
-   2. [Segmented scan](#segmented_scan)
-
-## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
+## Flexible parallel reduction
 
 We will explain the *flexible parallel reduction* on several examples. We start with the simplest sum of sequence of numbers followed by more advanced problems like scalar product or vector norms.
 
-### Sum<a name="flexible_parallel_reduction_sum"></a>
+### Sum
 
 We start with simple problem of computing sum of sequence of numbers \f[ s = \sum_{i=1}^n a_i. \f] Sequentialy, such sum can be computed very easily as follows:
 
@@ -52,7 +40,7 @@ Note tha we pass `0.0` as the last argument of the method `Reduction< Device >::
 
 Sum of vector elements can be also obtained as [`sum(v)`](../html/namespaceTNL.html#a41cea4796188f0877dbb6e72e2d3559e).
 
-### Product<a name="flexible_parallel_reduction_product"></a>
+### Product
 
 To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+b` with `a*b` in the definition of `reduce`. We get the following code:
 
@@ -64,7 +52,7 @@ leading to output like this:
 
 Product of vector elements can be computed using fuction [`product(v)`](../html/namespaceTNL.html#ac11e1901681d36b19a0ad3c6f167a718).
 
-### Scalar product<a name="flexible_parallel_reduction_scalar_product"></a>
+### Scalar product
 
 One of the most important operation in the linear algebra is the scalar product of two vectors. Compared to coputing the sum of vector elements we must change the function `fetch` to read elements from both vectors and multiply them. See the following example.
 
@@ -76,7 +64,7 @@ The result is:
 
 Scalar product of vectors `u` and `v` in TNL can be computed by \ref TNL::dot "TNL::dot(u, v)" or simply as \ref TNL::Containers::operator, "(u, v)".
 
-### Maxium norm<a name="flexible_parallel_reduction_maximum_norm"></a>
+### Maxium norm
 
 Maximum norm of a vector equals modulus of the vector largest element.  Therefore, `fetch` must return the absolute value of the vector elements and `reduce` wil return maximum of given values. Look at the following example.
 
@@ -88,7 +76,7 @@ The output is:
 
 Maximum norm in TNL is computed by the function \ref TNL::maxNorm.
 
-### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
+### Vectors comparison
 
 Comparison of two vectors involve (parallel) reduction as well. The `fetch` part is responsible for comparison of corresponding vector elements result of which is boolean `true` or `false` for each vector elements. The `reduce` part must perform logical and operation on all of them. We must not forget to change the *idempotent element* to `true`. The code may look as follows:
 
@@ -98,9 +86,9 @@ And the output looks as:
 
 \include ComparisonExample.out
 
-### Update and residue<a name="flexible_parallel_reduction_update_and_residue"></a>
+### Update and residue
 
-In iterative solvers we often need to update a vector and compute the update norm at the same time. For example the [Euler method](https://en.wikipedia.org/wiki/Euler_method) is defined as 
+In iterative solvers we often need to update a vector and compute the update norm at the same time. For example the [Euler method](https://en.wikipedia.org/wiki/Euler_method) is defined as
 
 \f[
 \bf u^{k+1} = \bf u^k + \tau \Delta \bf u.
@@ -114,7 +102,7 @@ The result reads as:
 
 \include UpdateAndResidueExample.out
 
-### Simple MapReduce<a name="flexible_parallel_reduction_simple_map_reduce"></a>
+### Simple MapReduce
 
 We can also filter the data to be reduced. This operation is called [MapReduce](https://en.wikipedia.org/wiki/MapReduce) . You simply add necessary if statement to the fetch function, or in the case of the following example we use a statement
 
@@ -149,8 +137,8 @@ See the following example and compare the execution times.
 \include MapReduceExample-3.cpp
 
 \include MapReduceExample-3.out
- 
-### Reduction with argument<a name="flexible_parallel_reduction_with_argument"></a>
+
+### Reduction with argument
 
 In some situations we may need to locate given element in the vector. For example index of the smallest or the largest element. `reductionWithArgument` is a function which can do it. In the following example, we modify function for computing the maximum norm of a vedctor. Instead of just computing the value, now we want to get index of the element having the absolute value equal to the max norm. The lambda function `reduction` do not compute only maximum of two given elements anymore, but it must also compute index of the winner. See the following code:
 
@@ -168,9 +156,10 @@ The result looks as:
 
 \include ReductionWithArgument.out
 
-## Flexible scan<a name="flexible_scan"></a>
+## Flexible scan
 
-### Inclusive and exclusive scan<a name="inclusive_and_exclusive_scan"></a>
+### Inclusive and exclusive scan
+
 Inclusive scan (or prefix sum) operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
 
 \f[
@@ -215,7 +204,7 @@ Exclusive scan works the same way, we just need to specify it by the second temp
 
 ```
 Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduce, 0.0 );
-``` 
+```
 
 The complete example looks as follows:
 
@@ -225,7 +214,7 @@ And the result looks as:
 
 \include ExclusiveScanExample.out
 
-### Segmented scan<a name="segmented_scan"></a>
+### Segmented scan
 
 Segmented scan is a modification of common scan. In this case the sequence of numbers in hand is divided into segments like this, for example
 
