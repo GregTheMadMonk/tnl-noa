@@ -74,7 +74,7 @@ These components can be individually enabled or disabled and installed by a
 convenient `install` script. See the [Installation](#installation) section for
 details.
 
-## Installation <a name="installation"></a>
+## Installation   {#installation}
 
 You can either download the [stable version](http://tnl-project.org/download/)
 or directly clone the git repository via HTTPS:
@@ -91,7 +91,7 @@ the library in your project. See the [Usage](#usage) section for details.
 You may also want to install some optional dependencies and/or compile and
 install various tools and examples. See the following section for details.
 
-### Dependencies <a name="dependencies"></a>
+### Dependencies   {#dependencies}
 
 In order to use TNL, you need to install a compatible compiler, a parallel
 computing platform, and (optionally) some libraries.
@@ -183,7 +183,7 @@ Individual components can be disabled and the installation prefix can be changed
 by passing command-line arguments to the install script. Run `./install --help`
 for details.
 
-## Usage <a name="usage"></a>
+## Usage   {#usage}
 
 TNL can be used with various build systems if you configure the compiler flags
 as explained below. See also an [example project](
