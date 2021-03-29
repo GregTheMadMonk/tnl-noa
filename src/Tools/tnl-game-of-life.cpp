@@ -71,33 +71,26 @@ struct MeshConfigTemplateTag< MyConfigTag >
              typename GlobalIndex = int,
              typename LocalIndex = GlobalIndex >
    struct MeshConfig
+      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
    {
-      using CellTopology = Cell;
-      using RealType = Real;
-      using GlobalIndexType = GlobalIndex;
-      using LocalIndexType = LocalIndex;
-
-      static constexpr int worldDimension = WorldDimension;
-      static constexpr int meshDimension = Cell::dimension;
-
       template< typename EntityTopology >
       static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension >= meshDimension - 1;
+         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
       }
 
       template< typename EntityTopology >
       static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
       {
 //         return false;
-         return (EntityTopology::dimension == 0 || EntityTopology::dimension == meshDimension - 1) && SuperentityDimension == meshDimension;
+         return (EntityTopology::dimension == 0 || EntityTopology::dimension == Cell::dimension - 1) && SuperentityDimension == Cell::dimension;
       }
 
       template< typename EntityTopology >
       static constexpr bool entityTagsStorage( EntityTopology )
       {
 //         return false;
-         return EntityTopology::dimension == 0 || EntityTopology::dimension >= meshDimension - 1;
+         return EntityTopology::dimension == 0 || EntityTopology::dimension >= Cell::dimension - 1;
       }
 
       static constexpr bool dualGraphStorage()
