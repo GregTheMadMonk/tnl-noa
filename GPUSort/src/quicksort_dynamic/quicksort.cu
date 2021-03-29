@@ -78,7 +78,7 @@ __device__ void multiBlockQuickSort(ArrayView<int, Devices::Cuda> arr, ArrayView
             cudaStream_t s;
             cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
 
-            cudaQuickSort<<<1, blockDim.x>>>(arr.getView(0, leftEnd), aux.getView(0, leftEnd), Cmp, blocksLeft, depth + 1);
+            cudaQuickSort<<<1, blockDim.x, 0, s>>>(arr.getView(0, leftEnd), aux.getView(0, leftEnd), Cmp, blocksLeft, depth + 1);
             
             cudaStreamDestroy(s);
         }
@@ -87,7 +87,7 @@ __device__ void multiBlockQuickSort(ArrayView<int, Devices::Cuda> arr, ArrayView
             cudaStream_t s;
             cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
 
-            cudaQuickSort<<<1, blockDim.x>>>(arr.getView(rightBegin, arr.getSize()), aux.getView(rightBegin, aux.getSize()), Cmp, blocksRight, depth + 1);
+            cudaQuickSort<<<1, blockDim.x, 0, s>>>(arr.getView(rightBegin, arr.getSize()), aux.getView(rightBegin, aux.getSize()), Cmp, blocksRight, depth + 1);
             cudaStreamDestroy(s);
         }
     }
@@ -235,7 +235,7 @@ template <typename Function>
 __global__ void cudaQuickSort(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
                               const Function &Cmp, int availBlocks, int depth)
 {
-    if (availBlocks == 0 || arr.getSize() <= blockDim.x * 2 || depth >= 20) //todo: determine max depth
+    if (availBlocks == 0 || arr.getSize() <= blockDim.x * 2 || depth >= 4) //todo: determine max depth
         singleBlockQuickSort<Function, 128>(arr, aux, Cmp, depth);
     else
         multiBlockQuickSort(arr, aux, Cmp, depth, availBlocks);
@@ -253,6 +253,7 @@ void quicksort(ArrayView<int, Devices::Cuda> arr, const Function &Cmp)
     int sets = arr.getSize() / minElemPerBlock + (arr.getSize() % minElemPerBlock != 0);
 
     int blocks = min(sets, maxBlocks);
+    cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, 10);
     cudaQuickSort<<<1, threadsPerBlock>>>(arr, aux.getView(), Cmp, blocks, 0);
     cudaDeviceSynchronize();
 }
