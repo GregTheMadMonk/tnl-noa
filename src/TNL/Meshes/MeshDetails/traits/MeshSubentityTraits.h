@@ -23,9 +23,6 @@
 namespace TNL {
 namespace Meshes {
 
-template< typename MeshConfig, typename EntityTopology >
-class MeshEntityOrientation;
-
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
@@ -40,17 +37,10 @@ public:
    static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
 
    static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
-   static constexpr bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimension );
    static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SubentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;
-   using Orientation       = MeshEntityOrientation< MeshConfig, SubentityTopology >;
-
-   // orientation and its accessor
-   using OrientationArrayType   = Containers::StaticArray< count, Orientation >;
-   using IdPermutationArrayType = Containers::StaticArray< count, LocalIndexType >;
-   using OrientationsStorageArrayType = Containers::Array< OrientationArrayType, Device, GlobalIndexType >;
 
    template< LocalIndexType subentityIndex,
              LocalIndexType subentityVertexIndex >

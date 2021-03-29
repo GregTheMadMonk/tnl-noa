@@ -88,12 +88,6 @@ struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
       }
 
       template< typename EntityTopology >
-      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
-      {
-         return false;
-      }
-
-      template< typename EntityTopology >
       static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
       {
          // superentities from faces to cells are needed due to cell boundary tags

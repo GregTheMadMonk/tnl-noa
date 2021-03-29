@@ -81,12 +81,6 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
       }
 
       template< typename EntityTopology >
-      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
-      {
-         return false;
-      }
-
-      template< typename EntityTopology >
       static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
       {
          return false;

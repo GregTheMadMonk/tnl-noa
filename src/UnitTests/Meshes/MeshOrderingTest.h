@@ -22,7 +22,6 @@ class TestTriangleMeshConfig
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
    template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   //template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return true; }
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 

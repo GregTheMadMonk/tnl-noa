@@ -34,18 +34,12 @@ class ConfigValidatorSubtopologyLayer
    static_assert( ! MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ) ||
                     MeshConfig::subentityStorage( EntityTopology(), 0 ),
                   "entities that are stored as subentities must store their subvertices" );
-   static_assert( ! MeshConfig::subentityOrientationStorage( EntityTopology(), DimensionTag::value ) ||
-                    MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ),
-                  "orientation can be stored only for subentities that are stored");
 };
 
 template< typename MeshConfig,
           typename EntityTopology >
 class ConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, DimensionTag< 0 > >
-{
-   static_assert( ! MeshConfig::subentityOrientationStorage( EntityTopology(), 0 ),
-                  "storage of vertex orientation does not make sense" );
-};
+{};
 
 
 template< typename MeshConfig,
@@ -95,8 +89,6 @@ class ConfigValidatorLayerCell
 
    static_assert( MeshConfig::subentityStorage( CellTopology(), 0 ),
                   "subvertices of cells must be stored" );
-   static_assert( ! MeshConfig::subentityOrientationStorage( CellTopology(), 0 ),
-                  "storage of cell orientation does not make sense" );
 };
 
 template< typename MeshConfig >
