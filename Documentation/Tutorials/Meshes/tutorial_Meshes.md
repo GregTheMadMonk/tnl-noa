@@ -58,7 +58,49 @@ For completeness, the full example follows:
 
 ## Mesh configuration
 
+The [Mesh](@ref TNL::Meshes::Mesh) class template is configurable via its first template parameter, `Config`.
+By default, the \ref TNL::Meshes::DefaultConfig template is used.
+Alternative, user-specified configuration templates can be specified by defining the mesh configuration as the `MeshConfig` template in the [MeshConfigTemplateTag](@ref TNL::Meshes::BuildConfigTags::MeshConfigTemplateTag) build config tag specialization.
+For example, here we derive the `MeshConfig` template from the [DefaultConfig](@ref TNL::Meshes::DefaultConfig) template and override the `subentityStorage` member function to store only those subentity incidence matrices, where the subentity dimension is 0 and the other dimension is at least $D-1$.
+Hence, only faces and cells will be able to access their subvertices and there will be no other links from entities to their subentities.
+
+
+```cpp
+// Define the tag for the MeshTypeResolver configuration
+struct MyConfigTag {};
+
+namespace TNL {
+namespace Meshes {
+namespace BuildConfigTags {
+
+// Create a template specialization of the tag specifying the MeshConfig template to use as the Config parameter for the mesh.
+template<>
+struct MeshConfigTemplateTag< MyConfigTag >
+{
+   template< typename Cell,
+             int WorldDimension = Cell::dimension,
+             typename Real = double,
+             typename GlobalIndex = int,
+             typename LocalIndex = GlobalIndex >
+   struct MeshConfig
+      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
+   {
+      template< typename EntityTopology >
+      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      {
+         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
+      }
+   };
+};
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL
+```
+
 ## Public interface and basic usage
+
+The whole public interface of the unstructured mesh and its mesh entity class can be found in the reference manual: \ref TNL::Meshes::Mesh, \ref TNL::Meshes::MeshEntity.
 
 ## Parallel iteration over mesh entities
 
