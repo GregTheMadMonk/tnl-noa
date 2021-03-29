@@ -45,7 +45,7 @@ void arrayViewExample()
    ArrayType a3( size );
    ViewType a3_view = a3.getView();
    auto f1 = [] __cuda_callable__ ( IndexType i, int& value ) { value = 2 * i; };
-   a3_view.forEachElement( f1 );
+   a3_view.forAllElements( f1 );
 
    for( int i = 0; i < size; i++ )
       if( a3_view.getElement( i ) != 2 * i )

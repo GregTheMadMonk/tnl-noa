@@ -36,7 +36,7 @@ class BiEllpack
       using ConstOffsetsHolderView = typename OffsetsHolderView::ConstViewType;
       using SegmentsSizes = OffsetsHolder;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
-      
+
       static constexpr int getWarpSize() { return WarpSize; };
 
       static constexpr int getLogWarpSize() { return std::log2( WarpSize ); };
@@ -90,7 +90,6 @@ class BiEllpack
          return groupPointers[ groupOffset + 1 ] - groupPointers[ groupOffset ];
       }
 
-      
       static IndexType getGroupSize( const ConstOffsetsHolderView& groupPointers,
                                      const IndexType strip,
                                      const IndexType group )
@@ -237,7 +236,8 @@ class BiEllpack
             groupHeight /= 2;
             //std::cerr << " ROW INIT: groupIdx = " << i << " groupSize = " << groupSize << " groupWidth = " << groupsWidth[ i ] << std::endl;
          }
-         return SegmentViewType( groupPointers[ groupIdx ],
+         return SegmentViewType( segmentIdx,
+                                 groupPointers[ groupIdx ],
                                  inStripIdx,
                                  groupsWidth );
       }
@@ -261,7 +261,8 @@ class BiEllpack
             groupsWidth[ i ] = groupSize / groupHeight;
             groupHeight /= 2;
          }
-         return SegmentViewType( groupPointers[ groupIdx ],
+         return SegmentViewType( segmentIdx,
+                                 groupPointers[ groupIdx ],
                                  inStripIdx,
                                  groupsWidth );
       }

@@ -12,6 +12,7 @@
 
 #include <type_traits>
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
@@ -31,12 +32,12 @@ class ChunkedEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = ChunkedEllpackView;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = ChunkedEllpackView< Device_, Index_ >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index > >;
+      using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
+      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, Organization >;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
       using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
@@ -124,12 +125,17 @@ class ChunkedEllpackView
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forAllElements( Function&& f ) const;
 
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

@@ -105,9 +105,11 @@ auto
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getView() -> ViewType
 {
+   ValuesView values_view = this->getValues().getView();
+   // note this is improtant here to avoid const qualifier to appear in - somehow :(
    return ViewType( this->getRows(),
                     this->getColumns(),
-                    this->getValues().getView() );
+                    values_view );
 }
 
 template< typename Real,
@@ -353,9 +355,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
 {
-   this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+   this->view.reduceRows( begin, end, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -366,9 +368,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
-   this->view.rowsReduction( begin, end, fetch, reduce, keep, zero );
+   this->view.reduceRows( begin, end, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -379,9 +381,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -392,9 +394,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -405,7 +407,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forElements( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.forElements( begin, end, function );
 }
@@ -418,7 +420,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forElements( IndexType first, IndexType last, Function& function )
+forElements( IndexType first, IndexType last, Function&& function )
 {
    this->view.forElements( first, last, function );
 }
@@ -431,7 +433,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function ) const
+forAllElements( Function&& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -444,7 +446,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-forEachElement( Function& function )
+forAllElements( Function&& function )
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -457,7 +459,59 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   this->getView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   this->getConstView().forRows( begin, end, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+forAllRows( Function&& function )
+{
+   this->getView().forAllRows( function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+forAllRows( Function&& function ) const
+{
+   this->getConsView().forAllRows( function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Function >
+void
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+sequentialForRows( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.sequentialForRows( begin, end, function );
 }
@@ -470,7 +524,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForRows( IndexType first, IndexType last, Function& function )
+sequentialForRows( IndexType first, IndexType last, Function&& function )
 {
    this->view.sequentialForRows( first, last, function );
 }
@@ -483,7 +537,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForAllRows( Function& function ) const
+sequentialForAllRows( Function&& function ) const
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }
@@ -496,7 +550,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-sequentialForAllRows( Function& function )
+sequentialForAllRows( Function&& function )
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }
@@ -1048,7 +1102,7 @@ operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHS
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {
@@ -1124,7 +1178,7 @@ operator=( const RHSMatrix& matrix )
          if( value != 0.0 && columnIdx != padding_index )
             values_view[ segments_view.getGlobalIndex( rowIdx, columnIdx ) ] = value;
       };
-      matrix.forEachElement( f );
+      matrix.forAllElements( f );
    }
    else
    {

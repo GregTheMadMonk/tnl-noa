@@ -131,7 +131,7 @@ performRowBubbleSort( const SizesHolder& segmentsSizes )
    if( segmentsSizes.getSize() == 0 )
       return;
 
-   this->rowPermArray.forEachElement( [] __cuda_callable__ ( const IndexType idx, IndexType& value ) { value = idx; } );
+   this->rowPermArray.forAllElements( [] __cuda_callable__ ( const IndexType idx, IndexType& value ) { value = idx; } );
 
    //if( std::is_same< DeviceType, Devices::Host >::value )
    {
@@ -443,12 +443,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( first, last, f );
 }
 
 template< typename Device,
@@ -456,13 +456,40 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
 }
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
+}
+
 
 template< typename Device,
           typename Index,

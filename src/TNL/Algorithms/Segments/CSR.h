@@ -104,15 +104,21 @@ class CSR
 
       /***
        * \brief Go over all segments and for each segment element call
-       * function 'f' with arguments 'args'. The return type of 'f' is bool.
+       * function 'f'. The return type of 'f' is bool.
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forAllElements( Function&& f ) const;
+
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

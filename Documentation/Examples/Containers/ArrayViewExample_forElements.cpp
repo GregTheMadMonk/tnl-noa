@@ -18,7 +18,7 @@ void forElementsExample()
     * Create an ArrayView and use it for initiation of elements of array `a`
     */
    auto a_view = a.getView();
-   a_view.forEachElement( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   a_view.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Initiate elements of array `b` with indexes 0-4 using `a_view`

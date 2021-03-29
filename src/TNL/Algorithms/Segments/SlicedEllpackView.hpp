@@ -217,25 +217,25 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 
    if( Organization == RowMajorOrder )
-      return SegmentViewType( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
+      return SegmentViewType( segmentIdx, sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
    else
-      return SegmentViewType( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
+      return SegmentViewType( segmentIdx, sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
 }
 
 template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( Organization == RowMajorOrder )
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -246,19 +246,19 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
          {
             // The following is a workaround of a bug in nvcc 11.2
-#if CUDART_VERSION == 11020            
-             f( segmentIdx, localIdx, globalIdx, compute, args... );
+#if CUDART_VERSION == 11020
+             f( segmentIdx, localIdx, globalIdx, compute );
              localIdx++;
 #else
-             f( segmentIdx, localIdx++, globalIdx, compute, args... );
+             f( segmentIdx, localIdx++, globalIdx, compute );
 #endif
          }
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
    else
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          //const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -269,15 +269,15 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize )
          {
             // The following is a workaround of a bug in nvcc 11.2
-#if CUDART_VERSION == 11020            
-            f( segmentIdx, localIdx, globalIdx, compute, args... );
+#if CUDART_VERSION == 11020
+            f( segmentIdx, localIdx, globalIdx, compute );
             localIdx++;
 #else
-            f( segmentIdx, localIdx++, globalIdx, compute, args... );
+            f( segmentIdx, localIdx++, globalIdx, compute );
 #endif
          }
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
 }
 
@@ -285,12 +285,41 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int SliceSize >
+   template< typename Function >
+void
+SlicedEllpackView< Device, Index, Organization, SliceSize >::
+forSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = this->getConstView();
+   auto f = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
+      auto segment = view.getSegmentView( segmentIdx );
+      function( segment );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int SliceSize >
+   template< typename Function >
+void
+SlicedEllpackView< Device, Index, Organization, SliceSize >::
+forEachSegment( Function&& f ) const
+{
+   this->forSegments( 0, this->getSegmentsCount(), f );
 }
 
 template< typename Device,

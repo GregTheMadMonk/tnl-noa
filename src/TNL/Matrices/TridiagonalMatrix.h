@@ -70,7 +70,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       // Supporting types - they are not important for the user
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using IndexerType = details::TridiagonalMatrixIndexer< Index, Organization >;
-      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesVectorType = typename BaseType::ValuesType;
       using ValuesViewType = typename ValuesVectorType::ViewType;
 
       /**
@@ -117,8 +117,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using RowView = typename ViewType::RowView;
 
+      /**
+       * \brief Type for accessing constant matrix rows.
+       */
+      using ConstRowView = typename ViewType::ConstRowView;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -401,7 +405,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * See \ref TridiagonalMatrixRowView.
        */
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -418,7 +422,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -442,7 +446,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -470,7 +474,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref TridiagonalMatrix::getRow
-       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forEachElement.
+       * or \ref TridiagonalMatrix::forElements and \ref TridiagonalMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -505,12 +509,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceRows.cpp
        * \par Output
-       * \include TridiagonalMatrixExample_rowsReduction.out
+       * \include TridiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows of constant matrix instances.
@@ -532,12 +536,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_rowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceRows.cpp
        * \par Output
-       * \include TridiagonalMatrixExample_rowsReduction.out
+       * \include TridiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -559,12 +563,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include TridiagonalMatrixExample_allRowsReduction.out
+       * \include TridiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows of constant matrix instances.
@@ -586,12 +590,12 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_allRowsReduction.cpp
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceAllRows.cpp
        * \par Output
-       * \include TridiagonalMatrixExample_allRowsReduction.out
+       * \include TridiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over matrix rows for constant instances.
@@ -657,7 +661,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
@@ -679,7 +683,107 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref TridiagonalMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::TridiagonalMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_forRows.cpp
+       * \par Output
+       * \include TridiagonalMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

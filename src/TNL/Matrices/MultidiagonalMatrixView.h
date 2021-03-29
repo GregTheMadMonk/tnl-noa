@@ -79,6 +79,11 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsOffsetsView >;
 
       /**
+       * \brief Type for accessing constant matrix rows.
+       */
+      using ConstRowView = typename RowView::ConstRowView;
+
+      /**
        * \brief Helper type for getting self type or its modifications.
        */
       template< typename _Real = Real,
@@ -268,7 +273,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * See \ref MultidiagonalMatrixRowView.
        */
       __cuda_callable__
-      const RowView getRow( const IndexType& rowIdx ) const;
+      const ConstRowView getRow( const IndexType& rowIdx ) const;
 
       /**
        * \brief Set all matrix elements to given value.
@@ -285,7 +290,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -310,7 +315,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -338,7 +343,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref MultidiagonalMatrix::getRow
-       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forEachElement.
+       * or \ref MultidiagonalMatrix::forElements and \ref MultidiagonalMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -374,12 +379,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixViewExample_rowsReduction.out
+       * \include MultidiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on matrix rows.
@@ -401,12 +406,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixViewExample_rowsReduction.out
+       * \include MultidiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -426,12 +431,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixViewExample_allRowsReduction.out
+       * \include MultidiagonalMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -451,12 +456,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include MultidiagonalMatrixViewExample_allRowsReduction.out
+       * \include MultidiagonalMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
@@ -540,7 +545,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -556,7 +561,107 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrixView::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrixView::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref MultidiagonalMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include MultidiagonalMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

@@ -146,7 +146,7 @@ void forElements( const int gridSize, Matrix& matrix )
    auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, float& value, bool& compute ) mutable {
       const int i = rowIdx % gridSize;
       const int j = rowIdx / gridSize;
-      if( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 && localIdx == 0 )
+      if( ( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 ) && localIdx == 0 )
       {
          columnIdx = rowIdx;
          value = 1.0;

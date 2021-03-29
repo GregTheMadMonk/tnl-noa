@@ -391,24 +391,48 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( first, last, f );
 }
 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
 }
 
 template< typename Device,

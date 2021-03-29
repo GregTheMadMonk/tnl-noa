@@ -36,8 +36,6 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 void test_GetSerializationType()
 {
    using namespace TNL::Algorithms::Segments;
-   std::cerr << TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() << std::endl;
-   std::cerr << TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, ColumnMajorOrder >::getSerializationType() << std::endl;
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, RowMajorOrder >" ) );
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< int,   TNL::Devices::Host, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< int, [any_device], int, RowMajorOrder >" ) );
    EXPECT_EQ( ( TNL::Matrices::DenseMatrix< float, TNL::Devices::Cuda, int, RowMajorOrder >::getSerializationType() ), TNL::String( "Matrices::DenseMatrix< float, [any_device], int, RowMajorOrder >" ) );
@@ -608,7 +606,7 @@ void test_SetRow()
          { 2, 3, 4, 5, 6 } };
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
-        row.setElement( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
+        row.setValue( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
    };
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
 
@@ -725,7 +723,7 @@ void test_AddRow()
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
       {
-         RealType& val = row.getElement( i );
+         RealType& val = row.getValue( i );
          val = rowIdx * val + values[ rowIdx ][ i ];
       }
    };
@@ -767,6 +765,186 @@ void test_AddRow()
     EXPECT_EQ( m.getElement( 5, 2 ), 206 );
     EXPECT_EQ( m.getElement( 5, 3 ), 211 );
     EXPECT_EQ( m.getElement( 5, 4 ), 150 );
+}
+
+template< typename Matrix >
+void test_ForElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 8x3 sparse matrix:
+    *
+    *    /  1  1  1  \
+    *    |  2  2  2  |
+    *    |  3  3  3  |
+    *    |  4  4  4  |
+    *    |  5  5  5  |
+    *    |  6  6  6  |
+    *    |  7  7  7  |
+    *    \  8  8  8  /
+    */
+
+   const IndexType cols = 3;
+   const IndexType rows = 8;
+
+   Matrix m( rows, cols  );
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value, bool compute ) mutable {
+      value = rowIdx + 1.0;
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+         EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx + 1.0 );
+}
+
+template< typename Matrix >
+void test_ForRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /////
+   // Setup lower triangular matrix
+   const IndexType cols = 8;
+   const IndexType rows = 8;
+
+   /////
+   // Test without iterator
+   Matrix m( rows, cols  );
+   using RowView = typename Matrix::RowView;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
+         row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+
+   /////
+   // Test without iterator
+   m.getValues() = 0.0;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( auto element : row )
+         if( element.columnIndex() <= element.rowIndex() )
+            element.value() = element.rowIndex() - element.columnIndex() + 1.0;
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+
+
+}
+
+template< typename Matrix >
+void test_reduceRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 8x8 sparse matrix:
+    *
+    *    /  1  2  3  0  4  5  0  1 \   6
+    *    |  0  6  0  7  0  0  0  1 |   3
+    *    |  0  8  9  0 10  0  0  1 |   4
+    *    |  0 11 12 13 14  0  0  1 |   5
+    *    |  0 15  0  0  0  0  0  1 |   2
+    *    |  0 16 17 18 19 20 21  1 |   7
+    *    | 22 23 24 25 26 27 28  1 |   8
+    *    \ 29 30 31 32 33 34 35 36 /   8
+    */
+
+   const IndexType rows = 8;
+   const IndexType cols = 8;
+
+   Matrix m( {
+        {  1,  2,  3,  0,  4,  5,  0,  1 },
+        {  0,  6,  0,  7,  0,  0,  0,  1 },
+        {  0,  8,  9,  0, 10,  0,  0,  1 },
+        {  0, 11, 12, 13, 14,  0,  0,  1 },
+        {  0, 15,  0,  0,  0,  0,  0,  1 },
+        {  0, 16, 17, 18, 19, 20, 21,  1 },
+        { 22, 23, 24, 25, 26, 27, 28,  1 },
+        { 29, 30, 31, 32, 33, 34, 35, 36 } } );
+    typename Matrix::RowsCapacitiesType rowsCapacities{ 6, 3, 4, 5, 2, 7, 8, 8 };
+
+   RealType value = 1;
+   for( IndexType i = 0; i < 3; i++ )   // 0th row
+      m.setElement( 0, i, value++ );
+
+   m.setElement( 0, 4, value++ );       // 0th row
+   m.setElement( 0, 5, value++ );
+
+   m.setElement( 1, 1, value++ );       // 1st row
+   m.setElement( 1, 3, value++ );
+
+   for( IndexType i = 1; i < 3; i++ )   // 2nd row
+      m.setElement( 2, i, value++ );
+
+   m.setElement( 2, 4, value++ );       // 2nd row
+
+   for( IndexType i = 1; i < 5; i++ )   // 3rd row
+      m.setElement( 3, i, value++ );
+
+   m.setElement( 4, 1, value++ );       // 4th row
+
+   for( IndexType i = 1; i < 7; i++ )   // 5th row
+      m.setElement( 5, i, value++ );
+
+   for( IndexType i = 0; i < 7; i++ )   // 6th row
+      m.setElement( 6, i, value++ );
+
+   for( IndexType i = 0; i < 8; i++ )   // 7th row
+       m.setElement( 7, i, value++ );
+
+   for( IndexType i = 0; i < 7; i++ )   // 1s at the end of rows
+      m.setElement( i, 7, 1);
+
+   ////
+   // Compute number of non-zero elements in rows.
+   typename Matrix::RowsCapacitiesType rowLengths( rows );
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return ( value != 0.0 );
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   m.reduceAllRows( fetch, std::plus<>{}, keep, 0 );
+   EXPECT_EQ( rowsCapacities, rowLengths );
+   m.getCompressedRowLengths( rowLengths );
+   EXPECT_EQ( rowsCapacities, rowLengths );
+
+   ////
+   // Compute max norm
+   TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
+   auto rowSums_view = rowSums.getView();
+   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return TNL::abs( value );
+   };
+   auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowSums_view[ rowIdx ] = value;
+   };
+   m.reduceAllRows( max_fetch, std::plus<>{}, max_keep, 0 );
+   const RealType maxNorm = TNL::max( rowSums );
+   EXPECT_EQ( maxNorm, 260 ) ; // 29+30+31+32+33+34+35+36
 }
 
 template< typename Matrix >
@@ -1421,6 +1599,20 @@ TYPED_TEST( MatrixTest, addRowTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_AddRow< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forElementsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForElements< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, forRowsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_ForRows< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, vectorProductTest )

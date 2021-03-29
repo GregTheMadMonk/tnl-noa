@@ -47,7 +47,10 @@ class EllpackView
       EllpackView();
 
       __cuda_callable__
-      EllpackView( IndexType segmentSize, IndexType size, IndexType alignedSize );
+      EllpackView( IndexType segmentsCount, IndexType segmentSize, IndexType alignedSize );
+
+      __cuda_callable__
+      EllpackView( IndexType segmentsCount, IndexType segmentSize );
 
       __cuda_callable__
       EllpackView( const EllpackView& ellpackView );
@@ -92,12 +95,17 @@ class EllpackView
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-      template< typename Function, typename... Args >
-      void forElements( IndexType first, IndexType last, Function& f, Args... args ) const;
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-      template< typename Function, typename... Args >
-      void forEachElement( Function& f, Args... args ) const;
+      template< typename Function >
+      void forAllElements( Function&& f ) const;
 
+      template< typename Function >
+      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void forEachSegment( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
@@ -116,7 +124,7 @@ class EllpackView
 
    protected:
 
-      IndexType segmentSize, size, alignedSize;
+      IndexType segmentSize, segmentsCount, alignedSize;
 };
 
       } // namespace Segments

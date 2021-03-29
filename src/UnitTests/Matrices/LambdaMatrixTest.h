@@ -89,6 +89,14 @@ TYPED_TEST( LambdaMatrixTest, getElementTest )
    test_GetElement< LambdaMatrixParametersType >();
 }
 
+TYPED_TEST( LambdaMatrixTest, forRowsTest )
+{
+    using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
+
+    test_ForRows< LambdaMatrixParametersType >();
+}
+
+
 TYPED_TEST( LambdaMatrixTest, vectorProductTest )
 {
     using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
@@ -96,11 +104,11 @@ TYPED_TEST( LambdaMatrixTest, vectorProductTest )
     test_VectorProduct< LambdaMatrixParametersType >();
 }
 
-TYPED_TEST( LambdaMatrixTest, rowsReduction )
+TYPED_TEST( LambdaMatrixTest, reduceRows )
 {
     using LambdaMatrixParametersType = typename TestFixture::LambdaMatrixType;
 
-    test_RowsReduction< LambdaMatrixParametersType >();
+    test_reduceRows< LambdaMatrixParametersType >();
 }
 #endif
 

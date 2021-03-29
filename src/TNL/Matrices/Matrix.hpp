@@ -112,9 +112,9 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-const typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType&
+auto
 Matrix< Real, Device, Index, RealAllocator >::
-getValues() const
+getValues() const -> const ValuesType&
 {
    return this->values;
 }
@@ -123,9 +123,9 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType&
+auto
 Matrix< Real, Device, Index, RealAllocator >::
-getValues()
+getValues() -> ValuesType&
 {
    return this->values;
 }

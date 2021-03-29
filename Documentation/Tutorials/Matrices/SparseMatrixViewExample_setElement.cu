@@ -1,1 +1,0 @@
-../../Examples/Matrices/SparseMatrix/SparseMatrixViewExample_setElement.cu

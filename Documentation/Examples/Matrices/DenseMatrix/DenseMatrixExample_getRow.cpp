@@ -13,7 +13,7 @@ void getRowExample()
 
    auto f = [=] __cuda_callable__ ( int rowIdx ) mutable {
       auto row = matrix->getRow( rowIdx );
-      row.setElement( rowIdx, 10 * ( rowIdx + 1 ) );
+      row.setValue( rowIdx, 10 * ( rowIdx + 1 ) );
    };
 
    /***

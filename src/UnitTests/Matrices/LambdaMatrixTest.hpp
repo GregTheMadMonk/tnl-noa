@@ -13,6 +13,7 @@
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
+#include <TNL/Matrices/DenseMatrix.h>
 
 template< typename Matrix >
 void test_Constructors()
@@ -162,6 +163,79 @@ void test_GetElement()
 }
 
 template< typename Matrix >
+void test_ForRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /**
+    * Prepare lambda matrix of the following form:
+    *
+    * /  1   0   0   0   0 \.
+    * | -2   1  -2   0   0 |
+    * |  0  -2   1  -2   0 |
+    * |  0   0  -2   1  -2 |
+    * \  0   0   0   0   1 /.
+    */
+
+   IndexType size = 5;
+   auto rowLengths = [=] __cuda_callable__ ( const IndexType rows, const IndexType columns, const IndexType rowIdx ) -> IndexType {
+      if( rowIdx == 0 || rowIdx == size - 1 )
+         return 1;
+      return 3;
+   };
+
+   auto matrixElements = [=] __cuda_callable__ ( const IndexType rows, const IndexType columns, const IndexType rowIdx, const IndexType localIdx, IndexType& columnIdx, RealType& value ) {
+      if( rowIdx == 0 || rowIdx == size -1 )
+      {
+         columnIdx = rowIdx;
+         value =  1.0;
+      }
+      else
+      {
+         columnIdx = rowIdx + localIdx - 1;
+         value = ( columnIdx == rowIdx ) ? -2.0 : 1.0;
+      }
+   };
+
+   using MatrixType = decltype( TNL::Matrices::LambdaMatrixFactory< RealType, DeviceType, IndexType >::create( matrixElements, rowLengths ) );
+
+   MatrixType m( size, size, matrixElements, rowLengths );
+
+   ////
+   // Test without iterator
+   TNL::Matrices::DenseMatrix< RealType, DeviceType, IndexType > denseMatrix( size, size );
+   denseMatrix.setValue( 0.0 );
+   auto dense_view = denseMatrix.getView();
+   auto f = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
+      auto dense_row = dense_view.getRow( row.getRowIndex() );
+      for( IndexType localIdx = 0; localIdx < row.getSize(); localIdx++ )
+         dense_row.setValue( row.getColumnIndex( localIdx ), row.getValue( localIdx ) );
+   };
+   m.forAllRows( f );
+
+   for( IndexType row = 0; row < size; row++ )
+      for( IndexType column = 0; column < size; column++ )
+         EXPECT_EQ( m.getElement( row, column ), denseMatrix.getElement( row, column ) );
+
+   ////
+   // Test with iterator
+   denseMatrix.getValues() = 0.0;
+   auto f_iter = [=] __cuda_callable__ ( const typename MatrixType::RowView& row ) mutable {
+      auto dense_row = dense_view.getRow( row.getRowIndex() );
+      for( const auto element : row )
+         dense_row.setValue( element.columnIndex(), element.value() );
+   };
+   m.forAllRows( f_iter );
+
+   for( IndexType row = 0; row < size; row++ )
+      for( IndexType column = 0; column < size; column++ )
+         EXPECT_EQ( m.getElement( row, column ), denseMatrix.getElement( row, column ) );
+
+}
+
+template< typename Matrix >
 void test_VectorProduct()
 {
    using RealType = typename Matrix::RealType;
@@ -201,7 +275,7 @@ void test_VectorProduct()
 }
 
 template< typename Matrix >
-void test_RowsReduction()
+void test_reduceRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -242,7 +316,7 @@ void test_RowsReduction()
    auto keep = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       vView[ row ] = value;
    };
-   A.allRowsReduction( fetch, reduce, keep, 0.0 );
+   A.reduceAllRows( fetch, reduce, keep, 0.0 );
 
    EXPECT_EQ( v.getElement( 0 ),  1.0 );
    EXPECT_EQ( v.getElement( 1 ),  0.0 );

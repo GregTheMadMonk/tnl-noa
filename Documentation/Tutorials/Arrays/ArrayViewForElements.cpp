@@ -18,7 +18,7 @@ int main( int argc, char* argv[] )
     * Create an ArrayView and use it for initiation
     */
    auto a_view = a.getView();
-   a_view.forEachElement( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   a_view.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Initiate elements of b with indexes 0-4 using a_view

@@ -17,7 +17,7 @@ void forElementsExample()
    /****
     * Initiate the elements of array `a`
     */
-   a.forEachElement( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   a.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
 
    /****
     * Initiate elements of array `b` with indexes 0-4 using `a_view`

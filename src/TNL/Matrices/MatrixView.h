@@ -38,7 +38,6 @@ class MatrixView : public Object
       using RowsCapacitiesType = Containers::Vector< Index, Device, Index >;
       using RowsCapacitiesTypeView = Containers::VectorView< Index, Device, Index >;
       using ConstRowsCapacitiesTypeView = typename RowsCapacitiesTypeView::ConstViewType;
-      using ValuesView = Containers::VectorView< Real, Device, Index >;
 
       /**
        * \brief The type of matrix elements.
@@ -59,16 +58,27 @@ class MatrixView : public Object
        * \brief Type of base matrix view.
        *
        */
-      using ViewType = MatrixView< typename std::remove_const< Real >::type, Device, Index >;
+      using ViewType = MatrixView< Real, Device, Index >;
 
       /**
        * \brief Type of base matrix view for constant instances.
        *
        */
-      using ConstViewType = MatrixView< typename std::add_const< Real >::type, Device, Index >;
+      using ConstViewType = MatrixView< typename std::add_const_t< Real >, Device, Index >;
 
       /**
-       * \brief Basic construtor with no parameters.
+       * \brief Type of vector view holding values of matrix elements.
+       */
+      using ValuesView = Containers::VectorView< Real, Device, Index >;
+
+      /**
+       * \brief Type of constant vector view holding values of matrix elements.
+       */
+      using ConstValuesView = typename ValuesView::ConstViewType;
+
+
+      /**
+       * \brief Basic constructor with no parameters.
        */
       __cuda_callable__
       MatrixView();

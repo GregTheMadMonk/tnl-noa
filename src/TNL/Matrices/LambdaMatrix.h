@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <TNL/String.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Matrices/LambdaMatrixRowView.h>
 
 namespace TNL {
 namespace Matrices {
@@ -25,24 +26,30 @@ namespace Matrices {
  *
  * \tparam MatrixElementsLambda is a lambda function returning matrix elements values and positions.
  *
- *    It has the following form:
+ * \tparam MatrixElementsLambda is a lambda function returning matrix elements values and positions.
  *
- *   `matrixElements( Index rows, Index columns, Index rowIdx, Index localIdx, Index& columnIdx, Real& value )`
+ * It has the following form:
+ *
+ * ```
+ * auto matrixElements = [] __cuda_callable__ ( Index rows, Index columns, Index rowIdx, Index localIdx, Index& columnIdx, Real& value ) { ... }
+ * ```
  *
  *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns, \e rowIdx is the index of matrix row being queried,
  *    \e localIdx is the rank of the non-zero element in given row, \e columnIdx is a column index of the matrix element computed by
  *    this lambda and \e value is a value of the matrix element computed by this lambda.
  * \tparam CompressedRowLengthsLambda is a lambda function returning a number of non-zero elements in each row.
  *
- *    It has the following form:
+ * It has the following form:
  *
- *    `rowLengths( Index rows, Index columns, Index rowIdx ) -> IndexType`
+ * ```
+ * auto rowLengths = [] __cuda_callable__ ( Index rows, Index columns, Index rowIdx ) -> IndexType { ...  }
+ * ```
  *
  *    where \e rows is the number of matrix rows, \e columns is the number of matrix columns and \e rowIdx is an index of the row being queried.
  *
  * \tparam Real is a type of matrix elements values.
  * \tparam Device is a device on which the lambda functions will be evaluated.
- * \ẗparam Index is a type to be used for indexing.
+ * \tparam Index is a type to be used for indexing.
  */
 template< typename MatrixElementsLambda,
           typename CompressedRowLengthsLambda,
@@ -67,6 +74,26 @@ class LambdaMatrix
        * \brief The type used for matrix elements indexing.
        */
       using IndexType = Index;
+
+      /**
+       * \brief Type of the lambda function returning the matrix elements.
+       */
+      using MatrixElementsLambdaType = MatrixElementsLambda;
+
+      /**
+       * \brief Type of the lambda function returning the number of non-zero elements in each row.
+       */
+      using CompressedRowLengthsLambdaType = CompressedRowLengthsLambda;
+
+      /**
+       * \brief Type of Lambda matrix row view.
+       */
+      using RowView = LambdaMatrixRowView< MatrixElementsLambdaType, CompressedRowLengthsLambdaType, RealType, IndexType >;
+
+      /**
+       * \brief Type of constant Lambda matrix row view.
+       */
+      using ConstRowView = RowView;
 
       static constexpr bool isSymmetric() { return false; };
       static constexpr bool isBinary() { return false; };
@@ -130,7 +157,7 @@ class LambdaMatrix
        * \param columns is the number of matrix columns.
        */
       void setDimensions( const IndexType& rows,
-                         const IndexType& columns );
+                          const IndexType& columns );
 
       /**
        * \brief Returns a number of matrix rows.
@@ -147,6 +174,22 @@ class LambdaMatrix
        */
       __cuda_callable__
       IndexType getColumns() const;
+
+      /**
+       * \brief Get reference to the lambda function returning number of non-zero elements in each row.
+       *
+       * \return constant reference to CompressedRowLengthsLambda.
+       */
+      __cuda_callable__
+      const CompressedRowLengthsLambda& getCompressedRowLengthsLambda() const;
+
+      /**
+       * \brief Get reference to the lambda function returning the matrix elements values and column indexes.
+       *
+       * \return constant reference to MatrixElementsLambda.
+       */
+      __cuda_callable__
+      const MatrixElementsLambda& getMatrixElementsLambda() const;
 
       /**
        * \brief Compute capacities of all rows.
@@ -185,6 +228,23 @@ class LambdaMatrix
       IndexType getNonzeroElementsCount() const;
 
       /**
+       * \brief Getter of simple structure for accessing given matrix row.
+       *
+       * \param rowIdx is matrix row index.
+       *
+       * \return RowView for accessing given matrix row.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/LambdaMatrixExample_getRow.cpp
+       * \par Output
+       * \include LambdaMatrixExample_getRow.out
+       *
+       * See \ref LambdaMatrixRowView.
+       */
+      __cuda_callable__
+      const RowView getRow( const IndexType& rowIdx ) const;
+
+      /**
        * \brief Returns value of matrix element at position given by its row and column index.
        *
        * \param row is a row index of the matrix element.
@@ -194,58 +254,6 @@ class LambdaMatrix
        */
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
-
-      /**
-       * \brief Method for performing general reduction on matrix rows.
-       *
-       * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
-       * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
-       * \tparam FetchValue is type returned by the Fetch lambda function.
-       *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
-       * \param fetch is an instance of lambda function for data fetch.
-       * \param reduce is an instance of lambda function for reduction.
-       * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
-       *
-       * \par Example
-       * \include Matrices/LambdaMatrix/LambdaMatrixExample_rowsReduction.cpp
-       * \par Output
-       * \include LambdaMatrixExample_rowsReduction.out
-       */
-      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
-
-      /**
-       * \brief Method for performing general reduction on ALL matrix rows.
-       *
-       * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
-       * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
-       * \tparam FetchValue is type returned by the Fetch lambda function.
-       *
-       * \param fetch is an instance of lambda function for data fetch.
-       * \param reduce is an instance of lambda function for reduction.
-       * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
-       *
-       * \par Example
-       * \include Matrices/LambdaMatrix/LambdaMatrixExample_allRowsReduction.cpp
-       * \par Output
-       * \include LambdaMatrixExample_allRowsReduction.out
-       */
-      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
@@ -283,7 +291,57 @@ class LambdaMatrix
        * \include LambdaMatrixExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref LambdaMatrix::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_forRows.cpp
+       * \par Output
+       * \include LambdaMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref LambdaMatrix::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::LambdaMatrix::RowView.
+       *
+       * \par Example
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_forRows.cpp
+       * \par Output
+       * \include LambdaMatrixExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
@@ -300,7 +358,7 @@ class LambdaMatrix
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForRows( IndexType begin, IndexType end, Function& function ) const;
+      void sequentialForRows( IndexType begin, IndexType end, Function&& function ) const;
 
       /**
        * \brief This method calls \e sequentialForRows for all matrix rows (for constant instances).
@@ -311,7 +369,59 @@ class LambdaMatrix
        * \param function  is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
-      void sequentialForAllRows( Function& function ) const;
+      void sequentialForAllRows( Function&& function ) const;
+
+      /**
+       * \brief Method for performing general reduction on matrix rows.
+       *
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       *
+       * \param begin defines beginning of the range [begin,end) of rows to be processed.
+       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       *
+       * \par Example
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceRows.cpp
+       * \par Output
+       * \include LambdaMatrixExample_reduceRows.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      /**
+       * \brief Method for performing general reduction on ALL matrix rows.
+       *
+       * \tparam Fetch is a type of lambda function for data fetch declared as
+       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *          The return type of this lambda can be any non void.
+       * \tparam Reduce is a type of lambda function for reduction declared as
+       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
+       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       * \tparam FetchValue is type returned by the Fetch lambda function.
+       *
+       * \param fetch is an instance of lambda function for data fetch.
+       * \param reduce is an instance of lambda function for reduction.
+       * \param keep in an instance of lambda function for storing results.
+       * \param zero is zero of given reduction operation also known as idempotent element.
+       *
+       * \par Example
+       * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceAllRows.cpp
+       * \par Output
+       * \include LambdaMatrixExample_reduceAllRows.out
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Computes product of matrix and vector.

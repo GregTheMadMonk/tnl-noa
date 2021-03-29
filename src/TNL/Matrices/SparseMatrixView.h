@@ -15,6 +15,7 @@
 #include <TNL/Allocators/Default.h>
 #include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
+#include <TNL/TypeTraits.h>
 
 namespace TNL {
 namespace Matrices {
@@ -75,7 +76,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using BaseType = MatrixView< Real, Device, Index >;
       using ValuesViewType = typename BaseType::ValuesView;
       using ConstValuesViewType = typename ValuesViewType::ConstViewType;
-      using ColumnsIndexesViewType = Containers::VectorView< Index, Device, Index >;
+      using ColumnsIndexesViewType = Containers::VectorView< typename TNL::copy_const< Index >::template from< Real >::type, Device, Index >;
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
       using RowsCapacitiesView = Containers::VectorView< Index, Device, Index >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
@@ -125,12 +126,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type of related matrix view.
        */
-      using ViewType = SparseMatrixView< std::remove_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       /**
        * \brief Matrix view type for constant instances.
        */
-      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, std::add_const_t< Index >, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< std::add_const_t< Real >, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       /**
        * \brief Type for accessing matrix rows.
@@ -140,7 +141,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = typename RowView::ConstViewType;
+      using ConstRowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary() >;;
 
       /**
        * \brief Helper type for getting self type or its modifications.
@@ -320,7 +321,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -345,7 +346,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        * The call may fail if the matrix row capacity is exhausted.
        *
        * \param row is row index of the element.
@@ -373,7 +374,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * can be called even from device kernels. If the matrix is allocated in GPU device
        * this method is called from CPU, it transfers values of each matrix element separately and so the
        * performance is very low. For higher performance see. \ref SparseMatrix::getRow
-       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forEachElement.
+       * or \ref SparseMatrix::forElements and \ref SparseMatrix::forAllElements.
        *
        * \param row is a row index of the matrix element.
        * \param column i a column index of the matrix element.
@@ -410,12 +411,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_rowsReduction.out
+       * \include SparseMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -437,12 +438,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_rowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_rowsReduction.out
+       * \include SparseMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -462,12 +463,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_allRowsReduction.out
+       * \include SparseMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -487,12 +488,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \param zero is zero of given reduction operation also known as idempotent element.
        *
        * \par Example
-       * \include Matrices/SparseMatrix/SparseMatrixViewExample_allRowsReduction.cpp
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_reduceAllRows.cpp
        * \par Output
-       * \include SparseMatrixViewExample_allRowsReduction.out
+       * \include SparseMatrixViewExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
@@ -552,7 +553,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \include SparseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function ) const;
+      void forAllElements( Function& function ) const;
 
       /**
        * \brief This method calls \e forElements for all matrix rows.
@@ -568,7 +569,108 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \include SparseMatrixViewExample_forAllRows.out
        */
       template< typename Function >
-      void forEachElement( Function& function );
+      void forAllElements( Function& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end).
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forElements where more than one thread can be mapped to each row.
+
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over matrix rows from interval [ \e begin, \e end) for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param begin defines beginning of the range [ \e begin,\e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const;
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function );
+
+      /**
+       * \brief Method for parallel iteration over all matrix rows for constant instances.
+       *
+       * In each row, given lambda function is performed. Each row is processed by at most one thread unlike the method
+       * \ref SparseMatrixView::forAllElements where more than one thread can be mapped to each row.
+       *
+       * \tparam Function is type of the lambda function.
+       *
+       * \param function is an instance of the lambda function to be called for each row.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \par Example
+       * \include Matrices/SparseMatrix/SparseMatrixViewExample_forRows.cpp
+       * \par Output
+       * \include SparseMatrixViewExample_forRows.out
+       */
+      template< typename Function >
+      void forAllRows( Function&& function ) const;
 
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.

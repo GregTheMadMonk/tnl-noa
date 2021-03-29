@@ -26,7 +26,7 @@ void getRowExample()
     */
    auto fetch = [=] __cuda_callable__ ( int rowIdx ) mutable -> double {
       auto row = matrixView.getRow( rowIdx );
-      return row.getElement( rowIdx );
+      return row.getValue( rowIdx );
    };
 
    int trace = TNL::Algorithms::Reduction< Device >::reduce( 0, matrix.getRows(), fetch, std::plus<>{}, 0 );

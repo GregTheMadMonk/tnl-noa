@@ -351,7 +351,7 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-forEachElement( Function&& f )
+forAllElements( Function&& f )
 {
    this->forElements( 0, this->getSize(), f );
 }
@@ -361,7 +361,7 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-forEachElement( Function&& f ) const
+forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSize(), f );
 }

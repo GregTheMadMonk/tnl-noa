@@ -275,9 +275,9 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 
    if( Organization == RowMajorOrder )
-      return SegmentViewType( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
+      return SegmentViewType( segmentIdx, sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
    else
-      return SegmentViewType( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
+      return SegmentViewType( segmentIdx, sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
 }
 
 template< typename Device,
@@ -285,12 +285,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( first, last, f );
 }
 
 template< typename Device,
@@ -298,12 +298,38 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+   template< typename Function >
+void
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+   template< typename Function >
+void
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
 }
 
 template< typename Device,

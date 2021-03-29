@@ -1466,7 +1466,7 @@ void test_VectorProductCSRAdaptive()
 }
 
 template< typename Matrix >
-void test_RowsReduction()
+void test_reduceRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -1547,7 +1547,7 @@ void test_RowsReduction()
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( fetch, reduce, keep, 0 );
+   m.reduceAllRows( fetch, reduce, keep, 0 );
    EXPECT_EQ( rowsCapacities, rowLengths );
    m.getCompressedRowLengths( rowLengths );
    EXPECT_EQ( rowsCapacities, rowLengths );
@@ -1565,7 +1565,7 @@ void test_RowsReduction()
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( max_fetch, max_reduce, max_keep, 0 );
+   m.reduceAllRows( max_fetch, max_reduce, max_keep, 0 );
    const RealType maxNorm = TNL::max( rowSums );
    EXPECT_EQ( maxNorm, 260 ) ; // 29+30+31+32+33+34+35+36
 }

@@ -24,7 +24,7 @@ template< typename Index,
 class BiEllpackSegmentView
 {
    public:
-      
+
       static constexpr int getWarpSize() { return WarpSize; };
 
       static constexpr int getLogWarpSize() { static_assert( WarpSize == 32, "nvcc does not allow constexpr log2" ); return 5; }// TODO: return std::log2( WarpSize ); };
@@ -37,17 +37,18 @@ class BiEllpackSegmentView
 
       /**
        * \brief Constructor.
-       * 
+       *
        * \param offset is offset of the first group of the strip the segment belongs to.
        * \param size is the segment size
        * \param inStripIdx is index of the segment within its strip.
        * \param groupsWidth is a static vector containing widths of the strip groups
        */
       __cuda_callable__
-      BiEllpackSegmentView( const IndexType offset,
+      BiEllpackSegmentView( const IndexType segmentIdx,
+                            const IndexType offset,
                             const IndexType inStripIdx,
                             const GroupsWidthType& groupsWidth )
-      : groupOffset( offset ), inStripIdx( inStripIdx ), segmentSize( TNL::sum( groupsWidth ) ), groupsWidth( groupsWidth ){};
+      : segmentIdx( segmentIdx ), groupOffset( offset ), inStripIdx( inStripIdx ), segmentSize( TNL::sum( groupsWidth ) ), groupsWidth( groupsWidth ){};
 
       __cuda_callable__
       IndexType getSize() const
@@ -79,9 +80,15 @@ class BiEllpackSegmentView
             return offset + inStripIdx + localIdx * groupHeight;
       };
 
+      __cuda_callable__
+      const IndexType& getSegmentIndex() const
+      {
+         return this->segmentIdx;
+      };
+
       protected:
 
-         IndexType groupOffset, inStripIdx, segmentSize;
+         IndexType segmentIdx, groupOffset, inStripIdx, segmentSize;
 
          GroupsWidthType groupsWidth;
 };

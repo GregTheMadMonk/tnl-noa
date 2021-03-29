@@ -1,1 +1,0 @@
-../../Examples/Matrices/SparseMatrix/SparseMatrixExample_Constructor_std_map.cu

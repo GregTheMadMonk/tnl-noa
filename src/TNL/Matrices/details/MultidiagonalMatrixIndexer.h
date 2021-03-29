@@ -34,7 +34,7 @@ class MultidiagonalMatrixIndexer
                                   const IndexType& columns,
                                   const IndexType& diagonals,
                                   const IndexType& nonemptyRows )
-      : rows( rows ), 
+      : rows( rows ),
         columns( columns ),
         diagonals( diagonals ),
         nonemptyRows( nonemptyRows ) {};
@@ -79,7 +79,7 @@ class MultidiagonalMatrixIndexer
          TNL_ASSERT_LT( localIdx, diagonals, "" );
          TNL_ASSERT_GE( rowIdx, 0, "" );
          TNL_ASSERT_LT( rowIdx, this->rows, "" );
-         
+
          if( RowMajorOrder )
             return diagonals * rowIdx + localIdx;
          else

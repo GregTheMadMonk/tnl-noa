@@ -129,7 +129,12 @@ template< typename Device,
 __cuda_callable__ auto BiEllpackView< Device, Index, Organization, WarpSize >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( size, storageSize, virtualRows, rowPermArray.getConstView(), groupPointers.getConstView() );
+   BiEllpackView* this_ptr = const_cast< BiEllpackView* >( this );
+   return ConstViewType( size,
+                         storageSize,
+                         virtualRows,
+                         this_ptr->rowPermArray.getView(),
+                         this_ptr->groupPointers.getView() );
 }
 
 template< typename Device,
@@ -255,14 +260,14 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
    const auto segmentsPermutationView = this->rowPermArray.getConstView();
    const auto groupPointersView = this->groupPointers.getConstView();
-   auto work = [=] __cuda_callable__ ( IndexType segmentIdx, Args... args ) mutable {
+   auto work = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
       const IndexType strip = segmentIdx / getWarpSize();
       const IndexType firstGroupInStrip = strip * ( getLogWarpSize() + 1 );
       const IndexType rowStripPerm = segmentsPermutationView[ segmentIdx ] - strip * getWarpSize();
@@ -298,19 +303,48 @@ forElements( IndexType first, IndexType last, Function& f, Args... args ) const
          groupHeight /= 2;
       }
    };
-   Algorithms::ParallelFor< DeviceType >::exec( first, last , work, args... );
+   Algorithms::ParallelFor< DeviceType >::exec( first, last , work );
 }
 
 template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpackView< Device, Index, Organization, WarpSize >::
+forSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = this->getConstView();
+   auto f = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
+      auto segment = view.getSegmentView( segmentIdx );
+      function( segment );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename Function >
+void
+BiEllpackView< Device, Index, Organization, WarpSize >::
+forEachSegment( Function&& f ) const
+{
+   this->forSegments( 0, this->getSegmentsCount(), f );
 }
 
 template< typename Device,

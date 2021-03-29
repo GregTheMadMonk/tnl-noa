@@ -52,10 +52,9 @@ struct ChunkedEllpackSliceInfo
    Index pointer;
 };
 
-         
 template< typename Index,
           typename Device,
-          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization() >
+          ElementsOrganization Organization >
 class ChunkedEllpack
 {
    public:
@@ -170,8 +169,8 @@ class ChunkedEllpack
       SegmentViewType getSegmentViewDirect( const OffsetsHolderView& segmentsToSlicesMapping,
                                             const ChunkedEllpackSliceInfoContainerView& slices,
                                             const OffsetsHolderView& segmentsToChunksMapping,
-                                            const IndexType chunksInSlice,
-                                            const IndexType segmentIdx )
+                                            const IndexType& chunksInSlice,
+                                            const IndexType& segmentIdx )
       {
          const IndexType& sliceIndex = segmentsToSlicesMapping[ segmentIdx ];
          IndexType firstChunkOfSegment( 0 );
@@ -185,12 +184,14 @@ class ChunkedEllpack
          const IndexType segmentSize = segmentChunksCount * chunkSize;
 
          if( Organization == RowMajorOrder )
-            return SegmentViewType( sliceOffset + firstChunkOfSegment * chunkSize,
+            return SegmentViewType( segmentIdx,
+                                    sliceOffset + firstChunkOfSegment * chunkSize,
                                     segmentSize,
                                     chunkSize,
                                     chunksInSlice );
          else
-            return SegmentViewType( sliceOffset + firstChunkOfSegment,
+            return SegmentViewType( segmentIdx,
+                                    sliceOffset + firstChunkOfSegment,
                                     segmentSize,
                                     chunkSize,
                                     chunksInSlice );
@@ -215,12 +216,14 @@ class ChunkedEllpack
          const IndexType segmentSize = segmentChunksCount * chunkSize;
 
          if( Organization == RowMajorOrder )
-            return SegmentViewType( sliceOffset + firstChunkOfSegment * chunkSize,
+            return SegmentViewType( segmentIdx,
+                                    sliceOffset + firstChunkOfSegment * chunkSize,
                                     segmentSize,
                                     chunkSize,
                                     chunksInSlice );
          else
-            return SegmentViewType( sliceOffset + firstChunkOfSegment,
+            return SegmentViewType( segmentIdx,
+                                    sliceOffset + firstChunkOfSegment,
                                     segmentSize,
                                     chunkSize,
                                     chunksInSlice );

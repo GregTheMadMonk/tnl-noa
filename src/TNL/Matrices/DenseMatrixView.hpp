@@ -38,10 +38,22 @@ DenseMatrixView< Real, Device, Index, Organization >::
 DenseMatrixView( const IndexType rows,
                  const IndexType columns,
                  const ValuesViewType& values )
- : MatrixView< Real, Device, Index >( rows, columns, values )
+ : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns )
 {
-   SegmentsType a( rows, columns );
-   segments = a.getView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Value_ >
+__cuda_callable__
+DenseMatrixView< Real, Device, Index, Organization >::
+DenseMatrixView( const IndexType rows,
+                 const IndexType columns,
+                 const Containers::VectorView< Value_, Device, Index >& values )
+ : MatrixView< Real, Device, Index >( rows, columns, values ), segments( rows, columns, true )
+{
 }
 
 template< typename Real,
@@ -130,7 +142,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, std::plus<>{}, keep, 0 );
+   this->reduceAllRows( fetch, std::plus<>{}, keep, 0 );
 }
 
 template< typename Real,
@@ -278,7 +290,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
 {
    auto values_view = this->values.getView();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
@@ -295,7 +307,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
    const auto values_view = this->values.getConstView();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
@@ -312,9 +324,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -324,9 +336,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -336,7 +348,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forElements( IndexType begin, IndexType end, Function& function ) const
+forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    const auto values_view = this->values.getConstView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
@@ -352,7 +364,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forElements( IndexType begin, IndexType end, Function& function )
+forElements( IndexType begin, IndexType end, Function&& function )
 {
    auto values_view = this->values.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
@@ -368,7 +380,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function ) const
+forAllElements( Function&& function ) const
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -380,7 +392,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function )
+forAllElements( Function&& function )
 {
    this->forElements( 0, this->getRows(), function );
 }
@@ -392,10 +404,15 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForRows( IndexType begin, IndexType end, Function& function ) const
+forRows( IndexType begin, IndexType end, Function&& function )
 {
-   for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+   auto values_view = this->values.getView();
+   using SegmentViewType = typename SegmentsViewType::SegmentViewType;
+   auto f = [=] __cuda_callable__ ( SegmentViewType& segmentView ) mutable {
+      auto rowView = RowView( segmentView, values_view );
+      function( rowView );
+   };
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,
@@ -405,10 +422,15 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForRows( IndexType begin, IndexType end, Function& function )
+forRows( IndexType begin, IndexType end, Function&& function ) const
 {
-   for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+   const auto values_view = this->values.getConstView();
+   using SegmentViewType = typename SegmentsViewType::SegmentViewType;
+   auto f = [=] __cuda_callable__ ( SegmentViewType&& segmentView ) mutable {
+      const auto rowView = RowViewType( segmentView, values_view );
+      function( rowView );
+   };
+   this->segments.forSegments( begin, end, f );
 }
 
 template< typename Real,
@@ -418,7 +440,57 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForAllRows( Function& function ) const
+forAllRows( Function&& function )
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForRows( IndexType begin, IndexType end, Function&& function )
+{
+   for( IndexType row = begin; row < end; row ++ )
+      this->forRows( row, row + 1, function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+DenseMatrixView< Real, Device, Index, Organization >::
+sequentialForAllRows( Function&& function ) const
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }
@@ -430,7 +502,7 @@ template< typename Real,
    template< typename Function >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-sequentialForAllRows( Function& function )
+sequentialForAllRows( Function&& function )
 {
    this->sequentialForRows( 0, this->getRows(), function );
 }

@@ -177,38 +177,65 @@ auto
 CSRView< Device, Index, Kernel >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
+   return SegmentViewType( segmentIdx, offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType begin, IndexType end, Function&& f ) const
 {
    const auto offsetsView = this->offsets;
-   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
       const IndexType begin = offsetsView[ segmentIdx ];
       const IndexType end = offsetsView[ segmentIdx + 1 ];
       IndexType localIdx( 0 );
       bool compute( true );
       for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-         f( segmentIdx, localIdx++, globalIdx, compute, args... );
+         f( segmentIdx, localIdx++, globalIdx, compute );
    };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   Algorithms::ParallelFor< Device >::exec( begin, end, l );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+   template< typename Function >
+void
+CSRView< Device, Index, Kernel >::
+forSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = this->getConstView();
+   auto f = [=] __cuda_callable__ ( IndexType segmentIdx ) mutable {
+      auto segment = view.getSegmentView( segmentIdx );
+      function( segment );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+   template< typename Function >
+void
+CSRView< Device, Index, Kernel >::
+forEachSegment( Function&& f ) const
+{
+   this->forSegments( 0, this->getSegmentsCount(), f );
 }
 
 template< typename Device,

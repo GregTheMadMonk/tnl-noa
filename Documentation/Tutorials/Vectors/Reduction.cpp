@@ -20,8 +20,8 @@ void expressions()
    ViewType a = a_v.getView();
    ViewType b = b_v.getView();
    ViewType c = c_v.getView();
-   a.forEachElement( [] __cuda_callable__ ( int i, RealType& value ) { value = i; } );
-   b.forEachElement( [] __cuda_callable__ ( int i, RealType& value ) { value = i - 5.0; } );
+   a.forAllElements( [] __cuda_callable__ ( int i, RealType& value ) { value = i; } );
+   b.forAllElements( [] __cuda_callable__ ( int i, RealType& value ) { value = i - 5.0; } );
    c = -5;
 
    std::cout << "a = " << a << std::endl;

@@ -1319,7 +1319,7 @@ void test_VectorProduct()
       // Test with large diagonal matrix
       Matrix m1( size, size );
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowCapacities( size );
-      rowCapacities.forEachElement( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
+      rowCapacities.forAllElements( [] __cuda_callable__ ( IndexType i, IndexType& value ) { value = 1; } );
       m1.setRowCapacities( rowCapacities );
       auto f1 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx == 0  )
@@ -1328,7 +1328,7 @@ void test_VectorProduct()
             column = row;
          }
       };
-      m1.forEachElement( f1 );
+      m1.forAllElements( f1 );
       // check that the matrix was initialized
       m1.getCompressedRowLengths( rowCapacities );
       EXPECT_EQ( rowCapacities, 1 );
@@ -1343,7 +1343,7 @@ void test_VectorProduct()
       const int rows( size ), columns( size );
       Matrix m2( rows, columns );
       rowCapacities.setSize( rows );
-      rowCapacities.forEachElement( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
+      rowCapacities.forAllElements( [=] __cuda_callable__ ( IndexType i, IndexType& value ) { value = i + 1; } );
       m2.setRowCapacities( rowCapacities );
       auto f2 = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
          if( localIdx <= row )
@@ -1352,7 +1352,7 @@ void test_VectorProduct()
             column = localIdx;
          }
       };
-      m2.forEachElement( f2 );
+      m2.forAllElements( f2 );
       // check that the matrix was initialized
       TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowLengths( rows );
       m2.getCompressedRowLengths( rowLengths );
@@ -1384,7 +1384,7 @@ void test_VectorProduct()
          column = localIdx;
          value = localIdx + 1;
       };
-      m3.forEachElement( f );
+      m3.forAllElements( f );
       TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
       m3.vectorProduct( in, out );
       EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );
@@ -1392,7 +1392,98 @@ void test_VectorProduct()
 }
 
 template< typename Matrix >
-void test_RowsReduction()
+void test_ForElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 8x3 sparse matrix:
+    *
+    *    /  1  1  1  \
+    *    |  2  2  2  |
+    *    |  3  3  3  |
+    *    |  4  4  4  |
+    *    |  5  5  5  |
+    *    |  6  6  6  |
+    *    |  7  7  7  |
+    *    \  8  8  8  /
+    */
+
+   const IndexType cols = 3;
+   const IndexType rows = 8;
+
+   Matrix m( { 3, 3, 3, 3, 3, 3, 3, 3, 3 }, cols  );
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
+      value = rowIdx + 1.0;
+      columnIdx = localIdx;
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+         EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx + 1.0 );
+}
+
+template< typename Matrix >
+void test_ForRows()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /////
+   // Setup lower triangular matrix
+   const IndexType cols = 8;
+   const IndexType rows = 8;
+
+   /////
+   // Test without iterator
+   Matrix m( { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, cols  );
+   using RowView = typename Matrix::RowView;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( IndexType localIdx = 0; localIdx <= row.getRowIndex(); localIdx++ )
+      {
+         row.setValue( localIdx, row.getRowIndex() - localIdx + 1.0 );
+         row.setColumnIndex( localIdx, localIdx );
+      }
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+
+   ////
+   // Test with iterator
+   m.getValues() = 0.0;
+   m.forAllRows( [] __cuda_callable__ ( RowView& row ) mutable {
+      for( auto element : row )
+      {
+         if( element.localIndex() <= element.rowIndex() )
+         {
+            element.value() = element.rowIndex() - element.localIndex() + 1.0;
+            element.columnIndex() = element.localIndex();
+         }
+      }
+   } );
+
+   for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+      for( IndexType colIdx = 0; colIdx < cols; colIdx++ )
+      {
+         if( colIdx <= rowIdx )
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), rowIdx - colIdx + 1.0 );
+         else
+            EXPECT_EQ( m.getElement( rowIdx, colIdx ), 0.0 );
+      }
+}
+
+template< typename Matrix >
+void test_reduceRows()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -1414,8 +1505,7 @@ void test_RowsReduction()
    const IndexType rows = 8;
    const IndexType cols = 8;
 
-   Matrix m;
-   m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
    typename Matrix::RowsCapacitiesType rowsCapacities{ 6, 3, 4, 5, 2, 7, 8, 8 };
    m.setRowCapacities( rowsCapacities );
 
@@ -1461,7 +1551,7 @@ void test_RowsReduction()
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( fetch, std::plus<>{}, keep, 0 );
+   m.reduceAllRows( fetch, std::plus<>{}, keep, 0 );
    EXPECT_EQ( rowsCapacities, rowLengths );
    m.getCompressedRowLengths( rowLengths );
    EXPECT_EQ( rowsCapacities, rowLengths );
@@ -1476,7 +1566,7 @@ void test_RowsReduction()
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( max_fetch, std::plus<>{}, max_keep, 0 );
+   m.reduceAllRows( max_fetch, std::plus<>{}, max_keep, 0 );
    const RealType maxNorm = TNL::max( rowSums );
    EXPECT_EQ( maxNorm, 260 ) ; // 29+30+31+32+33+34+35+36
 }

@@ -147,7 +147,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   this->allRowsReduction( fetch, reduce, keep, 0 );
+   this->reduceAllRows( fetch, reduce, keep, 0 );
 }
 
 template< typename Real,
@@ -219,7 +219,7 @@ setValue( const RealType& v )
    auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value, bool& compute ) mutable {
       value = newValue;
    };
-   this->forEachElement( f );
+   this->forAllElements( f );
 }
 
 template< typename Real,
@@ -229,9 +229,9 @@ template< typename Real,
 __cuda_callable__
 auto
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-getRow( const IndexType& rowIdx ) const -> const RowView
+getRow( const IndexType& rowIdx ) const -> const ConstRowView
 {
-   return RowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
+   return ConstRowView( rowIdx, this->diagonalsOffsets.getView(), this->values.getView(), this->indexer );
 }
 
 template< typename Real,
@@ -356,7 +356,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
@@ -385,7 +385,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
@@ -414,9 +414,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -426,9 +426,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
 {
-   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -490,7 +490,7 @@ template< typename Real,
    template< typename Function >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function ) const
+forAllElements( Function& function ) const
 {
    this->forElements( 0, this->indxer.getNonEmptyRowsCount(), function );
 }
@@ -502,9 +502,67 @@ template< typename Real,
    template< typename Function >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-forEachElement( Function& function )
+forAllElements( Function& function )
 {
    this->forElements( 0, this->indexer.getNonemptyRowsCount(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function )
+{
+   auto view = *this;
+   auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
+      auto rowView = view.getRow( rowIdx );
+      function( rowView );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+forRows( IndexType begin, IndexType end, Function&& function ) const
+{
+   auto view = *this;
+   auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
+      auto rowView = view.getRow( rowIdx );
+      function( rowView );
+   };
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( begin, end, f );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function )
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Function >
+void
+MultidiagonalMatrixView< Real, Device, Index, Organization >::
+forAllRows( Function&& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -517,7 +575,7 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+      this->forRows( row, row + 1, function );
 }
 
 template< typename Real,
@@ -530,7 +588,7 @@ MultidiagonalMatrixView< Real, Device, Index, Organization >::
 sequentialForRows( IndexType begin, IndexType end, Function& function )
 {
    for( IndexType row = begin; row < end; row ++ )
-      this->forElements( row, row + 1, function );
+      this->forRows( row, row + 1, function );
 }
 
 template< typename Real,
@@ -593,9 +651,9 @@ vectorProduct( const InVector& inVector,
    if( end == 0 )
       end = this->getRows();
    if( outVectorMultiplicator == ( RealType ) 0.0 )
-      this->rowsReduction( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
+      this->reduceRows( begin, end, fetch, reduction, keeper1, ( RealType ) 0.0 );
    else
-      this->rowsReduction( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
+      this->reduceRows( begin, end, fetch, reduction, keeper2, ( RealType ) 0.0 );
 }
 
 template< typename Real,
@@ -634,11 +692,11 @@ addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ 
          value = thisMult * value + matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
       if( thisMult == 0.0 )
-         this->forEachElement( add0 );
+         this->forAllElements( add0 );
       else if( thisMult == 1.0 )
-         this->forEachElement( add1 );
+         this->forAllElements( add1 );
       else
-         this->forEachElement( addGen );
+         this->forAllElements( addGen );
    }*/
 }
 

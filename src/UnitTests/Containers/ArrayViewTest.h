@@ -48,7 +48,6 @@ std::ostream& operator<<( std::ostream& str, const MyData& v )
    return str << v.data;
 }
 
-
 // test fixture for typed tests
 template< typename View >
 class ArrayViewTest : public ::testing::Test
@@ -274,7 +273,7 @@ void ArrayViewEvaluateTest( ArrayType& u )
    using ViewType = ArrayView< ValueType, DeviceType, IndexType >;
    ViewType v( u );
 
-   v.forEachElement( [] __cuda_callable__ ( IndexType i, ValueType& value ) { value = 3 * i % 4; } );
+   v.forAllElements( [] __cuda_callable__ ( IndexType i, ValueType& value ) { value = 3 * i % 4; } );
    
    for( int i = 0; i < 10; i++ )
    {

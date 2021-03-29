@@ -28,7 +28,7 @@ int main( int argc, char* argv[] )
     */
    Vector< double, Devices::Host > host_u( 10 ), host_v( 10 );
    host_u = 1.0;
-   host_v.forEachElement( [] __cuda_callable__ ( int i, double& value ) { value = 2 * ( i % 2 ) - 1; } );
+   host_v.forAllElements( [] __cuda_callable__ ( int i, double& value ) { value = 2 * ( i % 2 ) - 1; } );
    std::cout << "host_u = " << host_u << std::endl;
    std::cout << "host_v = " << host_v << std::endl;
    std::cout << "The scalar product ( host_u, host_v ) is " << scalarProduct( host_u, host_v ) << "." << std::endl;
@@ -40,7 +40,7 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    Vector< double, Devices::Cuda > cuda_u( 10 ), cuda_v( 10 );
    cuda_u = 1.0;
-   cuda_v.forEachElement( [] __cuda_callable__ ( int i, double& value ) { value = 2 * ( i % 2 ) - 1; } );
+   cuda_v.forAllElements( [] __cuda_callable__ ( int i, double& value ) { value = 2 * ( i % 2 ) - 1; } );
    std::cout << "cuda_u = " << cuda_u << std::endl;
    std::cout << "cuda_v = " << cuda_v << std::endl;
    std::cout << "The scalar product ( cuda_u, cuda_v ) is " << scalarProduct( cuda_u, cuda_v ) << "." << std::endl;

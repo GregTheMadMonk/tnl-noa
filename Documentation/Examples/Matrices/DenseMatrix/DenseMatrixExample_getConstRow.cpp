@@ -23,7 +23,7 @@ void getRowExample()
     */
    auto fetch = [=] __cuda_callable__ ( int rowIdx ) mutable -> double {
       auto row = matrix->getRow( rowIdx );
-      return row.getElement( rowIdx );
+      return row.getValue( rowIdx );
    };
 
    /***

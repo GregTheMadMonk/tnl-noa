@@ -13,6 +13,7 @@
 #include <ostream>
 
 #include <TNL/Cuda/CudaCallable.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
 
 namespace TNL {
 namespace Matrices {
@@ -81,9 +82,24 @@ class SparseMatrixRowView
       using ConstColumnsIndexesViewType = typename ColumnsIndexesViewType::ConstViewType;
 
       /**
+       * \brief Type of sparse matrix row view.
+       */
+      using RowView = SparseMatrixRowView< SegmentView, ValuesViewType, ColumnsIndexesViewType, isBinary_ >;
+
+      /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstViewType = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
+      using ConstView = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
+
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = SparseMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
+      using IteratorType = MatrixRowViewIterator< RowView >;
 
       /**
        * \brief Tells whether the parent matrix is a binary matrix.
@@ -110,6 +126,14 @@ class SparseMatrixRowView
        */
       __cuda_callable__
       IndexType getSize() const;
+
+      /**
+       * \brief Returns the matrix row index.
+       *
+       * \return matrix row index.
+       */
+      __cuda_callable__
+      const IndexType& getRowIndex() const;
 
       /**
        * \brief Returns constants reference to a column index of an element with given rank in the row.
@@ -169,7 +193,7 @@ class SparseMatrixRowView
        */
       __cuda_callable__
       void setColumnIndex( const IndexType localIdx,
-                           const RealType& columnIndex );
+                           const IndexType& columnIndex );
 
       /**
        * \brief Sets both a value and a column index of matrix element with given rank in the matrix row.
@@ -197,6 +221,38 @@ class SparseMatrixRowView
                 bool _isBinary >
       __cuda_callable__
       bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
+
+      /**
+       * \brief Returns iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin();
+
+      /**
+       * \brief Returns iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end();
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const;
 
    protected:
 

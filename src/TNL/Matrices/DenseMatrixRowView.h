@@ -10,6 +10,10 @@
 
 #pragma once
 
+#include <TNL/Cuda/CudaCallable.h>
+#include <TNL/Matrices/MatrixRowViewIterator.h>
+#include <TNL/Matrices/DenseMatrixElement.h>
+
 namespace TNL {
    namespace Matrices {
 
@@ -58,6 +62,31 @@ class DenseMatrixRowView
       using ValuesViewType = ValuesView;
 
       /**
+       * \brief Type of constant container view used for storing the matrix elements values.
+       */
+      using ConstValuesViewType = typename ValuesViewType::ConstViewType;
+
+      /**
+       * \brief Type of dense matrix row view.
+       */
+      using RowView = DenseMatrixRowView< SegmentView, ValuesViewType >;
+
+      /**
+       * \brief Type of constant sparse matrix row view.
+       */
+      using ConstView = DenseMatrixRowView< SegmentView, ConstValuesViewType >;
+
+      /**
+       * \brief The type of related matrix element.
+       */
+      using MatrixElementType = DenseMatrixElement< RealType, IndexType >;
+
+      /**
+       * \brief Type of iterator for the matrix row.
+       */
+      using IteratorType = MatrixRowViewIterator< RowView >;
+
+      /**
        * \brief Constructor with \e segmentView and \e values
        *
        * \param segmentView instance of SegmentViewType representing matrix row.
@@ -76,6 +105,14 @@ class DenseMatrixRowView
       IndexType getSize() const;
 
       /**
+       * \brief Returns the matrix row index.
+       *
+       * \return matrix row index.
+       */
+      __cuda_callable__
+      const IndexType& getRowIndex() const;
+
+      /**
        * \brief Returns constants reference to an element with given column index.
        *
        * \param column is column index of the matrix element.
@@ -83,7 +120,7 @@ class DenseMatrixRowView
        * \return constant reference to the matrix element.
        */
       __cuda_callable__
-      const RealType& getElement( const IndexType column ) const;
+      const RealType& getValue( const IndexType column ) const;
 
       /**
        * \brief Returns non-constants reference to an element with given column index.
@@ -93,7 +130,17 @@ class DenseMatrixRowView
        * \return non-constant reference to the matrix element.
        */
       __cuda_callable__
-      RealType& getElement( const IndexType column );
+      RealType& getValue( const IndexType column );
+
+      /**
+       * \brief This method is only for compatibility with sparse matrix row.
+       *
+       * \param localIdx is the rank of the matrix element in given row.
+       *
+       * \return the value of \ref localIdx as column index.
+       */
+      __cuda_callable__
+      IndexType getColumnIndex( const IndexType localIdx ) const;
 
       /**
        * \brief Sets value of matrix element with given column index
@@ -102,8 +149,8 @@ class DenseMatrixRowView
        * \param value is a value the matrix element will be set to.
        */
       __cuda_callable__
-      void setElement( const IndexType column,
-                       const RealType& value );
+      void setValue( const IndexType column,
+                     const RealType& value );
 
       /**
        * \brief Sets value of matrix element with given column index
@@ -118,6 +165,39 @@ class DenseMatrixRowView
       void setElement( const IndexType localIdx,
                        const IndexType column,
                        const RealType& value );
+
+      /**
+       * \brief Returns iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin();
+
+      /**
+       * \brief Returns iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end();
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the matrix row.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const;
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the matrix row.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const;
+
    protected:
 
       SegmentViewType segmentView;

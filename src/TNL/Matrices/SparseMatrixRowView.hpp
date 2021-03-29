@@ -44,6 +44,18 @@ template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
           bool isBinary_ >
+__cuda_callable__
+auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+getRowIndex() const -> const IndexType&
+{
+   return segmentView.getSegmentIndex();
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType&
@@ -112,6 +124,20 @@ template< typename SegmentView,
           bool isBinary_ >
 __cuda_callable__ void
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+setColumnIndex( const IndexType localIdx,
+                const IndexType& columnIndex )
+{
+   TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
+   const IndexType globalIdx = segmentView.getGlobalIndex( localIdx );
+   this->columnIndexes[ globalIdx ] = columnIndex;
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ void
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 setElement( const IndexType localIdx,
             const IndexType column,
             const RealType& value )
@@ -159,6 +185,50 @@ template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
           bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+begin() -> IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+end() -> IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+cbegin() const -> const IteratorType
+{
+   return IteratorType( *this, 0 );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ auto
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+cend() const -> const IteratorType
+{
+   return IteratorType( *this, this->getSize() );
+}
+
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row )
 {
    using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::IndexType >;
@@ -170,6 +240,7 @@ std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentV
          str << " [ " << row.getColumnIndex( i ) << " ] = " << row.getValue( i ) << ", ";
    return str;
 }
+
 
 } // namespace Matrices
 } // namespace TNL

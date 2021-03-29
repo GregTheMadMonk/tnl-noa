@@ -21,6 +21,7 @@ class TridiagonalMatrixIndexer
    public:
 
       using IndexType = Index;
+      using ConstType = TridiagonalMatrixIndexer< std::add_const_t< Index >, RowMajorOrder >;
 
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; };
 
@@ -46,15 +47,6 @@ class TridiagonalMatrixIndexer
       __cuda_callable__
       IndexType getRowSize( const IndexType rowIdx ) const
       {
-         /*if( rowIdx == 0 )
-            return 2;
-         if( columns <= rows )
-         {
-            if( rowIdx == columns - 1 )
-               return 2;
-            if( rowIdx == columns )
-               return 1;
-         }*/
          return 3;
       };
 

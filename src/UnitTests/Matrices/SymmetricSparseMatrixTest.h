@@ -88,11 +88,11 @@ TYPED_TEST( MatrixTest, vectorProductTest )
     test_VectorProduct< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, rowsReduction )
+TYPED_TEST( MatrixTest, reduceRows )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_RowsReduction< MatrixType >();
+    test_reduceRows< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, saveAndLoadTest )

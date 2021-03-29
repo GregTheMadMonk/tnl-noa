@@ -5,7 +5,6 @@ set( COMMON_TESTS
             DenseMatrixCopyTest
             TridiagonalMatrixTest
             MultidiagonalMatrixTest
-
             SparseMatrixTest_CSRScalar
             SparseMatrixTest_CSRVector
             SparseMatrixTest_CSRHybrid

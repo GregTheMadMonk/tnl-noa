@@ -109,7 +109,7 @@ auto
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getView() -> ViewType
 {
-   return ViewType( segmentSize, size, alignedSize );
+   return ViewType( size, segmentSize, alignedSize );
 }
 
 template< typename Device,
@@ -121,7 +121,7 @@ auto
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getConstView() const -> const ConstViewType
 {
-   return ConstViewType( segmentSize, size, alignedSize );
+   return ConstViewType( size, segmentSize, alignedSize );
 }
 
 template< typename Device,
@@ -242,9 +242,9 @@ __cuda_callable__ auto Ellpack< Device, Index, IndexAllocator, Organization, Ali
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( Organization == RowMajorOrder )
-      return SegmentViewType( segmentIdx * this->segmentSize, this->segmentSize, 1 );
+      return SegmentViewType( segmentIdx, segmentIdx * this->segmentSize, this->segmentSize, 1 );
    else
-      return SegmentViewType( segmentIdx, this->segmentSize, this->alignedSize );
+      return SegmentViewType( segmentIdx, segmentIdx, this->segmentSize, this->alignedSize );
 }
 
 template< typename Device,
@@ -252,12 +252,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forElements( IndexType first, IndexType last, Function& f, Args... args ) const
+forElements( IndexType first, IndexType last, Function&& f ) const
 {
-   this->getConstView().forElements( first, last, f, args... );
+   this->getConstView().forElements( first, last, f );
 }
 
 template< typename Device,
@@ -265,12 +265,38 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Function, typename... Args >
+   template< typename Function >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forEachElement( Function& f, Args... args ) const
+forAllElements( Function&& f ) const
 {
-   this->forElements( 0, this->getSegmentsCount(), f, args... );
+   this->forElements( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename Function >
+void
+Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
+forSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().forSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename Function >
+void
+Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
+forEachSegment( Function&& f ) const
+{
+   this->getConstView().forEachSegment( f );
 }
 
 template< typename Device,
