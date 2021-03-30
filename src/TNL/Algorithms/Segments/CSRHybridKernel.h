@@ -21,7 +21,8 @@ namespace TNL {
       namespace Segments {
 
 template< typename Index,
-          typename Device >
+          typename Device,
+          int ThreadsInBlock = 256 >
 struct CSRHybridKernel
 {
    using IndexType = Index;
@@ -44,16 +45,14 @@ struct CSRHybridKernel
              typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
+             typename Real >
    void segmentsReduction( const OffsetsView& offsets,
                                   Index first,
                                   Index last,
                                   Fetch& fetch,
                                   const Reduction& reduction,
                                   ResultKeeper& keeper,
-                                  const Real& zero,
-                                  Args... args ) const;
+                                  const Real& zero ) const;
 
    protected:
       int threadsPerSegment;
