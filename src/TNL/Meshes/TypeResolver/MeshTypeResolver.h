@@ -143,4 +143,4 @@ protected:
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/TypeResolver/MeshTypeResolver_impl.h>
+#include <TNL/Meshes/TypeResolver/MeshTypeResolver.hpp>

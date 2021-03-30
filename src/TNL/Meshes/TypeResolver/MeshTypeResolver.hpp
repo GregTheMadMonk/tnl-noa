@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshTypeResolver_impl.h  -  description
+                          MeshTypeResolver.hpp  -  description
                              -------------------
     begin                : Nov 22, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshResolver.h  -  description
+                          resolveMeshType.h  -  description
                              -------------------
     begin                : Nov 22, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -98,4 +98,4 @@ loadMesh( Grid< Dimension, Real, Device, Index >& grid,
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/TypeResolver/TypeResolver_impl.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.hpp>

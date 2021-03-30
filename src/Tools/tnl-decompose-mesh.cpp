@@ -11,7 +11,7 @@
 // Implemented by: Jakub Klinkovský
 
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>

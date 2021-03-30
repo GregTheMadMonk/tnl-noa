@@ -91,4 +91,4 @@ protected:
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/TypeResolver/GridTypeResolver_impl.h>
+#include <TNL/Meshes/TypeResolver/GridTypeResolver.hpp>

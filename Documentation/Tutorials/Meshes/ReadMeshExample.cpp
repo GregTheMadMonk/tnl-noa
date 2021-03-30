@@ -1,4 +1,4 @@
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 
 // Define the tag for the MeshTypeResolver configuration
 struct MeshConfigTag {};

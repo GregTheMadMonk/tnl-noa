@@ -13,7 +13,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
@@ -21,7 +21,7 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
           typename Real,

@@ -11,8 +11,7 @@
 #include <random>
 
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
-#include <TNL/Meshes/DistributedMeshes/loadDistributedMesh.h>
+#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/DistributedMeshes/distributeSubentities.h>
 #include <TNL/Meshes/Geometry/getEntityCenter.h>

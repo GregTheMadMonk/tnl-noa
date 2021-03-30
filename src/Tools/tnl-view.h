@@ -16,11 +16,10 @@
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorField.h>
-
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
 
 using namespace TNL;
 
@@ -155,7 +154,7 @@ bool setMeshEntityDimension( const MeshPointer& meshPointer,
    {
       case 0:
          return setMeshEntityType< MeshPointer, 0, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
-         break;      
+         break;
       case 1:
          return setMeshEntityType< MeshPointer, 1, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
@@ -353,7 +352,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
          std::cerr << "unknown object ... SKIPPING!" << std::endl;
          continue;
       }
-      
+
       if( verbose )
         std::cout << objectType << " detected ... ";
 
