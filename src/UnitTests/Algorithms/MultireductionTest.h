@@ -71,7 +71,7 @@ protected:
       result.setSize( n );
 
       for( int i = 0; i < n; i++ ) {
-         DeviceView v( &V[ i * size ], size );
+         DeviceView v( V.getData() + i * size, size );
          if( i % 2 == 0 )
             setLinearSequence( v );
          else
