@@ -194,7 +194,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, maxBlocks = 1 << 15; //32k
 const int g_maxTasks = 1 << 14;
-const int minElemPerBlock = threadsPerBlock;
+const int minElemPerBlock = threadsPerBlock*2;
 
 class QUICKSORT
 {
@@ -253,14 +253,8 @@ void QUICKSORT::sort(const Function &Cmp)
     while (tasksAmount > 0)
     {
         //by partitioning with n=tasksAmount, max 2n new tasks can be created
-        //quicksort1stPhase will 1st try to insert into newTasks
-        //if not enough space then insert into 2nd phase as last resort, and vice versa when inserting into 2ndphase
-        int maxNewTasks = 2 * tasksAmount;
-        int spaceLeft = cuda_newTasks.getSize() + (cuda_2ndPhaseTasks.getSize() - host_2ndPhaseTasksAmount);
-
-        if (maxNewTasks >= spaceLeft)
+        if (2 * tasksAmount >= maxTasks)
             break;
-        //in case all new tasks are written into newTasks, theres still space in 2ndphase to save it
 
         //2ndphase task is now full
         if (host_2ndPhaseTasksAmount >= cuda_2ndPhaseTasks.getSize())
@@ -306,7 +300,7 @@ void QUICKSORT::sort(const Function &Cmp)
         cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
 
         cudaQuickSort2ndPhase<Function, 128>
-            <<<tasksAmount, threadsPerBlock>>>(arr, aux, Cmp,
+            <<<tasksAmount, threadsPerBlock, 0, s>>>(arr, aux, Cmp,
                                                iteration % 2 == 0 ? cuda_tasks : cuda_newTasks);
         cudaStreamDestroy(s);
     }
@@ -317,7 +311,7 @@ void QUICKSORT::sort(const Function &Cmp)
         cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
 
         cudaQuickSort2ndPhase<Function, 128>
-            <<<host_2ndPhaseTasksAmount, threadsPerBlock>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
+            <<<host_2ndPhaseTasksAmount, threadsPerBlock, 0, s>>>(arr, aux, Cmp, cuda_2ndPhaseTasks);
 
         cudaStreamDestroy(s);
     }

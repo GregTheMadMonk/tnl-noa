@@ -38,13 +38,14 @@ __device__ int blockReduceSum(int val)
 
 __device__ int warpInclusivePrefixSum(int value)
 {
-    int laneId = threadIdx.x & 0x1f;
+    int laneId = threadIdx.x & (32-1);
 
     #pragma unroll
-    for (int i = 1; i*2 <= 32; i *= 2)//32 here is warp size
+    for (int i = 0; i < 6; i++) //iterates until x == 1<<5 == 32 which is warpSize
     {
-        int n = __shfl_up_sync(0xffffffff, value, i);
-        if ((laneId & (warpSize - 1)) >= i)
+        int x = 1<<i;
+        int n = __shfl_up_sync(0xffffffff, value, x);
+        if ((laneId & (warpSize - 1)) >= x)
             value += n;
     }
 
