@@ -65,9 +65,7 @@ template <typename Function>
 __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
                                       const Function &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
-                                      ArrayView<int, Devices::Cuda> taskMapping,
-                                      ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
+                                      ArrayView<int, Devices::Cuda> taskMapping)
 {
     extern __shared__ int externMem[];
     int *sharedMem = externMem;
@@ -106,7 +104,6 @@ template <typename Function>
 __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
                                       const Function &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
-                                      ArrayView<int, Devices::Cuda> taskMapping,
                                       ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
@@ -275,16 +272,11 @@ void QUICKSORT::sort(const Function &Cmp)
             cudaQuickSort1stPhase<Function>
                 <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                     arr, aux, Cmp, elemPerBlock,
-                    cuda_tasks,
-                    cuda_blockToTaskMapping,
-                    cuda_newTasks,
-                    cuda_newTasksAmount.getData(),
-                    cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
+                    cuda_tasks, cuda_blockToTaskMapping);
 
             cudaWritePivot<<<tasksAmount, 512>>>(
                 arr, aux, Cmp, elemPerBlock,
                 cuda_tasks,
-                cuda_blockToTaskMapping,
                 cuda_newTasks,
                 cuda_newTasksAmount.getData(),
                 cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
@@ -293,16 +285,11 @@ void QUICKSORT::sort(const Function &Cmp)
         {
             cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                 arr, aux, Cmp, elemPerBlock,
-                cuda_newTasks,
-                cuda_blockToTaskMapping,
-                cuda_tasks,
-                cuda_newTasksAmount.getData(),
-                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
+                cuda_newTasks, cuda_blockToTaskMapping);
 
             cudaWritePivot<<<tasksAmount, 512>>>(
                 arr, aux, Cmp, elemPerBlock,
                 cuda_newTasks,
-                cuda_blockToTaskMapping,
                 cuda_tasks,
                 cuda_newTasksAmount.getData(),
                 cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
