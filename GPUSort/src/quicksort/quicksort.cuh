@@ -15,7 +15,8 @@ using namespace TNL::Containers;
 
 //-----------------------------------------------------------
 
-__device__ void writeNewTask(int begin, int end, int depth, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+__device__ void writeNewTask(int begin, int end, int depth, int pivotIdx,
+                            ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                              ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     int size = end - begin;
@@ -25,12 +26,12 @@ __device__ void writeNewTask(int begin, int end, int depth, ArrayView<TASK, Devi
     {
         int idx = atomicAdd(secondPhaseTasksCnt, 1);
         if (idx < secondPhaseTasks.getSize())
-            secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
+            secondPhaseTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
         else
         {
             int idx = atomicAdd(newTasksCnt, 1);
             if (idx < newTasks.getSize())
-                newTasks[idx] = TASK(begin, end, depth + 1);
+                newTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
             else
                 printf("ran out of memory for second phase task, there isnt even space in newTask list\nPart of array may stay unsorted!!!\n");
         }
@@ -39,25 +40,16 @@ __device__ void writeNewTask(int begin, int end, int depth, ArrayView<TASK, Devi
     {
         int idx = atomicAdd(newTasksCnt, 1);
         if (idx < newTasks.getSize())
-            newTasks[idx] = TASK(begin, end, depth + 1);
+            newTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
         else
         {
             int idx = atomicAdd(secondPhaseTasksCnt, 1);
             if (idx < secondPhaseTasks.getSize())
-                secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
+                secondPhaseTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
             else
                 printf("ran out of memory for newtask, there isnt even space in second phase task list\nPart of array may stay unsorted!!!\n");
         }
     }
-}
-
-__device__ void writeNewTasks(int leftBegin, int leftEnd, int rightBegin, int rightEnd,
-                              int depth,
-                              ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                              ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
-{
-    writeNewTask(leftBegin, leftEnd, depth, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
-    writeNewTask(rightBegin, rightEnd, depth, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
 }
 //----------------------------------------------------
 
@@ -75,12 +67,11 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     if (threadIdx.x == 0)
     {
         if ((myTask.depth & 1) == 0)
-            pivot = pickPivot(arr.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+            pivot = arr[myTask.pivotIdx];
         else
-            pivot = pickPivot(aux.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+            pivot = aux[myTask.pivotIdx];
     }
     __syncthreads();
-
 
     if ((myTask.depth & 1) == 0)
     {
@@ -102,10 +93,10 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 
 template <typename Function>
 __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
-                                      const Function &Cmp, int elemPerBlock,
-                                      ArrayView<TASK, Devices::Cuda> tasks,
-                                      ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
+                               const Function &Cmp, int elemPerBlock,
+                               ArrayView<TASK, Devices::Cuda> tasks,
+                               ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+                               ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     static __shared__ int pivot;
     TASK &myTask = tasks[blockIdx.x];
@@ -113,9 +104,9 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
     if (threadIdx.x == 0)
     {
         if ((myTask.depth & 1) == 0)
-            pivot = pickPivot(arr.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+            pivot = arr[myTask.pivotIdx];
         else
-            pivot = pickPivot(aux.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+            pivot = aux[myTask.pivotIdx];
     }
     __syncthreads();
 
@@ -135,10 +126,25 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
     if (threadIdx.x != 0)
         return;
 
-    writeNewTasks(leftBegin, leftEnd, rightBegin, rightEnd,
-                  myTask.depth,
-                  newTasks, newTasksCnt,
-                  secondPhaseTasks, secondPhaseTasksCnt);
+    if(leftEnd - leftBegin > 0)
+    {
+        int leftPivotIdx = pickPivotIdx((myTask.depth & 1) == 0?
+                            aux.getView(leftBegin, leftEnd) :
+                            arr.getView(leftBegin, leftEnd)
+                            , Cmp) + leftBegin;
+
+        writeNewTask(leftBegin, leftEnd, myTask.depth, leftPivotIdx, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+    }
+
+    if(rightEnd - rightBegin)
+    {
+        int rightPivotIdx = pickPivotIdx((myTask.depth & 1) == 0?
+                                aux.getView(rightBegin, rightEnd) :
+                                arr.getView(rightBegin, rightEnd)
+                            , Cmp) + rightBegin;
+                                
+        writeNewTask(rightBegin, rightEnd, myTask.depth, rightPivotIdx, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+    }
 }
 
 //-----------------------------------------------------------
@@ -224,7 +230,7 @@ public:
           cuda_blockToTaskMapping(maxBlocks * 2),
           cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
     {
-        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
+        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize()/2));
         tasksAmount = 1;
         host_2ndPhaseTasksAmount = 0;
         cuda_2ndPhaseTasksAmount = 0;
@@ -259,7 +265,7 @@ void QUICKSORT::sort(const Function &Cmp)
         if (maxNewTasks >= spaceLeft)
             break;
         //in case all new tasks are written into newTasks, theres still space in 2ndphase to save it
-        
+
         //2ndphase task is now full
         if (host_2ndPhaseTasksAmount >= cuda_2ndPhaseTasks.getSize())
             break;

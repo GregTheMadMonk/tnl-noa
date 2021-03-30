@@ -8,16 +8,16 @@ struct TASK
     //helper variables for blocks working on this task
 
     int depth;
+    int pivotIdx;
     int dstBegin, dstEnd;
     int firstBlock, blockCount;//for workers read only values
-    int stillWorkingCnt;//shared counter of blocks working together(how many are still working)
 
     __cuda_callable__
-    TASK(int begin, int end, int depth)
+    TASK(int begin, int end, int depth, int pivotIdx)
         : partitionBegin(begin), partitionEnd(end),
-        depth(depth),
+        depth(depth), pivotIdx(pivotIdx),
         dstBegin(-151561), dstEnd(-151561),
-        firstBlock(-100), blockCount(-100), stillWorkingCnt(-100)
+        firstBlock(-100), blockCount(-100)
         {}
 
     __cuda_callable__
@@ -25,7 +25,7 @@ struct TASK
     {
         dstBegin= 0; dstEnd = partitionEnd - partitionBegin;
         this->firstBlock = firstBlock;
-        blockCount = stillWorkingCnt = blocks;
+        blockCount = blocks;
     }
 
     TASK() = default;

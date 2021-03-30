@@ -42,6 +42,37 @@ __device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const 
     
 }
 
+template <typename Value, typename Device, typename Function>
+__device__ Value pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const Function & Cmp)
+{
+    //return 0;
+    //return src.getSize()-1;
+
+    if(src.getSize() <= 1)
+        return 0;
+    
+    Value a = src[0], b = src[src.getSize()/2], c = src[src.getSize() - 1];
+
+    if(Cmp(a, b)) // ..a..b..
+    {
+        if(Cmp(b, c))// ..a..b..c
+            return src.getSize()/2;
+        else if(Cmp(c, a))//..c..a..b..
+            return 0;
+        else //..a..c..b..
+            return src.getSize() - 1;
+    }
+    else //..b..a..
+    {
+        if(Cmp(a, c))//..b..a..c
+            return 0;
+        else if(Cmp(c, b))//..c..b..a..
+            return src.getSize()/2;
+        else //..b..c..a..
+            return src.getSize() - 1;
+    }
+}
+
 __device__
 void countElem(ArrayView<int, Devices::Cuda> arr,
              int &smaller, int &bigger,
@@ -104,7 +135,7 @@ void copyData(ArrayView<int, Devices::Cuda> src,
 //----------------------------------------------------------------------------------
 
 template <typename Function>
-__device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
+__device__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
                               ArrayView<int, Devices::Cuda> dst,
                               int * sharedMem,
                               const Function &Cmp, const int & pivot,
@@ -114,7 +145,6 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
     static __shared__ int myBegin, myEnd;
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int smallerTotal, biggerTotal;
-    static __shared__ bool writePivot;
 
     if (threadIdx.x == 0)
     {
@@ -155,13 +185,4 @@ __device__ bool cudaPartition(ArrayView<int, Devices::Cuda> src,
                     smallerTotal, biggerTotal,
                     smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
                     pivot);
-    __syncthreads();
-
-    //-----------------------------------------------------------
-
-    if (threadIdx.x == 0)
-        writePivot = atomicAdd(&(task.stillWorkingCnt), -1) == 1;
-    __syncthreads();
-
-    return writePivot;
 }
