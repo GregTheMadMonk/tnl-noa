@@ -11,14 +11,14 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Meshes/BuildConfigTags.h>
+#include <TNL/Meshes/TypeResolver/BuildConfigTags.h>
 
 namespace TNL {
 
 class HeatEquationBuildConfigTag{};
 
 namespace Solvers {
-   
+
 /****
  * Turn off support for float and long double.
  */

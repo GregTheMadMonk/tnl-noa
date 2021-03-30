@@ -12,7 +12,7 @@
 
 #include <type_traits>
 
-#include <TNL/Meshes/BuildConfigTags.h>
+#include <TNL/Meshes/TypeResolver/BuildConfigTags.h>
 
 namespace TNL {
 namespace Meshes {

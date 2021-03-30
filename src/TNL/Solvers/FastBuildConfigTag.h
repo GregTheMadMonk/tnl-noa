@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Meshes/BuildConfigTags.h>
+#include <TNL/Meshes/TypeResolver/BuildConfigTags.h>
 
 namespace TNL {
 namespace Solvers {

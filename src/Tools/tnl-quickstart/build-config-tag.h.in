@@ -18,10 +18,10 @@ template<> struct ConfigTagReal< {problemBaseName}BuildConfigTag, long double > 
  */
 template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, short int >{{ enum {{ enabled = false }}; }};
 template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ enum {{ enabled = false }}; }};
-    
+
 /****
  * The mesh type will be resolved by the Solver by default.
- * (The detailed mesh configuration is in TNL/Meshes/BuildConfigTags.h)
+ * (The detailed mesh configuration is in TNL/Meshes/TypeResolver/BuildConfigTags.h)
  */
 template<> struct ConfigTagMeshResolve< {problemBaseName}BuildConfigTag >{{ enum {{ enabled = true }}; }};
 
