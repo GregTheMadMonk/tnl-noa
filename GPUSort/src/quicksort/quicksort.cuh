@@ -83,11 +83,10 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     }
     __syncthreads();
 
-    bool isLast;
 
     if ((myTask.depth & 1) == 0)
     {
-        isLast = cudaPartition(
+        cudaPartition(
             arr.getView(myTask.partitionBegin, myTask.partitionEnd),
             aux.getView(myTask.partitionBegin, myTask.partitionEnd),
             sharedMem,
@@ -95,15 +94,33 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     }
     else
     {
-        isLast = cudaPartition(
+        cudaPartition(
             aux.getView(myTask.partitionBegin, myTask.partitionEnd),
             arr.getView(myTask.partitionBegin, myTask.partitionEnd),
             sharedMem,
             Cmp, pivot, elemPerBlock, myTask);
     }
+}
 
-    if (!isLast)
-        return;
+template <typename Function>
+__global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+                                      const Function &Cmp, int elemPerBlock,
+                                      ArrayView<TASK, Devices::Cuda> tasks,
+                                      ArrayView<int, Devices::Cuda> taskMapping,
+                                      ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
+{
+    static __shared__ int pivot;
+    TASK &myTask = tasks[blockIdx.x];
+
+    if (threadIdx.x == 0)
+    {
+        if ((myTask.depth & 1) == 0)
+            pivot = pickPivot(arr.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+        else
+            pivot = pickPivot(aux.getView(myTask.partitionBegin, myTask.partitionEnd), Cmp);
+    }
+    __syncthreads();
 
     int leftBegin = myTask.partitionBegin, leftEnd = myTask.partitionBegin + myTask.dstBegin;
     int rightBegin = myTask.partitionBegin + myTask.dstEnd, rightEnd = myTask.partitionEnd;
@@ -263,10 +280,26 @@ void QUICKSORT::sort(const Function &Cmp)
                     cuda_newTasks,
                     cuda_newTasksAmount.getData(),
                     cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
+
+            cudaWritePivot<<<tasksAmount, 512>>>(
+                arr, aux, Cmp, elemPerBlock,
+                cuda_tasks,
+                cuda_blockToTaskMapping,
+                cuda_newTasks,
+                cuda_newTasksAmount.getData(),
+                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
         }
         else
         {
             cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
+                arr, aux, Cmp, elemPerBlock,
+                cuda_newTasks,
+                cuda_blockToTaskMapping,
+                cuda_tasks,
+                cuda_newTasksAmount.getData(),
+                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
+
+            cudaWritePivot<<<tasksAmount, 512>>>(
                 arr, aux, Cmp, elemPerBlock,
                 cuda_newTasks,
                 cuda_blockToTaskMapping,
