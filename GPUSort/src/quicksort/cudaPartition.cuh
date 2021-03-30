@@ -105,15 +105,16 @@ void copyDataShared(ArrayView<int, Devices::Cuda> src,
             sharedMem[smallerOffset++] = data;
         else if (data > pivot)
             sharedMem[smallerTotal + biggerOffset++] = data;
-
     }
     __syncthreads();
 
-    for (int i = threadIdx.x; i < smallerTotal; i += blockDim.x)
+    for (int i = threadIdx.x; i < smallerTotal + biggerTotal; i += blockDim.x)
+    {
+        if(i < smallerTotal)
             dst[smallerStart + i] = sharedMem[i];
-
-    for (int i = threadIdx.x; i < biggerTotal; i += blockDim.x)
-            dst[biggerStart + i] = sharedMem[smallerTotal + i];
+        else
+            dst[biggerStart + i - smallerTotal] = sharedMem[i];
+    }
 }
 
 __device__
@@ -142,16 +143,11 @@ __device__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
                               int elemPerBlock, TASK & task
                               )
 {
-    static __shared__ int myBegin, myEnd;
     static __shared__ int smallerStart, biggerStart;
     static __shared__ int smallerTotal, biggerTotal;
 
-    if (threadIdx.x == 0)
-    {
-        myBegin = elemPerBlock * (blockIdx.x - task.firstBlock);
-        myEnd = TNL::min(myBegin + elemPerBlock, src.getSize());
-    }
-    __syncthreads();
+    int myBegin = elemPerBlock * (blockIdx.x - task.firstBlock);
+    int myEnd = TNL::min(myBegin + elemPerBlock, src.getSize());
 
     auto srcView = src.getView(myBegin, myEnd);
 

@@ -61,17 +61,13 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 {
     extern __shared__ int externMem[];
     int *sharedMem = externMem;
-    static __shared__ int pivot;
+    int pivot;
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
 
-    if (threadIdx.x == 0)
-    {
-        if ((myTask.depth & 1) == 0)
-            pivot = arr[myTask.pivotIdx];
-        else
-            pivot = aux[myTask.pivotIdx];
-    }
-    __syncthreads();
+    if ((myTask.depth & 1) == 0)
+        pivot = arr[myTask.pivotIdx];
+    else
+        pivot = aux[myTask.pivotIdx];
 
     if ((myTask.depth & 1) == 0)
     {
