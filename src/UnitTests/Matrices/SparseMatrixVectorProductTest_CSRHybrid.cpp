@@ -1,7 +1,7 @@
 /***************************************************************************
                           SparseMatrixVectorProductTest_CSRHybrid.cpp -  description
                              -------------------
-    begin                : Jan 23, 2021
+    begin                : Mar 30, 2021
     copyright            : (C) 2021 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/

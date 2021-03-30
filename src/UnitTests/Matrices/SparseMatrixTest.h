@@ -88,13 +88,6 @@ TYPED_TEST( MatrixTest, addElementTest )
     test_AddElement< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, vectorProductTest )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_VectorProduct< MatrixType >();
-}
-
 TYPED_TEST( MatrixTest, forElements )
 {
     using MatrixType = typename TestFixture::MatrixType;

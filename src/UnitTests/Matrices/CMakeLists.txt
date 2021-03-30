@@ -13,6 +13,14 @@ set( COMMON_TESTS
             SparseMatrixTest_SlicedEllpack
             SparseMatrixTest_ChunkedEllpack
             SparseMatrixTest_BiEllpack
+            SparseMatrixVectorProductTest_CSRScalar
+            SparseMatrixVectorProductTest_CSRVector
+            SparseMatrixVectorProductTest_CSRHybrid
+            SparseMatrixVectorProductTest_CSRAdaptive
+            SparseMatrixVectorProductTest_Ellpack
+            SparseMatrixVectorProductTest_SlicedEllpack
+            SparseMatrixVectorProductTest_ChunkedEllpack
+            SparseMatrixVectorProductTest_BiEllpack
             SparseMatrixCopyTest
             BinarySparseMatrixTest_CSR
             BinarySparseMatrixTest_Ellpack
