@@ -11,7 +11,6 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
@@ -30,7 +29,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
                                                SolverMonitor >
 {
    public:
- 
+
    using ProblemType = Problem;
    using DofVectorType = typename Problem::DofVectorType;
    using RealType = typename Problem::RealType;
@@ -52,19 +51,19 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    void setTime( const RealType& t );
 
    const RealType& getTime() const;
- 
+
    void setStopTime( const RealType& stopTime );
 
    RealType getStopTime() const;
 
    void setTau( const RealType& tau );
- 
+
    const RealType& getTau() const;
 
    void setMaxTau( const RealType& maxTau );
 
    const RealType& getMaxTau() const;
- 
+
    void setVerbose( IndexType v );
 
    virtual bool solve( DofVectorPointer& u ) = 0;
@@ -76,7 +75,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    void refreshSolverMonitor( bool force = false );
 
 protected:
- 
+
    /****
     * Current time of the parabolic problem.
     */

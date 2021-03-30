@@ -4,10 +4,6 @@ install( DIRECTORY TNL/ DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}
          MESSAGE_NEVER
          FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" )
 
-# TODO: TNL/Experimental/ should be moved somewhere else, the TNL subdirectory
-# should contain only header files
-add_subdirectory( TNL/Experimental )
-
 # Note that it is important to start building examples as soon as possible,
 # because they take the longest time and other stuff can be pipelined before
 # they are finished (at least with Ninja).
