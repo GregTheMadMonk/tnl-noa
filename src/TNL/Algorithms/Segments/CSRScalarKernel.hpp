@@ -75,7 +75,7 @@ template< typename Index,
               typename... Args >
 void
 CSRScalarKernel< Index, Device >::
-segmentsReduction( const OffsetsView& offsets,
+reduceSegments( const OffsetsView& offsets,
                    Index first,
                    Index last,
                    Fetch& fetch,

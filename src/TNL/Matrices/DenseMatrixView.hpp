@@ -297,7 +297,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -314,7 +314,11 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
+<<<<<<< HEAD
    this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+=======
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
+>>>>>>> Renaming segmentsReduction to reduceSegments.
 }
 
 template< typename Real,
@@ -537,7 +541,7 @@ vectorProduct( const InVector& inVector,
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   this->segments.segmentsReduction( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+   this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,

@@ -100,7 +100,7 @@ template< typename Index,
                typename... Args >
 void
 CSRAdaptiveKernel< Index, Device >::
-segmentsReduction( const OffsetsView& offsets,
+reduceSegments( const OffsetsView& offsets,
                    Index first,
                    Index last,
                    Fetch& fetch,
@@ -109,7 +109,7 @@ segmentsReduction( const OffsetsView& offsets,
                    const Real& zero,
                    Args... args ) const
 {
-   view.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+   view.reduceSegments( offsets, first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Index,

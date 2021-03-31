@@ -35,7 +35,7 @@ template< typename BlocksView,
           typename Real,
           typename... Args >
 __global__ void
-segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
+reduceSegmentsCSRAdaptiveKernel( BlocksView blocks,
                                     int gridIdx,
                                     Offsets offsets,
                                     Index first,
@@ -183,14 +183,14 @@ template< typename Index,
           bool DispatchScalarCSR =
             detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
             std::is_same< Device, Devices::Host >::value >
-struct CSRAdaptiveKernelSegmentsReductionDispatcher;
+struct CSRAdaptiveKernelreduceSegmentsDispatcher;
 
 template< typename Index,
           typename Device,
           typename Fetch,
           typename Reduction,
           typename ResultKeeper >
-struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, true >
+struct CSRAdaptiveKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, true >
 {
 
    template< typename BlocksView,
@@ -208,7 +208,7 @@ struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduc
                        Args... args)
    {
       TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
-         segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+         reduceSegments( offsets, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
@@ -217,7 +217,7 @@ template< typename Index,
           typename Fetch,
           typename Reduction,
           typename ResultKeeper >
-struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, false >
+struct CSRAdaptiveKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduction, ResultKeeper, false >
 {
    template< typename BlocksView,
              typename Offsets,
@@ -256,7 +256,7 @@ struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduc
             neededThreads -= maxGridSize * threads;
          }
 
-         segmentsReductionCSRAdaptiveKernel<
+         reduceSegmentsCSRAdaptiveKernel<
                BlocksView,
                Offsets,
                Index, Fetch, Reduction, ResultKeeper, Real, Args... >
@@ -322,7 +322,7 @@ template< typename Index,
                typename... Args >
 void
 CSRAdaptiveKernelView< Index, Device >::
-segmentsReduction( const OffsetsView& offsets,
+reduceSegments( const OffsetsView& offsets,
                    Index first,
                    Index last,
                    Fetch& fetch,
@@ -336,11 +336,11 @@ segmentsReduction( const OffsetsView& offsets,
    if( detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog >= MaxValueSizeLog )
    {
       TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
-         segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+         reduceSegments( offsets, first, last, fetch, reduction, keeper, zero, args... );
       return;
    }
 
-   CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduction, ResultKeeper  >::template
+   CSRAdaptiveKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduction, ResultKeeper  >::template
       reduce< BlocksView, OffsetsView, Real, Args... >( offsets, this->blocksArray[ valueSizeLog ], first, last, fetch, reduction, keeper, zero, args... );
 }
 

@@ -30,7 +30,7 @@ template< typename Offsets,
           typename Real,
           typename... Args >
 __global__
-void segmentsReductionCSRKernelVector(
+void reduceSegmentsCSRKernelVector(
     int gridIdx,
     const Offsets offsets,
     Index first,
@@ -130,7 +130,7 @@ template< typename Index,
               typename... Args >
 void
 CSRVectorKernel< Index, Device >::
-segmentsReduction( const OffsetsView& offsets,
+reduceSegments( const OffsetsView& offsets,
                          Index first,
                          Index last,
                          Fetch& fetch,
@@ -149,7 +149,7 @@ segmentsReduction( const OffsetsView& offsets,
     {
         dim3 gridSize;
         TNL::Cuda::setupGrid( blocksCount, gridsCount, gridIdx, gridSize );
-        segmentsReductionCSRKernelVector< OffsetsView, IndexType, Fetch, Reduction, ResultKeeper, Real, Args... >
+        reduceSegmentsCSRKernelVector< OffsetsView, IndexType, Fetch, Reduction, ResultKeeper, Real, Args... >
         <<< gridSize, blockSize >>>(
             gridIdx.x, offsets, first, last, fetch, reduction, keeper, zero, args... );
     };

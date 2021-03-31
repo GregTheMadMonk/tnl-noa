@@ -233,11 +233,11 @@ class ChunkedEllpack
 #ifdef HAVE_CUDA
 template< typename Index,
           typename Fetch,
-          bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
-struct ChunkedEllpackSegmentsReductionDispatcher{};
+          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+struct ChunkedEllpackreduceSegmentsDispatcher{};
 
 template< typename Index, typename Fetch >
-struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, true >
+struct ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch, true >
 {
    template< typename View,
              typename Reduction,
@@ -255,12 +255,12 @@ struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, true >
                      Real zero,
                      Args... args )
    {
-      chunkedEllpack.segmentsReductionKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      chunkedEllpack.reduceSegmentsKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
 template< typename Index, typename Fetch >
-struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, false >
+struct ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch, false >
 {
    template< typename View,
              typename Reduction,
@@ -278,7 +278,7 @@ struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, false >
                      Real zero,
                      Args... args )
    {
-      chunkedEllpack.segmentsReductionKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      chunkedEllpack.reduceSegmentsKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
@@ -290,7 +290,7 @@ template< typename View,
           typename Real,
           typename... Args >
 __global__
-void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
+void ChunkedEllpackreduceSegmentsKernel( View chunkedEllpack,
                                             Index gridIdx,
                                             Index first,
                                             Index last,
@@ -300,7 +300,7 @@ void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
                                             Real zero,
                                             Args... args )
 {
-   ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch >::exec( chunkedEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch >::exec( chunkedEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
 }
 #endif
 

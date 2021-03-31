@@ -141,7 +141,7 @@ class ChunkedEllpackView
        * \brief Go over all segments and perform a reduction in each of them.
        */
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
@@ -161,7 +161,7 @@ class ChunkedEllpackView
                 typename Real,
                 typename... Args >
       __device__
-      void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+      void reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                                      IndexType first,
                                                      IndexType last,
                                                      Fetch fetch,
@@ -176,7 +176,7 @@ class ChunkedEllpackView
                 typename Real,
                 typename... Args >
       __device__
-      void segmentsReductionKernel( IndexType gridIdx,
+      void reduceSegmentsKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
                                     Fetch fetch,
@@ -219,7 +219,7 @@ class ChunkedEllpackView
                 typename Real_,
                 typename... Args_ >
       friend __global__
-      void ChunkedEllpackSegmentsReductionKernel( View_ chunkedEllpack,
+      void ChunkedEllpackreduceSegmentsKernel( View_ chunkedEllpack,
                                                   Index_ gridIdx,
                                                   Index_ first,
                                                   Index_ last,
@@ -230,7 +230,7 @@ class ChunkedEllpackView
                                                   Args_... args );
 
       template< typename Index_, typename Fetch_, bool B_ >
-      friend struct detail::ChunkedEllpackSegmentsReductionDispatcher;
+      friend struct details::ChunkedEllpackreduceSegmentsDispatcher;
 #endif
 };
       } // namespace Segments

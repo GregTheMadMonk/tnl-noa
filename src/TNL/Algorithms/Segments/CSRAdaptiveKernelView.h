@@ -49,7 +49,7 @@ struct CSRAdaptiveKernelView
              typename ResultKeeper,
              typename Real,
              typename... Args >
-   void segmentsReduction( const OffsetsView& offsets,
+   void reduceSegments( const OffsetsView& offsets,
                         Index first,
                         Index last,
                         Fetch& fetch,

@@ -30,7 +30,7 @@ template< int ThreadsPerSegment,
           typename ResultKeeper,
           typename Real >
 __global__
-void segmentsReductionCSRHybridVectorKernel(
+void reduceSegmentsCSRHybridVectorKernel(
     int gridIdx,
     const Offsets offsets,
     Index first,
@@ -83,7 +83,7 @@ template< int BlockSize,
           typename ResultKeeper,
           typename Real >
 __global__
-void segmentsReductionCSRHybridMultivectorKernel(
+void reduceSegmentsCSRHybridMultivectorKernel(
     int gridIdx,
     const Offsets offsets,
     Index first,
@@ -233,7 +233,7 @@ template< typename Index,
               typename Real >
 void
 CSRHybridKernel< Index, Device, ThreadsInBlock >::
-segmentsReduction( const OffsetsView& offsets,
+reduceSegments( const OffsetsView& offsets,
                          Index first,
                          Index last,
                          Fetch& fetch,
@@ -258,39 +258,39 @@ segmentsReduction( const OffsetsView& offsets,
             case 0:      // this means zero/empty matrix
                 break;
             case 1:
-                segmentsReductionCSRHybridVectorKernel<  1, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel<  1, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 2:
-                segmentsReductionCSRHybridVectorKernel<  2, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel<  2, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 4:
-                segmentsReductionCSRHybridVectorKernel<  4, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel<  4, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 8:
-                segmentsReductionCSRHybridVectorKernel<  8, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel<  8, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 16:
-                segmentsReductionCSRHybridVectorKernel< 16, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel< 16, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 32:
-                segmentsReductionCSRHybridVectorKernel< 32, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridVectorKernel< 32, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 64:
-                segmentsReductionCSRHybridMultivectorKernel< ThreadsInBlock,  64, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridMultivectorKernel< ThreadsInBlock,  64, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 128:
-                segmentsReductionCSRHybridMultivectorKernel< ThreadsInBlock, 128, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridMultivectorKernel< ThreadsInBlock, 128, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             case 256:
-                segmentsReductionCSRHybridMultivectorKernel< ThreadsInBlock, 256, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
+                reduceSegmentsCSRHybridMultivectorKernel< ThreadsInBlock, 256, OffsetsView, Index, Fetch, Reduction, ResultKeeper, Real ><<< gridSize, blockSize >>>(
                     gridIdx, offsets, first, last, fetch, reduction, keeper, zero );
                     break;
             default:

@@ -329,7 +329,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
@@ -380,7 +380,7 @@ void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,

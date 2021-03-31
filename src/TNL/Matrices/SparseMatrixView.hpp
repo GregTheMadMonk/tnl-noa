@@ -210,7 +210,7 @@ getNonzeroElementsCount() const
       auto keeper = [=] __cuda_callable__ ( IndexType row, const IndexType& value ) mutable {
          row_sums_view[ row ] = value;
       };
-      this->segments.segmentsReduction( (IndexType) 0, this->getRows(), fetch, std::plus<>{}, keeper, ( IndexType ) 0 );
+      this->segments.reduceSegments( 0, this->getRows(), fetch, std::plus<>{}, keeper, ( IndexType ) 0 );
       return sum( row_sums );
    }
 }
@@ -475,22 +475,22 @@ vectorProduct( const InVector& inVector,
    if( lastRow == 0 )
       lastRow = this->getRows();
    if( isSymmetric() )
-      this->segments.segmentsReduction( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeperGeneral, ( ComputeRealType ) 0.0 );
+      this->segments.reduceSegments( firstRow, lastRow, symmetricFetch, std::plus<>{}, keeperGeneral, ( ComputeRealType ) 0.0 );
    else
    {
       if( outVectorMultiplicator == 0.0 )
       {
          if( matrixMultiplicator == 1.0 )
-            this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeperDirect, ( ComputeRealType ) 0.0 );
+            this->segments.reduceSegments( firstRow, lastRow, fetch, std::plus<>{}, keeperDirect, ( ComputeRealType ) 0.0 );
          else
-            this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeperMatrixMult, ( ComputeRealType ) 0.0 );
+            this->segments.reduceSegments( firstRow, lastRow, fetch, std::plus<>{}, keeperMatrixMult, ( ComputeRealType ) 0.0 );
       }
       else
       {
          if( matrixMultiplicator == 1.0 )
-            this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeperVectorMult, ( ComputeRealType ) 0.0 );
+            this->segments.reduceSegments( firstRow, lastRow, fetch, std::plus<>{}, keeperVectorMult, ( ComputeRealType ) 0.0 );
          else
-            this->segments.segmentsReduction( firstRow, lastRow, fetch, std::plus<>{}, keeperGeneral, ( ComputeRealType ) 0.0 );
+            this->segments.reduceSegments( firstRow, lastRow, fetch, std::plus<>{}, keeperGeneral, ( ComputeRealType ) 0.0 );
       }
    }
 }
@@ -520,7 +520,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
       }
       return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -549,7 +549,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
       }
       return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
 }
 
 template< typename Real,

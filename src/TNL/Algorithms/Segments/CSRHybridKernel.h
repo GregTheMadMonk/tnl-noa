@@ -46,7 +46,7 @@ struct CSRHybridKernel
              typename Reduction,
              typename ResultKeeper,
              typename Real >
-   void segmentsReduction( const OffsetsView& offsets,
+   void reduceSegments( const OffsetsView& offsets,
                                   Index first,
                                   Index last,
                                   Fetch& fetch,

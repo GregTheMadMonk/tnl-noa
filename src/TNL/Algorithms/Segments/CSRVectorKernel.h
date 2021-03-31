@@ -46,7 +46,7 @@ struct CSRVectorKernel
              typename ResultKeeper,
              typename Real,
              typename... Args >
-   static void segmentsReduction( const OffsetsView& offsets,
+   static void reduceSegments( const OffsetsView& offsets,
                                   Index first,
                                   Index last,
                                   Fetch& fetch,

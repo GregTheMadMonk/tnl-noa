@@ -93,7 +93,7 @@ struct CSRAdaptiveKernelParameters
 
 template< int SizeOfValue,
           int StreamedSharedMemory_ >
-constexpr int 
+constexpr int
 CSRAdaptiveKernelParameters< SizeOfValue, StreamedSharedMemory_ >::
 getSizeValueLogConstexpr( const int i )
 {

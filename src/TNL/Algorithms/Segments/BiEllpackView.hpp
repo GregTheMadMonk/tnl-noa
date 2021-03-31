@@ -355,7 +355,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( this->getStorageSize() == 0 )
@@ -425,7 +425,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          dim3 cudaGridSize = Cuda::getMaxGridSize();
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         detail::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
+         details::BiEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
          cudaThreadSynchronize();
@@ -444,7 +444,7 @@ void
 BiEllpackView< Device, Index, Organization, WarpSize >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -518,7 +518,7 @@ template< typename Device,
 __device__
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                           IndexType first,
                                           IndexType last,
                                           Fetch fetch,
@@ -574,7 +574,7 @@ template< typename Device,
 __device__
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReductionKernel( IndexType gridIdx,
+reduceSegmentsKernel( IndexType gridIdx,
                          IndexType first,
                          IndexType last,
                          Fetch fetch,

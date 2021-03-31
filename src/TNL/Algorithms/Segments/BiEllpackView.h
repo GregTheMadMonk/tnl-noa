@@ -127,7 +127,7 @@ class BiEllpackView
        * \brief Go over all segments and perform a reduction in each of them.
        */
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
@@ -162,7 +162,7 @@ class BiEllpackView
                 int BlockDim,
                 typename... Args >
       __device__
-      void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+      void reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                                      IndexType first,
                                                      IndexType last,
                                                      Fetch fetch,
@@ -178,7 +178,7 @@ class BiEllpackView
                 int BlockDim,
                 typename... Args >
       __device__
-      void segmentsReductionKernel( IndexType gridIdx,
+      void reduceSegmentsKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
                                     Fetch fetch,
@@ -196,7 +196,7 @@ class BiEllpackView
                 int BlockDim,
                 typename... Args_ >
       friend __global__
-      void BiEllpackSegmentsReductionKernel( View_ chunkedEllpack,
+      void BiEllpackreduceSegmentsKernel( View_ chunkedEllpack,
                                              Index_ gridIdx,
                                              Index_ first,
                                              Index_ last,
@@ -207,7 +207,7 @@ class BiEllpackView
                                              Args_... args );
 
       template< typename Index_, typename Fetch_, int BlockDim_, int WarpSize_, bool B_ >
-      friend struct detail::BiEllpackSegmentsReductionDispatcher;
+      friend struct details::BiEllpackreduceSegmentsDispatcher;
 #endif
 };
       } // namespace Segments

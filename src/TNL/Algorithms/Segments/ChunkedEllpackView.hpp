@@ -396,12 +396,12 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      //segmentsReductionKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
+      //reduceSegmentsKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
       //return;
 
       for( IndexType segmentIdx = first; segmentIdx < last; segmentIdx++ )
@@ -456,7 +456,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         detail::ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
+         details::ChunkedEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
       }
@@ -472,7 +472,7 @@ void
 ChunkedEllpackView< Device, Index, Organization >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -548,7 +548,7 @@ template< typename Device,
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                           IndexType first,
                                           IndexType last,
                                           Fetch fetch,
@@ -626,7 +626,7 @@ template< typename Device,
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReductionKernel( IndexType gridIdx,
+reduceSegmentsKernel( IndexType gridIdx,
                          IndexType first,
                          IndexType last,
                          Fetch fetch,

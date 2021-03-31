@@ -443,9 +443,9 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,
@@ -457,7 +457,7 @@ void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,

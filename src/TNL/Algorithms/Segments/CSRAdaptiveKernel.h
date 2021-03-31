@@ -39,7 +39,7 @@ template< int CudaBlockSize,
           typename Real,
           typename... Args >
 __global__ void
-segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
+reduceSegmentsCSRAdaptiveKernel( BlocksView blocks,
                                     int gridIdx,
                                     Offsets offsets,
                                     Index first,
@@ -84,7 +84,7 @@ struct CSRAdaptiveKernel
               typename ResultKeeper,
               typename Real,
               typename... Args >
-   void segmentsReduction( const OffsetsView& offsets,
+   void reduceSegments( const OffsetsView& offsets,
                         Index first,
                         Index last,
                         Fetch& fetch,
