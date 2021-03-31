@@ -25,7 +25,7 @@
 #include <gtest/gtest.h>
 
 template< typename Matrix >
-void test_VectorProduct()
+void test_VectorProduct_smallMatrix1()
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -75,6 +75,15 @@ void test_VectorProduct()
    EXPECT_EQ( outVector_1.getElement( 1 ), 10 );
    EXPECT_EQ( outVector_1.getElement( 2 ),  8 );
    EXPECT_EQ( outVector_1.getElement( 3 ), 10 );
+}
+
+template< typename Matrix >
+void test_VectorProduct_smallMatrix2()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /*
     * Sets up the following 4x4 sparse matrix:
@@ -120,6 +129,15 @@ void test_VectorProduct()
    EXPECT_EQ( outVector_2.getElement( 1 ),  8 );
    EXPECT_EQ( outVector_2.getElement( 2 ), 36 );
    EXPECT_EQ( outVector_2.getElement( 3 ), 16 );
+}
+
+template< typename Matrix >
+void test_VectorProduct_smallMatrix3()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /*
     * Sets up the following 4x4 sparse matrix:
@@ -166,6 +184,15 @@ void test_VectorProduct()
    EXPECT_EQ( outVector_3.getElement( 1 ), 30 );
    EXPECT_EQ( outVector_3.getElement( 2 ), 48 );
    EXPECT_EQ( outVector_3.getElement( 3 ), 66 );
+}
+
+template< typename Matrix >
+void test_VectorProduct_mediumSizeMatrix1()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /*
     * Sets up the following 8x8 sparse matrix:
@@ -234,6 +261,15 @@ void test_VectorProduct()
    EXPECT_EQ( outVector_4.getElement( 5 ), 188 );
    EXPECT_EQ( outVector_4.getElement( 6 ), 280 );
    EXPECT_EQ( outVector_4.getElement( 7 ), 330 );
+}
+
+template< typename Matrix >
+void test_VectorProduct_mediumSizeMatrix2()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /*
     * Sets up the following 8x8 sparse matrix:
@@ -307,6 +343,16 @@ void test_VectorProduct()
    EXPECT_EQ( outVector_5.getElement( 5 ), 224 );
    EXPECT_EQ( outVector_5.getElement( 6 ), 352 );
    EXPECT_EQ( outVector_5.getElement( 7 ), 520 );
+}
+
+
+template< typename Matrix >
+void test_VectorProduct_largeMatrix()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /////
    // Large test
@@ -362,6 +408,15 @@ void test_VectorProduct()
       for( IndexType i = 0; i < rows; i++ )
          EXPECT_EQ( out.getElement( i ), ( i + 1 ) * ( i + 2 ) / 2 );
    }
+}
+
+template< typename Matrix >
+void test_VectorProduct_longRowsMatrix()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
    /**
     * Long row test
@@ -372,22 +427,29 @@ void test_VectorProduct()
    if( ! std::is_same< typename Matrix::SegmentsViewType, ChunkedEllpackView_ >::value )
    {
       // TODO: Fix ChunkedEllpack for this test - seems that it allocates too much memory
-      const int columns = 3000;
-      const int rows = 1;
-      Matrix m3( rows, columns );
-      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
-      rowsCapacities = columns;
-      m3.setRowCapacities( rowsCapacities );
-      auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
-         column = localIdx;
-         value = localIdx + 1;
-      };
-      m3.forAllElements( f );
-      TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
-      m3.vectorProduct( in, out );
-      EXPECT_EQ( out.getElement( 0 ), ( double ) columns * ( double ) (columns + 1 ) / 2.0 );
+      for( auto columns : { 64, 65, 128, 129, 256, 257, 512, 513, 1024, 1025, 2048, 2049, 3000 } )
+      {
+         //std::cerr << "Long-rows-matrix-test: columns = " << columns << std::endl;
+         //const int columns = 3000;
+         const int rows = 33;
+         Matrix m3( rows, columns );
+         TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
+         rowsCapacities = columns;
+         m3.setRowCapacities( rowsCapacities );
+         auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value, bool& compute ) {
+            column = localIdx;
+            value = localIdx + row;
+         };
+         m3.forAllElements( f );
+         TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
+         m3.vectorProduct( in, out );
+         for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+         {
+            //std::cerr << "Long-rows-matrix-test: rowIndex = " << rowIdx << std::endl;
+            EXPECT_EQ( out.getElement( rowIdx ), ( double ) columns * ( double ) (columns - 1 ) / 2.0 + columns * rowIdx );
+         }
+      }
    }
 }
-
 
 #endif
