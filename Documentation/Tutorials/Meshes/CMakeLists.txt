@@ -2,6 +2,8 @@ set( COMMON_EXAMPLES
 )
 set( CPP_EXAMPLES
    ReadMeshExample
+   MeshConfigurationExample
+   MeshIterationExample
    ${COMMON_EXAMPLES}
 )
 set( CUDA_EXAMPLES
