@@ -199,6 +199,7 @@ public:
                for( std::size_t i = 0; i < NumberOfCells; i++ ) {
                   CellSeedType& seed = meshBuilder.getCellSeed( i );
                   const std::size_t offsetEnd = offsets[ i ];
+                  seed.setCornersCount( offsetEnd - offsetStart );
                   for( std::size_t o = offsetStart; o < offsetEnd; o++ )
                      seed.setCornerId( o - offsetStart, connectivity[ o ] );
                   offsetStart = offsetEnd;

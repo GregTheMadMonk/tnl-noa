@@ -65,6 +65,8 @@ struct MeshEntitiesVTKWriter
       const int verticesPerEntity = VerticesPerEntity< EntityType >::count;;
       for( Index i = 0; i < entitiesCount; i++ ) {
          const auto& entity = mesh.template getEntity< EntityType >( i );
+         //TODO: polygons require verticesPerEntity to be aquired like below
+         //const Index verticesPerEntity = entity.template getSubentitiesCount< 0 >();
          writeInt( format, str, verticesPerEntity );
          for( int j = 0; j < verticesPerEntity; j++ )
             writeInt( format, str, entity.template getSubentityIndex< 0 >( j ) );
@@ -444,6 +446,12 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
    cellsCount = mesh.template getEntitiesCount< EntityType >();
    const int verticesPerEntity = VerticesPerEntity< EntityType >::count;
    const std::uint64_t cellsListSize = cellsCount * ( verticesPerEntity + 1 );
+
+   //TODO: polygons need cellsListSize computed like this, but code doesnt compile, 
+   //      because function writeEntities is also used for grids, that don't contain function getSubentitiesCount
+   /*IndexType cellsListSize = cellsCount;
+   for(IndexType index = 0; index < cellsCount; index++)
+      cellsListSize += mesh.template getSubentitiesCount< EntityDimension, 0 >( index );*/
 
    str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    EntitiesWriter< EntityDimension >::exec( mesh, str, format );

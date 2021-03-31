@@ -41,6 +41,9 @@ class EntitySeed
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
 
+      //this function is here only for compatibility with MeshReader
+      void setCornersCount( const LocalIndexType& cornersCount ) {}
+
       static constexpr LocalIndexType getCornersCount()
       {
          return SubvertexTraits::count;
@@ -80,6 +83,9 @@ class EntitySeed< MeshConfig, Topologies::Vertex >
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
+
+      //this function is here only for compatibility with MeshReader
+      void setCornersCount( const LocalIndexType& cornersCount ) {}
 
       static constexpr LocalIndexType getCornersCount()
       {
