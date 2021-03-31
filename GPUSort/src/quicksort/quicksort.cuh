@@ -280,33 +280,20 @@ void QUICKSORT::sort(const Function &Cmp)
             break;
 
         int externMemByteSize = elemPerBlock * sizeof(int);
-        if (iteration % 2 == 0)
-        {
-            cudaQuickSort1stPhase<Function>
-                <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
-                    arr, aux, Cmp, elemPerBlock,
-                    cuda_tasks, cuda_blockToTaskMapping);
+        auto & task = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
+        cudaQuickSort1stPhase<Function>
+            <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
+                arr, aux, Cmp, elemPerBlock,
+                task, cuda_blockToTaskMapping);
 
-            cudaWritePivot<<<tasksAmount, 512>>>(
-                arr, aux, Cmp, elemPerBlock,
-                cuda_tasks,
-                cuda_newTasks,
-                cuda_newTasksAmount.getData(),
-                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
-        }
-        else
-        {
-            cudaQuickSort1stPhase<<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
-                arr, aux, Cmp, elemPerBlock,
-                cuda_newTasks, cuda_blockToTaskMapping);
+        auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
+        cudaWritePivot<<<tasksAmount, 512>>>(
+            arr, aux, Cmp, elemPerBlock,
+            task,
+            newTask,
+            cuda_newTasksAmount.getData(),
+            cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
 
-            cudaWritePivot<<<tasksAmount, 512>>>(
-                arr, aux, Cmp, elemPerBlock,
-                cuda_newTasks,
-                cuda_tasks,
-                cuda_newTasksAmount.getData(),
-                cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
-        }
         processNewTasks();
         iteration++;
     }
