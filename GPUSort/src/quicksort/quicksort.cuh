@@ -227,7 +227,8 @@ class QUICKSORT
 public:
     QUICKSORT(ArrayView<int, Devices::Cuda> _arr)
         : arr(_arr), aux(arr.getSize()),
-          maxTasks(min(arr.getSize(), g_maxTasks)), maxBlocks(min(arr.getSize()/minElemPerBlock, g_maxBlocks)),
+          maxTasks(min(arr.getSize(), g_maxTasks)),
+          maxBlocks(g_maxBlocks),
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
           cudaCounters(3),
           cuda_newTasksAmount(cudaCounters.getView(0, 1)),
