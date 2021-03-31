@@ -56,7 +56,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
    //__shared__ BlockType sharedBlocks[ WarpsCount ];
 
-   const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
+   const Index index = ( ( gridIdx * TNL::Cuda::getMaxGridXSize() + blockIdx.x ) * blockDim.x ) + threadIdx.x;
    const Index blockIdx = index / WarpSize;
    if( blockIdx >= blocks.getSize() - 1 )
       return;
@@ -237,8 +237,8 @@ struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduc
 
       Index blocksCount;
 
-      const Index threads = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
-      constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize();
+      const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+      constexpr size_t maxGridSize = TNL::Cuda::getMaxGridXSize();
 
       // Fill blocks
       size_t neededThreads = blocks.getSize() * TNL::Cuda::getWarpSize(); // one warp per block
