@@ -393,15 +393,15 @@ forAllSegments( Function&& f ) const
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      //reduceSegmentsKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
+      //reduceSegmentsKernel( 0, first, last, fetch, reduction, keeper, zero );
       //return;
 
       for( IndexType segmentIdx = first; segmentIdx < last; segmentIdx++ )
@@ -456,9 +456,9 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         details::ChunkedEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
+         details::ChunkedEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
-            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
       }
 #endif
    }
@@ -467,12 +467,12 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -543,8 +543,7 @@ template< typename Device,
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
+             typename Real >
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
@@ -554,10 +553,9 @@ reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                           Fetch fetch,
                                           Reduction reduction,
                                           ResultKeeper keeper,
-                                          Real zero,
-                                          Args... args ) const
+                                          Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >() ) );
 
    const IndexType firstSlice = rowToSliceMapping[ first ];
    const IndexType lastSlice = rowToSliceMapping[ last - 1 ];
@@ -621,8 +619,7 @@ template< typename Device,
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
+             typename Real >
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
@@ -632,10 +629,9 @@ reduceSegmentsKernel( IndexType gridIdx,
                          Fetch fetch,
                          Reduction reduction,
                          ResultKeeper keeper,
-                         Real zero,
-                         Args... args ) const
+                         Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), std::declval< bool& >() ) );
 
    const IndexType firstSlice = rowToSliceMapping[ first ];
    const IndexType lastSlice = rowToSliceMapping[ last - 1 ];

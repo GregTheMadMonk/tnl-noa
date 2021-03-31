@@ -109,11 +109,11 @@ class SlicedEllpackView
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       SlicedEllpackView& operator=( const SlicedEllpackView& view );
 

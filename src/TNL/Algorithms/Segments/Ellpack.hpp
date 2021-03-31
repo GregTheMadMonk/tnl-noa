@@ -304,12 +304,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -317,12 +317,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
