@@ -316,7 +316,10 @@ void QUICKSORT::sort(const Function &Cmp)
         cudaStreamDestroy(s);
     }
 
-    cudaDeviceSynchronize();
+    auto error = cudaDeviceSynchronize();
+    if(error != cudaSuccess)
+        deb(error);
+    
     return;
 }
 
