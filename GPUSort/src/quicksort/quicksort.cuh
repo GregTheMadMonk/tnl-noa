@@ -201,7 +201,7 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
-const int threadsPerBlock = 512, maxBlocks = 1 << 15; //32k
+const int threadsPerBlock = 512, g_maxBlocks = 1 << 15; //32k
 const int g_maxTasks = 1 << 14;
 const int minElemPerBlock = threadsPerBlock*2;
 
@@ -209,7 +209,7 @@ class QUICKSORT
 {
     ArrayView<int, Devices::Cuda> arr;
     Array<int, Devices::Cuda> aux;
-    int maxTasks;
+    int maxTasks, maxBlocks;
     Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
     Array<int, Devices::Cuda> cudaCounters;
 
@@ -227,7 +227,7 @@ class QUICKSORT
 public:
     QUICKSORT(ArrayView<int, Devices::Cuda> _arr)
         : arr(_arr), aux(arr.getSize()),
-          maxTasks(min(arr.getSize(), g_maxTasks)),
+          maxTasks(min(arr.getSize(), g_maxTasks)), maxBlocks(min(arr.getSize()/minElemPerBlock, g_maxBlocks)),
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
           cudaCounters(3),
           cuda_newTasksAmount(cudaCounters.getView(0, 1)),
@@ -240,6 +240,10 @@ public:
         host_2ndPhaseTasksAmount = 0;
         cuda_2ndPhaseTasksAmount = 0;
         iteration = 0;
+
+        auto error = cudaGetLastError();
+        if(error != cudaSuccess)
+            deb(error);
     }
 
     template <typename Function>
