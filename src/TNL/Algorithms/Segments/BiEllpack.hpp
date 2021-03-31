@@ -486,9 +486,9 @@ template< typename Device,
    template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 

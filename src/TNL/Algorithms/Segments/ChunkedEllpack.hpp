@@ -431,9 +431,9 @@ template< typename Device,
    template< typename Function >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,

@@ -233,7 +233,7 @@ template< typename Device,
    template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }

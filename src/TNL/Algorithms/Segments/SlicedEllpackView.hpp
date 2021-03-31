@@ -317,7 +317,7 @@ template< typename Device,
    template< typename Function >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }

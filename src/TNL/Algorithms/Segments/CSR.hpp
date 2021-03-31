@@ -266,9 +266,9 @@ template< typename Device,
    template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,

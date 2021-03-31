@@ -118,7 +118,7 @@ class CSR
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
