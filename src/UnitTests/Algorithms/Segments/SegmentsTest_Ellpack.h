@@ -51,11 +51,11 @@ TYPED_TEST( EllpackSegmentsTest, setSegmentsSizes_EqualSizes_EllpackOnly )
     test_SetSegmentsSizes_EqualSizes_EllpackOnly< EllpackSegmentsType >();
 }
 
-TYPED_TEST( EllpackSegmentsTest, allReduction_MaximumInSegments )
+TYPED_TEST( EllpackSegmentsTest, reduceAllSegments_MaximumInSegments )
 {
     using EllpackSegmentsType = typename TestFixture::EllpackSegmentsType;
 
-    test_AllReduction_MaximumInSegments< EllpackSegmentsType >();
+    test_reduceAllSegments_MaximumInSegments< EllpackSegmentsType >();
 }
 
 #endif

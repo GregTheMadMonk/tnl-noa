@@ -320,7 +320,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }

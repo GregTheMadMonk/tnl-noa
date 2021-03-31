@@ -152,8 +152,8 @@ setSegmentsSizes( const SizesHolder& sizes )
       slices_view[ i ] = res * SliceSize;
       slice_segment_size_view[ i ] = res;
    };
-   ellpack.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
-   inplaceExclusiveScan( this->sliceOffsets );
+   ellpack.reduceAllSegments( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
+   this->sliceOffsets.template scan< Algorithms::ScanType::Exclusive >();
    this->size = sum( sizes );
    this->alignedSize = this->sliceOffsets.getElement( slicesCount );
 }
@@ -354,7 +354,7 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
