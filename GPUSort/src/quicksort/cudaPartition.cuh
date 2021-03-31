@@ -81,10 +81,8 @@ void countElem(ArrayView<int, Devices::Cuda> arr,
     for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
     {
         int data = arr[i];
-        if (data < pivot)
-            smaller++;
-        else if (data > pivot)
-            bigger++;
+        smaller += (data < pivot);
+        bigger += (data > pivot);
     }
 }
 

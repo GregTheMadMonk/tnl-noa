@@ -186,7 +186,16 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
         cuda_tasks[i].initTask(myFirstAvailBlock, blocksNeeded);
 
         for (int set = 0; set < blocksNeeded; set++)
-            cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
+        {
+            if(myFirstAvailBlock >= cuda_blockToTaskMapping.getSize())
+            {
+                printf("ran out of memory for mapping\n");
+            }
+            else
+            {
+                cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
+            }
+        }
     }
 }
 
@@ -262,6 +271,9 @@ void QUICKSORT::sort(const Function &Cmp)
 
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock);
+        if(blocksCnt > cuda_blockToTaskMapping.getSize())
+            break;
+
         int externMemByteSize = elemPerBlock * sizeof(int);
         if (iteration % 2 == 0)
         {
