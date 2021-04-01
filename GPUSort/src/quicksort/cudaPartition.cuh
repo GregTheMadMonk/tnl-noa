@@ -125,9 +125,21 @@ void copyData(ArrayView<int, Devices::Cuda> src,
     {
         int data = src[i];
         if (data < pivot)
+        {
+            /*
+            if(smallerStart >= dst.getSize() || smallerStart < 0)
+                printf("failed here: b:%d t:%d: tried to write into [%d]/%d\n", blockDim.x, threadIdx.x, smallerStart, dst.getSize());
+            */
             dst[smallerStart++] = data;
+        }
         else if (data > pivot)
+        {
+            /*
+            if(biggerStart >= dst.getSize() || biggerStart < 0)
+                printf("failed here: b:%d t:%d: tried to write into [%d]/%d\n", blockDim.x, threadIdx.x, biggerStart, dst.getSize());
+            */
             dst[biggerStart++] = data;
+        }
     }
 }
 
