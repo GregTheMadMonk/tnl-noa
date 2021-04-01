@@ -205,9 +205,10 @@ double staggared(int size)
 
 			if(i<=(p/2))
 				min = (2*i -1)*VALUE;
+
 			else
 				min = (2*i-p-1)*VALUE;
-                
+
 			vec[x++]= min + ( rand() % (VALUE - 1) );
 		}
 		i++;
@@ -236,14 +237,14 @@ void start(ostream & out, string delim)
         vector<int> vec(size);
 
         out << "2^" << pow << delim;
-        //out << fixed << setprecision(3);
-        //out << random(size) << delim;
-        //out << shuffle(size) << delim;
-        //out << sorted(size) << delim;
-        //out << almostSorted(size) << delim;
-        //out << decreasing(size) << delim;
-        //out << gaussian(size) << delim;
-        //out << bucket(size) << delim;
+        out << fixed << setprecision(3);
+        out << random(size) << delim;
+        out << shuffle(size) << delim;
+        out << sorted(size) << delim;
+        out << almostSorted(size) << delim;
+        out << decreasing(size) << delim;
+        out << gaussian(size) << delim;
+        out << bucket(size) << delim;
         out << staggared(size) << delim;
         out << zero_entropy(size);
         out << endl;
