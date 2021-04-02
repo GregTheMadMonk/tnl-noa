@@ -378,20 +378,11 @@ int QUICKSORT::initTasks(int elemPerBlock)
     int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
     cuda_blockToTaskMapping_Cnt = 0;
 
-    if (iteration % 2 == 0)
-    {
-        cudaInitTask<<<blocks, threads>>>(
-            cuda_tasks, tasksAmount, elemPerBlock,
-            cuda_blockToTaskMapping_Cnt.getData(),
-            cuda_blockToTaskMapping);
-    }
-    else
-    {
-        cudaInitTask<<<blocks, threads>>>(
-            cuda_newTasks, tasksAmount, elemPerBlock,
-            cuda_blockToTaskMapping_Cnt.getData(),
-            cuda_blockToTaskMapping);
-    }
+    auto &tasks = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
+    cudaInitTask<<<blocks, threads>>>(
+        tasks, tasksAmount, elemPerBlock,
+        cuda_blockToTaskMapping_Cnt.getData(),
+        cuda_blockToTaskMapping);
 
     cuda_newTasksAmount.setElement(0, 0);
     return cuda_blockToTaskMapping_Cnt.getElement(0);
@@ -400,7 +391,6 @@ int QUICKSORT::initTasks(int elemPerBlock)
 void QUICKSORT::processNewTasks()
 {
     tasksAmount = cuda_newTasksAmount.getElement(0);
-    cuda_newTasksAmount = 0;
     host_2ndPhaseTasksAmount = cuda_2ndPhaseTasksAmount.getElement(0);
 }
 
