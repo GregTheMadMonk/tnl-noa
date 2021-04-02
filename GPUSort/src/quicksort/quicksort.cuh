@@ -276,6 +276,8 @@ public:
 template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
+    cudaError_t error;
+
     while (tasksAmount > 0)
     {
         //2ndphase task is now full or tasksAmount is full, as backup during writing, overflowing tasks were written into the other array
@@ -313,19 +315,17 @@ void QUICKSORT::sort(const Function &Cmp)
         iteration++;
     }
 
-    auto error = cudaDeviceSynchronize();
-    if(error != cudaSuccess)
+    if((error = cudaDeviceSynchronize()) != cudaSuccess)
+    {
         deb(error);
+        return;
+    }
 
     if (tasksAmount > 0)
     {
         auto & tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
-        cudaStream_t s;
-        cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
-
         cudaQuickSort2ndPhase<Function, 128>
-            <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock, 0, s>>>(arr, aux, Cmp, tasks);
-        cudaStreamDestroy(s);
+            <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
     }
 
     if (host_2ndPhaseTasksAmount > 0)
@@ -340,9 +340,12 @@ void QUICKSORT::sort(const Function &Cmp)
         cudaStreamDestroy(s);
     }
 
-    error = cudaDeviceSynchronize();
-    if(error != cudaSuccess)
+
+    if((error = cudaDeviceSynchronize()) != cudaSuccess)
+    {
         deb(error);
+        return;
+    }
     return;
 }
 
