@@ -15,7 +15,7 @@ using namespace TNL::Containers;
 
 //-----------------------------------------------------------
 
-__device__ void writeNewTask(int begin, int end, int depth, int pivotIdx,
+__device__ void writeNewTask(int begin, int end, int depth, int pivotIdx, int maxElemFor2ndPhase,
                             ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                              ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
@@ -29,7 +29,7 @@ __device__ void writeNewTask(int begin, int end, int depth, int pivotIdx,
     if (size == 0)
         return;
 
-    if (size <= blockDim.x * 2)
+    if (size <= maxElemFor2ndPhase)
     {
         int idx = atomicAdd(secondPhaseTasksCnt, 1);
         if (idx < secondPhaseTasks.getSize())
@@ -98,7 +98,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 
 template <typename Function>
 __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
-                               const Function &Cmp, int elemPerBlock,
+                               const Function &Cmp, int maxElemFor2ndPhase,
                                ArrayView<TASK, Devices::Cuda> tasks,
                                ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
@@ -138,7 +138,8 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
                             arr.getView(leftBegin, leftEnd)
                             , Cmp) + leftBegin;
 
-        writeNewTask(leftBegin, leftEnd, myTask.depth, leftPivotIdx, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+        writeNewTask(leftBegin, leftEnd, myTask.depth, leftPivotIdx, maxElemFor2ndPhase,
+            newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
     }
 
     if(rightEnd - rightBegin > 0)
@@ -148,7 +149,8 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
                                 arr.getView(rightBegin, rightEnd)
                             , Cmp) + rightBegin;
                                 
-        writeNewTask(rightBegin, rightEnd, myTask.depth, rightPivotIdx, newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+        writeNewTask(rightBegin, rightEnd, myTask.depth, rightPivotIdx, maxElemFor2ndPhase,
+            newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
     }
 }
 
@@ -216,6 +218,8 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 const int threadsPerBlock = 512, g_maxBlocks = 1 << 15; //32k
 const int g_maxTasks = 1 << 14;
 const int minElemPerBlock = threadsPerBlock*2;
+const int maxBitonicSize = threadsPerBlock*2;
+const int desired_2ndPhasElemPerBlock = maxBitonicSize*8;
 
 class QUICKSORT
 {
@@ -277,19 +281,20 @@ template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
     cudaError_t error;
-
+    
     while (tasksAmount > 0)
     {
         //2ndphase task is now full or tasksAmount is full, as backup during writing, overflowing tasks were written into the other array
         if (tasksAmount >= maxTasks || host_2ndPhaseTasksAmount >= maxTasks)
         {
-            //deb("task overflow")
             break;
         }
 
         //just in case newly created tasks wouldnt fit
         if(tasksAmount*2 >= maxTasks + (maxTasks - host_2ndPhaseTasksAmount))
+        {
             break;
+        }
 
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock);
@@ -305,7 +310,7 @@ void QUICKSORT::sort(const Function &Cmp)
 
         auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
         cudaWritePivot<<<tasksAmount, 512>>>(
-            arr, aux, Cmp, elemPerBlock,
+            arr, aux, Cmp, desired_2ndPhasElemPerBlock,
             task,
             newTask,
             cuda_newTasksAmount.getData(),
@@ -320,24 +325,19 @@ void QUICKSORT::sort(const Function &Cmp)
         deb(error);
         return;
     }
-
+    
     if (tasksAmount > 0)
     {
         auto & tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
         cudaQuickSort2ndPhase<Function, 128>
             <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
     }
-
+    
     if (host_2ndPhaseTasksAmount > 0)
     {
-        cudaStream_t s;
-        cudaStreamCreateWithFlags(&s, cudaStreamNonBlocking);
-
         cudaQuickSort2ndPhase<Function, 128>
-            <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock, 0, s>>>
+            <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock>>>
             (arr, aux, Cmp, cuda_2ndPhaseTasks);
-
-        cudaStreamDestroy(s);
     }
 
 
