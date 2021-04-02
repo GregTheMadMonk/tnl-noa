@@ -24,10 +24,22 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
+   template< typename SizesContainer >
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-ChunkedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
+ChunkedEllpack( const SizesContainer& segmentsSizes )
 {
-   this->setSegmentsSizes( sizes );
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+   template< typename ListIndex >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+ChunkedEllpack( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,

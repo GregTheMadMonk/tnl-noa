@@ -26,10 +26,23 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
+   template< typename SizesContainer >
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-BiEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
+BiEllpack( const SizesContainer& segmentsSizes )
 {
-   this->setSegmentsSizes( sizes );
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename ListIndex >
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+BiEllpack( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,

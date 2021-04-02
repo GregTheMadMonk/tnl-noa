@@ -35,11 +35,25 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
+   template< typename SizesContainer >
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-Ellpack( const SegmentsSizes& segmentsSizes )
+Ellpack( const SizesContainer& segmentsSizes )
    : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
 {
    this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename ListIndex >
+Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
+Ellpack( const std::initializer_list< ListIndex >& segmentsSizes )
+   : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,

@@ -210,6 +210,14 @@ class BiEllpackView
       friend struct details::BiEllpackreduceSegmentsDispatcher;
 #endif
 };
+
+template <typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
+std::ostream& operator<<( std::ostream& str, const BiEllpackView< Device, Index, Organization, WarpSize >& segments ) { return printSegments( str, segments ); }
+
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

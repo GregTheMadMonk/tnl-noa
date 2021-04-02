@@ -43,7 +43,11 @@ class Ellpack
 
       Ellpack();
 
-      Ellpack( const SegmentsSizes& sizes );
+      template< typename SizesContainer >
+      Ellpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      Ellpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
       Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
 
@@ -130,6 +134,13 @@ class Ellpack
 
       IndexType segmentSize, size, alignedSize;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+std::ostream& operator<<( std::ostream& str, const Ellpack< Device, Index, IndexAllocator, Organization, Alignment >& segments ) { return printSegments( segments, str ); }
 
       } // namespace Segments
    }  // namespace Algorithms

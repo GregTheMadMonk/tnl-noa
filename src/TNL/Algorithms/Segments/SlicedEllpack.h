@@ -43,7 +43,11 @@ class SlicedEllpack
 
       SlicedEllpack();
 
-      SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );
+      template< typename SizesContainer >
+      SlicedEllpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
       SlicedEllpack( const SlicedEllpack& segments );
 
@@ -129,6 +133,13 @@ class SlicedEllpack
 
       OffsetsHolder sliceOffsets, sliceSegmentSizes;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+std::ostream& operator<<( std::ostream& str, const SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
 
       } // namespace Segements
    }  // namespace Algorithms

@@ -128,6 +128,12 @@ class SlicedEllpackView
       OffsetsView sliceOffsets, sliceSegmentSizes;
 };
 
+template <typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int SliceSize >
+std::ostream& operator<<( std::ostream& str, const SlicedEllpack< Device, Index, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
+
       } // namespace Segements
    }  // namespace Algorithms
 } // namespace TNL

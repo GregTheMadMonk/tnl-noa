@@ -18,6 +18,7 @@
 #include <TNL/Algorithms/Segments/CSRVectorKernel.h>
 #include <TNL/Algorithms/Segments/CSRHybridKernel.h>
 #include <TNL/Algorithms/Segments/CSRAdaptiveKernel.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -138,6 +139,12 @@ class CSRView
 
       KernelView kernel;
 };
+
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+std::ostream& operator<<( std::ostream& str, const CSRView< Device, Index, Kernel >& segments ) { return printSegments( str, segments ); }
 
 template< typename Device,
           typename Index >

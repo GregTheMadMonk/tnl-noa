@@ -15,6 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 
 namespace TNL {
@@ -126,6 +127,13 @@ class EllpackView
 
       IndexType segmentSize, segmentsCount, alignedSize;
 };
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+std::ostream& operator<<( std::ostream& str, const EllpackView< Device, Index, Organization, Alignment >& ellpack ) { return printSegments( str, ellpack ); }
+
 
       } // namespace Segments
    }  // namespace Algorithms

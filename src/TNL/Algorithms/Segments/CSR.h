@@ -21,6 +21,14 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+/**
+ * \brief Segments data structure based on CSR format.
+ *
+ * \tparam Device 
+ * \tparam Index 
+ * \tparam CSRScalarKernel< Index, Device > 
+ * \tparam Allocator< Index > 
+ */
 template< typename Device,
           typename Index,
           typename Kernel = CSRScalarKernel< Index, Device >,
@@ -46,7 +54,11 @@ class CSR
 
       CSR();
 
-      CSR( const SegmentsSizes& sizes );
+      template< typename SizesContainer >
+      CSR( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      CSR( const std::initializer_list< ListIndex >& segmentsSizes );
 
       CSR( const CSR& segments );
 
@@ -59,7 +71,7 @@ class CSR
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void reset();
@@ -144,6 +156,12 @@ class CSR
 
       KernelType kernel;
 };
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+std::ostream& operator<<( std::ostream& str, const CSR< Device, Index, Kernel, IndexAllocator >& segments ) { return printSegments( segments, str ); }
 
 template< typename Device,
           typename Index,

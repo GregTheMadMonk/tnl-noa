@@ -33,10 +33,22 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
+   template< typename SizesContainer >
 CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const SegmentsSizes& segmentsSizes )
+CSR( const SizesContainer& segmentsSizes )
 {
    this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename ListIndex >
+CSR< Device, Index, Kernel, IndexAllocator >::
+CSR( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,

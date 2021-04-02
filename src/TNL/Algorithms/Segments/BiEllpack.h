@@ -44,7 +44,12 @@ class BiEllpack
 
       BiEllpack() = default;
 
-      BiEllpack(const Containers::Vector<IndexType, DeviceType, IndexType> &sizes);
+      template< typename SizesContainer >
+      BiEllpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      BiEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
+
 
       BiEllpack(const BiEllpack &segments);
 
@@ -179,6 +184,14 @@ class BiEllpack
       template <typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int WarpSize_>
       friend class BiEllpack;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+std::ostream& operator<<( std::ostream& str, const BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >& segments ) { return printSegments( str, segments ); }
+
 
       } // namespace Segments
    }    // namespace Algorithms
