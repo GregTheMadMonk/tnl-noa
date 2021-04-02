@@ -262,7 +262,7 @@ public:
     template <typename Function>
     void sort(const Function &Cmp);
 
-    int getSetsNeeded() const;
+    int getSetsNeeded(int elemPerBlock) const;
     int getElemPerBlock() const;
 
     /**
@@ -349,13 +349,13 @@ void QUICKSORT::sort(const Function &Cmp)
     return;
 }
 
-int QUICKSORT::getSetsNeeded() const
+int QUICKSORT::getSetsNeeded(int elemPerBlock) const
 {
     auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
     auto fetch = [=] __cuda_callable__(int i) {
         auto &task = view[i];
         int size = task.partitionEnd - task.partitionBegin;
-        return size / minElemPerBlock + (size % minElemPerBlock != 0);
+        return size / elemPerBlock + (size % elemPerBlock != 0);
     };
     auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
     return Algorithms::Reduction<Devices::Cuda>::reduce(0, tasksAmount, fetch, reduction, 0);
@@ -363,7 +363,7 @@ int QUICKSORT::getSetsNeeded() const
 
 int QUICKSORT::getElemPerBlock() const
 {
-    int setsNeeded = getSetsNeeded();
+    int setsNeeded = getSetsNeeded(minElemPerBlock);
 
     if (setsNeeded <= maxBlocks)
         return minElemPerBlock;
