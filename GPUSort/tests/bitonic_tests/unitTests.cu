@@ -239,7 +239,39 @@ TEST(sortRange, middleMultiBlock)
     ASSERT_TRUE(arr[e + (std::rand() % (size - e))] == -1);
     ASSERT_TRUE(arr.back() == -1); 
 }
+/*
+void fetchAndSwapSorter(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> view)
+{
+    
+    //auto Fetch = [=]__cuda_callable__(int i){return view[i];};
+    //auto Cmp = [=]__cuda_callable__(const int & a, const int & b){return a < b;};
+    //auto Swap = [=] __device__ (int i, int j){TNL::swap(view[i], view[j]);};
+    //bitonicSort(0, view.getSize(), Fetch, Cmp, Swap);
+    
+}
 
+TEST(fetchAndSwap, oneBlockSort)
+{
+    int size = 9;
+    const int stride = 227;
+    int i = 0;
+
+    std::vector<int> orig(size);
+    std::iota(orig.begin(), orig.end(), 0);
+
+    do
+    {
+        if ((i++) % stride != 0)
+            continue;
+
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
+        auto view = cudaArr.getView();
+        fetchAndSwapSorter(view);
+        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    }
+    while (std::next_permutation(orig.begin(), orig.end()));
+}
+*/
 
 //----------------------------------------------------------------------------------
 

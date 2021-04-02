@@ -293,3 +293,66 @@ void bitonicSort(std::vector<Value> & vec)
 }
 
 //---------------------------------------------
+//---------------------------------------------
+
+template <typename FETCH, typename CMP,  typename SWAP>
+__global__ void bitonicMergeGlobal(int size, const FETCH & Fetch, 
+                                 const CMP & Cmp, const SWAP & Swap,
+                                 int monotonicSeqLen, int len, int partsInSeq)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int part = i / (len / 2); //computes which sorting block this thread belongs to
+
+    //the index of 2 elements that should be compared and swapped
+    int s = part * len + (i & ((len / 2) - 1) );
+    int e = s + len / 2;
+    if (e >= size) //arr[e] is virtual padding and will not be exchanged with
+        return;
+
+    //calculate the direction of swapping
+    int monotonicSeqIdx = part / partsInSeq;
+    bool ascending = (monotonicSeqIdx & 1) != 0;
+    if ((monotonicSeqIdx + 1) * monotonicSeqLen >= size) //special case for part with no "partner" to be merged with in next phase
+        ascending = true;
+
+    if( (ascending == Cmp(Fetch(e), Fetch(s))))
+        Swap(s, e);
+}
+
+
+
+template <typename FETCH, typename CMP,  typename SWAP>
+void bitonicSort(int begin, int end, const FETCH & Fetch, const CMP& Cmp, const SWAP & Swap)
+{
+    int size = end - begin;
+    int paddedSize = closestPow2(size);
+
+    int threadsNeeded = size / 2 + (size %2 !=0);
+
+    const int maxThreadsPerBlock = 512;
+    int threadPerBlock = maxThreadsPerBlock;
+    int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock != 0);
+
+    auto fetchWithOffset = 
+        [=] __cuda_callable__(int i)
+        {
+            return Fetch(i + begin);
+        };
+        
+    auto swapWithOffset = 
+        [=] __cuda_callable__(int i, int j)
+        {
+            return Swap(i+begin, i+begin);
+        };
+
+    for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
+    {
+        for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+        {
+            bitonicMergeGlobal<<<blocks, threadPerBlock>>>(
+                size, fetchWithOffset, Cmp, swapWithOffset, monotonicSeqLen, len, partsInSeq);
+        }
+    }
+    cudaDeviceSynchronize();
+}
