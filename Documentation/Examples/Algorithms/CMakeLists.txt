@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( Segments )
+
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( SortingExampleCuda SortingExample.cu)
    ADD_CUSTOM_COMMAND( COMMAND SortingExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample.out OUTPUT SortingExample.out )
