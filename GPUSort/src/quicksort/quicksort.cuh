@@ -15,7 +15,7 @@ using namespace TNL::Containers;
 
 //-----------------------------------------------------------
 
-__device__ void writeNewTask(int begin, int end, int depth, int pivotIdx, int maxElemFor2ndPhase,
+__device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPhase,
                             ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                              ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
@@ -33,13 +33,13 @@ __device__ void writeNewTask(int begin, int end, int depth, int pivotIdx, int ma
     {
         int idx = atomicAdd(secondPhaseTasksCnt, 1);
         if (idx < secondPhaseTasks.getSize())
-            secondPhaseTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
+            secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
         else
         {
             //printf("ran out of memory, trying backup\n");
             int idx = atomicAdd(newTasksCnt, 1);
             if (idx < newTasks.getSize())
-                newTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
+                newTasks[idx] = TASK(begin, end, depth + 1);
             else
                 printf("ran out of memory for second phase task, there isnt even space in newTask list\nPart of array may stay unsorted!!!\n");
         }
@@ -48,13 +48,13 @@ __device__ void writeNewTask(int begin, int end, int depth, int pivotIdx, int ma
     {
         int idx = atomicAdd(newTasksCnt, 1);
         if (idx < newTasks.getSize())
-            newTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
+            newTasks[idx] = TASK(begin, end, depth + 1);
         else
         {
             //printf("ran out of memory, trying backup\n");
             int idx = atomicAdd(secondPhaseTasksCnt, 1);
             if (idx < secondPhaseTasks.getSize())
-                secondPhaseTasks[idx] = TASK(begin, end, depth + 1, pivotIdx);
+                secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
             else
                 printf("ran out of memory for newtask, there isnt even space in second phase task list\nPart of array may stay unsorted!!!\n");
         }
@@ -96,11 +96,8 @@ __global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     }
 }
 
-template <typename Function>
-__global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
-                               const Function &Cmp, int maxElemFor2ndPhase,
-                               ArrayView<TASK, Devices::Cuda> tasks,
-                               ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+__global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux, int maxElemFor2ndPhase,
+                               ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     static __shared__ int pivot;
@@ -133,24 +130,18 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
 
     if(leftEnd - leftBegin > 0)
     {
-        int leftPivotIdx = pickPivotIdx((myTask.depth & 1) == 0?
-                            aux.getView(leftBegin, leftEnd) :
-                            arr.getView(leftBegin, leftEnd)
-                            , Cmp) + leftBegin;
-
-        writeNewTask(leftBegin, leftEnd, myTask.depth, leftPivotIdx, maxElemFor2ndPhase,
-            newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+        writeNewTask(leftBegin, leftEnd, myTask.depth,
+                    maxElemFor2ndPhase,
+                    newTasks, newTasksCnt,
+                    secondPhaseTasks, secondPhaseTasksCnt);
     }
 
     if(rightEnd - rightBegin > 0)
     {
-        int rightPivotIdx = pickPivotIdx((myTask.depth & 1) == 0?
-                                aux.getView(rightBegin, rightEnd) :
-                                arr.getView(rightBegin, rightEnd)
-                            , Cmp) + rightBegin;
-                                
-        writeNewTask(rightBegin, rightEnd, myTask.depth, rightPivotIdx, maxElemFor2ndPhase,
-            newTasks, newTasksCnt, secondPhaseTasks, secondPhaseTasksCnt);
+        writeNewTask(rightBegin, rightEnd,
+                    myTask.depth, maxElemFor2ndPhase,
+                    newTasks, newTasksCnt,
+                    secondPhaseTasks, secondPhaseTasksCnt);
     }
 }
 
@@ -171,10 +162,11 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     singleBlockQuickSort<Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
 }
 //-----------------------------------------------------------
-
+template <typename Function>
 __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              int taskAmount, int elemPerBlock, int *firstAvailBlock,
-                             ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping)
+                             ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
+                             ArrayView<int, Devices::Cuda> src, const Function &Cmp)
 {
     static __shared__ int avail;
 
@@ -195,9 +187,10 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 
     if (i < taskAmount)
     {
+        auto task = cuda_tasks[i];
         int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
-
-        cuda_tasks[i].initTask(myFirstAvailBlock, blocksNeeded);
+        int pivotIdx = task.partitionBegin + pickPivotIdx(src.getView(task.partitionBegin, task.partitionEnd), Cmp);
+        cuda_tasks[i].initTask(myFirstAvailBlock, blocksNeeded, pivotIdx);
 
         for (int set = 0; set < blocksNeeded; set++)
         {
@@ -252,7 +245,7 @@ public:
           cuda_blockToTaskMapping(maxBlocks * 2),
           cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
     {
-        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0, arr.getSize()/2));
+        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
         tasksAmount = 1;
         host_2ndPhaseTasksAmount = 0;
         cuda_2ndPhaseTasksAmount = 0;
@@ -272,7 +265,8 @@ public:
     /**
      * returns the amount of blocks needed
      * */
-    int initTasks(int elemPerBlock);
+    template <typename Function>
+    int initTasks(int elemPerBlock, const Function & Cmp);
 
     void processNewTasks();
 };
@@ -297,7 +291,7 @@ void QUICKSORT::sort(const Function &Cmp)
         }
 
         int elemPerBlock = getElemPerBlock();
-        int blocksCnt = initTasks(elemPerBlock);
+        int blocksCnt = initTasks(elemPerBlock, Cmp);
         if(blocksCnt > cuda_blockToTaskMapping.getSize())
             break;
 
@@ -310,10 +304,8 @@ void QUICKSORT::sort(const Function &Cmp)
 
         auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
         cudaWritePivot<<<tasksAmount, 512>>>(
-            arr, aux, Cmp, desired_2ndPhasElemPerBlock,
-            task,
-            newTask,
-            cuda_newTasksAmount.getData(),
+            arr, aux, desired_2ndPhasElemPerBlock,
+            task, newTask, cuda_newTasksAmount.getData(),
             cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
 
         processNewTasks();
@@ -372,17 +364,20 @@ int QUICKSORT::getElemPerBlock() const
     return setsPerBlock * minElemPerBlock;
 }
 
-int QUICKSORT::initTasks(int elemPerBlock)
+template <typename Function>
+int QUICKSORT::initTasks(int elemPerBlock, const Function & Cmp)
 {
     int threads = min(tasksAmount, threadsPerBlock);
     int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
     cuda_blockToTaskMapping_Cnt = 0;
 
+    auto src = iteration % 2 == 0? arr : aux.getView();
     auto &tasks = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
     cudaInitTask<<<blocks, threads>>>(
         tasks, tasksAmount, elemPerBlock,
         cuda_blockToTaskMapping_Cnt.getData(),
-        cuda_blockToTaskMapping);
+        cuda_blockToTaskMapping, 
+        src, Cmp);
 
     cuda_newTasksAmount.setElement(0, 0);
     return cuda_blockToTaskMapping_Cnt.getElement(0);
