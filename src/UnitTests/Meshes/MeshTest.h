@@ -16,6 +16,8 @@
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/MeshBuilder.h>
 
+#include "EntityTests.h"
+
 namespace MeshTest {
 
 using namespace TNL;
@@ -130,6 +132,7 @@ void testFinishedMesh( const Mesh& mesh )
    compareStringRepresentation( mesh, mesh2 );
    testCopyAssignment( mesh );
    testMeshOnCuda( mesh );
+   testEntities( mesh );
 }
 
 TEST( MeshTest, TwoTrianglesTest )
