@@ -121,19 +121,63 @@ All additional information needed by the functor must be handled manually, e.g. 
 
 For example, the iteration over cells on a mesh allocated on the host can be done as follows:
 
-```cpp
-TODO
-```
+\snippet MeshIterationExample.cpp Parallel iteration host
 
 The parallel iteration is more complicated for meshes allocated on a GPU, since the lambda expression needs to capture a pointer to the copy of the mesh, which is allocated on the right device.
 This can be achieved with a [smart pointer](tutorial_Pointers.html) as follows:
 
-```cpp
-TODO
-```
+\snippet ParallelIterationCuda.h Parallel iteration CUDA
 
 Alternatively, you can use a [SharedPointer](@ref TNL::Pointers::SharedPointer) instead of a [DevicePointer](@ref TNL::Pointers::DevicePointer) to allocate the mesh, but it does not allow to bind to an object which has already been created outside of the `SharedPointer`.
 
 ## Writing a mesh and data to a file
 
+Numerical simulations typically produce results which can be interpreted as _mesh functions_ or _fields_.
+In C++ they can be stored simply as arrays or vectors with the appropriate size.
+For example, here we create two arrays `f_in` and `f_out`, which represent the input and output state of an iterative algorithm (`f_in` and `f_out` will be swapped after each iteration):
+
+\snippet GameOfLife.cpp Data vectors
+
+Note that here we used `std::uint8_t` as the value type.
+The following value types are supported for the output into VTK file formats: `std::int8_t`, `std::uint8_t`, `std::int16_t`, `std::uint16_t`, `std::int32_t`, `std::uint32_t`, `std::int64_t`, `std::uint64_t`, `float`, `double`.
+
+The output into a specific file format can be done with an appropriate _writer_ class, see \ref TNL::Meshes::Writers.
+For example, using [VTUWriter](@ref TNL::Meshes::Writers::VTUWriter) for the `.vtu` file format:
+
+\snippet GameOfLife.cpp make_snapshot
+
+Note that this writer supports writing metadata (iteration index and time level value), then we call `writeEntities` to write the mesh cells and `writeCellData` to write the mesh function values.
+The `writeCellData` call can be repeated multiple times for different mesh functions that should be included in the snapshot.
+
+Then we can take the snapshot of the initial state,
+
+\snippet GameOfLife.cpp make initial snapshot
+
+and similarly use `make_snapshot` in the iteration loop.
+
 ## Example: Game of Life
+
+In this example we will show how to implement the [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) using the [Mesh](@ref TNL::Meshes::Mesh) class template.
+Although the game is usually implemented on structured grids rather than unstructured meshes, it will nicely illustrate how the building blocks for a numerical simulation are connected together.
+
+The kernel of the Game of Life can be implemented as follows:
+
+\snippet GameOfLife.cpp Game of Life kernel
+
+The `kernel` function takes `f_in_view` (the input state of the current iteration) and for the $i$-th cell sums the values of the neighbor cells, which are accessed using the dual graph -- see \ref TNL::Meshes::Mesh::getCellNeighborsCount and \ref TNL::Meshes::Mesh::getCellNeighborIndex.
+Then it writes the resulting state of the $i$-th cell into `f_out_view` according to Conway's rules for a square grid:
+
+- any live cell with less than two live neighbors dies,
+- any live cell with two or three live neighbors survives,
+- any live cell with more than three live neighbors dies,
+- any dead cell with exactly three live neighbors becomes a live cell,
+- and any other dead cell remains dead.
+
+The kernel function is evaluated for all cells in the mesh, followed by swapping `f_in` and `f_out` (including their views), writing the output into a VTU file and checking if this was the last iteration:
+
+\snippet GameOfLife.cpp Game of Life iteration
+
+The remaining pieces needed for the implementation have either been already presented on this page, or they are left as an exercise to the reader.
+For the sake of completeness, we include the full example below.
+
+\include GameOfLife.cpp

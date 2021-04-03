@@ -56,6 +56,18 @@ bool task( const Mesh& mesh )
    //! [Iteration over subentities]
 }
 
+{
+   //! [Parallel iteration host]
+   auto kernel = [&mesh] ( typename Mesh::GlobalIndexType i ) mutable
+   {
+      typename Mesh::Cell elem = mesh.template getEntity< Mesh::getMeshDimension() >( i );
+      // [Do some work with the current cell `elem`...]
+      (void) elem;
+   };
+   mesh.template forAll< Mesh::getMeshDimension() >( kernel );
+   //! [Parallel iteration host]
+}
+
    return true;
 }
 
