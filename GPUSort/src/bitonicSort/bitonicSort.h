@@ -296,8 +296,8 @@ void bitonicSort(std::vector<Value> & vec)
 //---------------------------------------------
 
 template <typename FETCH, typename CMP,  typename SWAP>
-__global__ void bitonicMergeGlobal(int size, const FETCH & Fetch, 
-                                 const CMP & Cmp, const SWAP & Swap,
+__global__ void bitonicMergeGlobal(int size, FETCH Fetch, 
+                                 const CMP & Cmp, SWAP Swap,
                                  int monotonicSeqLen, int len, int partsInSeq)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -316,14 +316,14 @@ __global__ void bitonicMergeGlobal(int size, const FETCH & Fetch,
     if ((monotonicSeqIdx + 1) * monotonicSeqLen >= size) //special case for part with no "partner" to be merged with in next phase
         ascending = true;
 
-    if( (ascending == Cmp(Fetch(e), Fetch(s))))
+    if( ascending == Cmp(Fetch(e), Fetch(s)))
         Swap(s, e);
 }
 
 
 
 template <typename FETCH, typename CMP,  typename SWAP>
-void bitonicSort(int begin, int end, const FETCH & Fetch, const CMP& Cmp, const SWAP & Swap)
+void bitonicSort(int begin, int end, FETCH Fetch, const CMP& Cmp, SWAP Swap)
 {
     int size = end - begin;
     int paddedSize = closestPow2(size);
@@ -341,9 +341,9 @@ void bitonicSort(int begin, int end, const FETCH & Fetch, const CMP& Cmp, const 
         };
         
     auto swapWithOffset = 
-        [=] __cuda_callable__(int i, int j)
+        [=] __cuda_callable__(int i, int j) mutable
         {
-            return Swap(i+begin, i+begin);
+            Swap(i+begin, j+begin);
         };
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
