@@ -120,36 +120,6 @@ void testMeshOnCuda( const Mesh& mesh )
 }
 
 template< typename Mesh >
-void testEntities( const Mesh& mesh )
-{
-   using IndexType = typename Mesh::GlobalIndexType;
-
-   // test that superentity accessors have been correctly bound
-   for( IndexType i = 0; i < mesh.template getEntitiesCount< 0 >(); i++ ) {
-      const auto v1 = mesh.template getEntity< 0 >( i );
-      const auto v2 = mesh.template getEntity< 0 >( i );
-      EXPECT_EQ( v1, v2 );
-      EXPECT_EQ( v1.template getSuperentitiesCount< Mesh::getMeshDimension() >(),
-                 v2.template getSuperentitiesCount< Mesh::getMeshDimension() >() );
-      for( IndexType s = 0; s < v1.template getSuperentitiesCount< Mesh::getMeshDimension() >(); s++ )
-         EXPECT_EQ( v1.template getSuperentityIndex< Mesh::getMeshDimension() >( s ),
-                    v2.template getSuperentityIndex< Mesh::getMeshDimension() >( s ) );
-   }
-
-   // test that subentity accessors have been correctly bound
-   for( IndexType i = 0; i < mesh.template getEntitiesCount< Mesh::getMeshDimension() >(); i++ ) {
-      const auto c1 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
-      const auto c2 = mesh.template getEntity< Mesh::getMeshDimension() >( i );
-      EXPECT_EQ( c1, c2 );
-      EXPECT_EQ( c1.template getSubentitiesCount< 0 >(),
-                 c2.template getSubentitiesCount< 0 >() );
-      for( IndexType s = 0; s < c1.template getSubentitiesCount< 0 >(); s++ )
-         EXPECT_EQ( c1.template getSubentityIndex< 0 >( s ),
-                    c2.template getSubentityIndex< 0 >( s ) );
-   }
-}
-
-template< typename Mesh >
 void testFinishedMesh( const Mesh& mesh )
 {
    Mesh mesh2;
@@ -160,7 +130,6 @@ void testFinishedMesh( const Mesh& mesh )
    compareStringRepresentation( mesh, mesh2 );
    testCopyAssignment( mesh );
    testMeshOnCuda( mesh );
-   testEntities( mesh );
 }
 
 TEST( MeshTest, TwoTrianglesTest )
