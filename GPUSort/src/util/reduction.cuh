@@ -36,6 +36,8 @@ __device__ int blockReduceSum(int val)
     return shared[0];
 }
 
+//-------------------------------------------------------------------------------
+
 __device__ int warpInclusivePrefixSum(int value)
 {
     int laneId = threadIdx.x & (32-1);
@@ -71,4 +73,41 @@ __device__ int blockInclusivePrefixSum(int value)
     
     tmp += shared[wid];
     return tmp;
+}
+
+//--------------------------------------------------------------------
+
+template<typename Operator>
+__device__ int warpCmpReduce(int initVal, const Operator & Cmp)
+{
+    const unsigned int maskConstant = 0xffffffff; //not used
+    for (unsigned int mask = warpSize / 2; mask > 0; mask >>= 1)
+        initVal = Cmp(initVal, __shfl_xor_sync(maskConstant, initVal, mask));
+
+    return initVal;
+}
+
+template<typename Operator>
+__device__ int blockCmpReduce(int val, const Operator & Cmp)
+{
+    static __shared__ int shared[32];
+    int lane = threadIdx.x & (warpSize - 1);
+    int wid = threadIdx.x / warpSize;
+
+    val = warpCmpReduce(val, Cmp);
+
+    if (lane == 0)
+        shared[wid] = val;
+    __syncthreads(); 
+
+    val = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : shared[0];
+
+    if (wid == 0)
+        val = warpReduceSum(val, Cmp);
+
+    if(threadIdx.x == 0)
+        shared[0] = val;
+    __syncthreads(); 
+
+    return shared[0];
 }
