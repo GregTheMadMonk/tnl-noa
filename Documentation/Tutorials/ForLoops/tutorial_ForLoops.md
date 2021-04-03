@@ -9,7 +9,7 @@ This tutorial shows how to use different kind of for-loops implemented in TNL. N
 * **Parallel for** is a for-loop which can be run in parallel, i.e. all iterations of the loop must be independent. Parallel for can be run on both multicore CPUs and GPUs.
 * **n-dimensional parallel for** is an extension of common parallel for into higher dimensions.
 * **Unrolled for** is a for-loop which is performed sequentially and it is explicitly unrolled by C++ templates. Iteration bounds must be static (known at compile time).
-* **Templated Static For** ....
+* **Static for** is a for-loop with static bounds (known at compile time) and indices usable in constant expressions.
 
 ## Parallel For
 
@@ -102,32 +102,29 @@ Algorithms::UnrolledFor< 0, Size, true >::exec( addition, 3.14 );
 
 `UnrolledFor` can be used also in CUDA kernels.
 
-## Templated Static For
+## Static For
 
-Templated static for-loop (`TemplateStaticFor`) is a for-loop in template parameters. For example, if class `LoopBody` is defined as
+\ref TNL::Algorithms::staticFor is a generic for-loop whose iteration indices are usable in constant expressions (e.g. template arguments). It can be used as
 
-```
-template< int i >
-struct LoopBody
-{
-   static void exec() { ... };
-}
+```cpp
+staticFor< int, 0, N >( f );
 ```
 
-one might need to execute the following sequence of statements:
+which is results in the following sequence of function calls:
 
-```
-LoopBody< 0 >::exec();
-LoopBody< 1 >::exec();
-LoopBody< 3 >::exec();
+```cpp
+f( std::integral_constant< 0 >{} );
+f( std::integral_constant< 1 >{} );
+f( std::integral_constant< 2 >{} );
+f( std::integral_constant< 3 >{} );
 ...
-LoodBody< N >::exec();
+f( std::integral_constant< N >{} );
 ```
 
-This is exactly what `TemplateStaticFor` can do - in a slightly more general way. See the following example:
+Notice that each iteration index is represented by its own distinct type using \ref std::integral_constant. Hence, the functor `f` must be generic, e.g. a _generic lambda expression_ such as in the following example:
 
-\include TemplateStaticForExample.cpp
+\include staticForExample.cpp
 
 The output looks as follows:
 
-\include TemplateStaticForExample.out
+\include staticForExample.out
