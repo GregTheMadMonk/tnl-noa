@@ -103,7 +103,7 @@ __device__ int blockCmpReduce(int val, const Operator & Cmp)
     val = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : shared[0];
 
     if (wid == 0)
-        val = warpReduceSum(val, Cmp);
+        val = warpCmpReduce(val, Cmp);
 
     if(threadIdx.x == 0)
         shared[0] = val;
