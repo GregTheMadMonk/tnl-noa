@@ -97,9 +97,39 @@ The following example demonstrates the essence of *segments* in TNL:
 
 \includelineno Algorithms/Segments/SegmentsExample_General.cpp
 
+We demonstrate two formats of segments - \ref TNL::Algorithms::Segments::CSR and \ref TNL::Algorithms::Segments::Ellpack running on both CPU and GPU
+(lines 58-76). For each of them, we call function `SegmentsExample` which first creates given segments (line 18). The segments are defined by the sizes of
+particular segments.
+
+Next we allocate array with data related to the segments (line 24). The number of elemets managed by the segments is given by
+\ref TNL::Algorithms::Segments::CSR::getStorageSize and \ref TNL::Algorithms::Segments::Ellpack::getStorageSize respectively.
+
+Next we setup the segments elements (lines 29-33) by calling \ref TNL::Algorithms::Segments::CSR::forAllElements
+(and \ref TNL::Algorithms::Segments::CSR::forAllElements respectively) which iterates over all elements of the segments
+in parallel and perform given lambda function. The lambda function receives index of the segment (`segmentIdx`),
+index of the element within the segment (`localIdx`), index of the element within the array `data` and a reference to boolean (`compute`) which serves as a
+hint for interrupting the iteration over the elements of given segment when it is set to `false`. The value of the elements having the local index smaller or equal
+to the segments index is set to the value of the segment index. It creates, in fact, lower triangular matrix elements of which have values equal to row index.
+
+Next we use a function \ref TNL::Algorithms::Segments::printSegments to print the content of the segments (lines 38-39). To do this we have to provide a lambda function
+`fetch` (line 38) which returns value of elements with given global index.
+
+Finally we show how to compute sum of all elemnts in each segment. Firstly, we create vector into which we will store the sums (line 44) and get its view (line 45).
+The size of the vector is given by the number of the segments which can be obtained by the means of the method \ref TNL::Algorithms::Segments::CSR::getSegmentsCount
+(and \ref TNL::Algorithms::Segments::Ellpack::getSegmentsCount respectively). The sums are computed using the method \ref TNL::Algorithms::Segments::CSR::reduceAllSegments
+(and \ref TNL::Algorithms::Segments::Ellpack::reduceAllSegments respectively) which works the same way as the flexible parallel reduction (\ref TNL::Algorithms::Reduction).
+It requires lambda functions `fetch` for reading the data related to particular elements of the segments, function `reduce` which is \ref std::plus in this case and a
+function `keep` to store the result of sums in particular segments.
+
 The result looks as follows:
 
 \include SegmentsExample_General.out
+
+Note that the Ellpack format manages more elements than we asked for. It is because some formats use padding elements for more efficient memory accesses. The padding
+elements are available to the user as well and so we must ensure that work only with those elements we want to. This is the reason why we use the if statement on the
+line 31 when setting up the values of the elements in segments. The padding elements can be used in case when we later need more elements than we requested. However,
+the segments data structure does not allow any resizing of the segments. One can change the sizes of the segments, however, the access to the originally managed data
+is becoming invalid at that moment.
 
 */
 

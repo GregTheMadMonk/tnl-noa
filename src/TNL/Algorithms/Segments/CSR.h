@@ -22,7 +22,9 @@ namespace TNL {
       namespace Segments {
 
 /**
- * \brief Segments data structure based on CSR format.
+ * \brief Data structure for CSR segments format.
+ *
+ * See \ref TNL::Algorithms::Segments for more details about segments.
  *
  * \tparam Device 
  * \tparam Index 

@@ -21,8 +21,7 @@ void SegmentsExample()
    /***
     * Allocate array for the segments;
     */
-   TNL::Containers::Array< double, DeviceType > data( segments.getStorageSize() );
-   data = 0.0;
+   TNL::Containers::Array< double, DeviceType > data( segments.getStorageSize(), 0.0 );
 
    /***
     * Insert data into particular segments.
