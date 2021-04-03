@@ -26,21 +26,12 @@ namespace TNL {
 namespace Meshes {
 namespace BuildConfigTags {
 
-/****
- * Turn off support for float and long double.
- */
-template<> struct GridRealTag< MyConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MyConfigTag, long double > { enum { enabled = false }; };
+// disable all grids
+template< int Dimension, typename Real, typename Device, typename Index >
+struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >
+{ enum { enabled = false }; };
 
-/****
- * Turn off support for short int and long int indexing.
- */
-template<> struct GridIndexTag< MyConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = false }; };
-
-/****
- * Unstructured meshes.
- */
+// Meshes are enabled only for topologies explicitly listed below.
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
@@ -116,7 +107,7 @@ bool runGameOfLife( const Mesh& mesh )
    // print basic mesh info
    mesh.printInfo( std::cout );
 
-   // test synchronizer
+   // initialize the synchronizer
    using Synchronizer = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Mesh >;
    Synchronizer sync;
    sync.initialize( mesh );
@@ -134,7 +125,7 @@ bool runGameOfLife( const Mesh& mesh )
    std::mt19937 rng(dev());
    std::uniform_int_distribution<> dist(0, 1);
    for( Index i = 0; i < cellsCount; i++ )
-      f_in.[ i ] = dist(rng);
+      f_in[ i ] = dist(rng);
    sync.synchronize( f_in );
 */
    // find the rank which contains most points in the box between (0.45, 0.45) and (0.55, 0.55)
@@ -150,6 +141,7 @@ bool runGameOfLife( const Mesh& mesh )
    Index max_count;
    TNL::MPI::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicationGroup() );
    std::cout << "Rank " << TNL::MPI::GetRank() << ": count=" << count << ", max_count=" << max_count << std::endl;
+   // FIXME: this is not reliable
    Index reference_cell = 0;
    if( count == max_count ) {
       // find cell which has all points in the central box
@@ -168,7 +160,7 @@ bool runGameOfLife( const Mesh& mesh )
    }
    // R-pentomino (stabilizes after 1103 iterations)
    const Index max_iter = 1103;
-   if( count == max_count ) {
+   if( count == max_count && localMesh.getCellNeighborsCount(reference_cell) > 6 ) {
       f_in[reference_cell] = 1;
       Index n1 = localMesh.getCellNeighborIndex(reference_cell,1);  // bottom
       Index n2 = localMesh.getCellNeighborIndex(reference_cell,2);  // left
@@ -217,8 +209,8 @@ bool runGameOfLife( const Mesh& mesh )
       const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
 
       // create a .vtu file for local data
-      using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
       std::ofstream subfile( subfilePath );
+      using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
       Writer writer( subfile );
       writer.writeMetadata( iteration, iteration );
       writer.template writeEntities< LocalMesh::getMeshDimension() >( localMesh );
@@ -231,7 +223,7 @@ bool runGameOfLife( const Mesh& mesh )
    make_snapshot( 0 );
 
    // captures for the iteration kernel
-   const auto f_in_view = f_in.getConstView();
+   auto f_in_view = f_in.getConstView();
    auto f_out_view = f_out.getView();
    Pointers::DevicePointer< const LocalMesh > localMeshDevicePointer( localMesh );
    const LocalMesh* localMeshPointer = &localMeshDevicePointer.template getData< typename LocalMesh::DeviceType >();
@@ -243,10 +235,10 @@ bool runGameOfLife( const Mesh& mesh )
       if( TNL::MPI::GetRank() == 0 )
          std::cout << "Computing iteration " << iteration << "..." << std::endl;
 
-      // iterate over all local entities
+      // iterate over all local cells
       auto kernel = [f_in_view, f_out_view, localMeshPointer] __cuda_callable__ ( Index i ) mutable
       {
-         // sum values of the function on the neighbor entities
+         // sum values of the function on the neighbor cells
          typename VectorType::RealType sum = 0;
          for( Index n = 0; n < localMeshPointer->getCellNeighborsCount( i ); n++ ) {
             const Index neighbor = localMeshPointer->getCellNeighborIndex( i, n );
@@ -279,8 +271,13 @@ bool runGameOfLife( const Mesh& mesh )
 
       // synchronize
       sync.synchronize( f_out );
+
       // swap input and output arrays
       f_in.swap( f_out );
+      // remember to update the views!
+      f_in_view.bind( f_in.getView() );
+      f_out_view.bind( f_out.getView() );
+
       // write output
       make_snapshot( iteration );
 
