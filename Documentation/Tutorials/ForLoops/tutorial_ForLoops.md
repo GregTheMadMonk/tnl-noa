@@ -35,7 +35,11 @@ Performing for-loops in higher dimensions is simillar. In the following example 
 
 Notice the parameters of the lambda function `sum`. The first parameter `i` changes more often than `j` and therefore the index mapping has the form `j * xSize + i` to acces the vector elements sequentialy on CPU and to fullfill coalesced memory accesses on GPU. The for-loop is executed by calling `ParallelFor2D` with proper device. The first four parameters are `startX, startY, endX, endY` and on CPU this is equivalent to the following embeded for loops:
 
-\include ParallelFor2D-snippet.cpp
+```cpp
+for( Index j = startY; j < endY; j++ )
+   for( Index i = startX; i < endX; i++ )
+      f( i, j, args... );
+```
 
 where `args...` stand for additional arguments passed to the for-loop. After the parameters defining the loops bounds, lambda function (`sum` in this case) is passed followed by additional arguments. One of them, in our example, is `xSize` again because it must be passed to the lambda function for the index mapping computation.
 
