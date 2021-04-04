@@ -238,14 +238,31 @@ void start(ostream & out, string delim)
 
         out << "2^" << pow << delim;
         out << fixed << setprecision(3);
+        
         out << random(size) << delim;
+        out.flush();
+        
         out << shuffle(size) << delim;
+        out.flush();
+        
         out << sorted(size) << delim;
+        out.flush();
+        
         out << almostSorted(size) << delim;
+        out.flush();
+        
         out << decreasing(size) << delim;
+        out.flush();
+        
         out << gaussian(size) << delim;
+        out.flush();
+        
         out << bucket(size) << delim;
+        out.flush();
+        
         out << staggared(size) << delim;
+        out.flush();
+        
         out << zero_entropy(size);
         out << endl;
     }
