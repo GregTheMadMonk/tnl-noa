@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRVectorKernel.h -  description
+                          CSRHybridKernel.h -  description
                              -------------------
     begin                : Jan 23, 2021 -> Joe Biden inauguration
     copyright            : (C) 2021 by Tomas Oberhuber
@@ -21,13 +21,14 @@ namespace TNL {
       namespace Segments {
 
 template< typename Index,
-          typename Device >
-struct CSRVectorKernel
+          typename Device,
+          int ThreadsInBlock = 256 >
+struct CSRHybridKernel
 {
    using IndexType = Index;
    using DeviceType = Device;
-   using ViewType = CSRVectorKernel< Index, Device >;
-   using ConstViewType = CSRVectorKernel< Index, Device >;
+   using ViewType = CSRHybridKernel< Index, Device >;
+   using ConstViewType = CSRHybridKernel< Index, Device >;
 
    template< typename Offsets >
    void init( const Offsets& offsets );
@@ -44,20 +45,21 @@ struct CSRVectorKernel
              typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
-   static void reduceSegments( const OffsetsView& offsets,
+             typename Real >
+   void reduceSegments( const OffsetsView& offsets,
                                   Index first,
                                   Index last,
                                   Fetch& fetch,
                                   const Reduction& reduction,
                                   ResultKeeper& keeper,
-                                  const Real& zero,
-                                  Args... args );
+                                  const Real& zero ) const;
+
+   protected:
+      int threadsPerSegment;
 };
 
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRVectorKernel.hpp>
+#include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.hpp>

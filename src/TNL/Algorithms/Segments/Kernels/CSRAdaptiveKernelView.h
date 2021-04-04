@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelBlockDescriptor.h>
-#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelParameters.h>
+#include <TNL/Algorithms/Segments/Kernels/details/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/Kernels/details/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -70,4 +70,4 @@ struct CSRAdaptiveKernelView
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRAdaptiveKernelView.hpp>
+#include <TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernelView.hpp>

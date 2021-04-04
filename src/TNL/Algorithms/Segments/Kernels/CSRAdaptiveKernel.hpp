@@ -15,8 +15,8 @@
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
-#include <TNL/Algorithms/Segments/CSRScalarKernel.h>
-#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/details/CSRAdaptiveKernelBlockDescriptor.h>
 
 namespace TNL {
    namespace Algorithms {

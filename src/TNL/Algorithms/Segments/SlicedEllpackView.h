@@ -132,7 +132,7 @@ template <typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-std::ostream& operator<<( std::ostream& str, const SlicedEllpack< Device, Index, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
+std::ostream& operator<<( std::ostream& str, const SlicedEllpackView< Device, Index, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
 
       } // namespace Segements
    }  // namespace Algorithms

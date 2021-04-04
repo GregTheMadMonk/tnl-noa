@@ -175,9 +175,8 @@ class ChunkedEllpack
 template <typename Device,
           typename Index,
           typename IndexAllocator,
-          ElementsOrganization Organization,
-          int Alignment >
-std::ostream& operator<<( std::ostream& str, const Ellpack< Device, Index, IndexAllocator, Organization, Alignment >& segments ) { return printSegments( str, segments ); }
+          ElementsOrganization Organization >
+std::ostream& operator<<( std::ostream& str, const ChunkedEllpack< Device, Index, IndexAllocator, Organization >& segments ) { return printSegments( str, segments ); }
 
 
       } // namespace Segments

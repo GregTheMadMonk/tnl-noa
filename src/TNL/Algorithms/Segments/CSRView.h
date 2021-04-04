@@ -14,10 +14,10 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
-#include <TNL/Algorithms/Segments/CSRScalarKernel.h>
-#include <TNL/Algorithms/Segments/CSRVectorKernel.h>
-#include <TNL/Algorithms/Segments/CSRHybridKernel.h>
-#include <TNL/Algorithms/Segments/CSRAdaptiveKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRVectorKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernel.h>
 #include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {

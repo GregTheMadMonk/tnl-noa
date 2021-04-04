@@ -60,4 +60,4 @@ struct CSRScalarKernel
    }  // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Segments/CSRScalarKernel.hpp>
+#include <TNL/Algorithms/Segments/Kernels/CSRScalarKernel.hpp>
