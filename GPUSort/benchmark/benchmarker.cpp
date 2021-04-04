@@ -192,7 +192,7 @@ double staggared(int size)
 	int tmp=4096; //(RAND_MAX)/p; --> size=2048
 	int p= (size+tmp-1)/tmp;
 
-	const int VALUE = (1<<31)/p; //(RAND_MAX)/p;
+	const int VALUE = (1<<30)/p; //(RAND_MAX)/p;
 
 	int i=1; int x=0;
 	//the array of size N is split into 'p' buckets
