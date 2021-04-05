@@ -13,7 +13,7 @@
 #include <TNL/File.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 
 struct TNLViewBuildConfigTag {};
 

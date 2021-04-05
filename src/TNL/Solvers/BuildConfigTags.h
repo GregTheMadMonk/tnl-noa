@@ -39,7 +39,7 @@ template< typename ConfigTag, typename Index > struct ConfigTagIndex{ enum { ena
 
 /****
  * The mesh type will be resolved by the Solver by default.
- * (The detailed mesh configuration is in TNL/Meshes/BuildConfigTags.h)
+ * (The detailed mesh configuration is in TNL/Meshes/TypeResolver/BuildConfigTags.h)
  */
 template< typename ConfigTag > struct ConfigTagMeshResolve{ enum { enabled = true }; };
 

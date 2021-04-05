@@ -11,10 +11,8 @@
 #include <random>
 
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
-#include <TNL/Meshes/DistributedMeshes/loadDistributedMesh.h>
+#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/MPI/ScopedInitializer.h>
@@ -28,21 +26,12 @@ namespace TNL {
 namespace Meshes {
 namespace BuildConfigTags {
 
-/****
- * Turn off support for float and long double.
- */
-template<> struct GridRealTag< MyConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MyConfigTag, long double > { enum { enabled = false }; };
+// disable all grids
+template< int Dimension, typename Real, typename Device, typename Index >
+struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >
+{ enum { enabled = false }; };
 
-/****
- * Turn off support for short int and long int indexing.
- */
-template<> struct GridIndexTag< MyConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = false }; };
-
-/****
- * Unstructured meshes.
- */
+// Meshes are enabled only for topologies explicitly listed below.
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
@@ -71,39 +60,26 @@ struct MeshConfigTemplateTag< MyConfigTag >
              typename GlobalIndex = int,
              typename LocalIndex = GlobalIndex >
    struct MeshConfig
+      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
    {
-      using CellTopology = Cell;
-      using RealType = Real;
-      using GlobalIndexType = GlobalIndex;
-      using LocalIndexType = LocalIndex;
-
-      static constexpr int worldDimension = WorldDimension;
-      static constexpr int meshDimension = Cell::dimension;
-
       template< typename EntityTopology >
       static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension >= meshDimension - 1;
-      }
-
-      template< typename EntityTopology >
-      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
-      {
-         return false;
+         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
       }
 
       template< typename EntityTopology >
       static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
       {
 //         return false;
-         return (EntityTopology::dimension == 0 || EntityTopology::dimension == meshDimension - 1) && SuperentityDimension == meshDimension;
+         return (EntityTopology::dimension == 0 || EntityTopology::dimension == Cell::dimension - 1) && SuperentityDimension == Cell::dimension;
       }
 
       template< typename EntityTopology >
       static constexpr bool entityTagsStorage( EntityTopology )
       {
 //         return false;
-         return EntityTopology::dimension == 0 || EntityTopology::dimension >= meshDimension - 1;
+         return EntityTopology::dimension == 0 || EntityTopology::dimension >= Cell::dimension - 1;
       }
 
       static constexpr bool dualGraphStorage()
@@ -131,50 +107,17 @@ bool runGameOfLife( const Mesh& mesh )
    // print basic mesh info
    mesh.printInfo( std::cout );
 
-   // test synchronizer
+   // initialize the synchronizer
    using Synchronizer = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Mesh >;
    Synchronizer sync;
    sync.initialize( mesh );
 
-   // TODO
-   // simple mesh function without SharedPointer for the mesh
-   using Real = std::uint8_t;
-   struct MyMeshFunction
-   {
-      using MeshType = LocalMesh;
-      using RealType = Real;
-      using DeviceType = typename LocalMesh::DeviceType;
-      using IndexType = typename LocalMesh::GlobalIndexType;
-      using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-
-      static constexpr int getEntitiesDimension() { return Mesh::getMeshDimension(); }
-
-      static constexpr int getMeshDimension() { return Mesh::getMeshDimension(); }
-
-      MyMeshFunction( const LocalMesh& localMesh )
-      {
-         data.setSize( localMesh.template getEntitiesCount< getEntitiesDimension() >() );
-      }
-
-      const VectorType& getData() const
-      {
-         return data;
-      }
-
-      VectorType& getData()
-      {
-         return data;
-      }
-
-      private:
-         VectorType data;
-   };
-
-   MyMeshFunction f_in( localMesh ), f_out( localMesh );
-   f_in.getData().setValue( 0 );
-
    const Index pointsCount = localMesh.template getEntitiesCount< 0 >();
    const Index cellsCount = localMesh.template getEntitiesCount< Mesh::getMeshDimension() >();
+
+   using VectorType = Containers::Vector< std::uint8_t, typename LocalMesh::DeviceType, Index >;
+   VectorType f_in( cellsCount ), f_out( cellsCount );
+   f_in.setValue( 0 );
 
 /*
    // random initial condition
@@ -182,7 +125,7 @@ bool runGameOfLife( const Mesh& mesh )
    std::mt19937 rng(dev());
    std::uniform_int_distribution<> dist(0, 1);
    for( Index i = 0; i < cellsCount; i++ )
-      f_in.getData()[ i ] = dist(rng);
+      f_in[ i ] = dist(rng);
    sync.synchronize( f_in );
 */
    // find the rank which contains most points in the box between (0.45, 0.45) and (0.55, 0.55)
@@ -198,6 +141,7 @@ bool runGameOfLife( const Mesh& mesh )
    Index max_count;
    TNL::MPI::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicationGroup() );
    std::cout << "Rank " << TNL::MPI::GetRank() << ": count=" << count << ", max_count=" << max_count << std::endl;
+   // FIXME: this is not reliable
    Index reference_cell = 0;
    if( count == max_count ) {
       // find cell which has all points in the central box
@@ -216,36 +160,34 @@ bool runGameOfLife( const Mesh& mesh )
    }
    // R-pentomino (stabilizes after 1103 iterations)
    const Index max_iter = 1103;
-   if( count == max_count ) {
-      auto& v = f_in.getData();
-      v[reference_cell] = 1;
+   if( count == max_count && localMesh.getCellNeighborsCount(reference_cell) > 6 ) {
+      f_in[reference_cell] = 1;
       Index n1 = localMesh.getCellNeighborIndex(reference_cell,1);  // bottom
       Index n2 = localMesh.getCellNeighborIndex(reference_cell,2);  // left
       Index n3 = localMesh.getCellNeighborIndex(reference_cell,5);  // top
       Index n4 = localMesh.getCellNeighborIndex(reference_cell,6);  // top-right
-      v[n1] = 1;
-      v[n2] = 1;
-      v[n3] = 1;
-      v[n4] = 1;
+      f_in[n1] = 1;
+      f_in[n2] = 1;
+      f_in[n3] = 1;
+      f_in[n4] = 1;
    }
 /*
    // Acorn (stabilizes after 5206 iterations)
    const Index max_iter = 5206;
    if( count == max_count ) {
-      auto& v = f_in.getData();
-      v[reference_cell] = 1;
+      f_in[reference_cell] = 1;
       Index n1 = localMesh.getCellNeighborIndex(reference_cell,4);
-      v[n1] = 1;
+      f_in[n1] = 1;
       Index s1 = localMesh.getCellNeighborIndex(n1,4);
       Index s2 = localMesh.getCellNeighborIndex(s1,4);
       Index n2 = localMesh.getCellNeighborIndex(s2,4);
-      v[n2] = 1;
+      f_in[n2] = 1;
       Index n3 = localMesh.getCellNeighborIndex(n2,4);
-      v[n3] = 1;
+      f_in[n3] = 1;
       Index n4 = localMesh.getCellNeighborIndex(n3,4);
-      v[n4] = 1;
-      v[localMesh.getCellNeighborIndex(s2,5)] = 1;
-      v[localMesh.getCellNeighborIndex(localMesh.getCellNeighborIndex(n1,5),5)] = 1;
+      f_in[n4] = 1;
+      f_in[localMesh.getCellNeighborIndex(s2,5)] = 1;
+      f_in[localMesh.getCellNeighborIndex(localMesh.getCellNeighborIndex(n1,5),5)] = 1;
    }
 */
 
@@ -263,26 +205,26 @@ bool runGameOfLife( const Mesh& mesh )
       // the PointData and CellData from the individual files should be added here
       if( mesh.getGhostLevels() > 0 )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
-      pvtu.template writePCellData< Real >( "function values" );
+      pvtu.template writePCellData< typename VectorType::RealType >( "function values" );
       const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
 
       // create a .vtu file for local data
-      using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
       std::ofstream subfile( subfilePath );
+      using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
       Writer writer( subfile );
       writer.writeMetadata( iteration, iteration );
       writer.template writeEntities< LocalMesh::getMeshDimension() >( localMesh );
       if( mesh.getGhostLevels() > 0 )
          writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
-      writer.writeCellData( f_in.getData(), "function values" );
+      writer.writeCellData( f_in, "function values" );
    };
 
    // write initial state
    make_snapshot( 0 );
 
    // captures for the iteration kernel
-   const auto f_in_view = f_in.getData().getConstView();
-   auto f_out_view = f_out.getData().getView();
+   auto f_in_view = f_in.getConstView();
+   auto f_out_view = f_out.getView();
    Pointers::DevicePointer< const LocalMesh > localMeshDevicePointer( localMesh );
    const LocalMesh* localMeshPointer = &localMeshDevicePointer.template getData< typename LocalMesh::DeviceType >();
 
@@ -293,11 +235,11 @@ bool runGameOfLife( const Mesh& mesh )
       if( TNL::MPI::GetRank() == 0 )
          std::cout << "Computing iteration " << iteration << "..." << std::endl;
 
-      // iterate over all local entities
+      // iterate over all local cells
       auto kernel = [f_in_view, f_out_view, localMeshPointer] __cuda_callable__ ( Index i ) mutable
       {
-         // sum values of the function on the neighbor entities
-         Real sum = 0;
+         // sum values of the function on the neighbor cells
+         typename VectorType::RealType sum = 0;
          for( Index n = 0; n < localMeshPointer->getCellNeighborsCount( i ); n++ ) {
             const Index neighbor = localMeshPointer->getCellNeighborIndex( i, n );
             sum += f_in_view[ neighbor ];
@@ -325,17 +267,22 @@ bool runGameOfLife( const Mesh& mesh )
                f_out_view[ i ] = 0;
          }
       };
-      localMesh.template forLocal< MyMeshFunction::getEntitiesDimension() >( kernel );
+      localMesh.template forLocal< Mesh::getMeshDimension() >( kernel );
 
       // synchronize
       sync.synchronize( f_out );
+
       // swap input and output arrays
-      f_in.getData().swap( f_out.getData() );
+      f_in.swap( f_out );
+      // remember to update the views!
+      f_in_view.bind( f_in.getView() );
+      f_out_view.bind( f_out.getView() );
+
       // write output
       make_snapshot( iteration );
 
       // check if finished
-      const bool done = max( f_in.getData() ) == 0 || iteration > max_iter || f_in.getData() == f_out.getData();
+      const bool done = max( f_in ) == 0 || iteration > max_iter || f_in == f_out;
       TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
    }
    while( all_done == false );

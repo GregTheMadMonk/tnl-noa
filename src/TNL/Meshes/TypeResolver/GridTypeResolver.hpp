@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GridTypeResolver_impl.h  -  description
+                          GridTypeResolver.hpp  -  description
                              -------------------
     begin                : Nov 22, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

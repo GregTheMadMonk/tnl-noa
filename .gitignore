@@ -15,4 +15,12 @@
 
 # VSCode
 /.vscode
+
+# Editors
+*.orig
+*.bak
+*.backup
+*.swp
+
+# GDB
 .gdb_history

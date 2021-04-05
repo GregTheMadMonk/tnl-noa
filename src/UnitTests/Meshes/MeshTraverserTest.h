@@ -25,7 +25,6 @@ class TestQuadrangleMeshConfig : public DefaultConfig< Topologies::Quadrangle >
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
    template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); }
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 
@@ -34,7 +33,6 @@ class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
 public:
    static constexpr bool entityStorage( int dimensions ) { return true; }
    template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimensions ) {  return ( SubentityDimensions % 2 != 0 ); }
    template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
 };
 

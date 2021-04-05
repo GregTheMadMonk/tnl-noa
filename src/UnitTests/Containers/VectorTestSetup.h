@@ -13,7 +13,7 @@
 #ifdef HAVE_GTEST
 #include <limits>
 
-#include <TNL/Experimental/Arithmetics/Quad.h>
+#include <TNL/Arithmetics/Quad.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include "VectorHelperFunctions.h"

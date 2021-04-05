@@ -1,5 +1,5 @@
 /***************************************************************************
-                          loadDistributedMesh.h  -  description
+                          resolveDistributedMesh.hpp  -  description
                              -------------------
     begin                : Apr 9, 2020
     copyright            : (C) 2020 by Tomas Oberhuber et al.
@@ -12,10 +12,9 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -26,7 +25,7 @@ template< typename ConfigTag,
 bool
 resolveDistributedMeshType( Functor&& functor,
                             const std::string& fileName,
-                            const std::string& fileFormat = "auto" )
+                            const std::string& fileFormat )
 {
    std::cout << "Detecting distributed mesh from file " << fileName << " ..." << std::endl;
 
@@ -76,7 +75,7 @@ template< typename ConfigTag,
 bool
 resolveAndLoadDistributedMesh( Functor&& functor,
                                const std::string& fileName,
-                               const std::string& fileFormat = "auto" )
+                               const std::string& fileFormat )
 {
    auto wrapper = [&]( Readers::MeshReader& reader, auto&& mesh ) -> bool
    {
@@ -100,7 +99,7 @@ bool
 loadDistributedMesh( Mesh< MeshConfig, Device >& mesh,
                      DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
                      const std::string& fileName,
-                     const std::string& fileFormat = "auto" )
+                     const std::string& fileFormat )
 {
    // TODO: simplify interface, pass only the distributed mesh
    TNL_ASSERT_EQ( &mesh, &distributedMesh.getLocalMesh(), "mesh is not local mesh of the distributed mesh" );
@@ -152,7 +151,7 @@ bool
 loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
                      DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
                      const std::string& fileName,
-                     const std::string& fileFormat = "auto" )
+                     const std::string& fileFormat )
 {
    std::cout << "Loading a global mesh from the file " << fileName << "...";
    Grid< Dimension, Real, Device, Index > globalGrid;

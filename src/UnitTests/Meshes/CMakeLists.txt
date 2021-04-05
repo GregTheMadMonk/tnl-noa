@@ -35,12 +35,3 @@ ADD_TEST( EntityTagsTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/EntityTagsTest${CMAKE
 ADD_TEST( MeshTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshTraverserTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshTraverserTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshOrderingTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshOrderingTest${CMAKE_EXECUTABLE_SUFFIX} )
-
-
-## NOTE: MeshEntityTest does not make sense anymore, since mesh entities are
-##       created on the fly and all information is stored directly in the mesh
-## TODO: check if something should be mereged into MeshTest and remove MeshEntityTest
-#ADD_EXECUTABLE( MeshEntityTest MeshEntityTest.cpp )
-#TARGET_COMPILE_OPTIONS( MeshEntityTest PRIVATE ${CXX_TESTS_FLAGS} )
-#TARGET_LINK_LIBRARIES( MeshEntityTest ${GTEST_BOTH_LIBRARIES} )
-#ADD_TEST( MeshEntityTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshEntityTest${CMAKE_EXECUTABLE_SUFFIX} )

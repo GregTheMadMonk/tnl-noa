@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Config/parseCommandLine.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/NetgenWriter.h>
@@ -78,12 +78,6 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
       static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
       {
          return SubentityDimension == 0 && EntityTopology::dimension == meshDimension;
-      }
-
-      template< typename EntityTopology >
-      static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
-      {
-         return false;
       }
 
       template< typename EntityTopology >

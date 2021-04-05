@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MeshResolver_impl.h  -  description
+                          resolveMeshType.hpp  -  description
                              -------------------
     begin                : Nov 22, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -12,7 +12,7 @@
 
 #include <experimental/filesystem>
 
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
 #include <TNL/Meshes/Readers/TNLReader.h>

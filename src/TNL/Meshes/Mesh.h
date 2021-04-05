@@ -115,12 +115,19 @@ class Mesh
       virtual String getSerializationTypeVirtual() const;
 
       /**
-       * Entities
+       * \brief Returns the count of mesh entities of the given dimension.
        */
       template< int Dimension >
       __cuda_callable__
       GlobalIndexType getEntitiesCount() const;
 
+      /**
+       * \brief Returns the mesh entity of the given dimension and index.
+       *
+       * Note that objects representing mesh entities are not stored in the mesh,
+       * but created on demand. Since the \ref MeshEntity contains just a pointer
+       * to the mesh and the supplied entity index, the creation should be fast.
+       */
       template< int Dimension >
       __cuda_callable__
       EntityType< Dimension > getEntity( const GlobalIndexType entityIndex ) const;
@@ -135,42 +142,56 @@ class Mesh
       EntityType getEntity( const GlobalIndexType entityIndex ) const;
 
       /**
-       * Points
+       * \brief Returns the spatial coordinates of the vertex with given index.
        */
       __cuda_callable__
       const PointType& getPoint( const GlobalIndexType vertexIndex ) const;
 
+      /**
+       * \brief Returns the spatial coordinates of the vertex with given index.
+       */
       __cuda_callable__
       PointType& getPoint( const GlobalIndexType vertexIndex );
 
       /**
-       * Subentities
+       * \brief Returns the count of subentities of the entity with given index.
        */
       template< int EntityDimension, int SubentityDimension >
       __cuda_callable__
       constexpr LocalIndexType getSubentitiesCount( const GlobalIndexType entityIndex ) const;
 
+      /**
+       * \brief Returns the global index of the subentity specified by its local index.
+       */
       template< int EntityDimension, int SubentityDimension >
       __cuda_callable__
       GlobalIndexType getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const;
 
       /**
-       * Superentities
+       * \brief Returns the count of superentities of the entity with given index.
        */
       template< int EntityDimension, int SuperentityDimension >
       __cuda_callable__
       LocalIndexType getSuperentitiesCount( const GlobalIndexType entityIndex ) const;
 
+      /**
+       * \brief Returns the global index of the superentity specified by its local index.
+       */
       template< int EntityDimension, int SuperentityDimension >
       __cuda_callable__
       GlobalIndexType getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const;
 
       /**
-       * Cell neighbors - access the dual graph
+       * \brief Returns the count of neighbor cells of the cell with given index,
+       * based on the information stored in the dual graph.
        */
       __cuda_callable__
       LocalIndexType getCellNeighborsCount( const GlobalIndexType cellIndex ) const;
 
+      /**
+       * \brief Returns the global index of the cell's specific neighbor cell wigh given local index,
+       * based on the information stored in the dual graph.
+       */
       __cuda_callable__
       GlobalIndexType getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const;
 
@@ -231,7 +252,9 @@ class Mesh
       void forGhost( Func f ) const;
 
 
-      /*
+      /**
+       * \brief Reorders the entities of the given dimension.
+       *
        * The permutations follow the definition used in the Metis library: Let M
        * be the original mesh and M' the permuted mesh. Then entity with index i
        * in M' is the entity with index perm[i] in M and entity with index j in

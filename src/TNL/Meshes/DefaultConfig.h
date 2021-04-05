@@ -52,16 +52,6 @@ struct DefaultConfig
    }
 
    /****
-    * Storage of subentity orientations of mesh entities.
-    * It must be false for vertices and cells.
-    */
-   template< typename EntityTopology >
-   static constexpr bool subentityOrientationStorage( EntityTopology, int SubentityDimension )
-   {
-      return SubentityDimension > 0 && SubentityDimension < meshDimension;
-   }
-
-   /****
     * Storage of superentities of mesh entities.
     */
    template< typename EntityTopology >

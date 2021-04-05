@@ -19,7 +19,6 @@
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 #include <TNL/Meshes/MeshDetails/layers/SubentityStorageLayer.h>
-#include <TNL/Meshes/MeshDetails/layers/SubentityOrientationsLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/SuperentityStorageLayer.h>
 #include <TNL/Meshes/MeshDetails/layers/DualGraphLayer.h>
 
@@ -223,26 +222,6 @@ public:
                                                      typename EntityTraits< Dimension >::EntityTopology >;
       return BaseType::template getSuperentitiesMatrix< Superdimension >();
    }
-
-   template< int Dimension, int Subdimension >
-   __cuda_callable__
-   typename SubentityTraits< Dimension, Subdimension >::IdPermutationArrayType
-   getSubentityOrientation( typename MeshTraitsType::GlobalIndexType entityIndex, typename MeshTraitsType::LocalIndexType localIndex ) const
-   {
-      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled,
-                     "You try to get subentity orientation which is not configured for storage." );
-      return BaseType::getSubentityOrientation( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex, localIndex );
-   }
-
-   template< int Dimension, int Subdimension >
-   __cuda_callable__
-   typename SubentityTraits< Dimension, Subdimension >::OrientationArrayType&
-   subentityOrientationsArray( typename MeshTraitsType::GlobalIndexType entityIndex )
-   {
-      static_assert( SubentityTraits< Dimension, Subdimension >::orientationEnabled,
-                     "You try to get subentity orientation which is not configured for storage." );
-      return BaseType::subentityOrientationsArray( DimensionTag< Dimension >(), DimensionTag< Subdimension >(), entityIndex );
-   }
 };
 
 
@@ -256,9 +235,6 @@ class StorageLayer< MeshConfig,
    : public SubentityStorageLayerFamily< MeshConfig,
                                          Device,
                                          typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
-     public SubentityOrientationsLayerFamily< MeshConfig,
-                                              Device,
-                                              typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public SuperentityStorageLayerFamily< MeshConfig,
                                            Device,
                                            typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
@@ -272,11 +248,7 @@ public:
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
-   using SubentityOrientationsBaseType = SubentityOrientationsLayerFamily< MeshConfig, Device, EntityTopology >;
    using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
-
-   using BaseType::subentityOrientationsArray;
-   using SubentityOrientationsBaseType::subentityOrientationsArray;
 
    StorageLayer() = default;
 
@@ -356,7 +328,6 @@ protected:
    void setEntitiesCount( DimensionTag, const GlobalIndexType& entitiesCount )
    {
       this->entitiesCount = entitiesCount;
-      SubentityOrientationsBaseType::setEntitiesCount( entitiesCount );
    }
 
    GlobalIndexType entitiesCount = 0;
@@ -393,7 +364,6 @@ protected:
    }
 
 
-   void subentityOrientationsArray() {}
    void setEntitiesCount() {}
    void getEntitiesCount() const {}
 

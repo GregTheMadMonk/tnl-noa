@@ -70,41 +70,44 @@ class MeshEntity
       __cuda_callable__
       GlobalIndexType getIndex() const;
 
-      /****
-       * Points
+      /**
+       * \brief Returns the spatial coordinates of this vertex.
+       *
+       * Can be used only when \ref getEntityDimension returns 0.
        */
       __cuda_callable__
       PointType getPoint() const;
 
-      /****
-       * Subentities
+      /**
+       * \brief Returns the count of subentities of this entity.
        */
       template< int Subdimension >
       __cuda_callable__
       LocalIndexType getSubentitiesCount() const;
 
+      /**
+       * \brief Returns the global index of the subentity specified by its local index.
+       */
       template< int Subdimension >
       __cuda_callable__
       GlobalIndexType getSubentityIndex( const LocalIndexType localIndex ) const;
 
-      template< int Subdimension >
-      __cuda_callable__
-      auto getSubentityOrientation( const LocalIndexType localIndex ) const
-         -> const typename SubentityTraits< Subdimension >::OrientationArrayType&;
-
-      /****
-       * Superentities
+      /**
+       * \brief Returns the count of superentities of this entity.
        */
       template< int Superdimension >
       __cuda_callable__
       LocalIndexType getSuperentitiesCount() const;
 
+      /**
+       * \brief Returns the global index of the superentity specified by its local index.
+       */
       template< int Superdimension >
       __cuda_callable__
       GlobalIndexType getSuperentityIndex( const LocalIndexType localIndex ) const;
 
-      /****
-       * Tags
+      /**
+       * \brief Returns the tag associated with this entity.
        */
       __cuda_callable__
       TagType getTag() const;

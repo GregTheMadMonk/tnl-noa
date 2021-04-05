@@ -18,8 +18,8 @@
 #pragma once
 
 #include <TNL/Solvers/PDE/TimeIndependentPDESolver.h>
-#include <TNL/Meshes/TypeResolver/TypeResolver.h>
-#include <TNL/Meshes/DistributedMeshes/loadDistributedMesh.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
 
 namespace TNL {
 namespace Solvers {
