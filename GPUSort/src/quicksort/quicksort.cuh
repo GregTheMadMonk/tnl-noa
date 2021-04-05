@@ -251,9 +251,7 @@ public:
         cuda_2ndPhaseTasksAmount = 0;
         iteration = 0;
 
-        auto error = cudaGetLastError();
-        if(error != cudaSuccess)
-            deb(error);
+        TNL_CHECK_CUDA_DEVICE;
     }
 
     template <typename Function>
@@ -274,7 +272,6 @@ public:
 template <typename Function>
 void QUICKSORT::sort(const Function &Cmp)
 {
-    cudaError_t error;
     
     while (tasksAmount > 0)
     {
@@ -295,12 +292,17 @@ void QUICKSORT::sort(const Function &Cmp)
         if(blocksCnt > cuda_blockToTaskMapping.getSize())
             break;
 
+        TNL_CHECK_CUDA_DEVICE;
+
         int externMemByteSize = elemPerBlock * sizeof(int);
         auto & task = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
+
         cudaQuickSort1stPhase<Function>
             <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                 arr, aux, Cmp, elemPerBlock,
                 task, cuda_blockToTaskMapping);
+                
+        TNL_CHECK_CUDA_DEVICE;
 
         auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
         cudaWritePivot<<<tasksAmount, 512>>>(
@@ -308,15 +310,14 @@ void QUICKSORT::sort(const Function &Cmp)
             task, newTask, cuda_newTasksAmount.getData(),
             cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
 
+        TNL_CHECK_CUDA_DEVICE;
+
         processNewTasks();
         iteration++;
     }
 
-    if((error = cudaDeviceSynchronize()) != cudaSuccess)
-    {
-        deb(error);
-        return;
-    }
+    cudaDeviceSynchronize();
+    TNL_CHECK_CUDA_DEVICE;
     
     if (tasksAmount > 0)
     {
@@ -324,6 +325,7 @@ void QUICKSORT::sort(const Function &Cmp)
         cudaQuickSort2ndPhase<Function, 128>
             <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
     }
+    TNL_CHECK_CUDA_DEVICE;
     
     if (host_2ndPhaseTasksAmount > 0)
     {
@@ -331,13 +333,10 @@ void QUICKSORT::sort(const Function &Cmp)
             <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock>>>
             (arr, aux, Cmp, cuda_2ndPhaseTasks);
     }
+    TNL_CHECK_CUDA_DEVICE;
 
-
-    if((error = cudaDeviceSynchronize()) != cudaSuccess)
-    {
-        deb(error);
-        return;
-    }
+    cudaDeviceSynchronize();
+    TNL_CHECK_CUDA_DEVICE;
     return;
 }
 
