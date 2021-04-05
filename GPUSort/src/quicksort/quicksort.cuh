@@ -198,7 +198,7 @@ __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, 
 }                                    
 
 template <typename Function>
-__global__ void cudaInitTask2(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
+__global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
                              ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
                              ArrayView<int, Devices::Cuda> src, const Function &Cmp)
@@ -253,7 +253,7 @@ public:
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
           cuda_newTasksAmount(1),
           cuda_2ndPhaseTasksAmount(1),
-          cuda_blockToTaskMapping(maxBlocks * 2),
+          cuda_blockToTaskMapping(maxBlocks),
           cuda_reductionTaskInitMem(maxTasks)
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
@@ -404,11 +404,12 @@ int QUICKSORT::initTasks(int elemPerBlock, const Function & Cmp)
         cuda_reductionTaskInitMem.getData());
 
     int blocksNeeded = cuda_reductionTaskInitMem.getElement(tasksAmount - 1);
+    //need too many blocks, give back control
     if(blocksNeeded >= cuda_blockToTaskMapping.getSize())
         return blocksNeeded;
 
-    cudaInitTask2<<<tasksAmount, 512>>>(
-        tasks.getView(0, tasksAmount), elemPerBlock,
+    cudaInitTask<<<tasksAmount, 512>>>(
+        tasks.getView(0, tasksAmount),
         cuda_blockToTaskMapping.getView(0, blocksNeeded),
         cuda_reductionTaskInitMem.getView(0, tasksAmount),
         src, Cmp
