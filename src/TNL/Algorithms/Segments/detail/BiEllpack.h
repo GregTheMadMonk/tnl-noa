@@ -31,10 +31,10 @@ class BiEllpack
       using DeviceType = Device;
       using IndexType = Index;
       static constexpr bool getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsHolder::ViewType;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using OffsetsHolderView = typename OffsetsContainer::ViewType;
       using ConstOffsetsHolderView = typename OffsetsHolderView::ConstViewType;
-      using SegmentsSizes = OffsetsHolder;
+      using SegmentsSizes = OffsetsContainer;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
       static constexpr int getWarpSize() { return WarpSize; };

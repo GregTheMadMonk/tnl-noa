@@ -31,8 +31,8 @@ class Ellpack
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
       static constexpr ElementsOrganization getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using SegmentsSizes = OffsetsHolder;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsContainer;
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
       using ViewType = EllpackView< Device, Index, Organization, Alignment >;
@@ -66,7 +66,7 @@ class Ellpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );

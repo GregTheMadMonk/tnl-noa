@@ -219,7 +219,7 @@ template< typename Device,
           typename IndexAllocator >
 auto
 CSR< Device, Index, Kernel, IndexAllocator >::
-getOffsets() const -> const OffsetsHolder&
+getOffsets() const -> const OffsetsContainer&
 {
    return this->offsets;
 }
@@ -230,7 +230,7 @@ template< typename Device,
           typename IndexAllocator >
 auto
 CSR< Device, Index, Kernel, IndexAllocator >::
-getOffsets() -> OffsetsHolder&
+getOffsets() -> OffsetsContainer&
 {
    return this->offsets;
 }

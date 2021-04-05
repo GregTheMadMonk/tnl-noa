@@ -32,7 +32,7 @@ class BiEllpack
    public:
       using DeviceType = Device;
       using IndexType = std::remove_const_t<Index>;
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocator>;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocator>;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = BiEllpackView< Device, Index, Organization, WarpSize >;
       template <typename Device_, typename Index_>
@@ -73,7 +73,7 @@ class BiEllpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template <typename SizesHolder = OffsetsHolder>
+      template <typename SizesHolder = OffsetsContainer>
       void setSegmentsSizes(const SizesHolder &sizes);
 
       void reset();
@@ -138,11 +138,11 @@ class BiEllpack
       void printStructure(std::ostream &str) const;
 
       // TODO: nvcc needs this public because of lambda function used inside
-      template <typename SizesHolder = OffsetsHolder>
+      template <typename SizesHolder = OffsetsContainer>
       void performRowBubbleSort(const SizesHolder &segmentsSize);
 
       // TODO: the same as  above
-      template <typename SizesHolder = OffsetsHolder>
+      template <typename SizesHolder = OffsetsContainer>
       void computeColumnSizes(const SizesHolder &segmentsSizes);
 
    protected:
@@ -150,10 +150,10 @@ class BiEllpack
 
       static constexpr int getLogWarpSize() { return std::log2(WarpSize); };
 
-      template <typename SizesHolder = OffsetsHolder>
+      template <typename SizesHolder = OffsetsContainer>
       void verifyRowPerm(const SizesHolder &segmentsSizes);
 
-      template <typename SizesHolder = OffsetsHolder>
+      template <typename SizesHolder = OffsetsContainer>
       void verifyRowLengths(const SizesHolder &segmentsSizes);
 
       IndexType getStripLength(const IndexType stripIdx) const;
@@ -164,9 +164,9 @@ class BiEllpack
 
       IndexType virtualRows = 0;
 
-      OffsetsHolder rowPermArray;
+      OffsetsContainer rowPermArray;
 
-      OffsetsHolder groupPointers;
+      OffsetsContainer groupPointers;
 
       // TODO: Replace later
       __cuda_callable__ Index power(const IndexType number, const IndexType exponent) const

@@ -30,7 +30,7 @@ class SlicedEllpack
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
@@ -64,7 +64,7 @@ class SlicedEllpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void reset();
@@ -131,7 +131,7 @@ class SlicedEllpack
 
       IndexType size, alignedSize, segmentsCount;
 
-      OffsetsHolder sliceOffsets, sliceSegmentSizes;
+      OffsetsContainer sliceOffsets, sliceSegmentSizes;
 };
 
 template <typename Device,

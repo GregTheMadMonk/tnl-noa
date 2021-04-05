@@ -62,10 +62,10 @@ class ChunkedEllpack
       using DeviceType = Device;
       using IndexType = Index;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsHolder::ViewType;
-      using SegmentsSizes = OffsetsHolder;
-      using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using OffsetsHolderView = typename OffsetsContainer::ViewType;
+      using SegmentsSizes = OffsetsContainer;
+      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;

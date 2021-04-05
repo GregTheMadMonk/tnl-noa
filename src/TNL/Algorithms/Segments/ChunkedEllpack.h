@@ -29,7 +29,7 @@ class ChunkedEllpack
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = ChunkedEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
@@ -72,7 +72,7 @@ class ChunkedEllpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void reset();
@@ -150,19 +150,19 @@ class ChunkedEllpack
        * For each segment, this keeps index of the slice which contains the
        * segment.
        */
-      OffsetsHolder rowToSliceMapping;
+      OffsetsContainer rowToSliceMapping;
 
       /**
        * For each row, this keeps index of the first chunk within a slice.
        */
-      OffsetsHolder rowToChunkMapping;
+      OffsetsContainer rowToChunkMapping;
 
-      OffsetsHolder chunksToSegmentsMapping;
+      OffsetsContainer chunksToSegmentsMapping;
 
       /**
        * Keeps index of the first segment index.
        */
-      OffsetsHolder rowPointers;
+      OffsetsContainer rowPointers;
 
       ChunkedEllpackSliceInfoContainer slices;
 

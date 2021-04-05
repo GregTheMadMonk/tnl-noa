@@ -26,10 +26,16 @@ namespace TNL {
  *
  * See \ref TNL::Algorithms::Segments for more details about segments.
  *
- * \tparam Device 
- * \tparam Index 
- * \tparam CSRScalarKernel< Index, Device > 
- * \tparam Allocator< Index > 
+ * \tparam Device is type of device where the segments will be operating.
+ * \tparam Index is type for indexing of the elements managed by the segments.
+ * \tparam Kernel is type of kernel used for parallel operations with segments.
+ *    It can be any of the following:
+ *    \ref TNL::Containers::Segments::Kernels::CSRAdaptiveKernel,
+ *    \ref TNL::Containers::Segments::Kernels::CSRHybridKernel,
+ *    \ref TNL::Containers::Segments::Kernels::CSRScalarKernel,
+ *    \ref TNL::Containers::Segments::Kernels::CSRVectorKernel
+ *
+ * \tparam IndexAllocator is allocator for supporting index containers.
  */
 template< typename Device,
           typename Index,
@@ -39,31 +45,117 @@ class CSR
 {
    public:
 
+      /**
+       * \brief The device where the segments are operating.
+       */
       using DeviceType = Device;
+
+      /**
+       * \brief The type used for indexing of segments elements.
+       */
       using IndexType = std::remove_const_t< Index >;
+
+      /**
+       * \brief Type of kernel used for reduction operations.
+       */
       using KernelType = Kernel;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
-      using SegmentsSizes = OffsetsHolder;
+
+      /**
+       * \brief Type of container storing offsets of particular rows.
+       */
+      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+
+      /**
+       * \brief Templated view type.
+       *
+       * \tparam Device_ is alternative device type for the view.
+       * \tparam Index_ is alternative index type for the view.
+       */
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_, KernelType >;
+
+      /**
+       * \brief Type of segments view.1
+       */
       using ViewType = CSRView< Device, Index, KernelType >;
+
+      /**
+       * \brief Type of constant segments view.
+       */
       using ConstViewType = CSRView< Device, std::add_const_t< IndexType >, KernelType >;
+
+      /**
+       * \brief Accessor type fro one particular segment.
+       */
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
-      static constexpr ElementsOrganization getOrganization() { return ColumnMajorOrder; }
+      /**
+       * \brief This functions says that CSR format is always organised in row-major order.
+       */
+      static constexpr ElementsOrganization getOrganization() { return RowMajorOrder; }
 
+      /**
+       * \brief This function says that CSR format does not use padding elements.
+       */
       static constexpr bool havePadding() { return false; };
 
+      /**
+       * \brief Construct with no parameters to create empty segments.
+       */
       CSR();
 
+      /**
+       * \brief Construct with segments sizes.
+       *
+       * The number of segments is given by the size of \e segmentsSizes. Particular elements
+       * of this container define sizes of particular segments.
+       *
+       * \tparam SizesContainer is a type of container for segments sizes.
+       * \param sizes is an instance of the container with the segments sizes.
+       *
+       * See the following example:
+       *
+       * \includelineno Algorithms/Segments/SegmentsExample_CSR_constructor_1.cpp
+       *
+       * The result looks as follows:
+       *
+       * \include SegmentsExample_CSR_constructor_1.out
+       */
       template< typename SizesContainer >
-      CSR( const SizesContainer& sizes );
+      CSR( const SizesContainer& segmentsSizes );
 
+      /**
+       * \brief Construct with segments sizes in initializer list..
+       *
+       * The number of segments is given by the size of \e segmentsSizes. Particular elements
+       * of this initializer list define sizes of particular segments.
+       *
+       * \tparam ListIndex is a type of indexes of the initializer list.
+       * \param sizes is an instance of the container with the segments sizes.
+       *
+       * See the following example:
+       *
+       * \includelineno Algorithms/Segments/SegmentsExample_constructor_2.cpp
+       *
+       * The result looks as follows:
+       *
+       * \include SegmentsExample_constructor_1.out
+       */
       template< typename ListIndex >
       CSR( const std::initializer_list< ListIndex >& segmentsSizes );
 
+      /**
+       * \brief Copy constructor.
+       *
+       * \param segments are the source segments.
+       */
       CSR( const CSR& segments );
 
+      /**
+       * \brief Move constructor.
+       *
+       * \param segments  are the source segments.
+       */
       CSR( const CSR&& segments );
 
       static String getSerializationType();
@@ -112,9 +204,9 @@ class CSR
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
-      const OffsetsHolder& getOffsets() const;
+      const OffsetsContainer& getOffsets() const;
 
-      OffsetsHolder& getOffsets();
+      OffsetsContainer& getOffsets();
 
       /***
        * \brief Go over all segments and for each segment element call
@@ -154,7 +246,7 @@ class CSR
 
    protected:
 
-      OffsetsHolder offsets;
+      OffsetsContainer offsets;
 
       KernelType kernel;
 };
