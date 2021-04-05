@@ -238,15 +238,14 @@ class QUICKSORT
     Array<int, Devices::Cuda> aux;
     int maxTasks, maxBlocks;
     Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
-    Array<int, Devices::Cuda> cudaCounters;
 
-    ArrayView<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer
+    Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer
 
     int tasksAmount;              //counter for Host == cuda_newTasksAmount
     int host_2ndPhaseTasksAmount; // cuda_2ndPhaseTasksAmount
 
     Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-    ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
+    Array<int, Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
 
     int iteration = 0;
     //--------------------------------------------------------------------------------------
@@ -258,11 +257,10 @@ public:
           maxTasks(min(arr.getSize(), g_maxTasks)),
           maxBlocks(g_maxBlocks),
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
-          cudaCounters(3),
-          cuda_newTasksAmount(cudaCounters.getView(0, 1)),
-          cuda_2ndPhaseTasksAmount(cudaCounters.getView(1, 2)),
+          cuda_newTasksAmount(1),
+          cuda_2ndPhaseTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks * 2),
-          cuda_blockToTaskMapping_Cnt(cudaCounters.getView(2, 3))
+          cuda_blockToTaskMapping_Cnt(1)
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
         tasksAmount = 1;
@@ -335,7 +333,7 @@ void QUICKSORT::sort(const Function &Cmp)
         TNL_CHECK_CUDA_DEVICE;
 
         auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
-        cudaWritePivot<<<tasksAmount, 512>>>(
+        cudaWritePivot<<<tasksAmount, 1024>>>(
             arr, aux, desired_2ndPhasElemPerBlock,
             task, newTask, cuda_newTasksAmount.getData(),
             cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
@@ -345,26 +343,26 @@ void QUICKSORT::sort(const Function &Cmp)
         processNewTasks();
         iteration++;
     }
-
-    cudaDeviceSynchronize();
-    TNL_CHECK_CUDA_DEVICE;
     
     if (tasksAmount > 0)
     {
         auto & tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
         cudaQuickSort2ndPhase<Function, 128>
             <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
+
+        TNL_CHECK_CUDA_DEVICE;
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
     }
-    TNL_CHECK_CUDA_DEVICE;
     
     if (host_2ndPhaseTasksAmount > 0)
     {
         cudaQuickSort2ndPhase<Function, 128>
             <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock>>>
             (arr, aux, Cmp, cuda_2ndPhaseTasks);
-    }
-    TNL_CHECK_CUDA_DEVICE;
 
+        TNL_CHECK_CUDA_DEVICE;
+    }
     cudaDeviceSynchronize();
     TNL_CHECK_CUDA_DEVICE;
     return;
