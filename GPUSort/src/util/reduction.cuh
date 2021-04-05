@@ -43,11 +43,10 @@ __device__ int warpInclusivePrefixSum(int value)
     int laneId = threadIdx.x & (32-1);
 
     #pragma unroll
-    for (int i = 0; i < 5; i++) //iterates until x == 1<<4 == 16 which is half warpSize
+    for (int i = 1; i*2 <= 32; i *= 2)//32 here is warp size
     {
-        int x = 1<<i;
-        int n = __shfl_up_sync(0xffffffff, value, x);
-        if ((laneId & (warpSize - 1)) >= x)
+        int n = __shfl_up_sync(0xffffffff, value, i);
+        if ((laneId & (warpSize - 1)) >= i)
             value += n;
     }
 
