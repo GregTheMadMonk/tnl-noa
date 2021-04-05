@@ -13,6 +13,7 @@
 #pragma once
 
 #include <TNL/Meshes/Readers/XMLVTK.h>
+#include <TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace TNL {
 namespace Meshes {
