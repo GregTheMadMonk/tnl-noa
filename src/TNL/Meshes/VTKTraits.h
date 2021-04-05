@@ -126,10 +126,10 @@ template< typename Topology > struct TopologyToEntityShape {};
 template<> struct TopologyToEntityShape< Topologies::Vertex >      { static constexpr EntityShape shape = EntityShape::Vertex; };
 template<> struct TopologyToEntityShape< Topologies::Edge >        { static constexpr EntityShape shape = EntityShape::Line; };
 template<> struct TopologyToEntityShape< Topologies::Triangle >    { static constexpr EntityShape shape = EntityShape::Triangle; };
+template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon; };
 template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad; };
 template<> struct TopologyToEntityShape< Topologies::Tetrahedron > { static constexpr EntityShape shape = EntityShape::Tetra; };
 template<> struct TopologyToEntityShape< Topologies::Hexahedron >  { static constexpr EntityShape shape = EntityShape::Hexahedron; };
-template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon; };
 
 // mapping used in VTKWriter
 template< typename GridEntity >

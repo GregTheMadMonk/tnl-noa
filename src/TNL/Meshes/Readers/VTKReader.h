@@ -19,6 +19,7 @@
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/Endianness.h>
+#include <TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace TNL {
 namespace Meshes {
@@ -157,13 +158,33 @@ public:
       }
 
       // validate cell types
+      using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
+      //TODO: uncomment line below later for polyhedrals
+      //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
       cellShape = (VTK::EntityShape) cellTypes[0];
       for( auto c : cellTypes )
-         if( (VTK::EntityShape) c != cellShape ) {
-            const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
-                                  + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c);
-            throw MeshReaderError( "VTKReader", msg );
+      {
+         if( (VTK::EntityShape) c != entityShape )
+         {
+            //in case input mesh includes mixed shapes, use more general cellShape ( polygon for 2D, polyhedrals for 3D )
+            if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+            {
+               cellShape = PolygonShapeGroupChecker::GeneralShape;
+            }
+            //TODO: add group check for polyhedrals later
+            /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+            {
+               cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
+            }*/
+            else
+            {
+               const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
+                                  + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
+               reset();
+               throw MeshReaderError( "VTKReader", msg );
+            }
          }
+      }
 
       // find to the CELLS section
       if( ! sectionPositions.count( "CELLS" ) )
@@ -177,7 +198,12 @@ public:
             throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
                                                 " (entityIndex = " + std::to_string(entityIndex) + ")" );
 
-         if( (VTK::EntityShape) typesArray[ entityIndex ] == cellShape ) {
+         VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
+
+         if( entityShape == cellShape ||
+             PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
+            iss.clear();
+            iss.str( line );
             // read number of subvertices
             const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
             for( int v = 0; v < subvertices; v++ ) {

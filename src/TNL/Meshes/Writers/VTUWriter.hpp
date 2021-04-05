@@ -43,11 +43,9 @@ struct MeshEntitiesVTUCollector
       using Index = typename Mesh::GlobalIndexType;
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
-      const Index verticesPerEntity = VerticesPerEntity< EntityType >::count;;
       for( Index i = 0; i < entitiesCount; i++ ) {
          const auto& entity = mesh.template getEntity< EntityType >( i );
-         //TODO: polygons require verticesPerEntity to be aquired like below
-         //const Index verticesPerEntity = entity.template getSubentitiesCount< 0 >();
+         const Index verticesPerEntity = entity.template getSubentitiesCount< 0 >();
          for( Index j = 0; j < verticesPerEntity; j++ )
             connectivity.push_back( entity.template getSubentityIndex< 0 >( j ) );
          offsets.push_back( connectivity.size() );

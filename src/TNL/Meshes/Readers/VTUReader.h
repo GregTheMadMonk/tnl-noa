@@ -94,11 +94,32 @@ class VTUReader
                   return;
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
+               using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
+               //TODO: uncomment line below later for polyhedrals
+               //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+
                // TODO: check only entities of the same dimension (edges, faces and cells separately)
                for( auto c : array )
-                  if( (VTK::EntityShape) c != cellShape )
-                     throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
-                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c) + "." );
+               {
+                  VTK::EntityShape entityShape = (VTK::EntityShape) c;
+                  if( entityShape != cellShape )
+                  {
+                     if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                     {
+                        cellShape = PolygonShapeGroupChecker::GeneralShape;
+                     }
+                     //TODO: add group check for polyhedrals later
+                     /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                     {
+                        cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
+                     }*/
+                     else
+                     {
+                        throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
+                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + "." );
+                     }
+                  }
+               }
             },
             typesArray
          );
