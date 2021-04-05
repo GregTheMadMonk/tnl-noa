@@ -241,8 +241,7 @@ public:
 
    template< typename Device,
              typename ResetFunction,
-             typename ComputeFunction,
-             typename... NextComputations >
+             typename ComputeFunction >
    inline double
    time( ResetFunction reset,
          const String & performer,
@@ -291,8 +290,7 @@ public:
    }
 
    template< typename Device,
-             typename ComputeFunction,
-             typename... NextComputations >
+             typename ComputeFunction >
    inline double
    time( const String & performer,
          ComputeFunction & compute )
