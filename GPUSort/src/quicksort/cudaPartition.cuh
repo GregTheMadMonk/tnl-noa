@@ -146,7 +146,7 @@ void copyData(ArrayView<int, Devices::Cuda> src,
 //----------------------------------------------------------------------------------
 
 template <typename Function>
-__device__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
+__device__ void cudaPartition_1(ArrayView<int, Devices::Cuda> src,
                               ArrayView<int, Devices::Cuda> dst,
                               int * sharedMem,
                               const Function &Cmp, const int & pivot,
@@ -180,15 +180,47 @@ __device__ void cudaPartition(ArrayView<int, Devices::Cuda> src,
 
     //-----------------------------------------------------------
 
-    /*
-    int destSmaller = smallerStart + smallerPrefSumInc - smaller;
-    int destBigger = biggerStart + biggerPrefSumInc - bigger;
-    copyData(srcView, dst, destSmaller, destBigger, pivot);
-    */
-
     copyDataShared(srcView, dst, sharedMem,
                     smallerStart, biggerStart,
                     smallerTotal, biggerTotal,
                     smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
                     pivot);
+}
+
+//------------------------------------------------------------------
+
+template <typename Function>
+__device__ void cudaPartition_2(ArrayView<int, Devices::Cuda> src,
+                              ArrayView<int, Devices::Cuda> dst,
+                              const Function &Cmp, const int & pivot,
+                              int elemPerBlock, TASK & task
+                              )
+{
+    static __shared__ int smallerStart, biggerStart;
+
+    int myBegin = elemPerBlock * (blockIdx.x - task.firstBlock);
+    int myEnd = TNL::min(myBegin + elemPerBlock, src.getSize());
+
+    auto srcView = src.getView(myBegin, myEnd);
+
+    //-------------------------------------------------------------------------
+
+    int smaller = 0, bigger = 0;
+    countElem(srcView, smaller, bigger, pivot);
+
+    int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
+    int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
+
+    if (threadIdx.x == blockDim.x - 1) //last thread in block has sum of all values
+    {
+        smallerStart = atomicAdd(&(task.dstBegin), smallerPrefSumInc);
+        biggerStart = atomicAdd(&(task.dstEnd), -biggerPrefSumInc) - biggerPrefSumInc;
+    }
+    __syncthreads();
+
+    //-----------------------------------------------------------
+
+    int destSmaller = smallerStart + smallerPrefSumInc - smaller;
+    int destBigger = biggerStart + biggerPrefSumInc - bigger;
+    copyData(srcView, dst, destSmaller, destBigger, pivot);
 }

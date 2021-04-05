@@ -60,41 +60,59 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
         }
     }
 }
+
 //----------------------------------------------------
 
 template <typename Function>
-__global__ void cudaQuickSort1stPhase(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+__global__ void cudaQuickSort1stPhase_1(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
                                       const Function &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
                                       ArrayView<int, Devices::Cuda> taskMapping)
 {
     extern __shared__ int externMem[];
     int *sharedMem = externMem;
-    int pivot;
+
+    static __shared__ int pivot;
+
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
+    auto & src = (myTask.depth & 1) == 0? arr : aux;
+    auto & dst = (myTask.depth & 1) == 0? aux : arr;
 
-    if ((myTask.depth & 1) == 0)
-        pivot = arr[myTask.pivotIdx];
-    else
-        pivot = aux[myTask.pivotIdx];
+    if (threadIdx.x == 0)
+        pivot = src[myTask.pivotIdx];
+    __syncthreads();
 
-    if ((myTask.depth & 1) == 0)
-    {
-        cudaPartition(
-            arr.getView(myTask.partitionBegin, myTask.partitionEnd),
-            aux.getView(myTask.partitionBegin, myTask.partitionEnd),
-            sharedMem,
-            Cmp, pivot, elemPerBlock, myTask);
-    }
-    else
-    {
-        cudaPartition(
-            aux.getView(myTask.partitionBegin, myTask.partitionEnd),
-            arr.getView(myTask.partitionBegin, myTask.partitionEnd),
-            sharedMem,
-            Cmp, pivot, elemPerBlock, myTask);
-    }
+    cudaPartition_1(
+        src.getView(myTask.partitionBegin, myTask.partitionEnd),
+        dst.getView(myTask.partitionBegin, myTask.partitionEnd),
+        sharedMem,
+        Cmp, pivot, elemPerBlock, myTask);
 }
+
+template <typename Function>
+__global__ void cudaQuickSort1stPhase_2(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+                                      const Function &Cmp, int elemPerBlock,
+                                      ArrayView<TASK, Devices::Cuda> tasks,
+                                      ArrayView<int, Devices::Cuda> taskMapping)
+{
+    static __shared__ int pivot;
+
+    TASK &myTask = tasks[taskMapping[blockIdx.x]];
+    auto & src = (myTask.depth & 1) == 0? arr : aux;
+    auto & dst = (myTask.depth & 1) == 0? aux : arr;
+
+    if (threadIdx.x == 0)
+        pivot = src[myTask.pivotIdx];
+    __syncthreads();
+
+    cudaPartition_2(
+        src.getView(myTask.partitionBegin, myTask.partitionEnd),
+        dst.getView(myTask.partitionBegin, myTask.partitionEnd),
+        Cmp, pivot, elemPerBlock, myTask);
+}
+
+//----------------------------------------------------
+
 
 __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux, int maxElemFor2ndPhase,
                                ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
@@ -231,7 +249,8 @@ class QUICKSORT
     ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
 
     int iteration = 0;
-
+    //--------------------------------------------------------------------------------------
+    cudaDeviceProp deviceProp;
     //--------------------------------------------------------------------------------------
 public:
     QUICKSORT(ArrayView<int, Devices::Cuda> _arr)
@@ -251,6 +270,7 @@ public:
         cuda_2ndPhaseTasksAmount = 0;
         iteration = 0;
 
+        cudaGetDeviceProperties(&deviceProp, 0); //change device
         TNL_CHECK_CUDA_DEVICE;
     }
 
@@ -297,10 +317,20 @@ void QUICKSORT::sort(const Function &Cmp)
         int externMemByteSize = elemPerBlock * sizeof(int);
         auto & task = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
 
-        cudaQuickSort1stPhase<Function>
-            <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
-                arr, aux, Cmp, elemPerBlock,
+        if(externMemByteSize <= deviceProp.sharedMemPerBlock)
+        {
+            cudaQuickSort1stPhase_1<Function>
+                <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
+                    arr, aux, Cmp, elemPerBlock,
+                    task, cuda_blockToTaskMapping);
+        }
+        else
+        {
+            cudaQuickSort1stPhase_2<Function>
+                <<<blocksCnt, threadsPerBlock>>>(
+                    arr, aux, Cmp, elemPerBlock,
                 task, cuda_blockToTaskMapping);
+        }
                 
         TNL_CHECK_CUDA_DEVICE;
 
