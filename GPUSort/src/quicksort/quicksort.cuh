@@ -8,6 +8,9 @@
 #include "../bitonicSort/bitonicSort.h"
 #include <iostream>
 
+#include <thrust/scan.h>
+#include <thrust/execution_policy.h>
+
 #define deb(x) std::cout << #x << " = " << x << std::endl;
 
 using namespace TNL;
@@ -179,51 +182,42 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
 
     singleBlockQuickSort<Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
 }
+
 //-----------------------------------------------------------
+
+__global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
+                                    ArrayView<int, Devices::Cuda> blocksNeeded)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if(i >= cuda_tasks.getSize())
+        return;
+
+    auto task = cuda_tasks[i];
+    int size = task.partitionEnd - task.partitionBegin;
+    blocksNeeded[i] = size / elemPerBlock + (size % elemPerBlock != 0);
+}                                    
+
 template <typename Function>
-__global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
-                             int taskAmount, int elemPerBlock, int *firstAvailBlock,
+__global__ void cudaInitTask2(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
+                             ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
                              ArrayView<int, Devices::Cuda> src, const Function &Cmp)
 {
-    static __shared__ int avail;
+    if(blockIdx.x >= cuda_tasks.getSize())
+        return;
 
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    int blocksNeeded = 0;
+    int start = blockIdx.x == 0? 0 : cuda_reductionTaskInitMem[blockIdx.x -1];
+    int end = cuda_reductionTaskInitMem[blockIdx.x];
+    for(int i = start + threadIdx.x; i < end; i += blockDim.x)
+        cuda_blockToTaskMapping[i] = blockIdx.x;
 
-    if (i < taskAmount)
+    if(threadIdx.x == 0)
     {
-        auto task = cuda_tasks[i];
-        int size = task.partitionEnd - task.partitionBegin;
-        blocksNeeded = size / elemPerBlock + (size % elemPerBlock != 0);
-    }
-
-    int blocksNeeded_total = blockInclusivePrefixSum(blocksNeeded);
-    if (threadIdx.x == blockDim.x - 1)
-        avail = atomicAdd(firstAvailBlock, blocksNeeded_total);
-    __syncthreads();
-
-    if (i < taskAmount)
-    {
-        auto task = cuda_tasks[i];
-        int myFirstAvailBlock = avail + blocksNeeded_total - blocksNeeded;
+        TASK & task = cuda_tasks[blockIdx.x];
         int pivotIdx = task.partitionBegin + pickPivotIdx(src.getView(task.partitionBegin, task.partitionEnd), Cmp);
-        cuda_tasks[i].initTask(myFirstAvailBlock, blocksNeeded, pivotIdx);
-
-        for (int set = 0; set < blocksNeeded; set++)
-        {
-            if(myFirstAvailBlock >= cuda_blockToTaskMapping.getSize())
-            {
-                printf("ran out of memory for mapping\n");
-            }
-            else
-            {
-                cuda_blockToTaskMapping[myFirstAvailBlock++] = i;
-            }
-        }
+        task.initTask(start, end-start, pivotIdx);
     }
 }
-
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, g_maxBlocks = 1 << 15; //32k
@@ -245,7 +239,7 @@ class QUICKSORT
     int host_2ndPhaseTasksAmount; // cuda_2ndPhaseTasksAmount
 
     Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-    Array<int, Devices::Cuda> cuda_blockToTaskMapping_Cnt; //is in reality 1 integer
+    Array<int, Devices::Cuda> cuda_reductionTaskInitMem;
 
     int iteration = 0;
     //--------------------------------------------------------------------------------------
@@ -260,7 +254,7 @@ public:
           cuda_newTasksAmount(1),
           cuda_2ndPhaseTasksAmount(1),
           cuda_blockToTaskMapping(maxBlocks * 2),
-          cuda_blockToTaskMapping_Cnt(1)
+          cuda_reductionTaskInitMem(maxTasks)
     {
         cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
         tasksAmount = 1;
@@ -307,7 +301,7 @@ void QUICKSORT::sort(const Function &Cmp)
 
         int elemPerBlock = getElemPerBlock();
         int blocksCnt = initTasks(elemPerBlock, Cmp);
-        if(blocksCnt > cuda_blockToTaskMapping.getSize())
+        if(blocksCnt >= cuda_blockToTaskMapping.getSize())
             break;
 
         TNL_CHECK_CUDA_DEVICE;
@@ -396,18 +390,32 @@ int QUICKSORT::initTasks(int elemPerBlock, const Function & Cmp)
 {
     int threads = min(tasksAmount, threadsPerBlock);
     int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
-    cuda_blockToTaskMapping_Cnt = 0;
 
     auto src = iteration % 2 == 0? arr : aux.getView();
     auto &tasks = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
-    cudaInitTask<<<blocks, threads>>>(
-        tasks, tasksAmount, elemPerBlock,
-        cuda_blockToTaskMapping_Cnt.getData(),
-        cuda_blockToTaskMapping, 
-        src, Cmp);
+
+    //[i] == how many blocks task i needs
+    cudaCalcBlocksNeeded<<<threads, blocks>>>(tasks.getView(0, tasksAmount),
+        elemPerBlock, cuda_reductionTaskInitMem.getView(0, tasksAmount));
+
+    thrust::inclusive_scan(thrust::device,
+        cuda_reductionTaskInitMem.getData(),
+        cuda_reductionTaskInitMem.getData() + tasksAmount,
+        cuda_reductionTaskInitMem.getData());
+
+    int blocksNeeded = cuda_reductionTaskInitMem.getElement(tasksAmount - 1);
+    if(blocksNeeded >= cuda_blockToTaskMapping.getSize())
+        return blocksNeeded;
+
+    cudaInitTask2<<<tasksAmount, 512>>>(
+        tasks.getView(0, tasksAmount), elemPerBlock,
+        cuda_blockToTaskMapping.getView(0, blocksNeeded),
+        cuda_reductionTaskInitMem.getView(0, tasksAmount),
+        src, Cmp
+    );
 
     cuda_newTasksAmount.setElement(0, 0);
-    return cuda_blockToTaskMapping_Cnt.getElement(0);
+    return blocksNeeded;
 }
 
 void QUICKSORT::processNewTasks()
