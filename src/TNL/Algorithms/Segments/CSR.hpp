@@ -79,7 +79,7 @@ CSR< Device, Index, Kernel, IndexAllocator >::
 getSerializationType()
 {
    return "CSR< [any_device], " +
-      TNL::getSerializationType< IndexType >() +
+      TNL::getSerializationType< IndexType >() + ", " +
       TNL::getSerializationType< KernelType >() + " >";
 }
 

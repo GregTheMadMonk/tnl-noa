@@ -1,5 +1,10 @@
 set( COMMON_EXAMPLES
    SegmentsExample_General
+   SegmentsExample_CSR_constructor_1
+   SegmentsExample_CSR_constructor_2
+   SegmentsExample_CSR_getSerializationType
+   SegmentsExample_CSR_getSegmentsType
+   SegmentsExample_CSR_setSegmentsSizes
 )
 
 if( BUILD_CUDA )

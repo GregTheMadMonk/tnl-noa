@@ -110,7 +110,8 @@ class CSR
        * The number of segments is given by the size of \e segmentsSizes. Particular elements
        * of this container define sizes of particular segments.
        *
-       * \tparam SizesContainer is a type of container for segments sizes.
+       * \tparam SizesContainer is a type of container for segments sizes.  It can be \ref TNL::Containers::Array or
+       *  \ref TNL::Containers::Vector for example.
        * \param sizes is an instance of the container with the segments sizes.
        *
        * See the following example:
@@ -135,11 +136,11 @@ class CSR
        *
        * See the following example:
        *
-       * \includelineno Algorithms/Segments/SegmentsExample_constructor_2.cpp
+       * \includelineno Algorithms/Segments/SegmentsExample_CSR_constructor_2.cpp
        *
        * The result looks as follows:
        *
-       * \include SegmentsExample_constructor_1.out
+       * \include SegmentsExample_CSR_constructor_2.out
        */
       template< typename ListIndex >
       CSR( const std::initializer_list< ListIndex >& segmentsSizes );
@@ -158,49 +159,118 @@ class CSR
        */
       CSR( const CSR&& segments );
 
+      /**
+       * \brief Returns string with serialization type.
+       *
+       * The string has a form `Algorithms::Segments::CSR< IndexType,  [any_device], [any_kernel], [any_allocator] >`.
+       *
+       * \return \ref String with the serialization type.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_getSerializationType.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_getSerializationType.out
+       */
       static String getSerializationType();
 
+      /**
+       * \brief Returns string with segments type.
+       *
+       * The string has a form `CSR< KernelType >`.
+       *
+       * \return \ref String with the segments type.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_getSegmentsType.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_getSegmentsType.out
+       */
       static String getSegmentsType();
 
       /**
        * \brief Set sizes of particular segments.
+       *
+       * \tparam SizesContainer is a container with segments sizes. It can be \ref TNL::Containers::Array or
+       *  \ref TNL::Containers::Vector for example.
+       *
+       * \param segmentsSizes is an instance of the container with segments sizes.
        */
-      template< typename SizesHolder >
-      void setSegmentsSizes( const SizesHolder& sizes );
+      template< typename SizesContainer >
+      void setSegmentsSizes( const SizesContainer& segmentsSizes );
 
+      /**
+       * \brief Reset the segments to empty states.
+       *
+       * It means that there is no segment in the CSR segments.
+       */
       void reset();
 
+      /**
+       * \brief Getter of a view object.
+       *
+       * \return View for this instance of CSR segments which can by used for example in
+       *  lambda functions running in GPU kernels.
+       */
       ViewType getView();
 
+      /**
+       * \brief Getter of a view object for constants instances.
+       *
+       * \return View for this instance of CSR segments which can by used for example in
+       *  lambda functions running in GPU kernels.
+       */
       const ConstViewType getConstView() const;
 
       /**
-       * \brief Number of segments.
+       * \brief Getter of number of segments.
+       *
+       * \return number of segments within this object.
        */
       __cuda_callable__
       IndexType getSegmentsCount() const;
 
-      /***
-       * \brief Returns size of the segment number \r segmentIdx
+      /**
+       * \brief Returns size of particular segment.
+       *
+       * \return size of the segment number \e segmentIdx.
        */
       __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /***
        * \brief Returns number of elements managed by all segments.
+       *
+       * \return number of elements managed by all segments.
        */
       __cuda_callable__
       IndexType getSize() const;
 
-      /***
-       * \brief Returns number of elements that needs to be allocated.
+      /**
+       * \brief Returns number of elements that needs to be allocated by a container connected to this segments.
+       *
+       * \return size of container connected to this segments.
        */
       __cuda_callable__
       IndexType getStorageSize() const;
 
+      /**
+       * \brief Computes the global index of an element managed by the segments.
+       *
+       * The global index serves as a refernce on the element in its container.
+       *
+       * \param segmentIdx is index of a segment with the element.
+       * \param localIdx is tha local index of the element within the segment.
+       * \return global index of the element.
+       */
       __cuda_callable__
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
 
+      /**
+       * \brief Returns segment view (i.e. segment accessor) of segment with given index.
+       *
+       * \param segmentIdx is index of the request segment.
+       * \return segment view of given segment.
+       */
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
