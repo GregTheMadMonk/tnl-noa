@@ -9,12 +9,12 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-template <typename Function, int externMemSize>
-__device__ void externSort(ArrayView<int, TNL::Devices::Cuda> src,
-                        ArrayView<int, TNL::Devices::Cuda> dst,
+template <typename Value, typename Function, int externMemSize>
+__device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
+                        ArrayView<Value, TNL::Devices::Cuda> dst,
                         const Function & Cmp)
 {
-    static __shared__ int sharedMem[externMemSize];
+    static __shared__ Value sharedMem[externMemSize];
     bitonicSort_Block(src, dst, sharedMem, Cmp);
 }
 
@@ -71,22 +71,23 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
     }
 }
 
-template <typename Function, int stackSize>
-__device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
-                                    ArrayView<int, TNL::Devices::Cuda> aux,
+template <typename Value, typename Function, int stackSize>
+__device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
+                                    ArrayView<Value, TNL::Devices::Cuda> aux,
                                     const Function & Cmp, int _depth)
 {
     if(arr.getSize() <= blockDim.x*2)
     {
         auto src = (_depth &1) == 0? arr : aux;
-        externSort<Function, 2048>(src, arr, Cmp);
+        externSort<Value, Function, 2048>(src, arr, Cmp);
         return;
     }
 
     static __shared__ int stackTop;
     static __shared__ int stackArrBegin[stackSize], stackArrEnd[stackSize], stackDepth[stackSize];
     static __shared__ int begin, end, depth;
-    static __shared__ int pivot, pivotBegin, pivotEnd;
+    static __shared__ int pivotBegin, pivotEnd;
+    static __shared__ Value pivot;
 
     if (threadIdx.x == 0)
     {
@@ -116,7 +117,7 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
         //small enough for for bitonic
         if(size <= blockDim.x*2)
         {
-            externSort<Function, 2048>(src.getView(begin, end), arr.getView(begin, end), Cmp);
+            externSort<Value, Function, 2048>(src.getView(begin, end), arr.getView(begin, end), Cmp);
             __syncthreads();
             continue;
         }

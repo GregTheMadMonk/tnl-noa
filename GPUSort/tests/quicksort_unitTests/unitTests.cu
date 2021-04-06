@@ -122,6 +122,25 @@ TEST(noLostElement, bigSizedArray)
     ASSERT_TRUE(view == cudaArr2.getView());
 }
 
+TEST(types, type_double)
+{
+    std::srand(8451);
+
+    int size = (1<<16);
+    std::vector<double> arr(size);
+    for(auto & x : arr) x = std::rand();
+    for(int i = 0; i < 10000; i++)
+        arr[std::rand() % arr.size()] = (1<<10);
+
+    TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr(arr);
+    auto view = cudaArr.getView();
+    quicksort(view);
+
+    TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr2(arr);
+    thrust::sort(thrust::device, cudaArr2.getData(), cudaArr2.getData() + cudaArr2.getSize());
+    ASSERT_TRUE(view == cudaArr2.getView());
+}
+
 //----------------------------------------------------------------------------------
 
 int main(int argc, char **argv)

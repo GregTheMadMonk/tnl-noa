@@ -66,16 +66,16 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
 
 //----------------------------------------------------
 
-template <typename Function>
-__global__ void cudaQuickSort1stPhase_1(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+template <typename Value, typename Function>
+__global__ void cudaQuickSort1stPhase_1(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
                                       ArrayView<int, Devices::Cuda> taskMapping)
 {
     extern __shared__ int externMem[];
-    int *sharedMem = externMem;
+    Value *sharedMem = (Value*)externMem;
 
-    static __shared__ int pivot;
+    static __shared__ Value pivot;
 
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
     auto & src = (myTask.depth & 1) == 0? arr : aux;
@@ -92,13 +92,13 @@ __global__ void cudaQuickSort1stPhase_1(ArrayView<int, Devices::Cuda> arr, Array
         Cmp, pivot, elemPerBlock, myTask);
 }
 
-template <typename Function>
-__global__ void cudaQuickSort1stPhase_2(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+template <typename Value, typename Function>
+__global__ void cudaQuickSort1stPhase_2(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
                                       ArrayView<int, Devices::Cuda> taskMapping)
 {
-    static __shared__ int pivot;
+    static __shared__ Value pivot;
 
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
     auto & src = (myTask.depth & 1) == 0? arr : aux;
@@ -116,12 +116,12 @@ __global__ void cudaQuickSort1stPhase_2(ArrayView<int, Devices::Cuda> arr, Array
 
 //----------------------------------------------------
 
-
-__global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux, int maxElemFor2ndPhase,
+template<typename Value>
+__global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux, int maxElemFor2ndPhase,
                                ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
-    static __shared__ int pivot;
+    static __shared__ Value pivot;
     TASK &myTask = tasks[blockIdx.x];
 
     if (threadIdx.x == 0)
@@ -168,8 +168,8 @@ __global__ void cudaWritePivot(ArrayView<int, Devices::Cuda> arr, ArrayView<int,
 
 //-----------------------------------------------------------
 
-template <typename Function, int stackSize>
-__global__ void cudaQuickSort2ndPhase(ArrayView<int, Devices::Cuda> arr, ArrayView<int, Devices::Cuda> aux,
+template <typename Value, typename Function, int stackSize>
+__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks)
 {
@@ -180,7 +180,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<int, Devices::Cuda> arr, ArrayVi
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    singleBlockQuickSort<Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
+    singleBlockQuickSort<Value, Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
 }
 
 //-----------------------------------------------------------
@@ -197,11 +197,11 @@ __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, 
     blocksNeeded[i] = size / elemPerBlock + (size % elemPerBlock != 0);
 }                                    
 
-template <typename Function>
+template <typename Value, typename Function>
 __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
                              ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
-                             ArrayView<int, Devices::Cuda> src, const Function &Cmp)
+                             ArrayView<Value, Devices::Cuda> src, const Function &Cmp)
 {
     if(blockIdx.x >= cuda_tasks.getSize())
         return;
@@ -226,10 +226,11 @@ const int minElemPerBlock = threadsPerBlock*2;
 const int maxBitonicSize = threadsPerBlock*2;
 const int desired_2ndPhasElemPerBlock = maxBitonicSize*8;
 
+template<typename Value>
 class QUICKSORT
 {
-    ArrayView<int, Devices::Cuda> arr;
-    Array<int, Devices::Cuda> aux;
+    ArrayView<Value, Devices::Cuda> arr;
+    Array<Value, Devices::Cuda> aux;
     int maxTasks, maxBlocks;
     Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
 
@@ -246,7 +247,7 @@ class QUICKSORT
     cudaDeviceProp deviceProp;
     //--------------------------------------------------------------------------------------
 public:
-    QUICKSORT(ArrayView<int, Devices::Cuda> _arr)
+    QUICKSORT(ArrayView<Value, Devices::Cuda> _arr)
         : arr(_arr), aux(arr.getSize()),
           maxTasks(min(arr.getSize(), g_maxTasks)),
           maxBlocks(g_maxBlocks),
@@ -281,8 +282,9 @@ public:
     void processNewTasks();
 };
 
+template <typename Value>
 template <typename Function>
-void QUICKSORT::sort(const Function &Cmp)
+void QUICKSORT<Value>::sort(const Function &Cmp)
 {
     
     while (tasksAmount > 0)
@@ -306,19 +308,19 @@ void QUICKSORT::sort(const Function &Cmp)
 
         TNL_CHECK_CUDA_DEVICE;
 
-        int externMemByteSize = elemPerBlock * sizeof(int);
+        int externMemByteSize = elemPerBlock * sizeof(Value);
         auto & task = iteration % 2 == 0? cuda_tasks : cuda_newTasks;
 
         if(externMemByteSize <= deviceProp.sharedMemPerBlock)
         {
-            cudaQuickSort1stPhase_1<Function>
+            cudaQuickSort1stPhase_1<Value, Function>
                 <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
         }
         else
         {
-            cudaQuickSort1stPhase_2<Function>
+            cudaQuickSort1stPhase_2<Value, Function>
                 <<<blocksCnt, threadsPerBlock>>>(
                     arr, aux, Cmp, elemPerBlock,
                 task, cuda_blockToTaskMapping);
@@ -327,7 +329,8 @@ void QUICKSORT::sort(const Function &Cmp)
         TNL_CHECK_CUDA_DEVICE;
 
         auto & newTask = iteration % 2 == 0? cuda_newTasks : cuda_tasks;
-        cudaWritePivot<<<tasksAmount, 1024>>>(
+        cudaWritePivot<Value>
+            <<<tasksAmount, 1024>>>(
             arr, aux, desired_2ndPhasElemPerBlock,
             task, newTask, cuda_newTasksAmount.getData(),
             cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
@@ -341,7 +344,7 @@ void QUICKSORT::sort(const Function &Cmp)
     if (tasksAmount > 0)
     {
         auto & tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
-        cudaQuickSort2ndPhase<Function, 128>
+        cudaQuickSort2ndPhase<Value, Function, 128>
             <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
 
         TNL_CHECK_CUDA_DEVICE;
@@ -351,7 +354,7 @@ void QUICKSORT::sort(const Function &Cmp)
     
     if (host_2ndPhaseTasksAmount > 0)
     {
-        cudaQuickSort2ndPhase<Function, 128>
+        cudaQuickSort2ndPhase<Value, Function, 128>
             <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock>>>
             (arr, aux, Cmp, cuda_2ndPhaseTasks);
 
@@ -362,7 +365,8 @@ void QUICKSORT::sort(const Function &Cmp)
     return;
 }
 
-int QUICKSORT::getSetsNeeded(int elemPerBlock) const
+template <typename Value>
+int QUICKSORT<Value>::getSetsNeeded(int elemPerBlock) const
 {
     auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
     auto fetch = [=] __cuda_callable__(int i) {
@@ -374,7 +378,8 @@ int QUICKSORT::getSetsNeeded(int elemPerBlock) const
     return Algorithms::Reduction<Devices::Cuda>::reduce(0, tasksAmount, fetch, reduction, 0);
 }
 
-int QUICKSORT::getElemPerBlock() const
+template <typename Value>
+int QUICKSORT<Value>::getElemPerBlock() const
 {
     int setsNeeded = getSetsNeeded(minElemPerBlock);
 
@@ -385,8 +390,9 @@ int QUICKSORT::getElemPerBlock() const
     return setsPerBlock * minElemPerBlock;
 }
 
+template <typename Value>
 template <typename Function>
-int QUICKSORT::initTasks(int elemPerBlock, const Function & Cmp)
+int QUICKSORT<Value>::initTasks(int elemPerBlock, const Function & Cmp)
 {
     int threads = min(tasksAmount, threadsPerBlock);
     int blocks = tasksAmount / threads + (tasksAmount % threads != 0);
@@ -419,7 +425,8 @@ int QUICKSORT::initTasks(int elemPerBlock, const Function & Cmp)
     return blocksNeeded;
 }
 
-void QUICKSORT::processNewTasks()
+template <typename Value>
+void QUICKSORT<Value>::processNewTasks()
 {
     tasksAmount = cuda_newTasksAmount.getElement(0);
     host_2ndPhaseTasksAmount = cuda_2ndPhaseTasksAmount.getElement(0);
@@ -429,14 +436,15 @@ void QUICKSORT::processNewTasks()
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 
-template <typename Function>
-void quicksort(ArrayView<int, Devices::Cuda> arr, const Function &Cmp)
+template <typename Value, typename Function>
+void quicksort(ArrayView<Value, Devices::Cuda> arr, const Function &Cmp)
 {
-    QUICKSORT sorter(arr);
+    QUICKSORT<Value> sorter(arr);
     sorter.sort(Cmp);
 }
 
-void quicksort(ArrayView<int, Devices::Cuda> arr)
+template <typename Value>
+void quicksort(ArrayView<Value, Devices::Cuda> arr)
 {
-    quicksort(arr, [] __cuda_callable__(int a, int b) { return a < b; });
+    quicksort(arr, [] __cuda_callable__(const Value & a, const Value & b) { return a < b; });
 }
