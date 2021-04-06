@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixRowView.hpp -  description
+                          MatrixRowViewIterator.hpp -  description
                              -------------------
     begin                : Mar 20, 2021
     copyright            : (C) 2021 by Tomas Oberhuber

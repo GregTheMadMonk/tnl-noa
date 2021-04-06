@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/SegmentViewIterator.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -26,6 +27,8 @@ class SegmentView< Index, ColumnMajorOrder >
    public:
 
       using IndexType = Index;
+
+      using IteratorType = SegmentViewIterator< SegmentView >;
 
       __cuda_callable__
       SegmentView( const IndexType segmentIdx,
@@ -57,6 +60,38 @@ class SegmentView< Index, ColumnMajorOrder >
          return this->segmentIdx;
       };
 
+      /**
+       * \brief Returns iterator pointing at the beginning of the segment.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin() const { return IteratorType( *this, 0 ); };
+
+      /**
+       * \brief Returns iterator pointing at the end of the segment.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end() const { return IteratorType( *this, this->getSize() ); };
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the segment.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const { return IteratorType( *this, 0 ); };
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the segment.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const { return IteratorType( *this, this->getSize() ); };
+
       protected:
 
          IndexType segmentIdx, segmentOffset, segmentSize, step;
@@ -68,6 +103,8 @@ class SegmentView< Index, RowMajorOrder >
    public:
 
       using IndexType = Index;
+
+      using IteratorType = SegmentViewIterator< SegmentView >;
 
       __cuda_callable__
       SegmentView( const IndexType segmentIdx,
@@ -94,6 +131,38 @@ class SegmentView< Index, RowMajorOrder >
       {
          return this->segmentIdx;
       };
+
+      /**
+       * \brief Returns iterator pointing at the beginning of the segment.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      IteratorType begin() const { return IteratorType( *this, 0 ); };
+
+      /**
+       * \brief Returns iterator pointing at the end of the segment.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      IteratorType end() const { return IteratorType( *this, this->getSize() ); };
+
+      /**
+       * \brief Returns constant iterator pointing at the beginning of the segment.
+       *
+       * \return iterator pointing at the beginning.
+       */
+      __cuda_callable__
+      const IteratorType cbegin() const { return IteratorType( *this, 0 ); };
+
+      /**
+       * \brief Returns constant iterator pointing at the end of the segment.
+       *
+       * \return iterator pointing at the end.
+       */
+      __cuda_callable__
+      const IteratorType cend() const { return IteratorType( *this, this->getSize() ); };
 
       protected:
 
