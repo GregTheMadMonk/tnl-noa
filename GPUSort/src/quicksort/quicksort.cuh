@@ -183,6 +183,28 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     singleBlockQuickSort<Value, Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
 }
 
+
+template <typename Value, typename Function, int stackSize>
+__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
+                                      const Function &Cmp,
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks2)
+{
+    TASK myTask;
+    if(blockIdx.x < secondPhaseTasks1.getSize())
+        myTask = secondPhaseTasks1[blockIdx.x];
+    else
+        myTask = secondPhaseTasks2[blockIdx.x - secondPhaseTasks1.getSize()];
+
+    if(myTask.partitionEnd - myTask.partitionBegin <= 0 )
+        return;
+
+    auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
+    auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
+
+    singleBlockQuickSort<Value, Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
+}
+
 //-----------------------------------------------------------
 
 __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
@@ -222,9 +244,9 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 //-----------------------------------------------------------
 const int threadsPerBlock = 512, g_maxBlocks = 1 << 15; //32k
 const int g_maxTasks = 1 << 14;
-const int minElemPerBlock = threadsPerBlock*2;
+const int minElemPerBlock = threadsPerBlock*10;
 const int maxBitonicSize = threadsPerBlock*2;
-const int desired_2ndPhasElemPerBlock = maxBitonicSize*8;
+const int desired_2ndPhasElemPerBlock = maxBitonicSize;
 
 template<typename Value>
 class QUICKSORT
@@ -341,24 +363,31 @@ void QUICKSORT<Value>::sort(const Function &Cmp)
         iteration++;
     }
     
-    if (tasksAmount > 0)
+    int total2ndPhase = tasksAmount + host_2ndPhaseTasksAmount;
+    if (total2ndPhase > 0)
     {
-        auto & tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
-        cudaQuickSort2ndPhase<Value, Function, 128>
-            <<<min(tasksAmount,tasks.getSize()) , threadsPerBlock>>>(arr, aux, Cmp, tasks);
+        const int stackSize = 32;
+        if(tasksAmount >0 && host_2ndPhaseTasksAmount > 0)
+        {
+            auto tasks = iteration % 2 == 0 ? cuda_tasks.getView(0, tasksAmount) : cuda_newTasks.getView(0, tasksAmount);
+            auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
-        TNL_CHECK_CUDA_DEVICE;
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-    }
-    
-    if (host_2ndPhaseTasksAmount > 0)
-    {
-        cudaQuickSort2ndPhase<Value, Function, 128>
-            <<<min(host_2ndPhaseTasksAmount,cuda_2ndPhaseTasks.getSize()) , threadsPerBlock>>>
-            (arr, aux, Cmp, cuda_2ndPhaseTasks);
+            cudaQuickSort2ndPhase<Value, Function, stackSize>
+                <<<total2ndPhase , threadsPerBlock>>>(arr, aux, Cmp, tasks, tasks2);
+        }
+        else if(tasksAmount >0)
+        {
+            auto tasks = iteration % 2 == 0 ? cuda_tasks.getView(0, tasksAmount) : cuda_newTasks.getView(0, tasksAmount);
+            cudaQuickSort2ndPhase<Value, Function, stackSize>
+                <<<total2ndPhase , threadsPerBlock>>>(arr, aux, Cmp, tasks);
+        }
+        else
+        {
+            auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
-        TNL_CHECK_CUDA_DEVICE;
+            cudaQuickSort2ndPhase<Value, Function, stackSize>
+                <<<total2ndPhase , threadsPerBlock>>>(arr, aux, Cmp, tasks2);
+        }
     }
     cudaDeviceSynchronize();
     TNL_CHECK_CUDA_DEVICE;
