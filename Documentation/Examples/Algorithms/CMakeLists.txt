@@ -1,56 +1,35 @@
 ADD_SUBDIRECTORY( Segments )
 
-IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( SortingExampleCuda SortingExample.cu)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample.out OUTPUT SortingExample.out )
-
-   CUDA_ADD_EXECUTABLE( SortingExample2Cuda SortingExample2.cu)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExample2Cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample2.out OUTPUT SortingExample2.out )
-
-   CUDA_ADD_EXECUTABLE( SortingExample3Cuda SortingExample3.cu)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExample3Cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample3.out OUTPUT SortingExample3.out )
-
-   CUDA_ADD_EXECUTABLE(ParallelForExampleCuda ParallelForExample.cu)
-   ADD_CUSTOM_COMMAND( COMMAND ParallelForExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ParallelForExample.out OUTPUT ParallelForExample.out )
-
-   CUDA_ADD_EXECUTABLE(reduceArrayExampleCuda reduceArrayExample.cu)
-   ADD_CUSTOM_COMMAND( COMMAND reduceArrayExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/reduceArrayExample.out OUTPUT reduceArrayExample.out )
-
-   CUDA_ADD_EXECUTABLE(reduceWithArgumentArrayExampleCuda reduceWithArgumentArrayExample.cu)
-   ADD_CUSTOM_COMMAND( COMMAND reduceWithArgumentArrayExampleCuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/reduceWithArgumentArrayExample.out OUTPUT reduceWithArgumentArrayExample.out )
-ELSE()
-   ADD_EXECUTABLE( SortingExample SortingExample.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample.out OUTPUT SortingExample.out )
-
-   ADD_EXECUTABLE( SortingExample2 SortingExample2.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExample2 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample2.out OUTPUT SortingExample2.out )
-
-   ADD_EXECUTABLE( SortingExample3 SortingExample3.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND SortingExample3 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SortingExample3.out OUTPUT SortingExample3.out )
-
-   ADD_EXECUTABLE(ParallelForExample ParallelForExample.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND ParallelForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ParallelForExample.out OUTPUT ParallelForExample.out )
-
-   ADD_EXECUTABLE(reduceArrayExample reduceArrayExample.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND reduceArrayExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/reduceArrayExample.out OUTPUT reduceArrayExample.out )
-
-   ADD_EXECUTABLE(reduceWithArgumentArrayExample reduceWithArgumentArrayExample.cpp)
-   ADD_CUSTOM_COMMAND( COMMAND reduceWithArgumentArrayExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/reduceWithArgumentArrayExample.out OUTPUT reduceWithArgumentArrayExample.out )
-ENDIF()
-
-ADD_EXECUTABLE(staticForExample staticForExample.cpp)
-ADD_CUSTOM_COMMAND( COMMAND staticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/staticForExample.out OUTPUT staticForExample.out )
-
-ADD_EXECUTABLE(unrolledForExample unrolledForExample.cpp)
-ADD_CUSTOM_COMMAND( COMMAND unrolledForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/unrolledForExample.out OUTPUT unrolledForExample.out )
-
-ADD_CUSTOM_TARGET( RunAlgorithmsExamples ALL DEPENDS
-   SortingExample.out
-   SortingExample2.out
-   SortingExample3.out
-   ParallelForExample.out
-   reduceArrayExample.out
-   reduceWithArgumentArrayExample.out
+set( COMMON_EXAMPLES
+   SortingExample
+   SortingExample2
+   SortingExample3
+   ParallelForExample
+   SequentialForExample
    unrolledForExample.out
    staticForExample.out
 )
+
+set( HOST_EXAMPLES
+   staticForExample
+   unrolledForExample
+)
+if( BUILD_CUDA )
+   foreach( target IN ITEMS ${COMMON_EXAMPLES} )
+      cuda_add_executable( ${target}-cuda ${target}.cu OPTIONS )
+      add_custom_command( COMMAND ${target}-cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${target}.out )
+   endforeach()
+else()
+   foreach( target IN ITEMS "${COMMON_EXAMPLES} ${HOST_EXAMPLES}")
+      add_executable( ${target} ${target}.cpp )
+      add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+   endforeach()
+endif()
+
+IF( BUILD_CUDA )
+   ADD_CUSTOM_TARGET( RunAlgorithmsExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
+ELSE()
+   ADD_CUSTOM_TARGET( RunAlgorithmsExamples ALL DEPENDS ${HOST_OUTPUTS} )
+ENDIF()
