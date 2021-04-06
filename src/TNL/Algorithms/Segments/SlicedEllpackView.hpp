@@ -242,15 +242,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
          {
             // The following is a workaround of a bug in nvcc 11.2
 #if CUDART_VERSION == 11020
-             f( segmentIdx, localIdx, globalIdx, compute );
+             f( segmentIdx, localIdx, globalIdx );
              localIdx++;
 #else
-             f( segmentIdx, localIdx++, globalIdx, compute );
+             f( segmentIdx, localIdx++, globalIdx );
 #endif
          }
       };
@@ -265,15 +264,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize )
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize )
          {
             // The following is a workaround of a bug in nvcc 11.2
 #if CUDART_VERSION == 11020
-            f( segmentIdx, localIdx, globalIdx, compute );
+            f( segmentIdx, localIdx, globalIdx );
             localIdx++;
 #else
-            f( segmentIdx, localIdx++, globalIdx, compute );
+            f( segmentIdx, localIdx++, globalIdx );
 #endif
          }
       };

@@ -594,11 +594,11 @@ forElements( IndexType begin, IndexType end, Function& function ) const
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    //const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> bool {
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
       if( isBinary() )
-         function( rowIdx, localIdx, columns_view[ globalIdx ], 1, compute );
+         function( rowIdx, localIdx, columns_view[ globalIdx ], 1 );
       else
-         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
+         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
       return true;
    };
    this->segments.forElements( begin, end, f );
@@ -618,14 +618,14 @@ forElements( IndexType begin, IndexType end, Function& function )
    auto columns_view = this->columnIndexes.getView();
    auto values_view = this->values.getView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable {
       if( isBinary() )
       {
          RealType one( columns_view[ globalIdx ] != paddingIndex_ );
-         function( rowIdx, localIdx, columns_view[ globalIdx ], one, compute );
+         function( rowIdx, localIdx, columns_view[ globalIdx ], one );
       }
       else
-         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
+         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }

@@ -158,8 +158,7 @@ class ChunkedEllpackView
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
-                typename Real,
-                typename... Args >
+                typename Real >
       __device__
       void reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                                      IndexType first,
@@ -167,14 +166,12 @@ class ChunkedEllpackView
                                                      Fetch fetch,
                                                      Reduction reduction,
                                                      ResultKeeper keeper,
-                                                     Real zero,
-                                                     Args... args ) const;
+                                                     Real zero ) const;
 
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
-                typename Real,
-                typename... Args >
+                typename Real >
       __device__
       void reduceSegmentsKernel( IndexType gridIdx,
                                     IndexType first,
@@ -182,8 +179,7 @@ class ChunkedEllpackView
                                     Fetch fetch,
                                     Reduction reduction,
                                     ResultKeeper keeper,
-                                    Real zero,
-                                    Args... args ) const;
+                                    Real zero ) const;
 #endif
 
       IndexType size = 0, storageSize = 0, numberOfSlices = 0;
@@ -216,8 +212,7 @@ class ChunkedEllpackView
                 typename Fetch_,
                 typename Reduction_,
                 typename ResultKeeper_,
-                typename Real_,
-                typename... Args_ >
+                typename Real_ >
       friend __global__
       void ChunkedEllpackreduceSegmentsKernel( View_ chunkedEllpack,
                                                   Index_ gridIdx,
@@ -226,8 +221,7 @@ class ChunkedEllpackView
                                                   Fetch_ fetch,
                                                   Reduction_ reduction,
                                                   ResultKeeper_ keeper,
-                                                  Real_ zero,
-                                                  Args_... args );
+                                                  Real_ zero );
 
       template< typename Index_, typename Fetch_, bool B_ >
       friend struct details::ChunkedEllpackreduceSegmentsDispatcher;

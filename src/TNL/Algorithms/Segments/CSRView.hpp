@@ -193,9 +193,8 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
       const IndexType begin = offsetsView[ segmentIdx ];
       const IndexType end = offsetsView[ segmentIdx + 1 ];
       IndexType localIdx( 0 );
-      bool compute( true );
-      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-         f( segmentIdx, localIdx++, globalIdx, compute );
+      for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
+         f( segmentIdx, localIdx++, globalIdx );
    };
    Algorithms::ParallelFor< Device >::exec( begin, end, l );
 }

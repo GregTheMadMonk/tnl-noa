@@ -873,7 +873,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
       if( std::is_same< Device, Device_ >::value )
       {
          const auto matrix_view = matrix.getView();
-         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
          this->forAllElements( f );
@@ -898,7 +898,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
 
             ////
             // Copy matrix elements into buffer
-            auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+            auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
                   const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                   matrixValuesBuffer_view[ bufferIdx ] = value;
             };
@@ -910,7 +910,7 @@ operator=( const MultidiagonalMatrix< Real_, Device_, Index_, Organization_, Rea
 
             ////
             // Copy matrix elements from the buffer to the matrix
-            auto f2 = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType localIdx, const IndexType columnIndex, RealType& value, bool& compute  ) mutable {
+            auto f2 = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType localIdx, const IndexType columnIndex, RealType& value ) mutable {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                   value = thisValuesBuffer_view[ bufferIdx ];
             };

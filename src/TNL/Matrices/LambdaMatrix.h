@@ -260,10 +260,8 @@ class LambdaMatrix
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
@@ -348,7 +346,7 @@ class LambdaMatrix
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
        *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.

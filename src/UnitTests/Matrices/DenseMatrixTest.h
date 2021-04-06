@@ -791,7 +791,7 @@ void test_ForElements()
    const IndexType rows = 8;
 
    Matrix m( rows, cols  );
-   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value, bool compute ) mutable {
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value ) mutable {
       value = rowIdx + 1.0;
    } );
 

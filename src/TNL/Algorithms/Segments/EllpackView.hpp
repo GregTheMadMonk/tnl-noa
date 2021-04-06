@@ -207,9 +207,8 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = segmentIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-            f( segmentIdx, localIdx++, globalIdx, compute );
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
+            f( segmentIdx, localIdx++, globalIdx );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
@@ -221,9 +220,8 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = segmentIdx;
          const IndexType end = storageSize;
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += alignedSize )
-            f( segmentIdx, localIdx++, globalIdx, compute );
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += alignedSize )
+            f( segmentIdx, localIdx++, globalIdx );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l );
    }

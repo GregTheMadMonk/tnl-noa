@@ -323,14 +323,13 @@ forElements( IndexType first, IndexType last, Function&& f ) const
       const IndexType chunkSize = slices[ sliceIdx ].chunkSize;
 
       const IndexType segmentSize = segmentChunksCount * chunkSize;
-      bool compute( true );
       if( Organization == RowMajorOrder )
       {
          IndexType begin = sliceOffset + firstChunkOfSegment * chunkSize;
          IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
-         for( IndexType j = begin; j < end && compute; j++ )
-            f( segmentIdx, localIdx++, j, compute );
+         for( IndexType j = begin; j < end; j++ )
+            f( segmentIdx, localIdx++, j );
       }
       else
       {
@@ -339,9 +338,9 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          {
             IndexType begin = sliceOffset + firstChunkOfSegment + chunkIdx;
             IndexType end = begin + chunksInSlice * chunkSize;
-            for( IndexType j = begin; j < end && compute; j += chunksInSlice )
+            for( IndexType j = begin; j < end; j += chunksInSlice )
             {
-               f( segmentIdx, localIdx++, j, compute );
+               f( segmentIdx, localIdx++, j );
             }
          }
       }

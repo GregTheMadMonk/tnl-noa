@@ -22,7 +22,7 @@ void forAllElementsExample()
    TNL::Matrices::DenseMatrix< double, Device > denseMatrix( 5, 5 );
    auto denseView = denseMatrix.getView();
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, double value, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, double value ) mutable {
       denseView.setElement( rowIdx, columnIdx, value );
    };
 

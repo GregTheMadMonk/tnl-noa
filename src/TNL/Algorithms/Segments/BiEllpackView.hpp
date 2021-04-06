@@ -275,9 +275,8 @@ forElements( IndexType first, IndexType last, Function&& f ) const
       const IndexType groupsCount = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( segmentsPermutationView, segmentIdx );
       IndexType groupHeight = getWarpSize();
       //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
-      bool compute( true );
       IndexType localIdx( 0 );
-      for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount && compute; groupIdx++ )
+      for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount; groupIdx++ )
       {
          IndexType groupOffset = groupPointersView[ groupIdx ];
          const IndexType groupSize = groupPointersView[ groupIdx + 1 ] - groupOffset;
@@ -289,14 +288,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
             {
                if( Organization == RowMajorOrder )
                {
-                  f( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute );
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i );
                }
                else
                {
                   /*printf( "segmentIdx = %d localIdx = %d globalIdx = %d groupIdx = %d groupSize = %d groupWidth = %d\n",
                      segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight,
                      groupIdx, groupSize, groupWidth );*/
-                  f( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute );
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight );
                }
                localIdx++;
             }

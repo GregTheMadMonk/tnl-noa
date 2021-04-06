@@ -317,14 +317,13 @@ forElements( IndexType first, IndexType last, Function& function ) const
    auto matrixElements = this->matrixElementsLambda;
    auto processRow = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       const IndexType rowLength = rowLengths( rows, columns, rowIdx );
-      bool compute( true );
-      for( IndexType localIdx = 0; localIdx < rowLength && compute; localIdx++ )
+      for( IndexType localIdx = 0; localIdx < rowLength; localIdx++ )
       {
         IndexType elementColumn( 0 );
         RealType elementValue( 0.0 );
         matrixElements( rows, columns, rowIdx, localIdx, elementColumn, elementValue );
         if( elementValue != 0.0 )
-            function( rowIdx, localIdx, elementColumn, elementValue, compute );
+            function( rowIdx, localIdx, elementColumn, elementValue );
       }
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, processRow );

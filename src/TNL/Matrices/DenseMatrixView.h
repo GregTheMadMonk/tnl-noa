@@ -518,7 +518,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, const RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
        *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
@@ -540,7 +540,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx, RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
        *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
@@ -694,7 +694,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
        *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.
@@ -711,7 +711,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value )`.
        *  The column index repeats twice only for compatibility with sparse matrices.
        *  If the 'compute' variable is set to false the iteration over the row can
        *  be interrupted.

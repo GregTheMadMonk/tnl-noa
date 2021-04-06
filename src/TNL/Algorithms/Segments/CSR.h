@@ -293,7 +293,7 @@ class CSR
        */
       OffsetsContainer& getOffsets();
 
-      /***
+      /**
        * \brief Go over all segments and for each segment element call
        * function 'f'. The return type of 'f' is bool.
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop

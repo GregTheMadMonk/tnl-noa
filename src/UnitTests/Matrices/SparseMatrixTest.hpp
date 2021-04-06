@@ -1050,7 +1050,7 @@ void test_ForElements()
    const IndexType rows = 8;
 
    Matrix m( { 3, 3, 3, 3, 3, 3, 3, 3, 3 }, cols  );
-   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value, bool compute ) mutable {
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, RealType& value ) mutable {
       value = rowIdx + 1.0;
       columnIdx = localIdx;
    } );

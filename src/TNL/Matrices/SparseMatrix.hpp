@@ -890,7 +890,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
          if( value != 0.0 )
          {
             IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, rowLocalIndexes_view[ rowIdx ]++ );
@@ -921,7 +921,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
             const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
             matrixValuesBuffer_view[ bufferIdx ] = value;
          };
@@ -935,7 +935,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
          // Copy matrix elements from the buffer to the matrix and ignoring
          // zero matrix elements.
          const IndexType matrix_columns = this->getColumns();
-         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value, bool& compute  ) mutable {
+         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value ) mutable {
             RealType inValue( 0.0 );
             IndexType bufferIdx, column( rowLocalIndexes_view[ rowIdx ] );
             while( inValue == 0.0 && column < matrix_columns )
@@ -1001,7 +1001,7 @@ operator=( const RHSMatrix& matrix )
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
          IndexType localIdx( rowLocalIndexes_view[ rowIdx ] );
          if( value != 0.0 && columnIndex != paddingIndex )
          {
@@ -1043,7 +1043,7 @@ operator=( const RHSMatrix& matrix )
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
             if( columnIndex != paddingIndex )
             {
                TNL_ASSERT_LT( rowIdx - baseRow, bufferRowsCount, "" );
@@ -1066,7 +1066,7 @@ operator=( const RHSMatrix& matrix )
          // zero matrix elements
          //const IndexType matrix_columns = this->getColumns();
          const auto thisRowLengths_view = thisRowLengths.getConstView();
-         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value, bool& compute ) mutable {
+         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value ) mutable {
             RealType inValue( 0.0 );
             size_t bufferIdx;
             IndexType bufferLocalIdx( rowLocalIndexes_view[ rowIdx ] );

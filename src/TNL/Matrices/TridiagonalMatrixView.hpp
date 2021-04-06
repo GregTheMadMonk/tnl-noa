@@ -393,26 +393,25 @@ forElements( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    const auto indexer = this->indexer;
-   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       if( rowIdx == 0 )
       {
-         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
-         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ], compute );
+         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ] );
+         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ] );
       }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
-         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ], compute );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
+         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] );
       }
       else if( rowIdx < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
       }
       else
-         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
 }
@@ -428,26 +427,25 @@ forElements( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
    const auto indexer = this->indexer;
-   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       if( rowIdx == 0 )
       {
-         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
-         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ], compute );
+         function( 0, 1, 0, values_view[ indexer.getGlobalIndex( 0, 1 ) ] );
+         function( 0, 2, 1, values_view[ indexer.getGlobalIndex( 0, 2 ) ] );
       }
       else if( rowIdx + 1 < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
-         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ], compute );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
+         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] );
       }
       else if( rowIdx < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
       }
       else
-         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
 }
@@ -663,13 +661,13 @@ addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, Organization_ >&
       const auto matrix_view = matrix;
       const auto matrixMult = matrixMultiplicator;
       const auto thisMult = thisMatrixMultiplicator;
-      auto add0 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+      auto add0 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
          value = matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
-      auto add1 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+      auto add1 = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
          value += matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
-      auto addGen = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+      auto addGen = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
          value = thisMult * value + matrixMult * matrix.getValues()[ matrix.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
       };
       if( thisMult == 0.0 )

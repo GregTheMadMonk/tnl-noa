@@ -355,8 +355,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    const auto values_view = this->values.getConstView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ], compute );
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }
@@ -371,8 +371,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 forElements( IndexType begin, IndexType end, Function&& function )
 {
    auto values_view = this->values.getView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ], compute );
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }

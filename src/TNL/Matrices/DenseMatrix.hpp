@@ -1139,7 +1139,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
    auto this_view = this->view;
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };
       matrix.forAllElements( f );
@@ -1162,7 +1162,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
             const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + columnIdx;
             matrixValuesBuffer_view[ bufferIdx ] = value;
          };
@@ -1214,7 +1214,7 @@ operator=( const RHSMatrix& matrix )
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
          if( value != 0.0 && columnIdx != padding_index )
             values_view[ segments_view.getGlobalIndex( rowIdx, columnIdx ) ] = value;
       };
@@ -1244,7 +1244,7 @@ operator=( const RHSMatrix& matrix )
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
             if( columnIndex != padding_index )
             {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;

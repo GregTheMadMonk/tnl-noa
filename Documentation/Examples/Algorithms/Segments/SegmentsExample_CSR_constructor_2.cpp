@@ -25,7 +25,7 @@ void SegmentsExample()
     * Insert data into particular segments.
     */
    auto data_view = data.getView();
-   segments.forAllElements( [=] __cuda_callable__ ( int segmentIdx, int localIdx, int globalIdx, bool& compute ) mutable {
+   segments.forAllElements( [=] __cuda_callable__ ( int segmentIdx, int localIdx, int globalIdx ) mutable {
       if( localIdx <= segmentIdx )
          data_view[ globalIdx ] = segmentIdx;
    } );
