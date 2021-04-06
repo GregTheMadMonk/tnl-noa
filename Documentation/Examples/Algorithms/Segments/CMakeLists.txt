@@ -5,6 +5,7 @@ set( COMMON_EXAMPLES
    SegmentsExample_CSR_getSerializationType
    SegmentsExample_CSR_getSegmentsType
    SegmentsExample_CSR_setSegmentsSizes
+   SegmentsExample_CSR_getSegmentView
 )
 
 if( BUILD_CUDA )

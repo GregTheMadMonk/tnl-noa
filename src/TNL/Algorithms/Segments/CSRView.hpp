@@ -241,6 +241,29 @@ forAllSegments( Function&& f ) const
 template< typename Device,
           typename Index,
           typename Kernel >
+   template< typename Function >
+void
+CSRView< Device, Index, Kernel >::
+sequentialForSegments( IndexType begin, IndexType end, Function&& function ) const
+{
+   for( IndexType i = begin; i < end; i++ )
+      forSegments( i, i + 1, function );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+   template< typename Function >
+void
+CSRView< Device, Index, Kernel >::
+sequentialForAllSegments( Function&& f ) const
+{
+   this->sequentialForSegments( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 CSRView< Device, Index, Kernel >::

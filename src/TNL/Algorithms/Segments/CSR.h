@@ -270,12 +270,27 @@ class CSR
        *
        * \param segmentIdx is index of the request segment.
        * \return segment view of given segment.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_getSegmentView.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_getSegmentView.out
        */
       __cuda_callable__
       SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
+      /**
+       * \brief Returns reference on constant vector with row offsets used in the CSR format.
+       *
+       * \return reference on constant vector with row offsets used in the CSR format.
+       */
       const OffsetsContainer& getOffsets() const;
 
+      /**
+       * \brief Returns reference on vector with row offsets used in the CSR format.
+       *
+       * \return reference on vector with row offsets used in the CSR format.
+       */
       OffsetsContainer& getOffsets();
 
       /***
@@ -295,6 +310,13 @@ class CSR
 
       template< typename Function >
       void forAllSegments( Function&& f ) const;
+
+      template< typename Function >
+      void sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void sequentialForAllSegments( Function&& f ) const;
+
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.

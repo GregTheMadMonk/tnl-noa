@@ -118,6 +118,12 @@ class CSRView
       template< typename Function >
       void forAllSegments( Function&& f ) const;
 
+      template< typename Function >
+      void sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void sequentialForAllSegments( Function&& f ) const;
+
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */

@@ -287,6 +287,30 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
+   template< typename Function >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->getConstView().sequentialForSegments( begin, end, f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename Function >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+sequentialForAllSegments( Function&& f ) const
+{
+   this->getConstView().sequentialForAllSegments( f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
