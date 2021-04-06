@@ -10,11 +10,12 @@ using namespace TNL::Containers;
 template< typename Device >
 void printVector()
 {
-   const int size( 36 );
+   const int size( 60 );
    TNL::Containers::Vector< float, Device > v( size, 1.0 );
    auto view = v.getView();
    auto print = [=] __cuda_callable__  ( int i ) mutable {
-      printf( "v[ %d ] = %f \n", i, view[ i ] );  // we use printf because of compatibility with GPU kernels
+      if( i % 5 == 0 )
+         printf( "v[ %d ] = %f \n", i, view[ i ] );  // we use printf because of compatibility with GPU kernels
    };
    std::cout << "Printing vector using parallel for: " << std::endl;
    Algorithms::ParallelFor< Device >::exec( 0, v.getSize(), print );
