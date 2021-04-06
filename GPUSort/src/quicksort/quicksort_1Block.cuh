@@ -76,6 +76,13 @@ __device__ void singleBlockQuickSort(ArrayView<int, TNL::Devices::Cuda> arr,
                                     ArrayView<int, TNL::Devices::Cuda> aux,
                                     const Function & Cmp, int _depth)
 {
+    if(arr.getSize() <= blockDim.x*2)
+    {
+        auto src = (_depth &1) == 0? arr : aux;
+        externSort<Function, 2048>(src, arr, Cmp);
+        return;
+    }
+
     static __shared__ int stackTop;
     static __shared__ int stackArrBegin[stackSize], stackArrEnd[stackSize], stackDepth[stackSize];
     static __shared__ int begin, end, depth;
