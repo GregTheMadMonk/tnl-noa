@@ -10,8 +10,3 @@ add_subdirectory( inviscid-flow-vl )
 add_subdirectory( flow )
 add_subdirectory( flow-sw )
 add_subdirectory( flow-vl )
-
-
-ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
-ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
-ADD_EXECUTABLE( MathExample MathExample.cpp )
