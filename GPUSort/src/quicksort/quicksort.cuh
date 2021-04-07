@@ -394,10 +394,11 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
 
     if (host_1stPhaseTasksAmount > 0 && host_2ndPhaseTasksAmount > 0)
     {
+        auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock>>>(arr, aux, Cmp, leftoverTasks, tasks2);
+            <<<total2ndPhase, threadsPerBlock>>>(arr, aux, Cmp, tasks, tasks2);
     }
     else if (host_1stPhaseTasksAmount > 0)
     {
@@ -483,8 +484,8 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const Function &Cmp)
 template <typename Value>
 void QUICKSORT<Value>::processNewTasks()
 {
-    host_1stPhaseTasksAmount = cuda_newTasksAmount.getElement(0);
-    host_2ndPhaseTasksAmount = cuda_2ndPhaseTasksAmount.getElement(0);
+    host_1stPhaseTasksAmount = min(cuda_newTasksAmount.getElement(0), maxTasks);
+    host_2ndPhaseTasksAmount = min(cuda_2ndPhaseTasksAmount.getElement(0), maxTasks);
 }
 
 //-----------------------------------------------------------
