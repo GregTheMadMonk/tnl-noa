@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticFor.h  -  description
+                          UnrolledFor.h  -  description
                              -------------------
     begin                : Jul 16, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
@@ -10,16 +10,18 @@
 
 #pragma once
 
+#include <utility>
+
 #include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 namespace Algorithms {
 
 /**
- * \brief StaticFor is a wrapper for common for-loop with explicit unrolling.
+ * \brief UnrolledFor is a wrapper for common for-loop with explicit unrolling.
  *
- * StaticFor can be used only for for-loops bounds of which are known at the
- * compile time. StaticFor performs explicit loop unrolling for better performance.
+ * UnrolledFor can be used only for for-loops bounds of which are known at the
+ * compile time. UnrolledFor performs explicit loop unrolling for better performance.
  * This, however, does not make sense for loops with a large iterations
  * count. For a very large iterations count it could trigger the compiler's
  * limit on recursive template instantiation. Also note that the compiler
@@ -33,20 +35,20 @@ namespace Algorithms {
  *   unrolling is performed.
  *
  * \par Example
- * \include Algorithms/StaticForExample.cpp
+ * \include Algorithms/UnrolledForExample.cpp
  * \par Output
- * \include StaticForExample.out
+ * \include UnrolledForExample.out
  */
 template< int Begin, int End, bool unrolled = (End - Begin <= 8) >
-struct StaticFor;
+struct UnrolledFor;
 
 template< int Begin, int End >
-struct StaticFor< Begin, End, true >
+struct UnrolledFor< Begin, End, true >
 {
-   static_assert( Begin < End, "Wrong index interval for StaticFor. Begin must be less than end." );
+   static_assert( Begin < End, "Wrong index interval for UnrolledFor. Begin must be less than end." );
 
    /**
-    * \brief Static method for execution od the StaticFor.
+    * \brief Static method for the execution of the UnrolledFor.
     *
     * \param f is a (lambda) function to be performed in each iteration.
     * \param args are auxiliary data to be passed to the function f.
@@ -56,12 +58,12 @@ struct StaticFor< Begin, End, true >
    static void exec( const Function& f, Args&&... args )
    {
       f( Begin, args... );
-      StaticFor< Begin + 1, End >::exec( f, std::forward< Args >( args )... );
+      UnrolledFor< Begin + 1, End >::exec( f, std::forward< Args >( args )... );
    }
 };
 
 template< int End >
-struct StaticFor< End, End, true >
+struct UnrolledFor< End, End, true >
 {
    template< typename Function, typename... Args >
    __cuda_callable__
@@ -69,9 +71,9 @@ struct StaticFor< End, End, true >
 };
 
 template< int Begin, int End >
-struct StaticFor< Begin, End, false >
+struct UnrolledFor< Begin, End, false >
 {
-   static_assert( Begin <= End, "Wrong index interval for StaticFor. Begin must be less than or equal to end." );
+   static_assert( Begin <= End, "Wrong index interval for UnrolledFor. Begin must be less than or equal to end." );
 
    template< typename Function, typename... Args >
    __cuda_callable__

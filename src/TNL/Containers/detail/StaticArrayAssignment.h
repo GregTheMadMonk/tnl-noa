@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
-#include <TNL/Algorithms/StaticFor.h>
+#include <TNL/Algorithms/UnrolledFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -53,7 +53,7 @@ struct StaticArrayAssignment< StaticArray, T, true >
    static void assign( StaticArray& a, const T& v )
    {
       static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      Algorithms::StaticFor< 0, StaticArray::getSize() >::exec( AssignArrayFunctor{}, a.getData(), v.getData() );
+      Algorithms::UnrolledFor< 0, StaticArray::getSize() >::exec( AssignArrayFunctor{}, a.getData(), v.getData() );
    }
 };
 
@@ -68,7 +68,7 @@ struct StaticArrayAssignment< StaticArray, T, false >
    __cuda_callable__
    static void assign( StaticArray& a, const T& v )
    {
-      Algorithms::StaticFor< 0, StaticArray::getSize() >::exec( AssignValueFunctor{}, a.getData(), v );
+      Algorithms::UnrolledFor< 0, StaticArray::getSize() >::exec( AssignValueFunctor{}, a.getData(), v );
    }
 };
 

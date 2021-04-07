@@ -1,1 +1,0 @@
-Algorithms::StaticFor< 0, Size, true >::exec( addition, 3.14 );

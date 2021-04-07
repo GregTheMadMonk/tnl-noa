@@ -99,7 +99,7 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), this->getData() );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), this->getData() );
    return aux;
 }
 

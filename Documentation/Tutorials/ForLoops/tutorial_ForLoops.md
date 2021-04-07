@@ -8,7 +8,7 @@ This tutorial shows how to use different kind of for-loops implemented in TNL. N
 
 * **Parallel for** is a for-loop which can be run in parallel, i.e. all iterations of the loop must be independent. Parallel for can be run on both multicore CPUs and GPUs.
 * **n-dimensional parallel for** is an extension of common parallel for into higher dimensions.
-* **Static For** is a for loop which is performed sequentialy and it is explicitly unrolled by C++ templates. Number of iterations must be static (known at compile time).
+* **Unrolled for** is a for-loop which is performed sequentially and it is explicitly unrolled by C++ templates. Iteration bounds must be static (known at compile time).
 * **Templated Static For** ....
 
 ## Parallel For
@@ -63,27 +63,44 @@ For completeness, we show modification of the previous example into 3D:
 
 \include ParallelForExample-3D.cpp
 
-## Static For
+## Unrolled For
 
-Static for-loop is designed for short loops with constant (i.e. known at the compile time) number of iterations. It is often used with static arrays and vectors. An adventage of this kind of for loop is that it is explicitly unrolled when the loop is short (up to eight iterations). See the following example:
+\ref TNL::Algorithms::UnrolledFor is a for-loop that it is explicitly unrolled via C++ templates when the loop is short (up to eight iterations).
+The bounds of `UnrolledFor` loops must be constant (i.e. known at the compile time).
+It is often used with static arrays and vectors.
 
-\include StaticForExample_ug.cpp
+See the following example:
 
-Notice that the static for-loop works with a lambda function simillar to parallel for-loop. The bounds of the loop are passed as template parameters in the statement `Algorithms::StaticFor< 0, Size >`. The parameters of the static method `exec` are the lambda functions to be performed in each iteration and auxiliar data to be passed to the function. The function gets the loop index `i` first followed by the auxiliary data `sum` in this example.
+\include UnrolledForExample.cpp
+
+Notice that the unrolled for-loop works with a lambda function similar to parallel for-loop.
+The bounds of the loop are passed as template parameters in the statement `Algorithms::UnrolledFor< 0, Size >`.
+The parameters of the static method `exec` are the lambda functions to be performed in each iteration and auxiliary data to be passed to the function.
+The function gets the loop index `i` first followed by the auxiliary data `sum` in this example.
 
 The result looks as:
 
-\include StaticForExample.out
+\include UnrolledForExample.out
 
-The effect of `StaticFor` is really the same as usual for-loop. The following code does the same as the previous example:
+The effect of `UnrolledFor` is really the same as usual for-loop.
+The following code does the same as the previous example:
 
-\include StaticForExample-2.cpp
+```cpp
+for( int i = 0; i < Size; i++ )
+{
+   a[ i ] = b[ i ] + 3.14;
+   sum += a[ i ];
+};
+```
 
-The benefit of `StaticFor` is mainly in the explicit unrolling of short loops which can improve the performance in some situations. `StaticFor` can be forced to do the loop-unrolling in any situations using the third template parameter as follows:
+The benefit of `UnrolledFor` is mainly in the explicit unrolling of short loops which can improve performance in some situations.
+`UnrolledFor` can be forced to do the loop-unrolling in any situations using the third template parameter as follows:
 
-\include StaticForExample-3.cpp
+```cpp
+Algorithms::UnrolledFor< 0, Size, true >::exec( addition, 3.14 );
+```
 
-`StaticFor` can be used also in CUDA kernels.
+`UnrolledFor` can be used also in CUDA kernels.
 
 ## Templated Static For
 

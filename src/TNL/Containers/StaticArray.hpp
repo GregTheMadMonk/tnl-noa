@@ -14,7 +14,7 @@
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Containers/detail/StaticArrayAssignment.h>
-#include <TNL/Algorithms/StaticFor.h>
+#include <TNL/Algorithms/UnrolledFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -102,21 +102,21 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), v );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v.getData() );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v.getData() );
 }
 
 template< int Size, typename Value >
@@ -228,7 +228,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), array.getData() );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), array.getData() );
    return *this;
 }
 
@@ -264,7 +264,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), getData() );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), getData() );
    return aux;
 }
 
@@ -272,7 +272,7 @@ template< int Size, typename Value >
 __cuda_callable__
 void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), val );
+   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), val );
 }
 
 template< int Size, typename Value >
