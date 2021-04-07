@@ -178,6 +178,38 @@ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src
             dst[copy2] = sharedMem[copy2];
     }
 }
+
+template <typename Value, typename Function>
+__device__
+void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, 
+                        TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> dst,
+                        const Function & Cmp)
+{
+    int i = threadIdx.x;
+    int paddedSize = closestPow2(src.getSize());
+
+    for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
+    {
+        //calculate the direction of swapping
+        int monotonicSeqIdx = i / (monotonicSeqLen/2);
+        bool ascending = (monotonicSeqIdx & 1) != 0;
+        if ((monotonicSeqIdx + 1) * monotonicSeqLen >= src.getSize()) //special case for parts with no "partner"
+            ascending = true;
+
+        for (int len = monotonicSeqLen; len > 1; len /= 2)
+        {
+            //calculates which 2 indexes will be compared and swap
+            int part = i / (len / 2);
+            int s = part * len + (i & ((len / 2) - 1));
+            int e = s + len / 2;
+
+            if(e < src.getSize()) //not touching virtual padding
+                cmpSwap(src[s], src[e], ascending, Cmp);
+            __syncthreads();
+        }
+    }
+}
+
 /**
  * very similar to bitonicMergeSharedMemory
  * does bitonicMergeSharedMemory but afterwards increases monotoncSeqLen
