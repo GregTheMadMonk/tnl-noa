@@ -9,12 +9,12 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-template <typename Value, typename Function, int externMemSize>
+template <typename Value, typename Function>
 __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
                         ArrayView<Value, TNL::Devices::Cuda> dst,
+                        Value * sharedMem,
                         const Function & Cmp)
 {
-    static __shared__ Value sharedMem[externMemSize];
     bitonicSort_Block(src, dst, sharedMem, Cmp);
 }
 
@@ -71,15 +71,16 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
     }
 }
 
-template <typename Value, typename Function, int stackSize>
+template <typename Value, typename Function, int stackSize, bool useShared>
 __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
                                     ArrayView<Value, TNL::Devices::Cuda> aux,
-                                    const Function & Cmp, int _depth)
+                                    const Function & Cmp, int _depth,
+                                    Value * sharedMem, int memSize)
 {
     if(arr.getSize() <= blockDim.x*2)
     {
         auto src = (_depth &1) == 0? arr : aux;
-        externSort<Value, Function, 2048>(src, arr, Cmp);
+        externSort<Value, Function>(src, arr, sharedMem, Cmp);
         return;
     }
 
@@ -117,7 +118,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         //small enough for for bitonic
         if(size <= blockDim.x*2)
         {
-            externSort<Value, Function, 2048>(src.getView(begin, end), arr.getView(begin, end), Cmp);
+            externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), sharedMem, Cmp);
             __syncthreads();
             continue;
         }
@@ -132,21 +133,48 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         countElem(src.getView(begin, end), smaller, bigger, pivot);
 
         //synchronization is in this function already
-        int smallerOffset = blockInclusivePrefixSum(smaller);
-        int biggerOffset = blockInclusivePrefixSum(bigger);
+        int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
+        int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
 
         if (threadIdx.x == blockDim.x - 1) //has sum of all smaller and greater elements than pivot in src
         {
-            pivotBegin = 0 + smallerOffset;
-            pivotEnd = size - biggerOffset;
+            pivotBegin = 0 + smallerPrefSumInc;
+            pivotEnd = size - biggerPrefSumInc;
         }
         __syncthreads();
 
-        int destSmaller = 0 + (smallerOffset - smaller);
-        int destBigger = pivotEnd  + (biggerOffset - bigger);
+        //--------------------------------------------------------------
+        /**
+         * move elements, either use shared mem for coalesced access or without shared mem if data is too big
+         * */
+
         auto &dst = (depth&1) == 0 ? aux : arr;
 
-        copyData(src.getView(begin, end), dst.getView(begin, end), destSmaller, destBigger, pivot);
+        if(useShared && size <= memSize)
+        {
+            static __shared__ int smallerTotal, biggerTotal;
+            if (threadIdx.x == blockDim.x - 1)
+            {
+                smallerTotal = smallerPrefSumInc;
+                biggerTotal = biggerPrefSumInc;
+            }
+            __syncthreads();
+
+            copyDataShared(src.getView(begin, end), dst.getView(begin, end),
+                sharedMem,
+                0, pivotEnd,
+                smallerTotal, biggerTotal,
+                smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
+                pivot);
+        }
+        else
+        {
+            int destSmaller = 0 + (smallerPrefSumInc - smaller);
+            int destBigger = pivotEnd  + (biggerPrefSumInc - bigger);
+
+            copyData(src.getView(begin, end), dst.getView(begin, end), destSmaller, destBigger, pivot);
+        }
+
         __syncthreads();
 
         for (int i = pivotBegin + threadIdx.x; i < pivotEnd; i += blockDim.x)

@@ -149,8 +149,12 @@ __global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Va
 template <typename Value, typename Function, int stackSize>
 __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks)
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
+                                      int elemInShared)
 {
+    extern __shared__ int externMem[];
+    Value * sharedMem = (Value *) externMem;
+
     TASK &myTask = secondPhaseTasks[blockIdx.x];
     if (myTask.partitionEnd - myTask.partitionBegin <= 0)
         return;
@@ -158,15 +162,29 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    singleBlockQuickSort<Value, Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
+    if(elemInShared == 0)
+    {
+        singleBlockQuickSort<Value, Function, stackSize, false>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+    }
+    else
+    {
+        singleBlockQuickSort<Value, Function, stackSize, true>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+    }
+
 }
 
 template <typename Value, typename Function, int stackSize>
 __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks2)
+                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
+                                      int elemInShared)
 {
+    extern __shared__ int externMem[];
+    Value * sharedMem = (Value *) externMem;
+
     TASK myTask;
     if (blockIdx.x < secondPhaseTasks1.getSize())
         myTask = secondPhaseTasks1[blockIdx.x];
@@ -174,12 +192,24 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
         myTask = secondPhaseTasks2[blockIdx.x - secondPhaseTasks1.getSize()];
 
     if (myTask.partitionEnd - myTask.partitionBegin <= 0)
+    {
+        printf("empty task???\n");
         return;
+    }
 
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    singleBlockQuickSort<Value, Function, stackSize>(arrView, auxView, Cmp, myTask.depth);
+    if(elemInShared == 0)
+    {
+        singleBlockQuickSort<Value, Function, stackSize, false>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+    }
+    else
+    {
+        singleBlockQuickSort<Value, Function, stackSize, true>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+    }
 }
 
 //-----------------------------------------------------------
@@ -392,26 +422,34 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
     const int stackSize = 32;
     auto &leftoverTasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
 
+    int elemInShared = desiredElemPerBlock;
+    int externSharedByteSize = sizeof(Value) * elemInShared;
+    if(externSharedByteSize > maxSharable)
+    {
+        externSharedByteSize = 0;
+        elemInShared = 0;
+    }
+
     if (host_1stPhaseTasksAmount > 0 && host_2ndPhaseTasksAmount > 0)
     {
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock>>>(arr, aux, Cmp, tasks, tasks2);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared);
     }
     else if (host_1stPhaseTasksAmount > 0)
     {
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock>>>(arr, aux, Cmp, tasks);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared);
     }
     else
     {
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock>>>(arr, aux, Cmp, tasks2);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared);
     }
 }
 

@@ -82,8 +82,10 @@ void countElem(ArrayView<Value, Devices::Cuda> arr,
     for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
     {
         const Value data = arr[i];
-        smaller += (data < pivot);
-        bigger += (data > pivot);
+        if(data < pivot)
+            smaller++;
+        else if(data > pivot)
+            bigger++;
     }
 }
 
@@ -129,14 +131,18 @@ void copyData(ArrayView<Value, Devices::Cuda> src,
         const Value data = src[i];
         if (data < pivot)
         {
+            /*
             if(smallerStart >= dst.getSize() || smallerStart < 0)
                 printf("failed smaller: b:%d t:%d: tried to write into [%d]/%d\n", blockDim.x, threadIdx.x, smallerStart, dst.getSize());
+            */
             dst[smallerStart++] = data;
         }
         else if (data > pivot)
         {
+            /*
             if(biggerStart >= dst.getSize() || biggerStart < 0)
                 printf("failed bigger: b:%d t:%d: tried to write into [%d]/%d\n", blockDim.x, threadIdx.x, biggerStart, dst.getSize());
+            */
             dst[biggerStart++] = data;
         }
     }
