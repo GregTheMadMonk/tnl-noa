@@ -66,8 +66,8 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
 
 //----------------------------------------------------
 
-template <typename Value, typename Function>
-__global__ void cudaQuickSort1stPhase_1(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
+template <typename Value, typename Function, bool useShared>
+__global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                         const Function &Cmp, int elemPerBlock,
                                         ArrayView<TASK, Devices::Cuda> tasks,
                                         ArrayView<int, Devices::Cuda> taskMapping)
@@ -85,32 +85,10 @@ __global__ void cudaQuickSort1stPhase_1(ArrayView<Value, Devices::Cuda> arr, Arr
         pivot = src[myTask.pivotIdx];
     __syncthreads();
 
-    cudaPartition_1(
+    cudaPartition<Value, Function, useShared>(
         src.getView(myTask.partitionBegin, myTask.partitionEnd),
         dst.getView(myTask.partitionBegin, myTask.partitionEnd),
         sharedMem,
-        Cmp, pivot, elemPerBlock, myTask);
-}
-
-template <typename Value, typename Function>
-__global__ void cudaQuickSort1stPhase_2(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                        const Function &Cmp, int elemPerBlock,
-                                        ArrayView<TASK, Devices::Cuda> tasks,
-                                        ArrayView<int, Devices::Cuda> taskMapping)
-{
-    static __shared__ Value pivot;
-
-    TASK &myTask = tasks[taskMapping[blockIdx.x]];
-    auto &src = (myTask.depth & 1) == 0 ? arr : aux;
-    auto &dst = (myTask.depth & 1) == 0 ? aux : arr;
-
-    if (threadIdx.x == 0)
-        pivot = src[myTask.pivotIdx];
-    __syncthreads();
-
-    cudaPartition_2(
-        src.getView(myTask.partitionBegin, myTask.partitionEnd),
-        dst.getView(myTask.partitionBegin, myTask.partitionEnd),
         Cmp, pivot, elemPerBlock, myTask);
 }
 
@@ -358,7 +336,7 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
 
         auto &task = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
         int externMemByteSize = elemPerBlock * sizeof(Value);
-
+        
         /**
          * check if can partition using shared memory for coalesced read and write
          * 1st phase of partitioning
@@ -369,15 +347,15 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
          * */
         if (externMemByteSize <= maxSharable)
         {
-            cudaQuickSort1stPhase_1<Value, Function>
+            cudaQuickSort1stPhase<Value, Function, true>
                 <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
         }
         else
         {
-            cudaQuickSort1stPhase_2<Value, Function>
-                <<<blocksCnt, threadsPerBlock>>>(
+            cudaQuickSort1stPhase<Value, Function, false>
+                <<<blocksCnt, threadsPerBlock, 0>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
         }
