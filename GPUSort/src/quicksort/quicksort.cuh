@@ -75,15 +75,12 @@ __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, Array
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
 
-    static __shared__ Value pivot;
 
     TASK &myTask = tasks[taskMapping[blockIdx.x]];
     auto &src = (myTask.depth & 1) == 0 ? arr : aux;
     auto &dst = (myTask.depth & 1) == 0 ? aux : arr;
 
-    if (threadIdx.x == 0)
-        pivot = src[myTask.pivotIdx];
-    __syncthreads();
+    Value pivot = src[myTask.pivotIdx];
 
     cudaPartition<Value, Function, useShared>(
         src.getView(myTask.partitionBegin, myTask.partitionEnd),
@@ -99,17 +96,9 @@ __global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Va
                                ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
                                ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
-    static __shared__ Value pivot;
     TASK &myTask = tasks[blockIdx.x];
 
-    if (threadIdx.x == 0)
-    {
-        if ((myTask.depth & 1) == 0)
-            pivot = arr[myTask.pivotIdx];
-        else
-            pivot = aux[myTask.pivotIdx];
-    }
-    __syncthreads();
+    Value pivot = (myTask.depth & 1) == 0 ? arr[myTask.pivotIdx] : aux[myTask.pivotIdx];
 
     int leftBegin = myTask.partitionBegin, leftEnd = myTask.partitionBegin + myTask.dstBegin;
     int rightBegin = myTask.partitionBegin + myTask.dstEnd, rightEnd = myTask.partitionEnd;

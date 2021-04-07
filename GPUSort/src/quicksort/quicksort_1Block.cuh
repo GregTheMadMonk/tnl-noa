@@ -17,6 +17,14 @@ __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
     bitonicSort_Block(src, dst, sharedMem, Cmp);
 }
 
+template <typename Value, typename Function>
+__device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
+                           ArrayView<Value, TNL::Devices::Cuda> dst,
+                           const Function &Cmp)
+{
+    bitonicSort_Block(src, dst, Cmp);
+}
+
 template <int stackSize>
 __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
                           int stackDepth[], int &stackTop,
@@ -79,7 +87,11 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
     if (arr.getSize() <= blockDim.x * 2)
     {
         auto src = (_depth & 1) == 0 ? arr : aux;
-        externSort<Value, Function>(src, arr, Cmp, sharedMem);
+        if(useShared)
+            externSort<Value, Function>(src, arr, Cmp, sharedMem);
+        else
+            externSort<Value, Function>(src, arr, Cmp);
+
         return;
     }
 
@@ -87,7 +99,6 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
     static __shared__ int stackArrBegin[stackSize], stackArrEnd[stackSize], stackDepth[stackSize];
     static __shared__ int begin, end, depth;
     static __shared__ int pivotBegin, pivotEnd;
-    static __shared__ Value pivot;
 
     if (threadIdx.x == 0)
     {
@@ -117,16 +128,16 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         //small enough for for bitonic
         if (size <= blockDim.x * 2)
         {
-            externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);
+            if(useShared)
+                externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);
+            else
+                externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp);
             __syncthreads();
             continue;
         }
         //------------------------------------------------------
 
-        //actually do partitioning from here on out
-        if (threadIdx.x == 0)
-            pivot = pickPivot(src.getView(begin, end), Cmp);
-        __syncthreads();
+        Value pivot = pickPivot(src.getView(begin, end), Cmp);
 
         int smaller = 0, bigger = 0;
         countElem(src.getView(begin, end), Cmp, smaller, bigger, pivot);

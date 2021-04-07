@@ -39,7 +39,7 @@ __device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const 
 }
 
 template <typename Value, typename Device, typename Function>
-__device__ Value pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const Function &Cmp)
+__device__ int pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const Function &Cmp)
 {
     //return 0;
     //return src.getSize()-1;

@@ -141,6 +141,28 @@ TEST(types, type_double)
     ASSERT_TRUE(view == cudaArr2.getView());
 }
 
+struct TMPSTRUCT{
+    uint8_t m_data[16];
+
+    __cuda_callable__ TMPSTRUCT(){m_data[0] = 0;}
+    __cuda_callable__ TMPSTRUCT(int first){m_data[0] = first;};
+    __cuda_callable__ bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
+};
+
+
+TEST(types, struct)
+{
+    std::srand(8451);
+
+    int size = (1<<13);
+    std::vector<TMPSTRUCT> arr(size);
+    for(auto & x : arr) x = TMPSTRUCT(std::rand());
+
+    TNL::Containers::Array<TMPSTRUCT, TNL::Devices::Cuda> cudaArr(arr);
+    auto view = cudaArr.getView();
+    quicksort(view);
+}
+
 //----------------------------------------------------------------------------------
 
 int main(int argc, char **argv)
