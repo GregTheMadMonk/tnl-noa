@@ -53,6 +53,10 @@ resolveCellTopology( Reader& reader, Functor&& functor )
          return resolveSpaceDimension< Topologies::Hexahedron >( reader, std::forward<Functor>(functor) );
       case VTK::EntityShape::Polygon:
          return resolveSpaceDimension< Topologies::Polygon >( reader, std::forward<Functor>(functor) );
+      case VTK::EntityShape::Wedge:
+         return resolveSpaceDimension< Topologies::Wedge >( reader, std::forward<Functor>(functor) );
+      case VTK::EntityShape::Pyramid:
+         return resolveSpaceDimension< Topologies::Pyramid >( reader, std::forward<Functor>(functor) );
       default:
          std::cerr << "unsupported cell topology: " << VTK::getShapeName( reader.getCellShape() ) << std::endl;
          return false;

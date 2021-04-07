@@ -207,9 +207,6 @@ class StorageLayer< MeshConfig,
    : public SubentityStorageLayerFamily< MeshConfig,
                                          Device,
                                          typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
-     public SubentityOrientationsLayerFamily< MeshConfig,
-                                              Device,
-                                              typename MeshTraits< MeshConfig, Device >::template EntityTraits< DimensionTag::value >::EntityTopology >,
      public SuperentityStorageLayerFamily< MeshConfig,
                                            Device,
                                            DimensionTag >,
@@ -223,7 +220,6 @@ public:
    using EntityType       = typename EntityTraitsType::EntityType;
    using EntityTopology   = typename EntityTraitsType::EntityTopology;
    using SubentityStorageBaseType = SubentityStorageLayerFamily< MeshConfig, Device, EntityTopology >;
-   using SubentityOrientationsBaseType = SubentityOrientationsLayerFamily< MeshConfig, Device, EntityTopology >;
    using SuperentityStorageBaseType = SuperentityStorageLayerFamily< MeshConfig, Device, DimensionTag >;
 
    StorageLayer() = default;

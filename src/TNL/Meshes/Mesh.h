@@ -50,6 +50,7 @@ class MeshInitializableBase
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
       void init( typename MeshTraitsType::PointArrayType& points,
+                 typename MeshTraitsType::FaceSeedArrayType& faceSeeds,
                  typename MeshTraitsType::CellSeedArrayType& cellSeeds );
 };
 

@@ -32,12 +32,18 @@ public:
    using PointType       = typename MeshTraitsType::PointType;
    using CellTopology    = typename MeshTraitsType::CellTopology;
    using CellSeedType    = typename MeshTraitsType::CellSeedType;
+   using FaceSeedType    = typename MeshTraitsType::FaceSeedType;
 
    void setPointsCount( const GlobalIndexType& points )
    {
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );
+   }
+
+   void setFacesCount( const GlobalIndexType& facesCount )
+   {
+      this->faceSeeds.setSize( facesCount );
    }
 
    void setCellsCount( const GlobalIndexType& cellsCount )
@@ -48,6 +54,11 @@ public:
    GlobalIndexType getPointsCount() const
    {
       return this->points.getSize();
+   }
+
+   GlobalIndexType getFacesCount() const
+   {
+      return this->faceSeeds.getSize();
    }
 
    GlobalIndexType getCellsCount() const
@@ -62,6 +73,11 @@ public:
       this->pointsSet[ index ] = true;
    }
 
+   FaceSeedType& getFaceSeed( GlobalIndexType index )
+   {
+      return this->faceSeeds[ index ];
+   }
+
    CellSeedType& getCellSeed( GlobalIndexType index )
    {
       return this->cellSeeds[ index ];
@@ -71,13 +87,14 @@ public:
    {
       if( ! this->validate() )
          return false;
-      mesh.init( this->points, this->cellSeeds );
+      mesh.init( this->points, this->faceSeeds, this->cellSeeds );
       return true;
    }
 
 private:
    using PointArrayType    = typename MeshTraitsType::PointArrayType;
    using CellSeedArrayType = typename MeshTraitsType::CellSeedArrayType;
+   using FaceSeedArrayType = typename MeshTraitsType::FaceSeedArrayType;
    using BoolVector        = Containers::Vector< bool, Devices::Host, GlobalIndexType >;
 
    bool validate() const
@@ -91,26 +108,68 @@ private:
       assignedPoints.setLike( pointsSet );
       assignedPoints.setValue( false );
 
-      for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
-         const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
-         for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
-            assignedPoints[ cornerIds[ j ] ] = true;
-            if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] ) {
-               std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
-               return false;
+      if( faceSeeds.empty() )
+      {
+         for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
+            const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
+            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
+               assignedPoints[ cornerIds[ j ] ] = true;
+               if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] ) {
+                  std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
+                  return false;
+               }
             }
          }
-      }
 
-      if( min( assignedPoints ) != true ) {
-         std::cerr << "Mesh builder error: Some points were not used for cells." << std::endl;
-         return false;
+         if( min( assignedPoints ) != true ) {
+            std::cerr << "Mesh builder error: Some points were not used for cells." << std::endl;
+            return false;
+         }
+      }
+      else
+      {
+         for( GlobalIndexType i = 0; i < getFacesCount(); i++ ) {
+            const auto& cornerIds = this->faceSeeds[ i ].getCornerIds();
+            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
+               if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] ) {
+                  std::cerr << "face seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
+                  return false;
+               }
+               assignedPoints[ cornerIds[ j ] ] = true;
+            }
+         }
+
+         if( min( assignedPoints ) != true ) {
+            std::cerr << "Mesh builder error: Some points were not used for faces." << std::endl;
+            return false;
+         }
+
+         BoolVector assignedFaces;
+         assignedFaces.setLike( faceSeeds );
+         assignedFaces.setValue( false );
+
+         for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
+            const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
+            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
+               if( cornerIds[ j ] < 0 || getFacesCount() <= cornerIds[ j ] ) {
+                  std::cerr << "cell seed " << i << " is referencing unavailable face " << cornerIds[ j ] << std::endl;
+                  return false;
+               }
+               assignedFaces[ cornerIds[ j ] ] = true;
+            }
+         }
+
+         if( min( assignedFaces ) != true ) {
+            std::cerr << "Mesh builder error: Some faces were not used for cells." << std::endl;
+            return false;
+         }
       }
 
       return true;
    }
 
    PointArrayType points;
+   FaceSeedArrayType faceSeeds;
    CellSeedArrayType cellSeeds;
    BoolVector pointsSet;
 };

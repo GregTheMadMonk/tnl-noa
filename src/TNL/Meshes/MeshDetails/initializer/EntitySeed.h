@@ -16,8 +16,10 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -29,14 +31,14 @@ struct EntitySeedEq;
 
 template< typename MeshConfig,
           typename EntityTopology >
-class EntitySeed
+class EntitySeed< MeshConfig, EntityTopology, false >
 {
-   using MeshConfigTraits = MeshTraits< MeshConfig >;
-   using SubvertexTraits = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using SubvertexTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
 
    public:
-      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< SubvertexTraits::count, GlobalIndexType >;
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
@@ -73,13 +75,13 @@ class EntitySeed
 };
 
 template< typename MeshConfig >
-class EntitySeed< MeshConfig, Topologies::Vertex >
+class EntitySeed< MeshConfig, Topologies::Vertex, false >
 {
-   using MeshConfigTraits = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
 
    public:
-      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
@@ -114,22 +116,34 @@ class EntitySeed< MeshConfig, Topologies::Vertex >
       IdArrayType cornerIds;
 };
 
-template< typename MeshConfig >
-class EntitySeed< MeshConfig, Topologies::Polygon >
+template< typename MeshConfig,
+          typename EntityTopology >
+class EntitySeed< MeshConfig, EntityTopology, true >
 {
-   using MeshConfigTraits = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
 
 public:
-   using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-   using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
-   using DeviceType      = typename MeshTraits< MeshConfig >::DeviceType;
-   using IdArrayType     = Containers::Array< GlobalIndexType, DeviceType, LocalIndexType >;
+   using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType     = Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >;
    using HashType        = EntitySeedHash< EntitySeed >;
    using KeyEqual        = EntitySeedEq< EntitySeed >;
 
+   // this constructor definition is here to avoid default constructor being implicitly declared as __host__ __device__, that causes warning:
+   // warning #20011-D: calling a __host__ function("std::allocator<int> ::allocator") 
+   // from a __host__ __device__ function("TNL::Meshes::EntitySeed< ::MeshTest::TestTwoWedgesMeshConfig,  
+   // ::TNL::Meshes::Topologies::Polygon> ::EntitySeed [subobject]") is not allowed
+   EntitySeed()
+   {
+   }
+
    void setCornersCount( const LocalIndexType& cornersCount )
    {
-      TNL_ASSERT_GE( cornersCount, 3, "cornersCount must be at least 3" );
+      if( std::is_same< EntityTopology, Topologies::Polygon >::value )
+         TNL_ASSERT_GE( cornersCount, 3, "polygons must have at least 3 corners" );
+      else if( std::is_same< EntityTopology, Topologies::Polyhedron >::value )
+         TNL_ASSERT_GE( cornersCount, 2, "polyhedron must have at least 2 faces" );
+
       this->cornerIds.setSize( cornersCount );
    }
 
@@ -195,8 +209,12 @@ struct EntitySeedEq
 
       IdArrayType sortedLeft( left.getCornerIds() );
       IdArrayType sortedRight( right.getCornerIds() );
-      sortedLeft.sort();
-      sortedRight.sort();
+
+      //use std::sort for now, because polygon EntitySeeds use TNL::Containers::Array for cornersIds, that is missing sort function
+      std::sort( sortedLeft.getData(), sortedLeft.getData() + sortedLeft.getSize() );
+      std::sort( sortedRight.getData(), sortedRight.getData() + sortedRight.getSize() );
+      /*sortedLeft.sort();
+      sortedRight.sort();*/
       return sortedLeft == sortedRight;
    }
 };

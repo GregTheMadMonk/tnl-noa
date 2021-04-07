@@ -23,14 +23,29 @@
 #include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology > class MeshEntity;
-template< typename MeshConfig, typename EntityTopology > class EntitySeed;
+
+template< typename MeshConfig,
+          typename EntityTopology,
+          bool variableSize = std::is_same< EntityTopology, Topologies::Polygon >::value ||
+                              std::is_same< EntityTopology, Topologies::Polyhedron >::value >
+class EntitySeed;
+
 template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
-template< typename MeshConfig, typename Device, typename MeshEntity, int Subdimension > class MeshSubentityTraits;
+
+template< typename MeshConfig,
+          typename Device,
+          typename EntityTopology,
+          int Dimension,
+          bool dynamicTopology = std::is_same< EntityTopology, Topologies::Polygon >::value ||
+                                 std::is_same< EntityTopology, Topologies::Polyhedron >::value >
+class MeshSubentityTraits;
+
 template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;
 
 // helper templates (must be public because nvcc sucks, and outside of MeshTraits to avoid duplicate code generation)
@@ -52,14 +67,17 @@ public:
    using LocalIndexType      = typename MeshConfig::LocalIndexType;
 
    using CellTopology        = typename MeshConfig::CellTopology;
+   using FaceTopology        = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
    using CellType            = MeshEntity< MeshConfig, Device, CellTopology >;
    using VertexType          = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
    using PointType           = Containers::StaticVector< spaceDimension, typename MeshConfig::RealType >;
+   using FaceSeedType        = EntitySeed< MeshConfig, FaceTopology >;
    using CellSeedType        = EntitySeed< MeshConfig, CellTopology >;
    using EntityTagType       = std::uint8_t;
 
    using NeighborCountsArray = Containers::Vector< LocalIndexType, DeviceType, GlobalIndexType >;
    using PointArrayType      = Containers::Array< PointType, DeviceType, GlobalIndexType >;
+   using FaceSeedArrayType   = Containers::Array< FaceSeedType, DeviceType, GlobalIndexType >;
    using CellSeedArrayType   = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
    using EntityTagsArrayType = Containers::Array< EntityTagType, DeviceType, GlobalIndexType >;
 

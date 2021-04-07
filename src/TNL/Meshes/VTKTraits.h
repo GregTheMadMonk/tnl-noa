@@ -20,6 +20,9 @@
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/Topologies/Polygon.h>
+#include <TNL/Meshes/Topologies/Wedge.h>
+#include <TNL/Meshes/Topologies/Pyramid.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -59,7 +62,8 @@ enum class EntityShape
    Voxel = 11,
    Hexahedron = 12,
    Wedge = 13,
-   Pyramid = 14
+   Pyramid = 14,
+   Polyhedron = 100
 };
 
 inline std::string getShapeName( EntityShape shape )
@@ -94,6 +98,8 @@ inline std::string getShapeName( EntityShape shape )
          return "Wedge";
       case EntityShape::Pyramid:
          return "Pyramid";
+      case EntityShape::Polyhedron:
+         return "Polyhedron";
    }
    return "<unknown entity shape>";
 }
@@ -116,6 +122,7 @@ inline int getEntityDimension( EntityShape shape )
       case EntityShape::Hexahedron:     return 3;
       case EntityShape::Wedge:          return 3;
       case EntityShape::Pyramid:        return 3;
+      case EntityShape::Polyhedron:     return 3;
    }
    // this can actually happen when an invalid uint8_t value is converted to EntityShape
    throw std::runtime_error( "VTK::getEntityDimension: invalid entity shape value " + std::to_string(int(shape)) );
@@ -123,13 +130,16 @@ inline int getEntityDimension( EntityShape shape )
 
 // static mapping of TNL entity topologies to EntityShape
 template< typename Topology > struct TopologyToEntityShape {};
-template<> struct TopologyToEntityShape< Topologies::Vertex >      { static constexpr EntityShape shape = EntityShape::Vertex; };
-template<> struct TopologyToEntityShape< Topologies::Edge >        { static constexpr EntityShape shape = EntityShape::Line; };
-template<> struct TopologyToEntityShape< Topologies::Triangle >    { static constexpr EntityShape shape = EntityShape::Triangle; };
-template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon; };
-template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad; };
-template<> struct TopologyToEntityShape< Topologies::Tetrahedron > { static constexpr EntityShape shape = EntityShape::Tetra; };
+template<> struct TopologyToEntityShape< Topologies::Vertex >      { static constexpr EntityShape shape = EntityShape::Vertex;     };
+template<> struct TopologyToEntityShape< Topologies::Edge >        { static constexpr EntityShape shape = EntityShape::Line;       };
+template<> struct TopologyToEntityShape< Topologies::Triangle >    { static constexpr EntityShape shape = EntityShape::Triangle;   };
+template<> struct TopologyToEntityShape< Topologies::Polygon >     { static constexpr EntityShape shape = EntityShape::Polygon;    };
+template<> struct TopologyToEntityShape< Topologies::Quadrangle >  { static constexpr EntityShape shape = EntityShape::Quad;       };
+template<> struct TopologyToEntityShape< Topologies::Tetrahedron > { static constexpr EntityShape shape = EntityShape::Tetra;      };
 template<> struct TopologyToEntityShape< Topologies::Hexahedron >  { static constexpr EntityShape shape = EntityShape::Hexahedron; };
+template<> struct TopologyToEntityShape< Topologies::Wedge >       { static constexpr EntityShape shape = EntityShape::Wedge;      };
+template<> struct TopologyToEntityShape< Topologies::Pyramid >     { static constexpr EntityShape shape = EntityShape::Pyramid;    };
+template<> struct TopologyToEntityShape< Topologies::Polyhedron >  { static constexpr EntityShape shape = EntityShape::Polyhedron; };
 
 // mapping used in VTKWriter
 template< typename GridEntity >

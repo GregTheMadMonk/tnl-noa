@@ -41,9 +41,11 @@ template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ enum { enabl
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { enum { enabled = true }; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >

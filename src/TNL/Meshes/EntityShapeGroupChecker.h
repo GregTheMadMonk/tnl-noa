@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 #include <TNL/Meshes/EntityShapeGroup.h>
 
 namespace TNL {
@@ -22,7 +22,14 @@ public:
       else
       {
          bool result = false;
-         Algorithms::TemplateStaticFor< int, 0, EntityShapeGroup< GeneralShape >::size, OtherEntitiesChecker >::execHost( result, shape );
+
+         Algorithms::staticFor< int, 0, EntityShapeGroup< GeneralShape >::size >(
+            [&] ( auto index ) {
+               EntityShape groupShape = EntityShapeGroupElement< GeneralShape, index >::shape;
+               result = result || ( shape == groupShape );
+            }
+         );
+
          return result;
       }
    }
@@ -31,18 +38,6 @@ public:
    {
       return belong( shape1 ) && belong( shape2 );
    }
-
-private:
-   template< int index >
-   class OtherEntitiesChecker
-   {
-      public:
-         static void exec( bool& result, EntityShape shape )
-         {
-            EntityShape groupShape = EntityShapeGroupElement< GeneralShape, index >::shape;
-            result = result || ( shape == groupShape );
-         }
-   };
 };
 
 } // namespace VTK

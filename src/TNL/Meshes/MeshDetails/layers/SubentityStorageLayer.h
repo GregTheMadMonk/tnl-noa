@@ -21,6 +21,7 @@
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
 #include <TNL/Meshes/Topologies/Polygon.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -29,7 +30,9 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           typename SubdimensionTag,
-          bool SubentityStorage = WeakSubentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology::dimension >::EntityTopology, SubdimensionTag >::storageEnabled >
+          bool SubentityStorage = WeakSubentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology::dimension >::EntityTopology, SubdimensionTag >::storageEnabled,
+          bool dynamicTopology = std::is_same< EntityTopology, Topologies::Polygon >::value ||
+                                 std::is_same< EntityTopology, Topologies::Polyhedron >::value >
 class SubentityStorageLayer;
 
 template< typename MeshConfig,
@@ -92,7 +95,8 @@ class SubentityStorageLayer< MeshConfig,
                              Device,
                              EntityTopology,
                              SubdimensionTag,
-                             true >
+                             true,
+                             false >
    : public SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
    using BaseType = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
@@ -175,21 +179,22 @@ private:
    SubentityMatrixType matrix;
 
    // friend class is needed for templated assignment operators
-   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_ >
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
    friend class SubentityStorageLayer;
 };
 
 template< typename MeshConfig,
           typename Device,
+          typename EntityTopology,
           typename SubdimensionTag >
 class SubentityStorageLayer< MeshConfig,
                              Device,
-                             Topologies::Polygon,
+                             EntityTopology,
                              SubdimensionTag,
+                             true,
                              true >
-   : public SubentityStorageLayer< MeshConfig, Device, Topologies::Polygon, typename SubdimensionTag::Increment >
+   : public SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
-   using EntityTopology = Topologies::Polygon;
    using BaseType       = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
@@ -288,19 +293,21 @@ private:
    SubentityMatrixType matrix;
    
    // friend class is needed for templated assignment operators
-   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_ >
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
    friend class SubentityStorageLayer;
 };
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
-          typename SubdimensionTag >
+          typename SubdimensionTag,
+          bool dynamicTopology >
 class SubentityStorageLayer< MeshConfig,
                              Device,
                              EntityTopology,
                              SubdimensionTag,
-                             false >
+                             false,
+                             dynamicTopology >
    : public SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >
 {
    using BaseType = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
@@ -313,51 +320,16 @@ public:
 // termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSubentityStorageTrait)
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopology >
+          typename EntityTopology,
+          bool dynamicTopology >
 class SubentityStorageLayer< MeshConfig,
                              Device,
                              EntityTopology,
                              DimensionTag< EntityTopology::dimension >,
-                             false >
+                             false,
+                             dynamicTopology >
 {
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
-
-protected:
-   using GlobalIndexType = typename MeshConfig::GlobalIndexType;
-
-   SubentityStorageLayer() = default;
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) {}
-   template< typename Device_ >
-   SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) {}
-   template< typename Device_ >
-   SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
-
-   void print( std::ostream& str ) const {}
-
-   bool operator==( const SubentityStorageLayer& layer ) const
-   {
-      return true;
-   }
-
-   void save( File& file ) const {}
-   void load( File& file ) {}
-
-   void setSubentitiesCounts( SubdimensionTag, const typename MeshTraitsType::NeighborCountsArray& ) {}
-   void getSubentitiesCount( SubdimensionTag ) {}
-   void getSubentitiesMatrix( SubdimensionTag ) {}
-};
-
-template< typename MeshConfig,
-          typename Device >
-class SubentityStorageLayer< MeshConfig,
-                             Device,
-                             Topologies::Polygon,
-                             DimensionTag< Topologies::Polygon::dimension >,
-                             false >
-{
-   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
-   using EntityTopology  = Topologies::Polygon;
    using SubdimensionTag = DimensionTag< EntityTopology::dimension >;
 
 protected:

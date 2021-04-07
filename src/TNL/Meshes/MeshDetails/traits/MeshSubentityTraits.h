@@ -28,7 +28,7 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           int Dimension >
-class MeshSubentityTraits
+class MeshSubentityTraits< MeshConfig, Device, EntityTopology, Dimension, false >
 {
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType  = typename MeshConfig::LocalIndexType;
@@ -58,15 +58,14 @@ public:
    };
 };
 
-// Specialization for Polygons
 template< typename MeshConfig,
           typename Device,
+          typename EntityTopology,
           int Dimension >
-class MeshSubentityTraits<MeshConfig, Device, Topologies::Polygon, Dimension>
+class MeshSubentityTraits< MeshConfig, Device, EntityTopology, Dimension, true >
 {
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType  = typename MeshConfig::LocalIndexType;
-   using EntityTopology = Topologies::Polygon;
 
 public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );

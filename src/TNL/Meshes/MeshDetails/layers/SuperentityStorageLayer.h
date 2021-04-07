@@ -26,23 +26,23 @@ namespace Meshes {
 
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopologyDimensionTag,
+          typename EntityDimensionTag,
           typename SuperdimensionTag,
-          bool SuperentityStorage = WeakSuperentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopologyDimensionTag::value >::EntityTopology, SuperdimensionTag >::storageEnabled >
+          bool SuperentityStorage = WeakSuperentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityDimensionTag::value >::EntityTopology, SuperdimensionTag >::storageEnabled >
 class SuperentityStorageLayer;
 
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopologyDimensionTag >
+          typename EntityDimensionTag >
 class SuperentityStorageLayerFamily
    : public SuperentityStorageLayer< MeshConfig,
                                      Device,
-                                     EntityTopologyDimensionTag,
+                                     EntityDimensionTag,
                                      DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >
 {
    using BaseType = SuperentityStorageLayer< MeshConfig,
                                              Device,
-                                             EntityTopologyDimensionTag,
+                                             EntityDimensionTag,
                                              DimensionTag< MeshTraits< MeshConfig, Device >::meshDimension > >;
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
@@ -57,7 +57,7 @@ protected:
    typename MeshTraitsType::NeighborCountsArray&
    getSuperentitiesCountsArray()
    {
-      static_assert( EntityTopologyDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( EntityDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentitiesCountsArray( DimensionTag< Superdimension >() );
    }
 
@@ -66,7 +66,7 @@ protected:
    const typename MeshTraitsType::NeighborCountsArray&
    getSuperentitiesCountsArray() const
    {
-      static_assert( EntityTopologyDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( EntityDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentitiesCountsArray( DimensionTag< Superdimension >() );
    }
 
@@ -75,7 +75,7 @@ protected:
    typename MeshTraitsType::SuperentityMatrixType&
    getSuperentitiesMatrix()
    {
-      static_assert( EntityTopologyDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( EntityDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentitiesMatrix( DimensionTag< Superdimension >() );
    }
 
@@ -84,19 +84,19 @@ protected:
    const typename MeshTraitsType::SuperentityMatrixType&
    getSuperentitiesMatrix() const
    {
-      static_assert( EntityTopologyDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
+      static_assert( EntityDimensionTag::value < Superdimension, "Invalid combination of Dimension and Superdimension." );
       return BaseType::getSuperentitiesMatrix( DimensionTag< Superdimension >() );
    }
 };
 
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopologyDimensionTag,
+          typename EntityDimensionTag,
           typename SuperdimensionTag >
-class SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, SuperdimensionTag, true >
-   : public SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, typename SuperdimensionTag::Decrement >
+class SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, SuperdimensionTag, true >
+   : public SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, typename SuperdimensionTag::Decrement >
 {
-   using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, typename SuperdimensionTag::Decrement >;
+   using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, typename SuperdimensionTag::Decrement >;
    using MeshTraitsType = MeshTraits< MeshConfig, Device >;
 
 protected:
@@ -111,7 +111,7 @@ protected:
    }
 
    template< typename Device_ >
-   SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopologyDimensionTag, SuperdimensionTag >& other )
+   SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other )
    {
       operator=( other );
    }
@@ -125,7 +125,7 @@ protected:
    }
 
    template< typename Device_ >
-   SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopologyDimensionTag, SuperdimensionTag >& other )
+   SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other )
    {
       BaseType::operator=( other );
       superentitiesCounts = other.superentitiesCounts;
@@ -137,7 +137,7 @@ protected:
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << "Adjacency matrix for superentities with dimension " << SuperdimensionTag::value << " of entities with dimension " << EntityTopologyDimensionTag::value << " is: " << std::endl;
+      str << "Adjacency matrix for superentities with dimension " << SuperdimensionTag::value << " of entities with dimension " << EntityDimensionTag::value << " is: " << std::endl;
       str << matrix << std::endl;
    }
 
@@ -186,12 +186,12 @@ private:
 
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopologyDimensionTag,
+          typename EntityDimensionTag,
           typename SuperdimensionTag >
-class SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, SuperdimensionTag, false >
-   : public SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, typename SuperdimensionTag::Decrement >
+class SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, SuperdimensionTag, false >
+   : public SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, typename SuperdimensionTag::Decrement >
 {
-   using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, typename SuperdimensionTag::Decrement >;
+   using BaseType = SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, typename SuperdimensionTag::Decrement >;
 public:
    // inherit constructors and assignment operators (including templated versions)
    using BaseType::BaseType;
@@ -201,18 +201,18 @@ public:
 // termination of recursive inheritance (everything is reduced to EntityStorage == false thanks to the WeakSuperentityStorageTrait)
 template< typename MeshConfig,
           typename Device,
-          typename EntityTopologyDimensionTag >
-class SuperentityStorageLayer< MeshConfig, Device, EntityTopologyDimensionTag, EntityTopologyDimensionTag, false >
+          typename EntityDimensionTag >
+class SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, EntityDimensionTag, false >
 {
-   using SuperdimensionTag = EntityTopologyDimensionTag;
+   using SuperdimensionTag = EntityDimensionTag;
 
 protected:
    SuperentityStorageLayer() = default;
    explicit SuperentityStorageLayer( const SuperentityStorageLayer& other ) {}
    template< typename Device_ >
-   SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopologyDimensionTag, SuperdimensionTag >& other ) {}
+   SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other ) {}
    template< typename Device_ >
-   SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityTopologyDimensionTag, SuperdimensionTag >& other ) { return *this; }
+   SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other ) { return *this; }
 
    void getSuperentitiesCountsArray() {}
 

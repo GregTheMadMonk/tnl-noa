@@ -27,11 +27,12 @@ template< typename MeshConfig, typename Device, typename MeshType >
 void
 MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
+      typename MeshTraitsType::FaceSeedArrayType& faceSeeds,
       typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
    MeshType* mesh = static_cast< MeshType* >( this );
    Initializer< typename MeshType::Config > initializer;
-   initializer.createMesh( points, cellSeeds, *mesh );
+   initializer.createMesh( points, faceSeeds, cellSeeds, *mesh );
    // init boundary tags
    static_cast< EntityTags::LayerFamily< MeshConfig, Device, MeshType >* >( mesh )->initLayer();
    // init dual graph
