@@ -130,7 +130,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         __syncthreads();
 
         int smaller = 0, bigger = 0;
-        countElem(src.getView(begin, end), smaller, bigger, pivot);
+        countElem(src.getView(begin, end), Cmp, smaller, bigger, pivot);
 
         //synchronization is in this function already
         int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
@@ -160,7 +160,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
             }
             __syncthreads();
 
-            copyDataShared(src.getView(begin, end), dst.getView(begin, end),
+            copyDataShared(src.getView(begin, end), dst.getView(begin, end), Cmp,
                 sharedMem,
                 0, pivotEnd,
                 smallerTotal, biggerTotal,
@@ -172,7 +172,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
             int destSmaller = 0 + (smallerPrefSumInc - smaller);
             int destBigger = pivotEnd  + (biggerPrefSumInc - bigger);
 
-            copyData(src.getView(begin, end), dst.getView(begin, end), destSmaller, destBigger, pivot);
+            copyData(src.getView(begin, end), dst.getView(begin, end), Cmp, destSmaller, destBigger, pivot);
         }
 
         __syncthreads();
