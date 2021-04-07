@@ -8,93 +8,92 @@ using namespace TNL;
 using namespace TNL::Containers;
 
 template <typename Value, typename Device, typename Function>
-__device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const Function & Cmp)
+__device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const Function &Cmp)
 {
     //return src[0];
     //return src[src.getSize()-1];
 
-    if(src.getSize() ==1)
+    if (src.getSize() == 1)
         return src[0];
-    
-    Value a = src[0], b = src[src.getSize()/2], c = src[src.getSize() - 1];
 
-    if(Cmp(a, b)) // ..a..b..
+    Value a = src[0], b = src[src.getSize() / 2], c = src[src.getSize() - 1];
+
+    if (Cmp(a, b)) // ..a..b..
     {
-        if(Cmp(b, c))// ..a..b..c
+        if (Cmp(b, c)) // ..a..b..c
             return b;
-        else if(Cmp(c, a))//..c..a..b..
+        else if (Cmp(c, a)) //..c..a..b..
             return a;
         else //..a..c..b..
             return c;
     }
     else //..b..a..
     {
-        if(Cmp(a, c))//..b..a..c
+        if (Cmp(a, c)) //..b..a..c
             return a;
-        else if(Cmp(c, b))//..c..b..a..
+        else if (Cmp(c, b)) //..c..b..a..
             return b;
         else //..b..c..a..
             return c;
     }
-    
 }
 
 template <typename Value, typename Device, typename Function>
-__device__ Value pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const Function & Cmp)
+__device__ Value pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const Function &Cmp)
 {
     //return 0;
     //return src.getSize()-1;
 
-    if(src.getSize() <= 1)
+    if (src.getSize() <= 1)
         return 0;
-    
-    Value a = src[0], b = src[src.getSize()/2], c = src[src.getSize() - 1];
 
-    if(Cmp(a, b)) // ..a..b..
+    Value a = src[0], b = src[src.getSize() / 2], c = src[src.getSize() - 1];
+
+    if (Cmp(a, b)) // ..a..b..
     {
-        if(Cmp(b, c))// ..a..b..c
-            return src.getSize()/2;
-        else if(Cmp(c, a))//..c..a..b..
+        if (Cmp(b, c)) // ..a..b..c
+            return src.getSize() / 2;
+        else if (Cmp(c, a)) //..c..a..b..
             return 0;
         else //..a..c..b..
             return src.getSize() - 1;
     }
     else //..b..a..
     {
-        if(Cmp(a, c))//..b..a..c
+        if (Cmp(a, c)) //..b..a..c
             return 0;
-        else if(Cmp(c, b))//..c..b..a..
-            return src.getSize()/2;
+        else if (Cmp(c, b)) //..c..b..a..
+            return src.getSize() / 2;
         else //..b..c..a..
             return src.getSize() - 1;
     }
 }
 
 template <typename Value, typename Function>
-__device__
-void countElem(ArrayView<Value, Devices::Cuda> arr, const Function & Cmp,
-             int &smaller, int &bigger,
-             const Value &pivot)
+__device__ void countElem(ArrayView<Value, Devices::Cuda> arr,
+                          const Function &Cmp,
+                          int &smaller, int &bigger,
+                          const Value &pivot)
 {
     for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
     {
         const Value data = arr[i];
-        if(Cmp(data, pivot))
+        if (Cmp(data, pivot))
             smaller++;
-        else if(Cmp(pivot, data) )
+        else if (Cmp(pivot, data))
             bigger++;
     }
 }
 
 template <typename Value, typename Function>
-__device__
-void copyDataShared(ArrayView<Value, Devices::Cuda> src,
-              ArrayView<Value, Devices::Cuda> dst, const Function & Cmp,
-              Value *sharedMem,
-              int smallerStart, int biggerStart,
-              int smallerTotal, int biggerTotal,
-              int smallerOffset, int biggerOffset, //exclusive prefix sum of elements
-              const Value &pivot)
+__device__ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
+                               ArrayView<Value, Devices::Cuda> dst,
+                               const Function &Cmp,
+                               Value *sharedMem,
+                               int smallerStart, int biggerStart,
+                               int smallerTotal, int biggerTotal,
+                               int smallerOffset, int biggerOffset, //exclusive prefix sum of elements
+                               const Value &pivot)
 {
 
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
@@ -109,7 +108,7 @@ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
 
     for (int i = threadIdx.x; i < smallerTotal + biggerTotal; i += blockDim.x)
     {
-        if(i < smallerTotal)
+        if (i < smallerTotal)
             dst[smallerStart + i] = sharedMem[i];
         else
             dst[biggerStart + i - smallerTotal] = sharedMem[i];
@@ -117,17 +116,16 @@ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
 }
 
 template <typename Value, typename Function>
-__device__
-void copyData(ArrayView<Value, Devices::Cuda> src,
-              ArrayView<Value, Devices::Cuda> dst,
-              const Function & Cmp, 
-              int smallerStart, int biggerStart,
-              const Value &pivot)
+__device__ void copyData(ArrayView<Value, Devices::Cuda> src,
+                         ArrayView<Value, Devices::Cuda> dst,
+                         const Function &Cmp,
+                         int smallerStart, int biggerStart,
+                         const Value &pivot)
 {
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
     {
         const Value data = src[i];
-        if ( Cmp(data, pivot) )
+        if (Cmp(data, pivot))
         {
             /*
             if(smallerStart >= dst.getSize() || smallerStart < 0)
@@ -135,7 +133,7 @@ void copyData(ArrayView<Value, Devices::Cuda> src,
             */
             dst[smallerStart++] = data;
         }
-        else if ( Cmp(pivot, data) )
+        else if (Cmp(pivot, data))
         {
             /*
             if(biggerStart >= dst.getSize() || biggerStart < 0)
@@ -151,10 +149,10 @@ void copyData(ArrayView<Value, Devices::Cuda> src,
 template <typename Value, typename Function, bool useShared>
 __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
                               ArrayView<Value, Devices::Cuda> dst,
-                              Value * sharedMem,
-                              const Function &Cmp, const Value & pivot,
-                              int elemPerBlock, TASK & task
-                              )
+                              const Function &Cmp,
+                              Value *sharedMem,
+                              const Value &pivot,
+                              int elemPerBlock, TASK &task)
 {
     static __shared__ int smallerStart, biggerStart;
 
@@ -167,7 +165,7 @@ __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
 
     int smaller = 0, bigger = 0;
     countElem(srcView, Cmp, smaller, bigger, pivot);
-    
+
     int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
     int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
 
@@ -179,7 +177,7 @@ __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
     __syncthreads();
 
     //-----------------------------------------------------------
-    if(useShared)
+    if (useShared)
     {
         static __shared__ int smallerTotal, biggerTotal;
         if (threadIdx.x == blockDim.x - 1)
@@ -190,10 +188,10 @@ __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
         __syncthreads();
 
         copyDataShared(srcView, dst, Cmp, sharedMem,
-                        smallerStart, biggerStart,
-                        smallerTotal, biggerTotal,
-                        smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
-                        pivot);
+                       smallerStart, biggerStart,
+                       smallerTotal, biggerTotal,
+                       smallerPrefSumInc - smaller, biggerPrefSumInc - bigger, //exclusive prefix sum of elements
+                       pivot);
     }
     else
     {

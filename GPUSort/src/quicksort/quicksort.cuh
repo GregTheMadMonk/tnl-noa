@@ -68,9 +68,9 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
 
 template <typename Value, typename Function, bool useShared>
 __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                        const Function &Cmp, int elemPerBlock,
-                                        ArrayView<TASK, Devices::Cuda> tasks,
-                                        ArrayView<int, Devices::Cuda> taskMapping)
+                                      const Function &Cmp, int elemPerBlock,
+                                      ArrayView<TASK, Devices::Cuda> tasks,
+                                      ArrayView<int, Devices::Cuda> taskMapping)
 {
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
@@ -88,8 +88,8 @@ __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, Array
     cudaPartition<Value, Function, useShared>(
         src.getView(myTask.partitionBegin, myTask.partitionEnd),
         dst.getView(myTask.partitionBegin, myTask.partitionEnd),
-        sharedMem,
-        Cmp, pivot, elemPerBlock, myTask);
+        Cmp, sharedMem, pivot,
+        elemPerBlock, myTask);
 }
 
 //----------------------------------------------------
@@ -153,7 +153,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
                                       int elemInShared)
 {
     extern __shared__ int externMem[];
-    Value * sharedMem = (Value *) externMem;
+    Value *sharedMem = (Value *)externMem;
 
     TASK &myTask = secondPhaseTasks[blockIdx.x];
     if (myTask.partitionEnd - myTask.partitionBegin <= 0)
@@ -162,17 +162,14 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    if(elemInShared == 0)
+    if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
     }
-
 }
 
 template <typename Value, typename Function, int stackSize>
@@ -183,7 +180,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
                                       int elemInShared)
 {
     extern __shared__ int externMem[];
-    Value * sharedMem = (Value *) externMem;
+    Value *sharedMem = (Value *)externMem;
 
     TASK myTask;
     if (blockIdx.x < secondPhaseTasks1.getSize())
@@ -200,15 +197,13 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    if(elemInShared == 0)
+    if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
     }
 }
 
@@ -366,7 +361,7 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
 
         auto &task = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
         int externMemByteSize = elemPerBlock * sizeof(Value);
-        
+
         /**
          * check if can partition using shared memory for coalesced read and write
          * 1st phase of partitioning
@@ -424,7 +419,7 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
 
     int elemInShared = desiredElemPerBlock;
     int externSharedByteSize = sizeof(Value) * elemInShared;
-    if(externSharedByteSize > maxSharable)
+    if (externSharedByteSize > maxSharable)
     {
         externSharedByteSize = 0;
         elemInShared = 0;
@@ -563,7 +558,7 @@ void quicksort(ArrayView<Value, Devices::Cuda> arr, const Function &Cmp)
 
     assert(blockDim * multiplier * sizeof(Value) <= maxSharable);
 
-    QUICKSORT<Value> sorter(arr, maxBlocks, blockDim, multiplier*blockDim, maxSharable);
+    QUICKSORT<Value> sorter(arr, maxBlocks, blockDim, multiplier * blockDim, maxSharable);
     sorter.sort(Cmp);
 }
 
