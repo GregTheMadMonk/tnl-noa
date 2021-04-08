@@ -19,6 +19,13 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+/**
+ * \brief Iterator for iterating over elements of a segment.
+ *
+ * The iterator can be used even in GPU kernels.
+ *
+ * \tparam SegmentView is a type of related segment view.
+ */
 template< typename SegmentView >
 class SegmentViewIterator
 {
@@ -61,12 +68,28 @@ class SegmentViewIterator
       __cuda_callable__
       bool operator!=( const SegmentViewIterator& other ) const;
 
+      /**
+       * \brief Operator for incrementing the iterator, i.e. moving to the next element.
+       *
+       * \return reference to this iterator.
+       */
       __cuda_callable__
       SegmentViewIterator& operator++();
 
+      /**
+       * \brief Operator for decrementing the iterator, i.e. moving to the previous element.
+       *
+       * \return reference to this iterator.
+       */
       __cuda_callable__
       SegmentViewIterator& operator--();
 
+      /**
+       * \brief Operator for derefrencing the iterator.
+       *
+       * It returns structure \ref SegmentElementType which represent one element of a segment.
+       * \return segment element the iterator points to.
+       */
       __cuda_callable__
       const SegmentElementType operator*() const;
 

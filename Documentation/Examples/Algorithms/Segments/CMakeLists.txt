@@ -6,6 +6,10 @@ set( COMMON_EXAMPLES
    SegmentsExample_CSR_getSegmentsType
    SegmentsExample_CSR_setSegmentsSizes
    SegmentsExample_CSR_getSegmentView
+   SegmentsExample_CSR_forElements
+   SegmentsExample_CSR_forSegments
+   SegmentsExample_CSR_sequentialForSegments
+   SegmentsExample_CSR_reduceSegments
 )
 
 if( BUILD_CUDA )

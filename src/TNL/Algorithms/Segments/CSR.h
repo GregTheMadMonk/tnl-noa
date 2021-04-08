@@ -294,46 +294,196 @@ class CSR
       OffsetsContainer& getOffsets();
 
       /**
-       * \brief Go over all segments and for each segment element call
-       * function 'f'. The return type of 'f' is bool.
-       * When its true, the for-loop continues. Once 'f' returns false, the for-loop
-       * is terminated.
+       * \brief Iterate over all elements of given segments in parallel and call given lambda function.
+       *
+       * \tparam Function is a type of the lambda function to be performed on each element.
+       * \param begin defines begining of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param end defines end of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param function is the lambda function to be applied on the elements of the segments.
+       *
+       * Declaration of the lambda function \e function is supposed to be
+       *
+       * ```
+       * auto f = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx ) {...} 
+       * ```
+       * where \e segmentIdx is index of segment where given element belong to, \e localIdx is rank of the element
+       * within the segment and \e globalIdx is index of the element within the related container.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_forElements.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_forElements.out
        */
       template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function&& f ) const;
+      void forElements( IndexType begin, IndexType end, Function&& function ) const;
 
+      /**
+       * \brief Call \ref TNL::Algorithms::Segments::CSR::forElements for all elements of the segments.
+       *
+       * See \ref TNL::Algorithms::Segments::CSR::forElements for more details.
+       */
       template< typename Function >
-      void forAllElements( Function&& f ) const;
+      void forAllElements( Function&& function ) const;
 
+      /**
+       * \brief Iterate over all segments in parallel and call given lambda function.
+       *
+       * \tparam Function is a type of the lambda function to be performed on each segment.
+       * \param begin defines begining of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param end defines end of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param function is the lambda function to be applied on the elements of the segments.
+       *
+       *  Declaration of the lambda function \e function is supposed to be
+       *
+       * ```
+       * auto f = [=] __cuda_callable__ ( const SegmentView& segment ) {...}
+       * ```
+       * where \e segment represents given segment (see \ref TNL::Algorithms::Segments::SegmentView).
+       * Its type is given by \ref SegmentViewType.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_forSegments.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_forSegments.out
+       */
       template< typename Function >
-      void forSegments( IndexType begin, IndexType end, Function&& f ) const;
+      void forSegments( IndexType begin, IndexType end, Function&& function ) const;
 
+      /**
+       * \brief Call \ref TNL::Algorithms::Segments::CSR::forSegments for all segments.
+       *
+       * See \ref TNL::Algorithms::Segments::CSR::forSegments for more details.
+       */
       template< typename Function >
-      void forAllSegments( Function&& f ) const;
+      void forAllSegments( Function&& function ) const;
 
+      /**
+       * \brief Call \ref TNL::Algorithms::Segments::CSR::forSegments sequentially for particular segments.
+       *
+       * With this method, the given segments are processed sequentially one-by-one. This is usefull for example
+       * for printing of segments based data structures or for debugging reasons.
+       *
+       * \param begin defines begining of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param end defines end of an interval [ \e begin, \e end ) of segments on
+       *    elements of which we want to apply the lambda function.
+       * \param function is the lambda function to be applied on the elements of the segments.
+       *
+       * See \ref TNL::Algorithms::Segments::CSR::forSegments for more details.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_sequentialForSegments.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_sequentialForSegments.out
+       */
       template< typename Function >
-      void sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const;
+      void sequentialForSegments( IndexType begin, IndexType end, Function&& function ) const;
 
+      /**
+       * \brief Call \ref TNL::Algorithms::Segments::CSR::sequentialForSegments for all segments.
+       *
+       * See \ref TNL::Algorithms::Segments::CSR::sequentialForSegments for more details.
+       */
       template< typename Function >
       void sequentialForAllSegments( Function&& f ) const;
 
-
-      /***
-       * \brief Go over all segments and perform a reduction in each of them.
+      /**
+       * \brief Compute reduction in each segment.
+       *
+       * \tparam Fetch is type of lambda function for data fetching.
+       * \tparam Reduce is a reduction operation.
+       * \tparam Keep is lambda function for storing results from particular segments.
+       *
+       * \param begin defines begining of an interval [ \e begin, \e end ) of segments in
+       *    which we want to perform the reduction.
+       * \param end defines and of an interval [ \e begin, \e end ) of segments in
+       *    which we want to perform the reduction.
+       * \param fetch is a lambda function for fetching of data. It is suppos have one of the
+       *  following forms:
+       * 1. Full form
+       *  ```
+       *  auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) { ... }
+       *  ```
+       * 2. Brief form
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType globalIdx, bool& compute ) { ... }
+       * ```
+       * where for both variants \e segmentIdx is segment index, \e localIdx is a rank of element in the segment, \e globalIdx is index of the element
+       * in related container and \e compute is a boolean variable which serves for stopping the reduction if it is set to \e false. It is however,
+       * only a hint and the real behaviour depends on type of kernel used ofr the redcution.
+       * Some kernels are optimized so that they can be significantly faster with the brief variant of the \e fetch lambda function.
+       * \param reduce is a lambda function representing the reduction opeartion. It is supposed to be defined as:
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const Value& a, const Value& b ) -> Value { ... }
+       * ```
+       *
+       * where \e a and \e b are values to be reduced and the lambda function returns result of the reduction.
+       * \param keep is a lambda function for saving results from particular segments. It is supposed to be defined as:
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( IndexType segmentIdx, const Value& value ) { ... }
+       * ```
+       *
+       * where \e segmentIdx is an index of the segment and \e value is the result of the reduction in given segment to be stored.
+       *
+       * \par Example
+       * \include Algorithms/Segments/SegmentsExample_CSR_reduceSegments.cpp
+       * \par Output
+       * \include SegmentsExample_CSR_reduceSegments.out
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
-      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
+      template< typename Fetch, typename Reduce, typename Keep, typename Value >
+      void reduceSegments( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const Value& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
-      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
+      /**
+       * \brief Call \ref TNL::Algorithms::Segments::CSR::reduceSegments for all segments.
+       *
+       * See \ref TNL::Algorithms::Segments::CSR::reduceSegments for more details.
+       */
+      template< typename Fetch, typename Reduce, typename Keep, typename Value >
+      void reduceAllSegments( Fetch& fetch, const Reduce& reduce, Keep& keep, const Value& zero ) const;
 
-      CSR& operator=( const CSR& rhsSegments ) = default;
+      /**
+       * \brief Assignment operator.
+       *
+       * It makes a deep copy of the source segments.
+       *
+       * \param source are the CSR segments to be assigned.
+       * \return reference to this instance.
+       */
+      CSR& operator=( const CSR& source ) = default;
 
+      /**
+       * \brief Assignment operator with CSR segments with different template parameters.
+       *
+       * It makes a deep copy of the source segments.
+       *
+       * \tparam Device_ is device type of the source segments.
+       * \tparam Index_ is the index type of the source segments.
+       * \tparam Kernel_ is the kernel type of the source segments.
+       * \tparam IndexAllocator_ is the index allocator of the source segments.
+       * \param source is the source segments object.
+       * \return reference to this instance.
+       */
       template< typename Device_, typename Index_, typename Kernel_, typename IndexAllocator_ >
       CSR& operator=( const CSR< Device_, Index_, Kernel_, IndexAllocator_ >& source );
 
+      /**
+       * \brief Method for saving the segments to a file in a binary form.
+       *
+       * \param file is the target file.
+       */
       void save( File& file ) const;
 
+      /**
+       * \brief Method for loading the segments from a file in a binary form.
+       *
+       * \param file is the source file.
+       */
       void load( File& file );
 
    protected:
@@ -343,6 +493,17 @@ class CSR
       KernelType kernel;
 };
 
+/**
+ * \brief Insertion operator of CSR segments to output stream.
+ *
+ * \tparam Device is the device type of the source segments.
+ * \tparam Index is the index type of the source segments.
+ * \tparam Kernel is kernel type of the source segments.
+ * \tparam IndexAllocator is the index allocator of the source segments.
+ * \param str is the output stream.
+ * \param segments are the source segments.
+ * \return reference to the output stream.
+ */
 template< typename Device,
           typename Index,
           typename Kernel,
