@@ -32,7 +32,7 @@ struct TASK
     __cuda_callable__
     int getSize() const
     {
-        return end - begin;
+        return partitionEnd - partitionBegin;
     }
 
     TASK() = default;
