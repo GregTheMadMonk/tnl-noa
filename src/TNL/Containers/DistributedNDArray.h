@@ -391,7 +391,22 @@ public:
    void allocate()
    {
       SizesHolderType localSizes;
-      Algorithms::TemplateStaticFor< std::size_t, 0, SizesHolderType::getDimension(), LocalSizesSetter >::execHost( localSizes, globalSizes, localBegins, localEnds );
+      Algorithms::staticFor< std::size_t, 0, SizesHolderType::getDimension() >(
+         [&] ( auto level ) {
+            if( SizesHolderType::template getStaticSize< level >() != 0 )
+               return;
+
+            const auto begin = localBegins.template getSize< level >();
+            const auto end = localEnds.template getSize< level >();
+            if( begin == end )
+               localSizes.template setSize< level >( globalSizes.template getSize< level >() );
+            else {
+               TNL_ASSERT_GE( end - begin, (decltype(end)) __ndarray_impl::get<level>( OverlapsType{} ), "local size is less than the size of overlaps" );
+               //localSizes.template setSize< level >( end - begin + 2 * __ndarray_impl::get<level>( OverlapsType{} ) );
+               localSizes.template setSize< level >( end - begin );
+            }
+         }
+      );
       localArray.setSize( localSizes );
    }
 
@@ -439,28 +454,6 @@ protected:
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;
    SizesHolderType localEnds;
-
-private:
-   template< std::size_t level >
-   struct LocalSizesSetter
-   {
-      template< typename SizesHolder, typename LocalBegins >
-      static void exec( SizesHolder& localSizes, const SizesHolder& globalSizes, const LocalBegins& localBegins, const SizesHolder& localEnds )
-      {
-         if( SizesHolder::template getStaticSize< level >() != 0 )
-            return;
-
-         const auto begin = localBegins.template getSize< level >();
-         const auto end = localEnds.template getSize< level >();
-         if( begin == end )
-            localSizes.template setSize< level >( globalSizes.template getSize< level >() );
-         else {
-            TNL_ASSERT_GE( end - begin, (decltype(end)) __ndarray_impl::get<level>( OverlapsType{} ), "local size is less than the size of overlaps" );
-            //localSizes.template setSize< level >( end - begin + 2 * __ndarray_impl::get<level>( OverlapsType{} ) );
-            localSizes.template setSize< level >( end - begin );
-         }
-      }
-   };
 };
 
 } // namespace Containers

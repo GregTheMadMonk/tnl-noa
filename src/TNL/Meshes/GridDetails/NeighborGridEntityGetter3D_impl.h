@@ -14,7 +14,7 @@
 #include <TNL/Meshes/GridDetails/Grid1D.h>
 #include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -36,7 +36,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 3;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -51,7 +51,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -68,7 +68,7 @@ class NeighborGridEntityGetter<
                                                          entity.getCoordinates().y() + stepY,
                                                          entity.getCoordinates().z() + stepZ ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
@@ -83,16 +83,16 @@ class NeighborGridEntityGetter<
                    << " EntityDimension = " << EntityDimension );
          return this->entity.getIndex() + ( stepZ * entity.getMesh().getDimensions().y() + stepY ) * entity.getMesh().getDimensions().x() + stepX;
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
- 
+
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
- 
+
 };
 
 
@@ -113,7 +113,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityCrossStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 3;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -126,12 +126,12 @@ class NeighborGridEntityGetter<
       typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
 
       static constexpr int stencilSize = Config::getStencilSize();
- 
+
       __cuda_callable__ inline
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -148,7 +148,7 @@ class NeighborGridEntityGetter<
                                                          entity.getCoordinates().y() + stepY,
                                                          entity.getCoordinates().z() + stepZ ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
@@ -179,66 +179,38 @@ class NeighborGridEntityGetter<
 #endif
 
       }
- 
-      template< IndexType index >
-      class StencilXRefresher
-      {
-         public:
- 
-            __cuda_callable__
-            static void exec( NeighborGridEntityGetter& neighborEntityGetter, const IndexType& entityIndex )
-            {
-               neighborEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
-            }
-      };
 
-      template< IndexType index >
-      class StencilYRefresher
-      {
-         public:
- 
-            __cuda_callable__
-            static void exec( NeighborGridEntityGetter& neighborEntityGetter, const IndexType& entityIndex )
-            {
-               neighborEntityGetter.stencilY[ index + stencilSize ] =
-                  entityIndex + index * neighborEntityGetter.entity.getMesh().getDimensions().x();
-            }
-      };
- 
-      template< IndexType index >
-      class StencilZRefresher
-      {
-         public:
- 
-            __cuda_callable__
-            static void exec( NeighborGridEntityGetter& neighborEntityGetter, const IndexType& entityIndex )
-            {
-               neighborEntityGetter.stencilZ[ index + stencilSize ] =
-                  entityIndex + index * neighborEntityGetter.entity.getMesh().cellZNeighborsStep;
-            }
-      };
-
- 
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA
-         Algorithms::TemplateStaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
-         Algorithms::TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
-         Algorithms::TemplateStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
-         Algorithms::TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
-         Algorithms::TemplateStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
+         auto stencilXRefresher = [&] ( auto index ) {
+            stencilX[ index + stencilSize ] = entityIndex + index;
+         };
+         auto stencilYRefresher = [&] ( auto index ) {
+            stencilY[ index + stencilSize ] =
+               entityIndex + index * entity.getMesh().getDimensions().x();
+         };
+         auto stencilZRefresher = [&] ( auto index ) {
+            stencilZ[ index + stencilSize ] =
+               entityIndex + index * entity.getMesh().cellZNeighborsStep;
+         };
+         Algorithms::staticFor< IndexType, -stencilSize, 0 >( stencilZRefresher );
+         Algorithms::staticFor< IndexType, 1, stencilSize + 1 >( stencilZRefresher );
+         Algorithms::staticFor< IndexType, -stencilSize, 0 >( stencilYRefresher );
+         Algorithms::staticFor< IndexType, 1, stencilSize + 1 >( stencilYRefresher );
+         Algorithms::staticFor< IndexType, -stencilSize, stencilSize + 1 >( stencilXRefresher );
 #endif
       };
- 
+
    protected:
 
       const GridEntityType& entity;
- 
+
       IndexType stencilX[ 2 * stencilSize + 1 ];
       IndexType stencilY[ 2 * stencilSize + 1 ];
       IndexType stencilZ[ 2 * stencilSize + 1 ];
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -259,7 +231,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -276,7 +248,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -307,21 +279,21 @@ class NeighborGridEntityGetter<
                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
                                         EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
          return GridEntityGetterType::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
- 
+
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -342,7 +314,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityCrossStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 2;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -359,7 +331,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -390,21 +362,21 @@ class NeighborGridEntityGetter<
                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
                                         EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
          return GridEntityGetterType::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
- 
+
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -426,7 +398,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 1;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -443,7 +415,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -472,21 +444,21 @@ class NeighborGridEntityGetter<
                                         EntityOrientationType( !!stepX, !!stepY, !!stepZ ),
                                         EntityBasisType( !stepX, !stepY, !stepZ ));
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
          return GridEntityGetterType::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
- 
+
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -508,7 +480,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 3;
       static constexpr int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -523,7 +495,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY,int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -554,21 +526,21 @@ class NeighborGridEntityGetter<
                                                          entity.getCoordinates().y() + stepY + ( stepY < 0 ),
                                                          entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
          return GridEntityGetterType::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
 
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -589,7 +561,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 2;
       static constexpr int NeighborEntityDimension = 3;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -604,7 +576,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -637,21 +609,21 @@ class NeighborGridEntityGetter<
                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
          return GridEntityGetterType::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
 
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
 };
 
@@ -672,7 +644,7 @@ class NeighborGridEntityGetter<
    GridEntityStencilStorageTag< GridEntityNoStencil > >
 {
    public:
- 
+
       static constexpr int EntityDimension = 0;
       static constexpr int NeighborEntityDimension = 0;
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
@@ -687,7 +659,7 @@ class NeighborGridEntityGetter<
       NeighborGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
       {}
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       NeighborGridEntityType getEntity() const
@@ -705,7 +677,7 @@ class NeighborGridEntityGetter<
                                                          entity.getCoordinates().y() + stepY,
                                                          entity.getCoordinates().z() + stepZ ) );
       }
- 
+
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
@@ -720,16 +692,16 @@ class NeighborGridEntityGetter<
                    << " EntityDimension = " << EntityDimension );
          return this->entity.getIndex() + stepZ * ( entity.getMesh().getDimensions().y() + 1 + stepY ) * ( entity.getMesh().getDimensions().x() + 1 ) + stepX;
       }
- 
+
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex ){};
 
    protected:
 
       const GridEntityType& entity;
- 
+
       //NeighborGridEntityGetter(){};
- 
+
 };
 
 } // namespace Meshes

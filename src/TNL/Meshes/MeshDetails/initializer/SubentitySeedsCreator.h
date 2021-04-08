@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 
 namespace TNL {
@@ -43,35 +43,20 @@ public:
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
       SubentitySeedArray subentitySeeds;
-      Algorithms::TemplateStaticFor< LocalIndexType, 0, SubentitySeedArray::getSize(), CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
+      Algorithms::staticFor< LocalIndexType, 0, SubentitySeedArray::getSize() >(
+         [&] ( auto subentityIndex ) {
+            Algorithms::staticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT >(
+               [&] ( auto subentityVertexIndex ) {
+                  // subentityIndex cannot be captured as constexpr, so we need to create another instance of its type
+                  static constexpr LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< decltype(subentityIndex){}, subentityVertexIndex >::index;
+                  subentitySeeds[ subentityIndex ].setCornerId( subentityVertexIndex, subvertices.getColumnIndex( VERTEX_INDEX ) );
+               }
+            );
+         }
+      );
 
       return subentitySeeds;
    }
-
-private:
-   using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
-
-   template< LocalIndexType subentityIndex >
-   class CreateSubentitySeeds
-   {
-      public:
-         static void exec( SubentitySeedArray& subentitySeeds, const SubvertexAccessorType& subvertices )
-         {
-            Algorithms::TemplateStaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::execHost( subentitySeeds[ subentityIndex ], subvertices );
-         }
-
-      private:
-         template< LocalIndexType subentityVertexIndex >
-         class SetSubentitySeedVertex
-         {
-            public:
-               static void exec( SubentitySeed& subentitySeed, const SubvertexAccessorType& subvertices )
-               {
-                  static constexpr LocalIndexType VERTEX_INDEX = SubentityTraits::template Vertex< subentityIndex, subentityVertexIndex >::index;
-                  subentitySeed.setCornerId( subentityVertexIndex, subvertices.getColumnIndex( VERTEX_INDEX ) );
-               }
-         };
-   };
 };
 
 template< typename MeshConfig,

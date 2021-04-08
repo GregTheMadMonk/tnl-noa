@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
@@ -45,15 +45,6 @@ protected:
    {
       using EntityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, 0 >::EntityTopology;
       static constexpr bool value = MeshConfig::entityTagsStorage( EntityTopology() );
-   };
-
-   template< int Dimension >
-   struct SetEntitiesCount
-   {
-      static void exec( Mesh& mesh )
-      {
-         mesh.template entityTagsSetEntitiesCount< Dimension >( mesh.template getEntitiesCount< Dimension >() );
-      }
    };
 
    template< int Dimension >
@@ -123,15 +114,6 @@ protected:
       }
    };
 
-   template< int Dimension >
-   struct UpdateEntityTagsLayer
-   {
-      static void exec( Mesh& mesh )
-      {
-         mesh.template updateEntityTagsLayer< Dimension >();
-      }
-   };
-
 // nvcc does not allow __cuda_callable__ lambdas inside private or protected sections
 #ifdef __NVCC__
 public:
@@ -144,8 +126,19 @@ public:
    public:
       static void exec( Mesh& mesh )
       {
-         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
-         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetEntityTags >::execHost( mesh );
+         // set entities count
+         Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
+            [&mesh] ( auto dim ) {
+               mesh.template entityTagsSetEntitiesCount< dim >( mesh.template getEntitiesCount< dim >() );
+            }
+         );
+
+         // reset entity tags
+         Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
+            [&mesh] ( auto dim ) {
+               ResetEntityTags< dim >::exec( mesh );
+            }
+         );
 
          auto kernel = [] __cuda_callable__
             ( GlobalIndexType faceIndex,
@@ -159,7 +152,11 @@ public:
                const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
                mesh->template addEntityTag< Mesh::getMeshDimension() >( cellIndex, EntityTags::BoundaryEntity );
                // initialize all subentities
-               Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
+               Algorithms::staticFor< int, 0, Mesh::getMeshDimension() - 1 >(
+                  [&mesh, faceIndex, &face] ( auto dim ) {
+                     InitializeSubentities< dim >::exec( *mesh, faceIndex, face );
+                  }
+               );
             }
          };
 
@@ -169,7 +166,12 @@ public:
                                                       kernel,
                                                       &meshPointer.template modifyData< DeviceType >() );
 
-         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateEntityTagsLayer >::execHost( mesh );
+         // update entity tags
+         Algorithms::staticFor< int, 0, Mesh::getMeshDimension() + 1 >(
+            [&mesh] ( auto dim ) {
+               mesh.template updateEntityTagsLayer< dim >();
+            }
+         );
       }
    };
 

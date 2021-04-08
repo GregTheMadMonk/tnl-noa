@@ -14,7 +14,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Cuda/CudaCallable.h>
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>
 
@@ -124,48 +124,6 @@ protected:
     }
 };
 
-template< std::size_t dimension >
-struct SizesHolderStaticSizePrinter
-{
-   template< typename SizesHolder >
-   static void exec( std::ostream& str, const SizesHolder& holder )
-   {
-      str << holder.template getStaticSize< dimension >() << ", ";
-   }
-};
-
-template< std::size_t dimension >
-struct SizesHolderSizePrinter
-{
-   template< typename SizesHolder >
-   static void exec( std::ostream& str, const SizesHolder& holder )
-   {
-      str << holder.template getSize< dimension >() << ", ";
-   }
-};
-
-template< std::size_t level >
-struct SizesHolerOperatorPlusHelper
-{
-   template< typename Result, typename LHS, typename RHS >
-   static void exec( Result& result, const LHS& lhs, const RHS& rhs )
-   {
-      if( result.template getStaticSize< level >() == 0 )
-         result.template setSize< level >( lhs.template getSize< level >() + rhs.template getSize< level >() );
-   }
-};
-
-template< std::size_t level >
-struct SizesHolerOperatorMinusHelper
-{
-   template< typename Result, typename LHS, typename RHS >
-   static void exec( Result& result, const LHS& lhs, const RHS& rhs )
-   {
-      if( result.template getStaticSize< level >() == 0 )
-         result.template setSize< level >( lhs.template getSize< level >() - rhs.template getSize< level >() );
-   }
-};
-
 } // namespace __ndarray_impl
 
 
@@ -231,7 +189,12 @@ SizesHolder< Index, sizes... >
 operator+( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
 {
    SizesHolder< Index, sizes... > result;
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorPlusHelper >::execHost( result, lhs, rhs );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) >(
+      [&result, &lhs, &rhs] ( auto level ) {
+         if( result.template getStaticSize< level >() == 0 )
+            result.template setSize< level >( lhs.template getSize< level >() + rhs.template getSize< level >() );
+      }
+   );
    return result;
 }
 
@@ -242,7 +205,12 @@ SizesHolder< Index, sizes... >
 operator-( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
 {
    SizesHolder< Index, sizes... > result;
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorMinusHelper >::execHost( result, lhs, rhs );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) >(
+      [&result, &lhs, &rhs] ( auto level ) {
+         if( result.template getStaticSize< level >() == 0 )
+            result.template setSize< level >( lhs.template getSize< level >() - rhs.template getSize< level >() );
+      }
+   );
    return result;
 }
 
@@ -295,9 +263,17 @@ template< typename Index,
 std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
 {
    str << "SizesHolder< ";
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, holder );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) - 1 >(
+      [&str, &holder] ( auto dimension ) {
+         str << holder.template getStaticSize< dimension >() << ", ";
+      }
+   );
    str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >( ";
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) - 1 >(
+      [&str, &holder] ( auto dimension ) {
+         str << holder.template getSize< dimension >() << ", ";
+      }
+   );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }
@@ -360,10 +336,18 @@ template< typename Index,
 std::ostream& operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHolder< Index, sizes... >, ConstValue >& holder )
 {
    str << "LocalBeginsHolder< SizesHolder< ";
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, (SizesHolder< Index, sizes... >) holder );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) - 1 >(
+      [&str, &holder] ( auto dimension ) {
+         str << holder.template getStaticSize< dimension >() << ", ";
+      }
+   );
    str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >, ";
    str << ConstValue << " >( ";
-   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
+   Algorithms::staticFor< std::size_t, 0, sizeof...(sizes) - 1 >(
+      [&str, &holder] ( auto dimension ) {
+         str << holder.template getSize< dimension >() << ", ";
+      }
+   );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }

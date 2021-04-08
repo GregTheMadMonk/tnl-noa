@@ -15,7 +15,7 @@
 #include <algorithm>
 
 #include <TNL/Assert.h>
-#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/staticFor.h>
 #include <TNL/Containers/ndarray/Meta.h>
 
 namespace TNL {
@@ -209,18 +209,6 @@ struct SetSizesCopyHelper< TargetHolder, SourceHolder, 0 >
 };
 
 
-template< std::size_t level >
-struct WeakCompareHelper
-{
-   template< typename SizesHolder1,
-             typename SizesHolder2 >
-   __cuda_callable__
-   static void exec( const SizesHolder1& sizes1, const SizesHolder2& sizes2, bool& result )
-   {
-      result &= sizes1.template getSize< level >() == sizes2.template getSize< level >();
-   }
-};
-
 // helper for the assignment operator in NDArrayView
 template< typename SizesHolder1,
           typename SizesHolder2 >
@@ -230,7 +218,11 @@ bool sizesWeakCompare( const SizesHolder1& sizes1, const SizesHolder2& sizes2 )
    static_assert( SizesHolder1::getDimension() == SizesHolder2::getDimension(),
                   "Cannot compare sizes of different dimensions." );
    bool result = true;
-   Algorithms::TemplateStaticFor< std::size_t, 0, SizesHolder1::getDimension(), WeakCompareHelper >::exec( sizes1, sizes2, result );
+   Algorithms::staticFor< std::size_t, 0, SizesHolder1::getDimension() >(
+      [&result, &sizes1, &sizes2] ( auto level ) {
+         result = result && sizes1.template getSize< level >() == sizes2.template getSize< level >();
+      }
+   );
    return result;
 }
 
