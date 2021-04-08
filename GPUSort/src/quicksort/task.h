@@ -29,5 +29,20 @@ struct TASK
         this->pivotIdx = pivotIdx;
     }
 
+    __cuda_callable__
+    int getSize() const
+    {
+        return end - begin;
+    }
+
     TASK() = default;
 };
+
+std::ostream& operator<<(std::ostream & out, const TASK & task)
+{
+    out << "[ ";
+    out << task.partitionBegin << " - " << task.partitionEnd;
+    out << " | " << "depth: " << task.depth;
+    out << " | " << "pivotIdx: " << task.pivotIdx;
+    return out << " ] ";
+}
