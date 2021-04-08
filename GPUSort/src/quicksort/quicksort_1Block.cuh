@@ -25,58 +25,16 @@ __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
     bitonicSort_Block(src, dst, Cmp);
 }
 
+//---------------------------------------------------------------
+
 template <int stackSize>
 __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
                           int stackDepth[], int &stackTop,
                           int begin, int pivotBegin,
                           int pivotEnd, int end,
-                          int depth)
-{
-    int sizeL = pivotBegin - begin, sizeR = end - pivotEnd;
+                          int depth);
 
-    //push the bigger one 1st and then smaller one 2nd
-    //in next iteration, the smaller part will be handled 1st
-    if (sizeL > sizeR)
-    {
-        if (sizeL > 0) //left from pivot are smaller elems
-        {
-            stackArrBegin[stackTop] = begin;
-            stackArrEnd[stackTop] = pivotBegin;
-            stackDepth[stackTop] = depth + 1;
-            stackTop++;
-        }
-
-        if (sizeR > 0) //right from pivot until end are elem greater than pivot
-        {
-            assert(stackTop < stackSize && "Local quicksort stack overflow.");
-
-            stackArrBegin[stackTop] = pivotEnd;
-            stackArrEnd[stackTop] = end;
-            stackDepth[stackTop] = depth + 1;
-            stackTop++;
-        }
-    }
-    else
-    {
-        if (sizeR > 0) //right from pivot until end are elem greater than pivot
-        {
-            stackArrBegin[stackTop] = pivotEnd;
-            stackArrEnd[stackTop] = end;
-            stackDepth[stackTop] = depth + 1;
-            stackTop++;
-        }
-
-        if (sizeL > 0) //left from pivot are smaller elems
-        {
-            assert(stackTop < stackSize && "Local quicksort stack overflow.");
-
-            stackArrBegin[stackTop] = begin;
-            stackArrEnd[stackTop] = pivotBegin;
-            stackDepth[stackTop] = depth + 1;
-            stackTop++;
-        }
-    }
-}
+//---------------------------------------------------------------
 
 template <typename Value, typename Function, int stackSize, bool useShared>
 __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
@@ -86,8 +44,8 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
 {
     if (arr.getSize() <= blockDim.x * 2)
     {
-        auto src = (_depth & 1) == 0 ? arr : aux;
-        if(useShared)
+        auto &src = (_depth & 1) == 0 ? arr : aux;
+        if (useShared && arr.getSize() <= memSize)
             externSort<Value, Function>(src, arr, Cmp, sharedMem);
         else
             externSort<Value, Function>(src, arr, Cmp);
@@ -99,6 +57,8 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
     static __shared__ int stackArrBegin[stackSize], stackArrEnd[stackSize], stackDepth[stackSize];
     static __shared__ int begin, end, depth;
     static __shared__ int pivotBegin, pivotEnd;
+    Value *piv = sharedMem;
+    sharedMem += 1;
 
     if (threadIdx.x == 0)
     {
@@ -128,16 +88,20 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         //small enough for for bitonic
         if (size <= blockDim.x * 2)
         {
-            if(useShared)
+            if (useShared && size <= memSize)
                 externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);
             else
                 externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp);
             __syncthreads();
             continue;
         }
+
         //------------------------------------------------------
 
-        Value pivot = pickPivot(src.getView(begin, end), Cmp);
+        if (threadIdx.x == 0)
+            *piv = pickPivot(src.getView(begin, end), Cmp);
+        __syncthreads();
+        Value &pivot = *piv;
 
         int smaller = 0, bigger = 0;
         countElem(src.getView(begin, end), Cmp, smaller, bigger, pivot);
@@ -200,4 +164,59 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         }
         __syncthreads(); //sync to update stackTop
     }                    //ends while loop
+}
+
+//--------------------------------------------------------------
+
+template <int stackSize>
+__device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
+                          int stackDepth[], int &stackTop,
+                          int begin, int pivotBegin,
+                          int pivotEnd, int end,
+                          int depth)
+{
+    int sizeL = pivotBegin - begin, sizeR = end - pivotEnd;
+
+    //push the bigger one 1st and then smaller one 2nd
+    //in next iteration, the smaller part will be handled 1st
+    if (sizeL > sizeR)
+    {
+        if (sizeL > 0) //left from pivot are smaller elems
+        {
+            stackArrBegin[stackTop] = begin;
+            stackArrEnd[stackTop] = pivotBegin;
+            stackDepth[stackTop] = depth + 1;
+            stackTop++;
+        }
+
+        if (sizeR > 0) //right from pivot until end are elem greater than pivot
+        {
+            assert(stackTop < stackSize && "Local quicksort stack overflow.");
+
+            stackArrBegin[stackTop] = pivotEnd;
+            stackArrEnd[stackTop] = end;
+            stackDepth[stackTop] = depth + 1;
+            stackTop++;
+        }
+    }
+    else
+    {
+        if (sizeR > 0) //right from pivot until end are elem greater than pivot
+        {
+            stackArrBegin[stackTop] = pivotEnd;
+            stackArrEnd[stackTop] = end;
+            stackDepth[stackTop] = depth + 1;
+            stackTop++;
+        }
+
+        if (sizeL > 0) //left from pivot are smaller elems
+        {
+            assert(stackTop < stackSize && "Local quicksort stack overflow.");
+
+            stackArrBegin[stackTop] = begin;
+            stackArrEnd[stackTop] = pivotBegin;
+            stackDepth[stackTop] = depth + 1;
+            stackTop++;
+        }
+    }
 }

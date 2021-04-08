@@ -16,7 +16,7 @@ __device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const 
     if (src.getSize() == 1)
         return src[0];
 
-    Value a = src[0], b = src[src.getSize() / 2], c = src[src.getSize() - 1];
+    const Value &a = src[0], &b = src[src.getSize() / 2], &c = src[src.getSize() - 1];
 
     if (Cmp(a, b)) // ..a..b..
     {
@@ -47,7 +47,7 @@ __device__ int pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const
     if (src.getSize() <= 1)
         return 0;
 
-    Value a = src[0], b = src[src.getSize() / 2], c = src[src.getSize() - 1];
+    const Value &a = src[0], &b = src[src.getSize() / 2], &c = src[src.getSize() - 1];
 
     if (Cmp(a, b)) // ..a..b..
     {
@@ -69,6 +69,8 @@ __device__ int pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const
     }
 }
 
+//-----------------------------------------------------------
+
 template <typename Value, typename Function>
 __device__ void countElem(ArrayView<Value, Devices::Cuda> arr,
                           const Function &Cmp,
@@ -77,13 +79,15 @@ __device__ void countElem(ArrayView<Value, Devices::Cuda> arr,
 {
     for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
     {
-        const Value data = arr[i];
+        const Value &data = arr[i];
         if (Cmp(data, pivot))
             smaller++;
         else if (Cmp(pivot, data))
             bigger++;
     }
 }
+
+//-----------------------------------------------------------
 
 template <typename Value, typename Function>
 __device__ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
@@ -98,7 +102,7 @@ __device__ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
 
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
     {
-        const Value data = src[i];
+        const Value &data = src[i];
         if (Cmp(data, pivot))
             sharedMem[smallerOffset++] = data;
         else if (Cmp(pivot, data))
@@ -124,7 +128,7 @@ __device__ void copyData(ArrayView<Value, Devices::Cuda> src,
 {
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
     {
-        const Value data = src[i];
+        const Value &data = src[i];
         if (Cmp(data, pivot))
         {
             /*

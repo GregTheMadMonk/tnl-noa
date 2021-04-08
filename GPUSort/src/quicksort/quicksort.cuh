@@ -1,270 +1,57 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include "../util/reduction.cuh"
 #include "task.h"
-#include "cudaPartition.cuh"
-#include "quicksort_1Block.cuh"
-#include "../bitonicSort/bitonicSort.h"
-#include <iostream>
+#include "quicksort_kernel.cuh"
 
 #include <thrust/scan.h>
 #include <thrust/execution_policy.h>
 
+#include <iostream>
 #define deb(x) std::cout << #x << " = " << x << std::endl;
 
 using namespace TNL;
 using namespace TNL::Containers;
 
-//-----------------------------------------------------------
-
-__device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPhase,
-                             ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                             ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
-{
-    int size = end - begin;
-    if (size < 0)
-    {
-        printf("negative size, something went really wrong\n");
-        return;
-    }
-
-    if (size == 0)
-        return;
-
-    if (size <= maxElemFor2ndPhase)
-    {
-        int idx = atomicAdd(secondPhaseTasksCnt, 1);
-        if (idx < secondPhaseTasks.getSize())
-            secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
-        else
-        {
-            //printf("ran out of memory, trying backup\n");
-            int idx = atomicAdd(newTasksCnt, 1);
-            if (idx < newTasks.getSize())
-                newTasks[idx] = TASK(begin, end, depth + 1);
-            else
-                printf("ran out of memory for second phase task, there isnt even space in newTask list\nPart of array may stay unsorted!!!\n");
-        }
-    }
-    else
-    {
-        int idx = atomicAdd(newTasksCnt, 1);
-        if (idx < newTasks.getSize())
-            newTasks[idx] = TASK(begin, end, depth + 1);
-        else
-        {
-            //printf("ran out of memory, trying backup\n");
-            int idx = atomicAdd(secondPhaseTasksCnt, 1);
-            if (idx < secondPhaseTasks.getSize())
-                secondPhaseTasks[idx] = TASK(begin, end, depth + 1);
-            else
-                printf("ran out of memory for newtask, there isnt even space in second phase task list\nPart of array may stay unsorted!!!\n");
-        }
-    }
-}
-
-//----------------------------------------------------
-
-template <typename Value, typename Function, bool useShared>
-__global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp, int elemPerBlock,
-                                      ArrayView<TASK, Devices::Cuda> tasks,
-                                      ArrayView<int, Devices::Cuda> taskMapping)
-{
-    extern __shared__ int externMem[];
-    Value *sharedMem = (Value *)externMem;
-
-
-    TASK &myTask = tasks[taskMapping[blockIdx.x]];
-    auto &src = (myTask.depth & 1) == 0 ? arr : aux;
-    auto &dst = (myTask.depth & 1) == 0 ? aux : arr;
-
-    Value pivot = src[myTask.pivotIdx];
-
-    cudaPartition<Value, Function, useShared>(
-        src.getView(myTask.partitionBegin, myTask.partitionEnd),
-        dst.getView(myTask.partitionBegin, myTask.partitionEnd),
-        Cmp, sharedMem, pivot,
-        elemPerBlock, myTask);
-}
-
-//----------------------------------------------------
-
-template <typename Value>
-__global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux, int maxElemFor2ndPhase,
-                               ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                               ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
-{
-    TASK &myTask = tasks[blockIdx.x];
-
-    Value pivot = (myTask.depth & 1) == 0 ? arr[myTask.pivotIdx] : aux[myTask.pivotIdx];
-
-    int leftBegin = myTask.partitionBegin, leftEnd = myTask.partitionBegin + myTask.dstBegin;
-    int rightBegin = myTask.partitionBegin + myTask.dstEnd, rightEnd = myTask.partitionEnd;
-
-    for (int i = leftEnd + threadIdx.x; i < rightBegin; i += blockDim.x)
-    {
-        /*
-        #ifdef DEBUG
-        aux[i] = -1;
-        #endif
-        */
-        arr[i] = pivot;
-    }
-
-    if (threadIdx.x != 0)
-        return;
-
-    if (leftEnd - leftBegin > 0)
-    {
-        writeNewTask(leftBegin, leftEnd, myTask.depth,
-                     maxElemFor2ndPhase,
-                     newTasks, newTasksCnt,
-                     secondPhaseTasks, secondPhaseTasksCnt);
-    }
-
-    if (rightEnd - rightBegin > 0)
-    {
-        writeNewTask(rightBegin, rightEnd,
-                     myTask.depth, maxElemFor2ndPhase,
-                     newTasks, newTasksCnt,
-                     secondPhaseTasks, secondPhaseTasksCnt);
-    }
-}
-
-//-----------------------------------------------------------
-
-template <typename Value, typename Function, int stackSize>
-__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
-                                      int elemInShared)
-{
-    extern __shared__ int externMem[];
-    Value *sharedMem = (Value *)externMem;
-
-    TASK &myTask = secondPhaseTasks[blockIdx.x];
-    if (myTask.partitionEnd - myTask.partitionBegin <= 0)
-        return;
-
-    auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
-    auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
-
-    if (elemInShared == 0)
-    {
-        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
-    }
-    else
-    {
-        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
-    }
-}
-
-template <typename Value, typename Function, int stackSize>
-__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
-                                      int elemInShared)
-{
-    extern __shared__ int externMem[];
-    Value *sharedMem = (Value *)externMem;
-
-    TASK myTask;
-    if (blockIdx.x < secondPhaseTasks1.getSize())
-        myTask = secondPhaseTasks1[blockIdx.x];
-    else
-        myTask = secondPhaseTasks2[blockIdx.x - secondPhaseTasks1.getSize()];
-
-    if (myTask.partitionEnd - myTask.partitionBegin <= 0)
-    {
-        printf("empty task???\n");
-        return;
-    }
-
-    auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
-    auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
-
-    if (elemInShared == 0)
-    {
-        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
-    }
-    else
-    {
-        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
-    }
-}
-
-//-----------------------------------------------------------
-
-__global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
-                                     ArrayView<int, Devices::Cuda> blocksNeeded)
-{
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i >= cuda_tasks.getSize())
-        return;
-
-    auto task = cuda_tasks[i];
-    int size = task.partitionEnd - task.partitionBegin;
-    blocksNeeded[i] = size / elemPerBlock + (size % elemPerBlock != 0);
-}
-
-template <typename Value, typename Function>
-__global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
-                             ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
-                             ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
-                             ArrayView<Value, Devices::Cuda> src, const Function &Cmp)
-{
-    if (blockIdx.x >= cuda_tasks.getSize())
-        return;
-
-    int start = blockIdx.x == 0 ? 0 : cuda_reductionTaskInitMem[blockIdx.x - 1];
-    int end = cuda_reductionTaskInitMem[blockIdx.x];
-    for (int i = start + threadIdx.x; i < end; i += blockDim.x)
-        cuda_blockToTaskMapping[i] = blockIdx.x;
-
-    if (threadIdx.x == 0)
-    {
-        TASK &task = cuda_tasks[blockIdx.x];
-        int pivotIdx = task.partitionBegin + pickPivotIdx(src.getView(task.partitionBegin, task.partitionEnd), Cmp);
-        task.initTask(start, end - start, pivotIdx);
-    }
-}
-//-----------------------------------------------------------
-//-----------------------------------------------------------
-
 template <typename Value>
 class QUICKSORT
 {
-    ArrayView<Value, Devices::Cuda> arr;
-    Array<Value, Devices::Cuda> aux;
+    int maxBlocks, threadsPerBlock, desiredElemPerBlock, maxSharable; //kernel config
 
-    int maxBlocks, threadsPerBlock, desiredElemPerBlock, maxSharable;
+    //--------------------------------------
+
+    Array<Value, Devices::Cuda> auxMem;
+    ArrayView<Value, Devices::Cuda> arr, aux;
+
+    //--------------------------------------
 
     const int maxBitonicSize = threadsPerBlock * 2;
     const int desired_2ndPhasElemPerBlock = maxBitonicSize;
     const int g_maxTasks = 1 << 14;
-
     int maxTasks;
-    Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks;
 
-    Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount; //is in reality 1 integer each
+    //--------------------------------------
 
-    int host_1stPhaseTasksAmount; //counter for Host == cuda_newTasksAmount
-    int host_2ndPhaseTasksAmount; // cuda_2ndPhaseTasksAmount
+    //cuda side task initialization and storing
+    Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks; //1 set of 2 rotating tasks and 2nd phase
+    Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  //is in reality 1 integer each
 
     Array<int, Devices::Cuda> cuda_blockToTaskMapping;
     Array<int, Devices::Cuda> cuda_reductionTaskInitMem;
 
+    //--------------------------------------
+
+    int host_1stPhaseTasksAmount = 0, host_2ndPhaseTasksAmount = 0;
     int iteration = 0;
+
     //--------------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------------
 public:
     QUICKSORT(ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable)
-        : arr(arr.getView()), aux(arr.getSize()),
-          maxBlocks(gridDim), threadsPerBlock(blockDim),
+        : maxBlocks(gridDim), threadsPerBlock(blockDim),
           desiredElemPerBlock(desiredElemPerBlock), maxSharable(maxSharable),
+
+          arr(arr.getView()), auxMem(arr.getSize()), aux(auxMem.getView()),
 
           maxTasks(min(arr.getSize(), g_maxTasks)),
 
@@ -274,37 +61,63 @@ public:
           cuda_blockToTaskMapping(maxBlocks),
           cuda_reductionTaskInitMem(maxTasks)
     {
-        cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
-        host_1stPhaseTasksAmount = 1;
+        if (arr.getSize() > desired_2ndPhasElemPerBlock)
+        {
+            cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
+            host_1stPhaseTasksAmount = 1;
+        }
+        else
+        {
+            cuda_2ndPhaseTasks.setElement(0, TASK(0, arr.getSize(), 0));
+            host_2ndPhaseTasksAmount = 1;
+        }
 
-        host_2ndPhaseTasksAmount = 0;
         cuda_2ndPhaseTasksAmount = 0;
-        iteration = 0;
-
         TNL_CHECK_CUDA_DEVICE;
     }
+    //--------------------------------------------------------------------------------------
 
     template <typename Function>
     void sort(const Function &Cmp);
 
-    template <typename Function>
-    void firstPhase(const Function &Cmp);
+    //--------------------------------------------------------------------------------------
 
-    template <typename Function>
-    void secondPhase(const Function &Cmp);
-
+    /**
+     * returns how many blocks are needed to start sort phase 1 if @param elemPerBlock were to be used
+     * */
     int getSetsNeeded(int elemPerBlock) const;
+
+    /**
+     * returns the optimal amount of elements per thread needed for phase 
+     * */
     int getElemPerBlock() const;
 
     /**
-     * returns the amount of blocks needed
+     * returns the amount of blocks needed to start phase 1 while also initializing all tasks
      * */
     template <typename Function>
     int initTasks(int elemPerBlock, const Function &Cmp);
 
+    /**
+     * does the 1st phase of quicksort until out of task memory or each task is small enough
+     * for correctness, secondphase method needs to be called to sort each subsequences
+     * */
+    template <typename Function>
+    void firstPhase(const Function &Cmp);
+
+    /**
+     * update necessary variables after 1 phase1 sort
+     * */
     void processNewTasks();
+
+    /**
+     * sorts all leftover tasks
+     * */
+    template <typename Function>
+    void secondPhase(const Function &Cmp);
 };
 
+//---------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------
 
 template <typename Value>
@@ -339,25 +152,29 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
             break;
 
         int elemPerBlock = getElemPerBlock();
+
+        /**
+         * initializes tasks so that each block knows which task to work on and which part of array to split
+         * also sets pivot needed for partitioning, this is why Cmp is needed
+         * */
         int blocksCnt = initTasks(elemPerBlock, Cmp);
         TNL_CHECK_CUDA_DEVICE;
 
-        if (blocksCnt >= maxBlocks) //too many blocks needed, switch to 2nd phase
+        //not enough or too many blocks needed, switch to 2nd phase
+        if (blocksCnt <= 1 || blocksCnt > cuda_blockToTaskMapping.getSize())
             break;
 
         //-----------------------------------------------
         //do the partitioning
 
         auto &task = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
-        int externMemByteSize = elemPerBlock * sizeof(Value);
+        int externMemByteSize = elemPerBlock * sizeof(Value) + sizeof(Value); //elems + 1 for pivot
 
         /**
-         * check if can partition using shared memory for coalesced read and write
-         * 1st phase of partitioning
-         * sets of blocks work on a task
+         * check if partition procedure can use shared memory for coalesced write after reordering
          * 
-         * using the atomicAdd intristic, each block reserves a chunk of memory where to move elements
-         * smaller and bigger than pivot move to
+         * move elements smaller than pivot to the left and bigger to the right
+         * note: pivot isnt inserted in the middle yet
          * */
         if (externMemByteSize <= maxSharable)
         {
@@ -369,7 +186,7 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
         else
         {
             cudaQuickSort1stPhase<Value, Function, false>
-                <<<blocksCnt, threadsPerBlock, 0>>>(
+                <<<blocksCnt, threadsPerBlock, sizeof(Value)>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
         }
@@ -385,11 +202,13 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
          * */
         auto &newTask = iteration % 2 == 0 ? cuda_newTasks : cuda_tasks;
         cudaWritePivot<Value>
-            <<<host_1stPhaseTasksAmount, 1024>>>(
+            <<<host_1stPhaseTasksAmount, threadsPerBlock, sizeof(Value)>>>(
                 arr, aux, desired_2ndPhasElemPerBlock,
                 task, newTask, cuda_newTasksAmount.getData(),
                 cuda_2ndPhaseTasks, cuda_2ndPhaseTasksAmount.getData());
         TNL_CHECK_CUDA_DEVICE;
+
+        //----------------------------------------
 
         processNewTasks();
         iteration++;
@@ -407,10 +226,10 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
     auto &leftoverTasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
 
     int elemInShared = desiredElemPerBlock;
-    int externSharedByteSize = sizeof(Value) * elemInShared;
+    int externSharedByteSize = elemInShared * sizeof(Value) + sizeof(Value); //reserve space for storing elements + 1 pivot
     if (externSharedByteSize > maxSharable)
     {
-        externSharedByteSize = 0;
+        externSharedByteSize = sizeof(Value);
         elemInShared = 0;
     }
 
@@ -473,33 +292,38 @@ template <typename Value>
 template <typename Function>
 int QUICKSORT<Value>::initTasks(int elemPerBlock, const Function &Cmp)
 {
-    int threads = min(host_1stPhaseTasksAmount, threadsPerBlock);
-    int blocks = host_1stPhaseTasksAmount / threads + (host_1stPhaseTasksAmount % threads != 0);
 
-    auto src = iteration % 2 == 0 ? arr : aux.getView();
+    auto &src = iteration % 2 == 0 ? arr : aux;
     auto &tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
 
-    //[i] == how many blocks task i needs
-    cudaCalcBlocksNeeded<<<threads, blocks>>>(tasks.getView(0, host_1stPhaseTasksAmount),
-                                              elemPerBlock, cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
+    //--------------------------------------------------------
+    int blocks = host_1stPhaseTasksAmount / threadsPerBlock + (host_1stPhaseTasksAmount % threadsPerBlock != 0);
+
+    cudaCalcBlocksNeeded<<<blocks, threadsPerBlock>>>(tasks.getView(0, host_1stPhaseTasksAmount), elemPerBlock,
+                                                      cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
+    //cuda_reductionTaskInitMem[i] == how many blocks task i needs
 
     thrust::inclusive_scan(thrust::device,
                            cuda_reductionTaskInitMem.getData(),
                            cuda_reductionTaskInitMem.getData() + host_1stPhaseTasksAmount,
                            cuda_reductionTaskInitMem.getData());
+    //cuda_reductionTaskInitMem[i] == how many blocks task [0..i] need
 
     int blocksNeeded = cuda_reductionTaskInitMem.getElement(host_1stPhaseTasksAmount - 1);
+
     //need too many blocks, give back control
-    if (blocksNeeded >= cuda_blockToTaskMapping.getSize())
+    if (blocksNeeded > cuda_blockToTaskMapping.getSize())
         return blocksNeeded;
 
-    cudaInitTask<<<host_1stPhaseTasksAmount, 512>>>(
-        tasks.getView(0, host_1stPhaseTasksAmount),
-        cuda_blockToTaskMapping.getView(0, blocksNeeded),
-        cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount),
-        src, Cmp);
+    //--------------------------------------------------------
 
-    cuda_newTasksAmount.setElement(0, 0);
+    cudaInitTask<<<host_1stPhaseTasksAmount, threadsPerBlock>>>(
+        tasks.getView(0, host_1stPhaseTasksAmount),                     //task to read from
+        cuda_blockToTaskMapping.getView(0, blocksNeeded),               //maps block to a certain task
+        cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount), //has how many each task need blocks precalculated
+        src, Cmp);                                                      //used to pick pivot
+
+    cuda_newTasksAmount.setElement(0, 0); //resets new element counter
     return blocksNeeded;
 }
 
@@ -517,29 +341,40 @@ void QUICKSORT<Value>::processNewTasks()
 template <typename Value, typename Function>
 void quicksort(ArrayView<Value, Devices::Cuda> arr, const Function &Cmp)
 {
-    const int maxBlocks = (1 << 20);
-
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, 0);
-    int sharedReserve = sizeof(Value) + sizeof(int) * 16; //1pivot + 16 other shared vars reserved
+
+    /**
+     * for every block there is a bit of shared memory reserved, the actual value can slightly differ
+     * */
+    int sharedReserve = sizeof(int) * (16 + 3 * 32);
     int maxSharable = deviceProp.sharedMemPerBlock - sharedReserve;
 
-    //blockDim*multiplier*sizeof(Value) <= maxSharable
-
     int blockDim = 512; //best case
-    int elemPerBlock = maxSharable / sizeof(Value);
+
+    /**
+     * the goal is to use shared memory as often as possible
+     * each thread in a block will process n elements, n==multiplier
+     * + 1 reserved for pivot (statically allocating Value type throws weird error, hence it needs to be dynamic)
+     * 
+     * blockDim*multiplier*sizeof(Value) + 1*sizeof(Value) <= maxSharable
+     * */
+    int elemPerBlock = (maxSharable - sizeof(Value)) / sizeof(Value); //try to use up all of shared memory to store elements
+    const int maxBlocks = (1 << 20);
     const int maxMultiplier = 8;
     int multiplier = min(elemPerBlock / blockDim, maxMultiplier);
-    if (multiplier <= 0)
+
+    if (multiplier <= 0) //a block cant store 512 elements, sorting some really big data
     {
-        blockDim = 256;
+        blockDim = 256; //try to fit 256 elements
         multiplier = min(elemPerBlock / blockDim, maxMultiplier);
+
         if (multiplier <= 0)
         {
             //worst case scenario, shared memory cant be utilized at all because of the sheer size of Value
             //sort has to be done with the use of global memory alone
 
-            QUICKSORT<Value> sorter(arr, maxBlocks, 512, 0, maxSharable);
+            QUICKSORT<Value> sorter(arr, maxBlocks, 512, 0, 0);
             sorter.sort(Cmp);
             return;
         }
