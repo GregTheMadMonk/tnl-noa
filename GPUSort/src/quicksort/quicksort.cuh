@@ -10,6 +10,11 @@
 #include <iostream>
 #define deb(x) std::cout << #x << " = " << x << std::endl;
 
+#ifdef CHECK_RESULT_SORT
+#include "../util/algorithm.h"
+#include <fstream>
+#endif
+
 using namespace TNL;
 using namespace TNL::Containers;
 
@@ -132,6 +137,24 @@ void QUICKSORT<Value>::sort(const Function &Cmp)
 
     cudaDeviceSynchronize();
     TNL_CHECK_CUDA_DEVICE;
+
+#ifdef CHECK_RESULT_SORT
+if(!is_sorted(arr))
+{
+    std::ofstream out("error.txt");
+    out << arr << std::endl;
+    out << aux << std::endl;
+    out << cuda_tasks << std::endl;
+    out << cuda_newTasks << std::endl;
+    out << cuda_2ndPhaseTasks << std::endl;
+
+    out << cuda_newTasksAmount << std::endl;
+    out << cuda_2ndPhaseTasksAmount << std::endl;
+
+    out << iteration << std::endl;
+}
+#endif
+
     return;
 }
 
