@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdlib>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 
@@ -14,16 +13,18 @@ void initMeshFunction( const int xSize,
                        Vector< double, Device >& v,
                        const double& c )
 {
-   auto view = v1.getConstView();
-   auto init = [=] __cuda_callable__  ( int i, int j, int k, const int xSize, const int ySize, const double c ) mutable {
-      view[ ( k * ySize + j ) * xSize + i ] =  c; };
-   ParallelFor3D< Device >::exec( 0, 0, xSize, ySize, init, xSize, ySize, c );
+   auto view = v.getView();
+   auto init = [=] __cuda_callable__ ( int i, int j, int k ) mutable
+   {
+      view[ ( k * ySize + j ) * xSize + i ] = c;
+   };
+   ParallelFor3D< Device >::exec( 0, 0, 0, xSize, ySize, zSize, init );
 }
 
 int main( int argc, char* argv[] )
 {
    /***
-    * Define dimensions of 2D mesh function.
+    * Define dimensions of a 3D mesh function.
     */
    const int xSize( 10 ), ySize( 10 ), zSize( 10 );
    const int size = xSize * ySize * zSize;
@@ -43,4 +44,3 @@ int main( int argc, char* argv[] )
 #endif
    return EXIT_SUCCESS;
 }
-

@@ -1,10 +1,10 @@
 #include <iostream>
-#include <cstdlib>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
+using namespace TNL::Algorithms;
 
 /****
  * Set all elements of the vector v to the constant c.
@@ -14,10 +14,11 @@ void initVector( Vector< double, Device >& v,
                  const double& c )
 {
    auto view = v.getView();
-   auto init = [=] __cuda_callable__  ( int i, const double c ) mutable {
-      view[ i ] = c; };
-
-   Algorithms::ParallelFor< Device >::exec( 0, v.getSize(), init, c );
+   auto init = [=] __cuda_callable__ ( int i ) mutable
+   {
+      view[ i ] = c;
+   };
+   ParallelFor< Device >::exec( 0, v.getSize(), init );
 }
 
 int main( int argc, char* argv[] )
@@ -39,4 +40,3 @@ int main( int argc, char* argv[] )
 #endif
    return EXIT_SUCCESS;
 }
-

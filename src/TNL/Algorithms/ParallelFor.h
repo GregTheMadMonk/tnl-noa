@@ -53,10 +53,11 @@ enum ParallelForMode { SynchronousMode, AsynchronousMode };
 
 
 /**
- * \brief Parallel for loop for one dimensional interval of indexes.
+ * \brief Parallel for loop for one dimensional interval of indices.
  *
- * \tparam Device says on what device the for-loop is gonna be executed.
- *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Device specifies the device where the for-loop will be executed.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
 template< typename Device = Devices::Sequential,
@@ -64,16 +65,17 @@ template< typename Device = Devices::Sequential,
 struct ParallelFor
 {
    /**
-    * \brief Static method for execution of the loop.
+    * \brief Static method for the execution of the loop.
     *
-    * \tparam Index defines the type of indexes over which the loop iterates.
-    * \tparam Function is the type of function to be called in each iteration.
-    * \tparam FunctionArgs is a variadic type of additional parameters which are
-    *    supposed to be passed to the inner Function.
+    * \tparam Index is the type of the loop indices.
+    * \tparam Function is the type of the functor to be called in each iteration
+    *    (it is usually deduced from the argument used in the function call).
+    * \tparam FunctionArgs is a variadic pack of types for additional parameters
+    *    that are forwarded to the functor in every iteration.
     *
-    * \param start the for-loop iterates over index interval [start, end).
-    * \param end the for-loop iterates over index interval [start, end).
-    * \param f is the function to be called in each iteration
+    * \param start is the left bound of the iteration range `[begin, end)`.
+    * \param end is the right bound of the iteration range `[begin, end)`.
+    * \param f is the function to be called in each iteration.
     * \param args are additional parameters to be passed to the function f.
     *
     * \par Example
@@ -93,10 +95,11 @@ struct ParallelFor
 };
 
 /**
- * \brief Parallel for loop for two dimensional domain of indexes.
+ * \brief Parallel for loop for two dimensional domain of indices.
  *
- * \tparam Device says on what device the for-loop is gonna be executed.
- *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Device specifies the device where the for-loop will be executed.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
 template< typename Device = Devices::Sequential,
@@ -104,23 +107,26 @@ template< typename Device = Devices::Sequential,
 struct ParallelFor2D
 {
    /**
-    * \brief Static method for execution of the loop.
+    * \brief Static method for the execution of the loop.
     *
-    * \tparam Index defines the type of indexes over which the loop iterates.
-    * \tparam Function is the type of function to be called in each iteration.
-    * \tparam FunctionArgs is a variadic type of additional parameters which are
-    *    supposed to be passed to the inner Function.
+    * \tparam Index is the type of the loop indices.
+    * \tparam Function is the type of the functor to be called in each iteration
+    *    (it is usually deduced from the argument used in the function call).
+    * \tparam FunctionArgs is a variadic pack of types for additional parameters
+    *    that are forwarded to the functor in every iteration.
     *
-    * \param startX the for-loop iterates over index domain [startX,endX)x[startY,endY).
-    * \param startY the for-loop iterates over index domain [startX,endX)x[startY,endY).
-    * \param endX the for-loop iterates over index domain [startX,endX)x[startY,endY).
-    * \param endY the for-loop iterates over index domain [startX,endX)x[startY,endY).
+    * \param startX the for-loop iterates over index domain `[startX,endX) x [startY,endY)`.
+    * \param startY the for-loop iterates over index domain `[startX,endX) x [startY,endY)`.
+    * \param endX the for-loop iterates over index domain `[startX,endX) x [startY,endY)`.
+    * \param endY the for-loop iterates over index domain `[startX,endX) x [startY,endY)`.
     * \param f is the function to be called in each iteration
     * \param args are additional parameters to be passed to the function f.
     *
     * The function f is called for each iteration as
     *
+    * \code
     * f( i, j, args... )
+    * \endcode
     *
     * where the first parameter is changing more often than the second one.
     *
@@ -142,10 +148,11 @@ struct ParallelFor2D
 };
 
 /**
- * \brief Parallel for loop for three dimensional domain of indexes.
+ * \brief Parallel for loop for three dimensional domain of indices.
  *
- * \tparam Device says on what device the for-loop is gonna be executed.
- *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Device specifies the device where the for-loop will be executed.
+ *    It can be \ref TNL::Devices::Host, \ref TNL::Devices::Cuda or
+ *    \ref TNL::Devices::Sequential.
  * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
  */
 template< typename Device = Devices::Sequential,
@@ -153,25 +160,28 @@ template< typename Device = Devices::Sequential,
 struct ParallelFor3D
 {
    /**
-    * \brief Static method for execution of the loop.
+    * \brief Static method for the execution of the loop.
     *
-    * \tparam Index defines the type of indexes over which the loop iterates.
-    * \tparam Function is the type of function to be called in each iteration.
-    * \tparam FunctionArgs is a variadic type of additional parameters which are
-    *    supposed to be passed to the inner Function.
+    * \tparam Index is the type of the loop indices.
+    * \tparam Function is the type of the functor to be called in each iteration
+    *    (it is usually deduced from the argument used in the function call).
+    * \tparam FunctionArgs is a variadic pack of types for additional parameters
+    *    that are forwarded to the functor in every iteration.
     *
-    * \param startX the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
-    * \param startY the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
-    * \param startZ the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
-    * \param endX the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
-    * \param endY the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
-    * \param endZ the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param startX the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
+    * \param startY the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
+    * \param startZ the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
+    * \param endX the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
+    * \param endY the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
+    * \param endZ the for-loop iterates over index domain `[startX,endX) x [startY,endY) x [startZ,endZ)`.
     * \param f is the function to be called in each iteration
     * \param args are additional parameters to be passed to the function f.
     *
     * The function f is called for each iteration as
     *
+    * \code
     * f( i, j, k, args... )
+    * \endcode
     *
     * where the first parameter is changing the most often.
     *
