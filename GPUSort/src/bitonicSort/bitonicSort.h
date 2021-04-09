@@ -173,10 +173,10 @@ __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cud
 
 /**
  * IMPORTANT: all threads in block have to call this function to work properly
- * IMPORTANT: input can be at max size of blockDim.x*2, bigger size will lead to part of input unsorted
+ * the size of src isn't limited, but for optimal efficiency, no more than 8*blockDim.x should be used
  * Description: sorts src and writes into dst within a block
  * works independently from other concurrent blocks
- * @param sharedMem sharedMem pointer has to be able to store blockDim.x*2 elements
+ * @param sharedMem sharedMem pointer has to be able to store all of src elements
  * */
 template <typename Value, typename Function>
 __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src,
@@ -230,8 +230,9 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
 
 /**
  * IMPORTANT: all threads in block have to call this function to work properly
- * IMPORTANT: input can be at max size of blockDim.x*2, bigger size will lead to part of input unsorted
- * Description: sorts src and writes into dst within a block
+ * IMPORTANT: unlike the counterpart with shared memory, this function only works in-place
+ * the size of src isn't limited, but for optimal efficiency, no more than 8*blockDim.x should be used
+ * Description: sorts src in place using bitonic sort
  * works independently from other concurrent blocks
  * this version doesnt use shared memory and is prefered for Value with big size
  * */
