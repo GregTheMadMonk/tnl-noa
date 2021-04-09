@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "../src/util/timer.h"
+#include "generators.cpp"
 
 //---------------------------
 /**
@@ -78,143 +79,48 @@ double measure(const vector<int>&vec)
 #endif
 
 double sorted(int size)
-{
-    vector<int> vec(size);
-    iota(vec.begin(), vec.end(), 0);
-    
-    return measure(vec);
+{    
+    return measure(generateSorted(size));
 }
 
 double random(int size)
 {
-    srand(size + 2021);
-
-    vector<int> vec(size);
-    generate(vec.begin(), vec.end(), [=](){return std::rand() % (2*size);});
-
-    return measure(vec);
+    return measure(generateRandom(size));
 }
 
 double shuffle(int size)
 {
-    srand(size);
-
-    vector<int> vec(size);
-    iota(vec.begin(), vec.end(), 0);
-    random_shuffle(vec.begin(), vec.end());
-
-    return measure(vec);
+    return measure(generateShuffle(size));
 }
 
 double almostSorted(int size)
 {
-    vector<int> vec(size);
-    iota(vec.begin(), vec.end(), 0);
-    for(int i = 0; i < 3; i++) //swaps 3 times in array
-    {
-        int s = rand() % (size - 3);
-        std::swap(vec[s], vec[s + 1]);
-    }
-
-    return measure(vec);
+    return measure(generateAlmostSorted(size));
 }
 
 double decreasing(int size)
 {
-    vector<int> vec(size);
-    for(int i = 0; i < size; i++)
-        vec[i] = size - i;
-                
-    return measure(vec);
+    return measure(generateDecreasing(size));
 }
 
 double zero_entropy(int size)
-{
-    vector<int> vec(size);
-    for(auto & x : vec)
-        x = size;
-                
-    return measure(vec);
+{               
+    return measure(generateZero_entropy(size));
 }
 
 double gaussian(int size)
 {
-	srand(size + 2000);
-
-    vector<int> vec(size);
-	for (int i = 0; i < size; ++i)
-    {
-		int value = 0;
-		for (int j = 0; j < 4; ++j) 
-			value += rand()%16384;
-
-		vec[i] = value /4;
-	}
-    return measure(vec);  
+    return measure(generateZero_entropy(size));  
 }
 
 double bucket(int size)
 {
-	srand (size + 94215);
-    vector<int> vec(size);
-    
-	double tmp = ((double)size)*3000000; //(RAND_MAX)/p; --> ((double)N)*30000;
-	double tmp2 = sqrt(tmp);
-
-	int p= (size+tmp2-1)/tmp2;
-
-	const int VALUE = 8192/p; //(RAND_MAX)/p;
-
-	int i=0; int x=0;
-	//the array of size N is split into 'p' buckets
-	while(i < p)
-	{
-		for (int z = 0; z < p; ++z)
-			for (int j = 0; j < size/(p*p); ++j)
-			{
-				//every bucket has N/(p*p) items and the range is [min : VALUE-1 ]
-				int min = VALUE*z;
-
-				vec[x]= min + ( rand() %  (VALUE-1) ) ;
-				x++;
-			}
-		i++;
-	}
-
-    return measure(vec);
+    return measure(generateBucket(size));
 }
 
 double staggared(int size)
 {
-	srand (size + 815618);
-    vector<int> vec(size);
-
-	int tmp=4096; //(RAND_MAX)/p; --> size=2048
-	int p= (size+tmp-1)/tmp;
-
-	const int VALUE = (1<<30)/p; //(RAND_MAX)/p;
-
-	int i=1; int x=0;
-	//the array of size N is split into 'p' buckets
-	while(i <= p)
-	{
-		//every bucket has N/(p) items
-		for (int j = 0; j < size/(p); ++j)
-		{
-			int min;
-
-			if(i<=(p/2))
-				min = (2*i -1)*VALUE;
-
-			else
-				min = (2*i-p-1)*VALUE;
-
-			vec[x++]= min + ( rand() % (VALUE - 1) );
-		}
-		i++;
-	}
-
-    return measure(vec);
+    return measure(generateStaggered(size));
 }
 
 void start(ostream & out, string delim)
