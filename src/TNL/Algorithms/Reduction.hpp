@@ -17,7 +17,7 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Algorithms/Reduction.h>
-#include <TNL/Algorithms/CudaReductionKernel.h>
+#include <TNL/Algorithms/detail/CudaReductionKernel.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
@@ -311,7 +311,7 @@ reduce( const Index begin,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
+   detail::CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduce on the GPU
    Result* deviceAux1( 0 );
@@ -401,7 +401,7 @@ reduceWithArgument( const Index begin,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
+   detail::CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduce on the GPU
    Result* deviceAux1( nullptr );

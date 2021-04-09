@@ -21,6 +21,7 @@
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
 /****
  * The performance of this kernel is very sensitive to register usage.
@@ -642,5 +643,6 @@ struct CudaReductionKernelLauncher
       Index reducedSize;
 };
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL

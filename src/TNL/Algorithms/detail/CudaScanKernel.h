@@ -19,6 +19,7 @@
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
 #ifdef HAVE_CUDA
 
@@ -386,5 +387,6 @@ struct CudaScanKernelLauncher
 
 #endif
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL

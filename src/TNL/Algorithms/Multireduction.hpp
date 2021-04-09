@@ -19,7 +19,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Algorithms/Multireduction.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Algorithms/CudaMultireductionKernel.h>
+#include <TNL/Algorithms/detail/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <TNL/Timer.h>
@@ -212,7 +212,7 @@ reduce( const Result zero,
 
    // start the reduction on the GPU
    Result* deviceAux1 = nullptr;
-   const int reducedSize = CudaMultireductionKernelLauncher( zero, dataFetcher, reduction, size, n, deviceAux1 );
+   const int reducedSize = detail::CudaMultireductionKernelLauncher( zero, dataFetcher, reduction, size, n, deviceAux1 );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
