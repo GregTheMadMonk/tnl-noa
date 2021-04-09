@@ -12,9 +12,9 @@
 
 //----------------------------------------------------------------------------------
 
-TEST(permutations, allPermutationSize_1_to_8)
+TEST(permutations, allPermutationSize_2_to_7)
 {
-    for(int i = 2; i<=8; i++ )
+    for(int i = 2; i<=7; i++ )
     {
         int size = i;
         std::vector<int> orig(size);
@@ -31,6 +31,30 @@ TEST(permutations, allPermutationSize_1_to_8)
         } 
         while (std::next_permutation(orig.begin(), orig.end()));
     }
+}
+
+TEST(permutations, allPermutationSize_8)
+{
+    int size = 9;
+    const int stride = 151;
+    int i = 0;
+
+    std::vector<int> orig(size);
+    std::iota(orig.begin(), orig.end(), 0);
+
+    do
+    {
+        if ((i++) % stride != 0)
+            continue;
+
+        TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
+        auto view = cudaArr.getView();
+
+        bitonicSort(view);
+
+        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    }
+    while (std::next_permutation(orig.begin(), orig.end()));
 }
 
 TEST(permutations, somePermutationSize9)
