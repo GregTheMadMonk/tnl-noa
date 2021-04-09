@@ -52,7 +52,7 @@ public:
    /**
     * \brief Constructor from static array.
     *
-    * \param v[Size] input array.
+    * \param v Input array.
     */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
@@ -79,9 +79,9 @@ public:
    /**
     * \brief Constructor which initializes the array by copying elements from
     * \ref std::initializer_list, e.g. `{...}`.
-    * 
+    *
     * The initializer list size must larger or equal to \e Size.
-    * 
+    *
     * @param elems input initializer list
     */
    __cuda_callable__
@@ -179,9 +179,9 @@ public:
 
    /**
     * \brief Assigns an object \e v of type \e T.
-    * 
+    *
     * T can be:
-    * 
+    *
     * 1. Static linear container implementing operator[] and having the same size.
     * In this case, \e v is copied to this array elementwise.
     * 2. An object that can be converted to \e Value type. In this case all elements
@@ -211,13 +211,13 @@ public:
 
    /**
     * \brief Cast operator for changing of the \e Value type.
-    * 
+    *
     * Returns static array having \e ValueType set to \e OtherValue, i.e.
     * StaticArray< Size, OtherValue >.
-    * 
-    * \tparam OtherValue is the \e Value type of the static array the casting 
+    *
+    * \tparam OtherValue is the \e Value type of the static array the casting
     * will be performed to.
-    * 
+    *
     * \return instance of StaticArray< Size, OtherValue >
     */
    template< typename OtherValue >
@@ -265,7 +265,7 @@ std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a
 
 /**
  * \brief Serialization of static arrays into binary files.
- * 
+ *
  * \param file output file
  * \param array is an array to be written into the output file.
  */
@@ -274,7 +274,7 @@ File& operator<<( File& file, const StaticArray< Size, Value >& array );
 
 /**
  * \brief Serialization of static arrays into binary files.
- * 
+ *
  * \param file output file
  * \param array is an array to be written into the output file.
  */
@@ -283,7 +283,7 @@ File& operator<<( File&& file, const StaticArray< Size, Value >& array );
 
 /**
  * \brief Deserialization of static arrays from binary files.
- * 
+ *
  * \param file input file
  * \param array is an array to be read from the input file.
  */
@@ -292,7 +292,7 @@ File& operator>>( File& file, StaticArray< Size, Value >& array );
 
 /**
  * \brief Deserialization of static arrays from binary files.
- * 
+ *
  * \param file input file
  * \param array is an array to be read from the input file.
  */

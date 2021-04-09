@@ -202,7 +202,7 @@ class Mesh
        * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
        * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
        * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
-       * and/or using a \ref SharedPointer.
+       * and/or using a \ref TNL::Pointers::SharedPointer "SharedPointer".
        */
       template< int EntityDimension, typename Device2 = DeviceType, typename Func >
       void forAll( Func f ) const;
@@ -213,7 +213,7 @@ class Mesh
        * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
        * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
        * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
-       * and/or using a \ref SharedPointer.
+       * and/or using a \ref TNL::Pointers::SharedPointer "SharedPointer".
        */
       template< int EntityDimension, typename Device2 = DeviceType, typename Func >
       void forBoundary( Func f ) const;
@@ -224,7 +224,7 @@ class Mesh
        * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
        * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
        * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
-       * and/or using a \ref SharedPointer.
+       * and/or using a \ref TNL::Pointers::SharedPointer "SharedPointer".
        */
       template< int EntityDimension, typename Device2 = DeviceType, typename Func >
       void forInterior( Func f ) const;
@@ -235,7 +235,7 @@ class Mesh
        * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
        * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
        * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
-       * and/or using a \ref SharedPointer.
+       * and/or using a \ref TNL::Pointers::SharedPointer "SharedPointer".
        */
       template< int EntityDimension, typename Device2 = DeviceType, typename Func >
       void forLocal( Func f ) const;
@@ -246,7 +246,7 @@ class Mesh
        * The function \e f is executed as `f(i)`, where `GlobalIndexType i` is the global index of the
        * mesh entity to be processed. The mesh itself is not passed to the function `f`, it is the user's
        * responsibility to ensure proper access to the mesh if needed, e.g. by the means of lambda capture
-       * and/or using a \ref SharedPointer.
+       * and/or using a \ref TNL::Pointers::SharedPointer "SharedPointer".
        */
       template< int EntityDimension, typename Device2 = DeviceType, typename Func >
       void forGhost( Func f ) const;
