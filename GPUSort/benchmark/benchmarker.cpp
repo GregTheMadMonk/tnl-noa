@@ -110,7 +110,7 @@ double zero_entropy(int size)
 
 double gaussian(int size)
 {
-    return measure(generateZero_entropy(size));  
+    return measure(generateGaussian(size));  
 }
 
 double bucket(int size)
