@@ -17,48 +17,38 @@ namespace Algorithms {
 
 namespace detail {
 
-template< typename Index, Index begin, Index end >
-struct UnrolledFor
-{
-   static_assert( begin < end, "internal error - wrong iteration index for UnrolledFor" );
-
-   template< typename Func >
-   static constexpr void exec( Func&& f )
-   {
-      f( begin );
-      UnrolledFor< Index, begin + 1, end >::exec( std::forward< Func >( f ) );
-   }
-};
-
-template< typename Index, Index end >
-struct UnrolledFor< Index, end, end >
-{
-   template< typename Func >
-   static constexpr void exec( Func&& f ) {}
-};
-
-// specialization for short loops - unrolling
+// special dispatch for empty loop
 template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin < end && end - begin <= unrollFactor) >
+constexpr std::enable_if_t< (begin >= end) >
+unrolled_for_dispatch( Func&& f )
+{}
+
+// special dispatch for 1 iteration
+template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
+constexpr std::enable_if_t< (begin < end && end - begin == 1) >
 unrolled_for_dispatch( Func&& f )
 {
-   UnrolledFor< Index, begin, end >::exec( std::forward< Func >( f ) );
+   f( begin );
+}
+
+// specialization for unrolling short loops (at least 2, but at most unrollFactor iterations)
+template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
+constexpr std::enable_if_t< (begin < end && end - begin >= 2 && end - begin <= unrollFactor) >
+unrolled_for_dispatch( Func&& f )
+{
+   constexpr Index mid = begin + (end - begin) / 2;
+   unrolled_for_dispatch< Index, begin, mid, unrollFactor >( std::forward< Func >( f ) );
+   unrolled_for_dispatch< Index, mid, end, unrollFactor >( std::forward< Func >( f ) );
 }
 
 // specialization for long loops - normal for-loop
 template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin < end && end - begin > unrollFactor) >
+constexpr std::enable_if_t< (begin < end && end - begin > 1 && end - begin > unrollFactor) >
 unrolled_for_dispatch( Func&& f )
 {
    for( Index i = begin; i < end; i++ )
       f( i );
 }
-
-// specialization for empty loop
-template< typename Index, Index begin, Index end, Index unrollFactor,  typename Func >
-constexpr std::enable_if_t< (begin >= end) >
-unrolled_for_dispatch( Func&& f )
-{}
 
 } // namespace detail
 

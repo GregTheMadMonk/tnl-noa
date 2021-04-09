@@ -17,6 +17,13 @@ namespace TNL {
 namespace Algorithms {
 
 namespace detail {
+
+// special dispatch for `begin >= end` (i.e. empty loop)
+template< typename Index, Index begin, Index end,  typename Func >
+constexpr std::enable_if_t< (begin >= end) >
+static_for_dispatch( Func &&f )
+{}
+
 #if __cplusplus >= 201703L
 
 // C++17 version using fold expression
@@ -26,34 +33,7 @@ constexpr void static_for_impl( Func &&f, std::integer_sequence< Index, idx... >
    ( f( std::integral_constant<Index, begin + idx>{} ), ... );
 }
 
-#else
-
-// C++14 version using recursion and variadic pack
-template< typename Index, Index begin,  typename Func, Index idx >
-constexpr void static_for_impl( Func &&f, std::integer_sequence< Index, idx > )
-{
-   f( std::integral_constant<Index, begin + idx>{} );
-}
-
-template< typename Index, Index begin,  typename Func, Index idx, Index... indices >
-// WTF why, clang, why...
-//constexpr void
-constexpr std::enable_if_t< sizeof...(indices) >= 1 >
-static_for_impl( Func &&f, std::integer_sequence< Index, idx, indices... > )
-{
-   static_for_impl< Index, begin >(
-         std::forward< Func >( f ),
-         std::integer_sequence< Index, idx >{}
-   );
-   static_for_impl< Index, begin >(
-         std::forward< Func >( f ),
-         std::integer_sequence< Index, indices... >{}
-   );
-}
-
-#endif
-
-// general specialization for `begin < end`
+// general dispatch for `begin < end`
 template< typename Index, Index begin, Index end,  typename Func >
 constexpr std::enable_if_t< (begin < end) >
 static_for_dispatch( Func &&f )
@@ -64,11 +44,32 @@ static_for_dispatch( Func &&f )
    );
 }
 
-// specialization for `begin >= end` (i.e. empty loop)
+#else
+
+// C++14 version using recursive folding
+// (We avoid manual folding with std::integer_sequence, because it cannot be
+// empty, so it would be rather weird. Folding is done by bisection to limit
+// the recursion depth.)
+
+// special dispatch for 1 iteration
 template< typename Index, Index begin, Index end,  typename Func >
-constexpr std::enable_if_t< (begin >= end) >
+constexpr std::enable_if_t< (begin < end && end - begin == 1) >
 static_for_dispatch( Func &&f )
-{}
+{
+   f( std::integral_constant< Index, begin >{} );
+}
+
+// general dispatch for at least 2 iterations
+template< typename Index, Index begin, Index end,  typename Func >
+constexpr std::enable_if_t< (begin < end && end - begin >= 2) >
+static_for_dispatch( Func &&f )
+{
+   constexpr Index mid = begin + (end - begin) / 2;
+   static_for_dispatch< Index, begin, mid >( std::forward< Func >( f ) );
+   static_for_dispatch< Index, mid, end >( std::forward< Func >( f ) );
+}
+
+#endif
 
 } // namespace detail
 
