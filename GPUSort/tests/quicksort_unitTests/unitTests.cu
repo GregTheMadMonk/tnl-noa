@@ -150,8 +150,7 @@ struct TMPSTRUCT_xyz{
 };
 std::ostream & operator<<(std::ostream & out, const TMPSTRUCT_xyz & data){return out << data.x;}
 
-
-TEST(types, struct)
+TEST(types, struct_3D_points)
 {
     std::srand(46151);
 
@@ -160,6 +159,31 @@ TEST(types, struct)
     for(auto & x : arr) x = TMPSTRUCT_xyz(std::rand());
 
     TNL::Containers::Array<TMPSTRUCT_xyz, TNL::Devices::Cuda> cudaArr(arr);
+    auto view = cudaArr.getView();
+    //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
+    //std::cout << view << std::endl;
+    quicksort(view);
+    ASSERT_TRUE(is_sorted(view));
+}
+
+struct TMPSTRUCT_64b{
+    uint8_t m_Data[64];
+    __cuda_callable__ TMPSTRUCT_64b() {m_Data[0] = 0;}
+    __cuda_callable__ TMPSTRUCT_64b(int first){m_Data[0] = first;};
+    __cuda_callable__ bool operator <(const TMPSTRUCT_64b& other) const { return m_Data[0]< other.m_Data[0];}
+    __cuda_callable__ TMPSTRUCT_64b& operator =(const TMPSTRUCT_64b& other) {m_Data[0] = other.m_Data[0]; return *this;}
+};
+std::ostream & operator<<(std::ostream & out, const TMPSTRUCT_64b & data){return out << (unsigned) data.m_Data[0];}
+
+TEST(types, struct_64b)
+{
+    std::srand(96);
+
+    int size = (1<<18);
+    std::vector<TMPSTRUCT_64b> arr(size);
+    for(auto & x : arr) x = TMPSTRUCT_64b(std::rand() % 512);
+
+    TNL::Containers::Array<TMPSTRUCT_64b, TNL::Devices::Cuda> cudaArr(arr);
     auto view = cudaArr.getView();
     //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
     //std::cout << view << std::endl;
