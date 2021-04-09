@@ -14,7 +14,7 @@
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Containers/detail/StaticArrayAssignment.h>
-#include <TNL/Algorithms/StaticFor.h>
+#include <TNL/Algorithms/unrolledFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -49,7 +49,7 @@ struct StaticArrayComparator< Size, LeftValue, RightValue, Size >
 ////
 // Static array sort does static loop unrolling of array sort.
 // It performs static variant of bubble sort as follows:
-// 
+//
 // for( int k = Size - 1; k > 0; k--)
 //   for( int i = 0; i < k; i++ )
 //      if( data[ i ] > data[ i+1 ] )
@@ -102,21 +102,33 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         (*this)[ i ] = v[ i ];
+      }
+   );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), v );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         (*this)[ i ] = v;
+      }
+   );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), v.getData() );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         (*this)[ i ] = v[ i ];
+      }
+   );
 }
 
 template< int Size, typename Value >
@@ -228,7 +240,11 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, getData(), array.getData() );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         (*this)[ i ] = array[ i ];
+      }
+   );
    return *this;
 }
 
@@ -264,7 +280,11 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), getData() );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         aux[ i ] = (*this)[ i ];
+      }
+   );
    return aux;
 }
 
@@ -272,7 +292,11 @@ template< int Size, typename Value >
 __cuda_callable__
 void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, getData(), val );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         (*this)[ i ] = val;
+      }
+   );
 }
 
 template< int Size, typename Value >

@@ -21,6 +21,7 @@
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
 #ifdef HAVE_CUDA
 /****
@@ -281,5 +282,6 @@ CudaMultireductionKernelLauncher( const Result zero,
 #endif
 }
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL

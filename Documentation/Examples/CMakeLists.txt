@@ -28,6 +28,9 @@ ADD_EXECUTABLE( ObjectExample_getType ObjectExample_getType.cpp )
 ADD_CUSTOM_COMMAND( COMMAND ObjectExample_getType > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ObjectExample_getType.out OUTPUT ObjectExample_getType.out )
 
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
+ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
+ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
+ADD_EXECUTABLE( MathExample MathExample.cpp )
 
 ADD_EXECUTABLE( ParseObjectTypeExample ParseObjectTypeExample.cpp )
 ADD_CUSTOM_COMMAND( COMMAND ParseObjectTypeExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ParseObjectTypeExample.out OUTPUT ParseObjectTypeExample.out )

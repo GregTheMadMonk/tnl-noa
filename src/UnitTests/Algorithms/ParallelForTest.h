@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Array.h>
@@ -164,7 +166,7 @@ void test_1D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
    }
 }
@@ -200,7 +202,7 @@ void test_2D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
 
       a.setValue( 0 );
@@ -213,7 +215,7 @@ void test_2D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
    }
 }
@@ -249,7 +251,7 @@ void test_3D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
 
       a.setValue( 0 );
@@ -262,7 +264,7 @@ void test_3D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
 
       a.setValue( 0 );
@@ -275,7 +277,7 @@ void test_3D_cuda()
       ah = a;
       if( ah != expected ) {
          for (int i = 0; i < size; i++)
-            ASSERT_EQ( ah[i], i ) << "First index at which the result is wrong is i = " << i;
+            ASSERT_EQ( ah[i], expected[i] ) << "First index at which the result is wrong is i = " << i;
       }
    }
 }

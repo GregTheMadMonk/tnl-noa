@@ -17,7 +17,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Algorithms/CudaScanKernel.h>
+#include <TNL/Algorithms/detail/CudaScanKernel.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
@@ -227,7 +227,7 @@ perform( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   CudaScanKernelLauncher< Type, RealType, IndexType >::perform(
+   detail::CudaScanKernelLauncher< Type, RealType, IndexType >::perform(
       end - begin,
       &v.getData()[ begin ],  // input
       &v.getData()[ begin ],  // output
@@ -253,7 +253,7 @@ performFirstPhase( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   return CudaScanKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
+   return detail::CudaScanKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
       end - begin,
       &v.getData()[ begin ],  // input
       &v.getData()[ begin ],  // output
@@ -281,7 +281,7 @@ performSecondPhase( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   CudaScanKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
+   detail::CudaScanKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
       end - begin,
       &v.getData()[ begin ],  // output
       blockShifts.getData(),

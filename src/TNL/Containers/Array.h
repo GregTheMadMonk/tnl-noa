@@ -136,7 +136,7 @@ class Array
        * \param size The number of array elements to be allocated.
        * \param allocator The allocator to be associated with this array.
        */
-      explicit Array( const IndexType& size, const AllocatorType& allocator = AllocatorType() );
+      explicit Array( IndexType size, const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Constructs an array with given size and value.
@@ -145,7 +145,7 @@ class Array
        * \param value The value all elements will be set to.
        * \param allocator The allocator to be associated with this array.
        */
-      explicit Array( const IndexType& size, const Value& value, const AllocatorType& allocator = AllocatorType() );
+      explicit Array( IndexType size, ValueType value, const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Constructs an array with given size and copies data from given
@@ -155,8 +155,8 @@ class Array
        * \param size The number of array elements to be copied to the array.
        * \param allocator The allocator to be associated with this array.
        */
-      Array( Value* data,
-             const IndexType& size,
+      Array( ValueType* data,
+             IndexType size,
              const AllocatorType& allocator = AllocatorType() );
 
       /**
@@ -287,7 +287,7 @@ class Array
        *
        * \param size The new size of the array.
        */
-      void resize( Index size );
+      void resize( IndexType size );
 
       /**
        * \brief Method for resizing the array with an initial value.
@@ -306,7 +306,7 @@ class Array
        * \param size The new size of the array.
        * \param value The value to initialize new elements with.
        */
-      void resize( Index size, const ValueType& value );
+      void resize( IndexType size, ValueType value );
 
       /**
        * \brief Method for setting the array size.
@@ -318,14 +318,14 @@ class Array
        *
        * \param size The new size of the array.
        */
-      void setSize( Index size );
+      void setSize( IndexType size );
 
       /**
        * \brief Returns the current array size.
        *
        * This method can be called from device kernels.
        */
-      __cuda_callable__ Index getSize() const;
+      __cuda_callable__ IndexType getSize() const;
 
       /**
        * \brief Sets the same size as the size of an existing array.
@@ -448,10 +448,10 @@ class Array
        * where the array is allocated.
        *
        * \param i The index of the element to be set.
-       * \param v The new value of the element.
+       * \param value The new value of the element.
        */
       __cuda_callable__
-      void setElement( const Index& i, const Value& v );
+      void setElement( IndexType i, ValueType value );
 
       /**
        * \brief Returns the value of the \e i-th element.
@@ -462,7 +462,7 @@ class Array
        * \param i The index of the element to be returned.
        */
       __cuda_callable__
-      Value getElement( const Index& i ) const;
+      ValueType getElement( IndexType i ) const;
 
       /**
        * \brief Accesses the \e i-th element of the array.
@@ -479,7 +479,7 @@ class Array
        * \param i The index of the element to be accessed.
        * \return Reference to the \e i-th element.
        */
-      __cuda_callable__ Value& operator[]( const Index& i );
+      __cuda_callable__ Value& operator[]( IndexType i );
 
       /**
        * \brief Accesses the \e i-th element of the array.
@@ -496,7 +496,7 @@ class Array
        * \param i The index of the element to be accessed.
        * \return Constant reference to the \e i-th element.
        */
-      __cuda_callable__ const Value& operator[]( const Index& i ) const;
+      __cuda_callable__ const Value& operator[]( IndexType i ) const;
 
       /**
        * \brief Copy-assignment operator for copying data from another array.
@@ -557,7 +557,7 @@ class Array
        *         container, e.g. \ref Array, \ref ArrayView, \ref Vector,
        *         \ref VectorView, etc.
        * \param array Reference to the array-like container.
-       * \return \ref True if both arrays are element-wise equal and \ref false
+       * \return `true` if both arrays are element-wise equal and `false`
        *         otherwise.
        */
       template< typename ArrayT >
@@ -582,13 +582,13 @@ class Array
        * or \e end is set to a non-zero value, only elements in the sub-interval
        * `[begin, end)` are set.
        *
-       * \param v The new value for the array elements.
+       * \param value The new value for the array elements.
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
        * \param end The end of the array sub-interval. The default value is 0
        *            which is, however, replaced with the array size.
        */
-      void setValue( const ValueType& v,
+      void setValue( ValueType value,
                      IndexType begin = 0,
                      IndexType end = 0 );
 
@@ -603,8 +603,8 @@ class Array
        *
        * where
        *
-       * \param elementIdx is an index of the array element being currently processed
-       * \param elementValue is a value of the array element being currently processed
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
        *
        * This is performed at the same place where the array is allocated,
        * i.e. it is efficient even on GPU.
@@ -633,8 +633,8 @@ class Array
        *
        * where
        *
-       * \param elementIdx is an index of the array element being currently processed
-       * \param elementValue is a value of the array element being currently processed
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
        *
        * This is performed at the same place where the array is allocated,
        * i.e. it is efficient even on GPU.
@@ -663,8 +663,8 @@ class Array
        *
        * where
        *
-       * \param elementIdx is an index of the array element being currently processed
-       * \param elementValue is a value of the array element being currently processed
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
        *
        * This is performed at the same place where the array is allocated,
        * i.e. it is efficient even on GPU.
@@ -691,8 +691,8 @@ class Array
        *
        * where
        *
-       * \param elementIdx is an index of the array element being currently processed
-       * \param elementValue is a value of the array element being currently processed
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
        *
        * This is performed at the same place where the array is allocated,
        * i.e. it is efficient even on GPU.
@@ -727,7 +727,7 @@ class Array
         * being currently processed:
         *
         * ```
-        * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+        * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
         * ```
         *
         * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -744,7 +744,7 @@ class Array
       template< typename Fetch,
                 typename Reduce,
                 typename Result >
-      Result reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
+      Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
 
        /**
         * \brief Computes reduction with array elements on interval [ \e begin, \e end) for constant instances.
@@ -765,7 +765,7 @@ class Array
         * being currently processed:
         *
         * ```
-        * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+        * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
         * ```
         *
         * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -782,7 +782,7 @@ class Array
       template< typename Fetch,
                 typename Reduce,
                 typename Result >
-      Result reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
+      Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
 
        /**
         * \brief Computes reduction with all array elements.
@@ -801,7 +801,7 @@ class Array
         * being currently processed:
         *
         * ```
-        * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+        * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
         * ```
         *
         * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -837,7 +837,7 @@ class Array
         * being currently processed:
         *
         * ```
-        * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+        * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
         * ```
         *
         * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -863,15 +863,15 @@ class Array
        * \e end is set to a non-zero value, only elements in the sub-interval
        * `[begin, end)` are checked.
        *
-       * \param v The value to be checked.
+       * \param value The value to be checked.
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
        * \param end The end of the array sub-interval. The default value is 0
        *            which is, however, replaced with the array size.
-       * \return True if there is _at least one_ element in the sub-interval
-       *         `[begin, end)` which has the value \e v.
+       * \return `true` if there is _at least one_ element in the sub-interval
+       *         `[begin, end)` which has the value \e value.
        */
-      bool containsValue( const ValueType& v,
+      bool containsValue( ValueType value,
                           IndexType begin = 0,
                           IndexType end = 0 ) const;
 
@@ -882,15 +882,15 @@ class Array
        * \e end is set to a non-zero value, only elements in the sub-interval
        * `[begin, end)` are checked.
        *
-       * \param v The value to be checked.
+       * \param value The value to be checked.
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
        * \param end The end of the array sub-interval. The default value is 0
        *            which is, however, replaced with the array size.
-       * \return True if there is _all_ elements in the sub-interval
-       *         `[begin, end)` have the same value \e v.
+       * \return `true` if _all_ elements in the sub-interval `[begin, end)`
+       *         have the same value \e value.
        */
-      bool containsOnlyValue( const ValueType& v,
+      bool containsOnlyValue( ValueType value,
                               IndexType begin = 0,
                               IndexType end = 0 ) const;
 
@@ -919,13 +919,13 @@ class Array
       /** \brief Internal method for reallocating array elements. Used only
        * from the two overloads of \ref resize.
        */
-      void reallocate( Index size );
+      void reallocate( IndexType size );
 
       /** \brief Pointer to the data. */
       Value* data = nullptr;
 
       /** \brief Number of elements in the array. */
-      Index size = 0;
+      IndexType size = 0;
 
       /**
        * \brief The internal allocator instance.
@@ -941,7 +941,7 @@ class Array
  * \tparam Index is a type used for the indexing of the array elements.
  *
  * \param str is a output stream.
- * \param view is the array to be printed.
+ * \param array is the array to be printed.
  *
  * \return a reference on the output stream \ref std::ostream&.
  */

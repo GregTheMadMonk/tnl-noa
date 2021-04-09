@@ -32,7 +32,8 @@ template< typename Value,
           typename Index >
 __cuda_callable__
 ArrayView< Value, Device, Index >::
-ArrayView( Value* data, Index size ) : data(data), size(size)
+ArrayView( ValueType* data, IndexType size )
+: data(data), size(size)
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
@@ -46,7 +47,7 @@ template< typename Value,
 __cuda_callable__
 void
 ArrayView< Value, Device, Index >::
-bind( Value* data, Index size )
+bind( ValueType* data, IndexType size )
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
@@ -60,7 +61,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-void ArrayView< Value, Device, Index >::bind( ArrayView view )
+void
+ArrayView< Value, Device, Index >::
+bind( ArrayView view )
 {
    bind( view.getData(), view.getSize() );
 }
@@ -71,7 +74,7 @@ template< typename Value,
 __cuda_callable__
 typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::
-getView( const IndexType begin, IndexType end )
+getView( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
@@ -84,7 +87,7 @@ template< typename Value,
 __cuda_callable__
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
-getConstView( const IndexType begin, IndexType end ) const
+getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
@@ -157,8 +160,8 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const
-Value* ArrayView< Value, Device, Index >::
+const Value*
+ArrayView< Value, Device, Index >::
 getData() const
 {
    return data;
@@ -179,8 +182,8 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const
-Value* ArrayView< Value, Device, Index >::
+const Value*
+ArrayView< Value, Device, Index >::
 getArrayData() const
 {
    return data;
@@ -214,7 +217,7 @@ template< typename Value,
 __cuda_callable__
 void
 ArrayView< Value, Device, Index >::
-setElement( Index i, Value value )
+setElement( IndexType i, ValueType value )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -226,7 +229,7 @@ template< typename Value,
           typename Index >
 __cuda_callable__ Value
 ArrayView< Value, Device, Index >::
-getElement( Index i ) const
+getElement( IndexType i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -238,7 +241,7 @@ template< typename Value,
           typename Index >
 __cuda_callable__
 Value& ArrayView< Value, Device, Index >::
-operator[]( Index i )
+operator[]( IndexType i )
 {
 #ifdef __CUDA_ARCH__
    TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
@@ -254,9 +257,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const
-Value& ArrayView< Value, Device, Index >::
-operator[]( Index i ) const
+const Value&
+ArrayView< Value, Device, Index >::
+operator[]( IndexType i ) const
 {
 #ifdef __CUDA_ARCH__
    TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
@@ -302,7 +305,7 @@ template< typename Value,
           typename Index >
 void
 ArrayView< Value, Device, Index >::
-setValue( Value value, const Index begin, Index end )
+setValue( ValueType value, IndexType begin, IndexType end )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
    if( end == 0 )
@@ -314,14 +317,15 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void ArrayView< Value, Device, Index >::
-forElements( const Index begin, Index end, Function&& f )
+void
+ArrayView< Value, Device, Index >::
+forElements( IndexType begin, IndexType end, Function&& f )
 {
    if( ! this->data )
       return;
 
    ValueType* d = this->getData();
-   auto g = [=] __cuda_callable__ ( Index i ) mutable
+   auto g = [=] __cuda_callable__ ( IndexType i ) mutable
    {
       f( i, d[ i ] );
    };
@@ -332,14 +336,15 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void ArrayView< Value, Device, Index >::
-forElements( const Index begin, Index end, Function&& f ) const
+void
+ArrayView< Value, Device, Index >::
+forElements( IndexType begin, IndexType end, Function&& f ) const
 {
    if( ! this->data )
       return;
 
    const ValueType* d = this->getData();
-   auto g = [=] __cuda_callable__ ( Index i )
+   auto g = [=] __cuda_callable__ ( IndexType i )
    {
       f( i, d[ i ] );
    };
@@ -350,7 +355,8 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void ArrayView< Value, Device, Index >::
+void
+ArrayView< Value, Device, Index >::
 forAllElements( Function&& f )
 {
    this->forElements( 0, this->getSize(), f );
@@ -360,7 +366,8 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void ArrayView< Value, Device, Index >::
+void
+ArrayView< Value, Device, Index >::
 forAllElements( Function&& f ) const
 {
    this->forElements( 0, this->getSize(), f );
@@ -372,8 +379,9 @@ template< typename Value,
    template< typename Fetch,
              typename Reduce,
              typename Result >
-Result ArrayView< Value, Device, Index >::
-reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
+Result
+ArrayView< Value, Device, Index >::
+reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
 {
    if( ! this->data )
       return zero;
@@ -389,8 +397,9 @@ template< typename Value,
    template< typename Fetch,
              typename Reduce,
              typename Result >
-Result ArrayView< Value, Device, Index >::
-reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+Result
+ArrayView< Value, Device, Index >::
+reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
 {
    if( ! this->data )
       return;
@@ -406,7 +415,8 @@ template< typename Value,
    template< typename Fetch,
              typename Reduce,
              typename Result >
-Result ArrayView< Value, Device, Index >::
+Result
+ArrayView< Value, Device, Index >::
 reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
 {
    return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
@@ -418,7 +428,8 @@ template< typename Value,
    template< typename Fetch,
              typename Reduce,
              typename Result >
-Result ArrayView< Value, Device, Index >::
+Result
+ArrayView< Value, Device, Index >::
 reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
 {
    return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
@@ -429,9 +440,9 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsValue( Value value,
-               const Index begin,
-               Index end ) const
+containsValue( ValueType value,
+               IndexType begin,
+               IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
@@ -443,13 +454,33 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsOnlyValue( Value value,
-                   const Index begin,
-                   Index end  ) const
+containsOnlyValue( ValueType value,
+                   IndexType begin,
+                   IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
    return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+ArrayView< Value, Device, Index >::
+save( const String& fileName ) const
+{
+   File( fileName, std::ios_base::out ) << *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+ArrayView< Value, Device, Index >::
+load( const String& fileName )
+{
+   File( fileName, std::ios_base::in ) >> *this;
 }
 
 template< typename Value, typename Device, typename Index >
@@ -464,24 +495,6 @@ std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Ind
    }
    str << " ]";
    return str;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void ArrayView< Value, Device, Index >::save( const String& fileName ) const
-{
-   File( fileName, std::ios_base::out ) << *this;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void
-ArrayView< Value, Device, Index >::
-load( const String& fileName )
-{
-   File( fileName, std::ios_base::in ) >> *this;
 }
 
 // Serialization of array views into binary files.

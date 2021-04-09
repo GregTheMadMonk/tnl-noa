@@ -4,6 +4,8 @@ set( COMMON_TESTS
          MemoryOperationsTest
          MultireductionTest
          ParallelForTest
+         staticForTest
+         unrolledForTest
 )
 
 set( CPP_TESTS )

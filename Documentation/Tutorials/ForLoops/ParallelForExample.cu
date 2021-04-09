@@ -1,1 +1,0 @@
-ParallelForExample_ug.cpp

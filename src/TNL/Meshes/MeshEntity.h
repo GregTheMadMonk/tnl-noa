@@ -62,11 +62,20 @@ class MeshEntity
       __cuda_callable__
       bool operator!=( const MeshEntity& entity ) const;
 
+      /**
+       * \brief Returns the dimension of this mesh entity.
+       */
       static constexpr int getEntityDimension();
 
+      /**
+       * \brief Returns a reference to the mesh that owns this mesh entity.
+       */
       __cuda_callable__
       const MeshType& getMesh() const;
 
+      /**
+       * \brief Returns the index of this mesh entity.
+       */
       __cuda_callable__
       GlobalIndexType getIndex() const;
 

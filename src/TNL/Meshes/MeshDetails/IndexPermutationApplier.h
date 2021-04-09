@@ -28,7 +28,7 @@ private:
                 Mesh::MeshTraitsType::template SubentityTraits< typename Mesh::template EntityType< Dimension >::EntityTopology,
                                                                 Subdimension >::storageEnabled
              >
-   struct _SubentitiesStorageWorker
+   struct SubentitiesStorageWorker
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
@@ -38,7 +38,7 @@ private:
    };
 
    template< int Subdimension >
-   struct _SubentitiesStorageWorker< Subdimension, false >
+   struct SubentitiesStorageWorker< Subdimension, false >
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
@@ -49,7 +49,7 @@ private:
                 Mesh::MeshTraitsType::template SuperentityTraits< typename Mesh::template EntityType< Dimension >::EntityTopology,
                                                                   Superdimension >::storageEnabled
              >
-   struct _SuperentitiesStorageWorker
+   struct SuperentitiesStorageWorker
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& perm )
       {
@@ -60,7 +60,7 @@ private:
    };
 
    template< int Superdimension >
-   struct _SuperentitiesStorageWorker< Superdimension, false >
+   struct SuperentitiesStorageWorker< Superdimension, false >
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
@@ -71,7 +71,7 @@ private:
                 Mesh::MeshTraitsType::template SuperentityTraits< typename Mesh::template EntityType< Subdimension >::EntityTopology,
                                                                   Dimension >::storageEnabled
              >
-   struct IndexPermutationApplierSubentitiesWorker
+   struct SubentitiesWorker
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
@@ -81,7 +81,7 @@ private:
    };
 
    template< int Subdimension >
-   struct IndexPermutationApplierSubentitiesWorker< Subdimension, false >
+   struct SubentitiesWorker< Subdimension, false >
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
@@ -92,7 +92,7 @@ private:
                 Mesh::MeshTraitsType::template SubentityTraits< typename Mesh::template EntityType< Superdimension >::EntityTopology,
                                                                 Dimension >::storageEnabled
              >
-   struct IndexPermutationApplierSuperentitiesWorker
+   struct SuperentitiesWorker
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm )
       {
@@ -102,24 +102,11 @@ private:
    };
 
    template< int Superdimension >
-   struct IndexPermutationApplierSuperentitiesWorker< Superdimension, false >
+   struct SuperentitiesWorker< Superdimension, false >
    {
       static void exec( Mesh& mesh, const GlobalIndexArray& iperm ) {}
    };
 
-
-   // template aliases needed to hide the 'Enabled' parameter
-   template< int Subdimension >
-   using SubentitiesStorageWorker = _SubentitiesStorageWorker< Subdimension >;
-
-   template< int Superdimension >
-   using SuperentitiesStorageWorker = _SuperentitiesStorageWorker< Superdimension >;
-
-   template< int Subdimension >
-   using SubentitiesWorker = IndexPermutationApplierSubentitiesWorker< Subdimension >;
-
-   template< int Superdimension >
-   using SuperentitiesWorker = IndexPermutationApplierSuperentitiesWorker< Superdimension >;
 
    template< typename Mesh_, std::enable_if_t< Mesh_::Config::dualGraphStorage(), bool > = true >
    static void permuteDualGraph( Mesh_& mesh, const GlobalIndexArray& perm, const GlobalIndexArray& iperm )
@@ -183,17 +170,33 @@ public:
       if( Dimension == 0 )
          permuteArray( mesh.getPoints(), perm );
 
-      // permute superentities storage
-      Algorithms::TemplateStaticFor< int, 0, Dimension, SubentitiesStorageWorker >::execHost( mesh, perm );
-
       // permute subentities storage
-      Algorithms::TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::execHost( mesh, perm );
+      Algorithms::staticFor< int, 0, Dimension >(
+         [&] ( auto dim ) {
+            SubentitiesStorageWorker< dim >::exec( mesh, perm );
+         }
+      );
+
+      // permute superentities storage
+      Algorithms::staticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1 >(
+         [&] ( auto dim ) {
+            SuperentitiesStorageWorker< dim >::exec( mesh, perm );
+         }
+      );
 
       // update superentity indices from the subentities
-      Algorithms::TemplateStaticFor< int, 0, Dimension, SubentitiesWorker >::execHost( mesh, iperm );
+      Algorithms::staticFor< int, 0, Dimension >(
+         [&] ( auto dim ) {
+            SubentitiesWorker< dim >::exec( mesh, iperm );
+         }
+      );
 
       // update subentity indices from the superentities
-      Algorithms::TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::execHost( mesh, iperm );
+      Algorithms::staticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1 >(
+         [&] ( auto dim ) {
+            SuperentitiesWorker< dim >::exec( mesh, iperm );
+         }
+      );
 
       if( Dimension == Mesh::getMeshDimension() ) {
          // permute dual graph

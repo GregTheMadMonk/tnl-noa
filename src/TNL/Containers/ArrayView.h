@@ -119,7 +119,7 @@ public:
     * \param size The number of elements in the array view.
     */
    __cuda_callable__
-   ArrayView( Value* data, Index size );
+   ArrayView( ValueType* data, IndexType size );
 
    /**
     * \brief Shallow copy constructor.
@@ -165,7 +165,7 @@ public:
     * \param size The number of elements in the array view.
     */
    __cuda_callable__
-   void bind( Value* data, const Index size );
+   void bind( ValueType* data, IndexType size );
 
    /**
     * \brief Method for rebinding (reinitialization) using another array view.
@@ -193,7 +193,7 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ViewType getView( const IndexType begin = 0, IndexType end = 0 );
+   ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
@@ -208,7 +208,7 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
+   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Deep copy assignment operator for copying data from another array
@@ -270,7 +270,7 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   const Value* getData() const;
+   const ValueType* getData() const;
 
    /**
     * \brief Returns a raw pointer to the data.
@@ -278,7 +278,7 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   Value* getData();
+   ValueType* getData();
 
    /**
     * \brief Returns a \e const-qualified raw pointer to the data.
@@ -289,7 +289,7 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   const Value* getArrayData() const;
+   const ValueType* getArrayData() const;
 
    /**
     * \brief Returns a raw pointer to the data.
@@ -300,7 +300,7 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   Value* getArrayData();
+   ValueType* getArrayData();
 
    /**
     * \brief Returns the current size of the array view.
@@ -308,7 +308,7 @@ public:
     * This method can be called from device kernels.
     */
    __cuda_callable__
-   Index getSize() const;
+   IndexType getSize() const;
 
    /**
     * \brief Sets the value of the \e i-th element to \e v.
@@ -317,10 +317,10 @@ public:
     * where the array is allocated.
     *
     * \param i The index of the element to be set.
-    * \param v The new value of the element.
+    * \param value The new value of the element.
     */
    __cuda_callable__
-   void setElement( Index i, Value value );
+   void setElement( IndexType i, ValueType value );
 
    /**
     * \brief Returns the value of the \e i-th element.
@@ -331,7 +331,7 @@ public:
     * \param i The index of the element to be returned.
     */
    __cuda_callable__
-   Value getElement( Index i ) const;
+   ValueType getElement( IndexType i ) const;
 
    /**
     * \brief Accesses the \e i-th element of the array view.
@@ -349,7 +349,7 @@ public:
     * \return Reference to the \e i-th element.
     */
    __cuda_callable__
-   Value& operator[]( Index i );
+   Value& operator[]( IndexType i );
 
    /**
     * \brief Accesses the \e i-th element of the array view.
@@ -367,7 +367,7 @@ public:
     * \return Constant reference to the \e i-th element.
     */
    __cuda_callable__
-   const Value& operator[]( Index i ) const;
+   const Value& operator[]( IndexType i ) const;
 
    /**
     * \brief Compares the array view with another array-like container.
@@ -401,15 +401,15 @@ public:
     * \e begin or \e end is set to a non-zero value, only elements in the
     * sub-interval `[begin, end)` are set.
     *
-    * \param v The new value for the array view elements.
+    * \param value The new value for the array view elements.
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array view size.
     */
-   void setValue( Value value,
-                  const Index begin = 0,
-                  Index end = 0 );
+   void setValue( ValueType value,
+                  IndexType begin = 0,
+                  IndexType end = 0 );
 
    /**
     * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
@@ -422,8 +422,8 @@ public:
     *
     * where
     *
-    * \param elementIdx is an index of the array element being currently processed
-    * \param elementValue is a value of the array element being currently processed
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
     *
     * This is performed at the same place where the array is allocated,
     * i.e. it is efficient even on GPU.
@@ -452,8 +452,8 @@ public:
     *
     * where
     *
-    * \param elementIdx is an index of the array element being currently processed
-    * \param elementValue is a value of the array element being currently processed
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
     *
     * This is performed at the same place
     * where the array is allocated, i.e. it is efficient even on GPU.
@@ -481,8 +481,8 @@ public:
     *
     * where
     *
-    * \param elementIdx is an index of the array element being currently processed
-    * \param elementValue is a value of the array element being currently processed
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
     *
     * This is performed at the same place where the array is allocated,
     * i.e. it is efficient even on GPU.
@@ -509,8 +509,8 @@ public:
     *
     * where
     *
-    * \param elementIdx is an index of the array element being currently processed
-    * \param elementValue is a value of the array element being currently processed
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
     *
     * This is performed at the same place where the array is allocated,
     * i.e. it is efficient even on GPU.
@@ -545,7 +545,7 @@ public:
     * being currently processed:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
     * ```
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -562,7 +562,7 @@ public:
    template< typename Fetch,
              typename Reduce,
              typename Result >
-   Result reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
+   Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
 
    /**
     * \brief Computes reduction with array view elements on interval [ \e begin, \e end) for constant instances.
@@ -583,7 +583,7 @@ public:
     * being currently processed:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
     * ```
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -600,7 +600,7 @@ public:
    template< typename Fetch,
              typename Reduce,
              typename Result >
-   Result reduceElements( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
+   Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
 
    /**
     * \brief Computes reduction with all array view elements.
@@ -619,7 +619,7 @@ public:
     * being currently processed:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
     * ```
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -655,7 +655,7 @@ public:
     * being currently processed:
     *
     * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( Index idx, Value& value ) -> Result { return ... };
+    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
     * ```
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
@@ -681,17 +681,17 @@ public:
     * \e end is set to a non-zero value, only elements in the sub-interval
     * `[begin, end)` are checked.
     *
-    * \param v The value to be checked.
+    * \param value The value to be checked.
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array view size.
-    * \return True if there is _at least one_ element in the sub-interval
-    *         `[begin, end)` which has the value \e v.
+    * \return `true` if there is _at least one_ element in the sub-interval
+    *         `[begin, end)` which has the value \e value.
     */
-   bool containsValue( Value value,
-                       const Index begin = 0,
-                       Index end = 0  ) const;
+   bool containsValue( ValueType value,
+                       IndexType begin = 0,
+                       IndexType end = 0 ) const;
 
    /**
     * \brief Checks if all elements have the same value \e v.
@@ -700,17 +700,17 @@ public:
     * \e end is set to a non-zero value, only elements in the sub-interval
     * `[begin, end)` are checked.
     *
-    * \param v The value to be checked.
+    * \param value The value to be checked.
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array view size.
-    * \return True if there is _all_ elements in the sub-interval
-    *         `[begin, end)` have the same value \e v.
+    * \return `true` if _all_ elements in the sub-interval `[begin, end)`
+    *         have the same value \e value.
     */
-   bool containsOnlyValue( Value value,
-                           const Index begin = 0,
-                           Index end = 0  ) const;
+   bool containsOnlyValue( ValueType value,
+                           IndexType begin = 0,
+                           IndexType end = 0 ) const;
 
    /**
     * \brief Method for saving the data to a binary file \e fileName.
@@ -728,10 +728,10 @@ public:
 
 protected:
    //! Pointer to the data
-   Value* data = nullptr;
+   ValueType* data = nullptr;
 
    //! Array view size
-   Index size = 0;
+   IndexType size = 0;
 };
 
 /**

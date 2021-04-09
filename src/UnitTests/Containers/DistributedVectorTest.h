@@ -151,12 +151,12 @@ TYPED_TEST( DistributedVectorTest, scan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host = -1;
       v.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
@@ -164,7 +164,7 @@ TYPED_TEST( DistributedVectorTest, scan )
       setConstantSequence( v, 1 );
       v_host = -1;
       v.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i + 1 );
@@ -172,7 +172,7 @@ TYPED_TEST( DistributedVectorTest, scan )
       setLinearSequence( v );
       v_host = -1;
       v.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -181,7 +181,7 @@ TYPED_TEST( DistributedVectorTest, scan )
       setConstantSequence( v, 0 );
       v_host = -1;
       v_view.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
@@ -189,7 +189,7 @@ TYPED_TEST( DistributedVectorTest, scan )
       setConstantSequence( v, 1 );
       v_host = -1;
       v_view.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i + 1 );
@@ -197,12 +197,12 @@ TYPED_TEST( DistributedVectorTest, scan )
       setLinearSequence( v );
       v_host = -1;
       v_view.scan();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
 
-      Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::resetMaxGridSize();
 #endif
    }
 }
@@ -270,12 +270,12 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host = -1;
       v.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
@@ -283,7 +283,7 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
       setConstantSequence( v, 1 );
       v_host = -1;
       v.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i );
@@ -291,7 +291,7 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
       setLinearSequence( v );
       v_host = -1;
       v.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -300,7 +300,7 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
       setConstantSequence( v, 0 );
       v_host = -1;
       v_view.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
@@ -308,7 +308,7 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
       setConstantSequence( v, 1 );
       v_host = -1;
       v_view.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i );
@@ -316,12 +316,12 @@ TYPED_TEST( DistributedVectorTest, exclusiveScan )
       setLinearSequence( v );
       v_host = -1;
       v_view.template scan< Algorithms::ScanType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
 
-      Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::resetMaxGridSize();
 #endif
    }
 }

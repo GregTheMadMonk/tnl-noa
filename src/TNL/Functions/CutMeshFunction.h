@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Algorithms/StaticVectorFor.h>
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
@@ -22,6 +21,38 @@ template <  typename MeshFunctionType,
             int codimension=MeshFunctionType::getMeshDimension()-OutMesh::getMeshDimension()>
 class CutMeshFunction
 {
+   template< typename Index,
+             typename Function,
+             typename... FunctionArgs,
+             int dim >
+   static void
+   staticVectorFor( const Containers::StaticVector< dim, Index >& begin,
+                    const Containers::StaticVector< dim, Index >& end,
+                    Function f,
+                    FunctionArgs... args )
+   {
+      static_assert( 1 <= dim && dim <= 3, "unsupported dimension" );
+      Containers::StaticVector< dim, Index > index;
+
+      if( dim == 1 ) {
+         for( index[0] = begin[0]; index[0] < end[0]; index[0]++ )
+            f( index, args... );
+      }
+
+      if( dim == 2 ) {
+         for( index[1] = begin[1]; index[1] < end[1]; index[1]++ )
+         for( index[0] = begin[0]; index[0] < end[0]; index[0]++ )
+               f( index, args... );
+      }
+
+      if( dim == 3 ) {
+         for( index[2] = begin[2]; index[2] < end[2]; index[2]++ )
+         for( index[1] = begin[1]; index[1] < end[1]; index[1]++ )
+         for( index[0] = begin[0]; index[0] < end[0]; index[0]++ )
+            f( index, args... );
+      }
+   }
+
   public:
     static bool Cut(MeshFunctionType &inputMeshFunction,
                     OutMesh &outMesh,
@@ -99,7 +130,7 @@ class CutMeshFunction
 
             typename OutMesh::CoordinatesType starts;
             starts.setValue(0);
-            Algorithms::StaticVectorFor::exec(starts,outMesh.getDimensions(),kernel);
+            staticVectorFor(starts,outMesh.getDimensions(),kernel);
         }
 
         return inCut;

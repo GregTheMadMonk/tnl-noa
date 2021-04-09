@@ -52,7 +52,7 @@ template< typename Value,
           typename Index,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
-Array( const IndexType& size, const AllocatorType& allocator )
+Array( IndexType size, const AllocatorType& allocator )
 : allocator( allocator )
 {
    this->setSize( size );
@@ -63,7 +63,7 @@ template< typename Value,
           typename Index,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
-Array( const IndexType& size, const Value& value, const AllocatorType& allocator )
+Array( IndexType size, ValueType value, const AllocatorType& allocator )
 : allocator( allocator )
 {
    this->setSize( size );
@@ -75,8 +75,8 @@ template< typename Value,
           typename Index,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
-Array( Value* data,
-       const IndexType& size,
+Array( ValueType* data,
+       IndexType size,
        const AllocatorType& allocator )
 : allocator( allocator )
 {
@@ -244,7 +244,7 @@ template< typename Value,
           typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
-reallocate( Index size )
+reallocate( IndexType size )
 {
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 
@@ -288,10 +288,10 @@ template< typename Value,
           typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
-resize( Index size )
+resize( IndexType size )
 {
    // remember the old size and reallocate the array
-   const Index old_size = this->size;
+   const IndexType old_size = this->size;
    reallocate( size );
 
    if( old_size < size )
@@ -306,10 +306,10 @@ template< typename Value,
           typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
-resize( Index size, const ValueType& value )
+resize( IndexType size, ValueType value )
 {
    // remember the old size and reallocate the array
-   const Index old_size = this->size;
+   const IndexType old_size = this->size;
    reallocate( size );
 
    if( old_size < size )
@@ -323,7 +323,7 @@ template< typename Value,
           typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
-setSize( Index size )
+setSize( IndexType size )
 {
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 
@@ -495,7 +495,7 @@ template< typename Value,
           typename Allocator >
 __cuda_callable__ void
 Array< Value, Device, Index, Allocator >::
-setElement( const Index& i, const Value& x )
+setElement( IndexType i, ValueType x )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -508,7 +508,7 @@ template< typename Value,
           typename Allocator >
 __cuda_callable__ Value
 Array< Value, Device, Index, Allocator >::
-getElement( const Index& i ) const
+getElement( IndexType i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -522,7 +522,7 @@ template< typename Value,
 __cuda_callable__
 Value&
 Array< Value, Device, Index, Allocator >::
-operator[]( const Index& i )
+operator[]( IndexType i )
 {
 #ifdef __CUDA_ARCH__
    TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
@@ -541,7 +541,7 @@ template< typename Value,
 __cuda_callable__
 const Value&
 Array< Value, Device, Index, Allocator >::
-operator[]( const Index& i ) const
+operator[]( IndexType i ) const
 {
 #ifdef __CUDA_ARCH__
    TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
@@ -647,9 +647,7 @@ operator==( const ArrayT& array ) const
    if( this->getSize() == 0 )
       return true;
    return Algorithms::MultiDeviceMemoryOperations< Device, typename ArrayT::DeviceType >::
-            compare( this->getData(),
-                           array.getData(),
-                           array.getSize() );
+            compare( this->getData(), array.getData(), array.getSize() );
 }
 
 template< typename Value,
@@ -670,7 +668,7 @@ template< typename Value,
           typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
-setValue( const ValueType& v,
+setValue( ValueType v,
           IndexType begin,
           IndexType end )
 {
@@ -742,7 +740,7 @@ template< typename Value,
          typename Result >
 Result
 Array< Value, Device, Index, Allocator >::
-reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
+reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
 {
    return this->getView().reduceElements( begin, end, fetch, reduce, zero );
 }
@@ -756,7 +754,7 @@ template< typename Value,
          typename Result >
 Result
 Array< Value, Device, Index, Allocator >::
-reduceElements( const Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
+reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
 {
    return this->getConstView().reduceElements( begin, end, fetch, reduce, zero );
 }
@@ -795,7 +793,7 @@ template< typename Value,
           typename Allocator >
 bool
 Array< Value, Device, Index, Allocator >::
-containsValue( const ValueType& v,
+containsValue( ValueType value,
                IndexType begin,
                IndexType end ) const
 {
@@ -803,7 +801,7 @@ containsValue( const ValueType& v,
    if( end == 0 )
       end = this->getSize();
 
-   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
+   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
@@ -812,7 +810,7 @@ template< typename Value,
           typename Allocator >
 bool
 Array< Value, Device, Index, Allocator >::
-containsOnlyValue( const ValueType& v,
+containsOnlyValue( ValueType value,
                    IndexType begin,
                    IndexType end ) const
 {
@@ -820,7 +818,7 @@ containsOnlyValue( const ValueType& v,
    if( end == 0 )
       end = this->getSize();
 
-   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
+   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
