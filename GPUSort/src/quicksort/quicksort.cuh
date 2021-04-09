@@ -166,13 +166,35 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
 {
     while (host_1stPhaseTasksAmount > 0)
     {
-        //2ndphase task is now full or host_1stPhaseTasksAmount is full, as backup during writing, overflowing tasks were written into the other array
-        if (host_1stPhaseTasksAmount >= maxTasks || host_2ndPhaseTasksAmount >= maxTasks)
+        if (host_1stPhaseTasksAmount >= maxTasks)
             break;
 
+        if(host_2ndPhaseTasksAmount >= maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
+        {
+            int tmp = host_1stPhaseTasksAmount;
+            host_1stPhaseTasksAmount = 0;
+            secondPhase(Cmp);
+            cuda_2ndPhaseTasksAmount = host_2ndPhaseTasksAmount = 0;
+            host_1stPhaseTasksAmount = tmp;
+        }
+
         //just in case newly created tasks wouldnt fit
+        //bite the bullet and sort with single blocks
         if (host_1stPhaseTasksAmount * 2 >= maxTasks + (maxTasks - host_2ndPhaseTasksAmount))
-            break;
+        {
+            if(host_2ndPhaseTasksAmount >= 0.75*maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
+            {
+                int tmp = host_1stPhaseTasksAmount;
+                host_1stPhaseTasksAmount = 0;
+                secondPhase(Cmp);
+                cuda_2ndPhaseTasksAmount = host_2ndPhaseTasksAmount = 0;
+                host_1stPhaseTasksAmount = tmp;
+            }
+            else
+                break;
+        }
+
+        //---------------------------------------------------------------
 
         int elemPerBlock = getElemPerBlock();
 
@@ -297,6 +319,8 @@ int QUICKSORT<Value>::getSetsNeeded(int elemPerBlock) const
 template <typename Value>
 int QUICKSORT<Value>::getElemPerBlock() const
 {
+    return desiredElemPerBlock;
+
     int setsNeeded = getSetsNeeded(desiredElemPerBlock);
 
     if (setsNeeded <= maxBlocks)
