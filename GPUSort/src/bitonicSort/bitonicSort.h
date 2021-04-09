@@ -3,6 +3,19 @@
 
 //---------------------------------------------
 
+// Inline PTX call to return index of highest non-zero bit in a word
+static __device__ __forceinline__ unsigned int __btflo(unsigned int word)
+{
+    unsigned int ret;
+    asm volatile("bfind.u32 %0, %1;" : "=r"(ret) : "r"(word));
+    return ret;
+}
+
+__device__ int closestPow2_ptx(int len)
+{
+    return 1 << (__btflo((unsigned)len-1U)+1);
+}
+
 __host__ __device__ int closestPow2(int x)
 {
     if (x == 0)
@@ -198,7 +211,7 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
     //bitonic activity
     {
         int i = threadIdx.x;
-        int paddedSize = closestPow2(src.getSize());
+        int paddedSize = closestPow2_ptx(src.getSize());
 
         for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
         {
@@ -246,7 +259,7 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
                                   const Function &Cmp)
 {
     int i = threadIdx.x;
-    int paddedSize = closestPow2(src.getSize());
+    int paddedSize = closestPow2_ptx(src.getSize());
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
