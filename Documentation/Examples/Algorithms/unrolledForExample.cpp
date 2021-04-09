@@ -1,6 +1,6 @@
 #include <iostream>
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Algorithms/UnrolledFor.h>
+#include <TNL/Algorithms/unrolledFor.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -19,13 +19,12 @@ int main( int argc, char* argv[] )
    /****
     * Compute an addition of a vector and a constant number.
     */
-   auto addition = [&]( int i, const double& c )
-   {
-      a[ i ] = b[ i ] + c;
-      sum += a[ i ];
-   };
-   Algorithms::UnrolledFor< 0, Size >::exec( addition, 3.14 );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&]( int i ) {
+         a[ i ] = b[ i ] + 3.14;
+         sum += a[ i ];
+      }
+   );
    std::cout << "a = " << a << std::endl;
    std::cout << "sum = " << sum << std::endl;
 }
-

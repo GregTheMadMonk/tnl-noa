@@ -9,11 +9,11 @@ ENDIF()
 ADD_EXECUTABLE(staticForExample staticForExample.cpp)
 ADD_CUSTOM_COMMAND( COMMAND staticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/staticForExample.out OUTPUT staticForExample.out )
 
-ADD_EXECUTABLE(UnrolledForExample UnrolledForExample.cpp)
-ADD_CUSTOM_COMMAND( COMMAND UnrolledForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UnrolledForExample.out OUTPUT UnrolledForExample.out )
+ADD_EXECUTABLE(unrolledForExample unrolledForExample.cpp)
+ADD_CUSTOM_COMMAND( COMMAND unrolledForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/unrolledForExample.out OUTPUT unrolledForExample.out )
 
 ADD_CUSTOM_TARGET( RunAlgorithmsExamples ALL DEPENDS
    ParallelForExample.out
-   UnrolledForExample.out
+   unrolledForExample.out
    staticForExample.out
 )

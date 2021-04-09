@@ -11,31 +11,11 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
-#include <TNL/Algorithms/UnrolledFor.h>
+#include <TNL/Algorithms/unrolledFor.h>
 
 namespace TNL {
 namespace Containers {
 namespace detail {
-
-struct AssignArrayFunctor
-{
-   template< typename LeftValue, typename RightValue >
-   __cuda_callable__
-   void operator()( int i, LeftValue* data, const RightValue* v ) const
-   {
-      data[ i ] = v[ i ];
-   }
-};
-
-struct AssignValueFunctor
-{
-   template< typename LeftValue, typename RightValue >
-   __cuda_callable__
-   void operator()( int i, LeftValue* data, const RightValue& v ) const
-   {
-      data[ i ] = v;
-   }
-};
 
 template< typename StaticArray,
           typename T,
@@ -49,11 +29,15 @@ template< typename StaticArray,
           typename T >
 struct StaticArrayAssignment< StaticArray, T, true >
 {
-   __cuda_callable__
-   static void assign( StaticArray& a, const T& v )
+   static constexpr void assign( StaticArray& a, const T& v )
    {
-      static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      Algorithms::UnrolledFor< 0, StaticArray::getSize() >::exec( AssignArrayFunctor{}, a.getData(), v.getData() );
+      static_assert( StaticArray::getSize() == T::getSize(),
+                     "Cannot assign static arrays with different size." );
+      Algorithms::unrolledFor< int, 0, StaticArray::getSize() >(
+         [&] ( int i ) mutable {
+            a[ i ] = v[ i ];
+         }
+      );
    }
 };
 
@@ -65,10 +49,13 @@ template< typename StaticArray,
           typename T >
 struct StaticArrayAssignment< StaticArray, T, false >
 {
-   __cuda_callable__
-   static void assign( StaticArray& a, const T& v )
+   static constexpr void assign( StaticArray& a, const T& v )
    {
-      Algorithms::UnrolledFor< 0, StaticArray::getSize() >::exec( AssignValueFunctor{}, a.getData(), v );
+      Algorithms::unrolledFor< int, 0, StaticArray::getSize() >(
+         [&] ( int i ) mutable {
+            a[ i ] = v;
+         }
+      );
    }
 };
 

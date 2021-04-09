@@ -99,7 +99,11 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   Algorithms::UnrolledFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), this->getData() );
+   Algorithms::unrolledFor< int, 0, Size >(
+      [&] ( int i ) mutable {
+         aux[ i ] = (*this)[ i ];
+      }
+   );
    return aux;
 }
 

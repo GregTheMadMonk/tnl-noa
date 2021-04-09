@@ -65,24 +65,24 @@ For completeness, we show modification of the previous example into 3D:
 
 ## Unrolled For
 
-\ref TNL::Algorithms::UnrolledFor is a for-loop that it is explicitly unrolled via C++ templates when the loop is short (up to eight iterations).
-The bounds of `UnrolledFor` loops must be constant (i.e. known at the compile time).
+\ref TNL::Algorithms::unrolledFor is a for-loop that it is explicitly unrolled via C++ templates when the loop is short (up to eight iterations).
+The bounds of `unrolledFor` loops must be constant (i.e. known at the compile time).
 It is often used with static arrays and vectors.
 
 See the following example:
 
-\include UnrolledForExample.cpp
+\include unrolledForExample.cpp
 
 Notice that the unrolled for-loop works with a lambda function similar to parallel for-loop.
-The bounds of the loop are passed as template parameters in the statement `Algorithms::UnrolledFor< 0, Size >`.
-The parameters of the static method `exec` are the lambda functions to be performed in each iteration and auxiliary data to be passed to the function.
-The function gets the loop index `i` first followed by the auxiliary data `sum` in this example.
+The bounds of the loop are passed as template parameters in the statement `Algorithms::unrolledFor< int, 0, Size >`.
+The parameter of the `unrolledFor` function is the functor to be called in each iteration.
+The function gets the loop index `i` only, see the following example:
 
 The result looks as:
 
-\include UnrolledForExample.out
+\include unrolledForExample.out
 
-The effect of `UnrolledFor` is really the same as usual for-loop.
+The effect of `unrolledFor` is really the same as usual for-loop.
 The following code does the same as the previous example:
 
 ```cpp
@@ -93,14 +93,14 @@ for( int i = 0; i < Size; i++ )
 };
 ```
 
-The benefit of `UnrolledFor` is mainly in the explicit unrolling of short loops which can improve performance in some situations.
-`UnrolledFor` can be forced to do the loop-unrolling in any situations using the third template parameter as follows:
+The benefit of `unrolledFor` is mainly in the explicit unrolling of short loops which can improve performance in some situations.
+The maximum length of loops that will be fully unrolled can be specified using the fourth template parameter as follows:
 
 ```cpp
-Algorithms::UnrolledFor< 0, Size, true >::exec( addition, 3.14 );
+Algorithms::unrolledFor< int, 0, Size, 16 >( ... );
 ```
 
-`UnrolledFor` can be used also in CUDA kernels.
+`unrolledFor` can be used also in CUDA kernels.
 
 ## Static For
 
