@@ -22,8 +22,8 @@ namespace Containers {
  * The template parameters have the same meaning as in \ref Array, with \e Real
  * corresponding to \e Array's \e Value parameter.
  *
- * \tparam Real   An arithmetic type for the vector values, e.g. \ref float or
- *                \ref double.
+ * \tparam Real   An arithmetic type for the vector values, e.g. `float` or
+ *                `double`.
  * \tparam Device The device to be used for the execution of vector operations.
  * \tparam Index  The indexing type.
  * \tparam Allocator The type of the allocator used for the allocation and
@@ -51,7 +51,7 @@ public:
 
    /**
     * \brief Device where the vector is allocated.
-    * 
+    *
     * See \ref Devices::Host or \ref Devices::Cuda.
     */
    using DeviceType = Device;
@@ -63,7 +63,7 @@ public:
 
    /**
     * \brief Allocator type used for allocating this vector.
-    * 
+    *
     * See \ref Allocators::Cuda, \ref Allocators::CudaHost, \ref Allocators::CudaManaged, \ref Allocators::Host or \ref Allocators:Default.
     */
    using AllocatorType = Allocator;
@@ -114,7 +114,7 @@ public:
 
    /**
     * \brief Constructor from expression template
-    * 
+    *
     * @param expression input expression template
     */
    template< typename VectorExpression,

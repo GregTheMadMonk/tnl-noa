@@ -25,8 +25,8 @@ namespace Containers {
  * The template parameters have the same meaning as in \ref ArrayView, with
  * \e Real corresponding to \e ArrayView's \e Value parameter.
  *
- * \tparam Real   An arithmetic type for the vector values, e.g. \ref float or
- *                \ref double.
+ * \tparam Real   An arithmetic type for the vector values, e.g. `float` or
+ *                `double`.
  * \tparam Device The device to be used for the execution of vector operations.
  * \tparam Index  The indexing type.
  */
