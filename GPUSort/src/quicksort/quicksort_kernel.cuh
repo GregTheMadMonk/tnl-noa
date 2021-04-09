@@ -185,7 +185,7 @@ template <typename Value, typename Function, int stackSize>
 __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
                                       const Function &Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
-                                      int elemInShared)
+                                      int elemInShared, int maxBitonicSize)
 {
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
@@ -202,11 +202,13 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, 0);
+        singleBlockQuickSort<Value, Function, stackSize, false>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, true>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }
 
@@ -215,7 +217,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
                                       const Function &Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
-                                      int elemInShared)
+                                      int elemInShared, int maxBitonicSize)
 {
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
@@ -237,11 +239,13 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, 0);
+        singleBlockQuickSort<Value, Function, stackSize, false>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared);
+        singleBlockQuickSort<Value, Function, stackSize, true>
+            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }
 

@@ -39,9 +39,10 @@ template <typename Value, typename Function, int stackSize, bool useShared>
 __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
                                      ArrayView<Value, TNL::Devices::Cuda> aux,
                                      const Function &Cmp, int _depth,
-                                     Value *sharedMem, int memSize)
+                                     Value *sharedMem, int memSize,
+                                     int maxBitonicSize)
 {
-    if (arr.getSize() <= blockDim.x * 2)
+    if (arr.getSize() <= maxBitonicSize)
     {
         auto &src = (_depth & 1) == 0 ? arr : aux;
         if (useShared && arr.getSize() <= memSize)
@@ -91,7 +92,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         auto &src = (depth & 1) == 0 ? arr : aux;
 
         //small enough for for bitonic
-        if (size <= blockDim.x * 2)
+        if (size <= maxBitonicSize)
         {
             if (useShared && size <= memSize)
                 externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);

@@ -30,7 +30,7 @@ class QUICKSORT
 
     //--------------------------------------
 
-    const int maxBitonicSize = threadsPerBlock * 2;
+    const int maxBitonicSize = threadsPerBlock * 8;
     const int desired_2ndPhasElemPerBlock = maxBitonicSize;
     const int g_maxTasks = 1 << 14;
     int maxTasks;
@@ -284,20 +284,20 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared, maxBitonicSize);
     }
     else if (host_1stPhaseTasksAmount > 0)
     {
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared, maxBitonicSize);
     }
     else
     {
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared, maxBitonicSize);
     }
 }
 
