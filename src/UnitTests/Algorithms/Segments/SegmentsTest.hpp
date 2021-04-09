@@ -128,7 +128,7 @@ void test_reduceAllSegments_MaximumInSegments()
    TNL::Containers::Vector< IndexType, DeviceType, IndexType > v( segments.getStorageSize() );
 
    auto view = v.getView();
-   auto init = [=] __cuda_callable__ ( const IndexType segmentIdx, const IndexType localIdx, const IndexType globalIdx, bool& compute ) mutable -> bool {
+   auto init = [=] __cuda_callable__ ( const IndexType segmentIdx, const IndexType localIdx, const IndexType globalIdx ) mutable -> bool {
       view[ globalIdx ] =  segmentIdx * 5 + localIdx + 1;
       return true;
    };
