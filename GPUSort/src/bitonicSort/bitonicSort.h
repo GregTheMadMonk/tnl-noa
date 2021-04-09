@@ -88,16 +88,9 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
     int myBlockEnd = TNL::min(arr.getSize(), myBlockStart + sharedMemLen);
 
     //copy from globalMem into sharedMem
-    int copy1 = myBlockStart + threadIdx.x;
-    int copy2 = copy1 + blockDim.x;
-    {
-        if (copy1 < myBlockEnd)
-            sharedMem[threadIdx.x] = arr[copy1];
-        if (copy2 < myBlockEnd)
-            sharedMem[threadIdx.x + blockDim.x] = arr[copy2];
-
-        __syncthreads();
-    }
+    for(int i = threadIdx.x; myBlockStart + i < myBlockEnd; i += blockDim.x)
+        sharedMem[i] = arr[myBlockStart + i];
+    __syncthreads();
 
     //------------------------------------------
     //bitonic activity
@@ -130,12 +123,8 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
     //------------------------------------------
 
     //writeback to global memory
-    {
-        if (copy1 < myBlockEnd)
-            arr[copy1] = sharedMem[threadIdx.x];
-        if (copy2 < myBlockEnd)
-            arr[copy2] = sharedMem[threadIdx.x + blockDim.x];
-    }
+    for(int i = threadIdx.x; myBlockStart + i < myBlockEnd; i += blockDim.x)
+        arr[myBlockStart + i] = sharedMem[i];
 }
 
 /**
@@ -195,17 +184,9 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
                                   Value *sharedMem, const Function &Cmp)
 {
     //copy from globalMem into sharedMem
-    int copy1 = threadIdx.x;
-    int copy2 = copy1 + blockDim.x;
-    {
-        if (copy1 < src.getSize())
-            sharedMem[copy1] = src[copy1];
-
-        if (copy2 < src.getSize())
-            sharedMem[copy2] = src[copy2];
-
-        __syncthreads();
-    }
+    for(int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
+        sharedMem[i] = src[i];
+    __syncthreads();
 
     //------------------------------------------
     //bitonic activity
@@ -237,12 +218,8 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
 
     //------------------------------------------
     //writeback to global memory
-    {
-        if (copy1 < src.getSize())
-            dst[copy1] = sharedMem[copy1];
-        if (copy2 < src.getSize())
-            dst[copy2] = sharedMem[copy2];
-    }
+    for(int i = threadIdx.x; i < dst.getSize(); i += blockDim.x)
+        dst[i] = sharedMem[i];
 }
 
 
