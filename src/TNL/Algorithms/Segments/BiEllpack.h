@@ -190,7 +190,7 @@ template <typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-std::ostream& operator<<( std::ostream& str, const BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >& segments ) { return printSegments( str, segments ); }
+std::ostream& operator<<( std::ostream& str, const BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >& segments ) { return printSegments( segments, str ); }
 
 
       } // namespace Segments

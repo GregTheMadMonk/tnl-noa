@@ -32,7 +32,7 @@ class BiEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = BiEllpackView;
       template< typename Device_, typename Index_ >

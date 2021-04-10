@@ -63,12 +63,12 @@ class ChunkedEllpack
       using IndexType = Index;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsContainer::ViewType;
+      using OffsetsHolderView = typename OffsetsContainer::ConstViewType;
       using SegmentsSizes = OffsetsContainer;
       using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
-      using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
+      using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ConstViewType;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
 
       __cuda_callable__ static

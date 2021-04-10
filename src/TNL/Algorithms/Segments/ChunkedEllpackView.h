@@ -32,7 +32,7 @@ class ChunkedEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = ChunkedEllpackView;
       template< typename Device_, typename Index_ >
@@ -41,7 +41,7 @@ class ChunkedEllpackView
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
       using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
+      using ChunkedEllpackSliceInfoContainer = Containers::Array< typename TNL::copy_const< ChunkedEllpackSliceInfoType >::template from< Index >::type, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
 
       static constexpr bool havePadding() { return true; };

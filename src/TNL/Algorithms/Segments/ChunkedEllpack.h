@@ -14,6 +14,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -34,7 +35,7 @@ class ChunkedEllpack
       using ViewType = ChunkedEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
+      using ConstViewType = typename ViewType::ConstViewType;
       using SegmentViewType = typename ViewType::SegmentViewType;
       using ChunkedEllpackSliceInfoType = typename ViewType::ChunkedEllpackSliceInfoType; // detail::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
@@ -176,7 +177,7 @@ template <typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-std::ostream& operator<<( std::ostream& str, const ChunkedEllpack< Device, Index, IndexAllocator, Organization >& segments ) { return printSegments( str, segments ); }
+std::ostream& operator<<( std::ostream& str, const ChunkedEllpack< Device, Index, IndexAllocator, Organization >& segments ) { return printSegments( segments, str ); }
 
 
       } // namespace Segments

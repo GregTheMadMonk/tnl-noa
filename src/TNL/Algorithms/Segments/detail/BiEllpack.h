@@ -32,7 +32,7 @@ class BiEllpack
       using IndexType = Index;
       static constexpr bool getOrganization() { return Organization; }
       using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsContainer::ViewType;
+      using OffsetsHolderView = typename OffsetsContainer::ConstViewType;
       using ConstOffsetsHolderView = typename OffsetsHolderView::ConstViewType;
       using SegmentsSizes = OffsetsContainer;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
