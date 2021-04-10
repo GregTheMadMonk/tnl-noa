@@ -162,6 +162,27 @@ protected:
       return found;
    }
 
+   template< typename T >
+   VariantVector
+   readAsciiBlock( const char* block ) const
+   {
+      // creating a copy of the block is rather costly, but so is ASCII parsing
+      std::stringstream ss;
+      ss << block;
+
+      std::vector<T> vector;
+      while( ss ) {
+         // since std::uint8_t is an alias to unsigned char, we need to parse
+         // bytes into a larger type, otherwise operator>> would read it as char
+         std::common_type_t< T, std::uint16_t > value;
+         ss >> value;
+         if( ss )
+            vector.push_back( value );
+      }
+
+      return vector;
+   }
+
    template< typename HeaderType >
    static std::size_t
    readBlockSize( const char* block )
@@ -232,8 +253,17 @@ protected:
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {
-         // TODO
-         throw MeshReaderError( "XMLVTK", "reading ASCII arrays is not implemented yet" );
+         if( type == "Int8" )          return readAsciiBlock< std::int8_t   >( block );
+         else if( type == "UInt8" )    return readAsciiBlock< std::uint8_t  >( block );
+         else if( type == "Int16" )    return readAsciiBlock< std::int16_t  >( block );
+         else if( type == "UInt16" )   return readAsciiBlock< std::uint16_t >( block );
+         else if( type == "Int32" )    return readAsciiBlock< std::int32_t  >( block );
+         else if( type == "UInt32" )   return readAsciiBlock< std::uint32_t >( block );
+         else if( type == "Int64" )    return readAsciiBlock< std::int64_t  >( block );
+         else if( type == "UInt64" )   return readAsciiBlock< std::uint64_t >( block );
+         else if( type == "Float32" )  return readAsciiBlock< float  >( block );
+         else if( type == "Float64" )  return readAsciiBlock< double >( block );
+         else throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
       }
       else if( format == "binary" ) {
          if( type == "Int8" )          return readBinaryBlock< std::int8_t   >( block );
