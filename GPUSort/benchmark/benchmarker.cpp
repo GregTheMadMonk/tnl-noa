@@ -1,10 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <numeric>
 #include <iomanip>
 #include <vector>
-#include <algorithm>
-#include <cmath>
 using namespace std;
 
 #include "generators.cpp"
@@ -45,32 +42,32 @@ void start(ostream & out, string delim)
         int size =(1<< pow);
         vector<int> vec(size);
 
-        out << "2^" << pow << delim;
+        out << "2^" << pow << delim << flush;
         out << fixed << setprecision(3);
         
         out << measure(generateRandom(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateShuffle(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateSorted(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateAlmostSorted(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateDecreasing(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateGaussian(size), TRIES, wrongAnsCnt) ;
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateBucket(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateStaggered(size), TRIES, wrongAnsCnt);
-        out << delim;
+        out << delim << flush;
 
         out << measure(generateZero_entropy(size), TRIES, wrongAnsCnt);
         out << endl;
