@@ -17,6 +17,19 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+/**
+ * \brief Print segments sizes, i.e. the segments setup.
+ *
+ * \tparam Segments is type of segments.
+ * \param segments is an instance of segments.
+ * \param str is output stream.
+ * \return reference to the output stream.
+ *
+ * \par Example
+ * \include Algorithms/Segments/SegmentsPrintingExample-1.cpp
+ * \par Output
+ * \include SegmentsPrintingExample-1.out
+ */
 template< typename Segments >
 std::ostream& printSegments( const Segments& segments, std::ostream& str )
 {
@@ -32,11 +45,31 @@ std::ostream& printSegments( const Segments& segments, std::ostream& str )
       if( segmentIdx < segmentsCount )
          str << ",";
    }
-   str << " ] " << std::endl;
+   str << " ] ";
    return str;
 }
 
 
+/**
+ * \brief Print segments with related content.
+ *
+ * \tparam Segments is type of segments.
+ * \tparam Fetch is a lambda function for reading related data.
+ * \param segments is an instance of segments.
+ * \param fetch is an instance of lambda function reading related data. It is supposed to defined as
+ *
+ * ```
+ * auto fetch = [=] __cuda_callable__ ( IndexType globalIdx ) -> ValueType { return data_view[ globalIdx ]; };
+ * ```
+ *
+ * \param str is output stream.
+ * \return reference to the output stream.
+ *
+ * \par Example
+ * \include Algorithms/Segments/SegmentsPrintingExample-2.cpp
+ * \par Output
+ * \include SegmentsPrintingExample-2.out
+ */
 template< typename Segments,
           typename Fetch >
 std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostream& str )
