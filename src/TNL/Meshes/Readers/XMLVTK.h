@@ -14,6 +14,7 @@
 
 #include <map>
 #include <set>
+#include <experimental/filesystem>
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/base64.h>
@@ -285,6 +286,12 @@ public:
    {
 #ifdef HAVE_TINYXML2
       using namespace tinyxml2;
+
+      namespace fs = std::experimental::filesystem;
+      if( ! fs::exists( fileName ) )
+         throw MeshReaderError( "XMLVTK", "file '" + fileName + "' does not exist" );
+      if( fs::is_directory( fileName ) )
+         throw MeshReaderError( "XMLVTK", "path '" + fileName + "' is a directory" );
 
       // load and verify XML
       tinyxml2::XMLError status = dom.LoadFile( fileName.c_str() );
