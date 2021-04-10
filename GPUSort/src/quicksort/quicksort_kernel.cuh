@@ -237,7 +237,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     auto arrView = arr.getView(myTask.partitionBegin, myTask.partitionEnd);
     auto auxView = aux.getView(myTask.partitionBegin, myTask.partitionEnd);
 
-    if (elemInShared == 0)
+    if (elemInShared <= 0)
     {
         singleBlockQuickSort<Value, Function, stackSize, false>
             (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);

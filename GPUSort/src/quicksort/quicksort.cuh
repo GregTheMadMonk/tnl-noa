@@ -30,8 +30,7 @@ class QUICKSORT
 
     //--------------------------------------
 
-    const int maxBitonicSize = threadsPerBlock * 8;
-    const int desired_2ndPhasElemPerBlock = maxBitonicSize;
+    int desired_2ndPhasElemPerBlock;
     const int g_maxTasks = 1 << 14;
     int maxTasks;
 
@@ -58,6 +57,7 @@ public:
 
           arr(arr.getView()), auxMem(arr.getSize()), aux(auxMem.getView()),
 
+          desired_2ndPhasElemPerBlock(desiredElemPerBlock),
           maxTasks(min(arr.getSize(), g_maxTasks)),
 
           cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
@@ -139,20 +139,20 @@ void QUICKSORT<Value>::sort(const Function &Cmp)
     TNL_CHECK_CUDA_DEVICE;
 
 #ifdef CHECK_RESULT_SORT
-if(!is_sorted(arr))
-{
-    std::ofstream out("error.txt");
-    out << arr << std::endl;
-    out << aux << std::endl;
-    out << cuda_tasks << std::endl;
-    out << cuda_newTasks << std::endl;
-    out << cuda_2ndPhaseTasks << std::endl;
+    if (!is_sorted(arr))
+    {
+        std::ofstream out("error.txt");
+        out << arr << std::endl;
+        out << aux << std::endl;
+        out << cuda_tasks << std::endl;
+        out << cuda_newTasks << std::endl;
+        out << cuda_2ndPhaseTasks << std::endl;
 
-    out << cuda_newTasksAmount << std::endl;
-    out << cuda_2ndPhaseTasksAmount << std::endl;
+        out << cuda_newTasksAmount << std::endl;
+        out << cuda_2ndPhaseTasksAmount << std::endl;
 
-    out << iteration << std::endl;
-}
+        out << iteration << std::endl;
+    }
 #endif
 
     return;
@@ -169,7 +169,7 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
         if (host_1stPhaseTasksAmount >= maxTasks)
             break;
 
-        if(host_2ndPhaseTasksAmount >= maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
+        if (host_2ndPhaseTasksAmount >= maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
         {
             int tmp = host_1stPhaseTasksAmount;
             host_1stPhaseTasksAmount = 0;
@@ -182,7 +182,7 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
         //bite the bullet and sort with single blocks
         if (host_1stPhaseTasksAmount * 2 >= maxTasks + (maxTasks - host_2ndPhaseTasksAmount))
         {
-            if(host_2ndPhaseTasksAmount >= 0.75*maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
+            if (host_2ndPhaseTasksAmount >= 0.75 * maxTasks) //2nd phase occupies enoughs tasks to warrant premature 2nd phase sort
             {
                 int tmp = host_1stPhaseTasksAmount;
                 host_1stPhaseTasksAmount = 0;
@@ -284,20 +284,20 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared, maxBitonicSize);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared, desired_2ndPhasElemPerBlock);
     }
     else if (host_1stPhaseTasksAmount > 0)
     {
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared, maxBitonicSize);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared, desired_2ndPhasElemPerBlock);
     }
     else
     {
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
         cudaQuickSort2ndPhase<Value, Function, stackSize>
-            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared, maxBitonicSize);
+            <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared, desired_2ndPhasElemPerBlock);
     }
 }
 
