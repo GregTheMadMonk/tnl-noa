@@ -187,7 +187,7 @@ protected:
    static std::size_t
    readBlockSize( const char* block )
    {
-      std::pair<std::size_t, std::unique_ptr<char[]>> decoded_data = decode_block( block, get_encoded_length(sizeof(HeaderType)) );
+      std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, base64::get_encoded_length(sizeof(HeaderType)) );
       if( decoded_data.first != sizeof(HeaderType) )
          throw MeshReaderError( "XMLVTK", "base64-decoding failed - mismatched data size in the binary header (read "
                                           + std::to_string(decoded_data.first) + " bytes, expected " + std::to_string(sizeof(HeaderType)) + " bytes)" );
@@ -205,8 +205,8 @@ protected:
 
       if( compressor == "" ) {
          const std::size_t blockSize = readBlockSize< HeaderType >( block );
-         block += get_encoded_length(sizeof(HeaderType));
-         std::pair<std::size_t, std::unique_ptr<char[]>> decoded_data = decode_block( block, get_encoded_length(blockSize) );
+         block += base64::get_encoded_length(sizeof(HeaderType));
+         std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, base64::get_encoded_length(blockSize) );
          std::vector<T> vector( decoded_data.first / sizeof(T) );
          for( std::size_t i = 0; i < vector.size(); i++ )
             vector[i] = reinterpret_cast<const T*>(decoded_data.second.get())[i];
