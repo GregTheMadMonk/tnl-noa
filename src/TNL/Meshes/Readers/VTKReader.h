@@ -204,6 +204,18 @@ public:
       meshType = "Meshes::Mesh";
    }
 
+   virtual VariantVector
+   readPointData( std::string arrayName ) override
+   {
+      return readPointOrCellData( "POINT_DATA", arrayName );
+   }
+
+   virtual VariantVector
+   readCellData( std::string arrayName ) override
+   {
+      return readPointOrCellData( "CELL_DATA", arrayName );
+   }
+
    virtual void reset() override
    {
       resetBase();
@@ -219,6 +231,10 @@ protected:
 
    // output of findSections
    std::map< std::string, std::ios::pos_type > sectionPositions;
+
+   // mesh properties - needed for reading POINT_DATA and CELL_DATA
+   std::int32_t points_count = 0;
+   std::int32_t cells_count = 0;
 
    void parseHeader( std::istream& str )
    {
@@ -305,18 +321,16 @@ protected:
          }
          else if( name == "POINTS" ) {
             sectionPositions.insert( {"POINTS", currentPosition} );
-            // parse the rest of the line: POINTS <count> <datatype>
-            std::int32_t count = 0;
+            // parse the rest of the line: POINTS <points_count> <datatype>
             std::string datatype;
-            iss >> count >> datatype;
+            iss >> points_count >> datatype;
             // skip the values
-            for( std::int32_t j = 0; j < 3 * count; j++ )
+            for( std::int32_t j = 0; j < 3 * points_count; j++ )
                skipValue( dataFormat, str, datatype );
          }
          else if( name == "CELLS" ) {
             sectionPositions.insert( {"CELLS", currentPosition} );
             // parse the rest of the line: CELLS <cells_count> <values_count>
-            std::int32_t cells_count = 0;
             std::int32_t values_count = 0;
             iss >> cells_count >> values_count;
             // skip the values
@@ -334,13 +348,167 @@ protected:
                skipValue( dataFormat, str, "int" );
          }
          else if( name == "CELL_DATA" || name == "POINT_DATA" ) {
-            // TODO: implement reading values from these sections
-            break;
+            if( cells_count == 0 || points_count == 0 )
+               throw MeshReaderError( "VTKReader", "encountered a " + name + " section, but the mesh topology was not parsed yet "
+                                      "(cells count = " + std::to_string(cells_count) + ", points count = " + std::to_string(points_count) + ")" );
+
+            while( str ) {
+               // drop all whitespace (empty lines etc) before saving a position and reading a line
+               str >> std::ws;
+               if( str.eof() )
+                  break;
+
+               // read a line which should contain the following array metadata
+               const std::ios::pos_type currentPosition = str.tellg();
+               std::string line;
+               getline( str, line );
+               if( ! str )
+                  throw MeshReaderError( "VTKReader", "failed to parse sections of the VTK file" );
+
+               // parse the array type
+               std::istringstream iss( line );
+               std::string type;
+               iss >> type;
+
+               const std::int32_t elements = (name == "CELL_DATA") ? cells_count : points_count;
+
+               // scalars: 1 value per cell/point
+               // vectors: 3 values per cell/point
+               // fields: arbitrary number of values per cell/point
+               int values_per_element = 1;
+
+               // additional metadata
+               std::string array_name, datatype;
+
+               if( type == "SCALARS" ) {
+                  // parse the rest of the line: SCALARS <array_name> <datatype>
+                  iss >> array_name >> datatype;
+                  sectionPositions.insert( {name + "::" + array_name, currentPosition} );
+                  // skip the LOOKUP_TABLE line
+                  getline( str, line );
+               }
+               else if( type == "VECTORS" ) {
+                  values_per_element = 3;
+                  // parse the rest of the line: VECTORS <array_name> <datatype>
+                  iss >> array_name >> datatype;
+                  sectionPositions.insert( {name + "::" + array_name, currentPosition} );
+               }
+               else if( type == "TENSORS" ) {
+                  values_per_element = 9;
+                  // parse the rest of the line: TENSORS <array_name> <datatype>
+                  iss >> array_name >> datatype;
+                  sectionPositions.insert( {name + "::" + array_name, currentPosition} );
+               }
+               else if( type == "FIELD" ) {
+                  // parse the rest of the line: FIELD FieldData <count>
+                  std::string aux;
+                  int count = 0;
+                  iss >> aux >> count;
+                  // skip the FieldData arrays
+                  for( int i = 0; i < count; i++ ) {
+                     // drop all whitespace (empty lines etc) before saving a position and reading a line
+                     str >> std::ws;
+                     const std::ios::pos_type currentPosition = str.tellg();
+                     getline( str, line );
+                     iss.clear();
+                     iss.str( line );
+                     // <array_name> <components> <tuples> <datatype>
+                     std::int32_t components = 0;
+                     std::int32_t tuples = 0;
+                     std::string datatype;
+                     iss >> array_name >> components >> tuples >> datatype;
+                     if( ! iss )
+                        throw MeshReaderError( "VTKReader", "failed to extract FieldData information from line '" + line + "'" );
+                     sectionPositions.insert( {name + "::" + array_name, currentPosition} );
+                     // skip the points coordinates
+                     for( std::int32_t j = 0; j < components * tuples; j++ )
+                        skipValue( dataFormat, str, datatype );
+                  }
+                  continue;
+               }
+               else {
+                  std::cerr << "VTKReader: encountered an unsupported CELL_DATA array type: " << type
+                            << ". Ignoring the rest of the file." << std::endl;
+                  return;
+               }
+
+               // skip the values
+               for( std::int32_t j = 0; j < elements * values_per_element; j++ )
+                  skipValue( dataFormat, str, datatype );
+            }
          }
          else
             throw MeshReaderError( "VTKReader", "parsing error: unexpected section start at byte " + std::to_string(currentPosition)
                                     + " (section name is '" + name + "')" );
       }
+   }
+
+   VariantVector
+   readPointOrCellData( std::string sectionName, std::string arrayName )
+   {
+      std::ifstream inputFile( fileName );
+      if( ! inputFile )
+         throw MeshReaderError( "VTKReader", "failed to open the file '" + fileName + "'" );
+
+      std::int32_t elements = (sectionName == "CELL_DATA") ? cells_count : points_count;
+      int values_per_element = 1;
+
+      sectionName += "::" + arrayName;
+      if( ! sectionPositions.count( sectionName ) ) {
+         throw MeshReaderError( "VTKReader", "array " + arrayName + " was not found in the CELL_DATA section" );
+      }
+      inputFile.seekg( sectionPositions[sectionName] );
+
+      // type: SCALARS, VECTORS, etc.
+      // datatype: int, float, double
+      std::string type, datatype;
+
+      // parse the metadata line
+      std::string line;
+      getline( inputFile, line );
+      std::istringstream iss( line );
+      iss >> type;
+
+      // if the line starts with the array name, it must be a FIELD
+      if( type == arrayName ) {
+         // parse <array_name> <components> <tuples> <datatype>
+         iss >> values_per_element >> elements >> datatype;
+      }
+      else {
+         // parse the rest of the line: <type> <array_name> <datatype>
+         std::string array_name;
+         iss >> array_name >> datatype;
+         if( type == "SCALARS" ) {
+            values_per_element = 1;
+            // skip the LOOKUP_TABLE line
+            getline( inputFile, line );
+         }
+         else if( type == "VECTORS" )
+            values_per_element = 3;
+         else if( type == "TENSORS" )
+            values_per_element = 9;
+         else
+            throw MeshReaderError( "VTKReader", "requested array type " + type + " is not implemented in the reader" );
+      }
+
+      if( datatype == "int" )
+         return readDataArray< std::int32_t >( inputFile, elements * values_per_element );
+      else if( datatype == "float" )
+         return readDataArray< float >( inputFile, elements * values_per_element );
+      else if( datatype == "double" )
+         return readDataArray< double >( inputFile, elements * values_per_element );
+      else
+         throw MeshReaderError( "VTKReader", "found data type which is not implemented in the reader: " + datatype );
+   }
+
+   template< typename T >
+   std::vector<T>
+   readDataArray( std::istream& str, std::int32_t values )
+   {
+      std::vector<T> vector( values );
+      for( std::int32_t i = 0; i < values; i++ )
+         vector[i] = readValue< T >( dataFormat, str );
+      return vector;
    }
 
    static void skipValue( VTK::FileFormat format, std::istream& str, std::string datatype )
