@@ -183,18 +183,6 @@ protected:
       return vector;
    }
 
-   template< typename HeaderType >
-   static std::size_t
-   readBlockSize( const char* block )
-   {
-      std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, base64::get_encoded_length(sizeof(HeaderType)) );
-      if( decoded_data.first != sizeof(HeaderType) )
-         throw MeshReaderError( "XMLVTK", "base64-decoding failed - mismatched data size in the binary header (read "
-                                          + std::to_string(decoded_data.first) + " bytes, expected " + std::to_string(sizeof(HeaderType)) + " bytes)" );
-      const HeaderType* blockSize = reinterpret_cast<const HeaderType*>(decoded_data.second.get());
-      return *blockSize;
-   }
-
    template< typename HeaderType, typename T >
    VariantVector
    readBinaryBlock( const char* block ) const
@@ -204,12 +192,26 @@ protected:
          ++block;
 
       if( compressor == "" ) {
-         const std::size_t blockSize = readBlockSize< HeaderType >( block );
-         block += base64::get_encoded_length(sizeof(HeaderType));
-         std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, base64::get_encoded_length(blockSize) );
-         std::vector<T> vector( decoded_data.first / sizeof(T) );
+         std::size_t data_size = 0;
+         const T* data_ptr = nullptr;
+         std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, std::strlen(block) );
+
+         // check if block size was decoded separately (so decoding stopped after block size due to padding)
+         if( decoded_data.first == sizeof(HeaderType) ) {
+            const std::size_t header_length = base64::get_encoded_length(sizeof(HeaderType));
+            const HeaderType block_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get());
+            decoded_data = base64::decode( block + header_length, base64::get_encoded_length(block_size) );
+            data_size = decoded_data.first / sizeof(T);
+            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get());
+         }
+         else {
+            data_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get()) / sizeof(T);
+            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get() + sizeof(HeaderType));
+         }
+
+         std::vector<T> vector( data_size );
          for( std::size_t i = 0; i < vector.size(); i++ )
-            vector[i] = reinterpret_cast<const T*>(decoded_data.second.get())[i];
+            vector[i] = data_ptr[i];
          return vector;
       }
       else if( compressor == "vtkZLibDataCompressor" ) {

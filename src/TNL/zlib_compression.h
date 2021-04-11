@@ -123,11 +123,13 @@ decompress_block(const char* data)
     if (compression_header[0] != 1)
         throw std::length_error("unexpected number of compressed blocks: "
                                 + std::to_string(compression_header[0]));
-    if (compression_header[1] != compression_header[2])
-        throw std::logic_error("inconsistent block sizes in the compression header: "
-                               + std::to_string(compression_header[1]) + " vs "
-                               + std::to_string(compression_header[2]));
-    const HeaderType data_size = compression_header[1] / sizeof(T);
+    // Note: for short arrays, paraview 5.9 creates files with:
+    //       num_blocks == 1, block_size == 32768, last_block_size == [the actual data size]
+    //if (compression_header[1] != compression_header[2])
+    //    throw std::logic_error("inconsistent block sizes in the compression header: "
+    //                           + std::to_string(compression_header[1]) + " vs "
+    //                           + std::to_string(compression_header[2]));
+    const HeaderType data_size = compression_header[2] / sizeof(T);
     const HeaderType compressed_data_length = base64::get_encoded_length(compression_header[3]);
 
     // decode the data
@@ -162,11 +164,13 @@ decompress_block(std::istream& input_stream)
     if (compression_header[0] != 1)
         throw std::length_error("unexpected number of compressed blocks: "
                                 + std::to_string(compression_header[0]));
-    if (compression_header[1] != compression_header[2])
-        throw std::logic_error("inconsistent block sizes in the compression header: "
-                               + std::to_string(compression_header[1]) + " vs "
-                               + std::to_string(compression_header[2]));
-    const HeaderType data_size = compression_header[1] / sizeof(T);
+    // Note: for short arrays, paraview 5.9 creates files with:
+    //       num_blocks == 1, block_size == 32768, last_block_size == [the actual data size]
+    //if (compression_header[1] != compression_header[2])
+    //    throw std::logic_error("inconsistent block sizes in the compression header: "
+    //                           + std::to_string(compression_header[1]) + " vs "
+    //                           + std::to_string(compression_header[2]));
+    const HeaderType data_size = compression_header[2] / sizeof(T);
     const HeaderType compressed_data_length = base64::get_encoded_length(compression_header[3]);
 
     // read the compressed data
