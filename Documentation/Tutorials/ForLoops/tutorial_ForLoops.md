@@ -110,7 +110,7 @@ Algorithms::unrolledFor< int, 0, Size, 16 >( ... );
 staticFor< int, 0, N >( f );
 ```
 
-which is results in the following sequence of function calls:
+which results in the following sequence of function calls:
 
 ```cpp
 f( std::integral_constant< 0 >{} );
