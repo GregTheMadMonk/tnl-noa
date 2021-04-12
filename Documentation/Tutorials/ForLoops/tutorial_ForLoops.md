@@ -118,7 +118,7 @@ f( std::integral_constant< 1 >{} );
 f( std::integral_constant< 2 >{} );
 f( std::integral_constant< 3 >{} );
 ...
-f( std::integral_constant< N >{} );
+f( std::integral_constant< N-1 >{} );
 ```
 
 Notice that each iteration index is represented by its own distinct type using \ref std::integral_constant. Hence, the functor `f` must be generic, e.g. a _generic lambda expression_ such as in the following example:
