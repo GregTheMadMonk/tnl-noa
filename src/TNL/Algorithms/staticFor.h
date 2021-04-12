@@ -79,13 +79,13 @@ static_for_dispatch( Func &&f )
  *
  * \e staticFor is a generic C++14/C++17 implementation of a static for-loop
  * using \e constexpr functions and template metaprogramming. It is equivalent
- * to executing a function $f(i)$ for arguments $i$ from the integral range
+ * to executing a function `f(i)` for arguments `i` from the integral range
  * `[begin, end)`, but with the type \ref std::integral_constant rather than
  * `int` or `std::size_t` representing the indices. Hence, each index has its
  * own distinct C++ type and the \e value of the index can be deduced from the
  * type.
  *
- * Also note that thanks to `constexpr`, the argument $i$ can be used in
+ * Also note that thanks to `constexpr`, the argument `i` can be used in
  * constant expressions and the \e staticFor function can be used from the host
  * code as well as CUDA kernels (TNL requires the `--expt-relaxed-constexpr`
  * parameter when compiled by `nvcc`).
