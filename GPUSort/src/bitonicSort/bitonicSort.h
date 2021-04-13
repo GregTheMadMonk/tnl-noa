@@ -28,8 +28,8 @@ __host__ __device__ int closestPow2(int x)
     return ret;
 }
 
-template <typename Value, typename Function>
-__host__ __device__ void cmpSwap(Value &a, Value &b, bool ascending, const Function &Cmp)
+template <typename Value, typename CMP>
+__host__ __device__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &Cmp)
 {
     if (ascending == Cmp(b, a))
         TNL::swap(a, b);
@@ -41,9 +41,9 @@ __host__ __device__ void cmpSwap(Value &a, Value &b, bool ascending, const Funct
  * this kernel simulates 1 exchange 
  * splits input arr that is bitonic into 2 bitonic sequences
  */
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
-                                   const Function &Cmp,
+                                   CMP Cmp,
                                    int monotonicSeqLen, int len, int partsInSeq)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -73,9 +73,9 @@ __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Device
  * 
  * this version uses shared memory to do the operations
  * */
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
-                                         const Function &Cmp,
+                                         CMP Cmp,
                                          int monotonicSeqLen, int len, int partsInSeq)
 {
     extern __shared__ int externMem[];
@@ -133,9 +133,9 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
  * 
  * this user only operates on global memory, no shared memory is used
  * */
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
-                             const Function &Cmp,
+                             CMP Cmp,
                              int monotonicSeqLen, int len, int partsInSeq)
 {
     //1st index and last index of subarray that this threadBlock should merge
@@ -178,10 +178,10 @@ __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cud
  * works independently from other concurrent blocks
  * @param sharedMem sharedMem pointer has to be able to store all of src elements
  * */
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src,
                                   TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> dst,
-                                  Value *sharedMem, const Function &Cmp)
+                                  Value *sharedMem, const CMP &Cmp)
 {
     //copy from globalMem into sharedMem
     for(int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
@@ -236,9 +236,9 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
  * works independently from other concurrent blocks
  * this version doesnt use shared memory and is prefered for Value with big size
  * */
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src,
-                                  const Function &Cmp)
+                                  const CMP &Cmp)
 {
     int paddedSize = closestPow2_ptx(src.getSize());
 
@@ -274,8 +274,8 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
  * sorts @param arr in alternating order to create bitonic sequences
  * sharedMem has to be able to store at least blockDim.x*2 elements
  * */
-template <typename Value, typename Function>
-__global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function &Cmp)
+template <typename Value, typename CMP>
+__global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, CMP Cmp)
 {
     extern __shared__ int externMem[];
     int sharedMemLen = 2 * blockDim.x;
@@ -294,8 +294,8 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
  * sorts @param arr in alternating order to create bitonic sequences
  * doesn't use shared memory
  * */
-template <typename Value, typename Function>
-__global__ void bitoniSort1stStep(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function &Cmp)
+template <typename Value, typename CMP>
+__global__ void bitoniSort1stStep(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, CMP Cmp)
 {
     int myBlockStart = blockIdx.x * (2 * blockDim.x);
     int myBlockEnd = TNL::min(arr.getSize(), myBlockStart + (2 * blockDim.x));
@@ -308,8 +308,8 @@ __global__ void bitoniSort1stStep(TNL::Containers::ArrayView<Value, TNL::Devices
 }
 
 //---------------------------------------------
-template <typename Value, typename Function>
-void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, int begin, int end, const Function &Cmp)
+template <typename Value, typename CMP>
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, int begin, int end, const CMP &Cmp)
 {
     TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr = src.getView(begin, end);
     int paddedSize = closestPow2(arr.getSize());
@@ -365,14 +365,14 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, int 
 
 //---------------------------------------------
 
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, int begin, int end)
 {
     bitonicSort(arr, begin, end, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
 }
 
-template <typename Value, typename Function>
-void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const Function &Cmp)
+template <typename Value, typename CMP>
+void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const CMP &Cmp)
 {
     bitonicSort(arr, 0, arr.getSize(), Cmp);
 }
@@ -384,8 +384,8 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr)
 }
 
 //---------------------------------------------
-template <typename Value, typename Function>
-void bitonicSort(std::vector<Value> &vec, int begin, int end, const Function &Cmp)
+template <typename Value, typename CMP>
+void bitonicSort(std::vector<Value> &vec, int begin, int end, const CMP &Cmp)
 {
     TNL::Containers::Array<Value, TNL::Devices::Cuda> Arr(vec);
     auto view = Arr.getView();
@@ -401,8 +401,8 @@ void bitonicSort(std::vector<Value> &vec, int begin, int end)
     bitonicSort(vec, begin, end, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
 }
 
-template <typename Value, typename Function>
-void bitonicSort(std::vector<Value> &vec, const Function &Cmp)
+template <typename Value, typename CMP>
+void bitonicSort(std::vector<Value> &vec, const CMP &Cmp)
 {
     bitonicSort(vec, 0, vec.size(), Cmp);
 }
@@ -417,8 +417,7 @@ void bitonicSort(std::vector<Value> &vec)
 //---------------------------------------------
 
 template <typename FETCH, typename CMP, typename SWAP>
-__global__ void bitonicMergeGlobal(int size, FETCH Fetch,
-                                   const CMP &Cmp, SWAP Swap,
+__global__ void bitonicMergeGlobal(int size, FETCH Fetch, CMP Cmp, SWAP Swap,
                                    int monotonicSeqLen, int len, int partsInSeq)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -468,7 +467,8 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
         for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
         {
             bitonicMergeGlobal<<<blocks, threadPerBlock>>>(
-                size, fetchWithOffset, Cmp, swapWithOffset, monotonicSeqLen, len, partsInSeq);
+                size, fetchWithOffset, Cmp, swapWithOffset,
+                monotonicSeqLen, len, partsInSeq);
         }
     }
     cudaDeviceSynchronize();
