@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/Vector.h>
 #include "../util/reduction.cuh"
 #include "task.h"
 #include "cudaPartition.cuh"
@@ -18,7 +19,7 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
 //-----------------------------------------------------------
 
 __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
-                                     ArrayView<int, Devices::Cuda> blocksNeeded)
+                                     VectorView<int, Devices::Cuda> blocksNeeded)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= cuda_tasks.getSize())
@@ -34,7 +35,7 @@ __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, 
 template <typename Value, typename CMP>
 __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
-                             ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
+                             VectorView<int, Devices::Cuda> cuda_reductionTaskInitMem,
                              ArrayView<Value, Devices::Cuda> src, CMP Cmp)
 {
     if (blockIdx.x >= cuda_tasks.getSize())
@@ -202,13 +203,11 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, CMP, stackSize, false>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
+        singleBlockQuickSort<Value, CMP, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, CMP, stackSize, true>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
+        singleBlockQuickSort<Value, CMP, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }
 
@@ -239,13 +238,11 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared <= 0)
     {
-        singleBlockQuickSort<Value, CMP, stackSize, false>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
+        singleBlockQuickSort<Value, CMP, stackSize, false>(arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, CMP, stackSize, true>
-            (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
+        singleBlockQuickSort<Value, CMP, stackSize, true>(arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }
 

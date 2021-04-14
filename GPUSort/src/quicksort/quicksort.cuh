@@ -1,11 +1,10 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Algorithms/Scan.h>
 #include "task.h"
 #include "quicksort_kernel.cuh"
-
-#include <thrust/scan.h>
-#include <thrust/execution_policy.h>
 
 #include <iostream>
 #define deb(x) std::cout << #x << " = " << x << std::endl;
@@ -41,7 +40,7 @@ class QUICKSORT
     Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  //is in reality 1 integer each
 
     Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-    Array<int, Devices::Cuda> cuda_reductionTaskInitMem;
+    Vector<int, Devices::Cuda> cuda_reductionTaskInitMem;
 
     //--------------------------------------
 
@@ -349,11 +348,11 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
     cudaCalcBlocksNeeded<<<blocks, threadsPerBlock>>>(tasks.getView(0, host_1stPhaseTasksAmount), elemPerBlock,
                                                       cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
     //cuda_reductionTaskInitMem[i] == how many blocks task i needs
+    
+    auto reduce = [] __cuda_callable__(const int &a, const int &b) { return a + b; };
 
-    thrust::inclusive_scan(thrust::device,
-                           cuda_reductionTaskInitMem.getData(),
-                           cuda_reductionTaskInitMem.getData() + host_1stPhaseTasksAmount,
-                           cuda_reductionTaskInitMem.getData());
+    Algorithms::Scan<Devices::Cuda, Algorithms::ScanType::Inclusive >::
+        perform(cuda_reductionTaskInitMem, 0, cuda_reductionTaskInitMem.getSize(), reduce, 0);
     //cuda_reductionTaskInitMem[i] == how many blocks task [0..i] need
 
     int blocksNeeded = cuda_reductionTaskInitMem.getElement(host_1stPhaseTasksAmount - 1);
