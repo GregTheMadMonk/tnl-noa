@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MPI/Wrappers.h  -  description
+                          MPI/Utils.h  -  description
                              -------------------
     begin                : Apr 23, 2005
     copyright            : (C) 2005 by Tomas Oberhuber et al.
