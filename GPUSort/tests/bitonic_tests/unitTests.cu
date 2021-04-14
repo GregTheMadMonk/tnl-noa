@@ -156,10 +156,11 @@ TEST(nonIntegerType, double_notPow2)
 
 struct TMPSTRUCT{
     uint8_t m_data[6];
-    TMPSTRUCT(){m_data[0] = 0;}
-    TMPSTRUCT(int first){m_data[0] = first;};
-    bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
-    bool operator <=(const TMPSTRUCT& other) const { return m_data[0] <= other.m_data[0];}
+    __cuda_callable__ TMPSTRUCT(){m_data[0] = 0;}
+    __cuda_callable__ TMPSTRUCT(int first){m_data[0] = first;};
+    __cuda_callable__ bool operator <(const TMPSTRUCT& other) const { return m_data[0] < other.m_data[0];}
+    __cuda_callable__ TMPSTRUCT& operator =(const TMPSTRUCT& other) {m_data[0] = other.m_data[0]; return *this;}
+
 };
 
 TEST(nonIntegerType, struct)
@@ -170,6 +171,49 @@ TEST(nonIntegerType, struct)
     ASSERT_TRUE(is_sorted(view));
 }
 
+struct TMPSTRUCT_64b{
+    uint8_t m_data[64];
+    __cuda_callable__ TMPSTRUCT_64b(){m_data[0] = 0;}
+    __cuda_callable__ TMPSTRUCT_64b(int first){m_data[0] = first;};
+    __cuda_callable__ bool operator <(const TMPSTRUCT_64b& other) const { return m_data[0] < other.m_data[0];}
+    __cuda_callable__ TMPSTRUCT_64b& operator =(const TMPSTRUCT_64b& other) {m_data[0] = other.m_data[0]; return *this;}
+};
+
+TEST(nonIntegerType, struct_64b)
+{
+    std::srand(61513);
+    int size = std::rand() % (1<<15);
+    std::vector<TMPSTRUCT_64b> vec(size);
+    for(auto & x : vec)
+        x = TMPSTRUCT_64b(std::rand());
+
+    TNL::Containers::Array<TMPSTRUCT_64b, TNL::Devices::Cuda> cudaArr(vec);
+    auto view = cudaArr.getView();
+    bitonicSort(view);
+    ASSERT_TRUE(is_sorted(view));
+}
+
+struct TMPSTRUCT_128b{
+    uint8_t m_data[128];
+    __cuda_callable__ TMPSTRUCT_128b(){m_data[0] = 0;}
+    __cuda_callable__ TMPSTRUCT_128b(int first){m_data[0] = first;};
+    __cuda_callable__ bool operator <(const TMPSTRUCT_128b& other) const { return m_data[0] < other.m_data[0];}
+    __cuda_callable__ TMPSTRUCT_128b& operator =(const TMPSTRUCT_128b& other) {m_data[0] = other.m_data[0]; return *this;}
+};
+
+TEST(nonIntegerType, struct_128b)
+{
+    std::srand(98451);
+    int size = std::rand() % (1<<14);
+    std::vector<TMPSTRUCT_128b> vec(size);
+    for(auto & x : vec)
+        x = TMPSTRUCT_128b(std::rand());
+
+    TNL::Containers::Array<TMPSTRUCT_128b, TNL::Devices::Cuda> cudaArr(vec);
+    auto view = cudaArr.getView();
+    bitonicSort(view);
+    ASSERT_TRUE(is_sorted(view));
+}
 
 //error bypassing
 //https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/blob/fbc34f6a97c13ec865ef7969b9704533222ed408/src/UnitTests/Containers/VectorTest-8.h
