@@ -82,8 +82,8 @@ public:
     }
     //--------------------------------------------------------------------------------------
 
-    template <typename Function>
-    void sort(const Function &Cmp);
+    template <typename CMP>
+    void sort(const CMP &Cmp);
 
     //--------------------------------------------------------------------------------------
 
@@ -100,15 +100,15 @@ public:
     /**
      * returns the amount of blocks needed to start phase 1 while also initializing all tasks
      * */
-    template <typename Function>
-    int initTasks(int elemPerBlock, const Function &Cmp);
+    template <typename CMP>
+    int initTasks(int elemPerBlock, const CMP &Cmp);
 
     /**
      * does the 1st phase of quicksort until out of task memory or each task is small enough
      * for correctness, secondphase method needs to be called to sort each subsequences
      * */
-    template <typename Function>
-    void firstPhase(const Function &Cmp);
+    template <typename CMP>
+    void firstPhase(const CMP &Cmp);
 
     /**
      * update necessary variables after 1 phase1 sort
@@ -118,16 +118,16 @@ public:
     /**
      * sorts all leftover tasks
      * */
-    template <typename Function>
-    void secondPhase(const Function &Cmp);
+    template <typename CMP>
+    void secondPhase(const CMP &Cmp);
 };
 
 //---------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------
 
 template <typename Value>
-template <typename Function>
-void QUICKSORT<Value>::sort(const Function &Cmp)
+template <typename CMP>
+void QUICKSORT<Value>::sort(const CMP &Cmp)
 {
     firstPhase(Cmp);
 
@@ -161,8 +161,8 @@ void QUICKSORT<Value>::sort(const Function &Cmp)
 //---------------------------------------------------------------------------------------------
 
 template <typename Value>
-template <typename Function>
-void QUICKSORT<Value>::firstPhase(const Function &Cmp)
+template <typename CMP>
+void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
 {
     while (host_1stPhaseTasksAmount > 0)
     {
@@ -223,14 +223,14 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
          * */
         if (externMemByteSize <= maxSharable)
         {
-            cudaQuickSort1stPhase<Value, Function, true>
+            cudaQuickSort1stPhase<Value, CMP, true>
                 <<<blocksCnt, threadsPerBlock, externMemByteSize>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
         }
         else
         {
-            cudaQuickSort1stPhase<Value, Function, false>
+            cudaQuickSort1stPhase<Value, CMP, false>
                 <<<blocksCnt, threadsPerBlock, sizeof(Value)>>>(
                     arr, aux, Cmp, elemPerBlock,
                     task, cuda_blockToTaskMapping);
@@ -263,8 +263,8 @@ void QUICKSORT<Value>::firstPhase(const Function &Cmp)
 //----------------------------------------------------------------------
 
 template <typename Value>
-template <typename Function>
-void QUICKSORT<Value>::secondPhase(const Function &Cmp)
+template <typename CMP>
+void QUICKSORT<Value>::secondPhase(const CMP &Cmp)
 {
     int total2ndPhase = host_1stPhaseTasksAmount + host_2ndPhaseTasksAmount;
     const int stackSize = 32;
@@ -283,20 +283,20 @@ void QUICKSORT<Value>::secondPhase(const Function &Cmp)
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
-        cudaQuickSort2ndPhase<Value, Function, stackSize>
+        cudaQuickSort2ndPhase<Value, CMP, stackSize>
             <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, tasks2, elemInShared, desired_2ndPhasElemPerBlock);
     }
     else if (host_1stPhaseTasksAmount > 0)
     {
         auto tasks = leftoverTasks.getView(0, host_1stPhaseTasksAmount);
-        cudaQuickSort2ndPhase<Value, Function, stackSize>
+        cudaQuickSort2ndPhase<Value, CMP, stackSize>
             <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks, elemInShared, desired_2ndPhasElemPerBlock);
     }
     else
     {
         auto tasks2 = cuda_2ndPhaseTasks.getView(0, host_2ndPhaseTasksAmount);
 
-        cudaQuickSort2ndPhase<Value, Function, stackSize>
+        cudaQuickSort2ndPhase<Value, CMP, stackSize>
             <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared, desired_2ndPhasElemPerBlock);
     }
 }
@@ -336,8 +336,8 @@ int QUICKSORT<Value>::getElemPerBlock() const
 }
 
 template <typename Value>
-template <typename Function>
-int QUICKSORT<Value>::initTasks(int elemPerBlock, const Function &Cmp)
+template <typename CMP>
+int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
 {
 
     auto &src = iteration % 2 == 0 ? arr : aux;
@@ -385,8 +385,8 @@ void QUICKSORT<Value>::processNewTasks()
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 
-template <typename Value, typename Function>
-void quicksort(ArrayView<Value, Devices::Cuda> arr, const Function &Cmp)
+template <typename Value, typename CMP>
+void quicksort(ArrayView<Value, Devices::Cuda> arr, const CMP &Cmp)
 {
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, 0);

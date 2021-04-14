@@ -31,11 +31,11 @@ __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, 
 
 //-----------------------------------------------------------
 
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
                              ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
-                             ArrayView<Value, Devices::Cuda> src, const Function &Cmp)
+                             ArrayView<Value, Devices::Cuda> src, CMP Cmp)
 {
     if (blockIdx.x >= cuda_tasks.getSize())
         return;
@@ -55,9 +55,9 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 
 //----------------------------------------------------
 
-template <typename Value, typename Function, bool useShared>
+template <typename Value, typename CMP, bool useShared>
 __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp, int elemPerBlock,
+                                      const CMP &Cmp, int elemPerBlock,
                                       ArrayView<TASK, Devices::Cuda> tasks,
                                       ArrayView<int, Devices::Cuda> taskMapping)
 {
@@ -74,7 +74,7 @@ __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, Array
     __syncthreads();
     Value &pivot = *piv;
 
-    cudaPartition<Value, Function, useShared>(
+    cudaPartition<Value, CMP, useShared>(
         src.getView(myTask.partitionBegin, myTask.partitionEnd),
         dst.getView(myTask.partitionBegin, myTask.partitionEnd),
         Cmp, sharedMem, pivot,
@@ -181,9 +181,9 @@ __device__ void writeNewTask(int begin, int end, int depth, int maxElemFor2ndPha
 
 //-----------------------------------------------------------
 
-template <typename Value, typename Function, int stackSize>
+template <typename Value, typename CMP, int stackSize>
 __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp,
+                                      CMP Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
                                       int elemInShared, int maxBitonicSize)
 {
@@ -202,19 +202,19 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared == 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>
+        singleBlockQuickSort<Value, CMP, stackSize, false>
             (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>
+        singleBlockQuickSort<Value, CMP, stackSize, true>
             (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }
 
-template <typename Value, typename Function, int stackSize>
+template <typename Value, typename CMP, int stackSize>
 __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
-                                      const Function &Cmp,
+                                      CMP Cmp,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
                                       ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
                                       int elemInShared, int maxBitonicSize)
@@ -239,12 +239,12 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 
     if (elemInShared <= 0)
     {
-        singleBlockQuickSort<Value, Function, stackSize, false>
+        singleBlockQuickSort<Value, CMP, stackSize, false>
             (arrView, auxView, Cmp, myTask.depth, sharedMem, 0, maxBitonicSize);
     }
     else
     {
-        singleBlockQuickSort<Value, Function, stackSize, true>
+        singleBlockQuickSort<Value, CMP, stackSize, true>
             (arrView, auxView, Cmp, myTask.depth, sharedMem, elemInShared, maxBitonicSize);
     }
 }

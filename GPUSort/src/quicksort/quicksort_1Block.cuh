@@ -9,17 +9,17 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
                            ArrayView<Value, TNL::Devices::Cuda> dst,
-                           const Function &Cmp, Value *sharedMem)
+                           const CMP &Cmp, Value *sharedMem)
 {
     bitonicSort_Block(src, dst, sharedMem, Cmp);
 }
 
-template <typename Value, typename Function>
+template <typename Value, typename CMP>
 __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
-                           const Function &Cmp)
+                           const CMP &Cmp)
 {
     bitonicSort_Block(src, Cmp);
 }
@@ -35,10 +35,10 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 
 //---------------------------------------------------------------
 
-template <typename Value, typename Function, int stackSize, bool useShared>
+template <typename Value, typename CMP, int stackSize, bool useShared>
 __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
                                      ArrayView<Value, TNL::Devices::Cuda> aux,
-                                     const Function &Cmp, int _depth,
+                                     const CMP &Cmp, int _depth,
                                      Value *sharedMem, int memSize,
                                      int maxBitonicSize)
 {
@@ -46,10 +46,10 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
     {
         auto &src = (_depth & 1) == 0 ? arr : aux;
         if (useShared && arr.getSize() <= memSize)
-            externSort<Value, Function>(src, arr, Cmp, sharedMem);
+            externSort<Value, CMP>(src, arr, Cmp, sharedMem);
         else
         {
-            externSort<Value, Function>(src, Cmp);
+            externSort<Value, CMP>(src, Cmp);
             //extern sort without shared memory only works in-place, need to copy into from aux
             if ((_depth & 1) != 0)
                 for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
@@ -95,10 +95,10 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         if (size <= maxBitonicSize)
         {
             if (useShared && size <= memSize)
-                externSort<Value, Function>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);
+                externSort<Value, CMP>(src.getView(begin, end), arr.getView(begin, end), Cmp, sharedMem);
             else
             {
-                externSort<Value, Function>(src.getView(begin, end), Cmp);
+                externSort<Value, CMP>(src.getView(begin, end), Cmp);
                 //extern sort without shared memory only works in-place, need to copy into from aux
                 if ((depth & 1) != 0)
                     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
