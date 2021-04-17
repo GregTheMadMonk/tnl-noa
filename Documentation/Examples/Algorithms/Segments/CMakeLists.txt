@@ -1,5 +1,7 @@
 set( COMMON_EXAMPLES
    SegmentsExample_General
+   SegmentsPrintingExample-1
+   SegmentsPrintingExample-2
    SegmentsExample_CSR_constructor_1
    SegmentsExample_CSR_constructor_2
    SegmentsExample_CSR_getSerializationType
@@ -10,6 +12,10 @@ set( COMMON_EXAMPLES
    SegmentsExample_CSR_forSegments
    SegmentsExample_CSR_sequentialForSegments
    SegmentsExample_CSR_reduceSegments
+   SegmentsExample_forElements
+   SegmentsExample_forSegments-1
+   SegmentsExample_forSegments-2
+   SegmentsExample_reduceSegments
 )
 
 if( BUILD_CUDA )

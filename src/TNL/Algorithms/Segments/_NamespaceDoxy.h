@@ -14,8 +14,8 @@ namespace TNL {
    namespace Algorithms {
 /**
  * \brief Namespace holding segments data structures.
-
- *Segments* represent data structure for manipulation with several local arrays (denoted also as segments)
+ *
+ * *Segments* represent data structure for manipulation with several local arrays (denoted also as segments)
  having different size in general. All the local arrays are supposed to be allocated in one continuos global array.
  The data structure segments offers mapping between indexes of particular local arrays and indexes
  of the global array. In addition,one can perform parallel operations like for or flexible reduction on partical
