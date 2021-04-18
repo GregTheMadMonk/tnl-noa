@@ -15,7 +15,8 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/detail/BiEllpack.h>
+#include <TNL/Algorithms/Segments/details/BiEllpack.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {

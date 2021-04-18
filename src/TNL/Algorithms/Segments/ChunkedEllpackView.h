@@ -16,7 +16,8 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
