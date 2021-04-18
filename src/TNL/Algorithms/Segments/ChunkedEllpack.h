@@ -131,6 +131,9 @@ class ChunkedEllpack
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< ChunkedEllpack, Fetch > print( Fetch&& fetch ) const;
+
       void printStructure( std::ostream& str ); // TODO const;
 
    protected:

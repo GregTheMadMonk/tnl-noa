@@ -357,6 +357,18 @@ load( File& file )
    file.load( &alignedSize );
 }
 
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+      template< typename Fetch >
+auto
+EllpackView< Device, Index, Organization, Alignment >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< EllpackView, Fetch >
+{
+   return SegmentsPrinter< EllpackView, Fetch >( *this, fetch );
+}
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

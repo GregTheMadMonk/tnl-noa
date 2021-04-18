@@ -123,6 +123,9 @@ class EllpackView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< EllpackView, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType segmentSize, segmentsCount, alignedSize;

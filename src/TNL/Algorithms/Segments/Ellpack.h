@@ -130,6 +130,9 @@ class Ellpack
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< Ellpack, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType segmentSize, size, alignedSize;

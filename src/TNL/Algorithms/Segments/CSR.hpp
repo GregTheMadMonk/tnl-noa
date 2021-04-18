@@ -368,6 +368,18 @@ load( File& file )
    this->kernel.init( this->offsets );
 }
 
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+      template< typename Fetch >
+auto
+CSR< Device, Index, Kernel, IndexAllocator >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< CSR, Fetch >
+{
+   return SegmentsPrinter< CSR, Fetch >( *this, fetch );
+}
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

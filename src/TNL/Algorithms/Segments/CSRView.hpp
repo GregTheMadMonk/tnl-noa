@@ -318,6 +318,18 @@ load( File& file )
    this->kernel.init( this->offsets );
 }
 
+template< typename Device,
+          typename Index,
+          typename Kernel >
+      template< typename Fetch >
+auto
+CSRView< Device, Index, Kernel >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< CSRView, Fetch >
+{
+   return SegmentsPrinter< CSRView, Fetch >( *this, fetch );
+}
+
+
       } // namespace Segments
    }  // namespace Containers
 } // namespace TNL

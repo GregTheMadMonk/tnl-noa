@@ -135,6 +135,9 @@ class BiEllpack
 
       void load(File &file);
 
+      template< typename Fetch >
+      SegmentsPrinter< BiEllpack, Fetch > print( Fetch&& fetch ) const;
+
       void printStructure(std::ostream &str) const;
 
       // TODO: nvcc needs this public because of lambda function used inside

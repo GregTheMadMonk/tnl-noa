@@ -150,6 +150,9 @@ class ChunkedEllpackView
 
       void save( File& file ) const;
 
+      template< typename Fetch >
+      SegmentsPrinter< ChunkedEllpackView, Fetch > print( Fetch&& fetch ) const;
+
       void printStructure( std::ostream& str ) const;
 
    protected:

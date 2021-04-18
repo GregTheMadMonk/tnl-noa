@@ -138,6 +138,9 @@ class BiEllpackView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< BiEllpackView, Fetch > print( Fetch&& fetch ) const;
+
       void printStructure( std::ostream& str ) const;
 
    protected:

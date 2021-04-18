@@ -99,6 +99,30 @@ std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostre
    return str;
 }
 
+
+template< typename Segments,
+          typename Fetch >
+struct SegmentsPrinter
+{
+   SegmentsPrinter( const Segments& segments, Fetch& fetch )
+   : segments( segments ), fetch( fetch ) {}
+
+   std::ostream& print( std::ostream& str ) const { return printSegments( segments, fetch, str ); }
+
+   protected:
+
+   const Segments& segments;
+
+   Fetch& fetch;
+};
+
+template< typename Segments,
+          typename Fetch >
+std::ostream& operator<<( std::ostream& str, const SegmentsPrinter< Segments, Fetch >& printer )
+{
+   return printer.print( str );
+}
+
       } // namespace Segments
    } // namespace Algorithms
 } // namespace TNL

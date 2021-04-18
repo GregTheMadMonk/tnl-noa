@@ -423,6 +423,19 @@ load( File& file )
    file >> this->sliceSegmentSizes;
 }
 
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+      template< typename Fetch >
+auto
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< SlicedEllpack, Fetch >
+{
+   return SegmentsPrinter< SlicedEllpack, Fetch >( *this, fetch );
+}
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

@@ -121,6 +121,9 @@ class SlicedEllpackView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< SlicedEllpackView, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType size, alignedSize, segmentsCount;

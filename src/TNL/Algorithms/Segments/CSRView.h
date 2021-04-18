@@ -139,6 +139,9 @@ class CSRView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< CSRView, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       OffsetsView offsets;

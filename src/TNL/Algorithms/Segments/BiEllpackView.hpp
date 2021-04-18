@@ -481,6 +481,18 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
+      template< typename Fetch >
+auto
+BiEllpackView< Device, Index, Organization, WarpSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< BiEllpackView, Fetch >
+{
+   return SegmentsPrinter< BiEllpackView, Fetch >( *this, fetch );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
 printStructure( std::ostream& str ) const
