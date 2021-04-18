@@ -538,10 +538,33 @@ vectorProduct( const InVector& inVector,
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperGeneral = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+   auto keeperDirect = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   auto keeperMatrixMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = matrixMultiplicator * value;
+   };
+   auto keeperVectorMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + value;
+   };
+
+   if( outVectorMultiplicator == 0.0 )
+   {
+      if( matrixMultiplicator == 1.0 )
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperDirect, ( RealType ) 0.0 );
+      else
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperMatrixMult, ( RealType ) 0.0 );
+   }
+   else
+   {
+      if( matrixMultiplicator == 1.0 )
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperVectorMult, ( RealType ) 0.0 );
+      else
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperGeneral, ( RealType ) 0.0 );
+   }
 }
 
 template< typename Real,
