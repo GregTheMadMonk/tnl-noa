@@ -15,7 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
-#include <TNL/Algorithms/Segments/SegmentPrinting.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
