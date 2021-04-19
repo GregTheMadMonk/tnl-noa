@@ -92,12 +92,12 @@ struct SegmentsPrinter
    Fetch fetch;
 };
 
-template< typename Segments,
+/*template< typename Segments,
           typename Fetch >
 std::ostream& operator<<( std::ostream& str, const SegmentsPrinter< Segments, Fetch >& printer )
 {
    return printer.print( str );
-}
+}*/
 
 template< typename Segments,
           typename Fetch >

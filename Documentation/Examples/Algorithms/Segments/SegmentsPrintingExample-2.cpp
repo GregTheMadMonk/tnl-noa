@@ -32,8 +32,7 @@ void SegmentsExample()
     */
    auto data_view = data.getView();
    auto fetch = [=] __cuda_callable__ ( int globalIdx ) -> double { return data_view[ globalIdx ]; };
-   std::cout << segments.print( fetch ) << std::endl;
-   std::cout << std::endl;
+   printSegments( segments, fetch, std::cout ) << std::endl;
 }
 
 int main( int argc, char* argv[] )

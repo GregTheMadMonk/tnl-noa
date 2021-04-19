@@ -36,7 +36,7 @@ void SegmentsExample()
     */
    std::cout << "Values of elements after intial setup: " << std::endl;
    auto fetch = [=] __cuda_callable__ ( int globalIdx ) -> double { return data_view[ globalIdx ]; };
-   std::cout << segments.print( fetch ) << std::endl;
+   printSegments( segments, fetch, std::cout );
 
    /***
     * Compute sums of elements in each segment.
