@@ -26,6 +26,7 @@
 #include <chrono>
 
 using namespace TNL;
+using MetisIndexArray = Containers::Array< idx_t, Devices::Sequential, idx_t >;
 
 struct DecomposeMeshConfigTag {};
 
@@ -278,12 +279,10 @@ void setMETISoptions( idx_t options[METIS_NOPTIONS], const Config::ParameterCont
 template< typename Mesh >
 struct DecomposeMesh
 {
-   using Index = typename Mesh::GlobalIndexType;
-   using IndexArray = Containers::Array< Index, Devices::Sequential, Index >;
-   using MetisIndexArray = Containers::Array< idx_t, Devices::Sequential, idx_t >;
-
    static void run( const Mesh& mesh, const Config::ParameterContainer& parameters )
    {
+      using Index = typename Mesh::GlobalIndexType;
+
       // warn if input mesh has 64-bit indices, but METIS uses only 32-bit indices
       if( IDXTYPEWIDTH == 32 && sizeof(Index) > 4 )
          std::cerr << "Warning: the input mesh uses 64-bit indices, but METIS was compiled only with 32-bit indices. "
@@ -422,19 +421,24 @@ struct DecomposeMesh
       offsets.clear();
       offsets.shrink_to_fit();
 
-      decompose_and_save( mesh, parameters, part_array, shared_xadj, shared_adjncy, ncommon );
+      const unsigned ghost_levels = parameters.getParameter< unsigned >( "ghost-levels" );
+      const std::string pvtuFileName = parameters.template getParameter< String >( "output-file" );
+      decompose_and_save( mesh, nparts, part_array, shared_xadj, shared_adjncy, ncommon, ghost_levels, pvtuFileName );
    }
 
    static void
    decompose_and_save( const Mesh& mesh,
-                       const Config::ParameterContainer& parameters,
+                       const unsigned nparts,
                        const MetisIndexArray& part,
                        const std::shared_ptr< idx_t > dual_xadj,
                        const std::shared_ptr< idx_t > dual_adjncy,
-                       const Index ncommon )
+                       const unsigned ncommon,
+                       const unsigned ghost_levels,
+                       const std::string pvtuFileName )
    {
-      const unsigned nparts = parameters.template getParameter< unsigned >( "subdomains" );
-      const unsigned ghost_levels = parameters.getParameter< unsigned >( "ghost-levels" );
+      using Index = typename Mesh::GlobalIndexType;
+      using IndexArray = Containers::Array< Index, Devices::Sequential, Index >;
+
       const Index cellsCount = mesh.template getEntitiesCount< typename Mesh::Cell >();
       const Index pointsCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
 
@@ -554,7 +558,6 @@ struct DecomposeMesh
 
       // write a .pvtu file
       using PVTU = Meshes::Writers::PVTUWriter< Mesh >;
-      const std::string pvtuFileName = parameters.template getParameter< String >( "output-file" );
       std::ofstream file( pvtuFileName );
       PVTU pvtu( file );
       pvtu.template writeEntities< Mesh::getMeshDimension() >( Mesh{}, ghost_levels, ncommon );
