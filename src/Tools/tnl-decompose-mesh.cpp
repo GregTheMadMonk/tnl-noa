@@ -282,10 +282,10 @@ struct DecomposeMesh
    using IndexArray = Containers::Array< Index, Devices::Sequential, Index >;
    using MetisIndexArray = Containers::Array< idx_t, Devices::Sequential, idx_t >;
 
-   static bool run( const Mesh& mesh, const Config::ParameterContainer& parameters )
+   static void run( const Mesh& mesh, const Config::ParameterContainer& parameters )
    {
       // warn if input mesh has 64-bit indices, but METIS uses only 32-bit indices
-      if( IDXTYPEWIDTH == 32 && sizeof(Index) > 32 )
+      if( IDXTYPEWIDTH == 32 && sizeof(Index) > 4 )
          std::cerr << "Warning: the input mesh uses 64-bit indices, but METIS was compiled only with 32-bit indices. "
                       "Decomposition may not work correctly if the index values overflow the 32-bit type." << std::endl;
 
@@ -422,10 +422,10 @@ struct DecomposeMesh
       offsets.clear();
       offsets.shrink_to_fit();
 
-      return decompose_and_save( mesh, parameters, part_array, shared_xadj, shared_adjncy, ncommon );
+      decompose_and_save( mesh, parameters, part_array, shared_xadj, shared_adjncy, ncommon );
    }
 
-   static bool
+   static void
    decompose_and_save( const Mesh& mesh,
                        const Config::ParameterContainer& parameters,
                        const MetisIndexArray& part,
@@ -753,8 +753,6 @@ struct DecomposeMesh
             writer.writeCellData( cellsGlobalIndices, "GlobalIndex" );
          }
       }
-
-      return true;
    }
 };
 
@@ -779,7 +777,8 @@ int main( int argc, char* argv[] )
    auto wrapper = [&] ( const auto& reader, auto&& mesh )
    {
       using MeshType = std::decay_t< decltype(mesh) >;
-      return DecomposeMesh< MeshType >::run( std::forward<MeshType>(mesh), parameters );
+      DecomposeMesh< MeshType >::run( std::forward<MeshType>(mesh), parameters );
+      return true;
    };
    return ! Meshes::resolveAndLoadMesh< DecomposeMeshConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
 }
