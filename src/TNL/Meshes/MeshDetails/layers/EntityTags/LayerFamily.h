@@ -170,7 +170,6 @@ public:
    using BaseType::operator=;
 
    template< int Dimension >
-   __cuda_callable__
    typename EntityTagsArrayType::ViewType
    getEntityTagsView()
    {
@@ -179,7 +178,6 @@ public:
    }
 
    template< int Dimension >
-   __cuda_callable__
    typename EntityTagsArrayType::ConstViewType
    getEntityTagsView() const
    {
