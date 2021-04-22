@@ -28,6 +28,8 @@ set( COMMON_TESTS
             BinarySparseMatrixCopyTest
             SymmetricSparseMatrixTest_CSR
             LambdaMatrixTest
+            SparseMatrixTest_SandboxMatrix
+            SparseMatrixVectorProductTest_SandboxMatrix
 )
 
 set( CPP_TESTS

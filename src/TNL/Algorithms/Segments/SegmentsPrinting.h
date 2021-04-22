@@ -49,6 +49,8 @@ std::ostream& printSegments( const Segments& segments, std::ostream& str )
    return str;
 }
 
+/// This is to prevent from appearing in Doxygen documentation.
+/// \cond HIDDEN_CLASS
 template< typename Segments,
           typename Fetch >
 struct SegmentsPrinter
@@ -130,6 +132,7 @@ std::ostream& printSegments( const Segments& segments, Fetch&& fetch, std::ostre
    }
    return str;
 }
+/// \endcond
 
       } // namespace Segments
    } // namespace Algorithms

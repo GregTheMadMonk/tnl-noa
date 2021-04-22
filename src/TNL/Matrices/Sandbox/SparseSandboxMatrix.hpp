@@ -1,8 +1,8 @@
 /***************************************************************************
-                          SparseMatrix.hpp -  description
+                          SparseSandboxMatrix.hpp -  description
                              -------------------
-    begin                : Nov 29, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    begin                : Apr 19, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,62 +10,59 @@
 
 #pragma once
 
+#include <functional>
 #include <sstream>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
 
 namespace TNL {
-namespace Matrices {
+   namespace Matrices {
+      namespace Sandbox {
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const RealAllocatorType& realAllocator,
-              const IndexAllocatorType& indexAllocator )
-: BaseType( realAllocator ), columnIndexes( indexAllocator ), view( this->getView() )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const RealAllocatorType& realAllocator,
+                     const IndexAllocatorType& indexAllocator )
+: BaseType( realAllocator ), columnIndexes( indexAllocator ), rowPointers( ( IndexType ) 1, ( IndexType ) 0, indexAllocator )
 {
+   this->view = this->getView();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Index_t, std::enable_if_t< std::is_integral< Index_t >::value, int > >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const Index_t rows,
-              const Index_t columns,
-              const RealAllocatorType& realAllocator,
-              const IndexAllocatorType& indexAllocator )
-: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ),
-  segments( Containers::Vector< IndexType, DeviceType, IndexType >( rows, 0 ) ),
-  view( this->getView() )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const Index_t rows,
+                     const Index_t columns,
+                     const RealAllocatorType& realAllocator,
+                     const IndexAllocatorType& indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ), rowPointers( rows + 1, ( IndexType ) 0, indexAllocator )
 {
+   this->view = this->getView();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename ListIndex >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
-              const IndexType columns,
-              const RealAllocatorType& realAllocator,
-              const IndexAllocatorType& indexAllocator )
-: BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const std::initializer_list< ListIndex >& rowCapacities,
+                     const IndexType columns,
+                     const RealAllocatorType& realAllocator,
+                     const IndexAllocatorType& indexAllocator )
+: BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator ), rowPointers( rowCapacities.size() + 1, ( IndexType ) 0, indexAllocator )
 {
    this->setRowCapacities( RowsCapacitiesType( rowCapacities ) );
 }
@@ -74,17 +71,15 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename RowCapacitiesVector, std::enable_if_t< TNL::IsArrayType< RowCapacitiesVector >::value, int > >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const RowCapacitiesVector& rowCapacities,
-              const IndexType columns,
-              const RealAllocatorType& realAllocator,
-              const IndexAllocatorType& indexAllocator )
-: BaseType( rowCapacities.getSize(), columns, realAllocator ), columnIndexes( indexAllocator )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const RowCapacitiesVector& rowCapacities,
+                     const IndexType columns,
+                     const RealAllocatorType& realAllocator,
+                     const IndexAllocatorType& indexAllocator )
+: BaseType( rowCapacities.getSize(), columns, realAllocator ), columnIndexes( indexAllocator ), rowPointers( rowCapacities.getSize() + 1, ( IndexType ) 0, indexAllocator )
 {
    this->setRowCapacities( rowCapacities );
 }
@@ -93,72 +88,66 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const IndexType rows,
-              const IndexType columns,
-              const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
-              const RealAllocatorType& realAllocator,
-              const IndexAllocatorType& indexAllocator )
-: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const IndexType rows,
+                     const IndexType columns,
+                     const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
+                     const RealAllocatorType& realAllocator,
+                     const IndexAllocatorType& indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ), rowPointers( rows + 1, ( IndexType ) 0, indexAllocator )
 {
    this->setElements( data );
+   this->view = this->getView();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename MapIndex,
              typename MapValue >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-SparseMatrix( const IndexType rows,
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix( const IndexType rows,
               const IndexType columns,
               const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator ), rowPointers( rows + 1, ( IndexType ) 0, indexAllocator )
 {
    this->setDimensions( rows, columns );
    this->setElements( map );
+   this->view = this->getView();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getView() const -> ViewType
 {
    return ViewType( this->getRows(),
                     this->getColumns(),
-                    const_cast< SparseMatrix* >( this )->getValues().getView(),  // TODO: remove const_cast
-                    const_cast< SparseMatrix* >( this )->columnIndexes.getView(),
-                    const_cast< SparseMatrix* >( this )->segments.getView() );
+                    const_cast< SparseSandboxMatrix* >( this )->getValues().getView(),  // TODO: remove const_cast
+                    const_cast< SparseSandboxMatrix* >( this )->columnIndexes.getView(),
+                    const_cast< SparseSandboxMatrix* >( this )->rowPointers.getView() );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
@@ -172,12 +161,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 String
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getSerializationType()
 {
    return ViewType::getSerializationType();
@@ -187,12 +174,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 String
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -202,17 +187,14 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns )
 {
    BaseType::setDimensions( rows, columns );
-   segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( rows, 0 ) );
    this->view = this->getView();
 }
 
@@ -220,50 +202,70 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Matrix_ >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setLike( const Matrix_& matrix )
 {
    BaseType::setLike( matrix );
-   this->segments.setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( matrix.getRows(), 0 ) ),
+   // SANDBOX_TODO: Replace the following line with assignment of metadata required by your format. 
+   //               Do not assign matrix elements here.
+   this->rowPointers = matrix.rowPointers;
    this->view = this->getView();
-   TNL_ASSERT_EQ( this->getRows(), segments.getSegmentsCount(), "mismatched segments count" );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename RowsCapacitiesVector >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setRowCapacities( const RowsCapacitiesVector& rowsCapacities )
 {
    TNL_ASSERT_EQ( rowsCapacities.getSize(), this->getRows(), "Number of matrix rows does not fit with rowCapacities vector size." );
    using RowsCapacitiesVectorDevice = typename RowsCapacitiesVector::DeviceType;
+
+   // SANDBOX_TODO: Replace the following lines with the setup of your sparse matrix format based on
+   //               `rowsCapacities`. This container has the same number of elements as is the number of
+   //               rows of this matrix. Each element says how many nonzero elements the user needs to have
+   //               in each row. This number can be increased if the sparse matrix format uses padding zeros.
+   this->rowPointers.setSize( this->getRows() + 1 );
    if( std::is_same< DeviceType, RowsCapacitiesVectorDevice >::value )
-      this->segments.setSegmentsSizes( rowsCapacities );
+   {
+      // GOTCHA: when this->getRows() == 0, getView returns a full view with size == 1
+      if( this->getRows() > 0 ) {
+         auto view = this->rowPointers.getView( 0, this->getRows() );
+         view = rowsCapacities;
+      }
+   }
    else
    {
       RowsCapacitiesType thisRowsCapacities;
       thisRowsCapacities = rowsCapacities;
-      this->segments.setSegmentsSizes( thisRowsCapacities );
+      if( this->getRows() > 0 ) {
+         auto view = this->rowPointers.getView( 0, this->getRows() );
+         view = thisRowsCapacities;
+      }
    }
+   this->rowPointers.setElement( this->getRows(), 0 );
+   this->rowPointers.template scan< Algorithms::ScanType::Exclusive >();
+   // End of sparse matrix format initiation.
+
+   // SANDBOX_TODO: Compute number of all elements that need to be allocated by your format.
+   const auto storageSize = rowPointers.getElement( this->getRows() );
+
+   // The rest of this methods needs no changes.
    if( ! isBinary() )
    {
-      this->values.setSize( this->segments.getStorageSize() );
+      this->values.setSize( storageSize );
       this->values = ( RealType ) 0;
    }
-   this->columnIndexes.setSize( this->segments.getStorageSize() );
+   this->columnIndexes.setSize( storageSize );
    this->columnIndexes = this->getPaddingIndex();
    this->view = this->getView();
 }
@@ -272,13 +274,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getRowCapacities( Vector& rowCapacities ) const
 {
    this->view.getRowCapacities( rowCapacities );
@@ -288,12 +288,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data )
 {
    const auto& rows = this->getRows();
@@ -309,7 +307,7 @@ setElements( const std::initializer_list< std::tuple< IndexType, IndexType, Real
       }
       rowCapacities[ std::get< 0 >( i ) ]++;
    }
-   SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
+   SparseSandboxMatrix< Real, Devices::Host, Index, MatrixType > hostMatrix( rows, columns );
    hostMatrix.setRowCapacities( rowCapacities );
    for( const auto& i : data )
    {
@@ -328,14 +326,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename MapIndex,
              typename MapValue >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
 {
    Containers::Vector< IndexType, Devices::Host, IndexType > rowsCapacities( this->getRows(), 0 );
@@ -343,7 +339,7 @@ setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
       rowsCapacities[ element.first.first ]++;
    if( !std::is_same< DeviceType, Devices::Host >::value )
    {
-      SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( this->getRows(), this->getColumns() );
+      SparseSandboxMatrix< Real, Devices::Host, Index, MatrixType > hostMatrix( this->getRows(), this->getColumns() );
       hostMatrix.setRowCapacities( rowsCapacities );
       for( auto element : map )
          hostMatrix.setElement( element.first.first, element.first.second, element.second );
@@ -361,13 +357,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Vector >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
    this->view.getCompressedRowLengths( rowLengths );
@@ -377,13 +371,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 Index
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getRowCapacity( const IndexType row ) const
 {
    return this->view.getRowCapacity( row );
@@ -393,12 +385,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 Index
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getNonzeroElementsCount() const
 {
    return this->view.getNonzeroElementsCount();
@@ -408,31 +398,27 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 reset()
 {
    BaseType::reset();
    this->columnIndexes.reset();
-   this->segments.reset();
+   // SANDBOX_TODO: Reset the metadata required by your format here.
+   this->rowPointers.reset();
    this->view = this->getView();
-   TNL_ASSERT_EQ( this->getRows(), segments.getSegmentsCount(), "mismatched segments count" );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__ auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getRow( const IndexType& rowIdx ) const -> const ConstRowView
 {
    return this->view.getRow( rowIdx );
@@ -442,12 +428,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__ auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    return this->view.getRow( rowIdx );
@@ -457,12 +441,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__ void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
@@ -474,12 +456,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__ void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
@@ -492,13 +472,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const -> RealType
 {
@@ -509,18 +487,16 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 template< typename InVector,
        typename OutVector >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
-               const ComputeRealType& matrixMultiplicator,
-               const ComputeRealType& outVectorMultiplicator,
+               const RealType& matrixMultiplicator,
+               const RealType& outVectorMultiplicator,
                const IndexType firstRow,
                const IndexType lastRow ) const
 {
@@ -531,77 +507,67 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
 {
-   this->view.reduceRows( begin, end, fetch, reduce, keep, identity );
+   this->view.reduceRows( begin, end, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity ) const
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
-   this->view.reduceRows( begin, end, fetch, reduce, keep, identity );
+   this->view.reduceRows( begin, end, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+reduceAllRows( Fetch&& fetch, const Reduce&& reduce, Keep&& keep, const FetchReal& zero )
 {
-   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    this->view.forElements( begin, end, function );
@@ -611,13 +577,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forElements( IndexType begin, IndexType end, Function&& function )
 {
    this->view.forElements( begin, end, function );
@@ -627,45 +591,39 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forAllElements( Function&& function ) const
 {
-   this->forElements( (IndexType) 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forAllElements( Function&& function )
 {
-   this->forElements( (IndexType) 0, this->getRows(), function );
+   this->forElements( 0, this->getRows(), function );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forRows( IndexType begin, IndexType end, Function&& function )
 {
    this->getView().forRows( begin, end, function );
@@ -675,13 +633,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forRows( IndexType begin, IndexType end, Function&& function ) const
 {
    this->getConstView().forRows( begin, end, function );
@@ -691,13 +647,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forAllRows( Function&& function )
 {
    this->getView().forAllRows( function );
@@ -707,13 +661,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 forAllRows( Function&& function ) const
 {
    this->getConsView().forAllRows( function );
@@ -723,13 +675,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 sequentialForRows( IndexType begin, IndexType end, Function& function ) const
 {
    this->view.sequentialForRows( begin, end, function );
@@ -739,13 +689,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 sequentialForRows( IndexType first, IndexType last, Function& function )
 {
    this->view.sequentialForRows( first, last, function );
@@ -755,32 +703,28 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function ) const
 {
-   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
+   this->sequentialForRows( 0, this->getRows(), function );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Function >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function )
 {
-   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
+   this->sequentialForRows( 0, this->getRows(), function );
 }
 
 
@@ -792,8 +736,8 @@ sequentialForAllRows( Function& function )
           typename IndexAllocator >
 template< typename Real2, template< typename, typename > class Segments2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-addMatrix( const SparseMatrix< Real2, Segments2, Device, Index2, RealAllocator2, IndexAllocator2 >& matrix,
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+addMatrix( const SparseSandboxMatrix< Real2, Segments2, Device, Index2, RealAllocator2, IndexAllocator2 >& matrix,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
 {
@@ -808,8 +752,8 @@ template< typename Real,
           typename IndexAllocator >
 template< typename Real2, typename Index2 >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getTransposition( const SparseMatrix< Real2, Device, Index2 >& matrix,
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+getTransposition( const SparseSandboxMatrix< Real2, Device, Index2 >& matrix,
                   const RealType& matrixMultiplicator )
 {
 
@@ -819,13 +763,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 template< typename Vector1, typename Vector2 >
 bool
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
@@ -839,17 +781,16 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >&
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-operator=( const SparseMatrix& matrix )
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >&
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+operator=( const SparseSandboxMatrix& matrix )
 {
    Matrix< Real, Device, Index >::operator=( matrix );
    this->columnIndexes = matrix.columnIndexes;
-   this->segments = matrix.segments;
+   // SANDBOX_TODO: Replace the following line with an assignment of metadata required by you sparse matrix format.
+   this->rowPointers = matrix.rowPointers;
    this->view = this->getView();
    return *this;
 }
@@ -858,13 +799,30 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Device_ >
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >&
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
+operator=( const SparseSandboxMatrix< RealType, Device_, IndexType, MatrixType, RealAllocator, IndexAllocator >& matrix )
+{
+   Matrix< Real, Device, Index >::operator=( matrix );
+   this->columnIndexes = matrix.columnIndexes;
+   // SANDBOX_TODO: Replace the following line with an assignment of metadata required by you sparse matrix format.
+   this->rowPointers = matrix.rowPointers;
+   this->view = this->getView();
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization, typename RealAllocator_ >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >&
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >&
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix )
 {
    using RHSMatrix = DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >;
@@ -905,7 +863,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
    else
    {
       const IndexType maxRowLength = matrix.getColumns();
-      const IndexType bufferRowsCount( 4096 );
+      const IndexType bufferRowsCount( 128 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
       Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
@@ -970,13 +928,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename RHSMatrix >
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >&
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >&
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 operator=( const RHSMatrix& matrix )
 {
    using RHSIndexType = typename RHSMatrix::IndexType;
@@ -999,14 +955,16 @@ operator=( const RHSMatrix& matrix )
    auto rowLocalIndexes_view = rowLocalIndexes.getView();
    columns_view = paddingIndex;
 
+   // SANDBOX_TODO: Modify the follwoing accoring to your format
+   auto row_pointers_view = this->rowPointers.getView();
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
-      const auto segments_view = this->segments.getView();
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
          IndexType localIdx( rowLocalIndexes_view[ rowIdx ] );
+         IndexType thisRowBegin = row_pointers_view[ rowIdx ];
          if( value != 0.0 && columnIndex != paddingIndex )
          {
-            IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, localIdx++ );
+            IndexType thisGlobalIdx = thisRowBegin + localIdx++;
             columns_view[ thisGlobalIdx ] = columnIndex;
             if( ! isBinary() )
                values_view[ thisGlobalIdx ] = value;
@@ -1018,7 +976,7 @@ operator=( const RHSMatrix& matrix )
    else
    {
       const IndexType maxRowLength = max( rowCapacities );
-      const IndexType bufferRowsCount( 4096 );
+      const IndexType bufferRowsCount( 128 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
       Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > matrixColumnsBuffer( bufferSize );
@@ -1101,13 +1059,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Matrix >
 bool
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 operator==( const Matrix& m ) const
 {
    return view == m;
@@ -1117,13 +1073,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Matrix >
 bool
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 operator!=( const Matrix& m ) const
 {
    return view != m;
@@ -1133,12 +1087,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 save( File& file ) const
 {
    this->view.save( file );
@@ -1148,17 +1100,16 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 load( File& file )
 {
    Matrix< RealType, DeviceType, IndexType >::load( file );
    file >> this->columnIndexes;
-   this->segments.load( file );
+   // SANDBOX_TODO: Replace the following line with loading of metadata required by your sparse matrix format.
+   file >> rowPointers;
    this->view = this->getView();
 }
 
@@ -1166,12 +1117,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 save( const String& fileName ) const
 {
    Object::save( fileName );
@@ -1181,12 +1130,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 load( const String& fileName )
 {
    Object::load( fileName );
@@ -1196,12 +1143,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 print( std::ostream& str ) const
 {
    this->view.print( str );
@@ -1211,13 +1156,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 __cuda_callable__
 Index
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getPaddingIndex() const
 {
    return -1;
@@ -1227,42 +1170,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getSegments() -> SegmentsType&
-{
-   return this->segments;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
-          typename RealAllocator,
-          typename IndexAllocator >
-auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-getSegments() const -> const SegmentsType&
-{
-   return this->segments;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
-          typename RealAllocator,
-          typename IndexAllocator >
-auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getColumnIndexes() const -> const ColumnsIndexesVectorType&
 {
    return this->columnIndexes;
@@ -1272,17 +1183,15 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
           typename RealAllocator,
           typename IndexAllocator >
 auto
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getColumnIndexes() -> ColumnsIndexesVectorType&
 {
    return this->columnIndexes;
 }
 
-
-} // namespace Matrices
+      } // namespace Sandbox
+   } // namespace Matrices
 } // namespace TNL
