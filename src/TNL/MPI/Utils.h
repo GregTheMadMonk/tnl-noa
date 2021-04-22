@@ -72,5 +72,30 @@ inline int getRankOnNode( MPI_Comm group = AllGroup() )
 #endif
 }
 
+/**
+ * \brief Applies the given reduction operation to the values among all ranks
+ * in the given communicator.
+ *
+ * This is a collective operation which uses \ref Allreduce internally. It
+ * provides nicer semantics than the wrapper function: the input value is passed
+ * by value (heh) rather then by pointer, and the result is returned rather than
+ * written to the output pointer.
+ *
+ * \param value Value of the current rank to be reduced.
+ * \param op The reduction operation to be applied.
+ * \param group The communicator comprising ranks that participate in the
+ *              collective operation.
+ * \return The reduced value (it is ensured that all ranks receive the same
+ *         value).
+ */
+template< typename T >
+T reduce( T value, const MPI_Op& op, MPI_Comm group = AllGroup() )
+{
+   // call the in-place variant of Allreduce
+   Allreduce( &value, 1, op, group );
+   // return the reduced value
+   return value;
+}
+
 } // namespace MPI
 } // namespace TNL
