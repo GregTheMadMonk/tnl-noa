@@ -223,7 +223,6 @@ public:
    operator()( IndexTypes&&... indices )
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
       return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
    }
 
@@ -233,7 +232,6 @@ public:
    operator()( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
       return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
    }
 

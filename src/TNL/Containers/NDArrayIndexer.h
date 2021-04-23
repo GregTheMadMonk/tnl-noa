@@ -91,10 +91,19 @@ public:
    getStorageIndex( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == SizesHolder::getDimension(), "got wrong number of indices" );
-      return Base::template getStorageIndex< Permutation, Overlaps >
-             ( sizes,
-               static_cast< const StridesHolder& >( *this ),
-               std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
+      const IndexType result = Base::template getStorageIndex< Permutation, Overlaps >
+                               ( sizes,
+                                 static_cast< const StridesHolder& >( *this ),
+                                 std::forward< IndexTypes >( indices )... );
+      TNL_ASSERT_GE( result, (IndexType) 0,
+                     "storage index out of bounds - either input error or a bug in the indexer" );
+      // upper bound can be checked only for contiguous arrays/views
+      if( StridesHolder::isContiguous() ) {
+         TNL_ASSERT_LT( result, getStorageSize(),
+                        "storage index out of bounds - either input error or a bug in the indexer" );
+      }
+      return result;
    }
 
 protected:
