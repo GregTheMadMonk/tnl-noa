@@ -426,7 +426,11 @@ vectorProduct( const InVector& inVector,
          const auto end = rowPointers[ rowIdx + 1 ];
          RealType sum( 0.0 );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx++ )
-               sum += this->values[ globalIdx ] * inVector[ this->columnIndexes[ globalIdx ] ];
+         {
+            const auto columnIdx = this->columnIndexes[ globalIdx ];
+            if( columnIdx != paddingIndex )
+               sum += this->values[ globalIdx ] * inVector[ columnIdx ];
+         }
          // SANDBOX_TODO:The following is quite inefficient, its better to specialized the code for cases when
          // `outVectorMultiplicator` is zero or `matrixMultiplicator` is one - see. the full implementation bellow.
          outVector[ rowIdx ] = outVector[ rowIdx ] * outVectorMultiplicator + matrixMultiplicator * sum;
@@ -440,7 +444,7 @@ vectorProduct( const InVector& inVector,
          const auto end = rowPointersView[ rowIdx + 1 ];
          RealType sum( 0.0 );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx++ )
-            sum + valuesView[ globalIdx ] * inVectorView[ columnIndexesView[ globalIdx ] ];
+            sum += valuesView[ globalIdx ] * inVectorView[ columnIndexesView[ globalIdx ] ];
          outVectorView[ rowIdx ] = outVectorView[ rowIdx ] * outVectorMultiplicator + matrixMultiplicator * sum;
       };
       TNL::Algorithms::ParallelFor< DeviceType >::exec( firstRow, lastRow, f );

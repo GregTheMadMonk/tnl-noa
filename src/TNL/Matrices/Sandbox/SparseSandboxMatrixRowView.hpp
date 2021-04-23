@@ -28,7 +28,7 @@ SparseSandboxMatrixRowView( IndexType rowIdx,
                             IndexType size,
                             const ValuesViewType& values,
                             const ColumnsIndexesViewType& columnIndexes )
- : rowIdx( rowIdx ), offset( offset ), size( size ), values( values ), columnIndexes( columnIndexes )
+ : rowIdx( rowIdx ), size( size ), offset( offset ), values( values ), columnIndexes( columnIndexes )
 {
 }
 

@@ -21,6 +21,9 @@
 
 namespace TNL {
    namespace Matrices {
+      /**
+       * \brief Namespace for sandbox matrices.
+       */
       namespace Sandbox {
 
 /**
