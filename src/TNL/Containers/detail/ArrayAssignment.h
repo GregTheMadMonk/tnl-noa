@@ -38,7 +38,7 @@ struct ArrayAssignment< Array, T, true >
 
    static void assign( Array& a, const T& t )
    {
-      TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
+      TNL_ASSERT_EQ( a.getSize(), ( decltype( a.getSize() ) ) t.getSize(), "The sizes of the arrays must be equal." );
       // skip assignment of empty arrays
       if( a.getSize() == 0 )
          return;
