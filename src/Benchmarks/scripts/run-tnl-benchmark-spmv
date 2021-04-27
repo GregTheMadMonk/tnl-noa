@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-                
+
 DEBUG="no"
 STOP_TIME="1"
 export CUDA_PROFILE=0
@@ -15,7 +15,7 @@ PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
 #source matrix-market
 source florida-matrix-market
 
-# !!!Matrices in MatrixMarket2 don't load properly, formatting issues with every file. MatrixReader fails. 
+# !!!Matrices in MatrixMarket2 don't load properly, formatting issues with every file. MatrixReader fails.
 #for link in $MM_MATRICES;
 #do
 #   echo "======================================================================================================"
@@ -24,9 +24,9 @@ source florida-matrix-market
 #   if test ! -e $matrix;
 #   then
 #      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-#      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log            
+#      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
 #   else
-#      gunzip -c ${matrix} > ${unzipped_matrix}      
+#      gunzip -c ${matrix} > ${unzipped_matrix}
 #      echo "Benchmarking with the matrix $unzipped_matrix ..."
 #      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
 #      if test x$DEBUG = xyes;
@@ -35,7 +35,7 @@ source florida-matrix-market
 #      else
 #         $BENCHMARK --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
 #      fi
-#      #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log          
+#      #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
 #   fi
 #done
 
@@ -43,7 +43,7 @@ for link in $FLORIDA_MM_MATRICES;
 do
    matrix=matrices`echo $link | sed 's/http:\/\/www.cise.ufl.edu\/research\/sparse//'`
    if test ! -e $matrix;
-   then      
+   then
       echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
       #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
    else
@@ -59,14 +59,14 @@ do
      SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
      rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usualy in array format
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
-     do        
+     do
          echo "======================================================================================================"
          echo "Benchmarking with the matrix $file ..."
 	 mtx_file_name=`basename $file`
-	 mtx_file_name=${mtx_file_name%.mtx}	 
+	 mtx_file_name=${mtx_file_name%.mtx}
          if test x$DEBUG = xyes;
          then
-            gdb --args $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
+            gdb --args ${BENCHMARK_DBG} --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
          else
             $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
          fi
