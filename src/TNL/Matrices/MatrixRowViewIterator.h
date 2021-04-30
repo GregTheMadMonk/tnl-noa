@@ -72,15 +72,27 @@ class MatrixRowViewIterator
       __cuda_callable__
       bool operator!=( const MatrixRowViewIterator& other ) const;
 
+      /**
+       * \brief Increment operator.
+       */
       __cuda_callable__
       MatrixRowViewIterator& operator++();
 
+      /**
+       * \brief Decrement operetor.
+       */
       __cuda_callable__
       MatrixRowViewIterator& operator--();
 
+      /**
+       * \brief Dereference operator.
+       */
       __cuda_callable__
       MatrixElementType operator*();
 
+      /**
+       * \brief Dereference operator for constant instances.
+       */
       __cuda_callable__
       const MatrixElementType operator*() const;
 

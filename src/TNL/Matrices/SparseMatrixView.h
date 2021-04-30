@@ -395,16 +395,28 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue
+       * ```
+       *
+       *  The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -424,16 +436,28 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -453,12 +477,24 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on all matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -480,12 +516,24 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on all matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -506,13 +554,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value )`.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
+       *
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
+       *
        *  The \e localIdx parameter is a rank of the non-zero element in given row.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin,\e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
@@ -526,13 +577,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value )`.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
+       *
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
+       *
        *  The \e localIdx parameter is a rank of the non-zero element in given row.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
@@ -679,13 +733,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
@@ -694,13 +751,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for sequential iteration over all matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::SparseMatrixView::RowView.
+       *
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
@@ -733,7 +793,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        *
        * More precisely, it computes:
        *
-       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
+       * ```
+       * outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector
+       * ```
        *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.

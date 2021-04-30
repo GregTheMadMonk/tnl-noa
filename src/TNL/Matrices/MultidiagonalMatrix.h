@@ -245,7 +245,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       MultidiagonalMatrix( MultidiagonalMatrix&& matrix ) = default;
 
       /**
-       * \brief Returns a modifiable view of the mutlidiagonal matrix.
+       * \brief Returns a modifiable view of the multidiagonal matrix.
        *
        * See \ref MultidiagonalMatrixView.
        *
@@ -601,12 +601,24 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -624,22 +636,34 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callbale__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep =[=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [\e begin,\e end) of rows to be processed.
+       * \param end defines ending of the range [\e begin,\e end) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -653,18 +677,30 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -686,12 +722,24 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on all matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       *  ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -712,10 +760,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for iteration over matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value )`,
+       * ```
+       * auto function = [=] __cuda_callble__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
        *
        * where
        *
@@ -724,7 +773,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
        *  index of the matrix subdiagonal.
        *
-       * \e columnIdx is a column index of the matrx element.
+       * \e columnIdx is a column index of the matrix element.
        *
        * \e value is the matrix element value.
        *
@@ -743,10 +792,11 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for iteration over matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value )`,
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
        *
        * where
        *
@@ -906,9 +956,12 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value )`.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
+       *
+       * ```
+       * auto function = [=] ( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value ) { ... };
+       * ```
+       *
        *  The column index repeats twice only for compatibility with sparse matrices.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -921,13 +974,16 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Method for sequential iteration over all matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value )`.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
+       *
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value ) { ... };
+       * ```
+       *
        *  The column index repeats twice only for compatibility with sparse matrices.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [\e begin,\e end) of rows to be processed.
+       * \param end defines ending of the range [\e begin,\e end) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
@@ -960,7 +1016,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * More precisely, it computes:
        *
-       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
+       * ```
+       * outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector
+       * ```
        *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
