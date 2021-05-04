@@ -137,7 +137,6 @@ template< typename Device,
           int Alignment >
 std::ostream& operator<<( std::ostream& str, const EllpackView< Device, Index, Organization, Alignment >& ellpack ) { return printSegments( str, ellpack ); }
 
-
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

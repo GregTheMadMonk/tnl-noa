@@ -110,7 +110,7 @@ typename EllpackView< Device, Index, Organization, Alignment >::ViewType
 EllpackView< Device, Index, Organization, Alignment >::
 getView()
 {
-   return ViewType( segmentSize, segmentsCount, alignedSize );
+   return ViewType( segmentsCount, segmentSize, alignedSize );
 }
 
 template< typename Device,
