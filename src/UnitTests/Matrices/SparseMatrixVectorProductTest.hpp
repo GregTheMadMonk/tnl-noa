@@ -424,31 +424,22 @@ void test_VectorProduct_longRowsMatrix()
    using MatrixSegmentsType = typename Matrix::SegmentsType;
    constexpr TNL::Algorithms::Segments::ElementsOrganization organization = MatrixSegmentsType::getOrganization();
    using ChunkedEllpackView_ = TNL::Algorithms::Segments::ChunkedEllpackView< DeviceType, IndexType, organization >;
-   if( ! std::is_same< typename Matrix::SegmentsViewType, ChunkedEllpackView_ >::value )
+   for( auto columns : { 64, 65, 128, 129, 256, 257, 512, 513, 1024, 1025, 2048, 2049, 3000 } )
    {
-      // TODO: Fix ChunkedEllpack for this test - seems that it allocates too much memory
-      for( auto columns : { 64, 65, 128, 129, 256, 257, 512, 513, 1024, 1025, 2048, 2049, 3000 } )
-      {
-         //std::cerr << "Long-rows-matrix-test: columns = " << columns << std::endl;
-         //const int columns = 3000;
-         const int rows = 33;
-         Matrix m3( rows, columns );
-         TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
-         rowsCapacities = columns;
-         m3.setRowCapacities( rowsCapacities );
-         auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value ) {
-            column = localIdx;
-            value = localIdx + row;
-         };
-         m3.forAllElements( f );
-         TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
-         m3.vectorProduct( in, out );
-         for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
-         {
-            //std::cerr << "Long-rows-matrix-test: rowIndex = " << rowIdx << std::endl;
-            EXPECT_EQ( out.getElement( rowIdx ), ( double ) columns * ( double ) (columns - 1 ) / 2.0 + columns * rowIdx );
-         }
-      }
+      const int rows = 33;
+      Matrix m3( rows, columns );
+      TNL::Containers::Vector< IndexType, DeviceType, IndexType > rowsCapacities( rows );
+      rowsCapacities = columns;
+      m3.setRowCapacities( rowsCapacities );
+      auto f = [] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType& column, RealType& value ) {
+         column = localIdx;
+         value = localIdx + row;
+      };
+      m3.forAllElements( f );
+      TNL::Containers::Vector< double, DeviceType, IndexType > in( columns, 1.0 ), out( rows, 0.0 );
+      m3.vectorProduct( in, out );
+      for( IndexType rowIdx = 0; rowIdx < rows; rowIdx++ )
+         EXPECT_EQ( out.getElement( rowIdx ), ( double ) columns * ( double ) (columns - 1 ) / 2.0 + columns * rowIdx );
    }
 }
 
