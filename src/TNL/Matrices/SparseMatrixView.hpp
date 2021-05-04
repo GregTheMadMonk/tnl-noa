@@ -80,8 +80,8 @@ getConstView() const -> ConstViewType
    return ConstViewType( this->getRows(),
                          this->getColumns(),
                          this->getValues().getConstView(),
-                         this->getColumnsIndexes().getConstView(),
-                         this->segments.getConstView() );
+                         this->getColumnIndexes().getConstView(),
+                         const_cast< SparseMatrixView* >( this )->segments.getView() );
 }
 
 template< typename Real,
@@ -862,14 +862,12 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 operator==( const Matrix& m ) const
 {
    const auto& view1 = *this;
-   // FIXME: getConstView does not work
-   //const auto view2 = m.getConstView();
-   const auto view2 = m.getView();
+   const auto view2 = m.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> bool
    {
       return view1.getRow( i ) == view2.getRow( i );
    };
-   return Algorithms::reduce< DeviceType >( (IndexType) 0, this->getRows(), fetch, std::logical_and<>{}, true );
+   return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
 }
 
 template< typename Real,
@@ -896,7 +894,7 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 save( File& file ) const
 {
-   MatrixView< RealType, DeviceType, IndexType >::save( file );
+   MatrixView< Real, Device, Index >::save( file );
    file << this->columnIndexes;
    this->segments.save( file );
 }
