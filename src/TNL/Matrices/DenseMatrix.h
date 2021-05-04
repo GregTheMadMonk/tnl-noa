@@ -974,7 +974,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return \e true if the RHS matrix is equal, \e false otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
+      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const;
 
       /**
        * \brief Comparison operator with another dense matrix.
@@ -983,7 +983,43 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return \e false if the RHS matrix is equal, \e true otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
+      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix view.
+       * \return \e true if the RHS matrix view is equal, \e false otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix view.
+       * \return \e false if the RHS matrix view is equal, \e true otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -1044,6 +1080,33 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator >
 std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix );
+
+/**
+ * \brief Comparison operator with another dense matrix view.
+ *
+ * \param leftMatrix is the left-hand side matrix view.
+ * \param rightMatrix is the right-hand side matrix.
+ * \return \e true if the both matrices are is equal, \e false otherwise.
+ */
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator==( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix );
+
+/**
+ * \brief Comparison operator with another dense matrix view.
+ *
+ * \param leftMatrix is the left-hand side matrix view.
+ * \param rightMatrix is the right-hand side matrix.
+ * \return \e false if the both matrices are is equal, \e true otherwise.
+ */
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator!=( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix );
+
 
 } // namespace Matrices
 } // namespace TNL

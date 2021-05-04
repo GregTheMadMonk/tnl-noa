@@ -812,6 +812,63 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return( this->getRows() == matrix.getRows() &&
+           this->getColumns() == matrix.getColumns() &&
+           this->getValues() == matrix.getValues() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return ! ( *this == matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Matrix >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator==( const Matrix& m ) const
+{
+   const auto& view1 = *this;
+   const auto view2 = m.getConstView();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> bool
+   {
+      return view1.getRow( i ) == view2.getRow( i );
+   };
+   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Matrix >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator!=( const Matrix& m ) const
+{
+   return ! ( *this == m );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
 void DenseMatrixView< Real, Device, Index, Organization >::save( const String& fileName ) const
 {
    Object::save( fileName );

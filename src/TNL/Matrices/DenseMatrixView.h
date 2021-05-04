@@ -871,6 +871,42 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       DenseMatrixView& operator=( const DenseMatrixView& matrix );
 
       /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix view.
+       * \return \e true if the RHS matrix view is equal, \e false otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e false if the RHS matrix view is equal, \e true otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
+
+      /**
        * \brief Method for saving the matrix view to the file with given filename.
        *
        * The ouput file can be loaded by \ref DenseMatrix.
