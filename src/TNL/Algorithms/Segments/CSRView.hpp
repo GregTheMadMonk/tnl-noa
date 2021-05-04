@@ -46,8 +46,8 @@ template< typename Device,
           typename Kernel >
 __cuda_callable__
 CSRView< Device, Index, Kernel >::
-CSRView( const OffsetsView&& offsets_view,
-         const KernelView&& kernel_view )
+CSRView( OffsetsView&& offsets_view,
+         KernelView&& kernel_view )
    : offsets( std::move( offsets_view ) ), kernel( std::move( kernel_view ) )
 {
 }
@@ -67,7 +67,7 @@ template< typename Device,
           typename Kernel >
 __cuda_callable__
 CSRView< Device, Index, Kernel >::
-CSRView( const CSRView&& csr_view )
+CSRView( CSRView&& csr_view )
    : offsets( std::move( csr_view.offsets ) ), kernel( std::move( csr_view.kernel ) )
 {
 }
