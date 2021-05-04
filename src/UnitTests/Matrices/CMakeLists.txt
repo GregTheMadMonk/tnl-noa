@@ -30,6 +30,7 @@ set( COMMON_TESTS
             LambdaMatrixTest
             SparseMatrixTest_SandboxMatrix
             SparseMatrixVectorProductTest_SandboxMatrix
+            MatrixWrappingTest
 )
 
 set( CPP_TESTS

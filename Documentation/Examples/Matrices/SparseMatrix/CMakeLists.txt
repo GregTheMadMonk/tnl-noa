@@ -30,6 +30,8 @@ set( COMMON_EXAMPLES
    SparseMatrixViewExample_forElements
    SparseMatrixViewExample_forRows
    SparseMatrixViewExample_forAllElements
+   SparseMatrixViewExample_wrapCSR
+   SparseMatrixViewExample_wrapEllpack
 )
 
 if( BUILD_CUDA )
