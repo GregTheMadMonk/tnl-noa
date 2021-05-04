@@ -18,10 +18,9 @@ namespace Matrices {
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 SparseMatrixRowView( const SegmentViewType& segmentView,
                      const ValuesViewType& values,
                      const ColumnsIndexesViewType& columnIndexes )
@@ -31,10 +30,9 @@ SparseMatrixRowView( const SegmentViewType& segmentView,
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getSize() const -> IndexType
 {
    return segmentView.getSize();
@@ -42,11 +40,10 @@ getSize() const -> IndexType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__
 auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getRowIndex() const -> const IndexType&
 {
    return segmentView.getSegmentIndex();
@@ -54,10 +51,9 @@ getRowIndex() const -> const IndexType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -66,10 +62,9 @@ getColumnIndex( const IndexType localIdx ) const -> const IndexType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getColumnIndex( const IndexType localIdx ) -> IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -78,14 +73,12 @@ getColumnIndex( const IndexType localIdx ) -> IndexType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstResultType
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
-   //TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
    return ValueGetterType::getValue( segmentView.getGlobalIndex( localIdx ),
                                      values,
                                      columnIndexes,
@@ -94,14 +87,12 @@ getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstRes
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
-   //TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
    return ValueGetterType::getValue( segmentView.getGlobalIndex( localIdx ),
                                      values,
                                      columnIndexes,
@@ -110,10 +101,9 @@ getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ void
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 setValue( const IndexType localIdx,
           const RealType& value )
 {
@@ -126,10 +116,9 @@ setValue( const IndexType localIdx,
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ void
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 setColumnIndex( const IndexType localIdx,
                 const IndexType& columnIndex )
 {
@@ -140,10 +129,9 @@ setColumnIndex( const IndexType localIdx,
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ void
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 setElement( const IndexType localIdx,
             const IndexType column,
             const RealType& value )
@@ -157,22 +145,20 @@ setElement( const IndexType localIdx,
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
    template< typename _SegmentView,
              typename _ValuesView,
-             typename _ColumnsIndexesView,
-             bool _isBinary >
+             typename _ColumnsIndexesView >
 __cuda_callable__
 bool
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
-operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView >& other ) const
 {
    IndexType i = 0;
    while( i < getSize() && i < other.getSize() ) {
       if( getColumnIndex( i ) != other.getColumnIndex( i ) )
          return false;
-      if( ! _isBinary && getValue( i ) != other.getValue( i ) )
+      if( ! isBinary() && getValue( i ) != other.getValue( i ) )
          return false;
       ++i;
    }
@@ -189,10 +175,9 @@ operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexe
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 begin() -> IteratorType
 {
    return IteratorType( *this, 0 );
@@ -200,10 +185,9 @@ begin() -> IteratorType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 end() -> IteratorType
 {
    return IteratorType( *this, this->getSize() );
@@ -211,10 +195,9 @@ end() -> IteratorType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 cbegin() const -> const IteratorType
 {
    return IteratorType( *this, 0 );
@@ -222,10 +205,9 @@ cbegin() const -> const IteratorType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 cend() const -> const IteratorType
 {
    return IteratorType( *this, this->getSize() );
@@ -233,13 +215,12 @@ cend() const -> const IteratorType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
-std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row )
+          typename ColumnsIndexesView >
+std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >& row )
 {
-   using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::IndexType >;
+   using NonConstIndex = std::remove_const_t< typename SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::IndexType >;
    for( NonConstIndex i = 0; i < row.getSize(); i++ )
-      if( isBinary_ )
+      if( row.isBinary() )
          // TODO: check getPaddingIndex(), print only the column indices of non-zeros but not the values
          str << " [ " << row.getColumnIndex( i ) << " ] = " << (row.getColumnIndex( i ) >= 0) << ", ";
       else

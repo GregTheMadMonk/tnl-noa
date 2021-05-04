@@ -136,12 +136,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Type for accessing matrix rows.
        */
-      using RowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
+      using RowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ValuesViewType, ColumnsIndexesViewType >;
 
       /**
        * \brief Type for accessing constant matrix rows.
        */
-      using ConstRowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary() >;;
+      using ConstRowView = SparseMatrixRowView< typename SegmentsViewType::SegmentViewType, ConstValuesViewType, ConstColumnsIndexesViewType >;;
 
       /**
        * \brief Helper type for getting self type or its modifications.

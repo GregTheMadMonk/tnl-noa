@@ -20,13 +20,15 @@ namespace TNL {
 template< typename SegmentView,
           typename ValuesView,
           typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename Real = std::remove_const_t<typename ValuesView::RealType >,
+          bool isBinary_ = std::is_same< std::remove_const_t<typename ValuesView::RealType >, bool >::value >
 struct SparseMatrixRowViewValueGetter {};
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
-struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, true >
+          typename ColumnsIndexesView,
+          typename Real >
+struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, Real, true >
 {
    using RealType = typename ValuesView::RealType;
 
@@ -47,8 +49,9 @@ struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesVi
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
-struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, false >
+          typename ColumnsIndexesView,
+          typename Real >
+struct SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, Real, false >
 {
    using RealType = typename ValuesView::RealType;
 

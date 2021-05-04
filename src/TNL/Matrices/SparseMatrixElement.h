@@ -25,11 +25,17 @@ namespace Matrices {
  * \tparam Index is a type of matrix elements column indexes.
  */
 template< typename Real,
-          typename Index,
-          bool isBinary_ = false >
+          typename Index >
 class SparseMatrixElement
 {
    public:
+
+      /**
+       * \brief Test of binary matrix type.
+       *
+       * \return \e true if the matrix is stored as binary and \e false otherwise.
+       */
+      static constexpr bool isBinary() { return std::is_same< std::remove_const_t< Real >, bool >::value; };
 
       /**
        * \brief Type of matrix elements values.
