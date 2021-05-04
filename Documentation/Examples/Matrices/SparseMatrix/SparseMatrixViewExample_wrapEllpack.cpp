@@ -26,7 +26,7 @@ void wrapMatrixView()
    /***
     * Wrap the arrays `values` and `columnIndexes` to sparse matrix view
     */
-   auto matrix = TNL::Matrices::wrapEllpackMatrix< Device >( rows, columns, 2, values, columnIndexes );
+   auto matrix = TNL::Matrices::wrapEllpackMatrix< Device, TNL::Algorithms::Segments::RowMajorOrder >( rows, columns, 2, values, columnIndexes );
 
    std::cout << "Matrix reads as: " << std::endl << matrix << std::endl;
 }

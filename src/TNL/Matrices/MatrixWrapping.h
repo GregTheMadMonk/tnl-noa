@@ -94,9 +94,9 @@ wrapCSRMatrix( const Index& rows, const Index& columns, Index* rowPointers, Real
 /// This is to prevent from appearing in Doxygen documentation.
 /// \cond HIDDEN_CLASS
 template< typename Device,
+          ElementsOrganization Organization,
           typename Real,
           typename Index,
-          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int Alignment = 1 >
 struct EllpackMatrixWrapper
 {
@@ -140,15 +140,15 @@ struct EllpackMatrixWrapper
  * \include SparseMatrixViewExample_wrapEllpack.out
  */
 template< typename Device,
+          ElementsOrganization Organization,
           typename Real,
           typename Index,
-          ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization< Device >::getOrganization(),
           int Alignment = 1 >
 auto
 wrapEllpackMatrix( const Index rows, const Index columns, const Index nonzerosPerRow, Real* values, Index* columnIndexes )
--> decltype( EllpackMatrixWrapper< Device, Real, Index, Organization, Alignment >::wrap( rows, columns, nonzerosPerRow, values, columnIndexes ) )
+-> decltype( EllpackMatrixWrapper< Device, Organization, Real, Index, Alignment >::wrap( rows, columns, nonzerosPerRow, values, columnIndexes ) )
 {
-   return EllpackMatrixWrapper< Device, Real, Index, Organization, Alignment >::wrap( rows, columns, nonzerosPerRow, values, columnIndexes );
+   return EllpackMatrixWrapper< Device, Organization, Real, Index, Alignment >::wrap( rows, columns, nonzerosPerRow, values, columnIndexes );
 }
 
    } //namespace Matrices

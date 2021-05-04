@@ -165,7 +165,7 @@ getConstView() const -> ConstViewType
                          this->getColumns(),
                          this->getValues().getConstView(),
                          this->columnIndexes.getConstView(),
-                         this->segments.getConstView() );
+                         const_cast< SparseMatrix* >( this )->segments.getView() );
 }
 
 template< typename Real,

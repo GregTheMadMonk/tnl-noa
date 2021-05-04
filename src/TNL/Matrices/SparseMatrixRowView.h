@@ -14,6 +14,7 @@
 
 #include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Matrices/MatrixRowViewIterator.h>
+#include <TNL/Matrices/details/SparseMatrixRowViewValueGetter.h>
 
 namespace TNL {
 namespace Matrices {
@@ -101,6 +102,8 @@ class SparseMatrixRowView
        */
       using IteratorType = MatrixRowViewIterator< RowView >;
 
+      using ValueGetterType = details::SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >;
+
       /**
        * \brief Tells whether the parent matrix is a binary matrix.
        * @return `true` if the matrix is binary.
@@ -163,7 +166,7 @@ class SparseMatrixRowView
        * \return constant reference to the matrix element value.
        */
       __cuda_callable__
-      const RealType& getValue( const IndexType localIdx ) const;
+      auto getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstResultType;
 
       /**
        * \brief Returns non-constants reference to value of an element with given rank in the row.
@@ -173,7 +176,7 @@ class SparseMatrixRowView
        * \return non-constant reference to the matrix element value.
        */
       __cuda_callable__
-      RealType& getValue( const IndexType localIdx );
+      auto getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType;
 
       /**
        * \brief Sets a value of matrix element with given rank in the matrix row.
@@ -253,6 +256,9 @@ class SparseMatrixRowView
        */
       __cuda_callable__
       const IteratorType cend() const;
+
+      __cuda_callable__
+      IndexType getPaddingIndex() const { return -1; };
 
    protected:
 

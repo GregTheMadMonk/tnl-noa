@@ -77,7 +77,7 @@ TYPED_TEST( MatrixTest, WrapMatrix )
    using DeviceType  = typename DenseMatrix::DeviceType;
    using IndexType  = typename DenseMatrix::IndexType;
    using CSRMatrix = TNL::Matrices::SparseMatrix< RealType, DeviceType, IndexType,  TNL::Matrices::GeneralMatrix, TNL::Algorithms::Segments::CSRScalar >;
-   using EllpackMatrix = TNL::Matrices::SparseMatrix< RealType, DeviceType, IndexType,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >;
+   using EllpackMatrix = TNL::Matrices::SparseMatrix< RealType, DeviceType, IndexType, TNL::Matrices::GeneralMatrix, RowMajorEllpack >;
 
    DenseMatrix denseMatrix{
     { 1,  2,  0,  0 },
@@ -100,7 +100,7 @@ TYPED_TEST( MatrixTest, WrapMatrix )
 
    auto wrappedDenseMatrix   = TNL::Matrices::wrapDenseMatrix< DeviceType >( rows, columns, denseMatrixValues );
    auto wrappedCSRMatrix     = TNL::Matrices::wrapCSRMatrix< DeviceType >( rows, columns, csrMatrixRowPointers, csrMatrixValues, csrMatrixColumnIndexes );
-   auto wrappedEllpackMatrix = TNL::Matrices::wrapEllpackMatrix< DeviceType >( rows, columns, ( IndexType ) 2, ellpackMatrixValues, ellpackMatrixColumnIndexes );
+   auto wrappedEllpackMatrix = TNL::Matrices::wrapEllpackMatrix< DeviceType, TNL::Algorithms::Segments::RowMajorOrder >( rows, columns, ( IndexType ) 2, ellpackMatrixValues, ellpackMatrixColumnIndexes );
 
    EXPECT_EQ( denseMatrix, wrappedDenseMatrix );
    EXPECT_EQ( csrMatrix, wrappedCSRMatrix );

@@ -82,11 +82,14 @@ template< typename SegmentView,
           bool isBinary_ >
 __cuda_callable__ auto
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
-getValue( const IndexType localIdx ) const -> const RealType&
+getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstResultType
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
-   TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
-   return values[ segmentView.getGlobalIndex( localIdx ) ];
+   //TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
+   return ValueGetterType::getValue( segmentView.getGlobalIndex( localIdx ),
+                                     values,
+                                     columnIndexes,
+                                     this->getPaddingIndex() );
 }
 
 template< typename SegmentView,
@@ -95,11 +98,14 @@ template< typename SegmentView,
           bool isBinary_ >
 __cuda_callable__ auto
 SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
-getValue( const IndexType localIdx ) -> RealType&
+getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
-   TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
-   return values[ segmentView.getGlobalIndex( localIdx ) ];
+   //TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
+   return ValueGetterType::getValue( segmentView.getGlobalIndex( localIdx ),
+                                     values,
+                                     columnIndexes,
+                                     this->getPaddingIndex() );
 }
 
 template< typename SegmentView,

@@ -677,7 +677,7 @@ Wrapping data corresponding with the Ellpack format is very similar as we can se
 
 \includelineno SparseMatrixViewExample_wrapEllpack.cpp
 
-We encode the same sparse matrix as in the previous example. The essence of the Ellpack format is that we allocate the same number of matrix elements for each row which is two in our example. For some matrix rows we use the padding zeros for which we set the column index to -1 (line 21). Therefore the size of `valuesVector` and `columnIndexesVector` equals number of matrix rows times number of matrix elements allocated in each row. As before, we turn the vectors into C style pointers (lines 23-24) and wrap them into sparse matrix view with Ellpack format (line 29). Note that we must state the device on which the arrays are allocated explicitly. The result looks as follows:
+We encode the same sparse matrix as in the previous example. The essence of the Ellpack format is that we allocate the same number of matrix elements for each row which is two in our example. For some matrix rows we use the padding zeros for which we set the column index to -1 (line 21). Therefore the size of `valuesVector` and `columnIndexesVector` equals number of matrix rows times number of matrix elements allocated in each row. As before, we turn the vectors into C style pointers (lines 23-24) and wrap them into sparse matrix view with Ellpack format (line 29). Note that we must state the device on which the arrays are allocated explicitly and also the matrix elements organization, which is \ref TNL::Algorithms::Segments::RowMajorOrder in this case. For Ellpack matrix stored on GPU, \ref TNL::Algorithms::Segments::ColumnMajorOrder is preferred. The result looks as follows:
 
 \include SparseMatrixViewExample_wrapEllpack.out
 
