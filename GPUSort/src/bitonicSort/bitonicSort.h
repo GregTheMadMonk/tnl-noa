@@ -487,8 +487,8 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
     int threadsNeeded = size / 2 + (size % 2 != 0);
 
     const int maxThreadsPerBlock = 512;
-    int threadPerBlock = maxThreadsPerBlock;
-    int blocks = threadsNeeded / threadPerBlock + (threadsNeeded % threadPerBlock != 0);
+    int threadsPerBlock = maxThreadsPerBlock;
+    int blocks = threadsNeeded / threadsPerBlock + (threadsNeeded % threadsPerBlock != 0);
 
     auto fetchWithOffset =
         [=] __cuda_callable__(int i) {
@@ -504,7 +504,7 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
     {
         for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
         {
-            bitonicMergeGlobal<<<blocks, threadPerBlock>>>(
+            bitonicMergeGlobal<<<blocks, threadsPerBlock>>>(
                 size, fetchWithOffset, Cmp, swapWithOffset,
                 monotonicSeqLen, len);
         }
