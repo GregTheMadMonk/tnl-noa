@@ -25,6 +25,10 @@ endif
 # CUDA compiler flags
 CUDA_CXXFLAGS := -std=c++14 --expt-relaxed-constexpr --expt-extended-lambda $(TNL_INCLUDE_DIRS)
 CUDA_CXXFLAGS += -DHAVE_CUDA
+ifeq ($(WITH_DEBUG), no)
+    CUDA_CXXFLAGS += -O3 -DNDEBUG
+endif
+
 ifeq ($(CUDA_ARCH),auto)
     CUDA_CXXFLAGS += $(shell tnl-cuda-arch)
 else

@@ -13,9 +13,9 @@ static __device__ __forceinline__ unsigned int __btflo(unsigned int word)
     return ret;
 }
 
-__device__ int closestPow2_ptx(int len)
+__device__ int closestPow2_ptx(int bitonicLen)
 {
-    return 1 << (__btflo((unsigned)len - 1U) + 1);
+    return 1 << (__btflo((unsigned)bitonicLen - 1U) + 1);
 }
 
 __host__ __device__ int closestPow2(int x)
@@ -46,19 +46,19 @@ __host__ __device__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &
 template <typename Value, typename CMP>
 __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                                    CMP Cmp,
-                                   int monotonicSeqLen, int len)
+                                   int monotonicSeqLen, int bitonicLen)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
-    int part = i / (len / 2); //computes which sorting block this thread belongs to
+    int part = i / (bitonicLen / 2); //computes which sorting block this thread belongs to
 
     //the index of 2 elements that should be compared and swapped
-    int s = part * len + (i & ((len / 2) - 1));
-    int e = s + len / 2;
+    int s = part * bitonicLen + (i & ((bitonicLen / 2) - 1));
+    int e = s + bitonicLen / 2;
     if (e >= arr.getSize()) //arr[e] is virtual padding and will not be exchanged with
         return;
 
-    int partsInSeq = monotonicSeqLen / len;
+    int partsInSeq = monotonicSeqLen / bitonicLen;
     //calculate the direction of swapping
     int monotonicSeqIdx = part / partsInSeq;
     bool ascending = (monotonicSeqIdx & 1) != 0;
@@ -79,7 +79,7 @@ __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Device
 template <typename Value, typename CMP>
 __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                                          CMP Cmp,
-                                         int monotonicSeqLen, int len, int partsInSeq)
+                                         int monotonicSeqLen, int bitonicLen, int partsInSeq)
 {
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
@@ -100,7 +100,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
     {
         //calculate the direction of swapping
         int i = blockIdx.x * blockDim.x + threadIdx.x;
-        int part = i / (len / 2);
+        int part = i / (bitonicLen / 2);
         int monotonicSeqIdx = part / partsInSeq;
 
         bool ascending = (monotonicSeqIdx & 1) != 0;
@@ -110,12 +110,12 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
         //------------------------------------------
 
         //do bitonic merge
-        for (; len > 1; len /= 2)
+        for (; bitonicLen > 1; bitonicLen /= 2)
         {
             //calculates which 2 indexes will be compared and swap
-            int part = threadIdx.x / (len / 2);
-            int s = part * len + (threadIdx.x & ((len / 2) - 1));
-            int e = s + len / 2;
+            int part = threadIdx.x / (bitonicLen / 2);
+            int s = part * bitonicLen + (threadIdx.x & ((bitonicLen / 2) - 1));
+            int e = s + bitonicLen / 2;
 
             if (e < myBlockEnd - myBlockStart) //not touching virtual padding
                 cmpSwap(sharedMem[s], sharedMem[e], ascending, Cmp);
@@ -139,7 +139,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
 template <typename Value, typename CMP>
 __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                              CMP Cmp,
-                             int monotonicSeqLen, int len, int partsInSeq)
+                             int monotonicSeqLen, int bitonicLen, int partsInSeq)
 {
     //1st index and last index of subarray that this threadBlock should merge
     int myBlockStart = blockIdx.x * (2 * blockDim.x);
@@ -149,7 +149,7 @@ __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cud
 
     //calculate the direction of swapping
     int i = blockIdx.x * blockDim.x + threadIdx.x;
-    int part = i / (len / 2);
+    int part = i / (bitonicLen / 2);
     int monotonicSeqIdx = part / partsInSeq;
 
     bool ascending = (monotonicSeqIdx & 1) != 0;
@@ -159,12 +159,12 @@ __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cud
     //------------------------------------------
 
     //do bitonic merge
-    for (; len > 1; len /= 2)
+    for (; bitonicLen > 1; bitonicLen /= 2)
     {
         //calculates which 2 indexes will be compared and swap
-        int part = threadIdx.x / (len / 2);
-        int s = part * len + (threadIdx.x & ((len / 2) - 1));
-        int e = s + len / 2;
+        int part = threadIdx.x / (bitonicLen / 2);
+        int s = part * bitonicLen + (threadIdx.x & ((bitonicLen / 2) - 1));
+        int e = s + bitonicLen / 2;
 
         if (e < myBlockEnd - myBlockStart) //not touching virtual padding
             cmpSwap(src[s], src[e], ascending, Cmp);
@@ -198,14 +198,14 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
 
         for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
         {
-            for (int len = monotonicSeqLen; len > 1; len /= 2)
+            for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
             {
                 for (int i = threadIdx.x;; i += blockDim.x) //simulates other blocks in case src.size > blockDim.x*2
                 {
                     //calculates which 2 indexes will be compared and swap
-                    int part = i / (len / 2);
-                    int s = part * len + (i & ((len / 2) - 1));
-                    int e = s + len / 2;
+                    int part = i / (bitonicLen / 2);
+                    int s = part * bitonicLen + (i & ((bitonicLen / 2) - 1));
+                    int e = s + bitonicLen / 2;
 
                     if (e >= src.getSize()) //touching virtual padding, the order dont swap
                         break;
@@ -246,14 +246,14 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int len = monotonicSeqLen; len > 1; len /= 2)
+        for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
         {
             for (int i = threadIdx.x;; i += blockDim.x) //simulates other blocks in case src.size > blockDim.x*2
             {
                 //calculates which 2 indexes will be compared and swap
-                int part = i / (len / 2);
-                int s = part * len + (i & ((len / 2) - 1));
-                int e = s + len / 2;
+                int part = i / (bitonicLen / 2);
+                int s = part * bitonicLen + (i & ((bitonicLen / 2) - 1));
+                int e = s + bitonicLen / 2;
 
                 if (e >= src.getSize())
                     break;
@@ -318,24 +318,24 @@ void bitonicSortWithShared(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda>
     int paddedSize = closestPow2(view.getSize());
 
     bitoniSort1stStepSharedMemory<<<gridDim, blockDim, sharedMemSize>>>(view, Cmp);
-    //now alternating monotonic sequences with lenght of sharedMemLen
+    //now alternating monotonic sequences with bitonicLenght of sharedMemLen
 
-    // \/ has length of 2 * sharedMemLen
+    // \/ has bitonicLength of 2 * sharedMemLen
     for (int monotonicSeqLen = 2 * sharedMemLen; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
         {
-            if (len > sharedMemLen)
+            if (bitonicLen > sharedMemLen)
             {
                 bitonicMergeGlobal<<<gridDim, blockDim>>>(
-                    view, Cmp, monotonicSeqLen, len);
+                    view, Cmp, monotonicSeqLen, bitonicLen);
             }
             else
             {
                 bitonicMergeSharedMemory<<<gridDim, blockDim, sharedMemSize>>>(
-                    view, Cmp, monotonicSeqLen, len, partsInSeq);
+                    view, Cmp, monotonicSeqLen, bitonicLen, partsInSeq);
 
-                //simulates sorts until len == 2 already, no need to continue this loop
+                //simulates sorts until bitonicLen == 2 already, no need to continue this loop
                 break;
             }
         }
@@ -355,9 +355,9 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> view,
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
         {
-            bitonicMergeGlobal<<<gridDim, blockDim>>>(view, Cmp, monotonicSeqLen, len);
+            bitonicMergeGlobal<<<gridDim, blockDim>>>(view, Cmp, monotonicSeqLen, bitonicLen);
         }
     }
     cudaDeviceSynchronize();
@@ -455,20 +455,20 @@ void bitonicSort(std::vector<Value> &vec)
 
 template <typename FETCH, typename CMP, typename SWAP>
 __global__ void bitonicMergeGlobal(int size, FETCH Fetch, CMP Cmp, SWAP Swap,
-                                   int monotonicSeqLen, int len)
+                                   int monotonicSeqLen, int bitonicLen)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
 
-    int part = i / (len / 2); //computes which sorting block this thread belongs to
+    int part = i / (bitonicLen / 2); //computes which sorting block this thread belongs to
 
     //the index of 2 elements that should be compared and swapped
-    int s = part * len + (i & ((len / 2) - 1));
-    int e = s + len / 2;
+    int s = part * bitonicLen + (i & ((bitonicLen / 2) - 1));
+    int e = s + bitonicLen / 2;
     if (e >= size) //arr[e] is virtual padding and will not be exchanged with
         return;
 
     //calculate the direction of swapping
-    int partsInSeq = monotonicSeqLen / len;
+    int partsInSeq = monotonicSeqLen / bitonicLen;
     int monotonicSeqIdx = part / partsInSeq;
     bool ascending = (monotonicSeqIdx & 1) != 0;
     if ((monotonicSeqIdx + 1) * monotonicSeqLen >= size) //special case for part with no "partner" to be merged with in next phase
@@ -502,11 +502,11 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int len = monotonicSeqLen, partsInSeq = 1; len > 1; len /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
         {
             bitonicMergeGlobal<<<blocks, threadsPerBlock>>>(
                 size, fetchWithOffset, Cmp, swapWithOffset,
-                monotonicSeqLen, len);
+                monotonicSeqLen, bitonicLen);
         }
     }
     cudaDeviceSynchronize();
