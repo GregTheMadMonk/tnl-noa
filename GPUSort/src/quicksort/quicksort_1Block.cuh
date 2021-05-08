@@ -31,27 +31,27 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
                           int stackDepth[], int &stackTop,
                           int begin, int pivotBegin,
                           int pivotEnd, int end,
-                          int depth);
+                          int iteration);
 
 //---------------------------------------------------------------
 
 template <typename Value, typename CMP, int stackSize, bool useShared>
 __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
                                      ArrayView<Value, TNL::Devices::Cuda> aux,
-                                     const CMP &Cmp, int _depth,
+                                     const CMP &Cmp, int _iteration,
                                      Value *sharedMem, int memSize,
                                      int maxBitonicSize)
 {
     if (arr.getSize() <= maxBitonicSize)
     {
-        auto &src = (_depth & 1) == 0 ? arr : aux;
+        auto &src = (_iteration & 1) == 0 ? arr : aux;
         if (useShared && arr.getSize() <= memSize)
             externSort<Value, CMP>(src, arr, Cmp, sharedMem);
         else
         {
             externSort<Value, CMP>(src, Cmp);
             //extern sort without shared memory only works in-place, need to copy into from aux
-            if ((_depth & 1) != 0)
+            if ((_iteration & 1) != 0)
                 for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
                     arr[i] = src[i];
         }
@@ -61,7 +61,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
 
     static __shared__ int stackTop;
     static __shared__ int stackArrBegin[stackSize], stackArrEnd[stackSize], stackDepth[stackSize];
-    static __shared__ int begin, end, depth;
+    static __shared__ int begin, end, iteration;
     static __shared__ int pivotBegin, pivotEnd;
     Value *piv = sharedMem;
     sharedMem += 1;
@@ -71,7 +71,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         stackTop = 0;
         stackArrBegin[stackTop] = 0;
         stackArrEnd[stackTop] = arr.getSize();
-        stackDepth[stackTop] = _depth;
+        stackDepth[stackTop] = _iteration;
         stackTop++;
     }
     __syncthreads();
@@ -83,13 +83,13 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
         {
             begin = stackArrBegin[stackTop - 1];
             end = stackArrEnd[stackTop - 1];
-            depth = stackDepth[stackTop - 1];
+            iteration = stackDepth[stackTop - 1];
             stackTop--;
         }
         __syncthreads();
 
         int size = end - begin;
-        auto &src = (depth & 1) == 0 ? arr : aux;
+        auto &src = (iteration & 1) == 0 ? arr : aux;
 
         //small enough for for bitonic
         if (size <= maxBitonicSize)
@@ -100,7 +100,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
             {
                 externSort<Value, CMP>(src.getView(begin, end), Cmp);
                 //extern sort without shared memory only works in-place, need to copy into from aux
-                if ((depth & 1) != 0)
+                if ((iteration & 1) != 0)
                     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
                         arr[begin + i] = src[i];
             }
@@ -134,7 +134,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
          * move elements, either use shared mem for coalesced access or without shared mem if data is too big
          * */
 
-        auto &dst = (depth & 1) == 0 ? aux : arr;
+        auto &dst = (iteration & 1) == 0 ? aux : arr;
 
         if (useShared && size <= memSize)
         {
@@ -172,7 +172,7 @@ __device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
             stackPush<stackSize>(stackArrBegin, stackArrEnd, stackDepth, stackTop,
                                  begin, begin + pivotBegin,
                                  begin + pivotEnd, end,
-                                 depth);
+                                 iteration);
         }
         __syncthreads(); //sync to update stackTop
     }                    //ends while loop
@@ -185,7 +185,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
                           int stackDepth[], int &stackTop,
                           int begin, int pivotBegin,
                           int pivotEnd, int end,
-                          int depth)
+                          int iteration)
 {
     int sizeL = pivotBegin - begin, sizeR = end - pivotEnd;
 
@@ -197,7 +197,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
         {
             stackArrBegin[stackTop] = begin;
             stackArrEnd[stackTop] = pivotBegin;
-            stackDepth[stackTop] = depth + 1;
+            stackDepth[stackTop] = iteration + 1;
             stackTop++;
         }
 
@@ -207,7 +207,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 
             stackArrBegin[stackTop] = pivotEnd;
             stackArrEnd[stackTop] = end;
-            stackDepth[stackTop] = depth + 1;
+            stackDepth[stackTop] = iteration + 1;
             stackTop++;
         }
     }
@@ -217,7 +217,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
         {
             stackArrBegin[stackTop] = pivotEnd;
             stackArrEnd[stackTop] = end;
-            stackDepth[stackTop] = depth + 1;
+            stackDepth[stackTop] = iteration + 1;
             stackTop++;
         }
 
@@ -227,7 +227,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 
             stackArrBegin[stackTop] = begin;
             stackArrEnd[stackTop] = pivotBegin;
-            stackDepth[stackTop] = depth + 1;
+            stackDepth[stackTop] = iteration + 1;
             stackTop++;
         }
     }

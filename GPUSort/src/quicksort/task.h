@@ -7,15 +7,15 @@ struct TASK
     //-----------------------------------------------
     //helper variables for blocks working on this task
 
-    int depth;
+    int iteration;
     int pivotIdx;
     int dstBegin, dstEnd;
     int firstBlock, blockCount;//for workers read only values
 
     __cuda_callable__
-    TASK(int begin, int end, int depth)
+    TASK(int begin, int end, int iteration)
         : partitionBegin(begin), partitionEnd(end),
-        depth(depth), pivotIdx(-1),
+        iteration(iteration), pivotIdx(-1),
         dstBegin(-151561), dstEnd(-151561),
         firstBlock(-100), blockCount(-100)
         {}
@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream & out, const TASK & task)
 {
     out << "[ ";
     out << task.partitionBegin << " - " << task.partitionEnd;
-    out << " | " << "depth: " << task.depth;
+    out << " | " << "iteration: " << task.iteration;
     out << " | " << "pivotIdx: " << task.pivotIdx;
     return out << " ] ";
 }
