@@ -31,7 +31,7 @@ __host__ __device__ int closestPow2(int x)
 }
 
 template <typename Value, typename CMP>
-__host__ __device__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &Cmp)
+__cuda_callable__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &Cmp)
 {
     if (ascending == Cmp(b, a))
         TNL::swap(a, b);
@@ -79,7 +79,7 @@ __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Device
 template <typename Value, typename CMP>
 __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                                          CMP Cmp,
-                                         int monotonicSeqLen, int bitonicLen, int partsInSeq)
+                                         int monotonicSeqLen, int bitonicLen)
 {
     extern __shared__ int externMem[];
     Value *sharedMem = (Value *)externMem;
@@ -101,6 +101,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
         //calculate the direction of swapping
         int i = blockIdx.x * blockDim.x + threadIdx.x;
         int part = i / (bitonicLen / 2);
+        int partsInSeq = monotonicSeqLen / bitonicLen;
         int monotonicSeqIdx = part / partsInSeq;
 
         bool ascending = (monotonicSeqIdx & 1) != 0;
@@ -139,7 +140,7 @@ __global__ void bitonicMergeSharedMemory(TNL::Containers::ArrayView<Value, TNL::
 template <typename Value, typename CMP>
 __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
                              CMP Cmp,
-                             int monotonicSeqLen, int bitonicLen, int partsInSeq)
+                             int monotonicSeqLen, int bitonicLen)
 {
     //1st index and last index of subarray that this threadBlock should merge
     int myBlockStart = blockIdx.x * (2 * blockDim.x);
@@ -150,6 +151,7 @@ __global__ void bitonicMerge(TNL::Containers::ArrayView<Value, TNL::Devices::Cud
     //calculate the direction of swapping
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int part = i / (bitonicLen / 2);
+    int partsInSeq = monotonicSeqLen / bitonicLen;
     int monotonicSeqIdx = part / partsInSeq;
 
     bool ascending = (monotonicSeqIdx & 1) != 0;
@@ -323,7 +325,7 @@ void bitonicSortWithShared(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda>
     // \/ has bitonicLength of 2 * sharedMemLen
     for (int monotonicSeqLen = 2 * sharedMemLen; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
         {
             if (bitonicLen > sharedMemLen)
             {
@@ -333,7 +335,7 @@ void bitonicSortWithShared(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda>
             else
             {
                 bitonicMergeSharedMemory<<<gridDim, blockDim, sharedMemSize>>>(
-                    view, Cmp, monotonicSeqLen, bitonicLen, partsInSeq);
+                    view, Cmp, monotonicSeqLen, bitonicLen);
 
                 //simulates sorts until bitonicLen == 2 already, no need to continue this loop
                 break;
@@ -355,7 +357,7 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> view,
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
         {
             bitonicMergeGlobal<<<gridDim, blockDim>>>(view, Cmp, monotonicSeqLen, bitonicLen);
         }
@@ -502,7 +504,7 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
     {
-        for (int bitonicLen = monotonicSeqLen, partsInSeq = 1; bitonicLen > 1; bitonicLen /= 2, partsInSeq *= 2)
+        for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
         {
             bitonicMergeGlobal<<<blocks, threadsPerBlock>>>(
                 size, fetchWithOffset, Cmp, swapWithOffset,
