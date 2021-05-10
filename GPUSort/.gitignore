@@ -3,3 +3,4 @@ backup
 *.csv
 *.o
 *.cuo
+*.ipynb
