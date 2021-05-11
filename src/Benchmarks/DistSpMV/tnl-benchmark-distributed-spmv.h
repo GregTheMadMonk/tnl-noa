@@ -42,7 +42,7 @@ using namespace TNL::Benchmarks;
 
 template< typename Matrix, typename Vector >
 void
-benchmarkSpmv( Benchmark& benchmark,
+benchmarkSpmv( Benchmark<>& benchmark,
                const Matrix& matrix,
                const Vector& x,
                const char* performer = "CPU" )
@@ -65,7 +65,7 @@ benchmarkSpmv( Benchmark& benchmark,
 
 template< typename Matrix, typename Vector >
 void
-benchmarkSpmvCuda( Benchmark& benchmark,
+benchmarkSpmvCuda( Benchmark<>& benchmark,
                    const Matrix& matrix,
                    const Vector& x )
 {
@@ -91,7 +91,7 @@ benchmarkSpmvCuda( Benchmark& benchmark,
 
 template< typename Matrix, typename Vector >
 void
-benchmarkDistributedSpmv( Benchmark& benchmark,
+benchmarkDistributedSpmv( Benchmark<>& benchmark,
                           // TODO: cannot be const due to internal buffering
 //                          const Matrix& matrix,
                           Matrix& matrix,
@@ -117,7 +117,7 @@ benchmarkDistributedSpmv( Benchmark& benchmark,
 
 template< typename Matrix, typename Vector >
 void
-benchmarkDistributedSpmvCuda( Benchmark& benchmark,
+benchmarkDistributedSpmvCuda( Benchmark<>& benchmark,
                               const Matrix& matrix,
                               const Vector& x )
 {
@@ -156,8 +156,8 @@ struct SpmvBenchmark
    using DistributedRowLengths = typename DistributedMatrix::RowsCapacitiesType;
 
    static bool
-   run( Benchmark& benchmark,
-        Benchmark::MetadataMap metadata,
+   run( Benchmark<>& benchmark,
+        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
       MatrixType matrix;
@@ -172,7 +172,7 @@ struct SpmvBenchmark
       const String name = String( (TNL::MPI::GetSize() > 1) ? "DistSpMV" : "SpMV" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          // TODO: strip the device
 //         { "matrix type", matrix.getType() },
          { "rows", convertToString( matrix.getRows() ) },
@@ -205,8 +205,8 @@ struct SpmvBenchmark
    }
 
    static void
-   runNonDistributed( Benchmark& benchmark,
-                      Benchmark::MetadataMap metadata,
+   runNonDistributed( Benchmark<>& benchmark,
+                      Benchmark<>::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
                       MatrixType& matrix,
                       VectorType& vector )
@@ -218,8 +218,8 @@ struct SpmvBenchmark
    }
 
    static void
-   runDistributed( Benchmark& benchmark,
-                   Benchmark::MetadataMap metadata,
+   runDistributed( Benchmark<>& benchmark,
+                   Benchmark<>::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
                    MatrixType& matrix,
                    VectorType& vector )
@@ -334,10 +334,10 @@ main( int argc, char* argv[] )
       logFile.open( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
 
    // TODO: implement resolveMatrixType
 //   return ! Matrices::resolveMatrixType< MainConfig,

@@ -54,7 +54,7 @@ bool checkDevice( const Config::ParameterContainer& parameters )
 
 template< template<typename> class Preconditioner, typename Matrix >
 void
-benchmarkPreconditionerUpdate( Benchmark& benchmark,
+benchmarkPreconditionerUpdate( Benchmark<>& benchmark,
                                const Config::ParameterContainer& parameters,
                                const SharedPointer< Matrix >& matrix )
 {
@@ -78,7 +78,7 @@ benchmarkPreconditionerUpdate( Benchmark& benchmark,
 
 template< template<typename> class Solver, template<typename> class Preconditioner, typename Matrix, typename Vector >
 void
-benchmarkSolver( Benchmark& benchmark,
+benchmarkSolver( Benchmark<>& benchmark,
                  const Config::ParameterContainer& parameters,
                  const SharedPointer< Matrix >& matrix,
                  const Vector& x0,

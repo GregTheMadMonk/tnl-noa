@@ -81,7 +81,7 @@ void reset() {}
 // as "compile-time constants" and thus e.g. optimizing the 1D iterations with memcpy
 
 template< typename Device >
-void benchmark_1D( Benchmark& benchmark, index_type size = 500000000 )
+void benchmark_1D( Benchmark<>& benchmark, index_type size = 500000000 )
 {
    NDArray< value_type,
             SizesHolder< index_type, 0 >,
@@ -108,7 +108,7 @@ void benchmark_1D( Benchmark& benchmark, index_type size = 500000000 )
 }
 
 template< typename Device >
-void benchmark_2D( Benchmark& benchmark, index_type size = 22333 )
+void benchmark_2D( Benchmark<>& benchmark, index_type size = 22333 )
 {
    NDArray< value_type,
             SizesHolder< index_type, 0, 0 >,
@@ -135,7 +135,7 @@ void benchmark_2D( Benchmark& benchmark, index_type size = 22333 )
 }
 
 template< typename Device >
-void benchmark_3D( Benchmark& benchmark, index_type size = 800 )
+void benchmark_3D( Benchmark<>& benchmark, index_type size = 800 )
 {
    NDArray< value_type,
             SizesHolder< index_type, 0, 0, 0 >,
@@ -245,7 +245,7 @@ void benchmark_3D( Benchmark& benchmark, index_type size = 800 )
 
 
 template< typename Device >
-void benchmark_2D_perm( Benchmark& benchmark, index_type size = 22333 )
+void benchmark_2D_perm( Benchmark<>& benchmark, index_type size = 22333 )
 {
    NDArray< value_type,
             SizesHolder< index_type, 0, 0 >,
@@ -272,7 +272,7 @@ void benchmark_2D_perm( Benchmark& benchmark, index_type size = 22333 )
 }
 
 template< typename Device >
-void benchmark_3D_perm( Benchmark& benchmark, index_type size = 800 )
+void benchmark_3D_perm( Benchmark<>& benchmark, index_type size = 800 )
 {
    NDArray< value_type,
             SizesHolder< index_type, 0, 0, 0 >,
@@ -381,7 +381,7 @@ void benchmark_3D_perm( Benchmark& benchmark, index_type size = 800 )
 //}
 
 template< typename Device >
-void run_benchmarks( Benchmark& benchmark )
+void run_benchmarks( Benchmark<>& benchmark )
 {
    benchmark_1D< Device >( benchmark );
    benchmark_2D< Device >( benchmark );
@@ -443,10 +443,10 @@ int main( int argc, char* argv[] )
    std::ofstream logFile( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
 
    const String devices = parameters.getParameter< String >( "devices" );
    if( devices == "all" || devices == "host" )

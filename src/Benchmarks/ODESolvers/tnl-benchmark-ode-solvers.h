@@ -41,7 +41,7 @@ using namespace TNL::Pointers;
 
 template< typename Real, typename Index >
 void
-benchmarkODESolvers( Benchmark& benchmark,
+benchmarkODESolvers( Benchmark<>& benchmark,
                      const Config::ParameterContainer& parameters,
                      size_t dofs )
 {
@@ -51,7 +51,7 @@ benchmarkODESolvers( Benchmark& benchmark,
    using CudaVectorPointer = Pointers::SharedPointer< CudaVectorType >;
    using HostProblem = SimpleProblem< Real, Devices::Host, Index >;
    using CudaProblem = SimpleProblem< Real, Devices::Cuda, Index >;
-   using SolverMonitorType = typename Benchmark::SolverMonitorType;
+   using SolverMonitorType = typename Benchmark<>::SolverMonitorType;
 
    const auto& solvers = parameters.getList< String >( "solvers" );
    for( auto&& solver : solvers )
@@ -107,15 +107,15 @@ struct ODESolversBenchmark
    using VectorPointer = Pointers::SharedPointer< VectorType >;
 
    static bool
-   run( Benchmark& benchmark,
-        Benchmark::MetadataMap metadata,
+   run( Benchmark<>& benchmark,
+        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
       const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" );
                           //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
       for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
-         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
             // TODO: strip the device
             { "DOFs", convertToString( dofs ) },
          } ));
@@ -129,8 +129,8 @@ struct ODESolversBenchmark
    }
 
    static void
-   runDistributed( Benchmark& benchmark,
-                   Benchmark::MetadataMap metadata,
+   runDistributed( Benchmark<>& benchmark,
+                   Benchmark<>::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
                    size_t dofs )
    {
@@ -139,8 +139,8 @@ struct ODESolversBenchmark
    }
 
    static void
-   runNonDistributed( Benchmark& benchmark,
-                      Benchmark::MetadataMap metadata,
+   runNonDistributed( Benchmark<>& benchmark,
+                      Benchmark<>::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
                       size_t dofs )
    {
@@ -150,8 +150,8 @@ struct ODESolversBenchmark
 };
 
 template< typename Real >
-bool resolveIndexType( Benchmark& benchmark,
-   Benchmark::MetadataMap& metadata,
+bool resolveIndexType( Benchmark<>& benchmark,
+   Benchmark<>::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
    const String& index = parameters.getParameter< String >( "index-type" );
@@ -159,8 +159,8 @@ bool resolveIndexType( Benchmark& benchmark,
    return ODESolversBenchmark< Real, long int >::run( benchmark, metadata, parameters );
 }
 
-bool resolveRealTypes( Benchmark& benchmark,
-   Benchmark::MetadataMap& metadata,
+bool resolveRealTypes( Benchmark<>& benchmark,
+   Benchmark<>::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
@@ -245,10 +245,10 @@ main( int argc, char* argv[] )
       logFile.open( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
 
    const bool status = resolveRealTypes( benchmark, metadata, parameters );
 

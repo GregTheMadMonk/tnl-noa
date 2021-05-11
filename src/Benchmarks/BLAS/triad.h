@@ -24,7 +24,7 @@ namespace Benchmarks {
 template< typename Real = double,
           typename Index = int >
 void
-benchmarkTriad( Benchmark & benchmark,
+benchmarkTriad( Benchmark<> & benchmark,
                 const long & size )
 {
    using HostAllocator = Allocators::Host< Real >;

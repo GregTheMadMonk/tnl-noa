@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Logging.h  -  description
+                          JsonLogging.h  -  description
                              -------------------
-    begin                : Dec 25, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : May 11, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -25,17 +25,17 @@
 namespace TNL {
 namespace Benchmarks {
 
-class LoggingRowElements
+class JsonLoggingRowElements
 {
    public:
 
-      LoggingRowElements()
+      JsonLoggingRowElements()
       {
          stream << std::setprecision( 6 ) << std::fixed;
       }
 
       template< typename T >
-      LoggingRowElements& operator << ( const T& b )
+      JsonLoggingRowElements& operator << ( const T& b )
       {
          stream << b;
          elements.push_back( stream.str() );
@@ -43,13 +43,13 @@ class LoggingRowElements
          return *this;
       }
 
-      LoggingRowElements& operator << ( decltype( std::setprecision( 2 ) )& setprec )
+      JsonLoggingRowElements& operator << ( decltype( std::setprecision( 2 ) )& setprec )
       {
          stream << setprec;
          return *this;
       }
 
-      LoggingRowElements& operator << ( decltype( std::fixed )& setfixed ) // the same works also for std::scientific
+      JsonLoggingRowElements& operator << ( decltype( std::fixed )& setfixed ) // the same works also for std::scientific
       {
          stream << setfixed;
          return *this;
@@ -74,7 +74,7 @@ class LoggingRowElements
       std::stringstream stream;
 };
 
-class Logging
+class JsonLogging
 {
 public:
    using MetadataElement = std::pair< const char*, String >;
@@ -84,7 +84,7 @@ public:
    using HeaderElements = std::vector< String >;
    using RowElements = LoggingRowElements;
 
-   Logging( int verbose = true )
+   JsonLogging( int verbose = true )
    : verbose(verbose)
    {}
 

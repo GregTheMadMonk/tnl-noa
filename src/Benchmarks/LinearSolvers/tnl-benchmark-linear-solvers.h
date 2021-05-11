@@ -145,7 +145,7 @@ void set_random_vector( Vector& v, typename Vector::RealType a, typename Vector:
 
 template< typename Matrix, typename Vector >
 void
-benchmarkIterativeSolvers( Benchmark& benchmark,
+benchmarkIterativeSolvers( Benchmark<>& benchmark,
                            Config::ParameterContainer parameters,
                            const SharedPointer< Matrix >& matrixPointer,
                            const Vector& x0,
@@ -337,8 +337,8 @@ struct LinearSolversBenchmark
    using DistributedRowLengths = typename DistributedMatrix::RowsCapacitiesType;
 
    static bool
-   run( Benchmark& benchmark,
-        Benchmark::MetadataMap metadata,
+   run( Benchmark<>& benchmark,
+        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
       const String file_matrix = parameters.getParameter< String >( "input-matrix" );
@@ -384,7 +384,7 @@ struct LinearSolversBenchmark
       const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed linear solvers" : "Linear solvers" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          // TODO: strip the device
 //         { "matrix type", matrixPointer->getType() },
          { "rows", convertToString( matrixPointer->getRows() ) },
@@ -422,8 +422,8 @@ struct LinearSolversBenchmark
    }
 
    static void
-   runDistributed( Benchmark& benchmark,
-                   Benchmark::MetadataMap metadata,
+   runDistributed( Benchmark<>& benchmark,
+                   Benchmark<>::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
                    const SharedPointer< MatrixType >& matrixPointer,
                    const VectorType& x0,
@@ -466,8 +466,8 @@ struct LinearSolversBenchmark
    }
 
    static void
-   runNonDistributed( Benchmark& benchmark,
-                      Benchmark::MetadataMap metadata,
+   runNonDistributed( Benchmark<>& benchmark,
+                      Benchmark<>::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
                       const SharedPointer< MatrixType >& matrixPointer,
                       const VectorType& x0,
@@ -614,10 +614,10 @@ main( int argc, char* argv[] )
       logFile.open( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
 
    // TODO: implement resolveMatrixType
 //   return ! Matrices::resolveMatrixType< MainConfig,

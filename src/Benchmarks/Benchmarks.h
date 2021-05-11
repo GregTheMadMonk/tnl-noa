@@ -61,19 +61,19 @@ struct BenchmarkResult
    }
 };
 
-
+template< typename Logger = Logging >
 class Benchmark
-: protected Logging
+: protected Logger
 {
 public:
-   using Logging::MetadataElement;
-   using Logging::MetadataMap;
-   using Logging::MetadataColumns;
+   using typename Logger::MetadataElement;
+   using typename Logger::MetadataMap;
+   using typename Logger::MetadataColumns;
    using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
    Benchmark( int loops = 10,
               bool verbose = true )
-   : Logging(verbose), loops(loops)
+   : Logger(verbose), loops(loops)
    {}
 
    static void configSetup( Config::ConfigDescription& config )
@@ -90,7 +90,7 @@ public:
       this->reset = parameters.getParameter< bool >( "reset" );
       this->minTime = parameters.getParameter< double >( "min-time" );
       const int verbose = parameters.getParameter< int >( "verbose" );
-      Logging::setVerbose( verbose );
+      Logger::setVerbose( verbose );
    }
    // TODO: ensure that this is not called in the middle of the benchmark
    // (or just remove it completely?)
@@ -109,8 +109,8 @@ public:
    void
    newBenchmark( const String & title )
    {
-      closeTable();
-      writeTitle( title );
+      Logger::closeTable();
+      Logger::writeTitle( title );
    }
 
    // Marks the start of a new benchmark (with custom metadata)
@@ -118,13 +118,13 @@ public:
    newBenchmark( const String & title,
                  MetadataMap metadata )
    {
-      closeTable();
-      writeTitle( title );
+      Logger::closeTable();
+      Logger::writeTitle( title );
       // add loops and reset flag to metadata
       metadata["loops"] = convertToString(loops);
       metadata["reset"] = convertToString( reset );
       metadata["minimal test time"] = convertToString( minTime );
-      writeMetadata( metadata );
+      Logger::writeMetadata( metadata );
    }
 
    // Sets metadata columns -- values used for all subsequent rows until
@@ -132,9 +132,9 @@ public:
    void
    setMetadataColumns( const MetadataColumns & metadata )
    {
-      if( metadataColumns != metadata )
-         header_changed = true;
-      metadataColumns = metadata;
+      if( Logger::metadataColumns != metadata )
+         Logger::header_changed = true;
+      Logger::metadataColumns = metadata;
    }
 
    // TODO: maybe should be renamed to createVerticalGroup and ensured that vertical and horizontal groups are not used within the same "Benchmark"
@@ -149,14 +149,14 @@ public:
                  const double baseTime = 0.0 )
    {
       monitor.setStage( operation.getString() );
-      if( metadataColumns.size() > 0 && String(metadataColumns[ 0 ].first) == "operation" ) {
-         metadataColumns[ 0 ].second = operation;
+      if( Logger::metadataColumns.size() > 0 && String(Logger::metadataColumns[ 0 ].first) == "operation" ) {
+         Logger::metadataColumns[ 0 ].second = operation;
       }
       else {
-         metadataColumns.insert( metadataColumns.begin(), {"operation", operation} );
+         Logger::metadataColumns.insert( Logger::metadataColumns.begin(), {"operation", operation} );
       }
       setOperation( datasetSize, baseTime );
-      header_changed = true;
+      Logger::header_changed = true;
    }
 
    void
@@ -174,13 +174,13 @@ public:
    createHorizontalGroup( const String & name,
                           int subcolumns )
    {
-      if( horizontalGroups.size() == 0 ) {
-         horizontalGroups.push_back( {name, subcolumns} );
+      if( Logger::horizontalGroups.size() == 0 ) {
+         Logger::horizontalGroups.push_back( {name, subcolumns} );
       }
       else {
-         auto & last = horizontalGroups.back();
+         auto & last = Logger::horizontalGroups.back();
          if( last.first != name && last.second > 0 ) {
-            horizontalGroups.push_back( {name, subcolumns} );
+            Logger::horizontalGroups.push_back( {name, subcolumns} );
          }
          else {
             last.first = name;
@@ -208,19 +208,19 @@ public:
       result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
-         if( verbose > 1 ) {
+         if( Logger::verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             if( this->reset )
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
             else
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
          }
          else {
             if( this->reset )
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
             else
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
          }
          this->performedLoops = functionTimer.getPerformedLoops();
       }
@@ -233,8 +233,8 @@ public:
       if( this->baseTime == 0.0 )
          this->baseTime = result.time;
 
-      writeTableHeader( performer, result.getTableHeader() );
-      writeTableRow( performer, result.getRowElements() );
+      Logger::writeTableHeader( performer, result.getTableHeader() );
+      Logger::writeTableRow( performer, result.getRowElements() );
 
       return this->baseTime;
    }
@@ -265,13 +265,13 @@ public:
       result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
-         if( verbose > 1 ) {
+         if( Logger::verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
          }
          else {
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -283,8 +283,8 @@ public:
       if( this->baseTime == 0.0 )
          this->baseTime = result.time;
 
-      writeTableHeader( performer, result.getTableHeader() );
-      writeTableRow( performer, result.getRowElements() );
+      Logger::writeTableHeader( performer, result.getTableHeader() );
+      Logger::writeTableRow( performer, result.getRowElements() );
 
       return this->baseTime;
    }
@@ -306,7 +306,7 @@ public:
                     int numberOfComputations = 1 ) {
       // each computation has 3 subcolumns
       const int colspan = 3 * numberOfComputations;
-      writeErrorMessage( msg, colspan );
+      Logger::writeErrorMessage( msg, colspan );
       std::cerr << msg << std::endl;
    }
 
@@ -334,7 +334,8 @@ protected:
 };
 
 
-inline Benchmark::MetadataMap getHardwareMetadata()
+template< typename Logger >
+inline typename Benchmark< Logger >::MetadataMap getHardwareMetadata()
 {
    const int cpu_id = 0;
    const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
@@ -356,7 +357,7 @@ inline Benchmark::MetadataMap getHardwareMetadata()
       nproc = TNL::MPI::GetSize();
 #endif
 
-   Benchmark::MetadataMap metadata {
+   typename Benchmark< Logger >::MetadataMap metadata {
        { "host name", SystemInfo::getHostname() },
        { "architecture", SystemInfo::getArchitecture() },
        { "system", SystemInfo::getSystemName() },
