@@ -185,7 +185,7 @@ decode_block( const char* input, std::size_t input_length, std::uint8_t* output,
  * \return A pair of the decoded data length and a \ref std::unique_ptr to the
  *         decoded data.
  */
-inline std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>>
+inline std::pair< std::size_t, std::unique_ptr<std::uint8_t[]> >
 decode( const char* data, const std::size_t data_size )
 {
    const std::size_t buffer_size = std::ceil(data_size * (3.0 / 4.0));
@@ -201,13 +201,14 @@ decode( const char* data, const std::size_t data_size )
  * The encoded data is prepended with a short header, which is the base64-encoded
  * byte length of the data. The type of the byte length value is `HeaderType`.
  */
-template <typename HeaderType = std::uint64_t, typename T>
-void write_encoded_block(const T* data, const std::size_t data_length, std::ostream& output_stream)
+template< typename HeaderType = std::uint64_t, typename T >
+void
+write_encoded_block( const T* data, const std::size_t data_length, std::ostream& output_stream )
 {
    const HeaderType size = data_length * sizeof(T);
-   std::unique_ptr<char[]> encoded_size = base64::encode(reinterpret_cast<const std::uint8_t*>(&size), sizeof(HeaderType));
+   std::unique_ptr<char[]> encoded_size = base64::encode( reinterpret_cast<const std::uint8_t*>(&size), sizeof(HeaderType) );
    output_stream << encoded_size.get();
-   std::unique_ptr<char[]> encoded_data = base64::encode(reinterpret_cast<const std::uint8_t*>(data), size);
+   std::unique_ptr<char[]> encoded_data = base64::encode( reinterpret_cast<const std::uint8_t*>(data), size );
    output_stream << encoded_data.get();
 }
 
