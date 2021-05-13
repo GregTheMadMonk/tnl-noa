@@ -81,14 +81,12 @@ public:
       ghostsOffset = entitiesCount;
    }
 
-   __cuda_callable__
    typename EntityTagsArrayType::ViewType
    getEntityTagsView( DimensionTag )
    {
       return tags.getView();
    }
 
-   __cuda_callable__
    typename EntityTagsArrayType::ConstViewType
    getEntityTagsView( DimensionTag ) const
    {

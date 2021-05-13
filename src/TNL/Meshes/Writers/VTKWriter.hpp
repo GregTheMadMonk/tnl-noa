@@ -22,13 +22,13 @@ namespace Writers {
 
 namespace details {
 
-// TODO: 64-bit integers are most likely not supported in the BINARY format
+// legacy VTK files do not support 64-bit integers, even in the BINARY format
 inline void
-writeInt( VTK::FileFormat format, std::ostream& str, int value )
+writeInt( VTK::FileFormat format, std::ostream& str, std::int32_t value )
 {
    if( format == VTK::FileFormat::binary ) {
       value = forceBigEndian( value );
-      str.write( reinterpret_cast<const char*>(&value), sizeof(int) );
+      str.write( reinterpret_cast<const char*>(&value), sizeof(std::int32_t) );
    }
    else {
       str << value << " ";

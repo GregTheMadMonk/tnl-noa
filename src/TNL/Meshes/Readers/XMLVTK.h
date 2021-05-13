@@ -14,6 +14,7 @@
 
 #include <map>
 #include <set>
+#include <experimental/filesystem>
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/base64.h>
@@ -161,16 +162,25 @@ protected:
       return found;
    }
 
-   template< typename HeaderType >
-   static std::size_t
-   readBlockSize( const char* block )
+   template< typename T >
+   VariantVector
+   readAsciiBlock( const char* block ) const
    {
-      std::pair<std::size_t, std::unique_ptr<char[]>> decoded_data = decode_block( block, get_encoded_length(sizeof(HeaderType)) );
-      if( decoded_data.first != sizeof(HeaderType) )
-         throw MeshReaderError( "XMLVTK", "base64-decoding failed - mismatched data size in the binary header (read "
-                                          + std::to_string(decoded_data.first) + " bytes, expected " + std::to_string(sizeof(HeaderType)) + " bytes)" );
-      const HeaderType* blockSize = reinterpret_cast<const HeaderType*>(decoded_data.second.get());
-      return *blockSize;
+      // creating a copy of the block is rather costly, but so is ASCII parsing
+      std::stringstream ss;
+      ss << block;
+
+      std::vector<T> vector;
+      while( ss ) {
+         // since std::uint8_t is an alias to unsigned char, we need to parse
+         // bytes into a larger type, otherwise operator>> would read it as char
+         std::common_type_t< T, std::uint16_t > value;
+         ss >> value;
+         if( ss )
+            vector.push_back( value );
+      }
+
+      return vector;
    }
 
    template< typename HeaderType, typename T >
@@ -182,12 +192,26 @@ protected:
          ++block;
 
       if( compressor == "" ) {
-         const std::size_t blockSize = readBlockSize< HeaderType >( block );
-         block += get_encoded_length(sizeof(HeaderType));
-         std::pair<std::size_t, std::unique_ptr<char[]>> decoded_data = decode_block( block, get_encoded_length(blockSize) );
-         std::vector<T> vector( decoded_data.first / sizeof(T) );
+         std::size_t data_size = 0;
+         const T* data_ptr = nullptr;
+         std::pair<std::size_t, std::unique_ptr<std::uint8_t[]>> decoded_data = base64::decode( block, std::strlen(block) );
+
+         // check if block size was decoded separately (so decoding stopped after block size due to padding)
+         if( decoded_data.first == sizeof(HeaderType) ) {
+            const std::size_t header_length = base64::get_encoded_length(sizeof(HeaderType));
+            const HeaderType block_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get());
+            decoded_data = base64::decode( block + header_length, base64::get_encoded_length(block_size) );
+            data_size = decoded_data.first / sizeof(T);
+            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get());
+         }
+         else {
+            data_size = *reinterpret_cast<const HeaderType*>(decoded_data.second.get()) / sizeof(T);
+            data_ptr = reinterpret_cast<const T*>(decoded_data.second.get() + sizeof(HeaderType));
+         }
+
+         std::vector<T> vector( data_size );
          for( std::size_t i = 0; i < vector.size(); i++ )
-            vector[i] = reinterpret_cast<const T*>(decoded_data.second.get())[i];
+            vector[i] = data_ptr[i];
          return vector;
       }
       else if( compressor == "vtkZLibDataCompressor" ) {
@@ -231,8 +255,17 @@ protected:
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {
-         // TODO
-         throw MeshReaderError( "XMLVTK", "reading ASCII arrays is not implemented yet" );
+         if( type == "Int8" )          return readAsciiBlock< std::int8_t   >( block );
+         else if( type == "UInt8" )    return readAsciiBlock< std::uint8_t  >( block );
+         else if( type == "Int16" )    return readAsciiBlock< std::int16_t  >( block );
+         else if( type == "UInt16" )   return readAsciiBlock< std::uint16_t >( block );
+         else if( type == "Int32" )    return readAsciiBlock< std::int32_t  >( block );
+         else if( type == "UInt32" )   return readAsciiBlock< std::uint32_t >( block );
+         else if( type == "Int64" )    return readAsciiBlock< std::int64_t  >( block );
+         else if( type == "UInt64" )   return readAsciiBlock< std::uint64_t >( block );
+         else if( type == "Float32" )  return readAsciiBlock< float  >( block );
+         else if( type == "Float64" )  return readAsciiBlock< double >( block );
+         else throw MeshReaderError( "XMLVTK", "unsupported DataArray type: " + type );
       }
       else if( format == "binary" ) {
          if( type == "Int8" )          return readBinaryBlock< std::int8_t   >( block );
@@ -285,6 +318,12 @@ public:
    {
 #ifdef HAVE_TINYXML2
       using namespace tinyxml2;
+
+      namespace fs = std::experimental::filesystem;
+      if( ! fs::exists( fileName ) )
+         throw MeshReaderError( "XMLVTK", "file '" + fileName + "' does not exist" );
+      if( fs::is_directory( fileName ) )
+         throw MeshReaderError( "XMLVTK", "path '" + fileName + "' is a directory" );
 
       // load and verify XML
       tinyxml2::XMLError status = dom.LoadFile( fileName.c_str() );

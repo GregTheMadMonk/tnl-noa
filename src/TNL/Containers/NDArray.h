@@ -167,9 +167,6 @@ public:
    operator()( IndexTypes&&... indices )
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
-                     "storage index out of bounds - either input error or a bug in the indexer" );
       return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
    }
 
@@ -179,9 +176,6 @@ public:
    operator()( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
-                     "storage index out of bounds - either input error or a bug in the indexer" );
       return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
    }
 
@@ -294,9 +288,6 @@ public:
    getElement( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( getSizes(), OverlapsType{}, std::forward< IndexTypes >( indices )... );
-      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
-                     "storage index out of bounds - either input error or a bug in the indexer" );
       return array.getElement( getStorageIndex( std::forward< IndexTypes >( indices )... ) );
    }
 

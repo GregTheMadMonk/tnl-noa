@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <string>
 #include <cstdint>
 
@@ -115,9 +116,8 @@ inline int getEntityDimension( EntityShape shape )
       case EntityShape::Wedge:          return 3;
       case EntityShape::Pyramid:        return 3;
    }
-   // this just avoids a compiler warning in GCC and nvcc (clang actually knows if the
-   // switch above covers all cases, and print a warning only when it does not)
-   throw 1;
+   // this can actually happen when an invalid uint8_t value is converted to EntityShape
+   throw std::runtime_error( "VTK::getEntityDimension: invalid entity shape value " + std::to_string(int(shape)) );
 }
 
 // static mapping of TNL entity topologies to EntityShape

@@ -504,7 +504,7 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
 #endif
          // fall through to binary if HAVE_ZLIB is not defined
       case VTK::FileFormat::binary:
-         write_encoded_block< HeaderType >( array.getData(), array.getSize(), str );
+         base64::write_encoded_block< HeaderType >( array.getData(), array.getSize(), str );
          str << "\n";
          break;
    }
