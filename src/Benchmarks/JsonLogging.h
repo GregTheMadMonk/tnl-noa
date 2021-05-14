@@ -100,11 +100,18 @@ public:
 
    void addCommonLogs( const CommonLogs& logs )
    {
+      if( this->lineStarted )
+         log << "," << std::endl;
+      log << "   \"benchmarks\" : [" << std::endl;
+      int idx( 0 );
       for( auto lg : logs )
       {
          if( verbose )
             std::cout << lg.first << " = " << lg.second << std::endl;
-         log << "\"" << lg.first << "\" = \"" << lg.second << std::endl;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "      \"" << lg.first << "\" : \"" << lg.second;
+         this->lineStarted = true;
       }
    };
 
@@ -128,13 +135,26 @@ public:
    void writeRow( const RowElements& rowEls )
    {
       TNL_ASSERT_EQ( rowEls.size(), this->logsMetadata.size(), "" );
+      if( this->lineStarted )
+         log << "," << std::endl;
+      if( ! this->resultsStarted )
+      {
+         log << "      \"results\" : [ " << std::endl;
+         this->resultsStarted = true;
+      }
+      log << "         {" << std::endl;
       auto md = this->logsMetadata.begin();
+      int idx( 0 );
       for( auto el : rowEls )
       {
          if( verbose )
             std::cout << el << "\t";
-         log << "    \"" << *md++ << "\" = \"" << el << "," << std::endl;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "          \"" << *md++ << "\" : \"" << el << "\"";
       }
+      log << std::endl << "         }";
+      this->lineStarted = true;
       if( verbose )
          std::cout << std::endl;
    }
@@ -144,7 +164,8 @@ public:
    {
       if( verbose )
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
-      log << ": title = " << title << std::endl;
+      log << "   \"title\" : \"" << title << "\"";
+      this->lineStarted = true;
    }
 
    void
@@ -153,10 +174,14 @@ public:
       if( verbose )
          std::cout << "properties:" << std::endl;
 
+      int idx( this->lineStarted );
       for( auto & it : metadata ) {
          if( verbose )
             std::cout << "   " << it.first << " = " << it.second << std::endl;
-         log << ": " << it.first << " = " << it.second << std::endl;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "   \"" << it.first << "\" : \"" << it.second << "\"";
+         this->lineStarted = true;
       }
       if( verbose )
          std::cout << std::endl;
@@ -166,52 +191,6 @@ public:
    writeTableHeader( const String & spanningElement,
                      const HeaderElements & subElements )
    {
-      /*if( verbose && header_changed ) {
-         for( auto & it : metadataColumns ) {
-            std::cout << std::setw( 20 ) << it.first;
-         }
-
-         // spanning element is printed as usual column to stdout,
-         // but is excluded from header
-         std::cout << std::setw( 15 ) << "";
-
-         for( auto & it : subElements ) {
-            std::cout << std::setw( 15 ) << it;
-         }
-         std::cout << std::endl;
-
-         header_changed = false;
-      }
-
-      // initial indent string
-      header_indent = "!";
-      log << std::endl;
-      for( auto & it : metadataColumns ) {
-         log << header_indent << " " << it.first << std::endl;
-      }
-
-      // dump stacked spanning columns
-      if( horizontalGroups.size() > 0 )
-         while( horizontalGroups.back().second <= 0 ) {
-            horizontalGroups.pop_back();
-            header_indent.pop_back();
-         }
-      for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
-         if( horizontalGroups[ i ].second > 0 ) {
-            log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
-            header_indent += "!";
-         }
-      }
-
-      log << header_indent << " " << spanningElement << std::endl;
-      for( auto & it : subElements ) {
-         log << header_indent << "! " << it << std::endl;
-      }
-
-      if( horizontalGroups.size() > 0 ) {
-         horizontalGroups.back().second--;
-         header_indent.pop_back();
-      }*/
    }
 
    void
@@ -219,29 +198,6 @@ public:
                   const RowElements & subElements )
    {
       writeRow( subElements );
-      /*if( verbose ) {
-         for( auto & it : metadataColumns ) {
-            std::cout << std::setw( 20 ) << it.second;
-         }
-         // spanning element is printed as usual column to stdout
-         //std::cout << std::setw( 15 ) << spanningElement;
-         for( auto & it : subElements ) {
-            std::cout << std::setw( 15 ) << it;
-         }
-         std::cout << std::endl;
-      }
-
-      // only when changed (the header has been already adjusted)
-      // print each element on separate line
-      for( auto & it : metadataColumns ) {
-         log << it.second << std::endl;
-      }
-
-      // benchmark data are indented
-      const String indent = "    ";
-      for( auto & it : subElements ) {
-         log << indent << it << std::endl;
-      }*/
    }
 
    void
@@ -328,6 +284,9 @@ protected:
 
    // new JSON implementation
    LogsMetadata logsMetadata;
+
+   bool lineStarted = false;
+   bool resultsStarted = false;
 };
 
 } // namespace Benchmarks
