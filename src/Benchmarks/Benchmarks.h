@@ -34,10 +34,11 @@ namespace Benchmarks {
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
 
+template< typename Logger = Logging >
 struct BenchmarkResult
 {
-   using HeaderElements = Logging::HeaderElements;
-   using RowElements = Logging::RowElements;
+   using HeaderElements = typename Logger::HeaderElements;
+   using RowElements = typename Logger::RowElements;
 
    double time = std::numeric_limits<double>::quiet_NaN();
    double stddev = std::numeric_limits<double>::quiet_NaN();
@@ -70,6 +71,11 @@ public:
    using typename Logger::MetadataMap;
    using typename Logger::MetadataColumns;
    using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
+
+   using typename Logger::CommonLogs;
+   using Logger::addCommonLogs;
+   using Logger::addLogsMetadata;
+   using Logger::writeHeader;
 
    Benchmark( int loops = 10,
               bool verbose = true )
@@ -202,7 +208,7 @@ public:
    time( ResetFunction reset,
          const String & performer,
          ComputeFunction & compute,
-         BenchmarkResult & result )
+         BenchmarkResult< Logger > & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
       result.stddev = std::numeric_limits<double>::quiet_NaN();
@@ -247,7 +253,7 @@ public:
          const String & performer,
          ComputeFunction & compute )
    {
-      BenchmarkResult result;
+      BenchmarkResult< Logger > result;
       return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
    }
 
@@ -259,7 +265,7 @@ public:
    double
    time( const String & performer,
          ComputeFunction & compute,
-         BenchmarkResult & result )
+         BenchmarkResult< Logger > & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
       result.stddev = std::numeric_limits<double>::quiet_NaN();
@@ -295,7 +301,7 @@ public:
    time( const String & performer,
          ComputeFunction & compute )
    {
-      BenchmarkResult result;
+      BenchmarkResult< Logger > result;
       return time< Device, ComputeFunction >( performer, compute, result );
    }
 
@@ -310,7 +316,7 @@ public:
       std::cerr << msg << std::endl;
    }
 
-   using Logging::save;
+   using Logger::save;
 
    SolverMonitorType& getMonitor() {
       return monitor;

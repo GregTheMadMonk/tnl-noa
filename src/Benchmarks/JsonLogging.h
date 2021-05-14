@@ -68,6 +68,7 @@ class JsonLoggingRowElements
 
       auto cend() const noexcept { return elements.cend(); }
 
+      size_t size() const noexcept { return this->elements.size(); };
    protected:
       std::list< String > elements;
 
@@ -81,8 +82,11 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
+   using CommonLogs = std::vector< std::pair< const char*, String > >;
+   using LogsMetadata = std::vector< String >;
+
    using HeaderElements = std::vector< String >;
-   using RowElements = LoggingRowElements;
+   using RowElements = JsonLoggingRowElements;
 
    JsonLogging( int verbose = true )
    : verbose(verbose)
@@ -92,6 +96,42 @@ public:
    setVerbose( int verbose)
    {
       this->verbose = verbose;
+   }
+
+   void addCommonLogs( const CommonLogs& logs )
+   {
+      for( auto lg : logs )
+      {
+         if( verbose )
+            std::cout << lg.first << " = " << lg.second << std::endl;
+         log << "\"" << lg.first << "\" = \"" << lg.second << std::endl;
+      }
+   };
+
+   void resetLogsMetadat() { this->logsMetadata.clear(); };
+
+   void addLogsMetadata( const std::vector< String >& md )
+   {
+      this->logsMetadata.insert( this->logsMetadata.end(), md.begin(), md.end() );
+   }
+
+   void writeHeader()
+   {
+      for( auto md : this->logsMetadata )
+         std::cout << md << "\t";
+      std::cout << std::endl;
+   }
+
+   void writeRow( const RowElements& rowEls )
+   {
+      TNL_ASSERT_EQ( rowEls.size(), this->logsMetadata.size(), "" );
+      auto md = this->logsMetadata.begin();
+      for( auto el : rowEls )
+      {
+         if( verbose )
+            std::cout << el << "\t";
+         log << "    \"" << *md++ << "\" = \"" << el << "," << std::endl;
+      }
    }
 
    void
@@ -178,7 +218,7 @@ public:
             std::cout << std::setw( 20 ) << it.second;
          }
          // spanning element is printed as usual column to stdout
-         std::cout << std::setw( 15 ) << spanningElement;
+         //std::cout << std::setw( 15 ) << spanningElement;
          for( auto & it : subElements ) {
             std::cout << std::setw( 15 ) << it;
          }
@@ -279,6 +319,9 @@ protected:
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;
+
+   // new JSON implementation
+   LogsMetadata logsMetadata;
 };
 
 } // namespace Benchmarks

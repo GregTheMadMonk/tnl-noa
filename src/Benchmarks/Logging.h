@@ -81,6 +81,8 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
+   using CommonLogs = std::vector< std::pair< const char*, String > >;
+
    using HeaderElements = std::vector< String >;
    using RowElements = LoggingRowElements;
 
@@ -101,6 +103,19 @@ public:
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
       log << ": title = " << title << std::endl;
    }
+
+   void addCommonLogs( const CommonLogs& logs )
+   {
+      for( auto log : logs )
+      {
+         if( verbose )
+            std::cout << log.first << " = " << log.second << std::endl;
+      }
+   };
+
+   void addLogsMetadata( const std::vector< String >& md ){};
+
+   void writeHeader(){};
 
    void
    writeMetadata( const MetadataMap & metadata )
