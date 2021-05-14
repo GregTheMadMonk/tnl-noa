@@ -117,9 +117,12 @@ public:
 
    void writeHeader()
    {
-      for( auto md : this->logsMetadata )
-         std::cout << md << "\t";
-      std::cout << std::endl;
+      if( verbose )
+      {
+         for( auto md : this->logsMetadata )
+            std::cout << md << "\t";
+         std::cout << std::endl;
+      }
    }
 
    void writeRow( const RowElements& rowEls )
@@ -132,6 +135,8 @@ public:
             std::cout << el << "\t";
          log << "    \"" << *md++ << "\" = \"" << el << "," << std::endl;
       }
+      if( verbose )
+         std::cout << std::endl;
    }
 
    void
@@ -161,7 +166,7 @@ public:
    writeTableHeader( const String & spanningElement,
                      const HeaderElements & subElements )
    {
-      if( verbose && header_changed ) {
+      /*if( verbose && header_changed ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.first;
          }
@@ -206,14 +211,15 @@ public:
       if( horizontalGroups.size() > 0 ) {
          horizontalGroups.back().second--;
          header_indent.pop_back();
-      }
+      }*/
    }
 
    void
    writeTableRow( const String & spanningElement,
                   const RowElements & subElements )
    {
-      if( verbose ) {
+      writeRow( subElements );
+      /*if( verbose ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.second;
          }
@@ -235,7 +241,7 @@ public:
       const String indent = "    ";
       for( auto & it : subElements ) {
          log << indent << it << std::endl;
-      }
+      }*/
    }
 
    void

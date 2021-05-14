@@ -126,7 +126,7 @@ benchmarkSolver( Benchmark<>& benchmark,
 
    // subclass BenchmarkResult to add extra columns to the benchmark
    // (iterations, preconditioned residue, true residue)
-   struct MyBenchmarkResult : public BenchmarkResult
+   struct MyBenchmarkResult : public BenchmarkResult<>
    {
       using HeaderElements = BenchmarkResult::HeaderElements;
       using RowElements = BenchmarkResult::RowElements;
