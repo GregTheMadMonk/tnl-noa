@@ -52,7 +52,7 @@ runBlasBenchmarks( Benchmark<> & benchmark,
    benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaHost)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaHost >( benchmark, size );
@@ -60,7 +60,7 @@ runBlasBenchmarks( Benchmark<> & benchmark,
    benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaManaged)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaManaged >( benchmark, size );
