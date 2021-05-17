@@ -86,8 +86,9 @@ public:
    using HeaderElements = std::vector< String >;
    using RowElements = LoggingRowElements;
 
-   Logging( int verbose = true )
-   : verbose(verbose)
+   Logging( int verbose = true,
+            String outputMode = "" )
+   : verbose(verbose), outputMode( outputMode )
    {}
 
    void
@@ -294,6 +295,8 @@ protected:
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;
+
+   String outputMode;
 };
 
 } // namespace Benchmarks

@@ -78,8 +78,9 @@ public:
    using Logger::writeHeader;
 
    Benchmark( int loops = 10,
-              bool verbose = true )
-   : Logger(verbose), loops(loops)
+              bool verbose = true,
+              String outputMode = "" )
+   : Logger(verbose, outputMode), loops(loops)
    {}
 
    static void configSetup( Config::ConfigDescription& config )

@@ -88,8 +88,9 @@ public:
    using HeaderElements = std::vector< String >;
    using RowElements = JsonLoggingRowElements;
 
-   JsonLogging( int verbose = true )
-   : verbose(verbose)
+   JsonLogging( int verbose = true,
+                String outputMode = "" )
+   : verbose(verbose), outputMode( outputMode )
    {}
 
    void
@@ -100,18 +101,19 @@ public:
 
    void addCommonLogs( const CommonLogs& logs )
    {
-      if( this->lineStarted )
-         log << "," << std::endl;
-      log << "   \"benchmarks\" : [" << std::endl;
-      int idx( 0 );
+      //if( this->lineStarted )
+      //   log << "," << std::endl;
+      //log << "   \"benchmarks\" : [" << std::endl;
+      this->commonLogs = logs;
+      //int idx( 0 );
       for( auto lg : logs )
       {
          if( verbose )
             std::cout << lg.first << " = " << lg.second << std::endl;
-         if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "      \"" << lg.first << "\" : \"" << lg.second;
-         this->lineStarted = true;
+         //if( idx++ > 0 )
+         //   log << "," << std::endl;
+         //log << "      \"" << lg.first << "\" : \"" << lg.second << "\"";
+         //this->lineStarted = true;
       }
    };
 
@@ -137,14 +139,21 @@ public:
       TNL_ASSERT_EQ( rowEls.size(), this->logsMetadata.size(), "" );
       if( this->lineStarted )
          log << "," << std::endl;
-      if( ! this->resultsStarted )
-      {
-         log << "      \"results\" : [ " << std::endl;
-         this->resultsStarted = true;
-      }
+
       log << "         {" << std::endl;
-      auto md = this->logsMetadata.begin();
+
+      // write common logs
       int idx( 0 );
+      for( auto lg : this->commonLogs )
+      {
+         //if( verbose )
+         //   std::cout << lg.first << " = " << lg.second << std::endl;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "      \"" << lg.first << "\" : \"" << lg.second << "\"";
+      }
+
+      auto md = this->logsMetadata.begin();
       for( auto el : rowEls )
       {
          if( verbose )
@@ -162,6 +171,9 @@ public:
    void
    writeTitle( const String & title )
    {
+      if( outputMode == "append" )
+         return;
+
       if( verbose )
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
       log << "   \"title\" : \"" << title << "\"";
@@ -171,6 +183,9 @@ public:
    void
    writeMetadata( const MetadataMap & metadata )
    {
+      if( outputMode == "append" )
+         return;
+
       if( verbose )
          std::cout << "properties:" << std::endl;
 
@@ -181,8 +196,11 @@ public:
          if( idx++ > 0 )
             log << "," << std::endl;
          log << "   \"" << it.first << "\" : \"" << it.second << "\"";
-         this->lineStarted = true;
+         //this->lineStarted = true;
       }
+      log << "," << std::endl << "      \"results\" : [ " << std::endl;
+      this->lineStarted = false;
+
       if( verbose )
          std::cout << std::endl;
    }
@@ -204,8 +222,9 @@ public:
    writeErrorMessage( const char* msg,
                       int colspan = 1 )
    {
+      log << "\"error\" : \"" << msg << "\"" << std::endl;
       // initial indent string
-      header_indent = "!";
+      /*header_indent = "!";
       log << std::endl;
       for( auto & it : metadataColumns ) {
          log << header_indent << " " << it.first << std::endl;
@@ -237,15 +256,17 @@ public:
          log << it.second << std::endl;
       }
       log << msg << std::endl;
+      */
    }
 
    void
    closeTable()
    {
-      log << std::endl;
-      header_indent = body_indent = "";
-      header_changed = true;
-      horizontalGroups.clear();
+      //log << std::endl << "   ]" << std::endl;
+      log << "," << std::endl;
+      //header_indent = body_indent = "";
+      //header_changed = true;
+      //horizontalGroups.clear();
    }
 
    bool save( std::ostream & logFile )
@@ -284,6 +305,8 @@ protected:
 
    // new JSON implementation
    LogsMetadata logsMetadata;
+   CommonLogs commonLogs;
+   String outputMode;
 
    bool lineStarted = false;
    bool resultsStarted = false;
