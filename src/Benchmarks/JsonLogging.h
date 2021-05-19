@@ -184,7 +184,10 @@ public:
    writeMetadata( const MetadataMap & metadata )
    {
       if( outputMode == "append" )
+      {
+         this->lineStarted = true;
          return;
+      }
 
       if( verbose )
          std::cout << "properties:" << std::endl;
@@ -263,7 +266,7 @@ public:
    closeTable()
    {
       //log << std::endl << "   ]" << std::endl;
-      log << "," << std::endl;
+      //log << "," << std::endl;
       //header_indent = body_indent = "";
       //header_changed = true;
       //horizontalGroups.clear();
