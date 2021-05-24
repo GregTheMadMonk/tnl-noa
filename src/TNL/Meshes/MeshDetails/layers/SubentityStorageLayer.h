@@ -20,8 +20,6 @@
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDetails/traits/WeakStorageTraits.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
-#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -31,8 +29,7 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename SubdimensionTag,
           bool SubentityStorage = WeakSubentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology::dimension >::EntityTopology, SubdimensionTag >::storageEnabled,
-          bool dynamicTopology = std::is_same< EntityTopology, Topologies::Polygon >::value ||
-                                 std::is_same< EntityTopology, Topologies::Polyhedron >::value >
+          bool DynamicTopology = Topologies::isDynamicTopology< EntityTopology >::value >
 class SubentityStorageLayer;
 
 template< typename MeshConfig,
@@ -87,6 +84,12 @@ protected:
    }
 };
 
+/****
+ *       Mesh subentity storage layer with specializations
+ *
+ *  SUBENTITY STORAGE     DYNAMIC TOPOLOGY
+ *        TRUE                FALSE
+ */
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
@@ -183,6 +186,12 @@ private:
    friend class SubentityStorageLayer;
 };
 
+/****
+ *       Mesh subentity storage layer with specializations
+ *
+ *  SUBENTITY STORAGE     DYNAMIC TOPOLOGY
+ *        TRUE                  TRUE
+ */
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
@@ -297,6 +306,12 @@ private:
    friend class SubentityStorageLayer;
 };
 
+/****
+ *       Mesh subentity storage layer with specializations
+ *
+ *  SUBENTITY STORAGE     DYNAMIC TOPOLOGY
+ *       FALSE               TRUE/FALSE
+ */
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,

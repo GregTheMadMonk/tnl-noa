@@ -50,9 +50,9 @@ class VTUReader
       // read the points, connectivity, offsets and types into intermediate arrays
       pointsArray = readDataArray( pointsData, "Points" );
       pointsType = VTKDataTypes.at( getAttributeString( pointsData, "type" ) );
-      connectivityArray = readDataArray( connectivity, "connectivity" );
+      cellConnectivityArray = readDataArray( connectivity, "connectivity" );
       connectivityType = VTKDataTypes.at( getAttributeString( connectivity, "type" ) );
-      offsetsArray = readDataArray( offsets, "offsets" );
+      cellOffsetsArray = readDataArray( offsets, "offsets" );
       offsetsType = VTKDataTypes.at( getAttributeString( offsets, "type" ) );
       typesArray = readDataArray( types, "types" );
       typesType = VTKDataTypes.at( getAttributeString( types, "type" ) );
@@ -135,7 +135,7 @@ class VTUReader
                   max_offset = c;
                }
             },
-            offsetsArray
+            cellOffsetsArray
          );
       // validate connectivity
       visit( [this, max_offset](auto&& array) {
@@ -146,7 +146,7 @@ class VTUReader
                      throw MeshReaderError( "VTUReader", "connectivity index " + std::to_string(c) + " is out of range" );
                }
             },
-            connectivityArray
+            cellConnectivityArray
          );
    }
 #endif

@@ -19,11 +19,16 @@
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/Topologies/Polygon.h>
 
 namespace TNL {
 namespace Meshes {
 
+/****
+ *       Mesh subentity traits with specializations
+ *
+ *  DYNAMIC TOPOLOGY
+ *       FALSE
+ */
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
@@ -58,6 +63,12 @@ public:
    };
 };
 
+/****
+ *       Mesh subentity traits with specializations
+ *
+ *  DYNAMIC TOPOLOGY
+ *       TRUE
+ */
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology,

@@ -168,10 +168,12 @@ public:
 
       using MeshBuilder = MeshBuilder< MeshType >;
       using PointType = typename MeshType::PointType;
+      using FaceSeedType = typename MeshBuilder::FaceSeedType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
       MeshBuilder meshBuilder;
       meshBuilder.setPointsCount( NumberOfPoints );
+      meshBuilder.setFacesCount( NumberOfFaces );
       meshBuilder.setCellsCount( NumberOfCells );
 
       // assign points
@@ -190,11 +192,29 @@ public:
             pointsArray
          );
 
+      // assign faces
+      visit( [this, &meshBuilder](auto&& connectivity) {
+               // let's just assume that the connectivity and offsets arrays have the same type...
+               using mpark::get;
+               const auto& offsets = get< std::decay_t<decltype(connectivity)> >( faceOffsetsArray );
+               std::size_t offsetStart = 0;
+               for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
+                  FaceSeedType& seed = meshBuilder.getFaceSeed( i );
+                  const std::size_t offsetEnd = offsets[ i ];
+                  seed.setCornersCount( offsetEnd - offsetStart );
+                  for( std::size_t o = offsetStart; o < offsetEnd; o++ )
+                     seed.setCornerId( o - offsetStart, connectivity[ o ] );
+                  offsetStart = offsetEnd;
+               }
+            },
+            faceConnectivityArray
+         );
+
       // assign cells
       visit( [this, &meshBuilder](auto&& connectivity) {
                // let's just assume that the connectivity and offsets arrays have the same type...
                using mpark::get;
-               const auto& offsets = get< std::decay_t<decltype(connectivity)> >( offsetsArray );
+               const auto& offsets = get< std::decay_t<decltype(connectivity)> >( cellOffsetsArray );
                std::size_t offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfCells; i++ ) {
                   CellSeedType& seed = meshBuilder.getCellSeed( i );
@@ -205,11 +225,11 @@ public:
                   offsetStart = offsetEnd;
                }
             },
-            connectivityArray
+            cellConnectivityArray
          );
 
       // reset arrays since they are not needed anymore
-      pointsArray = connectivityArray = offsetsArray = typesArray = {};
+      pointsArray = faceConnectivityArray = cellConnectivityArray = faceOffsetsArray = cellOffsetsArray = typesArray = {};
 
       if( ! meshBuilder.build( mesh ) )
          throw MeshReaderError( "MeshReader", "MeshBuilder failed" );
@@ -224,7 +244,7 @@ public:
    virtual VariantVector
    readCellData( std::string arrayName )
    {
-      throw Exceptions::NotImplementedError( "readPointData is not implemented in the mesh reader for this specific file format." );
+      throw Exceptions::NotImplementedError( "readCellData is not implemented in the mesh reader for this specific file format." );
    }
 
    std::string
@@ -279,7 +299,7 @@ protected:
    std::string meshType;
 
    // attributes of the mesh
-   std::size_t NumberOfPoints, NumberOfCells;
+   std::size_t NumberOfPoints, NumberOfFaces, NumberOfCells;
    int meshDimension, spaceDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
 
@@ -289,21 +309,26 @@ protected:
 
    // intermediate representation of the unstructured mesh (matches the VTU
    // file format, other formats have to be converted)
-   VariantVector pointsArray, connectivityArray, offsetsArray, typesArray;
+   VariantVector pointsArray, cellConnectivityArray, cellOffsetsArray,
+                 faceConnectivityArray, faceOffsetsArray,
+                 typesArray;
+
+
+
    // string representation of each array's value type
    std::string pointsType, connectivityType, offsetsType, typesType;
 
    void resetBase()
    {
       meshType = "";
-      NumberOfPoints = NumberOfCells = 0;
+      NumberOfPoints = NumberOfFaces = NumberOfCells = 0;
       meshDimension = spaceDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
 
       gridExtent = {};
       gridOrigin = gridSpacing = {};
 
-      pointsArray = connectivityArray = offsetsArray = typesArray = {};
+      pointsArray = cellConnectivityArray = cellOffsetsArray = faceConnectivityArray = faceOffsetsArray = typesArray = {};
       pointsType = connectivityType = offsetsType = typesType = "";
    }
 };

@@ -162,9 +162,11 @@ public:
       //TODO: uncomment line below later for polyhedrals
       //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
       cellShape = (VTK::EntityShape) cellTypes[0];
+
       for( auto c : cellTypes )
       {
-         if( (VTK::EntityShape) c != entityShape )
+         auto entityShape = (VTK::EntityShape) c;
+         if( cellShape != entityShape )
          {
             //in case input mesh includes mixed shapes, use more general cellShape ( polygon for 2D, polyhedrals for 3D )
             if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
@@ -229,8 +231,8 @@ public:
 
       // set the arrays to the base class
       this->pointsArray = std::move(pointsArray);
-      this->connectivityArray = std::move(connectivityArray);
-      this->offsetsArray = std::move(offsetsArray);
+      this->cellConnectivityArray = std::move(connectivityArray);
+      this->cellOffsetsArray = std::move(offsetsArray);
       this->typesArray = std::move(typesArray);
 
       // indicate success by setting the mesh type
