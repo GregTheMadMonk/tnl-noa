@@ -609,7 +609,7 @@ TYPED_TEST( VectorUnaryOperationsTest, cast )
    EXPECT_EQ( expression1, true );
 
    // binary expression
-   auto expression2( cast<bool>(V1 + V1) );
+   auto expression2 = cast<bool>(V1 + V1);
    static_assert( std::is_same< typename decltype(expression2)::RealType, bool >::value,
                   "BUG: the cast function does not work for binary expression." );
    // FIXME: expression2 cannot be reused, because expression templates for StaticVector and DistributedVector contain references and the test would crash in Release
@@ -617,10 +617,10 @@ TYPED_TEST( VectorUnaryOperationsTest, cast )
    EXPECT_EQ( cast<bool>(V1 + V1), true );
 
    // unary expression
-   auto expression3( cast<bool>(-V1) );
+   auto expression3 = cast<bool>(-V1);
    static_assert( std::is_same< typename decltype(expression3)::RealType, bool >::value,
                   "BUG: the cast function does not work for unary expression." );
-   // FIXME: expression2 cannot be reused, because expression templates for StaticVector and DistributedVector contain references and the test would crash in Release
+   // FIXME: expression3 cannot be reused, because expression templates for StaticVector and DistributedVector contain references and the test would crash in Release
 //   EXPECT_EQ( expression3, true );
    EXPECT_EQ( cast<bool>(-V1), true );
 }
