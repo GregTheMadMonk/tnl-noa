@@ -33,7 +33,7 @@ void test_decompress( std::string input, std::string expected_output )
    // decompress C string
    {
       const auto result = TNL::decompress_block< HeaderType, char >( input.c_str() );
-      EXPECT_EQ( result.first, expected_output.length() );
+      EXPECT_EQ( result.first, (HeaderType) expected_output.length() );
       const std::string output( result.second.get(), result.first );
       EXPECT_EQ( output, expected_output );
    }
@@ -41,7 +41,7 @@ void test_decompress( std::string input, std::string expected_output )
    {
       std::stringstream str( input );
       const auto result = TNL::decompress_block< HeaderType, char >( str );
-      EXPECT_EQ( result.first, expected_output.length() );
+      EXPECT_EQ( result.first, (HeaderType) expected_output.length() );
       const std::string output( result.second.get(), result.first );
       EXPECT_EQ( output, expected_output );
    }
