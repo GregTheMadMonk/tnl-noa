@@ -352,8 +352,10 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
 
          if( numCells == 1 ) {
             TNL_ASSERT_FALSE( localMeshPointer->template isGhostEntity< LocalMesh::getMeshDimension() >( cellIndexes[0] ),
-                              ("iterator bug - boundary face " + std::to_string(E) + " on a ghost cell "
-                               + std::to_string(cellIndexes[0])).c_str() );
+                              // NOTE: c_str does not work on GPU
+                              //("iterator bug - boundary face " + std::to_string(E) + " on a ghost cell "
+                              // + std::to_string(cellIndexes[0])).c_str() );
+                              "iterator bug - boundary face on a ghost cell" );
             f_E_view[ E ] = boundary_value;
          }
          else {
