@@ -226,7 +226,6 @@ public:
    }
 
    template< int Dimension >
-   __cuda_callable__
    auto getBoundaryIndices() const
    {
       static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );
@@ -234,7 +233,6 @@ public:
    }
 
    template< int Dimension >
-   __cuda_callable__
    auto getInteriorIndices() const
    {
       static_assert( WeakTrait< Dimension >::entityTagsEnabled, "You try to access entity tags which are not configured for storage." );

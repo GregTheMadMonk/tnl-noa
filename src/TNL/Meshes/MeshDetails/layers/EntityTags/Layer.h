@@ -184,13 +184,11 @@ public:
       }
    }
 
-   __cuda_callable__
    auto getBoundaryIndices( DimensionTag ) const
    {
       return boundaryIndices.getConstView();
    }
 
-   __cuda_callable__
    auto getInteriorIndices( DimensionTag ) const
    {
       return interiorIndices.getConstView();
