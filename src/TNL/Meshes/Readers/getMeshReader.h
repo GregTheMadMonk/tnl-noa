@@ -18,6 +18,7 @@
 #include <TNL/Meshes/Readers/NetgenReader.h>
 #include <TNL/Meshes/Readers/VTKReader.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
+#include <TNL/Meshes/Readers/VTIReader.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>
 
 namespace TNL {
@@ -43,6 +44,8 @@ getMeshReader( const std::string& fileName,
       return std::make_shared< Readers::VTKReader >( fileName );
    else if( format == "vtu" )
       return std::make_shared< Readers::VTUReader >( fileName );
+   else if( format == "vti" )
+      return std::make_shared< Readers::VTIReader >( fileName );
    else if( format == "pvtu" )
       return std::make_shared< Readers::PVTUReader >( fileName );
 
@@ -50,7 +53,7 @@ getMeshReader( const std::string& fileName,
       std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
    else
       std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
-   std::cerr << " Supported formats are 'vtk', 'vtu', 'pvtu' and 'ng'." << std::endl;
+   std::cerr << " Supported formats are 'ng', 'vtk', 'vtu', 'vti' and 'pvtu'." << std::endl;
    return nullptr;
 }
 

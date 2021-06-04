@@ -73,25 +73,15 @@ resolveAndLoadMesh( Functor&& functor,
  * should be avoided. Use \ref resolveAndLoadMesh instead to reuse the mesh
  * reader instance created in \ref resolveMeshType.
  */
-template< typename MeshConfig,
-          typename Device >
+template< typename Mesh >
 bool
-loadMesh( Mesh< MeshConfig, Device >& mesh,
+loadMesh( Mesh& mesh,
           const std::string& fileName,
           const std::string& fileFormat = "auto" );
 
 template< typename MeshConfig >
 bool
 loadMesh( Mesh< MeshConfig, Devices::Cuda >& mesh,
-          const std::string& fileName,
-          const std::string& fileFormat = "auto" );
-
-template< int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-bool
-loadMesh( Grid< Dimension, Real, Device, Index >& grid,
           const std::string& fileName,
           const std::string& fileFormat = "auto" );
 

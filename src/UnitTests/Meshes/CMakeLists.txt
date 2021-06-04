@@ -42,7 +42,7 @@ find_package( ZLIB )
 find_package( tinyxml2 QUIET )
 
 if( ZLIB_FOUND AND tinyxml2_FOUND )
-   foreach( target IN ITEMS NetgenReaderTest VTKReaderTest VTUReaderTest )
+   foreach( target IN ITEMS NetgenReaderTest VTKReaderTest VTUReaderTest VTIReaderTest )
       add_executable(${target} ${target}.cpp)
       target_compile_options(${target} PRIVATE ${CXX_TESTS_FLAGS} )
       target_link_libraries(${target} ${GTEST_BOTH_LIBRARIES})
