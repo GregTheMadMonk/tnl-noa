@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <memory>
 #include <experimental/filesystem>
 
 #include <TNL/Meshes/Readers/NetgenReader.h>
@@ -23,7 +24,7 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-std::shared_ptr< Readers::MeshReader >
+inline std::shared_ptr< Readers::MeshReader >
 getMeshReader( const std::string& fileName,
                const std::string& fileFormat )
 {

@@ -19,7 +19,6 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter2D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
-#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Meshes {

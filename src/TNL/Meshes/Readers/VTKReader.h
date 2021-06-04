@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <map>
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/Endianness.h>

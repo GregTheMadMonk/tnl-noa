@@ -12,11 +12,9 @@
 
 #include <TNL/Object.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Containers/StaticVector.h>
-#include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Meshes {    
+namespace Meshes {
 
 template< int Dimension,
           typename Real = double,
