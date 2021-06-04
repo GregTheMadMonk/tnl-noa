@@ -14,11 +14,10 @@
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addEntry        < String >( "output-file",   "Output file.", "mesh.tnl" );
+   config.addEntry        < String >( "output-file",   "Output file.", "mesh.vti" );
    config.addEntry        < int >   ( "verbose",       "Set the verbosity of the program.", 1 );
 
    config.addDelimiter              ( "Grid parameters" );
-   config.addEntry        < String >( "grid-name",     "The grid name.", "tnl-grid" );
    config.addRequiredEntry< int >   ( "dimension",     "The grid dimension." );
       config.addEntryEnum< int >( 1 );
       config.addEntryEnum< int >( 2 );

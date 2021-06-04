@@ -8,18 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_GRID_SETUP_H_
-#define TNL_GRID_SETUP_H_
+#pragma once
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
 
 using namespace TNL;
 
 template< typename RealType, typename IndexType >
 bool setupGrid( const Config::ParameterContainer& parameters )
 {
-   const String gridName = parameters.getParameter< String >( "grid-name" );
    const String outputFile = parameters.getParameter< String >( "output-file" );
    const int dimension = parameters.getParameter< int >( "dimension" );
    if( dimension == 1 )
@@ -39,16 +38,11 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       grid.setDomain( PointType( originX ), PointType( proportionsX ) );
       grid.setDimensions( CoordinatesType( sizeX ) );
       std::cout << "Setting dimensions to  ... " << sizeX << std::endl;
-      std::cout << "Writing the grid to the file " << outputFile << " .... ";      
-      try
-      {
-         grid.save( outputFile );
-      }
-      catch(...)
-      {
-         std::cerr << "[ FAILED ] " << std::endl;
-         return false;
-      }
+      std::cout << "Writing the grid to the file " << outputFile << std::endl;
+
+      std::ofstream file( outputFile );
+      Meshes::Writers::VTIWriter< GridType > writer( file );
+      writer.writeImageData( grid );
    }
    if( dimension == 2 )
    {
@@ -74,23 +68,17 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          {
             double h = min( grid.getSpaceSteps().x(), grid.getSpaceSteps().y() );
             grid.setSpaceSteps( PointType( h, h ) );
-            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps()
                       << " and grid proportions to " << grid.getProportions() << "."  << std::endl;
 
          }
       }
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
-      std::cout << "Writing the grid to the file " << outputFile << " .... ";
+      std::cout << "Writing the grid to the file " << outputFile << std::endl;
 
-      try
-      {
-         grid.save( outputFile );
-      }
-      catch(...)
-      {
-         std::cerr << "[ FAILED ] " << std::endl;
-         return false;
-      }
+      std::ofstream file( outputFile );
+      Meshes::Writers::VTIWriter< GridType > writer( file );
+      writer.writeImageData( grid );
    }
    if( dimension == 3 )
    {
@@ -121,22 +109,16 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          {
             double h = min( grid.getSpaceSteps().x(), min( grid.getSpaceSteps().y(), grid.getSpaceSteps().z() ) );
             grid.setSpaceSteps( PointType( h, h, h ) );
-            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps() 
+            std::cout << "Adjusting grid space steps to " << grid.getSpaceSteps()
                       << " and grid proportions to " << grid.getProportions() << "." << std::endl;
          }
       }
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
-      std::cout << "Writing the grid to the file " << outputFile << " .... ";      
+      std::cout << "Writing the grid to the file " << outputFile << std::endl;
 
-      try
-      {
-         grid.save( outputFile );
-      }
-      catch(...)
-      {
-         std::cerr << "[ FAILED ] " << std::endl;
-         return false;
-      }
+      std::ofstream file( outputFile );
+      Meshes::Writers::VTIWriter< GridType > writer( file );
+      writer.writeImageData( grid );
    }
    std::cout << "[ OK ] " << std::endl;
    return true;
@@ -155,7 +137,7 @@ bool resolveIndexType( const Config::ParameterContainer& parameters )
    return false;
 }
 
-bool resolveRealType( const Config::ParameterContainer& parameters )
+inline bool resolveRealType( const Config::ParameterContainer& parameters )
 {
    String realType = parameters.getParameter< String >( "real-type" );
    std::cout << "Setting real type to   ... " << realType << std::endl;
@@ -168,5 +150,3 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
    std::cerr << "The real type '" << realType << "' is not supported." << std::endl;
    return false;
 }
-
-#endif /* TNL_GRID_SETUP_H_ */

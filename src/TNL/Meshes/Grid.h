@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
@@ -20,7 +19,7 @@ template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Grid : public Object
+class Grid
 {
 };
 

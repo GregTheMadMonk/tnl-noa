@@ -153,6 +153,7 @@ loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
                      const std::string& fileName,
                      const std::string& fileFormat )
 {
+/*
    std::cout << "Loading a global mesh from the file " << fileName << "...";
    Grid< Dimension, Real, Device, Index > globalGrid;
    try
@@ -171,6 +172,10 @@ loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
    distributedMesh.setGlobalGrid( globalGrid );
    distributedMesh.setupGrid(mesh);
    return true;
+*/
+   // TODO: implement a PVTI reader
+   std::cerr << "Loading a distributed mesh from a " << fileFormat << " file is not implemented yet." << std::endl;
+   return false;
 }
 
 template< typename Problem,

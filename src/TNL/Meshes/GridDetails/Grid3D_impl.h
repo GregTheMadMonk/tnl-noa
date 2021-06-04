@@ -68,26 +68,6 @@ Grid< 3, Real, Device, Index >::Grid( const Index xSize, const Index ySize, cons
 template< typename Real,
           typename Device,
           typename Index >
-String Grid< 3, Real, Device, Index > :: getSerializationType()
-{
-   return String( "Meshes::Grid< " ) +
-          convertToString( getMeshDimension() ) + ", " +
-          getType< RealType >() + ", " +
-          getType< Devices::Host >() + ", " +
-          getType< IndexType >() + " >";
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Grid< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 &&
@@ -97,9 +77,9 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
       this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
-      
+
       this->computeSpaceStepPowers();
-      
+
    }
 };
 
@@ -107,7 +87,7 @@ template< typename Real,
           typename Device,
           typename Index >
 void Grid< 3, Real, Device, Index > :: computeSpaceStepPowers()
-{      
+{
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
       const RealType& hz = this->spaceSteps.z();
@@ -203,9 +183,9 @@ template< typename Real,
           typename Index >
 void Grid< 3, Real, Device, Index > :: setSpaceSteps(const PointType& steps)
 {
-     this->spaceSteps=steps;    
+     this->spaceSteps=steps;
      computeSpaceStepPowers();
-     computeProportions(); 
+     computeProportions();
 }
 
 
@@ -436,55 +416,15 @@ void Grid< 3, Real, Device, Index >:: setDistMesh(DistributedMeshType * distMesh
 {
     this->distGrid=distMesh;
 }
-   
+
 template< typename Real,
           typename Device,
           typename Index >
-DistributedMeshes::DistributedMesh <Grid< 3, Real, Device, Index >> * 
+DistributedMeshes::DistributedMesh <Grid< 3, Real, Device, Index >> *
 Grid< 3, Real, Device, Index >:: getDistributedMesh(void) const
 {
     return this->distGrid;
 }
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: save( File& file ) const
-{
-   Object::save( file );
-   this->origin.save( file );
-   this->proportions.save( file );
-   this->dimensions.save( file );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::load( File& file )
-{
-   Object :: load( file );
-   CoordinatesType dimensions;
-   this->origin.load( file );
-   this->proportions.load( file );
-   dimensions.load( file );
-   this->setDimensions( dimensions );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::save( const String& fileName ) const
-{
-   Object::save( fileName );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::load( const String& fileName )
-{
-   Object::load( fileName );
-};
 
 template< typename Real,
           typename Device,
@@ -494,7 +434,7 @@ Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
    if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
-      return this->getDistributedMesh()->writeProlog( logger );   
+      return this->getDistributedMesh()->writeProlog( logger );
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

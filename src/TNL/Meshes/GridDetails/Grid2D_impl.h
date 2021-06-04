@@ -53,26 +53,6 @@ Grid< 2, Real, Device, Index >::Grid( const Index xSize, const Index ySize )
 template< typename Real,
           typename Device,
           typename Index >
-String Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return String( "Meshes::Grid< " ) +
-          convertToString( getMeshDimension() ) + ", " +
-          getType< RealType >() + ", " +
-          getType< Devices::Host >() + ", " +
-          getType< IndexType >() + " >";
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
 __cuda_callable__
 void Grid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
@@ -304,7 +284,7 @@ getSpaceSteps() const
 template< typename Real,
           typename Device,
           typename Index >
-inline void 
+inline void
 Grid< 2, Real, Device, Index >::
 setSpaceSteps(const typename Grid< 2, Real, Device, Index >::PointType& steps)
 {
@@ -365,55 +345,15 @@ void Grid< 2, Real, Device, Index >:: setDistMesh(DistributedMeshType* distMesh)
 {
     this->distGrid=distMesh;
 }
-   
+
 template< typename Real,
           typename Device,
           typename Index >
-DistributedMeshes::DistributedMesh <Grid< 2, Real, Device, Index >> * 
+DistributedMeshes::DistributedMesh <Grid< 2, Real, Device, Index >> *
 Grid< 2, Real, Device, Index >:: getDistributedMesh(void) const
 {
     return this->distGrid;
 }
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 2, Real, Device, Index > :: save( File& file ) const
-{
-   Object::save( file );
-   this->origin.save( file );
-   this->proportions.save( file );
-   this->dimensions.save( file );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 2, Real, Device, Index > :: load( File& file )
-{
-   Object::load( file );
-   CoordinatesType dimensions;
-   this->origin.load( file );
-   this->proportions.load( file );
-   dimensions.load( file );
-   this->setDimensions( dimensions );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 2, Real, Device, Index > :: save( const String& fileName ) const
-{
-   Object::save( fileName );
-};
-
-template< typename Real,
-           typename Device,
-           typename Index >
-void Grid< 2, Real, Device, Index > :: load( const String& fileName )
-{
-   Object::load( fileName );
-};
 
 template< typename Real,
           typename Device,

@@ -178,12 +178,10 @@ struct MeshCreator< Meshes::Grid< 3, Real, Device, Index > >
 };
 
 template< typename Grid >
-bool convertGrid( Grid& grid, const String& fileName, const String& outputFileName, const String& outputFormat )
+bool convertGrid( Grid& grid, const String& outputFileName, const String& outputFormat )
 {
    using MeshCreator = MeshCreator< Grid >;
    using Mesh = typename MeshCreator::MeshType;
-
-   grid.load( fileName );
 
    Mesh mesh;
    if( ! MeshCreator::run( grid, mesh ) ) {
@@ -241,7 +239,7 @@ main( int argc, char* argv[] )
 
    auto wrapper = [&] ( const auto& reader, auto&& grid )
    {
-      return convertGrid( grid, inputFileName, outputFileName, outputFileFormat );
+      return convertGrid( grid, outputFileName, outputFileFormat );
    };
-   return ! Meshes::resolveMeshType< GridToMeshConfigTag, Devices::Host >( wrapper, inputFileName );
+   return ! Meshes::resolveAndLoadMesh< GridToMeshConfigTag, Devices::Host >( wrapper, inputFileName );
 }

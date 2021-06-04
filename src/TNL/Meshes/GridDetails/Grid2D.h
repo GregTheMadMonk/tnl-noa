@@ -25,7 +25,7 @@ namespace Meshes {
 template< typename Real,
           typename Device,
           typename Index >
-class Grid< 2, Real, Device, Index > : public Object
+class Grid< 2, Real, Device, Index >
 {
    public:
 
@@ -36,7 +36,7 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
 
    typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
- 
+
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
@@ -59,16 +59,6 @@ class Grid< 2, Real, Device, Index > : public Object
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
-
-   /**
-    * \brief See Grid1D::getSerializationType().
-    */
-   static String getSerializationType();
-
-   /**
-    * \brief See Grid1D::getSerializationTypeVirtual().
-    */
-   virtual String getSerializationTypeVirtual() const;
 
    /**
     * \brief Sets the size of dimensions.
@@ -181,35 +171,15 @@ class Grid< 2, Real, Device, Index > : public Object
 
 
    void setDistMesh(DistributedMeshType * distGrid);
-   
+
    DistributedMeshType * getDistributedMesh() const;
-
-   /**
-    * \brief See Grid1D::save( File& file ) const.
-    */
-   void save( File& file ) const;
-
-   /**
-    * \brief See Grid1D::load( File& file ).
-    */
-   void load( File& file );
-
-   /**
-    * \brief See Grid1D::save( const String& fileName ) const.
-    */
-   void save( const String& fileName ) const;
-
-   /**
-    * \brief See Grid1D::load( const String& fileName ).
-    */
-   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 
    protected:
-   
+
    void computeProportions();
-       
+
    __cuda_callable__
    void computeSpaceStepPowers();
 
@@ -225,9 +195,9 @@ class Grid< 2, Real, Device, Index > : public Object
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ][ 5 ];
-   
+
    DistributedMeshType *distGrid;
- 
+
    template< typename, typename, int >
    friend class GridEntityGetter;
 };

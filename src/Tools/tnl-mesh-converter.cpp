@@ -12,7 +12,8 @@
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
-#include <TNL/Meshes/Writers/NetgenWriter.h>
+//#include <TNL/Meshes/Writers/VTIWriter.h>
+//#include <TNL/Meshes/Writers/NetgenWriter.h>
 
 using namespace TNL;
 
@@ -107,34 +108,29 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
 template< typename Mesh >
 bool convertMesh( const Mesh& mesh, const String& inputFileName, const String& outputFileName, const String& outputFormat )
 {
-   if( outputFormat == "tnl" )
-   {
-      try
-      {
-         mesh.save( outputFileName );
-      }
-      catch(...)
-      {
-         std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
-         return false;
-      }
-   }
-   else if( outputFormat == "vtk" ) {
-      using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
-      std::ofstream file( outputFileName.getString() );
-      VTKWriter writer( file );
+   if( outputFormat == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      std::ofstream file( outputFileName );
+      Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
    }
    else if( outputFormat == "vtu" ) {
-      using VTKWriter = Meshes::Writers::VTUWriter< Mesh >;
-      std::ofstream file( outputFileName.getString() );
-      VTKWriter writer( file );
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      std::ofstream file( outputFileName );
+      Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
    }
+   // FIXME: VTIWriter is not specialized for meshes
+//   else if( outputFormat == "vti" ) {
+//      using Writer = Meshes::Writers::VTIWriter< Mesh >;
+//      std::ofstream file( outputFileName );
+//      Writer writer( file );
+//      writer.writeImageData( mesh );
+//   }
    // FIXME: NetgenWriter is not specialized for grids
 //   else if( outputFormat == "netgen" ) {
 //      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
-//      std::fstream file( outputFileName.getString() );
+//      std::fstream file( outputFileName );
 //      NetgenWriter::writeMesh( mesh, file );
 //   }
 
@@ -148,9 +144,9 @@ void configSetup( Config::ConfigDescription& config )
    config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
    config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
    config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
-   config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
+//   config.addEntryEnum( "vti" );
 //   config.addEntryEnum( "netgen" );
 }
 

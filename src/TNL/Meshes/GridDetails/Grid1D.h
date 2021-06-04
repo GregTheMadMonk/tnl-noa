@@ -25,7 +25,7 @@ namespace Meshes {
 template< typename Real,
           typename Device,
           typename Index >
-class Grid< 1, Real, Device, Index > : public Object
+class Grid< 1, Real, Device, Index >
 {
    public:
 
@@ -57,21 +57,11 @@ class Grid< 1, Real, Device, Index > : public Object
     * \brief Basic constructor.
     */
    Grid();
-   
+
    Grid( const Index xSize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
-
-   /**
-    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
-    */
-   static String getSerializationType();
-
-   /**
-    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
-    */
-   virtual String getSerializationTypeVirtual() const;
 
    /**
     * \brief Sets the size of dimensions.
@@ -180,37 +170,17 @@ class Grid< 1, Real, Device, Index > : public Object
     */
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
-   
+
    void setDistMesh(DistributedMeshType * distMesh);
-   
+
    DistributedMeshType * getDistributedMesh() const;
-
-   /**
-    * \brief Method for saving the object to a file as a binary data
-    */
-   void save( File& file ) const;
-
-   /**
-    * \brief Method for restoring the object from a file.
-    */
-   void load( File& file );
-
-   /**
-    * \brief Method for saving the object to a file.
-    */
-   void save( const String& fileName ) const;
-
-   /**
-    * \brief Method for restoring the object from a file.
-    */
-   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 
    protected:
 
    void computeProportions();
-       
+
    void computeSpaceStepPowers();
 
    void computeSpaceSteps();
@@ -224,7 +194,7 @@ class Grid< 1, Real, Device, Index > : public Object
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ];
-   
+
    DistributedMeshType *distGrid;
 };
 

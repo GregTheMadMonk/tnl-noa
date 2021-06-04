@@ -66,10 +66,11 @@ class DistributedGridIO<
          CoordinatesType newOrigin;
          newMesh->setOrigin(origin+spaceSteps*localBegin);
 
-         File meshFile;
-         meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"), std::ios_base::out );
-         newMesh->save( meshFile );
-         meshFile.close();
+         // FIXME: save was removed from Grid (but this is probably just for debugging...)
+//         File meshFile;
+//         meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"), std::ios_base::out );
+//         newMesh->save( meshFile );
+//         meshFile.close();
 
          VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
 

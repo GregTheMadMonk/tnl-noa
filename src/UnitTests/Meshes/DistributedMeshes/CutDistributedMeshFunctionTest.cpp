@@ -599,10 +599,11 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
         MPI_Comm group=cutDistributedGrid.getCommunicationGroup();
         if(TNL::MPI::GetRank(group)==0)
         {
-            File meshFile;
-            meshFile.open( TEST_FILE_NAME+String("-mesh.tnl"),std::ios_base::out);
-            cutDistributedGrid.getGlobalGrid().save( meshFile );
-            meshFile.close();
+           // FIXME: save was removed from Grid (but this is just for debugging...)
+//            File meshFile;
+//            meshFile.open( TEST_FILE_NAME+String("-mesh.tnl"),std::ios_base::out);
+//            cutDistributedGrid.getGlobalGrid().save( meshFile );
+//            meshFile.close();
         }
 
     }
