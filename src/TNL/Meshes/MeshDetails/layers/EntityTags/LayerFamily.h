@@ -83,18 +83,6 @@ protected:
    }
 
 
-   void save( File& file ) const
-   {
-      LayerType::save( file );
-      BaseType::save( file );
-   }
-
-   void load( File& file )
-   {
-      LayerType::load( file );
-      BaseType::load( file );
-   }
-
    void print( std::ostream& str ) const
    {
       LayerType::print( str );
@@ -132,9 +120,6 @@ protected:
    LayerInheritor& operator=( const LayerInheritor& other ) { return *this; }
    template< typename Device_ >
    LayerInheritor& operator=( const LayerInheritor< MeshConfig, Device_, DimensionTag< MeshConfig::meshDimension + 1 > >& other ) { return *this; }
-
-   void save( File& file ) const {}
-   void load( File& file ) {}
 
    void print( std::ostream& str ) const {}
 

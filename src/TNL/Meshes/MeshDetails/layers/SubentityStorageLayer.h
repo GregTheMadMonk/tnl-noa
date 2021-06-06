@@ -122,18 +122,6 @@ protected:
    }
 
 
-   void save( File& file ) const
-   {
-      BaseType::save( file );
-      matrix.save( file );
-   }
-
-   void load( File& file )
-   {
-      BaseType::load( file );
-      matrix.load( file );
-   }
-
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
@@ -223,9 +211,6 @@ protected:
    {
       return true;
    }
-
-   void save( File& file ) const {}
-   void load( File& file ) {}
 
    void getSubentitiesCount( SubdimensionTag ) {}
    void getSubentitiesMatrix( SubdimensionTag ) {}
