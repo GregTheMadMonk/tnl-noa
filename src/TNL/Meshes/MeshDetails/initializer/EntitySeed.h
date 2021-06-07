@@ -141,8 +141,8 @@ public:
    {
       if( std::is_same< EntityTopology, Topologies::Polygon >::value )
          TNL_ASSERT_GE( cornersCount, 3, "polygons must have at least 3 corners" );
-      else if( std::is_same< EntityTopology, Topologies::Polyhedron >::value )
-         TNL_ASSERT_GE( cornersCount, 2, "polyhedron must have at least 2 faces" );
+      /*else if( std::is_same< EntityTopology, Topologies::Polyhedron >::value )
+         TNL_ASSERT_GE( cornersCount, 2, "polyhedron must have at least 2 faces" );*/
 
       this->cornerIds.setSize( cornersCount );
    }

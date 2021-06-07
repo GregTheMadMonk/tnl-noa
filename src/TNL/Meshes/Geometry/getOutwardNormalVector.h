@@ -117,6 +117,27 @@ getOutwardNormalVector( const Mesh< MeshConfig, Device > & mesh,
 template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
 typename MeshTraits< MeshConfig >::PointType
+getNormalVector( const Mesh< MeshConfig, Device > & mesh,
+                 const MeshEntity< MeshConfig, Device, EntityTopology > & entity )
+{
+   using PointType = typename MeshTraits< MeshConfig >::PointType;
+   
+   const auto& v0 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+   const auto& v1 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 1 ) );
+   const auto& v2 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 2 ) );
+   const PointType u1 = v0 - v1;
+   const PointType u2 = v0 - v2;
+   const PointType n {
+      u1.y() * u2.z() - u1.z() * u2.y(),   // first component of the cross product
+      u1.z() * u2.x() - u1.x() * u2.z(),   // second component of the cross product
+      u1.x() * u2.y() - u1.y() * u2.x()    // third component of the cross product
+   };
+   return n;
+}
+
+template< typename MeshConfig, typename Device, typename EntityTopology >
+__cuda_callable__
+typename MeshTraits< MeshConfig >::PointType
 getOutwardNormalVector( const Mesh< MeshConfig, Device > & mesh,
                         const MeshEntity< MeshConfig, Device, EntityTopology > & face,
                         typename MeshTraits< MeshConfig >::PointType cellCenter )
@@ -127,16 +148,7 @@ getOutwardNormalVector( const Mesh< MeshConfig, Device > & mesh,
    static_assert( std::is_same< typename MeshType::Face, FaceType >::value, "getOutwardNormalVector called for an entity which is not a face" );
    static_assert( MeshConfig::spaceDimension == 3, "general overload intended for 3D was called with the wrong space dimension" );
 
-   const auto& v0 = mesh.getPoint( face.template getSubentityIndex< 0 >( 0 ) );
-   const auto& v1 = mesh.getPoint( face.template getSubentityIndex< 0 >( 1 ) );
-   const auto& v2 = mesh.getPoint( face.template getSubentityIndex< 0 >( 2 ) );
-   const PointType u1 = v0 - v1;
-   const PointType u2 = v0 - v2;
-   const PointType n {
-      u1.y() * u2.z() - u1.z() * u2.y(),   // first component of the cross product
-      u1.z() * u2.x() - u1.x() * u2.z(),   // second component of the cross product
-      u1.x() * u2.y() - u1.y() * u2.x()    // third component of the cross product
-   };
+   const PointType n = getNormalVector( mesh, face );
 
    // check on which side of the face is the reference cell center
    const PointType faceCenter = getEntityCenter( mesh, face );

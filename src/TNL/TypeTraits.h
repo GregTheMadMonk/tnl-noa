@@ -295,4 +295,21 @@ struct copy_const
    };
 };
 
+/**
+ * \brief Type trait for checking if T has count member
+ */
+template< typename T >
+class HasCountMember
+{
+private:
+    typedef char YesType[1];
+    typedef char NoType[2];
+
+    template< typename C > static YesType& test( decltype( &C::count ) );
+    template< typename C > static NoType& test(...);
+
+public:
+    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+};
+
 } //namespace TNL

@@ -24,7 +24,7 @@
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Topologies/Vertex.h>
 #include <TNL/Meshes/Topologies/Polyhedron.h>
-#include <TNL/Meshes/Topologies/isDynamicTopology.h>
+#include <TNL/Meshes/Topologies/IsDynamicTopology.h>
 
 namespace TNL {
 namespace Meshes {
@@ -43,7 +43,7 @@ template< typename MeshConfig,
           typename Device,
           typename EntityTopology,
           int Dimension,
-          bool dynamicTopology = Topologies::isDynamicTopology< EntityTopology >::value >
+          bool IsDynamicTopology = Topologies::IsDynamicTopology< EntityTopology >::value >
 class MeshSubentityTraits;
 
 template< typename MeshConfig, typename Device, typename MeshEntity, int Superdimension > class MeshSuperentityTraits;

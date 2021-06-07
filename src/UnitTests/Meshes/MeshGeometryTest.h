@@ -1,0 +1,457 @@
+#pragma once
+
+#ifdef HAVE_GTEST
+#include <gtest/gtest.h>
+
+#include <sstream>
+
+#include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/MeshEntity.h>
+#include <TNL/Meshes/DefaultConfig.h>
+#include <TNL/Meshes/Topologies/Vertex.h>
+#include <TNL/Meshes/Topologies/Edge.h>
+#include <TNL/Meshes/Topologies/Polygon.h>
+#include <TNL/Meshes/Topologies/Wedge.h>
+#include <TNL/Meshes/Topologies/Pyramid.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
+#include <TNL/Meshes/MeshBuilder.h>
+
+#include <TNL/Meshes/Geometry/getEntityMeasure.h>
+#include <TNL/Meshes/Geometry/isPlanar.h>
+
+namespace MeshGeometryTest {
+
+using namespace TNL;
+using namespace TNL::Meshes;
+
+class TestPolygon2DMeshConfig : public DefaultConfig< Topologies::Polygon >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+class TestPolygon3DMeshConfig : public DefaultConfig< Topologies::Polyhedron >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+class TestWedgeMeshConfig : public DefaultConfig< Topologies::Wedge >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+class TestPyramidMeshConfig : public DefaultConfig< Topologies::Pyramid >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+class TestPolyhedronMeshConfig : public DefaultConfig< Topologies::Polyhedron >
+{
+public:
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
+};
+
+TEST( MeshGeometryTest, Polygon2DAreaTest )
+{
+   using PolygonTestMesh = Mesh< TestPolygon2DMeshConfig >;
+   using PolygonMeshEntityType = MeshEntity< TestPolygon2DMeshConfig, Devices::Host, Topologies::Polygon >;
+   using VertexMeshEntityType = typename PolygonMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+
+   // Set up a non-convex 2D polygon.
+
+   PointType point0(  3.0,  4.0 ),
+             point1(  5.0, 11.0 ),
+             point2( 12.0,  8.0 ),
+             point3(  9.0,  5.0 ),
+             point4(  5.0,  6.0 );
+
+   PolygonTestMesh mesh;
+   MeshBuilder< PolygonTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setPoint( 0, point0 );
+   meshBuilder.setPoint( 1, point1 );
+   meshBuilder.setPoint( 2, point2 );
+   meshBuilder.setPoint( 3, point3 );
+   meshBuilder.setPoint( 4, point4 );
+
+   meshBuilder.setCellsCount( 1 );
+
+   meshBuilder.getCellSeed( 0 ).setCornersCount( 5 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_NEAR( getEntityMeasure( mesh, mesh.template getEntity< 2 >( 0 ) ),
+                30.0,
+                1e-6 );
+}
+
+TEST( MeshGeometryTest, Polygon3DAreaTest )
+{
+   using PolyhedronTestMesh = Mesh< TestPolygon3DMeshConfig >;
+   using PolyhedronMeshEntityType = MeshEntity< TestPolygon3DMeshConfig, Devices::Host, Topologies::Polyhedron >;
+   using VertexMeshEntityType = typename PolyhedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+
+   // Set up a non-convex 3D polygon, that is not aligned to any of the axis.
+
+   /*
+   PointType point0(  3.0,  4.0, 1.0 ),
+             point1(  5.0, 11.0, 1.0 ),
+             point2( 12.0,  8.0, 1.0 ),
+             point3(  9.0,  5.0, 1.0 ),
+             point4(  5.0,  6.0, 1.0 );*/
+
+   // Above points rotated:
+   PointType point0(  1.25245,  4.16176, 2.66667 ),
+             point1(  0.08280, 10.41230, 6.21105 ),
+             point2(  7.16272, 11.94879, 3.86289 ),
+             point3(  5.86983,  8.12036, 2.56999 ),
+             point4(  2.11438,  6.71405, 3.52860 );
+
+   PolyhedronTestMesh mesh;
+   MeshBuilder< PolyhedronTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setPoint(  0, point0  );
+   meshBuilder.setPoint(  1, point1  );
+   meshBuilder.setPoint(  2, point2  );
+   meshBuilder.setPoint(  3, point3  );
+   meshBuilder.setPoint(  4, point4  );
+
+   meshBuilder.setFacesCount( 1 );
+   meshBuilder.getFaceSeed( 0 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 4, 4 );
+
+   meshBuilder.setCellsCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornersCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_NEAR( getEntityMeasure( mesh, mesh.template getEntity< 2 >( 0 ) ),
+                30.0,
+                1e-4 );
+}
+
+TEST( MeshGeometryTest, WedgeAreaTest )
+{
+   using WedgeTestMesh = Mesh< TestWedgeMeshConfig >;
+   using WedgeMeshEntityType = MeshEntity< TestWedgeMeshConfig, Devices::Host, Topologies::Wedge >;
+   using VertexMeshEntityType = typename WedgeMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+
+   PointType point0( 10.0, 10.0, 10.0 ),
+             point1( 14.0, 10.0, 10.0 ),
+             point2( 12.0, 10.0, 16.0 ),
+             point3( 10.0, 19.0, 10.0 ),
+             point4( 14.0, 19.0, 10.0 ),
+             point5( 12.0, 19.0, 16.0 );
+
+   WedgeTestMesh mesh;
+   MeshBuilder< WedgeTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 6 );
+   meshBuilder.setPoint(  0, point0  );
+   meshBuilder.setPoint(  1, point1  );
+   meshBuilder.setPoint(  2, point2  );
+   meshBuilder.setPoint(  3, point3  );
+   meshBuilder.setPoint(  4, point4  );
+   meshBuilder.setPoint(  5, point5  );
+
+   meshBuilder.setCellsCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 5, 5 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_NEAR( getEntityMeasure( mesh, mesh.template getEntity< 3 >( 0 ) ),
+                108.0,
+                1e-6 );
+}
+
+TEST( MeshGeometryTest, PyramidAreaTest )
+{
+   using PyramidTestMesh = Mesh< TestPyramidMeshConfig >;
+   using PyramidMeshEntityType = MeshEntity< TestPyramidMeshConfig, Devices::Host, Topologies::Pyramid >;
+   using VertexMeshEntityType = typename PyramidMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+
+   // Set up a pyramid of height 10 with a square base of size 10.
+
+   PointType point0( 10.0, 10.0, 10.0 ),
+             point1( 20.0, 10.0, 10.0 ),
+             point2( 20.0, 20.0, 10.0 ),
+             point3( 10.0, 20.0, 10.0 ),
+             point4( 15.0, 15.0, 20.0 );
+
+   PyramidTestMesh mesh;
+   MeshBuilder< PyramidTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setPoint(  0, point0  );
+   meshBuilder.setPoint(  1, point1  );
+   meshBuilder.setPoint(  2, point2  );
+   meshBuilder.setPoint(  3, point3  );
+   meshBuilder.setPoint(  4, point4  );
+
+   meshBuilder.setCellsCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_NEAR( getEntityMeasure( mesh, mesh.template getEntity< 3 >( 0 ) ),
+                1000.0 / 3.0,
+                1e-6 );
+}
+
+TEST( MeshGeometryTest, PolyhedronAreaTest )
+{
+   using PolyhedronTestMesh = Mesh< TestPolyhedronMeshConfig >;
+   using PolyhedronMeshEntityType = MeshEntity< TestPolyhedronMeshConfig, Devices::Host, Topologies::Polyhedron >;
+   using VertexMeshEntityType = typename PolyhedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+
+   // Set up a cube of size 10 with a pyramid of height 10 sitting on top.
+
+   PointType point0( 10.0, 10.0, 10.0 ),
+             point1( 20.0, 10.0, 10.0 ),
+             point2( 10.0, 20.0, 10.0 ),
+             point3( 20.0, 20.0, 10.0 ),
+             point4( 10.0, 10.0, 20.0 ),
+             point5( 20.0, 10.0, 20.0 ),
+             point6( 10.0, 20.0, 20.0 ),
+             point7( 20.0, 20.0, 20.0 ),
+             point8( 15.0, 15.0, 30.0 );
+
+   PolyhedronTestMesh mesh;
+   MeshBuilder< PolyhedronTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 9 );
+   meshBuilder.setPoint(  0, point0 );
+   meshBuilder.setPoint(  1, point1 );
+   meshBuilder.setPoint(  2, point2 );
+   meshBuilder.setPoint(  3, point3 );
+   meshBuilder.setPoint(  4, point4 );
+   meshBuilder.setPoint(  5, point5 );
+   meshBuilder.setPoint(  6, point6 );
+   meshBuilder.setPoint(  7, point7 );
+   meshBuilder.setPoint(  8, point8 );
+
+   meshBuilder.setFacesCount( 9 );
+
+   meshBuilder.getFaceSeed( 0 ).setCornersCount( 4 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 2 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 1, 3 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 2, 1 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 3, 0 );
+
+   meshBuilder.getFaceSeed( 1 ).setCornersCount( 4 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 0, 1 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 1, 3 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 2, 7 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 3, 5 );
+
+   meshBuilder.getFaceSeed( 2 ).setCornersCount( 4 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 0, 2 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 1, 0 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 2, 4 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 3, 6 );
+
+   meshBuilder.getFaceSeed( 3 ).setCornersCount( 4 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 2, 5 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 3, 4 );
+
+   meshBuilder.getFaceSeed( 4 ).setCornersCount( 4 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 0, 3 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 1, 2 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 2, 6 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 3, 7 );
+
+   meshBuilder.getFaceSeed( 5 ).setCornersCount( 3 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 0, 4 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 1, 5 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 2, 8 );
+
+   meshBuilder.getFaceSeed( 6 ).setCornersCount( 3 );
+   meshBuilder.getFaceSeed( 6 ).setCornerId( 0, 5 );
+   meshBuilder.getFaceSeed( 6 ).setCornerId( 1, 7 );
+   meshBuilder.getFaceSeed( 6 ).setCornerId( 2, 8 );
+
+   meshBuilder.getFaceSeed( 7 ).setCornersCount( 3 );
+   meshBuilder.getFaceSeed( 7 ).setCornerId( 0, 7 );
+   meshBuilder.getFaceSeed( 7 ).setCornerId( 1, 6 );
+   meshBuilder.getFaceSeed( 7 ).setCornerId( 2, 8 );
+
+   meshBuilder.getFaceSeed( 8 ).setCornersCount( 3 );
+   meshBuilder.getFaceSeed( 8 ).setCornerId( 0, 6 );
+   meshBuilder.getFaceSeed( 8 ).setCornerId( 1, 4 );
+   meshBuilder.getFaceSeed( 8 ).setCornerId( 2, 8 );
+
+   meshBuilder.setCellsCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornersCount( 9 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 5, 5 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 6, 6 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 7, 7 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 8, 8 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_NEAR( getEntityMeasure( mesh, mesh.template getEntity< 3 >( 0 ) ),
+                1000.0 + ( 1000.0 / 3.0 ),
+                1e-6 );
+}
+
+TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
+{
+   using PolyhedronTestMesh = Mesh< TestPolygon3DMeshConfig >;
+   using PolyhedronMeshEntityType = MeshEntity< TestPolygon3DMeshConfig, Devices::Host, Topologies::Polyhedron >;
+   using VertexMeshEntityType = typename PolyhedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
+   using PointType = typename VertexMeshEntityType::PointType;
+   using RealType = typename PolyhedronTestMesh::RealType;
+
+   constexpr RealType offset[] = { 0.100, 0.125, 0.150 };
+
+   // Set up 1 planar and 5 non-planar non-convex 3D polygons.
+
+   /*
+   PointType point0(  3.0,  4.0, 1.0 ),
+             point1(  5.0, 11.0, 1.0 ),
+             point2( 12.0,  8.0, 1.0 ),
+             point3(  9.0,  5.0, 1.0 ),
+             point4(  5.0,  6.0, 1.0 );*/
+
+   // Above points rotated:
+   PointType point0(  1.25245,  4.16176, 2.66667 ),
+             point1(  0.08280, 10.41230, 6.21105 ),
+             point2(  7.16272, 11.94879, 3.86289 ),
+             point3(  5.86983,  8.12036, 2.56999 ),
+             point4(  2.11438,  6.71405, 3.52860 );
+
+   // Previous 5 points deviated by offset:
+   PointType point0_( point0[0] + offset[0], point0[1] + offset[1], point0[2] + offset[2] ),
+             point1_( point1[0] + offset[0], point1[1] + offset[1], point1[2] + offset[2] ),
+             point2_( point2[0] + offset[0], point2[1] + offset[1], point2[2] + offset[2] ),
+             point3_( point3[0] + offset[0], point3[1] + offset[1], point3[2] + offset[2] ),
+             point4_( point4[0] + offset[0], point4[1] + offset[1], point4[2] + offset[2] );
+
+   PolyhedronTestMesh mesh;
+   MeshBuilder< PolyhedronTestMesh > meshBuilder;
+
+   meshBuilder.setPointsCount( 10 );
+   meshBuilder.setPoint(  0, point0  );
+   meshBuilder.setPoint(  1, point1  );
+   meshBuilder.setPoint(  2, point2  );
+   meshBuilder.setPoint(  3, point3  );
+   meshBuilder.setPoint(  4, point4  );
+   meshBuilder.setPoint(  5, point0_ );
+   meshBuilder.setPoint(  6, point1_ );
+   meshBuilder.setPoint(  7, point2_ );
+   meshBuilder.setPoint(  8, point3_ );
+   meshBuilder.setPoint(  9, point4_ );
+
+   meshBuilder.setFacesCount( 6 );
+
+   // Planar face with non-deviated points
+   meshBuilder.getFaceSeed( 0 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 0 ).setCornerId( 4, 4 );
+
+   // Non-Planar face with 0th point deviated
+   meshBuilder.getFaceSeed( 1 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 0, 5 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 1 ).setCornerId( 4, 4 );
+
+   // Non-Planar face with 1th point deviated
+   meshBuilder.getFaceSeed( 2 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 1, 6 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 2 ).setCornerId( 4, 4 );
+
+   // Non-Planar face with 2th point deviated
+   meshBuilder.getFaceSeed( 3 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 2, 7 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 3 ).setCornerId( 4, 4 );
+
+   // Non-Planar face with 3th point deviated
+   meshBuilder.getFaceSeed( 4 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 3, 8 );
+   meshBuilder.getFaceSeed( 4 ).setCornerId( 4, 4 );
+
+   // Non-Planar face with 4th point deviated
+   meshBuilder.getFaceSeed( 5 ).setCornersCount( 5 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 0, 0 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 1, 1 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 2, 2 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 3, 3 );
+   meshBuilder.getFaceSeed( 5 ).setCornerId( 4, 9 );
+
+   meshBuilder.setCellsCount( 1 );
+   meshBuilder.getCellSeed( 0 ).setCornersCount( 6 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
+   meshBuilder.getCellSeed( 0 ).setCornerId( 5, 5 );
+
+   ASSERT_TRUE( meshBuilder.build( mesh ) );
+
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 0 ), 1e-4 ), true );
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 1 ), 1e-4 ), false );
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 2 ), 1e-4 ), false );
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 3 ), 1e-4 ), false );
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 4 ), 1e-4 ), false );
+   EXPECT_EQ( isPlanar( mesh, mesh.template getEntity< 2 >( 5 ), 1e-4 ), false );
+}
+
+} // namespace MeshTest
+
+#endif

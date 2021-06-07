@@ -29,7 +29,7 @@ template< typename MeshConfig,
           typename EntityTopology,
           typename SubdimensionTag,
           bool SubentityStorage = WeakSubentityStorageTrait< MeshConfig, Device, typename MeshTraits< MeshConfig, Device >::template EntityTraits< EntityTopology::dimension >::EntityTopology, SubdimensionTag >::storageEnabled,
-          bool DynamicTopology = Topologies::isDynamicTopology< EntityTopology >::value >
+          bool IsDynamicTopology = Topologies::IsDynamicTopology< EntityTopology >::value >
 class SubentityStorageLayer;
 
 template< typename MeshConfig,
