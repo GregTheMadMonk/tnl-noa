@@ -190,6 +190,12 @@ public:
             }
             offsetsArray.push_back( connectivityArray.size() );
          }
+         else {
+            // skip the entity
+            const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
+            for( int v = 0; v < subvertices; v++ )
+               skipValue( dataFormat, inputFile, "int" );
+         }
       }
 
       // set cell types
