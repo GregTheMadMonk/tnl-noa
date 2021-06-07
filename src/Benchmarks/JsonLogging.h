@@ -102,23 +102,15 @@ public:
 
    void addCommonLogs( const CommonLogs& logs )
    {
-      //if( this->lineStarted )
-      //   log << "," << std::endl;
-      //log << "   \"benchmarks\" : [" << std::endl;
       this->commonLogs = logs;
-      //int idx( 0 );
       for( auto lg : logs )
       {
          if( verbose )
             std::cout << lg.first << " = " << lg.second << std::endl;
-         //if( idx++ > 0 )
-         //   log << "," << std::endl;
-         //log << "      \"" << lg.first << "\" : \"" << lg.second << "\"";
-         //this->lineStarted = true;
       }
    };
 
-   void resetLogsMetadat() { this->logsMetadata.clear(); };
+   void resetLogsMetada() { this->logsMetadata.clear(); };
 
    void addLogsMetadata( const std::vector< String >& md )
    {
@@ -141,17 +133,15 @@ public:
       if( this->lineStarted )
          log << "," << std::endl;
 
-      log << "         {" << std::endl;
+      log << "      {" << std::endl;
 
       // write common logs
       int idx( 0 );
       for( auto lg : this->commonLogs )
       {
-         //if( verbose )
-         //   std::cout << lg.first << " = " << lg.second << std::endl;
          if( idx++ > 0 )
             log << "," << std::endl;
-         log << "      \"" << lg.first << "\" : \"" << lg.second << "\"";
+         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
       }
 
       auto md = this->logsMetadata.begin();
@@ -161,9 +151,9 @@ public:
             std::cout << el << "\t";
          if( idx++ > 0 )
             log << "," << std::endl;
-         log << "          \"" << *md++ << "\" : \"" << el << "\"";
+         log << "         \"" << *md++ << "\" : \"" << el << "\"";
       }
-      log << std::endl << "         }";
+      log << std::endl << "      }";
       this->lineStarted = true;
       if( verbose )
          std::cout << std::endl;
@@ -177,18 +167,13 @@ public:
 
       if( verbose )
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
-      log << "   \"title\" : \"" << title << "\"";
-      this->lineStarted = true;
    }
 
    void
    writeMetadata( const MetadataMap & metadata )
    {
       if( outputMode == "append" )
-      {
-         this->lineStarted = true;
          return;
-      }
 
       if( verbose )
          std::cout << "properties:" << std::endl;
@@ -197,13 +182,7 @@ public:
       for( auto & it : metadata ) {
          if( verbose )
             std::cout << "   " << it.first << " = " << it.second << std::endl;
-         if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "   \"" << it.first << "\" : \"" << it.second << "\"";
-         //this->lineStarted = true;
       }
-      log << "," << std::endl << "      \"results\" : [ " << std::endl;
-      this->lineStarted = false;
 
       if( verbose )
          std::cout << std::endl;
@@ -227,56 +206,22 @@ public:
                       int colspan = 1 )
    {
       log << "\"error\" : \"" << msg << "\"" << std::endl;
-      // initial indent string
-      /*header_indent = "!";
-      log << std::endl;
-      for( auto & it : metadataColumns ) {
-         log << header_indent << " " << it.first << std::endl;
-      }
-
-      // make sure there is a header column for the message
-      if( horizontalGroups.size() == 0 )
-         horizontalGroups.push_back( {"", 1} );
-
-      // dump stacked spanning columns
-      while( horizontalGroups.back().second <= 0 ) {
-         horizontalGroups.pop_back();
-         header_indent.pop_back();
-      }
-      for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
-         if( horizontalGroups[ i ].second > 0 ) {
-            log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
-            header_indent += "!";
-         }
-      }
-      if( horizontalGroups.size() > 0 ) {
-         horizontalGroups.back().second -= colspan;
-         header_indent.pop_back();
-      }
-
-      // only when changed (the header has been already adjusted)
-      // print each element on separate line
-      for( auto & it : metadataColumns ) {
-         log << it.second << std::endl;
-      }
-      log << msg << std::endl;
-      */
    }
 
    void
    closeTable()
    {
-      //log << std::endl << "   ]" << std::endl;
-      //log << "," << std::endl;
-      //header_indent = body_indent = "";
-      //header_changed = true;
-      //horizontalGroups.clear();
    }
 
    bool save( std::ostream & logFile )
    {
-      closeTable();
-      logFile << log.str();
+      if( ! this->logFileAppend )
+      {
+         logFile << "{" << std::endl;
+         logFile << "   \"results\" : [ " << std::endl;
+      }
+      else
+         logFile << log.str();
       if( logFile.good() ) {
          log.str() = "";
          return true;

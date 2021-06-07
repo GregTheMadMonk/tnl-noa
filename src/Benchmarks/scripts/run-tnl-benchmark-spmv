@@ -73,4 +73,4 @@ do
      done
    fi
 done
-
+$BENCHMARK --log-file log-files/sparse-matrix-benchmark.log --output-mode close --verbose 1
