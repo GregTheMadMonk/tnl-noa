@@ -59,7 +59,8 @@ public:
          for( int cellVertexIdx = 0;
               cellVertexIdx < meshDimension + 1;
               cellVertexIdx++ )
-            str << " " << cell.template getSubentityIndex< 0 >( cellVertexIdx );
+            // note: Netgen has 1-based indices
+            str << " " << cell.template getSubentityIndex< 0 >( cellVertexIdx ) + 1;
          str << "\n";
       }
    }
