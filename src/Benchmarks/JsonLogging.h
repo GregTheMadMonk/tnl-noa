@@ -89,8 +89,9 @@ public:
    using RowElements = JsonLoggingRowElements;
 
    JsonLogging( int verbose = true,
-                String outputMode = "" )
-   : verbose(verbose), outputMode( outputMode )
+                String outputMode = "",
+                bool logFileAppend = false )
+   : verbose(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
    {}
 
    void
@@ -313,6 +314,7 @@ protected:
 
    bool lineStarted = false;
    bool resultsStarted = false;
+   bool logFileAppend = false;
 };
 
 } // namespace Benchmarks

@@ -87,7 +87,8 @@ public:
    using RowElements = LoggingRowElements;
 
    Logging( int verbose = true,
-            String outputMode = "" )
+            String outputMode = "",
+            bool logFileAppend = false )
    : verbose(verbose), outputMode( outputMode )
    {}
 

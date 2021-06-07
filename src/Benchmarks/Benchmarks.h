@@ -1,5 +1,5 @@
 /***************************************************************************
-                          benchmarks.h  -  description
+                          Benchmarks.h  -  description
                              -------------------
     begin                : Dec 30, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -66,278 +66,129 @@ template< typename Logger = Logging >
 class Benchmark
 : protected Logger
 {
-public:
-   using typename Logger::MetadataElement;
-   using typename Logger::MetadataMap;
-   using typename Logger::MetadataColumns;
-   using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
+   public:
+      using typename Logger::MetadataElement;
+      using typename Logger::MetadataMap;
+      using typename Logger::MetadataColumns;
+      using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
-   using typename Logger::CommonLogs;
-   using Logger::addCommonLogs;
-   using Logger::addLogsMetadata;
-   using Logger::writeHeader;
+      using typename Logger::CommonLogs;
+      using Logger::addCommonLogs;
+      using Logger::addLogsMetadata;
+      using Logger::writeHeader;
 
-   Benchmark( int loops = 10,
-              bool verbose = true,
-              String outputMode = "" )
-   : Logger(verbose, outputMode), loops(loops)
-   {}
+      Benchmark( int loops = 10,
+               bool verbose = true,
+               String outputMode = "",
+               bool logFileAppend = false );
 
-   static void configSetup( Config::ConfigDescription& config )
-   {
-      config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
-      config.addEntry< bool >( "reset", "Call reset function between loops.", true );
-      config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 0.0 );
-      config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
-   }
+      static void configSetup( Config::ConfigDescription& config );
 
-   void setup( const Config::ParameterContainer& parameters )
-   {
-      this->loops = parameters.getParameter< int >( "loops" );
-      this->reset = parameters.getParameter< bool >( "reset" );
-      this->minTime = parameters.getParameter< double >( "min-time" );
-      const int verbose = parameters.getParameter< int >( "verbose" );
-      Logger::setVerbose( verbose );
-   }
-   // TODO: ensure that this is not called in the middle of the benchmark
-   // (or just remove it completely?)
-   void
-   setLoops( int loops )
-   {
-      this->loops = loops;
-   }
+      void setup( const Config::ParameterContainer& parameters );
 
-   void setMinTime( const double& minTime )
-   {
-      this->minTime = minTime;
-   }
+      // TODO: ensure that this is not called in the middle of the benchmark
+      // (or just remove it completely?)
+      void setLoops( int loops );
 
-   // Marks the start of a new benchmark
-   void
-   newBenchmark( const String & title )
-   {
-      Logger::closeTable();
-      Logger::writeTitle( title );
-   }
+      void setMinTime( const double& minTime );
 
-   // Marks the start of a new benchmark (with custom metadata)
-   void
-   newBenchmark( const String & title,
-                 MetadataMap metadata )
-   {
-      Logger::closeTable();
-      Logger::writeTitle( title );
-      // add loops and reset flag to metadata
-      metadata["loops"] = convertToString(loops);
-      metadata["reset"] = convertToString( reset );
-      metadata["minimal test time"] = convertToString( minTime );
-      Logger::writeMetadata( metadata );
-   }
+      // Marks the start of a new benchmark
+      void newBenchmark( const String & title );
 
-   // Sets metadata columns -- values used for all subsequent rows until
-   // the next call to this function.
-   void
-   setMetadataColumns( const MetadataColumns & metadata )
-   {
-      if( Logger::metadataColumns != metadata )
-         Logger::header_changed = true;
-      Logger::metadataColumns = metadata;
-   }
+      // Marks the start of a new benchmark (with custom metadata)
+      void newBenchmark( const String & title,
+                        MetadataMap metadata );
 
-   // TODO: maybe should be renamed to createVerticalGroup and ensured that vertical and horizontal groups are not used within the same "Benchmark"
-   // Sets current operation -- operations expand the table vertically
-   //  - baseTime should be reset to 0.0 for most operations, but sometimes
-   //    it is useful to override it
-   //  - Order of operations inside a "Benchmark" does not matter, rows can be
-   //    easily sorted while converting to HTML.)
-   void
-   setOperation( const String & operation,
-                 const double datasetSize = 0.0, // in GB
-                 const double baseTime = 0.0 )
-   {
-      monitor.setStage( operation.getString() );
-      if( Logger::metadataColumns.size() > 0 && String(Logger::metadataColumns[ 0 ].first) == "operation" ) {
-         Logger::metadataColumns[ 0 ].second = operation;
-      }
-      else {
-         Logger::metadataColumns.insert( Logger::metadataColumns.begin(), {"operation", operation} );
-      }
-      setOperation( datasetSize, baseTime );
-      Logger::header_changed = true;
-   }
+      // Sets metadata columns -- values used for all subsequent rows until
+      // the next call to this function.
+      void setMetadataColumns( const MetadataColumns & metadata );
 
-   void
-   setOperation( const double datasetSize = 0.0,
-                 const double baseTime = 0.0 )
-   {
-      this->datasetSize = datasetSize;
-      this->baseTime = baseTime;
-   }
+      // TODO: maybe should be renamed to createVerticalGroup and ensured that vertical and horizontal groups are not used within the same "Benchmark"
+      // Sets current operation -- operations expand the table vertically
+      //  - baseTime should be reset to 0.0 for most operations, but sometimes
+      //    it is useful to override it
+      //  - Order of operations inside a "Benchmark" does not matter, rows can be
+      //    easily sorted while converting to HTML.)
+      void
+      setOperation( const String & operation,
+                  const double datasetSize = 0.0, // in GB
+                  const double baseTime = 0.0 );
 
-   // Creates new horizontal groups inside a benchmark -- increases the number
-   // of columns in the "Benchmark", implies column spanning.
-   // (Useful e.g. for SpMV formats, different configurations etc.)
-   void
-   createHorizontalGroup( const String & name,
-                          int subcolumns )
-   {
-      if( Logger::horizontalGroups.size() == 0 ) {
-         Logger::horizontalGroups.push_back( {name, subcolumns} );
-      }
-      else {
-         auto & last = Logger::horizontalGroups.back();
-         if( last.first != name && last.second > 0 ) {
-            Logger::horizontalGroups.push_back( {name, subcolumns} );
-         }
-         else {
-            last.first = name;
-            last.second = subcolumns;
-         }
-      }
-   }
+      void setOperation( const double datasetSize = 0.0,
+                        const double baseTime = 0.0 );
 
-   // Times a single ComputeFunction. Subsequent calls implicitly split
-   // the current "horizontal group" into sub-columns identified by
-   // "performer", which are further split into "bandwidth", "time" and
-   // "speedup" columns.
-   // TODO: allow custom columns bound to lambda functions (e.g. for Gflops calculation)
-   // Also terminates the recursion of the following variadic template.
-   template< typename Device,
-             typename ResetFunction,
-             typename ComputeFunction >
-   double
-   time( ResetFunction reset,
-         const String & performer,
-         ComputeFunction & compute,
-         BenchmarkResult< Logger > & result )
-   {
-      result.time = std::numeric_limits<double>::quiet_NaN();
-      result.stddev = std::numeric_limits<double>::quiet_NaN();
-      FunctionTimer< Device > functionTimer;
-      try {
-         if( Logger::verbose > 1 ) {
-            // run the monitor main loop
-            Solvers::SolverMonitorThread monitor_thread( monitor );
-            if( this->reset )
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
-            else
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
-         }
-         else {
-            if( this->reset )
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
-            else
-               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
-         }
-         this->performedLoops = functionTimer.getPerformedLoops();
-      }
-      catch ( const std::exception& e ) {
-         std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
-      }
+      // Creates new horizontal groups inside a benchmark -- increases the number
+      // of columns in the "Benchmark", implies column spanning.
+      // (Useful e.g. for SpMV formats, different configurations etc.)
+      void
+      createHorizontalGroup( const String & name,
+                           int subcolumns );
 
-      result.bandwidth = datasetSize / result.time;
-      result.speedup = this->baseTime / result.time;
-      if( this->baseTime == 0.0 )
-         this->baseTime = result.time;
+      // Times a single ComputeFunction. Subsequent calls implicitly split
+      // the current "horizontal group" into sub-columns identified by
+      // "performer", which are further split into "bandwidth", "time" and
+      // "speedup" columns.
+      // TODO: allow custom columns bound to lambda functions (e.g. for Gflops calculation)
+      // Also terminates the recursion of the following variadic template.
+      template< typename Device,
+               typename ResetFunction,
+               typename ComputeFunction >
+      double time( ResetFunction reset,
+                  const String & performer,
+                  ComputeFunction & compute,
+                  BenchmarkResult< Logger > & result );
 
-      Logger::writeTableHeader( performer, result.getTableHeader() );
-      Logger::writeTableRow( performer, result.getRowElements() );
+      template< typename Device,
+               typename ResetFunction,
+               typename ComputeFunction >
+      inline double time( ResetFunction reset,
+                        const String & performer,
+                        ComputeFunction & compute );
+      /*{
+         BenchmarkResult< Logger > result;
+         return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
+      }*/
 
-      return this->baseTime;
-   }
+      /****
+       * The same methods as above but without reset function
+       */
+      template< typename Device,
+               typename ComputeFunction >
+      double time( const String & performer,
+                  ComputeFunction & compute,
+                  BenchmarkResult< Logger > & result );
 
-   template< typename Device,
-             typename ResetFunction,
-             typename ComputeFunction >
-   inline double
-   time( ResetFunction reset,
-         const String & performer,
-         ComputeFunction & compute )
-   {
-      BenchmarkResult< Logger > result;
-      return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
-   }
+      template< typename Device,
+               typename ComputeFunction >
+      inline double time( const String & performer,
+                        ComputeFunction & compute );
 
-   /****
-    * The same methods as above but without reset function
-    */
-   template< typename Device,
-             typename ComputeFunction >
-   double
-   time( const String & performer,
-         ComputeFunction & compute,
-         BenchmarkResult< Logger > & result )
-   {
-      result.time = std::numeric_limits<double>::quiet_NaN();
-      result.stddev = std::numeric_limits<double>::quiet_NaN();
-      FunctionTimer< Device > functionTimer;
-      try {
-         if( Logger::verbose > 1 ) {
-            // run the monitor main loop
-            Solvers::SolverMonitorThread monitor_thread( monitor );
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
-         }
-         else {
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
-         }
-      }
-      catch ( const std::exception& e ) {
-         std::cerr << "Function timer failed due to a C++ exception with description: " << e.what() << std::endl;
-      }
+      // Adds an error message to the log. Should be called in places where the
+      // "time" method could not be called (e.g. due to failed allocation).
+      void addErrorMessage( const char* msg,
+                           int numberOfComputations = 1 );
 
-      result.bandwidth = datasetSize / result.time;
-      result.speedup = this->baseTime / result.time;
-      if( this->baseTime == 0.0 )
-         this->baseTime = result.time;
+      using Logger::save;
 
-      Logger::writeTableHeader( performer, result.getTableHeader() );
-      Logger::writeTableRow( performer, result.getRowElements() );
+      SolverMonitorType& getMonitor();
 
-      return this->baseTime;
-   }
+      int getPerformedLoops() const;
 
-   template< typename Device,
-             typename ComputeFunction >
-   inline double
-   time( const String & performer,
-         ComputeFunction & compute )
-   {
-      BenchmarkResult< Logger > result;
-      return time< Device, ComputeFunction >( performer, compute, result );
-   }
+      bool isResetingOn() const;
 
-   // Adds an error message to the log. Should be called in places where the
-   // "time" method could not be called (e.g. due to failed allocation).
-   void
-   addErrorMessage( const char* msg,
-                    int numberOfComputations = 1 ) {
-      // each computation has 3 subcolumns
-      const int colspan = 3 * numberOfComputations;
-      Logger::writeErrorMessage( msg, colspan );
-      std::cerr << msg << std::endl;
-   }
+   protected:
 
-   using Logger::save;
+      int loops = 1, performedLoops = 0;
 
-   SolverMonitorType& getMonitor() {
-      return monitor;
-   }
+      double minTime = 0.0;
 
-   int getPerformedLoops() const {
-      return this->performedLoops;
-   }
+      double datasetSize = 0.0;
 
-   bool isResetingOn() const {
-      return reset;
-   }
+      double baseTime = 0.0;
 
-protected:
-   int loops = 1, performedLoops = 0;
-   double minTime = 0.0;
-   double datasetSize = 0.0;
-   double baseTime = 0.0;
-   bool reset = true;
-   SolverMonitorType monitor;
+      bool reset = true;
+
+      SolverMonitorType monitor;
 };
 
 
@@ -396,3 +247,5 @@ inline typename Benchmark< Logger >::MetadataMap getHardwareMetadata()
 
 } // namespace Benchmarks
 } // namespace TNL
+
+#include <Benchmarks/Benchmark.hpp>
