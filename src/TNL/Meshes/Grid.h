@@ -24,6 +24,31 @@ class Grid : public Object
 {
 };
 
+template< int Dimension, typename Real, typename Device, typename Index >
+bool operator==( const Grid< Dimension, Real, Device, Index >& lhs,
+                 const Grid< Dimension, Real, Device, Index >& rhs )
+{
+   return lhs.getDimensions() == rhs.getDimensions()
+       && lhs.getOrigin() == rhs.getOrigin()
+       && lhs.getProportions() == rhs.getProportions();
+}
+
+template< int Dimension, typename Real, typename Device, typename Index >
+bool operator!=( const Grid< Dimension, Real, Device, Index >& lhs,
+                 const Grid< Dimension, Real, Device, Index >& rhs )
+{
+   return ! (lhs == rhs);
+}
+
+template< int Dimension, typename Real, typename Device, typename Index >
+std::ostream& operator<<( std::ostream& str, const Grid< Dimension, Real, Device, Index >& grid )
+{
+   str << "Grid dimensions: "  << grid.getDimensions()  << std::endl;
+   str << "     origin: "      << grid.getOrigin()      << std::endl;
+   str << "     proportions: " << grid.getProportions() << std::endl;
+   return str;
+}
+
 } // namespace Meshes
 } // namespace TNL
 
