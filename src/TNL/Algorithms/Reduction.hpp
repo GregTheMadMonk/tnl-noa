@@ -331,7 +331,7 @@ reduce( const Index begin,
    if( can_reduce_later_on_host ) {
       // transfer the reduced data from device to host
       std::unique_ptr< Result[] > resultArray{
-         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // Workaround for nvcc 10.1.168 - it would modify the simple expression
          // `new Result[reducedSize]` in the source code to `new (Result[reducedSize])`
          // which is not correct - see e.g. https://stackoverflow.com/a/39671946
          // Thus, the host compiler would spit out hundreds of warnings...
@@ -423,7 +423,7 @@ reduceWithArgument( const Index begin,
    if( can_reduce_later_on_host ) {
       // transfer the reduced data from device to host
       std::unique_ptr< Result[] > resultArray{
-         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // Workaround for nvcc 10.1.168 - it would modify the simple expression
          // `new Result[reducedSize]` in the source code to `new (Result[reducedSize])`
          // which is not correct - see e.g. https://stackoverflow.com/a/39671946
          // Thus, the host compiler would spit out hundreds of warnings...
@@ -437,7 +437,7 @@ reduceWithArgument( const Index begin,
          #endif
       };
       std::unique_ptr< Index[] > indexArray{
-         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // Workaround for nvcc 10.1.168 - it would modify the simple expression
          // `new Index[reducedSize]` in the source code to `new (Index[reducedSize])`
          // which is not correct - see e.g. https://stackoverflow.com/a/39671946
          // Thus, the host compiler would spit out hundreds of warnings...
