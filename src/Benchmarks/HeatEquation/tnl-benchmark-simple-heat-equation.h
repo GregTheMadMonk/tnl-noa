@@ -195,7 +195,7 @@ __global__ void updateKernel( Real* u,
    extern __shared__ Real du[];
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
- 
+
    if( idx < dofs )
    {
       u[ idx ] += tau * aux[ idx ];
@@ -203,7 +203,7 @@ __global__ void updateKernel( Real* u,
    }
    else
       du[ threadIdx.x ] = 0.0;
- 
+
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
@@ -279,7 +279,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       std::cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << std::endl;
       return false;
    }
- 
+
    const Real hx = domainXSize / ( Real ) gridXSize;
    const Real hy = domainYSize / ( Real ) gridYSize;
    const Real hx_inv = 1.0 / ( hx * hx );
@@ -290,7 +290,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       if( verbose )
         std::cout << "Setting tau to " << tau << "." << std::endl;
    }
- 
+
    /****
     * Initial condition
     */
@@ -303,7 +303,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - ( x * x + y * y ) / ( sigma * sigma ) );
       }
-   
+
    /****
     * Allocate data on the CUDA device
     */
@@ -318,7 +318,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       std::cerr << "Allocation failed. " << cudaErr << std::endl;
       return false;
    }
-   
+
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typedef typename GridType::PointType PointType;
    typedef Pointers::SharedPointer<  GridType > GridPointer;
@@ -330,12 +330,12 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-initial.tnl" );
-   
+
    Containers::VectorView< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
-   vecAux.setValue( 0.0 );   
+   vecAux.setValue( 0.0 );
 
-   
+
    /****
     * Explicit Euler solver
     */
@@ -347,8 +347,8 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    std::cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << std::endl;
 
    if( verbose )
-     std::cout << "Starting the solver main loop..." <<std::endl;   
-   
+     std::cout << "Starting the solver main loop..." <<std::endl;
+
    timer.reset();
    computationTimer.reset();
    updateTimer.reset();
@@ -359,12 +359,12 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    {
       computationTimer.start();
       const Real timeLeft = finalTime - time;
-      const Real currentTau = tau < timeLeft ? tau : timeLeft;    
-      
+      const Real currentTau = tau < timeLeft ? tau : timeLeft;
+
       if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, currentTau, hx_inv, hy_inv, gridXSize, gridYSize) )
          return false;
       computationTimer.stop();
-      
+
       /*if( iteration % 100 == 0 )
       {
          cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
@@ -373,8 +373,8 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
          writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
          getchar();
-      }*/      
-      
+      }*/
+
       updateTimer.start();
       /****
        * Update
@@ -385,8 +385,8 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       {
          std::cerr << "Update failed." << std::endl;
          return false;
-      }            
-      
+      }
+
       cudaDeviceSynchronize();
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
       if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
@@ -397,16 +397,16 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       for( unsigned int i = 0; i < cudaUpdateBlocks.x; i++ )
          const Real a = fabs( max_du[ i ] );
       updateTimer.stop();
-            
+
       time += currentTau;
       iteration++;
       if( verbose && iteration % 1000 == 0 )
-        std::cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;                 
+        std::cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;
    }
    timer.stop();
    if( verbose )
     std::cout <<std::endl;
-   
+
    //cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    //writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
 
@@ -415,9 +415,9 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
     */
    if( verbose )
      std::cout << "Saving result..." << std::endl;
-   
+
    meshFunction.save( "simple-heat-equation-result.tnl" );
-   
+
    /***
     * Freeing allocated memory
     */
@@ -447,7 +447,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    Real tau = parameters.getParameter< double >( "time-step" );
    const Real finalTime = parameters.getParameter< double >( "final-time" );
    const bool verbose = parameters.getParameter< bool >( "verbose" );
- 
+
    /****
     * Initiation
     */
@@ -469,7 +469,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
       if( verbose )
         std::cout << "Setting tau to " << tau << "." << std::endl;
    }
- 
+
    /****
     * Initial condition
     */
@@ -482,13 +482,13 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
- 
+
    /****
     * Explicit Euler solver
     */
    if( verbose )
      std::cout << "Starting the solver main loop..." <<std::endl;
-   
+
    timer.reset();
    computationTimer.reset();
    updateTimer.reset();
@@ -507,14 +507,14 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
       for( Index j = 0; j < gridYSize; j++ )
       {
          aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
-         aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
+         aux[ j * gridXSize + gridXSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 2 ];
       }
       for( Index i = 0; i < gridXSize; i++ )
       {
          aux[ i ] = 0.0; //u[ gridXSize + i ];
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
- 
+
       for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -523,7 +523,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
                                      ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
       computationTimer.stop();
- 
+
       updateTimer.start();
       Real residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
@@ -533,7 +533,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
          residue += fabs( add );
       }
       updateTimer.stop();
- 
+
       time += currentTau;
       iteration++;
       if( verbose && iteration % 10000 == 0 )
@@ -543,7 +543,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    if( verbose )
     std::cout <<std::endl;
 
-   
+
    /****
     * Saving the result
     */
@@ -557,7 +557,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
-   
+
    /***
     * Freeing allocated memory
     */
@@ -584,13 +584,13 @@ int main( int argc, char* argv[] )
    config.addEntry< double >( "time-step", "Time step. By default it is proportional to one over space step square.", 0.0 );
    config.addEntry< double >( "final-time", "Final time of the simulation.", 1.0 );
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
- 
+
    Config::ParameterContainer parameters;
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
-   
+
    Timer timer, computationTimer, updateTimer;
-   
+
    String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&
        ! solveHeatEquationHost< double, int >( parameters, timer, computationTimer, updateTimer  ) )
@@ -598,11 +598,11 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    if( device == "cuda" &&
        ! solveHeatEquationCuda< double, int >( parameters, timer, computationTimer, updateTimer ) )
-      return EXIT_FAILURE;   
-#endif      
+      return EXIT_FAILURE;
+#endif
 
    const bool verbose = parameters.getParameter< bool >( "verbose" );
-   if( verbose )      
+   if( verbose )
      std::cout <<std::endl << "Finished..." <<std::endl;
    Logger logger( 72, std::cout );
    logger.writeSeparator();
@@ -614,7 +614,7 @@ int main( int argc, char* argv[] )
    updateTimer.writeLog( logger, 1 );
    logger.writeSeparator();
 
-   return EXIT_SUCCESS;   
+   return EXIT_SUCCESS;
 }
 
 
