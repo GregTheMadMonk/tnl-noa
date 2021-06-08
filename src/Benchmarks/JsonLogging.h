@@ -83,9 +83,9 @@ public:
    using MetadataColumns = std::vector<MetadataElement>;
 
    using CommonLogs = std::vector< std::pair< const char*, String > >;
-   using LogsMetadata = std::vector< String >;
+   using LogsMetadata = std::vector< std::pair< String, int > >;
 
-   using HeaderElements = std::vector< String >;
+   using HeaderElements = std::vector< std::pair< String, int > >;
    using RowElements = JsonLoggingRowElements;
 
    JsonLogging( int verbose = true,
@@ -103,16 +103,18 @@ public:
    void addCommonLogs( const CommonLogs& logs )
    {
       this->commonLogs = logs;
-      for( auto lg : logs )
+      if( verbose )
       {
-         if( verbose )
-            std::cout << lg.first << " = " << lg.second << std::endl;
+         std::cout << std::endl << "Benchmark setup:" << std::endl;
+         for( auto lg : logs )
+            std::cout << "   " << lg.first << " = " << lg.second << std::endl;
+         std::cout << std::endl;
       }
    };
 
    void resetLogsMetada() { this->logsMetadata.clear(); };
 
-   void addLogsMetadata( const std::vector< String >& md )
+   void addLogsMetadata( const std::vector< std::pair< String, int > >& md )
    {
       this->logsMetadata.insert( this->logsMetadata.end(), md.begin(), md.end() );
    }
@@ -122,7 +124,7 @@ public:
       if( verbose )
       {
          for( auto md : this->logsMetadata )
-            std::cout << md << "\t";
+            std::cout << std::setw( md.second ) << md.first;
          std::cout << std::endl;
       }
    }
@@ -148,10 +150,10 @@ public:
       for( auto el : rowEls )
       {
          if( verbose )
-            std::cout << el << "\t";
+            std::cout << std::setw( md->second ) << el;
          if( idx++ > 0 )
             log << "," << std::endl;
-         log << "         \"" << *md++ << "\" : \"" << el << "\"";
+         log << "         \"" << md++->first << "\" : \"" << el << "\"";
       }
       log << std::endl << "      }";
       this->lineStarted = true;
@@ -178,7 +180,6 @@ public:
       if( verbose )
          std::cout << "properties:" << std::endl;
 
-      int idx( this->lineStarted );
       for( auto & it : metadata ) {
          if( verbose )
             std::cout << "   " << it.first << " = " << it.second << std::endl;

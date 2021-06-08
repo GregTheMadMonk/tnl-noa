@@ -145,7 +145,15 @@ benchmarkSolver( Benchmark<>& benchmark,
 
       virtual HeaderElements getTableHeader() const override
       {
-         return HeaderElements({"time", "stddev", "stddev/time", "speedup", "converged", "iterations", "residue_precond", "residue_true"});
+         return HeaderElements( {
+            std::pair< String, int >( "time", 8 ),
+            std::pair< String, int >( "stddev", 8 ),
+            std::pair< String, int >( "stddev/time", 8 ),
+            std::pair< String, int >( "speedup", 8 ),
+            std::pair< String, int >( "converged", 8 ),
+            std::pair< String, int >( "iterations", 8 ),
+            std::pair< String, int >( "residue_precond", 8 ),
+            std::pair< String, int >( "residue_true", 8 ) } );
       }
 
       virtual RowElements getRowElements() const override

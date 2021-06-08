@@ -27,7 +27,7 @@ source florida-matrix-market
 #      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
 #   else
 #      gunzip -c ${matrix} > ${unzipped_matrix}
-#      echo "Benchmarking with the matrix $unzipped_matrix ..."
+#      #echo "Benchmarking with the matrix $unzipped_matrix ..."
 #      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
 #      if test x$DEBUG = xyes;
 #      then
@@ -61,9 +61,9 @@ do
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
      do
          echo "======================================================================================================"
-         echo "Benchmarking with the matrix $file ..."
-	 mtx_file_name=`basename $file`
-	 mtx_file_name=${mtx_file_name%.mtx}
+         #echo "Benchmarking with the matrix $file ..."
+	      mtx_file_name=`basename $file`
+	      mtx_file_name=${mtx_file_name%.mtx}
          if test x$DEBUG = xyes;
          then
             gdb --args ${BENCHMARK_DBG} --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
