@@ -1226,12 +1226,12 @@ void test_VectorProductLarger()
   using RealType = typename Matrix::RealType;
   using DeviceType = typename Matrix::DeviceType;
   using IndexType = typename Matrix::IndexType;
-    
+
 /*
  * Sets up the following 20x20 sparse matrix:
  *
  *          0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19
- *         ------------------------------------------------------------------------------ 
+ *         ------------------------------------------------------------------------------
  *   0   /  1   0   0   0   0   0   0   0   0   0   7   7   7   7   7   7   7   7   7   7 \
  *   1   |  0   2   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 |
  *   2   |  0   0   3   3   3   0   0   0   0   0   0   0   0   0   0  -2   0   0   0   0 |
@@ -1255,7 +1255,7 @@ void test_VectorProductLarger()
  */
   const IndexType m_rows = 20;
   const IndexType m_cols = 20;
-  
+
   Matrix m;
   m.reset();
   m.setDimensions( m_rows, m_cols );
@@ -1265,7 +1265,7 @@ void test_VectorProductLarger()
 //   rowLengths.setSize( m_rows );
 //   rowLengths.setValue( 20 );
   m.setCompressedRowLengths( rowLengths );
-  
+
   /* 0 */
   m.setElement( 0, 0, 1 );
   for ( IndexType i = 10; i < m_cols; ++i )
@@ -1273,7 +1273,7 @@ void test_VectorProductLarger()
 
   /* 1 */
   m.setElement( 1, 1, 2 );
-  
+
   /* 2 */
   m.setElement( 2, 2, 3 );
   m.setElement( 2, 3, 3 );
@@ -1324,7 +1324,7 @@ void test_VectorProductLarger()
       m.setElement(14, i - 1, -i);
       m.setElement(17, i - 1, -i);
   }
-  
+
   /* 12 && 18 */
   for (IndexType i = 0; i < m_cols; ++i) {
       if( i % 2 ) {
@@ -1335,7 +1335,7 @@ void test_VectorProductLarger()
 
   /* 15 */
   for (IndexType i = 0; i < m_cols; ++i)
-    if (i % 2 == 0) 
+    if (i % 2 == 0)
       m.setElement(15, i, 4);
 
   /* 16 */
@@ -1350,19 +1350,19 @@ void test_VectorProductLarger()
   }
 
   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-  
+
   VectorType inVector;
   inVector.setSize( 20 );
-  for( IndexType i = 0; i < inVector.getSize(); i++ )        
+  for( IndexType i = 0; i < inVector.getSize(); i++ )
       inVector.setElement( i, 2 );
 
-  VectorType outVector;  
+  VectorType outVector;
   outVector.setSize( 20 );
   for( IndexType j = 0; j < outVector.getSize(); j++ )
       outVector.setElement( j, 0 );
 
   m.vectorProduct( inVector, outVector);
-  
+
   EXPECT_EQ( outVector.getElement( 0 ), 142 );
   EXPECT_EQ( outVector.getElement( 1 ), 4 );
   EXPECT_EQ( outVector.getElement( 2 ), 14 );
@@ -1436,7 +1436,7 @@ void test_VectorProductCSRAdaptive()
 
    m.reset();
    m.setDimensions( m_rows, m_cols );
-   typename Matrix::RowsCapacitiesType rowLengths2({m_cols});
+   typename Matrix::RowsCapacitiesType rowLengths2 = {m_cols};
 
    if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
    {
