@@ -67,10 +67,17 @@ struct MatrixInfo< SparseMatrixView< Real, Device, Index, MatrixType, SegmentsVi
 
    static String getFormat()
    {
+      String prefix;
       if( MatrixType::isSymmetric() )
-         return TNL::String( "Symmetric " ) + SegmentsView< Device, Index >::getSegmentsType();
-      else
-         return SegmentsView< Device, Index >::getSegmentsType();
+      {
+         if( std::is_same< Real, bool >::value )
+            prefix = "Symmetric binary ";
+         else
+            prefix = "Symmetric ";
+      }
+      else if( std::is_same< Real, bool >::value )
+         prefix = "Binary ";
+      return prefix + SegmentsView< Device, Index >::getSegmentsType();
    };
 };
 
