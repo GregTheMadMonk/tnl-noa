@@ -83,17 +83,11 @@ setElement( Element* data,
 #ifdef __CUDA_ARCH__
    *data = value;
 #else
-#ifdef HAVE_CUDA
-   cudaMemcpy( ( void* ) data, ( void* ) &value, sizeof( Element ), cudaMemcpyHostToDevice );
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-   // TODO: For some reason the following does not work after adding
-   // #ifdef __CUDA_ARCH__ to Array::setElement and ArrayView::setElement.
-   // Probably it might be a problem with lambda function 'kernel' which
-   // nvcc probably does not handle properly.
-   //MemoryOperations< Devices::Cuda >::set( data, value, 1 );
+   // NOTE: calling `MemoryOperations< Devices::Cuda >::set( data, value, 1 );`
+   // does not work here due to `#ifdef __CUDA_ARCH__` above. It would involve
+   // launching a CUDA kernel with an extended lambda, which would be discarded
+   // by nvcc (never called).
+   MultiDeviceMemoryOperations< Devices::Cuda, void >::copy( data, &value, 1 );
 #endif
 }
 
@@ -106,19 +100,9 @@ getElement( const Element* data )
 #ifdef __CUDA_ARCH__
    return *data;
 #else
-   // TODO: For some reason the following does not work after adding
-   // #ifdef __CUDA_ARCH__ to Array::getElement and ArrayView::getElement
-   // Probably it might be a problem with lambda function 'kernel' which
-   // nvcc probably does not handle properly.
-   //MultiDeviceMemoryOperations< void, Devices::Cuda >::template copy< Element, Element, int >( &result, data, 1 );
-   #ifdef HAVE_CUDA
-      Element result;
-      cudaMemcpy( ( void* ) &result, ( void* ) data, sizeof( Element ), cudaMemcpyDeviceToHost );
-      TNL_CHECK_CUDA_DEVICE;
-      return result;
-   #else
-      throw Exceptions::CudaSupportMissing();
-   #endif
+   Element result;
+   MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result, data, 1 );
+   return result;
 #endif
 }
 
