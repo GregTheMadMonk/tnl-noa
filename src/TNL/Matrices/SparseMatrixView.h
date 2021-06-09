@@ -67,7 +67,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
    static_assert(
       ! MatrixType::isSymmetric() ||
       ! std::is_same< Device, Devices::Cuda >::value ||
-      ( std::is_same< Real, float >::value || std::is_same< Real, double >::value || std::is_same< Real, int >::value || std::is_same< Real, long long int >::value ),
+      ( std::is_same< Real, float >::value || std::is_same< Real, double >::value || std::is_same< Real, int >::value || std::is_same< Real, long long int >::value || std::is_same< Real, bool >::value ),
       "Given Real type is not supported by atomic operations on GPU which are necessary for symmetric operations." );
 
    public:
