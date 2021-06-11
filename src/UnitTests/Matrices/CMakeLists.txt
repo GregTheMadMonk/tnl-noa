@@ -8,6 +8,7 @@ set( COMMON_TESTS
             SparseMatrixTest_CSRScalar
             SparseMatrixTest_CSRVector
             SparseMatrixTest_CSRHybrid
+            SparseMatrixTest_CSRLight
             SparseMatrixTest_CSRAdaptive
             SparseMatrixTest_Ellpack
             SparseMatrixTest_SlicedEllpack
@@ -16,6 +17,7 @@ set( COMMON_TESTS
             SparseMatrixVectorProductTest_CSRScalar
             SparseMatrixVectorProductTest_CSRVector
             SparseMatrixVectorProductTest_CSRHybrid
+            SparseMatrixVectorProductTest_CSRLight
             SparseMatrixVectorProductTest_CSRAdaptive
             SparseMatrixVectorProductTest_Ellpack
             SparseMatrixVectorProductTest_SlicedEllpack

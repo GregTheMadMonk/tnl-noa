@@ -17,6 +17,7 @@
 #include <TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
 #include <TNL/Algorithms/Segments/Kernels/CSRVectorKernel.h>
 #include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRLightKernel.h>
 #include <TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernel.h>
 #include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
@@ -164,8 +165,13 @@ template< typename Device,
 using CSRViewVector = CSRView< Device, Index, CSRVectorKernel< Index, Device > >;
 
 template< typename Device,
+          typename Index,
+          int ThreadsInBlock = 256 >
+using CSRViewHybrid = CSRView< Device, Index, CSRHybridKernel< Index, Device, ThreadsInBlock > >;
+
+template< typename Device,
           typename Index >
-using CSRViewHybrid = CSRView< Device, Index, CSRHybridKernel< Index, Device > >;
+using CSRViewLight = CSRView< Device, Index, CSRLightKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >
