@@ -209,7 +209,7 @@ TNL::String
 CSRHybridKernel< Index, Device, ThreadsInBlock >::
 getKernelType()
 {
-    return "Hybrid";
+    return "Hybrid " + TNL::convertToString( ThreadsInBlock );
 }
 
 template< typename Index,

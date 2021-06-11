@@ -22,13 +22,13 @@ namespace TNL {
 
 template< typename Index,
           typename Device,
-          int ThreadsInBlock = 256 >
+          int ThreadsInBlock = 128 >
 struct CSRHybridKernel
 {
    using IndexType = Index;
    using DeviceType = Device;
-   using ViewType = CSRHybridKernel< Index, Device >;
-   using ConstViewType = CSRHybridKernel< Index, Device >;
+   using ViewType = CSRHybridKernel< Index, Device, ThreadsInBlock >;
+   using ConstViewType = CSRHybridKernel< Index, Device, ThreadsInBlock >;
 
    template< typename Offsets >
    void init( const Offsets& offsets );
