@@ -141,7 +141,7 @@ def cusparse_comparison( df, formats, head_size=10 ):
          head_df = filtered_df.head( head_size )
          for f in formats:
             if not f in ['cusparse','CSR',format]:
-               print( f"Droping {f}..." )
+               #print( f"Droping {f}..." )
                head_df.drop( labels=f, axis='columns', level=0, inplace=True )
          head_df.to_html( f"Cusparse-bw/{format}-head.html" )
 
@@ -167,10 +167,10 @@ def csr_comparison( df, formats, head_size=10 ):
          axs[1].set_ylabel( 'Bandwidth in GB/sec' )
          plt.savefig( f"CSR-bw/{format}.pdf")
          plt.close(fig)
-         head_df = filtered_df.head( head_size )
+         head_df = df.head( head_size )
          for f in formats:
             if not f in ['cusparse','CSR',format]:
-               print( f"Droping {f}..." )
+               #print( f"Droping {f}..." )
                head_df.drop( labels=f, axis='columns', level=0, inplace=True )
          head_df.to_html( f"CSR-bw/{format}-head.html" )
 
@@ -202,10 +202,10 @@ def legacy_formats_comparison( df, formats, head_size=10 ):
          axs[1].set_ylabel( 'Bandwidth in GB/sec' )
          plt.savefig( f"Legacy-bw/{ref_format}.pdf")
          plt.close(fig)
-         head_df = filtered_df.head( head_size )
+         head_df = df.head( head_size )
          for f in formats:
             if not f in ['cusparse','CSR',format]:
-               print( f"Droping {f}..." )
+               #print( f"Droping {f}..." )
                head_df.drop( labels=f, axis='columns', level=0, inplace=True )
          head_df.to_html( f"Legacy-bw/{format}-head.html" )
 
@@ -238,7 +238,7 @@ def cusparse_speedup_comparison( df, formats, head_size=10 ):
          head_df = filtered_df.head( head_size )
          for f in formats:
             if not f in ['cusparse','CSR',format]:
-               print( f"Droping {f}..." )
+               #print( f"Droping {f}..." )
                head_df.drop( labels=f, axis='columns', level=0, inplace=True )
          head_df.to_html( f"Cusparse-speed-up/{format}-head.html" )
 
