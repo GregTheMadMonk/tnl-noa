@@ -7,37 +7,36 @@ export CUDA_PROFILE=0
 PWD=`pwd`
 IWD="$PWD"
 BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
-BENCHMARK="tnl-benchmark-spmv"
-BENCHMARK_DBG="tnl-benchmark-spmv-dbg"
+BENCHMARK="tnl-benchmark-spmv --with-legacy-matrices yes --precision double"
+BENCHMARK_DBG="tnl-benchmark-spmv-dbg --with-legacy-matrices no"
 
 export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
 PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
-#source matrix-market
+source matrix-market
+M_MATRICES=""
 source florida-matrix-market
+#FLORIDA_MM_MATRICES=""
 
-# !!!Matrices in MatrixMarket2 don't load properly, formatting issues with every file. MatrixReader fails.
-#for link in $MM_MATRICES;
-#do
-#   echo "======================================================================================================"
-#   matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
-#   unzipped_matrix=`echo $matrix | sed 's/.gz//'`
-#   if test ! -e $matrix;
-#   then
-#      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-#      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
-#   else
-#      gunzip -c ${matrix} > ${unzipped_matrix}
-#      #echo "Benchmarking with the matrix $unzipped_matrix ..."
-#      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-#      if test x$DEBUG = xyes;
-#      then
-#         gdb --args ${BENCHMARK_DBG} --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
-#      else
-#         $BENCHMARK --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
-#      fi
-#      #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log
-#   fi
-#done
+for link in $MM_MATRICES;
+do
+   echo "======================================================================================================"
+   matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
+   unzipped_matrix=`echo $matrix | sed 's/.gz//'`
+   if test ! -e $matrix;
+   then
+      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
+   else
+      gunzip -c ${matrix} > ${unzipped_matrix}
+      echo "Benchmarking with the matrix $unzipped_matrix ..."
+      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
+      if test x$DEBUG = xyes;
+      then
+         gdb --args ${BENCHMARK_DBG} --input-file $unzipped_matrix --log-file log-files/sparse-matrix-benchmark.log --verbose 1
+      else
+         $BENCHMARK --input-file $unzipped_matrix --log-file log-files/sparse-matrix-benchmark.log --verbose 1
+      fi
+   fi
+done
 
 for link in $FLORIDA_MM_MATRICES;
 do
@@ -45,7 +44,6 @@ do
    if test ! -e $matrix;
    then
       echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
    else
      DIRNAME=`dirname $matrix`
      FILENAME=`basename $matrix`
@@ -61,9 +59,8 @@ do
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
      do
          echo "======================================================================================================"
-         #echo "Benchmarking with the matrix $file ..."
-	      mtx_file_name=`basename $file`
-	      mtx_file_name=${mtx_file_name%.mtx}
+         mtx_file_name=`basename $file`
+         mtx_file_name=${mtx_file_name%.mtx}
          if test x$DEBUG = xyes;
          then
             gdb --args ${BENCHMARK_DBG} --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
@@ -74,3 +71,4 @@ do
    fi
 done
 $BENCHMARK --log-file log-files/sparse-matrix-benchmark.log --output-mode close --verbose 1
+
