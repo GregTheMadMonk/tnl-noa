@@ -47,8 +47,9 @@ void SpMVCSRLightWithoutAtomic2( OffsetsView offsets,
    const Index maxID = offsets[ segmentIdx  + 1];
 
    Real result = zero;
+   bool compute = true;
    for( Index i = offsets[segmentIdx] + inGroupID; i < maxID; i += 2)
-      result = reduce( result, fetch( i, true ) );
+      result = reduce( result, fetch( i, compute ) );
 
    /* Parallel reduction */
    result = reduce( result, __shfl_down_sync(0xFFFFFFFF, result, 1 ) );
@@ -83,8 +84,9 @@ void SpMVCSRLightWithoutAtomic4( OffsetsView offsets,
    const Index maxID = offsets[segmentIdx + 1];
 
    Real result = zero;
+   bool compute = true;
    for (Index i = offsets[segmentIdx] + inGroupID; i < maxID; i += 4)
-      result = reduce( result, fetch( i, true ) );
+      result = reduce( result, fetch( i, compute ) );
 
    /* Parallel reduction */
    result = reduce( result, __shfl_down_sync(0xFFFFFFFF, result, 2 ) );
@@ -122,8 +124,9 @@ void SpMVCSRLightWithoutAtomic8( OffsetsView offsets,
    const Index maxID = offsets[segmentIdx + 1];
 
    Real result = zero;
+   bool compute = true;
    for (i = offsets[segmentIdx] + inGroupID; i < maxID; i += 8)
-      result = reduce( result, fetch( i, true ) );
+      result = reduce( result, fetch( i, compute ) );
 
    /* Parallel reduction */
    result = reduce( result, __shfl_down_sync(0xFFFFFFFF, result, 4 ) );
@@ -156,14 +159,14 @@ void SpMVCSRLightWithoutAtomic16( OffsetsView offsets,
    if( segmentIdx >= last )
       return;
 
-
    Index i;
    const Index inGroupID = threadIdx.x & 15; // & is cheaper than %
    const Index maxID = offsets[segmentIdx + 1];
 
    Real result = zero;
+   bool compute = true;
    for( i = offsets[segmentIdx] + inGroupID; i < maxID; i += 16 )
-      result = reduce( result, fetch( i, true ) );
+      result = reduce( result, fetch( i, compute ) );
 
    /* Parallel reduction */
    result = reduce( result, __shfl_down_sync( 0xFFFFFFFF, result, 8 ) );
@@ -202,8 +205,9 @@ void SpMVCSRVector( OffsetsView offsets,
    Index endID = offsets[warpID + 1];
 
    /* Calculate result */
+   bool compute = true;
    for (Index i = offsets[warpID] + laneID; i < endID; i += warpSize)
-      result = reduce( result, fetch( i, true ) );
+      result = reduce( result, fetch( i, compute ) );
 
    /* Reduction */
    result = reduce( result, __shfl_down_sync(0xFFFFFFFF, result, 16 ) );
@@ -304,7 +308,7 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
                offsets, first, last, fetch, reduce, keep, zero, grid );
          else // if (threadsPerSegment == 32)
          { // CSR SpMV Light with threadsPerSegment = 32 is CSR Vector
-            SpMVCSRVector<Real, Index, OffsetsView, Fetch, Reduce, Keep, warpSize ><<<blocks, threads>>>(
+            SpMVCSRVector<Real, Index, OffsetsView, Fetch, Reduce, Keep ><<<blocks, threads>>>(
                offsets, first, last, fetch, reduce, keep, zero, grid );
          }
          /*else
