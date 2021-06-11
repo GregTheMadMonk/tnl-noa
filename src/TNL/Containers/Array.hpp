@@ -493,7 +493,8 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-__cuda_callable__ void
+__cuda_callable__
+void
 Array< Value, Device, Index, Allocator >::
 setElement( IndexType i, ValueType x )
 {
@@ -506,7 +507,8 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-__cuda_callable__ Value
+__cuda_callable__
+Value
 Array< Value, Device, Index, Allocator >::
 getElement( IndexType i ) const
 {

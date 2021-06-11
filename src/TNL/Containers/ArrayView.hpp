@@ -227,7 +227,8 @@ setElement( IndexType i, ValueType value )
 template< typename Value,
           typename Device,
           typename Index >
-__cuda_callable__ Value
+__cuda_callable__
+Value
 ArrayView< Value, Device, Index >::
 getElement( IndexType i ) const
 {
@@ -240,7 +241,8 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Value& ArrayView< Value, Device, Index >::
+Value&
+ArrayView< Value, Device, Index >::
 operator[]( IndexType i )
 {
 #ifdef __CUDA_ARCH__
