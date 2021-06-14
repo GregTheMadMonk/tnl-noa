@@ -13,7 +13,7 @@ BENCHMARK_DBG="tnl-benchmark-spmv-dbg --with-legacy-matrices no"
 export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
 PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
 source matrix-market
-M_MATRICES=""
+#MM_MATRICES=""
 source florida-matrix-market
 #FLORIDA_MM_MATRICES=""
 

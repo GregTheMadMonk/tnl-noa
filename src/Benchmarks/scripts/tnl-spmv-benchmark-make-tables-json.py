@@ -254,7 +254,7 @@ formats = get_formats( input_df )
 multicolumns, df_data = get_multiindex( input_df, formats )
 
 print( "Converting data..." )
-result = convert_data_frame( input_df, multicolumns, df_data, 200 )
+result = convert_data_frame( input_df, multicolumns, df_data, 20000 )
 compute_speedup( result, formats )
 
 print( "Writting to HTML file..." )

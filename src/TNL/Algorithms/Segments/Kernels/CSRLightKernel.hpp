@@ -275,12 +275,8 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
 #ifdef HAVE_CUDA
       const int threads = 128;
       Index blocks, groupSize;
-      //if (KernelType == CSRLightWithoutAtomic)
       int  neededThreads = threadsPerSegment * ( last - first );
-      //else
-      //   neededThreads = rows * (threadsPerSegment > 32 ? 32 : threadsPerSegment);
 
-      /* Execute kernels on device */
       for (Index grid = 0; neededThreads != 0; ++grid)
       {
          if( TNL::Cuda::getMaxGridXSize() * threads >= neededThreads)
@@ -334,30 +330,25 @@ void
 CSRLightKernel< Index, Device >::
 init( const Offsets& offsets )
 {
-   //const Index elementsInSegment = std::ceil( ( double ) offsets.getElement( segmentsCount ) / ( double ) segmentsCount );
-   //this->threadsPerSegment = TNL::min( std::pow( 2, std::ceil( std::log2( elementsInSegment ) ) ) ); //TNL::Cuda::getWarpSize() );
-
    const Index segmentsCount = offsets.getSize() - 1;
-   //const Index threads = 128; // !!!!!!!!!!!!!!!!!!!!!! block size
    size_t neededThreads = segmentsCount * 32;//warpSize;
-   Index blocks, threadsPerSegment;
 
    const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
    if( elementsInSegment <= 2 )
-      threadsPerSegment = 2;
+      this->threadsPerSegment = 2;
    else if( elementsInSegment <= 4 )
-      threadsPerSegment = 4;
+      this->threadsPerSegment = 4;
    else if( elementsInSegment <= 8 )
-      threadsPerSegment = 8;
+      this->threadsPerSegment = 8;
    else if( elementsInSegment <= 16 )
-      threadsPerSegment = 16;
+      this->threadsPerSegment = 16;
    else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
-      threadsPerSegment = 32; // CSR Vector
+      this->threadsPerSegment = 32; // CSR Vector
    //else
    //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
 
-   TNL_ASSERT_GE( threadsPerSegment, 0, "" );
-   TNL_ASSERT_LE( threadsPerSegment, 33, "" );
+   TNL_ASSERT_GE( this->threadsPerSegment, 0, "" );
+   TNL_ASSERT_LE( this->threadsPerSegment, 33, "" );
 
 }
 
@@ -367,7 +358,7 @@ void
 CSRLightKernel< Index, Device >::
 reset()
 {
-    this->threadsPerSegment = 0;
+   this->threadsPerSegment = 0;
 }
 
 template< typename Index,
