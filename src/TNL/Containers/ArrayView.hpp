@@ -309,7 +309,6 @@ void
 ArrayView< Value, Device, Index >::
 setValue( ValueType value, IndexType begin, IndexType end )
 {
-   TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
    if( end == 0 )
       end = this->getSize();
    Algorithms::MemoryOperations< Device >::set( &getData()[ begin ], value, end - begin );

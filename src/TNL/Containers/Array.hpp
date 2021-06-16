@@ -674,7 +674,6 @@ setValue( ValueType v,
           IndexType begin,
           IndexType end )
 {
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    if( end == 0 )
       end = this->getSize();
    Algorithms::MemoryOperations< Device >::set( &this->getData()[ begin ], v, end - begin );
