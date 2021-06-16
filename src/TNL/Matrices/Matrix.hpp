@@ -50,7 +50,7 @@ template< typename Real,
 void Matrix< Real, Device, Index, RealAllocator >::setDimensions( const IndexType rows,
                                                    const IndexType columns )
 {
-   TNL_ASSERT( rows > 0 && columns > 0,
+   TNL_ASSERT( rows >= 0 && columns >= 0,
                std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
