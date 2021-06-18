@@ -107,9 +107,14 @@ TYPED_TEST( VectorTest, reduceElements )
 
 TEST( VectorSpecialCasesTest, defaultConstructors )
 {
-   using ArrayType = Containers::Array< int, Devices::Host >;
-   using VectorViewType = VectorView< int, Devices::Host >;
-   using ArrayViewType = ArrayView< int, Devices::Host >;
+   #ifdef HAVE_CUDA
+   using DeviceType = TNL::Devices::Cuda;
+   #else
+   using DeviceType = TNL::Devices::Host;
+   #endif
+   using ArrayType = Containers::Array< int, DeviceType >;
+   using VectorViewType = VectorView< int, DeviceType >;
+   using ArrayViewType = ArrayView< int, DeviceType >;
 
    ArrayType a( 100 );
    a.setValue( 0 );
@@ -124,8 +129,13 @@ TEST( VectorSpecialCasesTest, defaultConstructors )
 
 TEST( VectorSpecialCasesTest, assignmentThroughView )
 {
-   using VectorType = Containers::Vector< int, Devices::Host >;
-   using ViewType = VectorView< int, Devices::Host >;
+   #ifdef HAVE_CUDA
+   using DeviceType = TNL::Devices::Cuda;
+   #else
+   using DeviceType = TNL::Devices::Host;
+   #endif
+   using VectorType = Containers::Vector< int, DeviceType >;
+   using ViewType = VectorView< int, DeviceType >;
 
    static_assert( HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
    static_assert( HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
@@ -139,7 +149,7 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
    EXPECT_EQ( u_view.getData(), u.getData() );
    EXPECT_EQ( v_view.getData(), v.getData() );
    for( int i = 0; i < 100; i++ )
-      EXPECT_EQ( v_view[ i ], 42 );
+      EXPECT_EQ( v_view.getElement( i ), 42 );
 
    u.setValue( 42 );
    v.setValue( 0 );
@@ -147,14 +157,19 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
    EXPECT_EQ( u_view.getData(), u.getData() );
    EXPECT_EQ( v_view.getData(), v.getData() );
    for( int i = 0; i < 100; i++ )
-      EXPECT_EQ( v_view[ i ], 42 );
+      EXPECT_EQ( v_view.getElement( i ), 42 );
 }
 
 TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
 {
-   using ArrayType = Containers::Array< int, Devices::Host >;
-   using VectorViewType = VectorView< const int, Devices::Host >;
-   using ArrayViewType = ArrayView< int, Devices::Host >;
+   #ifdef HAVE_CUDA
+   using DeviceType = TNL::Devices::Cuda;
+   #else
+   using DeviceType = TNL::Devices::Host;
+   #endif
+   using ArrayType = Containers::Array< int, DeviceType >;
+   using VectorViewType = VectorView< const int, DeviceType >;
+   using ArrayViewType = ArrayView< int, DeviceType >;
 
    ArrayType a( 100 );
    a.setValue( 0 );
@@ -167,7 +182,12 @@ TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
 
 TEST( VectorSpecialCasesTest, sumOfBoolVector )
 {
-   using VectorType = Containers::Vector< bool, Devices::Host >;
+   #ifdef HAVE_CUDA
+   using DeviceType = TNL::Devices::Cuda;
+   #else
+   using DeviceType = TNL::Devices::Host;
+   #endif
+   using VectorType = Containers::Vector< bool, DeviceType >;
    using ViewType = typename VectorType::ViewType;
    const double epsilon = 64 * std::numeric_limits< double >::epsilon();
    constexpr int size = 4999;
@@ -216,6 +236,44 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
    EXPECT_EQ( l1norm_view_cast, size);
    EXPECT_EQ( l2norm_view_cast, std::sqrt( size ) );
    EXPECT_NEAR( l3norm_view_cast, std::cbrt( size ), epsilon );
+}
+
+TEST( VectorSpecialCasesTest, reductionOfEmptyVector )
+{
+   #ifdef HAVE_CUDA
+   using DeviceType = TNL::Devices::Cuda;
+   #else
+   using DeviceType = TNL::Devices::Host;
+   #endif
+   using VectorType = Containers::Vector< int, DeviceType >;
+   using ViewType = typename VectorType::ViewType;
+   constexpr int size = 0;
+
+   VectorType v( size );
+   ViewType v_view( v );
+   v.setValue( 1 );
+
+   EXPECT_EQ( min(v), std::numeric_limits< int >::max() );
+   EXPECT_EQ( max(v), std::numeric_limits< int >::lowest() );
+   EXPECT_EQ( argMin(v), std::make_pair( std::numeric_limits< int >::max(), 0 ) );
+   EXPECT_EQ( argMax(v), std::make_pair( std::numeric_limits< int >::lowest(), 0 ) );
+   EXPECT_EQ( sum(v), 0 );
+   EXPECT_EQ( product(v), 1 );
+   EXPECT_EQ( logicalAnd(v), true );
+   EXPECT_EQ( logicalOr(v), false );
+   EXPECT_EQ( binaryAnd(v), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryOr(v), 0 );
+
+   EXPECT_EQ( min(v_view), std::numeric_limits< int >::max() );
+   EXPECT_EQ( max(v_view), std::numeric_limits< int >::lowest() );
+   EXPECT_EQ( argMin(v_view), std::make_pair( std::numeric_limits< int >::max(), 0 ) );
+   EXPECT_EQ( argMax(v_view), std::make_pair( std::numeric_limits< int >::lowest(), 0 ) );
+   EXPECT_EQ( sum(v_view), 0 );
+   EXPECT_EQ( product(v_view), 1 );
+   EXPECT_EQ( logicalAnd(v_view), true );
+   EXPECT_EQ( logicalOr(v_view), false );
+   EXPECT_EQ( binaryAnd(v_view), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryOr(v_view), 0 );
 }
 
 #endif // HAVE_GTEST

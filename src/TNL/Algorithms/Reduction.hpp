@@ -140,6 +140,10 @@ reduceWithArgument( const Index begin,
       reduce( r[ 0 ], r[ 1 ], arg[ 0 ], arg[ 1 ] );
       return std::make_pair( r[ 0 ], arg[ 0 ] );
    }
+   else if( begin >= end ) {
+      // trivial case, fetch should not be called in this case
+      return std::make_pair( zero, end );
+   }
    else {
       std::pair< Result, Index > result( fetch( begin ), begin );
       for( Index i = begin + 1; i < end; i++ )
@@ -300,6 +304,10 @@ reduce( const Index begin,
         Reduce&& reduce,
         const Result& zero )
 {
+   // trivial case, nothing to reduce
+   if( begin >= end )
+      return zero;
+
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
    // in which case reduce on host might fail.
@@ -390,6 +398,10 @@ reduceWithArgument( const Index begin,
                     Reduce&& reduce,
                     const Result& zero )
 {
+   // trivial case, nothing to reduce
+   if( begin >= end )
+      return std::make_pair( zero, end );
+
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
    // in which case reduce on host might fail.
