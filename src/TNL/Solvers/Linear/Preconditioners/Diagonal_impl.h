@@ -58,7 +58,6 @@ void
 Diagonal< Matrices::DistributedMatrix< Matrix > >::
 update( const MatrixPointer& matrixPointer )
 {
-   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
    diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
 
    LocalViewType diag_view( diagonal );
@@ -78,7 +77,7 @@ update( const MatrixPointer& matrixPointer )
    }
    else {
       // non-square matrix, assume ghost indexing
-      TNL_ASSERT_LT( matrixPointer->getLocalMatrix().getRows(), matrixPointer->getLocalMatrix().getColumns(), "the local matrix should have more columns than rows" );
+      TNL_ASSERT_LE( matrixPointer->getLocalMatrix().getRows(), matrixPointer->getLocalMatrix().getColumns(), "the local matrix should have more columns than rows" );
       auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
       {
          diag_view[ i ] = matrix_view.getElement( i, i );
