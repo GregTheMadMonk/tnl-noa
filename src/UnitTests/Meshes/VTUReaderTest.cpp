@@ -31,6 +31,25 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { 
 } // namespace Meshes
 } // namespace TNL
 
+TEST( VTUReaderTest, empty )
+{
+   // the cell topology does not matter for an empty mesh
+   using MeshType = Mesh< DefaultConfig< Topologies::Triangle > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTUReader >( "empty.vtu" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 0 );
+   EXPECT_EQ( cells, 0 );
+
+   test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
+   // resolveAndLoadMesh cannot be tested since the empty mesh has Topologies::Vertex as cell topology
+//   test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
 // TODO: test case for 1D mesh of edges
 
 TEST( VTUReaderTest, mrizka_1 )

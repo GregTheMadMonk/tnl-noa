@@ -166,6 +166,10 @@ protected:
    VariantVector
    readAsciiBlock( const char* block ) const
    {
+      // handle empty array
+      if( ! block )
+         return std::vector<T> {};
+
       // creating a copy of the block is rather costly, but so is ASCII parsing
       std::stringstream ss;
       ss << block;
@@ -187,6 +191,10 @@ protected:
    VariantVector
    readBinaryBlock( const char* block ) const
    {
+      // handle empty array
+      if( ! block )
+         return std::vector<T> {};
+
       // skip whitespace at the beginning
       while( *block != '\0' && std::isspace( *block ) )
          ++block;
@@ -250,8 +258,6 @@ protected:
    {
       verifyElement( elem, "DataArray" );
       const char* block = elem->GetText();
-      if( ! block )
-         throw MeshReaderError( "XMLVTK", "the DataArray with Name=\"" + arrayName + "\" does not contain any data" );
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {

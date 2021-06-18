@@ -154,6 +154,12 @@ public:
       if( meshType != "Meshes::Mesh" )
          throw MeshReaderError( "MeshReader", "the file does not contain an unstructured mesh, it is " + meshType );
 
+      // skip empty mesh (the cell shape is indeterminate)
+      if( NumberOfPoints == 0 && NumberOfCells == 0 ) {
+         mesh = MeshType {};
+         return;
+      }
+
       // check that the cell shape mathes
       const VTK::EntityShape meshCellShape = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
       if( meshCellShape != cellShape )

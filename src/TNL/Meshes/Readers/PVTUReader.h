@@ -15,6 +15,7 @@
 #include <experimental/filesystem>
 
 #include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Utils.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
@@ -204,8 +205,20 @@ public:
       // reset arrays since they are not needed anymore
       this->pointTags = this->cellTags = pointGlobalIndices = cellGlobalIndices = {};
 
-      // set the communication group
-      mesh.setCommunicationGroup( group );
+      // check if we need to split the communicator
+      const Index minCount = MPI::reduce( TNL::min( pointsCount, cellsCount ), MPI_MIN );
+      if( minCount == 0 ) {
+         // split the communicator, remove the ranks which did not get a subdomain
+         const int color = (pointsCount > 0 && cellsCount > 0) ? 0 : MPI_UNDEFINED;
+         const MPI_Comm subgroup = MPI::Comm_split( group, color, 0 );
+
+         // set the communication group
+         mesh.setCommunicationGroup( subgroup );
+      }
+      else {
+         // set the communication group
+         mesh.setCommunicationGroup( group );
+      }
    }
 
    virtual VariantVector
