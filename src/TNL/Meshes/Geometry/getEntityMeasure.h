@@ -189,6 +189,10 @@ getPolygon2DArea( const Mesh< MeshConfig, Device > & mesh,
 {
     // http://geomalgorithms.com/code.html (function area2D_Polygon)
 
+    static_assert( Coord1 >= 0 && Coord1 <= 2 &&
+                   Coord2 >= 0 && Coord2 <= 2 &&
+                   Coord1 != Coord2, "Coord1 and Coord2 must be different integers with possible values {0, 1, 2}." );
+
     using Real = typename MeshConfig::RealType;
     using Index = typename MeshConfig::LocalIndexType;
 
@@ -315,7 +319,7 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
 }
 
 // Polyhedron
-template< typename MeshConfig,
+/*template< typename MeshConfig,
           typename Device >
 __cuda_callable__
 typename MeshConfig::RealType
@@ -347,6 +351,32 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
         }
     }
     return Real{ 1.0 / 6.0 } * TNL::abs( volume );
+}*/
+
+template< typename MeshConfig,
+          typename Device >
+__cuda_callable__
+typename MeshConfig::RealType
+getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
+                  const MeshEntity< MeshConfig, Device, Topologies::Polyhedron > & entity )
+{
+    using Real = typename MeshConfig::RealType;
+    using Index = typename MeshConfig::LocalIndexType;
+    Real volume{ 0.0 };
+    const Index facesCount = entity.template getSubentitiesCount< 2 >();
+    const auto& v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    for( Index faceIdx = 0; faceIdx < facesCount; faceIdx++ ) {
+        const auto face = mesh.template getEntity< 2 >( entity.template getSubentityIndex< 2 >( faceIdx ) );
+        const Index verticesCount = face.template getSubentitiesCount< 0 >();
+        const auto& v0 = mesh.getPoint( face.template getSubentityIndex< 0 >( 0 ) );
+        for( Index i = 1, j = 2; j < verticesCount; i++, j++ ) {
+            const auto& v1 = mesh.getPoint( face.template getSubentityIndex< 0 >( i ) );
+            const auto& v2 = mesh.getPoint( face.template getSubentityIndex< 0 >( j ) );
+            // Partition polyhedron into tetrahedrons by triangulating faces and connecting each triangle to one point of the polyhedron.
+            volume += getTetrahedronVolume( v3 - v0, v2 - v0, v1 - v0 );
+        }
+    }
+    return volume;
 }
 
 } // namespace Meshes
