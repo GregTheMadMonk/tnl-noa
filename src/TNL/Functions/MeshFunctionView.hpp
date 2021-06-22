@@ -120,15 +120,8 @@ setup( const MeshPointer& meshPointer,
        const String& prefix )
 {
    this->setMesh( meshPointer );
-   if( parameters.checkParameter( prefix + "file" ) )
-   {
-      String fileName = parameters.getParameter< String >( prefix + "file" );
-      this->load( fileName );
-   }
-   else
-   {
-      throw std::runtime_error( "Missing parameter " + prefix + "file." );
-   }
+   const String fileName = parameters.getParameter< String >( prefix + "file" );
+   this->load( fileName );
    return true;
 }
 
