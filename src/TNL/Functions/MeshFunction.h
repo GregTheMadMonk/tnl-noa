@@ -65,6 +65,8 @@ class MeshFunction :
 
       const MeshPointer& getMeshPointer() const;
 
+      MeshPointer& getMeshPointer();
+
       static IndexType getDofs( const MeshPointer& meshPointer );
 
       __cuda_callable__ const VectorType& getData() const;
@@ -94,6 +96,7 @@ class MeshFunction :
 
       __cuda_callable__
       RealType& operator[]( const IndexType& meshEntityIndex );
+
       __cuda_callable__
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
@@ -120,8 +123,9 @@ class MeshFunction :
 
       void boundLoad( const String& fileName );
 
-      bool write( const String& fileName,
-                  const String& format = "vtk" ) const;
+      bool write( const std::string& functionName,
+                  const std::string& fileName,
+                  const std::string& fileFormat = "auto" ) const;
 
       using Object::save;
 

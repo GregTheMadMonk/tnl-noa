@@ -1,0 +1,160 @@
+/***************************************************************************
+                          MeshFunctionIO.h  -  description
+                             -------------------
+    begin                : Jun 22, 2021
+    copyright            : (C) 2017 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+#include <type_traits>
+#include <experimental/filesystem>
+
+#include <TNL/Meshes/Traits.h>
+#include <TNL/Meshes/Readers/getMeshReader.h>
+#include <TNL/Meshes/Writers/VTKWriter.h>
+#include <TNL/Meshes/Writers/VTUWriter.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
+#include <TNL/Functions/MeshFunctionGnuplotWriter.h>
+
+namespace TNL {
+namespace Functions {
+
+template< typename MeshFunction >
+bool
+readMeshFunction( MeshFunction& function,
+                  const std::string& functionName,
+                  const std::string& fileName,
+                  const std::string& fileFormat = "auto" )
+{
+   std::shared_ptr< Meshes::Readers::MeshReader > reader = Meshes::Readers::getMeshReader( fileName, fileFormat );
+   if( reader == nullptr )
+      return false;
+
+   reader->detectMesh();
+
+   // load the mesh if the function does not have it yet
+   if( function.getMesh() == typename MeshFunction::MeshType {} )
+      reader->loadMesh( *function.getMeshPointer() );
+
+   Meshes::Readers::MeshReader::VariantVector data;
+   if( function.getEntitiesDimension() == 0 )
+      data = reader->readPointData( functionName );
+   else if( function.getEntitiesDimension() == function.getMeshDimension() )
+      data = reader->readCellData( functionName );
+   else {
+      std::cerr << "The mesh function with entities dimension " << function.getEntitiesDimension() << " cannot be read from the file " << fileName << std::endl;
+      return false;
+   }
+
+   visit( [&](auto&& array) {
+            const auto entitiesCount = function.getMesh().template getEntitiesCount< MeshFunction::getEntitiesDimension() >();
+            if( array.size() == (std::size_t) entitiesCount )
+               Algorithms::MultiDeviceMemoryOperations< typename MeshFunction::VectorType::DeviceType, Devices::Host >
+                  ::copy( function.getData().getData(), array.data(), array.size() );
+            else
+               throw Exceptions::FileDeserializationError( fileName, "mesh function data size does not match the mesh size (expected " + std::to_string(entitiesCount) + ", got " + std::to_string(array.size()) + ")." );
+         },
+         data
+      );
+
+   return true;
+}
+
+// specialization for grids
+template< typename MeshFunction >
+std::enable_if_t< Meshes::isGrid< typename MeshFunction::MeshType >::value, bool >
+writeMeshFunction( const MeshFunction& function,
+                   const std::string& functionName,
+                   const std::string& fileName,
+                   const std::string& fileFormat = "auto" )
+{
+   std::ofstream file;
+   file.open( fileName );
+   if( ! file )
+   {
+      std::cerr << "Unable to open a file " << fileName << "." << std::endl;
+      return false;
+   }
+
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   if( format == "vti" ) {
+      Meshes::Writers::VTIWriter< typename MeshFunction::MeshType > writer( file );
+      writer.writeImageData( function.getMesh() );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( function.getData(), functionName, 1 );
+      else
+         writer.writeCellData( function.getData(), functionName, 1 );
+   }
+   else if( format == "gnuplot" || format == "gplt" || format == "plt" )
+      return MeshFunctionGnuplotWriter< MeshFunction >::write( function, file );
+   else {
+      std::cerr << "Unknown output format: " << format << std::endl;
+      return false;
+   }
+   return true;
+}
+
+// specialization for meshes
+template< typename MeshFunction >
+std::enable_if_t< ! Meshes::isGrid< typename MeshFunction::MeshType >::value, bool >
+writeMeshFunction( const MeshFunction& function,
+                   const std::string& functionName,
+                   const std::string& fileName,
+                   const std::string& fileFormat = "auto" )
+{
+   std::ofstream file;
+   file.open( fileName );
+   if( ! file )
+   {
+      std::cerr << "Unable to open a file " << fileName << "." << std::endl;
+      return false;
+   }
+
+   namespace fs = std::experimental::filesystem;
+   std::string format = fileFormat;
+   if( format == "auto" ) {
+      format = fs::path(fileName).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   if( format == "vtk" ) {
+      Meshes::Writers::VTKWriter< typename MeshFunction::MeshType > writer( file );
+      writer.template writeEntities< MeshFunction::getEntitiesDimension() >( function.getMesh() );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( function.getData(), functionName, 1 );
+      else
+         writer.writeCellData( function.getData(), functionName, 1 );
+   }
+   else if( format == "vtu" ) {
+      Meshes::Writers::VTUWriter< typename MeshFunction::MeshType > writer( file );
+      writer.template writeEntities< MeshFunction::getEntitiesDimension() >( function.getMesh() );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( function.getData(), functionName, 1 );
+      else
+         writer.writeCellData( function.getData(), functionName, 1 );
+   }
+   else if( format == "gnuplot" || format == "gplt" || format == "plt" )
+      return MeshFunctionGnuplotWriter< MeshFunction >::write( function, file );
+   else {
+      std::cerr << "Unknown output format: " << format << std::endl;
+      return false;
+   }
+   return true;
+}
+
+} // namespace Functions
+} // namespace TNL

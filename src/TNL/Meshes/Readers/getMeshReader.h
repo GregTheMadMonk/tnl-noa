@@ -25,7 +25,7 @@ namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-inline std::shared_ptr< Readers::MeshReader >
+inline std::shared_ptr< MeshReader >
 getMeshReader( const std::string& fileName,
                const std::string& fileFormat )
 {

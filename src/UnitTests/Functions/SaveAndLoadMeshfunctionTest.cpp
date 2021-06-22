@@ -20,7 +20,7 @@ using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
 
-static const char* TEST_FILE_NAME = "test_SaveAndLoadMeshFunctionTest.tnl";
+static const char* TEST_FILE_NAME = "test_SaveAndLoadMeshFunctionTest.vti";
 
 //=====================================TEST CLASS==============================================
 
@@ -30,25 +30,20 @@ class TestSaveAndLoadMeshfunction
     public:
         static void Test()
         {
-
             typedef Grid<dim,double,Host,int> MeshType;
             typedef MeshFunctionView<MeshType> MeshFunctionType;
             typedef Vector<double,Host,int> DofType;
             typedef typename MeshType::Cell Cell;
-            typedef typename MeshType::IndexType IndexType;
             typedef typename MeshType::PointType PointType;
 
-            typedef typename MeshType::CoordinatesType CoordinatesType;
             typedef LinearFunction<double,dim> LinearFunctionType;
 
             Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
             MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
 
 
-            PointType localOrigin;
-            localOrigin.setValue(-0.5);
-            PointType localProportions;
-            localProportions.setValue(10);
+            PointType localOrigin = -0.5;
+            PointType localProportions = 10;
 
             Pointers::SharedPointer<MeshType>  localGridptr;
             localGridptr->setDimensions(localProportions);
@@ -60,10 +55,7 @@ class TestSaveAndLoadMeshfunction
             localMeshFunctionptr->bind(localGridptr,localDof);
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr, linearFunctionPtr);
 
-            File file;
-            ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
-            ASSERT_NO_THROW( localMeshFunctionptr->save(file) );
-            ASSERT_NO_THROW( file.close() );
+            ASSERT_TRUE( localMeshFunctionptr->write( "funcName", TEST_FILE_NAME ) );
 
             //load other meshfunction on same localgrid from created file
             Pointers::SharedPointer<MeshType>  loadGridptr;
@@ -71,17 +63,11 @@ class TestSaveAndLoadMeshfunction
             loadGridptr->setDomain(localOrigin,localProportions);
 
             DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
+            loadDof.setValue(-1);
             Pointers::SharedPointer<MeshFunctionType> loadMeshFunctionptr;
             loadMeshFunctionptr->bind(loadGridptr,loadDof);
 
-            for(int i=0;i<loadDof.getSize();i++)
-            {
-                loadDof[i]=-1;
-            }
-
-            ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
-            ASSERT_NO_THROW( loadMeshFunctionptr->boundLoad(file) );
-            ASSERT_NO_THROW( file.close() );
+            ASSERT_TRUE( Functions::readMeshFunction( *loadMeshFunctionptr, "funcName", TEST_FILE_NAME ) );
 
             for(int i=0;i<localDof.getSize();i++)
             {
