@@ -13,6 +13,8 @@
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/Readers/VTIReader.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
 #include <TNL/FileName.h>
@@ -37,25 +39,27 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    Pointers::SharedPointer< MeshType > meshPointer;
    MeshType globalMesh;
 
-   if(TNL::MPI::GetSize() > 1)
-   {
-       //suppose global mesh loaded from single file
-       String meshFile = parameters.getParameter< String >( "mesh" );
-       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       globalMesh.load( meshFile );
-
-       // TODO: This should work with no overlaps
-       distributedMesh.setGlobalGrid(globalMesh);
-       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-       SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
-       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
-       distributedMesh.setupGrid(*meshPointer);
-    }
-    else
+   // TODO: PVTI reader is not implemented yet
+//   if(TNL::MPI::GetSize() > 1)
+//   {
+//       //suppose global mesh loaded from single file
+//       String meshFile = parameters.getParameter< String >( "mesh" );
+//       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+//       globalMesh.load( meshFile );
+//
+//       // TODO: This should work with no overlaps
+//       distributedMesh.setGlobalGrid(globalMesh);
+//       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+//       SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
+//       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
+//       distributedMesh.setupGrid(*meshPointer);
+//    }
+//    else
     {
        String meshFile = parameters.getParameter< String >( "mesh" );
        std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       meshPointer->load( meshFile );
+       Meshes::Readers::VTIReader reader( meshFile );
+       reader.loadMesh( *meshPointer );
     }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
@@ -81,7 +85,6 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
    while( step <= steps )
    {
-
       if( numericalDifferentiation )
       {
         std::cout << "+ -> Computing the finite differences ... " << std::endl;
@@ -107,22 +110,29 @@ bool renderFunction( const Config::ParameterContainer& parameters )
          outputFileName.setExtension( extension.getString() );
          outputFileName.setIndex( step );
          outputFile = outputFileName.getFileName();
-        std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
+         std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
       }
       else
-        std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
+         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
 
-      if(TNL::MPI::GetSize() > 1)
+      const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
+
+      // TODO: PVTI writer is not implemented yet
+//      if(TNL::MPI::GetSize() > 1)
+//      {
+//         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
+//            return false;
+//      }
+//      else
       {
-         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
-            return false;
+         // TODO: write metadata: step and time
+         meshFunction->write( meshFunctionName, outputFile, "auto" );
       }
-      else
-        meshFunction->save( outputFile);
 
       time += tau;
       step ++;
    }
+
    return true;
 }
 

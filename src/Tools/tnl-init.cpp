@@ -23,8 +23,9 @@ using namespace TNL;
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addDelimiter                            ( "General settings:" );
-   config.addEntry< String >( "mesh", "Mesh file. If none is given, a regular rectangular mesh is assumed.", "mesh.tnl" );
+   config.addDelimiter( "General settings:" );
+   config.addEntry< String >( "mesh", "Mesh file. If none is given, a regular rectangular mesh is assumed.", "mesh.vti" );
+   config.addEntry< String >( "mesh-function-name", "Name of the mesh function in the VTI files.", "f" );
    config.addEntry< String >( "real-type", "Precision of the function evaluation.", "mesh-real-type" );
       config.addEntryEnum< String >( "mesh-real-type" );
       config.addEntryEnum< String >( "float" );
@@ -41,11 +42,9 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< bool >( "check-output-file", "If the output file already exists, do not recreate it.", false );
    config.addEntry< String >( "help", "Write help." );
 
-   config.addDelimiter                            ( "Functions parameters:" );
+   config.addDelimiter( "Functions parameters:" );
    Functions::TestFunction< 1 >::configSetup( config );
 }
-
-
 
 int main( int argc, char* argv[] )
 {
@@ -60,7 +59,7 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
 
-   String meshFile = parameters. getParameter< String >( "mesh" );
+   String meshFile = parameters.getParameter< String >( "mesh" );
    String meshType;
    try
    {
