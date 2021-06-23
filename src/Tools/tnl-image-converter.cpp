@@ -23,62 +23,48 @@ using namespace TNL;
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addList < String >( "input-images",  "Input images for conversion to .tnl files." );
-   config.addList < String >( "input-files",   "Input .tnl files for conversion to images." );
-   config.addEntry        < String >( "image-format",  "Output images file format.", "pgm" );
-   config.addEntry        < String >( "mesh-file",     "Mesh file.", "mesh.tnl" );
-   config.addEntry        < String >( "real-type",     "Output mesh function real type.", "double" );
-      config.addEntryEnum < String >( "float" );
-      config.addEntryEnum < String >( "double" );
-      config.addEntryEnum < String >( "long-double" );   
-   config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
-   config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
-   config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
-   config.addEntry        < int >      ( "roi-left",      "Left (smaller number) column of the region of interest.", -1 );
-   config.addEntry        < int >      ( "roi-right",     "Right (larger number) column of the region of interest.", -1 );
-   config.addEntry        < bool >      ( "verbose",       "Set the verbosity of the program.", true );
+   config.addList< String >( "input-images", "Input images for conversion to VTI files." );
+   config.addList< String >( "input-files", "Input VTI files for conversion to images." );
+   config.addEntry< String >( "image-format", "Output images file format.", "pgm" );
+   config.addEntry< String >( "mesh-function-name", "Name of the mesh function in the VTI files.", "image" );
+   config.addEntry< String >( "real-type", "Output mesh function real type.", "double" );
+      config.addEntryEnum< String >( "float" );
+      config.addEntryEnum< String >( "double" );
+      config.addEntryEnum< String >( "long-double" );
+   config.addEntry< int >( "roi-top",    "Top (smaller number) line of the region of interest.", -1 );
+   config.addEntry< int >( "roi-bottom", "Bottom (larger number) line of the region of interest.", -1 );
+   config.addEntry< int >( "roi-left",   "Left (smaller number) column of the region of interest.", -1 );
+   config.addEntry< int >( "roi-right",  "Right (larger number) column of the region of interest.", -1 );
 }
 
 template< typename Real >
 bool processImages( const Config::ParameterContainer& parameters )
 {
-    const std::vector< String >& inputImages = parameters.getParameter< std::vector< String > >( "input-images" );
-    String meshFile = parameters.getParameter< String >( "mesh-file" );
-    bool verbose = parameters.getParameter< bool >( "verbose" );
- 
-    using GridType = Meshes::Grid< 2, Real, Devices::Host, int >;
-    using GridPointer = Pointers::SharedPointer< GridType >;
-    using MeshFunctionType = Functions::MeshFunction< GridType >;
-    GridPointer grid;
-    MeshFunctionType meshFunction;
+   const std::vector< std::string > inputImages = parameters.getParameter< std::vector< std::string > >( "input-images" );
+   const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
 
-    Images::RegionOfInterest< int > roi;
-    for( int i = 0; i < (int) inputImages.size(); i++ )
-    {
-      const String& fileName = inputImages[ i ];
+   using GridType = Meshes::Grid< 2, Real, Devices::Host, int >;
+   using GridPointer = Pointers::SharedPointer< GridType >;
+   using MeshFunctionType = Functions::MeshFunction< GridType >;
+   GridPointer grid;
+   MeshFunctionType meshFunction;
+
+   Images::RegionOfInterest< int > roi;
+   for( auto fileName : inputImages )
+   {
+      const String outputFileName = removeFileNameExtension( fileName ) + ".vti";
       std::cout << "Processing image file " << fileName << "... ";
       Images::PGMImage< int > pgmImage;
       if( pgmImage.openForRead( fileName ) )
       {
          std::cout << "PGM format detected ...";
-         if( i == 0 )
-         {
-            if( ! roi.setup( parameters, &pgmImage ) )
-               return false;
-            roi.setGrid( *grid, verbose );
-            //vector.setSize( grid->template getEntitiesCount< typename GridType::Cell >() );
-            std::cout << "Writing grid to file " << meshFile << std::endl;
-            grid->save( meshFile );
-         }
-         else
-            if( ! roi.check( &pgmImage ) )
-               return false;
+         if( ! roi.check( &pgmImage ) )
+            return false;
          meshFunction.setMesh( grid );
          if( ! pgmImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
-         meshFunction.save( outputFileName );
+         meshFunction.write( meshFunctionName, outputFileName );
          pgmImage.close();
          continue;
       }
@@ -86,50 +72,28 @@ bool processImages( const Config::ParameterContainer& parameters )
       if( pngImage.openForRead( fileName ) )
       {
          std::cout << "PNG format detected ...";
-         if( i == 0 )
-         {
-            if( ! roi.setup( parameters, &pngImage ) )
-               return false;
-            roi.setGrid( *grid, verbose );
-            //vector.setSize( grid->template getEntitiesCount< typename GridType::Cell >() );
-            std::cout << "Writing grid to file " << meshFile << std::endl;
-            grid->save( meshFile );
-         }
-         else
-            if( ! roi.check( &pgmImage ) )
-               return false;
+         if( ! roi.check( &pngImage ) )
+            return false;
          meshFunction.setMesh( grid );
          if( ! pngImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
-         meshFunction.save( outputFileName );
-         pgmImage.close();
+         meshFunction.write( meshFunctionName, outputFileName );
+         pngImage.close();
          continue;
       }
       Images::JPEGImage< int > jpegImage;
       if( jpegImage.openForRead( fileName ) )
       {
          std::cout << "JPEG format detected ...";
-         if( i == 0 )
-         {
-            if( ! roi.setup( parameters, &jpegImage ) )
-               return false;
-            roi.setGrid( *grid, verbose );
-            //vector.setSize( grid->template getEntitiesCount< typename GridType::Cell >() );
-            std::cout << "Writing grid to file " << meshFile << std::endl;
-            grid->save( meshFile );
-         }
-         else
-            if( ! roi.check( &jpegImage ) )
-               return false;
+         if( ! roi.check( &jpegImage ) )
+            return false;
          meshFunction.setMesh( grid );
          if( ! jpegImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
-         meshFunction.save( outputFileName );
-         pgmImage.close();
+         meshFunction.write( meshFunctionName, outputFileName );
+         jpegImage.close();
          continue;
       }
    }
@@ -138,63 +102,50 @@ bool processImages( const Config::ParameterContainer& parameters )
 
 bool processFiles( const Config::ParameterContainer& parameters )
 {
-   const std::vector< String >& inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
-   const String& imageFormat = parameters.getParameter< String >( "image-format" );
-   String meshFile = parameters.getParameter< String >( "mesh-file" );
- 
-   Meshes::Grid< 2, double, Devices::Host, int > grid;
-   try
+   const std::vector< std::string > inputFiles = parameters.getParameter< std::vector< std::string > >( "input-files" );
+   const std::string imageFormat = parameters.getParameter< std::string >( "image-format" );
+   const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
+
+   for( auto fileName : inputFiles )
    {
-      grid.load( meshFile );
-   }
-   catch(...)
-   {
-      std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
-      return false;
-   }
-   Containers::Vector< double, Devices::Host, int > vector;
-   for( int i = 0; i < (int) inputFiles.size(); i++ )
-   {
-      const String& fileName = inputFiles[ i ];
       std::cout << "Processing file " << fileName << "... ";
-      try
-      {
-         File( fileName, std::ios_base::in ) >> vector;
-      }
-      catch(...)
-      {
-         std::cerr << "I am not able to load data from a file " << fileName << "." << std::endl;
+      using Real = double;
+      using GridType = Meshes::Grid< 2, Real, Devices::Host, int >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using MeshFunctionType = Functions::MeshFunction< GridType >;
+      GridPointer grid;
+      MeshFunctionType meshFunction;
+      if( ! Functions::readMeshFunction( meshFunction, meshFunctionName, fileName ) )
          return false;
-      }
+
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
          Images::PGMImage< int > image;
-         String outputFileName = removeFileNameExtension( fileName ) + ".pgm";
-	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
-         	image.openForWrite( outputFileName, grid, true );
-	 if ( imageFormat == "pgm-ascii" )
-         	image.openForWrite( outputFileName, grid, false );
-         image.write( grid, vector );
+         const String outputFileName = removeFileNameExtension( fileName ) + ".pgm";
+         if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
+            image.openForWrite( outputFileName, *grid, true );
+         if ( imageFormat == "pgm-ascii" )
+            image.openForWrite( outputFileName, *grid, false );
+         image.write( *grid, meshFunction.getData() );
          image.close();
          continue;
       }
       if( imageFormat == "png" )
       {
          Images::PNGImage< int > image;
-         String outputFileName = removeFileNameExtension( fileName ) + ".png";
-         image.openForWrite( outputFileName, grid );
-         image.write( grid, vector );
+         const String outputFileName = removeFileNameExtension( fileName ) + ".png";
+         image.openForWrite( outputFileName, *grid );
+         image.write( *grid, meshFunction.getData() );
          image.close();
       }
       if( imageFormat == "jpg" )
       {
          Images::JPEGImage< int > image;
-         String outputFileName = removeFileNameExtension( fileName ) + ".jpg";
-         image.openForWrite( outputFileName, grid );
-         image.write( grid, vector );
+         const String outputFileName = removeFileNameExtension( fileName ) + ".jpg";
+         image.openForWrite( outputFileName, *grid );
+         image.write( *grid, meshFunction.getData() );
          image.close();
       }
-
    }
    return true;
 }
@@ -219,8 +170,6 @@ int main( int argc, char* argv[] )
       if( realType == "float" &&  ! processImages< float >( parameters ) )
          return EXIT_FAILURE;
       if( realType == "double" &&  ! processImages< double >( parameters ) )
-         return EXIT_FAILURE;
-      if( realType == "long double" &&  ! processImages< long double >( parameters ) )
          return EXIT_FAILURE;
    }
    if( parameters.checkParameter( "input-files" ) && ! processFiles( parameters ) )
