@@ -51,30 +51,6 @@ MeshFunction( const MeshFunction& meshFunction )
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-String
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-getSerializationType()
-{
-   return String( "Functions::MeshFunction< " ) +
-          TNL::getSerializationType< Mesh >() + ", " +
-          convertToString( MeshEntityDimension ) + ", " +
-          getType< Real >() +
-          " >";
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-String
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 configSetup( Config::ConfigDescription& config,
@@ -341,56 +317,6 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 getMaxNorm() const
 {
    return max( abs( this->data ) );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-save( File& file ) const
-{
-   TNL_ASSERT_EQ( this->data.getSize(), this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "Size of the mesh function data does not match the mesh." );
-   Object::save( file );
-   file << this->data;
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-load( File& file )
-{
-   Object::load( file );
-   file >> this->data;
-   const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
-   if( this->data.getSize() != meshSize )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "mesh function data size does not match the mesh size (expected " + std::to_string(meshSize) + ", got " + std::to_string(this->data.getSize()) + ")." );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-boundLoad( File& file )
-{
-   Object::load( file );
-   file >> this->data.getView();
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-boundLoad( const String& fileName )
-{
-   File file;
-   file.open( fileName, std::ios_base::in );
-   this->boundLoad( file );
 }
 
 template< typename Mesh,

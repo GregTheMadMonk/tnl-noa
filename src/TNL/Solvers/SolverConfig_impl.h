@@ -75,7 +75,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     * Mesh file parameter
     */
    config.addDelimiter( " === Space discretisation parameters ==== " );
-   config.addEntry< String >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.tnl" );
+   config.addEntry< String >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.vti" );
    config.addEntry< String >( "mesh-format", "Mesh file format.", "auto" );
 
    /****

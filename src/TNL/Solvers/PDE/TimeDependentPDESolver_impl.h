@@ -39,7 +39,7 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    BaseType::configSetup( config, prefix );
-   config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
+   config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.vti" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addEntry< double >( prefix + "initial-time", "Initial time of the time dependent problem.", 0 );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");

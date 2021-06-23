@@ -74,7 +74,7 @@ solve( const MeshPointer& mesh,
 
   std::cout << "Initiating the interface cells ..." << std::endl;
   BaseType::initInterface( u, auxPtr, interfaceMapPtr, vecLowerOverlaps, vecUpperOverlaps );
-  auxPtr->save( "aux-ini.tnl" );
+  auxPtr->write( "aux", "aux-ini.vti" );
 
   typename MeshType::Cell cell( *mesh );
 
@@ -192,8 +192,8 @@ solve( const MeshPointer& mesh,
 
          this->getNeighbours( BlockIterHost, numBlocksX, numBlocksY, numBlocksZ );
 
-         //string s( "aux-"+ std::to_string(numWhile) + ".tnl");
-         //aux.save( s );
+         //string s( "aux-"+ std::to_string(numWhile) + ".vti");
+         //aux.write( "aux", s );
          }
          if( numWhile == 1 ){
          auxPtr = helpFunc;
@@ -368,13 +368,13 @@ solve( const MeshPointer& mesh,
       if( !CommunicatorType::isDistributed() ) // If we start the solver without MPI, we need calculatedBefore 0!
         calculatedBefore = 0; //otherwise we would go throw the FSM code and CUDA FSM code again uselessly
     }
-    //aux.save( "aux-8.tnl" );
+    //aux.write( "aux", "aux-8.vti" );
     iteration++;
 
   }
   // Saving the results into Aux for MakeSnapshot function.
   Aux = auxPtr;
-  aux.save("aux-final.tnl");
+  aux.write( "aux", "aux-final.vti" );
 }
 
 // PROTECTED FUNCTIONS:

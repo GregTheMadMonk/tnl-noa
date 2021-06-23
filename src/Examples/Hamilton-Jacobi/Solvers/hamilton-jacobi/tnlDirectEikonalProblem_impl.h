@@ -13,6 +13,7 @@
 
 #pragma once
 #include <TNL/FileName.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #include "tnlDirectEikonalProblem.h"
 
@@ -127,20 +128,17 @@ setInitialCondition( const Config::ParameterContainer& parameters,
   if( CommunicatorType::isDistributed() )
   {
     std::cout<<"Nodes Distribution: " << initialData->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
-    if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *initialData );
-    if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
+    throw Exceptions::NotImplementedError( "PVTI reader is not implemented yet." );
+//    if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+//      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *initialData );
+//    if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+//      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
     synchronizer.setDistributedGrid( initialData->getMesh().getDistributedMesh() );
     synchronizer.synchronize( *initialData );
   }
   else
   {
-      try
-      {
-          this->initialData->boundLoad( inputFile );
-      }
-      catch(...)
+      if( ! Functions::readMeshFunction( *this->initialData, "u", inputFile ) )
       {
          std::cerr << "I am not able to load the initial condition from the file " << inputFile << "." << std::endl;
          return false;
@@ -164,17 +162,20 @@ makeSnapshot(  )
 
    FileName fileName;
    fileName.setFileNameBase( "u-" );
-   fileName.setExtension( "tnl" );
 
    if(CommunicatorType::isDistributed())
    {
-      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *u );
-      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *u );
+      fileName.setExtension( "pvti" );
+      throw Exceptions::NotImplementedError( "PVTI writer is not implemented yet." );
+//      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *u );
+//      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *u );
    }
-   else
-      this->u->save( fileName.getFileName() );
+   else {
+      fileName.setExtension( "vti" );
+      this->u->write( "u", fileName.getFileName() );
+   }
    return true;
 }
 

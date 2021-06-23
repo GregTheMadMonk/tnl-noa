@@ -78,8 +78,8 @@ class TestDistributedVectorFieldMPIIO{
         DistributedGridIO_VectorField<VectorFieldType,MpiIO> ::save(FileName, vectorField );
         /*File file;
         file.open( FileName, std::ios_base::out );
-		vectorField.save(file);
-		file.close();		*/
+        vectorField.save(file);
+        file.close();		*/
 
        //first process compare results
        if(TNL::MPI::GetRank()==0)
@@ -88,8 +88,8 @@ class TestDistributedVectorFieldMPIIO{
 
             VectorFieldType globalEvaluatedvct;
             globalEvaluatedvct.bind(globalGrid,globalEvaluatedDof);
-			for(int i=0;i<vctdim;i++)
-	            linearFunctionEvaluator.evaluateAllEntities(globalEvaluatedvct[i] , linearFunctionPtr);
+            for(int i=0;i<vctdim;i++)
+               linearFunctionEvaluator.evaluateAllEntities(globalEvaluatedvct[i] , linearFunctionPtr);
 
 
             DofType loadDof(vctdim*(globalGrid->template getEntitiesCount< Cell >()));
@@ -100,11 +100,11 @@ class TestDistributedVectorFieldMPIIO{
 
             File file;
             file.open( FileName, std::ios_base::in );
-	    loadvct.boundLoad(file);
+            loadvct.boundLoad(file);
             for(int i=0;i<loadDof.getSize();i++)
-	    {
-		EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
-	    }
+            {
+               EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
+            }
        }
     };
 

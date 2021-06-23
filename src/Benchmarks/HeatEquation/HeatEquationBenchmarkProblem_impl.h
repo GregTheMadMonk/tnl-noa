@@ -11,7 +11,7 @@
 #include "Tuning/SimpleCell.h"
 #include "Tuning/GridTraverser.h"
 
-//#define WITH_TNL  // In the 'tunning' part, this serves for comparison of performance 
+//#define WITH_TNL  // In the 'tunning' part, this serves for comparison of performance
                   // when using common TNL structures compared to the benchmark ones
 
 
@@ -88,7 +88,7 @@ setup( const Config::ParameterContainer& parameters,
    }
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
-   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );   
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
    return true;
 }
 
@@ -133,16 +133,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    MeshFunctionViewType u;
    u.bind( this->getMesh(), *dofsPointer );
-   try
-   {
-      u.boundLoad( initialConditionFile );
-   }
-   catch(...)
+   if( ! Functions::readMeshFunction( u, "u", initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
-   return true; 
+   return true;
 }
 
 template< typename Mesh,
@@ -189,11 +185,11 @@ makeSnapshot( const RealType& time,
 
    FileName fileName;
    fileName.setFileNameBase( "u-" );
-   fileName.setExtension( "tnl" );
+   fileName.setExtension( "vti" );
    fileName.setIndex( step );
 
    //FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   u.save( fileName.getFileName() );
+   u.write( "u", fileName.getFileName() );
    return true;
 }
 
@@ -214,7 +210,7 @@ __global__ void boundaryConditionsKernel( Real* u,
    if( i == gridXSize - 1 && j < gridYSize )
    {
       fu[ j * gridXSize + gridYSize - 1 ] = 0.0;
-      u[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+      u[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
    }
    if( j == 0 && i > 0 && i < gridXSize - 1 )
    {
@@ -223,14 +219,14 @@ __global__ void boundaryConditionsKernel( Real* u,
    }
    if( j == gridYSize -1  && i > 0 && i < gridXSize - 1 )
    {
-      fu[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
-      u[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
-   }         
+      fu[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
+      u[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
+   }
 }
 
 
 template< typename Real, typename Index >
-__global__ void heatEquationKernel( const Real* u, 
+__global__ void heatEquationKernel( const Real* u,
                                     Real* fu,
                                     const Real tau,
                                     const Real hx_inv,
@@ -253,7 +249,7 @@ template< typename GridType,
           typename GridEntity,
           typename BoundaryConditions,
           typename MeshFunction >
-__global__ void 
+__global__ void
 boundaryConditionsTemplatedCompact( const GridType* grid,
                                     const BoundaryConditions* boundaryConditions,
                                     MeshFunction* u,
@@ -261,14 +257,14 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
                                     const typename GridEntity::CoordinatesType begin,
                                     const typename GridEntity::CoordinatesType end,
                                     const typename GridEntity::EntityOrientationType entityOrientation,
-                                    const typename GridEntity::EntityBasisType entityBasis,   
+                                    const typename GridEntity::EntityBasisType entityBasis,
                                     const typename GridType::IndexType gridXIdx,
                                     const typename GridType::IndexType gridYIdx )
 {
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin.x() + ( gridXIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;        
+   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
 
    if( coordinates.x() < end.x() &&
        coordinates.y() < end.y() )
@@ -287,9 +283,9 @@ struct EntityPointer : public EntityPointer< EntityType, Dimension - 1 >
 {
    __device__ EntityPointer( const EntityType* ptr )
       : EntityPointer< EntityType, Dimension - 1 >( ptr ), pointer( ptr )
-   {      
+   {
    }
-   
+
    const EntityType* pointer;
 };
 
@@ -298,10 +294,10 @@ struct EntityPointer< EntityType, 0 >
 {
    __device__ inline EntityPointer( const EntityType* ptr )
    :pointer( ptr )
-   {      
+   {
    }
 
-   
+
    const EntityType* pointer;
 };*/
 
@@ -309,7 +305,7 @@ struct EntityPointer< EntityType, 0 >
 struct TestEntity
 {
    typedef typename GridType::Cell::CoordinatesType CoordinatesType;
-   
+
    __device__ inline TestEntity( const GridType& grid,
                const typename GridType::Cell::CoordinatesType& coordinates,
                const typename GridType::Cell::EntityOrientationType& orientation,
@@ -320,19 +316,19 @@ struct TestEntity
       basis( basis ),
       entityIndex( 0 ),
       ptr( &grid )
-   {      
+   {
    };
-  
+
    const GridType& grid;
-   
-   EntityPointer< GridType, 2 > ptr; 
+
+   EntityPointer< GridType, 2 > ptr;
    //TestEntity< GridType > *entity1, *entity2, *entity3;
-   
-   typename GridType::IndexType entityIndex;      
-   
+
+   typename GridType::IndexType entityIndex;
+
    const typename GridType::Cell::CoordinatesType coordinates;
    const typename GridType::Cell::EntityOrientationType orientation;
-   const typename GridType::Cell::EntityBasisType basis;   
+   const typename GridType::Cell::EntityBasisType basis;
 };*/
 
 template< typename GridType,
@@ -340,7 +336,7 @@ template< typename GridType,
           typename DifferentialOperator,
           typename RightHandSide,
           typename MeshFunction >
-__global__ void 
+__global__ void
 heatEquationTemplatedCompact( const GridType* grid,
                               const DifferentialOperator* differentialOperator,
                               const RightHandSide* rightHandSide,
@@ -350,7 +346,7 @@ heatEquationTemplatedCompact( const GridType* grid,
                               const typename GridEntity::CoordinatesType begin,
                               const typename GridEntity::CoordinatesType end,
                               const typename GridEntity::EntityOrientationType entityOrientation,
-                              const typename GridEntity::EntityBasisType entityBasis,   
+                              const typename GridEntity::EntityBasisType entityBasis,
                               const typename GridType::IndexType gridXIdx,
                               const typename GridType::IndexType gridYIdx )
 {
@@ -359,8 +355,8 @@ heatEquationTemplatedCompact( const GridType* grid,
    typedef typename GridType::RealType RealType;
 
    coordinates.x() = begin.x() + ( gridXIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;     
-      
+   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
 
@@ -368,11 +364,11 @@ heatEquationTemplatedCompact( const GridType* grid,
        coordinates.y() < end.y() )
    {
       GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
-      
+
       entity.refresh();
       if( ! entity.isBoundaryEntity() )
       {
-         fu( entity ) = 
+         fu( entity ) =
             ( *differentialOperator )( u, entity, time );
 
          typedef Functions::FunctionAdapter< GridType, RightHandSide > FunctionAdapter;
@@ -423,11 +419,11 @@ getExplicitUpdate( const RealType& time,
          fu[ i ] = 0.0; //u[ gridXSize + i ];
          fu[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
-      
+
       /*typedef typename MeshType::Cell CellType;
       typedef typename CellType::CoordinatesType CoordinatesType;
       CoordinatesType coordinates( 0, 0 ), entityOrientation( 0,0 ), entityBasis( 0, 0 );*/
-      
+
       //CellType entity( mesh, coordinates, entityOrientation, entityBasis );
 
       for( IndexType j = 1; j < gridYSize - 1; j++ )
@@ -440,7 +436,7 @@ getExplicitUpdate( const RealType& time,
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      #ifdef HAVE_CUDA         
+      #ifdef HAVE_CUDA
       if( this->cudaKernelType == "pure-c" )
       {
          const IndexType gridXSize = mesh->getDimensions().x();
@@ -461,14 +457,14 @@ getExplicitUpdate( const RealType& time,
             std::cerr << "Laplace operator failed." << std::endl;
             return;
          }
-         
+
          boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
          if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
          {
             std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
             return;
          }
-         
+
       }
       if( this->cudaKernelType == "templated-compact" )
       {
@@ -488,7 +484,7 @@ getExplicitUpdate( const RealType& time,
          cudaBlocks.y = Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
          const IndexType cudaXGrids = Cuda::getNumberOfGrids( cudaBlocks.x );
          const IndexType cudaYGrids = Cuda::getNumberOfGrids( cudaBlocks.y );
-         
+
          //std::cerr << "Setting boundary conditions..." << std::endl;
 
          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
@@ -508,7 +504,7 @@ getExplicitUpdate( const RealType& time,
                     gridYIdx );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
-         
+
          //std::cerr << "Computing the heat equation ..." << std::endl;
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
@@ -526,7 +522,7 @@ getExplicitUpdate( const RealType& time,
                     cell.getBasis(),
                     gridXIdx,
                     gridYIdx );
-         cudaDeviceSynchronize();         
+         cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
       }
       if( this->cudaKernelType == "templated" )
@@ -535,20 +531,20 @@ getExplicitUpdate( const RealType& time,
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
          this->u->bind( mesh, *uDofs );
          this->fu->bind( mesh, *fuDofs );
-         //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
+         //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
          this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh, this->u, this->fu );
       }
       if( this->cudaKernelType == "tunning" )
       {
          if( std::is_same< DeviceType, Devices::Cuda >::value )
-         {   
+         {
             this->u->bind( mesh, *uDofs );
             this->fu->bind( mesh, *fuDofs );
-            
-            
+
+
             /*this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, this->u, this->fu );
             return;*/
-            
+
 #ifdef WITH_TNL
             using ExplicitUpdaterType = TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide >;
             using Cell = typename MeshType::Cell;
@@ -558,12 +554,12 @@ getExplicitUpdate( const RealType& time,
                DifferentialOperator,
                BoundaryCondition,
                RightHandSide >;
-            
+
 #else
             //using CellConfig = Meshes::GridEntityNoStencilStorage;
             using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
             using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide >;
-            using Cell = typename MeshType::Cell; 
+            using Cell = typename MeshType::Cell;
             //using Cell = SimpleCell< Mesh, CellConfig >;
             using MeshTraverserType = Traverser< MeshType, Cell >;
             using UserData = ExplicitUpdaterTraverserUserData< RealType,
@@ -571,11 +567,11 @@ getExplicitUpdate( const RealType& time,
                DifferentialOperator,
                BoundaryCondition,
                RightHandSide >;
-#endif            
+#endif
 
             using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
             using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
-            
+
             UserData userData;
             userData.time = time;
             userData.differentialOperator = &this->differentialOperatorPointer.template getData< Devices::Cuda >();
@@ -586,7 +582,7 @@ getExplicitUpdate( const RealType& time,
 #ifndef WITH_TNL
             userData.real_u = uDofs->getData();
             userData.real_fu = fuDofs->getData();
-#endif                        
+#endif
             /*
             const IndexType gridXSize = mesh->getDimensions().x();
             const IndexType gridYSize = mesh->getDimensions().y();
@@ -612,7 +608,7 @@ getExplicitUpdate( const RealType& time,
                std::cerr << "Laplace operator failed." << std::endl;
                return;
             }
-            
+
             meshTraverser.template processBoundaryEntities< BoundaryEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
@@ -622,17 +618,17 @@ getExplicitUpdate( const RealType& time,
                ( &mesh.template getData< Devices::Cuda >(),
                 userData );
                 //&userDataPtr.template modifyData< Devices::Cuda >() );
-            // */ 
+            // */
             if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
             {
                std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
                return;
             }
 
-            
-            
+
+
          }
-      }      
+      }
       #endif
    }
 }
@@ -642,7 +638,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator,
           typename Communicator >
-void 
+void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 applyBoundaryConditions( const RealType& time,
                             DofVectorPointer& uDofs )
@@ -659,7 +655,7 @@ applyBoundaryConditions( const RealType& time,
       this->bindDofs( uDofs );
       this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->u );
       return;*/
-      
+
 #ifdef HAVE_CUDA
 /*
 #ifdef WITH_TNL
@@ -671,12 +667,12 @@ applyBoundaryConditions( const RealType& time,
          DifferentialOperator,
          BoundaryCondition,
          RightHandSide >;
-            
+
 #else
       //using CellConfig = Meshes::GridEntityNoStencilStorage;
       using CellConfig = Meshes::GridEntityCrossStencilStorage< 1 >;
       using ExplicitUpdaterType = ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide >;
-      //using Cell = typename MeshType::Cell; 
+      //using Cell = typename MeshType::Cell;
       using Cell = SimpleCell< Mesh, CellConfig >;
       using MeshTraverserType = Traverser< MeshType, Cell >;
       using UserData = ExplicitUpdaterTraverserUserData< RealType,
@@ -684,7 +680,7 @@ applyBoundaryConditions( const RealType& time,
          DifferentialOperator,
          BoundaryCondition,
          RightHandSide >;
-#endif            
+#endif
          using InteriorEntitiesProcessor = typename ExplicitUpdaterType::TraverserInteriorEntitiesProcessor;
          using BoundaryEntitiesProcessor = typename ExplicitUpdaterType::TraverserBoundaryEntitiesProcessor;
 
@@ -709,7 +705,7 @@ applyBoundaryConditions( const RealType& time,
          ( &mesh.template getData< Devices::Cuda >(),
           userData );
           //&userDataPtr.template modifyData< Devices::Cuda >() );
-      // */ 
+      // */
       int cudaErr;
       if( ( cudaErr = ::cudaGetLastError() ) != cudaSuccess )
       {

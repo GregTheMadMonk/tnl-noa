@@ -159,8 +159,8 @@ makeSnapshot( const RealType& time,
    this->bindDofs( mesh, dofs );
    //cout << "dofs = " << dofs << std::endl;
    String fileName;
-   FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->solution.save( fileName ) )
+   FileNameBaseNumberEnding( "u-", step, 5, ".vti", fileName );
+   if( ! this->solution.write( "u", fileName ) )
       return false;
    return true;
 }
@@ -188,7 +188,7 @@ getExplicitUpdate( const RealType& time,
     */
 
 //   this->differentialOperator.computeFirstGradient(mesh,time,u);
- 
+
    //cout << "u = " << u << std::endl;
    //this->bindDofs( mesh, u );
    MeshFunctionType u( mesh, inDofs );
@@ -198,9 +198,9 @@ getExplicitUpdate( const RealType& time,
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
    explicitUpdater.setRightHandSide( this->rightHandSidePointer );
-   
+
    explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, u, fu );
- 
+
    /*cout << "u = " << u << std::endl;
   std::cout << "fu = " << fu << std::endl;
    u.save( "u.tnl" );

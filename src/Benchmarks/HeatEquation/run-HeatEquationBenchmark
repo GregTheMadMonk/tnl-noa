@@ -9,11 +9,9 @@ tnl-grid-setup --dimensions 2 \
                --size-y 100
 
 tnl-init --test-function sin-wave \
-         --output-file init.tnl
+         --output-file init.vti
 ./HeatEquationBenchmark --time-discretisation explicit \
               --boundary-conditions-constant 0 \
               --discrete-solver merson \
               --snapshot-period 0.01 \
               --final-time 1.0
-
-tnl-view --mesh mesh.tnl --input-files *tnl     

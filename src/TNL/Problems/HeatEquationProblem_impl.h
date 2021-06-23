@@ -20,6 +20,7 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #include "HeatEquationProblem.h"
 
@@ -139,31 +140,23 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if(CommunicatorType::isDistributed())
-    {
-        std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
-        if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-            Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
-        if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-            Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
-        synchronizer.setDistributedGrid( uPointer->getMesh().getDistributedMesh() );
-        synchronizer.synchronize( *uPointer );
-    }
-    else
-    {
-      if( this->catchExceptions )
+   {
+      std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
+      throw Exceptions::NotImplementedError( "PVTI reader is not implemented yet." );
+//      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+//         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
+//      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+//         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
+      synchronizer.setDistributedGrid( uPointer->getMesh().getDistributedMesh() );
+      synchronizer.synchronize( *uPointer );
+   }
+   else
+   {
+      if( ! Functions::readMeshFunction( *this->uPointer, "u", initialConditionFile ) )
       {
-         try
-         {
-            this->uPointer->boundLoad( initialConditionFile );
-         }
-         catch( std::ios_base::failure& e )
-         {
-            std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
-            std::cerr << e.what() << std::endl;
-            return false;
-         }
+         std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+         return false;
       }
-      else this->uPointer->boundLoad( initialConditionFile );
    }
    return true;
 }
@@ -210,19 +203,21 @@ makeSnapshot( const RealType& time,
 
    FileName fileName;
    fileName.setFileNameBase( "u-" );
-   fileName.setExtension( "tnl" );
    fileName.setIndex( step );
 
    if(CommunicatorType::isDistributed())
    {
-      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
-      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
+      fileName.setExtension( "pvti" );
+      throw Exceptions::NotImplementedError( "PVTI writer is not implemented yet." );
+//      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
+//      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
    }
    else
    {
-      this->uPointer->save( fileName.getFileName() );
+      fileName.setExtension( "vti" );
+      this->uPointer->write( "u", fileName.getFileName() );
    }
    return true;
 }

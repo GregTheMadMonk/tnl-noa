@@ -22,7 +22,6 @@ template< typename Mesh,
           int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType >
 class MeshFunction :
-   public Object,
    public Domain< Mesh::getMeshDimension(), MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
@@ -45,10 +44,6 @@ class MeshFunction :
       MeshFunction( const MeshPointer& meshPointer );
 
       MeshFunction( const MeshFunction& meshFunction );
-
-      static String getSerializationType();
-
-      virtual String getSerializationTypeVirtual() const;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -115,21 +110,9 @@ class MeshFunction :
 
       RealType getMaxNorm() const;
 
-      void save( File& file ) const;
-
-      void load( File& file );
-
-      void boundLoad( File& file );
-
-      void boundLoad( const String& fileName );
-
       bool write( const std::string& functionName,
                   const std::string& fileName,
                   const std::string& fileFormat = "auto" ) const;
-
-      using Object::save;
-
-      using Object::load;
 
    protected:
 

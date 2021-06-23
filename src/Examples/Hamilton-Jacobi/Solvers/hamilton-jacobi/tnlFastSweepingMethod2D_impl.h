@@ -75,7 +75,7 @@ solve( const MeshPointer& mesh,
   std::cout << "Initiating the interface cells ..." << std::endl;
   BaseType::initInterface( u, auxPtr, interfaceMapPtr, vecLowerOverlaps, vecUpperOverlaps );
 
-  //auxPtr->save( "aux-ini.tnl" );
+  //auxPtr->write( "aux", "aux-ini.vti" );
 
   typename MeshType::Cell cell( *mesh );
 
@@ -207,8 +207,8 @@ solve( const MeshPointer& mesh,
          this->getNeighbours( BlockIterHost, numBlocksX, numBlocksY );
 
          //std::cout<<std::endl;
-         //String s( "aux-"+ std::to_string(numWhile) + ".tnl");
-         //aux.save( s );
+         //String s( "aux-"+ std::to_string(numWhile) + ".vti");
+         //aux.write( "aux", s );
          }
          if( numWhile == 1 ){
          auxPtr = helpFunc;
@@ -223,19 +223,19 @@ solve( const MeshPointer& mesh,
         boundsFrom[1] = vecLowerOverlaps[1]; boundsTo[1] = mesh->getDimensions().y() - vecUpperOverlaps[1];
         boundsFrom[0] = vecLowerOverlaps[0]; boundsTo[0] = mesh->getDimensions().x() - vecUpperOverlaps[0];
         calculatedBefore = goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save("aux-1.tnl");
+        //aux.write( "aux", "aux-1.vti" );
 
     // UP and LEFL
         boundsFrom[1] = vecLowerOverlaps[1]; boundsTo[1] = mesh->getDimensions().y() - vecUpperOverlaps[1];
         boundsFrom[0] = mesh->getDimensions().x() - 1 - vecUpperOverlaps[0]; boundsTo[0] = -1 + vecLowerOverlaps[0];
         goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save( "aux-2.tnl" );
+        //aux.write( "aux", "aux-2.vti" );
 
     // DOWN and RIGHT
         boundsFrom[1] = mesh->getDimensions().y() - 1 - vecUpperOverlaps[1]; boundsTo[1] = - 1 + vecLowerOverlaps[1];
         boundsFrom[0] = vecLowerOverlaps[0]; boundsTo[0] = mesh->getDimensions().x() - vecUpperOverlaps[0];
         goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save( "aux-3.tnl" );
+        //aux.write( "aux", "aux-3.vti" );
 
     // DOWN and LEFT
         boundsFrom[1] = mesh->getDimensions().y() - 1 - vecUpperOverlaps[1]; boundsTo[1] = - 1 + vecLowerOverlaps[1];

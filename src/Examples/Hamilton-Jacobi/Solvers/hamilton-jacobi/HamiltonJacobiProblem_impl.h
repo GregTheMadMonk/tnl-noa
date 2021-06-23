@@ -14,7 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#pragma once 
+#pragma once
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
@@ -123,7 +123,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
   this->bindDofs( mesh, dofs );
   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-  if( ! this->solution.boundLoad( initialConditionFile ) )
+  if( ! Functions::readMeshFunction( this->solution, "u", initialConditionFile ) )
   {
     std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
     return false;
@@ -135,7 +135,7 @@ template< typename Mesh,
 		  typename HamiltonJacobi,
 		  typename BoundaryCondition,
 		  typename RightHandSide>
-bool 
+bool
 HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
@@ -147,8 +147,7 @@ makeSnapshot( const RealType& time,
 
    String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->solution.save( fileName ) )
-	   return false;
+   this->solution.write( "u", fileName );
 
    return true;
 }

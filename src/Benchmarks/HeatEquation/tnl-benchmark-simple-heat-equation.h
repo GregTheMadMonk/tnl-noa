@@ -329,7 +329,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
-   meshFunction.save( "simple-heat-equation-initial.tnl" );
+   meshFunction.write( "u", "simple-heat-equation-initial.vti" );
 
    Containers::VectorView< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
@@ -416,7 +416,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    if( verbose )
      std::cout << "Saving result..." << std::endl;
 
-   meshFunction.save( "simple-heat-equation-result.tnl" );
+   meshFunction.write( "u", "simple-heat-equation-result.vti" );
 
    /***
     * Freeing allocated memory
@@ -556,7 +556,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunctionView< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
-   meshFunction.save( "simple-heat-equation-result.tnl" );
+   meshFunction.write( "u", "simple-heat-equation-result.vti" );
 
    /***
     * Freeing allocated memory
