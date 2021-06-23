@@ -1,21 +1,18 @@
 #pragma once
 
-#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/Topologies/Vertex.h>
-#include <TNL/Meshes/Topologies/Edge.h>
+#include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Polygon.h>
 #include <TNL/Meshes/Topologies/Polyhedron.h>
-#include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Geometry/getEntityCenter.h>
 #include <TNL/Meshes/Geometry/getEntityMeasure.h>
+#include <TNL/Meshes/Geometry/PolygonDecomposer.h>
 
 namespace TNL {
 namespace Meshes {
-
 
 // Polygon Mesh
 template< typename ParentConfig >
@@ -24,153 +21,57 @@ struct TriangleConfig: public ParentConfig
    using CellTopology = Topologies::Triangle;
 };
 
-enum class GetTriangleMeshVersion
-{ 
-   V1, V2 
-};
-
-/**
- * Triangles are made by connecting each edge to the centroid of cell.
- */
-template< typename MeshConfig,
-          std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
-auto
-getTriangleMesh_v1( const Mesh< MeshConfig, Devices::Host > & inMesh )
-{
-   using TriangleMeshConfig = TriangleConfig< MeshConfig >;
-   using TriangleMesh = Mesh< TriangleMeshConfig, Devices::Host >;
-   using GlobalIndexType = typename TriangleMesh::GlobalIndexType;
-   using LocalIndexType = typename TriangleMesh::LocalIndexType;
-
-   TriangleMesh outMesh;
-   MeshBuilder< TriangleMesh > meshBuilder;
-   
-   const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
-   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< 2 >();
-
-   // find the number of points and cells in the outMesh
-   GlobalIndexType outPointsCount = inPointsCount;
-   GlobalIndexType outCellsCount = 0;
-
-   for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
-      const auto cell = inMesh.template getEntity< 2 >( i );
-      const auto verticesCount = cell.template getSubentitiesCount< 0 >();
-      if( verticesCount == 3 ) { // cell is not decomposed as it's already a triangle
-         outCellsCount++; // cell is just copied
-      }
-      else { // cell is decomposed as it has got more than 3 vertices
-         outPointsCount++; // each decomposed cell has 1 new center point
-         outCellsCount += verticesCount; // cell is decomposed into verticesCount number of triangles
-      }
-   }
-
-   meshBuilder.setPointsCount( outPointsCount );
-   meshBuilder.setCellsCount( outCellsCount );
-
-   // copy the points from inMesh to outMesh
-   GlobalIndexType pointSetIdx = 0;
-   for( ; pointSetIdx < inPointsCount; pointSetIdx++ ) {
-      meshBuilder.setPoint( pointSetIdx, inMesh.getPoint( pointSetIdx ) );
-   }
-
-   for( GlobalIndexType i = 0, cellSeedIdx = 0; i < inCellsCount; i++ ) {
-      const auto cell = inMesh.template getEntity< 2 >( i );
-      const auto verticesCount = cell.template getSubentitiesCount< 0 >();
-      if( verticesCount == 3 ) { // cell is not decomposed as it's already a triangle
-         // copy cell
-         auto & cellSeed = meshBuilder.getCellSeed( cellSeedIdx++ );
-         cellSeed.setCornerId( 0, cell.template getSubentityIndex< 0 >( 0 ) );
-         cellSeed.setCornerId( 1, cell.template getSubentityIndex< 0 >( 1 ) );
-         cellSeed.setCornerId( 2, cell.template getSubentityIndex< 0 >( 2 ) );
-      }
-      else { // cell is decomposed as it has got more than 3 vertices
-         // add centroid of cell to outMesh
-         const auto cellCenter = getEntityCenter( inMesh, cell );
-         const auto cellCenterIdx = pointSetIdx++;
-         meshBuilder.setPoint( cellCenterIdx, cellCenter );
-         // decompose cell into triangles by connecting each edge to the centroid
-         for( LocalIndexType j = 0, k = 1; k < verticesCount; j++, k++ ) {
-            auto & cellSeed = meshBuilder.getCellSeed( cellSeedIdx++ );
-            cellSeed.setCornerId( 0, cell.template getSubentityIndex< 0 >( j ) );
-            cellSeed.setCornerId( 1, cell.template getSubentityIndex< 0 >( k ) );
-            cellSeed.setCornerId( 2, cellCenterIdx );
-         }
-         { // wrap around term
-            auto & cellSeed = meshBuilder.getCellSeed( cellSeedIdx++ );
-            cellSeed.setCornerId( 0, cell.template getSubentityIndex< 0 >( verticesCount - 1 ) );
-            cellSeed.setCornerId( 1, cell.template getSubentityIndex< 0 >( 0 ) );
-            cellSeed.setCornerId( 2, cellCenterIdx );
-         }
-      }
-   }
-   
-   meshBuilder.build( outMesh );
-   return outMesh;
-}
-
-/**
- * Triangles are made by choosing the 0th point of cell and connecting each non-adjacent edge to it.
- */
-template< typename MeshConfig,
-          std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
-auto
-getTriangleMesh_v2( const Mesh< MeshConfig, Devices::Host > & inMesh )
-{
-   using TriangleMeshConfig = TriangleConfig< MeshConfig >;
-   using TriangleMesh = Mesh< TriangleMeshConfig, Devices::Host >;
-   using GlobalIndexType = typename TriangleMesh::GlobalIndexType;
-   using LocalIndexType = typename TriangleMesh::LocalIndexType;
-
-   TriangleMesh outMesh;
-   MeshBuilder< TriangleMesh > meshBuilder;
-   
-   const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
-   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< 2 >();
-
-   // outMesh keeps all the points of inMesh
-   meshBuilder.setPointsCount( inPointsCount );
-   for( GlobalIndexType i = 0; i < inPointsCount; i++ ) {
-      meshBuilder.setPoint( i, inMesh.getPoint( i ) );
-   }
-   
-   // find the number of cells in the outMesh
-   GlobalIndexType outCellsCount = 0;
-   for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
-      const auto cell = inMesh.template getEntity< 2 >( i );
-      const auto verticesCount = cell.template getSubentitiesCount< 0 >();
-      outCellsCount += verticesCount - 2;
-   }
-   meshBuilder.setCellsCount( outCellsCount );
-
-   for( GlobalIndexType i = 0, cellSeedIdx = 0; i < inCellsCount; i++ ) {
-      const auto cell = inMesh.template getEntity< 2 >( i );
-      const auto verticesCount = cell.template getSubentitiesCount< 0 >();
-      const auto v0 = cell.template getSubentityIndex< 0 >( 0 );
-      for( LocalIndexType j = 1, k = 2; k < verticesCount; j++, k++ ) {
-         auto & cellSeed = meshBuilder.getCellSeed( cellSeedIdx++ );
-         const auto v1 = cell.template getSubentityIndex< 0 >( j );
-         const auto v2 = cell.template getSubentityIndex< 0 >( k );
-         cellSeed.setCornerId( 0, v0 );
-         cellSeed.setCornerId( 1, v1 );
-         cellSeed.setCornerId( 2, v2 );
-      }
-   }
-   
-   meshBuilder.build( outMesh );
-   return outMesh;
-}
-
-template< GetTriangleMeshVersion version,
+template< PolygonDecomposerVersion version,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
 auto
 getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
 {
-   switch( version )
-   {
-      case GetTriangleMeshVersion::V1: return getTriangleMesh_v1( inMesh );
-      case GetTriangleMeshVersion::V2: return getTriangleMesh_v2( inMesh );
+   using TriangleMeshConfig = TriangleConfig< MeshConfig >;
+   using TriangleMesh = Mesh< TriangleMeshConfig, Devices::Host >;
+   using MeshBuilder = MeshBuilder< TriangleMesh >;
+   using GlobalIndexType = typename TriangleMesh::GlobalIndexType;
+   using LocalIndexType = typename TriangleMesh::LocalIndexType;
+   using PolygonDecomposer = PolygonDecomposer< MeshConfig, version >;
+   
+   TriangleMesh outMesh;
+   MeshBuilder meshBuilder;
+   
+   const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
+   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< 2 >();
+
+   // Find the number of points and cells in the outMesh
+   GlobalIndexType outPointsCount = inPointsCount;
+   GlobalIndexType outCellsCount = 0;
+
+   for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
+      const auto cell = inMesh.template getEntity< 2 >( i );
+      outPointsCount += PolygonDecomposer::getExtraPointsCount( cell );
+      outCellsCount += PolygonDecomposer::getEntitiesCount( cell );
    }
+
+   meshBuilder.setPointsCount( outPointsCount );
+   meshBuilder.setCellsCount( outCellsCount );
+
+   // Copy the points from inMesh to outMesh
+   GlobalIndexType setPointsCount = 0;
+   for( ; setPointsCount < inPointsCount; setPointsCount++ ) {
+      meshBuilder.setPoint( setPointsCount, inMesh.getPoint( setPointsCount ) );
+   }
+
+   // Decompose each cell into triangles
+   auto cellSeedGetter = [&] ( const GlobalIndexType i ) -> auto& { return meshBuilder.getCellSeed( i ); };
+   for( GlobalIndexType i = 0, setCellsCount = 0; i < inCellsCount; i++ ) {
+      const auto cell = inMesh.template getEntity< 2 >( i );
+      PolygonDecomposer::decompose( meshBuilder,
+                                    cellSeedGetter, 
+                                    setPointsCount,
+                                    setCellsCount,
+                                    cell );
+   }
+   
+   meshBuilder.build( outMesh );
+   return outMesh;
 }
 
 // Polyhedral Mesh

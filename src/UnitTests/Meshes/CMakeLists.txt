@@ -23,7 +23,7 @@ if( ${BUILD_CUDA} AND ${CUDA_VERSION_MAJOR} GREATER_EQUAL 9 )
    target_link_options( MeshOrderingTest PRIVATE ${TESTS_LINKER_FLAGS} )
 
    CUDA_ADD_EXECUTABLE( MeshGeometryTest MeshGeometryTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
+                        OPTIONS ${CUDA_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MeshGeometryTest ${TESTS_LIBRARIES} )
    target_link_options( MeshGeometryTest PRIVATE ${TESTS_LINKER_FLAGS} )
 else()
