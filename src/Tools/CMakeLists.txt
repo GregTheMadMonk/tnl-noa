@@ -10,9 +10,7 @@ else()
    ADD_EXECUTABLE(tnl-test-distributed-mesh tnl-test-distributed-mesh.cpp )
 endif()
 ADD_EXECUTABLE(tnl-init tnl-init.cpp )
-ADD_EXECUTABLE(tnl-view tnl-view.cpp )
 ADD_EXECUTABLE(tnl-diff tnl-diff.cpp )
-ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
 
 ADD_EXECUTABLE(tnl-image-converter tnl-image-converter.cpp )
 if( PNG_FOUND )
@@ -29,7 +27,7 @@ endif()
 
 find_package( ZLIB )
 if( ZLIB_FOUND )
-   foreach( target IN ITEMS tnl-init tnl-diff tnl-view tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+   foreach( target IN ITEMS tnl-init tnl-diff tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
       target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
       target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
       target_link_libraries(${target} ${ZLIB_LIBRARIES})
@@ -69,7 +67,6 @@ IF( BUILD_CUDA )
 ENDIF()
 
 INSTALL( TARGETS tnl-init
-                 tnl-view
                  tnl-diff
                  tnl-grid-setup
                  tnl-grid-to-mesh
@@ -78,7 +75,6 @@ INSTALL( TARGETS tnl-init
                  tnl-test-distributed-mesh
                  tnl-dicom-reader
                  tnl-image-converter
-                 tnl-lattice-init
          DESTINATION bin )
 
 INSTALL( FILES tnl-err2eoc
