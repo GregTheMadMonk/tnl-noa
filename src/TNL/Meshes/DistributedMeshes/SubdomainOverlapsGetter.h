@@ -11,11 +11,13 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
-   namespace Meshes {
-      namespace DistributedMeshes {
+namespace Meshes {
+namespace DistributedMeshes {
+
+template< typename Mesh >
+class DistributedMesh;
 
 template< typename Mesh >
 class SubdomainOverlapsGetter
@@ -118,9 +120,8 @@ class SubdomainOverlapsGetter< Grid< 3, Real, Device, Index > >
 
 };
 
-
-      } // namespace DistributedMeshes
-   } // namespace Meshes
+} // namespace DistributedMeshes
+} // namespace Meshes
 } // namespace TNL
 
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.hpp>

@@ -13,6 +13,7 @@
 #include <cstdlib>
 
 #include "DistributedGrid.h"
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
@@ -139,6 +140,23 @@ setOverlaps( const SubdomainOverlapsType& lower,
    this->localGridSize = this->localSize + this->lowerOverlap + this->upperOverlap;
 }
 
+template< int Dimension, typename Real, typename Device, typename Index >
+void
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+setGhostLevels( int levels )
+{
+   SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType >::getOverlaps( this, lowerOverlap, upperOverlap, levels );
+   setOverlaps( lowerOverlap, upperOverlap );
+}
+
+template< int Dimension, typename Real, typename Device, typename Index >
+int
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+getGhostLevels() const
+{
+   return TNL::max( TNL::max(lowerOverlap), TNL::max(upperOverlap) );
+}
 
 template< int Dimension, typename Real, typename Device, typename Index >
 void

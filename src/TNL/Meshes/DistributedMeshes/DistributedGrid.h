@@ -54,6 +54,10 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper);
 
+      // for compatibility with DistributedMesh
+      void setGhostLevels( int levels );
+      int getGhostLevels() const;
+
       void setupGrid( GridType& grid);
 
       bool isDistributed() const;
