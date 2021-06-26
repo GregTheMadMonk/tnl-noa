@@ -25,6 +25,8 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionMin( const Expression& expression )
 {
+   // use argument-dependent lookup and make TNL::min available for unqualified calls
+   using TNL::min;
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -54,6 +56,8 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionMax( const Expression& expression )
 {
+   // use argument-dependent lookup and make TNL::max available for unqualified calls
+   using TNL::max;
    using ResultType = RemoveET< typename Expression::RealType >;
    ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
