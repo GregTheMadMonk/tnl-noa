@@ -37,7 +37,7 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       static constexpr int getMeshDimension() { return Dimension; };
 
-      static constexpr int getNeighborsCount() { return DirectionCount<Dimension>::get(); } //c++14 may use Directions::pow3(Dimension)-1
+      static constexpr int getNeighborsCount() { return Directions::i3pow(Dimension)-1; }
 
       DistributedMesh();
 
