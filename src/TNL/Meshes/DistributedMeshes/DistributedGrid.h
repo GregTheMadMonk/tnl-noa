@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DistributedGrid_Base.h  -  part common for all Dimensionensions
+                          DistributedGrid.h  -  description
                              -------------------
     begin                : July 07, 2018
     copyright            : (C) 2018 by Tomas Oberhuber
@@ -16,12 +16,9 @@
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-
 namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
-
-
 
 template< int Dimension,
           typename Real,
@@ -29,15 +26,14 @@ template< int Dimension,
           typename Index >
 class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 {
-  public:
-
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Grid< Dimension, Real, Device, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef Containers::StaticVector< Dimension, IndexType > CoordinatesType;
-      typedef Containers::StaticVector< Dimension, IndexType > SubdomainOverlapsType;
+   public:
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using GridType = Grid< Dimension, Real, Device, IndexType >;
+      using PointType = typename GridType::PointType;
+      using CoordinatesType = Containers::StaticVector< Dimension, IndexType >;
+      using SubdomainOverlapsType = Containers::StaticVector< Dimension, IndexType >;
 
       static constexpr int getMeshDimension() { return Dimension; };
 
@@ -138,11 +134,10 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       CoordinatesType localSize;
       CoordinatesType localGridSize;
       CoordinatesType overlap;
-      //CoordinatesType globalDimensions;
       CoordinatesType globalBegin;
       PointType spaceSteps;
 
-      SubdomainOverlapsType lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap;
+      SubdomainOverlapsType lowerOverlap, upperOverlap;
 
       CoordinatesType domainDecomposition;
       CoordinatesType subdomainCoordinates;
@@ -161,7 +156,6 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       //aka MPI-communicator
       MPI_Comm group;
-
 };
 
 } // namespace DistributedMeshes

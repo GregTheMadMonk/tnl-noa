@@ -134,8 +134,6 @@ class DistributedGridTest_1D : public ::testing::Test
          globalGrid.setDimensions(size);
          globalGrid.setDomain(globalOrigin,globalProportions);
 
-         typename DistributedGridType::CoordinatesType overlap;
-         overlap.setValue(1);
          distributedGrid=new DistributedGridType();
 
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;

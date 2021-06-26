@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DistributedGrid_Base.hpp  -  description
+                          DistributedGrid.hpp  -  description
                              -------------------
     begin                : July 07, 2018
     copyright            : (C) 2018 by Tomas Oberhuber
@@ -16,8 +16,8 @@
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
-   namespace Meshes {
-      namespace DistributedMeshes {
+namespace Meshes {
+namespace DistributedMeshes {
 
 template<int Dimension, typename Real, typename Device, typename Index >
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
@@ -518,6 +518,6 @@ print( std::ostream& str ) const
    }
 }
 
-      } //namespace DistributedMeshes
-   } // namespace Meshes
+} // namespace DistributedMeshes
+} // namespace Meshes
 } // namespace TNL
