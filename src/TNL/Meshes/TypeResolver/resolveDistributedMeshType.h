@@ -41,16 +41,6 @@ loadDistributedMesh( Mesh< MeshConfig, Device >& mesh,
                      const std::string& fileName,
                      const std::string& fileFormat = "auto" );
 
-template< typename Problem,
-          typename MeshConfig,
-          typename Device >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const std::string& prefix,
-               Mesh< MeshConfig, Device >& mesh,
-               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
-               Problem& problem );
-
 // overloads for grids
 template< int Dimension,
           typename Real,
@@ -61,18 +51,6 @@ loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
                      DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
                      const std::string& fileName,
                      const std::string& fileFormat = "auto" );
-
-template< typename Problem,
-          int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const std::string& prefix,
-               Grid< Dimension, Real, Device, Index >& mesh,
-               DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
-               Problem& problem );
 
 } // namespace Meshes
 } // namespace TNL

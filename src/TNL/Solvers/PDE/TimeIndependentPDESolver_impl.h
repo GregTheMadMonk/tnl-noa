@@ -52,11 +52,8 @@ setup( const Config::ParameterContainer& parameters,
    //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
-   this->distributedMesh.setup( parameters, prefix );
    if( Problem::CommunicatorType::isDistributed() ) {
       if( ! Meshes::loadDistributedMesh( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
-         return false;
-      if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
          return false;
    }
    else {

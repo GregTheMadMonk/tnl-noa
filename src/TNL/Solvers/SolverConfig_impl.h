@@ -79,11 +79,6 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    config.addEntry< String >( "mesh-format", "Mesh file format.", "auto" );
 
    /****
-    * Domain decomposition
-    */
-   Meshes::DistributedMeshes::DistributedMesh< Meshes::Grid< 3 > >::configSetup( config );
-
-   /****
     * Time discretisation
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );

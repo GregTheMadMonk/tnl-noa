@@ -128,20 +128,6 @@ loadDistributedMesh( Mesh< MeshConfig, Device >& mesh,
    }
 }
 
-template< typename Problem,
-          typename MeshConfig,
-          typename Device >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const std::string& prefix,
-               Mesh< MeshConfig, Device >& mesh,
-               DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
-               Problem& problem )
-{
-   std::cerr << "Distributed Mesh is not supported yet, only Distributed Grid is supported.";
-   return false;
-}
-
 // overloads for grids
 template< int Dimension,
           typename Real,
@@ -153,56 +139,9 @@ loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
                      const std::string& fileName,
                      const std::string& fileFormat )
 {
-/*
-   std::cout << "Loading a global mesh from the file " << fileName << "...";
-   Grid< Dimension, Real, Device, Index > globalGrid;
-   try
-   {
-      globalGrid.load( fileName );
-   }
-   catch(...)
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
-      return false;
-   }
-   std::cout << " [ OK ] " << std::endl;
-
-   typename Meshes::DistributedMeshes::DistributedMesh<Grid< Dimension, Real, Device, Index >>::SubdomainOverlapsType overlap;
-   distributedMesh.setGlobalGrid( globalGrid );
-   distributedMesh.setupGrid(mesh);
-   return true;
-*/
    // TODO: implement a PVTI reader
    std::cerr << "Loading a distributed mesh from a " << fileFormat << " file is not implemented yet." << std::endl;
    return false;
-}
-
-template< typename Problem,
-          int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-bool
-decomposeMesh( const Config::ParameterContainer& parameters,
-               const std::string& prefix,
-               Grid< Dimension, Real, Device, Index >& mesh,
-               DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
-               Problem& problem )
-{
-   using GridType = Grid< Dimension, Real, Device, Index >;
-   using DistributedGridType = DistributedMeshes::DistributedMesh< GridType >;
-   using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
-
-   SubdomainOverlapsType lower( 0 ), upper( 0 );
-   distributedMesh.setOverlaps( lower, upper );
-   distributedMesh.setupGrid( mesh );
-
-   problem.getSubdomainOverlaps( parameters, prefix, mesh, lower, upper  );
-   distributedMesh.setOverlaps( lower, upper );
-   distributedMesh.setupGrid( mesh );
-
-   return true;
 }
 
 } // namespace Meshes

@@ -30,31 +30,6 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 {
 }
 
-
-template<int Dimension, typename Real, typename Device, typename Index >
-void
-DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-configSetup( Config::ConfigDescription& config )
-{
-   config.addEntry< int >( "grid-domain-decomposition-x", "Number of grid subdomains along x-axis.", 0 );
-   config.addEntry< int >( "grid-domain-decomposition-y", "Number of grid subdomains along y-axis.", 0 );
-   config.addEntry< int >( "grid-domain-decomposition-z", "Number of grid subdomains along z-axis.", 0 );
-}
-
-template<int Dimension, typename Real, typename Device, typename Index >
-bool
-DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-setup( const Config::ParameterContainer& parameters,
-       const String& prefix )
-{
-   this->domainDecomposition[ 0 ] = parameters.getParameter< int >( "grid-domain-decomposition-x" );
-   if( Dimension > 1 )
-      this->domainDecomposition[ 1 ] = parameters.getParameter< int >( "grid-domain-decomposition-y" );
-   if( Dimension > 2 )
-      this->domainDecomposition[ 2 ] = parameters.getParameter< int >( "grid-domain-decomposition-z" );
-   return true;
-}
-
 template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::

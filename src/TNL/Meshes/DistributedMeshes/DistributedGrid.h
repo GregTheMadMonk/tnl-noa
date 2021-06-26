@@ -47,11 +47,6 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       ~DistributedMesh();
 
-      static void configSetup( Config::ConfigDescription& config );
-
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix );
-
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );
 
       const CoordinatesType& getDomainDecomposition() const;
