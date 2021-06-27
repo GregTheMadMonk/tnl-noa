@@ -71,7 +71,7 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
 
       MeshPointer meshPointer;
 
-      Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
+      Pointers::SharedPointer< Meshes::DistributedMeshes::DistributedMesh<MeshType> > distributedMeshPointer;
 
       CommonDataPointer commonDataPointer;
 

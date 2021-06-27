@@ -141,13 +141,13 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if(CommunicatorType::isDistributed())
    {
-      std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
+      std::cout<<"Nodes Distribution: " << this->distributedMeshPointer->printProcessDistr() << std::endl;
       throw Exceptions::NotImplementedError( "PVTI reader is not implemented yet." );
 //      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
 //         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
 //      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
 //         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
-      synchronizer.setDistributedGrid( uPointer->getMesh().getDistributedMesh() );
+      synchronizer.setDistributedGrid( &this->distributedMeshPointer.getData() );
       synchronizer.synchronize( *uPointer );
    }
    else

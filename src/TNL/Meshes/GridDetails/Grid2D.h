@@ -17,7 +17,6 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -34,8 +33,6 @@ class Grid< 2, Real, Device, Index >
    typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
-
-   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -77,6 +74,26 @@ class Grid< 2, Real, Device, Index >
     */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
+
+   void setLocalBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalBegin() const;
+
+   void setLocalEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalEnd() const;
+
+   void setInteriorBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorBegin() const;
+
+   void setInteriorEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorEnd() const;
 
    /**
     * \brief See Grid1D::setDomain().
@@ -169,11 +186,6 @@ class Grid< 2, Real, Device, Index >
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
-
-   void setDistMesh(DistributedMeshType * distGrid);
-
-   DistributedMeshType * getDistributedMesh() const;
-
    void writeProlog( Logger& logger ) const;
 
    protected:
@@ -186,7 +198,7 @@ class Grid< 2, Real, Device, Index >
    __cuda_callable__
    void computeSpaceSteps();
 
-   CoordinatesType dimensions;
+   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
 
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
@@ -195,8 +207,6 @@ class Grid< 2, Real, Device, Index >
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ][ 5 ];
-
-   DistributedMeshType *distGrid;
 
    template< typename, typename, int >
    friend class GridEntityGetter;

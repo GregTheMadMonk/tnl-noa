@@ -58,10 +58,11 @@ template< typename Real,
         typename Anisotropy >
 void
 FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
-solve( const MeshPointer& mesh,
-        MeshFunctionPointer& Aux,
-        const AnisotropyPointer& anisotropy,
-        MeshFunctionPointer& u )
+solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+       const MeshPointer& mesh,
+       MeshFunctionPointer& Aux,
+       const AnisotropyPointer& anisotropy,
+       MeshFunctionPointer& u )
 {
   MeshFunctionPointer auxPtr;
   InterfaceMapPointer interfaceMapPtr;
@@ -69,8 +70,14 @@ solve( const MeshPointer& mesh,
   interfaceMapPtr->setMesh( mesh );
 
   // getting overlaps ( WITHOUT MPI SHOULD BE 0 )
-  Containers::StaticVector< 3, IndexType > vecLowerOverlaps, vecUpperOverlaps;
-  setOverlaps( vecLowerOverlaps, vecUpperOverlaps, mesh );
+  StaticVector vecLowerOverlaps = 0;
+  StaticVector vecUpperOverlaps = 0;
+  if( CommunicatorType::isDistributed() )
+  {
+    //Distributed mesh for MPI overlaps (without MPI null pointer)
+    vecLowerOverlaps = distributedMesh.getLowerOverlap();
+    vecUpperOverlaps = distributedMesh.getUpperOverlap();
+  }
 
   std::cout << "Initiating the interface cells ..." << std::endl;
   BaseType::initInterface( u, auxPtr, interfaceMapPtr, vecLowerOverlaps, vecUpperOverlaps );
@@ -81,7 +88,7 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   MeshFunctionType aux = *auxPtr;
   InterfaceMapType interfaceMap = * interfaceMapPtr;
-  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.setDistributedGrid( &distributedMesh );
   synchronizer.synchronize( aux ); //synchronization of intial conditions
 
   while( iteration < this->maxIterations )
@@ -357,7 +364,7 @@ solve( const MeshPointer& mesh,
 #ifdef HAVE_MPI
       if( CommunicatorType::isDistributed() )
       {
-        getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
+        getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, distributedMesh );
 
         // synchronizate the overlaps
         synchronizer.synchronize( aux );
@@ -378,29 +385,6 @@ solve( const MeshPointer& mesh,
 }
 
 // PROTECTED FUNCTIONS:
-
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
-void
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
-setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
-              const MeshPointer& mesh)
-{
-  vecLowerOverlaps[0] = 0; vecLowerOverlaps[1] = 0; vecLowerOverlaps[2] = 0;
-  vecUpperOverlaps[0] = 0; vecUpperOverlaps[1] = 0; vecUpperOverlaps[2] = 0;
-#ifdef HAVE_MPI
-  if( CommunicatorType::isDistributed() ) //If we started solver with MPI
-  {
-    //Distributed mesh for MPI overlaps (without MPI null pointer)
-    const Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshPom = mesh->getDistributedMesh();
-    vecLowerOverlaps = meshPom->getLowerOverlap();
-    vecUpperOverlaps = meshPom->getUpperOverlap();
-  }
-#endif
-}
-
-
-
 
 template< typename Real, typename Device, typename Index,
           typename Communicator, typename Anisotropy >
@@ -450,15 +434,14 @@ template< typename Real, typename Device, typename Index,
           typename Communicator, typename Anisotropy >
 void
 FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
-getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain, const MeshPointer& mesh )
+getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain,
+                       const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh )
 {
-  Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshDistr = mesh->getDistributedMesh();
-
   int calculateFromNeighbours[6] = {0,0,0,0,0,0};
 
-  const int *neighbours = meshDistr->getNeighbors(); // Getting neighbors of distributed mesh
+  const int *neighbours = distributedMesh.getNeighbors(); // Getting neighbors of distributed mesh
   MPI::Request *requestsInformation;
-  requestsInformation = new MPI::Request[ meshDistr->getNeighborsCount() ];
+  requestsInformation = new MPI::Request[ distributedMesh.getNeighborsCount() ];
 
   int neighCount = 0; // should this thread calculate again?
 

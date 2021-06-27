@@ -19,9 +19,7 @@ template< int Dimension,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class Grid
-{
-};
+class Grid;
 
 template< int Dimension, typename Real, typename Device, typename Index >
 bool operator==( const Grid< Dimension, Real, Device, Index >& lhs,
@@ -42,9 +40,13 @@ bool operator!=( const Grid< Dimension, Real, Device, Index >& lhs,
 template< int Dimension, typename Real, typename Device, typename Index >
 std::ostream& operator<<( std::ostream& str, const Grid< Dimension, Real, Device, Index >& grid )
 {
-   str << "Grid dimensions: "  << grid.getDimensions()  << std::endl;
-   str << "     origin: "      << grid.getOrigin()      << std::endl;
-   str << "     proportions: " << grid.getProportions() << std::endl;
+   str << "Grid dimensions:    " << grid.getDimensions()  << std::endl;
+   str << "     origin:        " << grid.getOrigin()      << std::endl;
+   str << "     proportions:   " << grid.getProportions() << std::endl;
+   str << "     localBegin:    " << grid.getLocalBegin() << std::endl;
+   str << "     localEnd:      " << grid.getLocalEnd() << std::endl;
+   str << "     interiorBegin: " << grid.getInteriorBegin() << std::endl;
+   str << "     interiorEnd:   " << grid.getInteriorEnd() << std::endl;
    return str;
 }
 

@@ -14,7 +14,7 @@
 #include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
-namespace Meshes {   
+namespace Meshes {
 
 template< typename Real,
           typename Device,
@@ -26,8 +26,6 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
       using GridType = Meshes::Grid< 2, Real, Device, Index >;
       using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
-      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
-      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename EntitiesProcessor,
                 typename UserData >
@@ -54,8 +52,6 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
       using GridType = Meshes::Grid< 2, Real, Device, Index >;
       using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
-      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
-      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename EntitiesProcessor,
                 typename UserData >
@@ -83,8 +79,6 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
       using GridType = Meshes::Grid< 2, Real, Device, Index >;
       using GridPointer = Pointers::SharedPointer< GridType >;
       using CoordinatesType = typename GridType::CoordinatesType;
-      using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
-      using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
       template< typename EntitiesProcessor,
                 typename UserData >

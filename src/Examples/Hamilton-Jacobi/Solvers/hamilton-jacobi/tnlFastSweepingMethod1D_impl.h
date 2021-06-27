@@ -58,8 +58,9 @@ template< typename Real,
           typename Anisotropy >
 void
 FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >::
-solve( const MeshPointer& mesh,
-        MeshFunctionPointer& Aux,
+solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+       const MeshPointer& mesh,
+       MeshFunctionPointer& Aux,
        const AnisotropyPointer& anisotropy,
        MeshFunctionPointer& u )
 {

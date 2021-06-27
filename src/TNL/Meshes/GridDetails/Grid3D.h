@@ -34,8 +34,6 @@ class Grid< 3, Real, Device, Index >
    typedef Containers::StaticVector< 3, Real > PointType;
    typedef Containers::StaticVector< 3, Index > CoordinatesType;
 
-   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
-
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
@@ -78,6 +76,26 @@ class Grid< 3, Real, Device, Index >
     */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
+
+   void setLocalBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalBegin() const;
+
+   void setLocalEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalEnd() const;
+
+   void setInteriorBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorBegin() const;
+
+   void setInteriorEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorEnd() const;
 
    /**
     * \brief See Grid1D::setDomain().
@@ -143,10 +161,6 @@ class Grid< 3, Real, Device, Index >
     */
    inline void setSpaceSteps(const PointType& steps);
 
-   void setDistMesh(DistributedMeshType * distGrid);
-
-   DistributedMeshType * getDistributedMesh(void) const;
-
    /**
     * \brief Returns product of space steps to the xPow.
     * \tparam xPow Exponent for dimension x.
@@ -191,7 +205,7 @@ class Grid< 3, Real, Device, Index >
 
    void computeSpaceSteps();
 
-   CoordinatesType dimensions;
+   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
 
    IndexType numberOfCells,
           numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
@@ -205,8 +219,6 @@ class Grid< 3, Real, Device, Index >
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
-
-   DistributedMeshType *distGrid;
 
    template< typename, typename, int >
    friend class GridEntityGetter;

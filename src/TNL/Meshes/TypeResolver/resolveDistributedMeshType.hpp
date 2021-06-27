@@ -96,14 +96,10 @@ resolveAndLoadDistributedMesh( Functor&& functor,
 template< typename MeshConfig,
           typename Device >
 bool
-loadDistributedMesh( Mesh< MeshConfig, Device >& mesh,
-                     DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
+loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
                      const std::string& fileName,
                      const std::string& fileFormat )
 {
-   // TODO: simplify interface, pass only the distributed mesh
-   TNL_ASSERT_EQ( &mesh, &distributedMesh.getLocalMesh(), "mesh is not local mesh of the distributed mesh" );
-
    namespace fs = std::experimental::filesystem;
    std::string format = fileFormat;
    if( format == "auto" ) {
@@ -134,8 +130,7 @@ template< int Dimension,
           typename Device,
           typename Index >
 bool
-loadDistributedMesh( Grid< Dimension, Real, Device, Index >& mesh,
-                     DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
+loadDistributedMesh( DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
                      const std::string& fileName,
                      const std::string& fileFormat )
 {

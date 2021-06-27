@@ -127,13 +127,13 @@ setInitialCondition( const Config::ParameterContainer& parameters,
   this->initialData->setMesh( this->getMesh() );
   if( CommunicatorType::isDistributed() )
   {
-    std::cout<<"Nodes Distribution: " << initialData->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
+    std::cout<<"Nodes Distribution: " << this->distributedMeshPointer->printProcessDistr() << std::endl;
     throw Exceptions::NotImplementedError( "PVTI reader is not implemented yet." );
 //    if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
 //      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *initialData );
 //    if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
 //      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
-    synchronizer.setDistributedGrid( initialData->getMesh().getDistributedMesh() );
+    synchronizer.setDistributedGrid( &this->distributedMeshPointer.getData() );
     synchronizer.synchronize( *initialData );
   }
   else
@@ -190,7 +190,7 @@ tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 solve( DofVectorPointer& dofs )
 {
    FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
-   fsm.solve( this->getMesh(), u, anisotropy, initialData );
+   fsm.solve( *this->getDistributedMesh(), this->getMesh(), u, anisotropy, initialData );
 
    makeSnapshot();
    return true;

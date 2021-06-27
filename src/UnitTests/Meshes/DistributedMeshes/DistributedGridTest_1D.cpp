@@ -48,8 +48,7 @@ void check_Boundary_1D(int rank, int nproc, const DofType& dof, typename DofType
         EXPECT_EQ( dof[dof.getSize()-1], expectedValue) << "Right boundary test failed";
         return;
     }
-
-};
+}
 
 template<typename DofType>
 void check_Overlap_1D(int rank, int nproc, const DofType& dof, typename DofType::RealType expectedValue)
@@ -68,14 +67,14 @@ void check_Overlap_1D(int rank, int nproc, const DofType& dof, typename DofType:
 
     EXPECT_EQ( dof[0], expectedValue) << "left overlap test failed";
     EXPECT_EQ( dof[dof.getSize()-1], expectedValue)<< "right overlap test failed";
-};
+}
 
 template<typename DofType>
 void check_Inner_1D(int rank, int nproc, const DofType& dof, typename DofType::RealType expectedValue)
 {
     for( int i = 1; i < ( dof.getSize()-2 ); i++ )
-        EXPECT_EQ( dof[i], expectedValue) << " " << i;
-};
+        EXPECT_EQ( dof[i], expectedValue) << "i = " << i;
+}
 
 /*
  * Light check of 1D distributed grid and its synchronization.
@@ -104,7 +103,7 @@ class DistributedGridTest_1D : public ::testing::Test
       DofType dof;
       MaskDofType maskDofs;
 
-      Pointers::SharedPointer< GridType > gridptr;
+      Pointers::SharedPointer< GridType > localGrid;
       Pointers::SharedPointer< MeshFunctionType > meshFunctionPtr;
       Pointers::SharedPointer< MaskType > maskPointer;
 
@@ -130,23 +129,23 @@ class DistributedGridTest_1D : public ::testing::Test
          globalOrigin.x()=-0.5;
          globalProportions.x()=size;
 
-
          globalGrid.setDimensions(size);
          globalGrid.setDomain(globalOrigin,globalProportions);
 
          distributedGrid=new DistributedGridType();
-
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          distributedGrid->setGlobalGrid( globalGrid );
-         //distributedGrid->setupGrid(*gridptr);
          SubdomainOverlapsGetter< GridType >::
             getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
-         distributedGrid->setupGrid(*gridptr);
-         dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+         // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+         // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+         *localGrid = distributedGrid->getLocalMesh();
 
-         meshFunctionPtr->bind(gridptr,dof);
+         dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+
+         meshFunctionPtr->bind( localGrid, dof );
 
          constFunctionPtr->Number=rank;
       }
@@ -157,7 +156,10 @@ class DistributedGridTest_1D : public ::testing::Test
          SubdomainOverlapsGetter< GridType >::
             getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-         distributedGrid->setupGrid(*gridptr);
+
+         // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+         // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+         *localGrid = distributedGrid->getLocalMesh();
       }
 
       void TearDown()
@@ -177,10 +179,9 @@ TEST_F( DistributedGridTest_1D, isBoundaryDomainTest )
 TEST_F(DistributedGridTest_1D, evaluateAllEntities)
 {
    //Check Traversars
-   //All entities, witout overlap
+   //All entities, without overlap
    setDof_1D( dof,-1);
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   //Printer<GridType,DofType>::print_dof(rank,*gridptr,dof);
    check_Boundary_1D(rank, nproc, dof, rank);
    check_Overlap_1D(rank, nproc, dof, -1);
    check_Inner_1D(rank, nproc, dof, rank);
@@ -188,7 +189,7 @@ TEST_F(DistributedGridTest_1D, evaluateAllEntities)
 
 TEST_F(DistributedGridTest_1D, evaluateBoundaryEntities)
 {
-   //Boundary entities, witout overlap
+   //Boundary entities, without overlap
    setDof_1D(dof,-1);
    constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionPtr , constFunctionPtr );
    check_Boundary_1D(rank, nproc, dof, rank);
@@ -198,7 +199,7 @@ TEST_F(DistributedGridTest_1D, evaluateBoundaryEntities)
 
 TEST_F(DistributedGridTest_1D, evaluateInteriorEntities)
 {
-   //Inner entities, witout overlap
+   //Inner entities, without overlap
    setDof_1D(dof,-1);
    constFunctionEvaluator.evaluateInteriorEntities( meshFunctionPtr , constFunctionPtr );
    check_Boundary_1D(rank, nproc, dof, -1);
@@ -211,7 +212,7 @@ TEST_F(DistributedGridTest_1D, SynchronizerNeighborsTest )
    setDof_1D(dof,-1);
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
    Synchronizer synchronizer;
-   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.setDistributedGrid( distributedGrid );
    synchronizer.synchronize( *meshFunctionPtr );
 
    if(rank!=0) {
@@ -228,14 +229,14 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    setDof_1D(dof,-1);
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
    Synchronizer synchronizer;
-   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.setDistributedGrid( distributedGrid );
    synchronizer.synchronize( *meshFunctionPtr );
 
-   auto entity = gridptr->template getEntity< Cell >(0);
+   auto entity = localGrid->template getEntity< Cell >(0);
    entity.refresh();
    EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function Overlap error on left Edge.";
 
-   auto entity2= gridptr->template getEntity< Cell >((dof).getSize()-1);
+   auto entity2= localGrid->template getEntity< Cell >((dof).getSize()-1);
    entity2.refresh();
    EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function Overlap error on right Edge.";
 }
@@ -248,17 +249,18 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    SubdomainOverlapsGetter< GridType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-   distributedGrid->setupGrid(*gridptr);
-   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
-   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
-   meshFunctionPtr->bind( gridptr, dof );
-   maskPointer->bind( gridptr, maskDofs );
+
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *localGrid = distributedGrid->getLocalMesh();
+
+   dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( localGrid, dof );
 
    setDof_1D( dof, -rank-1 );
-   maskDofs.setValue( true );
    //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    Synchronizer synchronizer;
-   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.setDistributedGrid( distributedGrid );
    synchronizer.synchronize( *meshFunctionPtr, true );
 
    if( rank == 0 ) {
@@ -277,18 +279,22 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
    SubdomainOverlapsGetter< GridType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-   distributedGrid->setupGrid(*gridptr);
-   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
-   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
-   meshFunctionPtr->bind( gridptr, dof );
-   maskPointer->bind( gridptr, maskDofs );
+
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *localGrid = distributedGrid->getLocalMesh();
+
+   dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( localGrid->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( localGrid, dof );
+   maskPointer->bind( localGrid, maskDofs );
 
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
    //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    Synchronizer synchronizer;
-   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.setDistributedGrid( distributedGrid );
    synchronizer.synchronize( *meshFunctionPtr, true, maskPointer );
    if( rank == 0 ) {
       EXPECT_EQ( dof[ 0 ], -nproc ) << "Left Overlap was filled by wrong process.";
@@ -308,11 +314,15 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLef
    SubdomainOverlapsGetter< GridType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-   distributedGrid->setupGrid(*gridptr);
-   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
-   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
-   meshFunctionPtr->bind( gridptr, dof );
-   maskPointer->bind( gridptr, maskDofs );
+
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *localGrid = distributedGrid->getLocalMesh();
+
+   dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( localGrid->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( localGrid, dof );
+   maskPointer->bind( localGrid, maskDofs );
 
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
@@ -337,11 +347,15 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
    SubdomainOverlapsGetter< GridType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-   distributedGrid->setupGrid(*gridptr);
-   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
-   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
-   meshFunctionPtr->bind( gridptr, dof );
-   maskPointer->bind( gridptr, maskDofs );
+
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *localGrid = distributedGrid->getLocalMesh();
+
+   dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( localGrid->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( localGrid, dof );
+   maskPointer->bind( localGrid, maskDofs );
 
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
@@ -368,19 +382,23 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
    SubdomainOverlapsGetter< GridType >::
       getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
-   distributedGrid->setupGrid(*gridptr);
-   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
-   meshFunctionPtr->bind( gridptr, dof );
+
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *localGrid = distributedGrid->getLocalMesh();
+
+   dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( localGrid, dof );
 
    setDof_1D(dof, -rank-1 );
    linearFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , linearFunctionPtr );
 
    Synchronizer synchronizer;
-   synchronizer.setDistributedGrid( meshFunctionPtr->getMesh().getDistributedMesh() );
+   synchronizer.setDistributedGrid( distributedGrid );
    synchronizer.synchronize( *meshFunctionPtr, true );
 
-   auto entity = gridptr->template getEntity< Cell >( 0 );
-   auto entity2= gridptr->template getEntity< Cell >( (dof).getSize() - 1 );
+   auto entity = localGrid->template getEntity< Cell >( 0 );
+   auto entity2= localGrid->template getEntity< Cell >( (dof).getSize() - 1 );
    entity.refresh();
    entity2.refresh();
 

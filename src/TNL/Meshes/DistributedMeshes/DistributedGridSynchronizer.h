@@ -31,7 +31,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
 {
    public:
       typedef typename Grid< MeshDimension, GridReal, Device, Index >::Cell Cell;
-      typedef typename Grid< MeshDimension, GridReal, Device, Index >::DistributedMeshType DistributedGridType;
+      typedef DistributedMesh< Grid< MeshDimension, GridReal, Device, Index > > DistributedGridType;
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
@@ -49,7 +49,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
          isSet = false;
       };
 
-      DistributedMeshSynchronizer( DistributedGridType *distributedGrid )
+      DistributedMeshSynchronizer( const DistributedGridType *distributedGrid )
       {
          isSet = false;
          setDistributedGrid( distributedGrid );
@@ -60,7 +60,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
          this->periodicBoundariesCopyDirection = dir;
       }
 
-      void setDistributedGrid( DistributedGridType *distributedGrid )
+      void setDistributedGrid( const DistributedGridType *distributedGrid )
       {
          isSet = true;
 
@@ -69,7 +69,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
          const SubdomainOverlapsType& lowerOverlap = this->distributedGrid->getLowerOverlap();
          const SubdomainOverlapsType& upperOverlap = this->distributedGrid->getUpperOverlap();
 
-         const CoordinatesType& localBegin = this->distributedGrid->getLocalBegin();
+         const CoordinatesType& localBegin = this->distributedGrid->getLocalMesh().getLocalBegin();
          const CoordinatesType& localSize = this->distributedGrid->getLocalSize();
 
          const int *neighbors = distributedGrid->getNeighbors();
@@ -222,7 +222,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
       CoordinatesType sendBegin[getNeighborsCount()];
       CoordinatesType recieveBegin[getNeighborsCount()];
 
-      DistributedGridType *distributedGrid;
+      const DistributedGridType *distributedGrid;
 
       bool isSet;
 };

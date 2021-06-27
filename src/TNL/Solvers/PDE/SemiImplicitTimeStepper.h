@@ -32,7 +32,6 @@ class SemiImplicitTimeStepper
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
-   typedef typename Problem::MeshPointer MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MatrixType MatrixType;
    typedef Pointers::SharedPointer< MatrixType, DeviceType > MatrixPointer;
@@ -50,7 +49,7 @@ class SemiImplicitTimeStepper
    bool setup( const Config::ParameterContainer& parameters,
               const String& prefix = "" );
 
-   bool init( const MeshPointer& meshPointer );
+   bool init( const MeshType& mesh );
 
    void setProblem( ProblemType& problem );
 
@@ -65,7 +64,7 @@ class SemiImplicitTimeStepper
    bool solve( const RealType& time,
                const RealType& stopTime,
                DofVectorPointer& dofVectorPointer );
- 
+
    bool writeEpilog( Logger& logger ) const;
 
    protected:

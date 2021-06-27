@@ -55,7 +55,7 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Problem >
 bool
 SemiImplicitTimeStepper< Problem >::
-init( const MeshPointer& mesh )
+init( const MeshType& mesh )
 {
    if( ! this->problem->setupLinearSystem( this->matrix ) ) {
       std::cerr << "Failed to set up the linear system." << std::endl;

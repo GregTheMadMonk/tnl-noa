@@ -52,7 +52,7 @@ processEntities(
       entity.getCoordinates() = begin;
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-      entity.getCoordinates() = end;
+      entity.getCoordinates() = end - 1;
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
@@ -66,7 +66,7 @@ processEntities(
             GridEntity entity( *gridPointer );
 #pragma omp for
             // TODO: g++ 5.5 crashes when coding this loop without auxiliary x as bellow
-            for( IndexType x = begin.x(); x <= end.x(); x++ )
+            for( IndexType x = begin.x(); x < end.x(); x++ )
             {
                entity.getCoordinates().x() = x;
                entity.refresh();
@@ -78,7 +78,7 @@ processEntities(
       {
          GridEntity entity( *gridPointer );
          for( entity.getCoordinates().x() = begin.x();
-              entity.getCoordinates().x() <= end.x();
+              entity.getCoordinates().x() < end.x();
               entity.getCoordinates().x() ++ )
          {
             entity.refresh();
@@ -88,7 +88,7 @@ processEntities(
 #else
       GridEntity entity( *gridPointer );
       for( entity.getCoordinates().x() = begin.x();
-           entity.getCoordinates().x() <= end.x();
+           entity.getCoordinates().x() < end.x();
            entity.getCoordinates().x() ++ )
       {
          entity.refresh();
@@ -119,10 +119,10 @@ GridTraverser1D(
    typedef Index IndexType;
    typedef Meshes::Grid< 1, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
- 
+
    coordinates.x() = begin.x() + ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( coordinates <= end )
-   {   
+   if( coordinates < end )
+   {
       GridEntity entity( *grid, coordinates );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
@@ -145,7 +145,7 @@ GridBoundaryTraverser1D(
    typedef Index IndexType;
    typedef Meshes::Grid< 1, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
- 
+
    if( threadIdx.x == 0 )
    {
       coordinates.x() = begin.x();
@@ -155,7 +155,7 @@ GridBoundaryTraverser1D(
    }
    if( threadIdx.x == 1 )
    {
-      coordinates.x() = end.x();
+      coordinates.x() = end.x() - 1;
       GridEntity entity( *grid, coordinates );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
@@ -204,7 +204,7 @@ processEntities(
          blockSize,
          blocksCount,
          gridsCount,
-         end.x() - begin.x() + 1 );
+         end.x() - begin.x() );
       dim3 gridIdx;
       for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
       {
@@ -225,7 +225,7 @@ processEntities(
 
       /*dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+      cudaBlocks.x = Cuda::getNumberOfBlocks( end.x() - begin.x(), cudaBlockSize.x );
       const IndexType cudaXGrids = Cuda::getNumberOfGrids( cudaBlocks.x );
 
       for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )

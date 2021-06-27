@@ -53,15 +53,15 @@ setup( const Config::ParameterContainer& parameters,
    const String& meshFile = parameters.getParameter< String >( "mesh" );
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
    if( Problem::CommunicatorType::isDistributed() ) {
-      if( ! Meshes::loadDistributedMesh( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadDistributedMesh( *distributedMeshPointer, meshFile, meshFileFormat ) )
          return false;
+      problem->setMesh( distributedMeshPointer );
    }
    else {
-      if( ! Meshes::loadMesh( *this->meshPointer, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
          return false;
+      problem->setMesh( meshPointer );
    }
-
-   problem->setMesh( this->meshPointer );
 
    /****
     * Set-up common data
@@ -112,7 +112,10 @@ writeProlog( Logger& logger,
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   meshPointer->writeProlog( logger );
+   if( Problem::CommunicatorType::isDistributed() )
+      distributedMeshPointer->writeProlog( logger );
+   else
+      meshPointer->writeProlog( logger );
    logger.writeSeparator();
    const String& solverName = parameters. getParameter< String >( "discrete-solver" );
    logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );

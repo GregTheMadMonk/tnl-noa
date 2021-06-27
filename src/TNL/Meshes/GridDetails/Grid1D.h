@@ -17,7 +17,6 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -27,15 +26,12 @@ template< typename Real,
           typename Index >
 class Grid< 1, Real, Device, Index >
 {
-   public:
-
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index GlobalIndexType;
-   typedef Containers::StaticVector< 1, Real > PointType;
-   typedef Containers::StaticVector< 1, Index > CoordinatesType;
-
-   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
+public:
+   using RealType = Real;
+   using DeviceType = Device;
+   using GlobalIndexType = Index;
+   using PointType = Containers::StaticVector< 1, Real >;
+   using CoordinatesType = Containers::StaticVector< 1, Index >;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -77,6 +73,26 @@ class Grid< 1, Real, Device, Index >
 
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
+
+   void setLocalBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalBegin() const;
+
+   void setLocalEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalEnd() const;
+
+   void setInteriorBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorBegin() const;
+
+   void setInteriorEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorEnd() const;
 
    /**
     * \brief Sets the origin.
@@ -171,13 +187,9 @@ class Grid< 1, Real, Device, Index >
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
-   void setDistMesh(DistributedMeshType * distMesh);
-
-   DistributedMeshType * getDistributedMesh() const;
-
    void writeProlog( Logger& logger ) const;
 
-   protected:
+protected:
 
    void computeProportions();
 
@@ -185,7 +197,7 @@ class Grid< 1, Real, Device, Index >
 
    void computeSpaceSteps();
 
-   CoordinatesType dimensions;
+   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
 
    IndexType numberOfCells, numberOfVertices;
 
@@ -194,8 +206,6 @@ class Grid< 1, Real, Device, Index >
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ];
-
-   DistributedMeshType *distGrid;
 };
 
 } // namespace Meshes

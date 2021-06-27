@@ -49,7 +49,7 @@ template< typename Problem,
           template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
-init( const MeshPointer& meshPointer )
+init( const MeshType& mesh )
 {
    this->explicitUpdaterTimer.reset();
    this->mainTimer.reset();

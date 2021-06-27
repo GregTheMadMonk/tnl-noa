@@ -97,6 +97,21 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
+void
+PDEProblem< Mesh, Communicator, Real, Device, Index >::
+setMesh( DistributedMeshPointer& distributedMeshPointer)
+{
+   this->distributedMeshPointer = distributedMeshPointer;
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the interface is fucked up (it should not require us to put SharedPointer everywhere)
+   *meshPointer = distributedMeshPointer->getLocalMesh();
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
 const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
 PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh() const
 {
@@ -112,6 +127,28 @@ typename PDEProblem< Mesh, Communicator, Real, Device, Index >::MeshPointer&
 PDEProblem< Mesh, Communicator, Real, Device, Index >::getMesh()
 {
    return this->meshPointer;
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+const typename PDEProblem< Mesh, Communicator, Real, Device, Index >::DistributedMeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getDistributedMesh() const
+{
+   return this->distributedMeshPointer;
+}
+
+template< typename Mesh,
+          typename Communicator,
+          typename Real,
+          typename Device,
+          typename Index >
+typename PDEProblem< Mesh, Communicator, Real, Device, Index >::DistributedMeshPointer&
+PDEProblem< Mesh, Communicator, Real, Device, Index >::getDistributedMesh()
+{
+   return this->distributedMeshPointer;
 }
 
 template< typename Mesh,

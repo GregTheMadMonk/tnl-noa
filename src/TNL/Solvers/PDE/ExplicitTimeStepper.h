@@ -19,7 +19,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Problem,
           template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
@@ -32,7 +32,6 @@ class ExplicitTimeStepper
       using DeviceType = typename Problem::DeviceType;
       using IndexType = typename Problem::IndexType;
       using MeshType = typename Problem::MeshType;
-      using MeshPointer = Pointers::SharedPointer< MeshType >;
       using DofVectorType = typename ProblemType::DofVectorType;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
@@ -50,7 +49,7 @@ class ExplicitTimeStepper
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
 
-      bool init( const MeshPointer& meshPointer );
+      bool init( const MeshType& mesh );
 
       void setSolver( OdeSolverType& odeSolver );
 
@@ -88,8 +87,6 @@ class ExplicitTimeStepper
 
       RealType timeStep;
 
-      const MeshPointer* mesh;
-
       Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
 
       long long int allIterations;
@@ -100,4 +97,3 @@ class ExplicitTimeStepper
 } // namespace TNL
 
 #include <TNL/Solvers/PDE/ExplicitTimeStepper_impl.h>
-

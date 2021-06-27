@@ -53,9 +53,10 @@ TEST(CutDistributedMeshFunction, 2D_Data)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -135,8 +136,10 @@ TEST(CutDistributedMeshFunction, 3D_1_Data)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -216,8 +219,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Data)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -303,8 +308,10 @@ TEST(CutDistributedMeshFunction, 2D_Synchronization)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -388,8 +395,10 @@ TEST(CutDistributedMeshFunction, 3D_1_Synchronization)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -477,8 +486,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
@@ -513,8 +524,8 @@ TEST(CutDistributedMeshFunction, 3D_2_Synchronization)
         typename MeshType::Cell fromEntity(meshFunctionptr->getMesh());
         typename CutMeshType::Cell outEntity(*cutGrid);
 
-        for(int i=0;i<distributedGrid.getLocalGridSize().x();i++)
-            for(int j=0;j<distributedGrid.getLocalGridSize().z();j++)
+        for(int i=0;i<distributedGrid.getLocalMeshSize().x();i++)
+            for(int j=0;j<distributedGrid.getLocalMeshSize().z();j++)
             {
                 fromEntity.getCoordinates().x()=i;
                 fromEntity.getCoordinates().z()=j;
@@ -564,8 +575,10 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
    SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
+   // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+   // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
    Pointers::SharedPointer<MeshType> originalGrid;
-   distributedGrid.setupGrid(*originalGrid);
+   *originalGrid = globalOriginalGrid->getLocalMesh();
 
    DofType dof(originalGrid->template getEntitiesCount< Cell >());
    dof.setValue(0);
