@@ -8,13 +8,13 @@
 #include <TNL/Meshes/Topologies/Polygon.h>
 #include <TNL/Meshes/Topologies/Polyhedron.h>
 #include <TNL/Meshes/Geometry/isPlanar.h>
-#include <TNL/Meshes/Geometry/PolygonDecomposer.h>
+#include <TNL/Meshes/Geometry/EntityDecomposer.h>
 
 namespace TNL {
 namespace Meshes {
 
 // 3D Polygon Mesh
-template< PolygonDecomposerVersion version,
+template< EntityDecomposerVersion EntityDecomposerVersion_,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true,
           std::enable_if_t< MeshConfig::spaceDimension == 3, bool > = true >
@@ -25,8 +25,9 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    using MeshBuilder = MeshBuilder< PolygonMesh >;
    using GlobalIndexType = typename PolygonMesh::GlobalIndexType;
    using LocalIndexType = typename PolygonMesh::LocalIndexType;
+   using PointType = typename PolygonMesh::PointType;
    using RealType = typename PolygonMesh::RealType;
-   using PolygonDecomposer = PolygonDecomposer< MeshConfig, version >;
+   using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersion_ >;
 
    constexpr RealType precision{ 1e-6 };
 
@@ -39,18 +40,18 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    // find the number of points and cells in the outMesh
    GlobalIndexType outPointsCount = inPointsCount;
    GlobalIndexType outCellsCount = 0;
-
    for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
       const auto cell = inMesh.template getEntity< 2 >( i );
       if( isPlanar( inMesh, cell, precision ) ) { // Cell is not decomposed
          outCellsCount++;
       }
       else { // Cell is decomposed
-         outPointsCount += PolygonDecomposer::getExtraPointsCount( cell );
-         outCellsCount += PolygonDecomposer::getEntitiesCount( cell );
+         GlobalIndexType extraPointsCount, entitiesCount;
+         std::tie( extraPointsCount, entitiesCount ) = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
+         outPointsCount += extraPointsCount;
+         outCellsCount += entitiesCount;
       }
    }
-
    meshBuilder.setPointsCount( outPointsCount );
    meshBuilder.setCellsCount( outCellsCount );
 
@@ -60,8 +61,25 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
       meshBuilder.setPoint( setPointsCount, inMesh.getPoint( setPointsCount ) );
    }
 
-   auto cellSeedGetter = [&] ( const GlobalIndexType i ) -> auto& { return meshBuilder.getCellSeed( i ); };
-   for( GlobalIndexType i = 0, setCellsCount = 0; i < inCellsCount; i++ ) {
+   // Lambda for creating new points
+   auto createPointFunc = [&] ( const PointType & point ) {
+      const auto pointIdx = setPointsCount++;
+      meshBuilder.setPoint( pointIdx, point );
+      return pointIdx;
+   };
+
+   // Lambda for setting decomposed cells in meshBuilder
+   GlobalIndexType setCellsCount = 0;
+   auto setDecomposedCellFunc = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
+      auto & entitySeed = meshBuilder.getCellSeed( setCellsCount++ );
+      entitySeed.setCornersCount( 3 );
+      entitySeed.setCornerId( 0, v0 );
+      entitySeed.setCornerId( 1, v1 );
+      entitySeed.setCornerId( 2, v2 );
+   };
+
+   // Decompose non-planar cells and copy the rest
+   for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
       const auto cell = inMesh.template getEntity< 2 >( i );
       if( isPlanar( inMesh, cell, precision ) ) { // Copy planar cells
          auto & cellSeed = meshBuilder.getCellSeed( setCellsCount++ );
@@ -71,12 +89,8 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
             cellSeed.setCornerId( j, cell.template getSubentityIndex< 0 >( j ) );
          }
       }
-      else { // decompose non-planar cells
-         PolygonDecomposer::decompose( meshBuilder,
-                                       cellSeedGetter,
-                                       setPointsCount,
-                                       setCellsCount,
-                                       cell );
+      else { // Decompose non-planar cells
+         EntityDecomposer::decompose( cell, createPointFunc, setDecomposedCellFunc );
       }
    }
 
@@ -85,7 +99,7 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
 }
 
 // Polyhedral Mesh
-template< PolygonDecomposerVersion version,
+template< EntityDecomposerVersion EntityDecomposerVersion_,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polyhedron >::value, bool > = true >
 Mesh< MeshConfig, Devices::Host >
@@ -94,9 +108,10 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    using PolyhedronMesh = Mesh< MeshConfig, Devices::Host >;
    using GlobalIndexType = typename PolyhedronMesh::GlobalIndexType;
    using LocalIndexType = typename PolyhedronMesh::LocalIndexType;
+   using PointType = typename PolyhedronMesh::PointType;
    using RealType = typename PolyhedronMesh::RealType;
    using FaceMapArray = Containers::Array< std::pair< GlobalIndexType, GlobalIndexType >, Devices::Host, GlobalIndexType >;
-   using PolygonDecomposer = PolygonDecomposer< MeshConfig, version >;
+   using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersion_ >;
 
    constexpr RealType precision{ 1e-6 };
 
@@ -107,22 +122,24 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    const GlobalIndexType inFacesCount = inMesh.template getEntitiesCount< 2 >();
    const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< 3 >();
 
-   FaceMapArray faceMap( inFacesCount );
+   FaceMapArray faceMap( inFacesCount ); // Mapping of original face indeces to a group of decomposed face indices
 
-   // find the number of points and faces in the outMesh
+   // Find the number of points and faces in the outMesh and setup faceMap
    GlobalIndexType outPointsCount = inPointsCount;
    GlobalIndexType outFacesCount = 0;
    for( GlobalIndexType i = 0; i < inFacesCount; i++ ) {
       const auto face = inMesh.template getEntity< 2 >( i );
-      if( isPlanar( inMesh, face, precision ) ) { //
+      if( isPlanar( inMesh, face, precision ) ) {
          const auto startFaceIdx = outFacesCount;
-         const auto endFaceIdx = ++outFacesCount;
+         const auto endFaceIdx = ++outFacesCount; // Planar faces aren't decomposed
          faceMap[ i ] = { startFaceIdx, endFaceIdx };
       }
       else {
-         outPointsCount += PolygonDecomposer::getExtraPointsCount( face );
+         GlobalIndexType extraPointsCount, entitiesCount;
+         std::tie( extraPointsCount, entitiesCount ) = EntityDecomposer::getExtraPointsAndEntitiesCount( face );
+         outPointsCount += extraPointsCount;
          const auto startFaceIdx = outFacesCount;
-         outFacesCount += PolygonDecomposer::getEntitiesCount( face );
+         outFacesCount += entitiesCount;
          const auto endFaceIdx = outFacesCount;
          faceMap[ i ] = { startFaceIdx, endFaceIdx };
       }
@@ -132,12 +149,13 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    meshBuilder.setFacesCount( outFacesCount );
    meshBuilder.setCellsCount( inCellsCount ); // The number of cells stays the same
 
-   // copy the points from inMesh to outMesh
+   // Copy the points from inMesh to outMesh
    GlobalIndexType setPointsCount = 0;
    for( ; setPointsCount < inPointsCount; setPointsCount++ ) {
       meshBuilder.setPoint( setPointsCount, inMesh.getPoint( setPointsCount ) );
    }
 
+   // Set up cell seeds
    for( GlobalIndexType i = 0; i < inCellsCount; i++ ) {
       const auto cell = inMesh.template getEntity< 3 >( i );
       const LocalIndexType cellFacesCount = cell.template getSubentitiesCount< 2 >();
@@ -162,12 +180,29 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
       }
    }
 
-   auto faceSeedGetter = [&] ( const GlobalIndexType i ) -> auto& { return meshBuilder.getFaceSeed( i ); };
-   for( GlobalIndexType i = 0, setFacesCount = 0; i < inFacesCount; i++ ) {
+   // Lambda for creating new points
+   auto createPointFunc = [&] ( const PointType & point ) {
+      const auto pointIdx = setPointsCount++;
+      meshBuilder.setPoint( pointIdx, point );
+      return pointIdx;
+   };
+
+   // Lambda for setting seed of decomposed triangle
+   GlobalIndexType setFacesCount = 0;
+   auto setDecomposedFaceFunc = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
+      auto & entitySeed = meshBuilder.getFaceSeed( setFacesCount++ );
+      entitySeed.setCornersCount( 3 );
+      entitySeed.setCornerId( 0, v0 );
+      entitySeed.setCornerId( 1, v1 );
+      entitySeed.setCornerId( 2, v2 );
+   };
+
+   // Decompose non-planar faces and copy the rest
+   for( GlobalIndexType i = 0; i < inFacesCount; i++ ) {
       const auto face = inMesh.template getEntity< 2 >( i );
       const auto verticesCount = face.template getSubentitiesCount< 0 >();
       const auto & faceMapping = faceMap[ i ];
-      const bool isPlanarRes = ( faceMapping.second - faceMapping.first ) == 1; // face was planar if face maps only onto 1 face
+      const bool isPlanarRes = ( faceMapping.second - faceMapping.first ) == 1; // Face was planar if face maps only onto 1 face
       if( isPlanarRes ) { // Copy planar faces
          auto & faceSeed = meshBuilder.getFaceSeed( setFacesCount++ );
          faceSeed.setCornersCount( verticesCount );
@@ -175,12 +210,8 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
             faceSeed.setCornerId( j, face.template getSubentityIndex< 0 >( j ) );
          }
       }
-      else { // decompose non-planar cells
-         PolygonDecomposer::decompose( meshBuilder,
-                                       faceSeedGetter,
-                                       setPointsCount,
-                                       setFacesCount,
-                                       face );
+      else { // Decompose non-planar cells
+         EntityDecomposer::decompose( face, createPointFunc, setDecomposedFaceFunc );
       }
    }
 
