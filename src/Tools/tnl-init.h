@@ -13,16 +13,15 @@
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/Readers/VTIReader.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
 #include <TNL/Meshes/Writers/VTIWriter.h>
+#include <TNL/Meshes/Writers/PVTIWriter.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
 #include <TNL/FileName.h>
 #include <TNL/Functions/MeshFunction.h>
-
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
-#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 using namespace TNL;
 
@@ -37,30 +36,21 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
    DistributedGridType distributedMesh;
    Pointers::SharedPointer< MeshType > meshPointer;
-   MeshType globalMesh;
 
-   // TODO: PVTI reader is not implemented yet
-//   if(TNL::MPI::GetSize() > 1)
-//   {
-//       //suppose global mesh loaded from single file
-//       String meshFile = parameters.getParameter< String >( "mesh" );
-//       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-//       globalMesh.load( meshFile );
-//
-//       // TODO: This should work with no overlaps
-//       distributedMesh.setGlobalGrid(globalMesh);
-//       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-//       SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
-//       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
-//       distributedMesh.setupGrid(*meshPointer);
-//    }
-//    else
-    {
-       String meshFile = parameters.getParameter< String >( "mesh" );
-       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       Meshes::Readers::VTIReader reader( meshFile );
-       reader.loadMesh( *meshPointer );
-    }
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+
+   if( TNL::MPI::GetSize() > 1 )
+   {
+      Meshes::Readers::PVTIReader reader( meshFile );
+      reader.loadMesh( distributedMesh );
+      *meshPointer = distributedMesh.getLocalMesh();
+   }
+   else
+   {
+      Meshes::Readers::VTIReader reader( meshFile );
+      reader.loadMesh( *meshPointer );
+   }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
@@ -117,13 +107,49 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
       const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
 
-      // TODO: PVTI writer is not implemented yet
-//      if(TNL::MPI::GetSize() > 1)
-//      {
-//         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
-//            return false;
-//      }
-//      else
+      if( TNL::MPI::GetSize() > 1 )
+      {
+         std::ofstream file;
+         if( TNL::MPI::GetRank() == 0 )
+            file.open( outputFile );
+         using PVTI = Meshes::Writers::PVTIWriter< typename DistributedGridType::GridType >;
+         PVTI pvti( file );
+         // TODO: write metadata: step and time
+         pvti.writeImageData( distributedMesh );
+         // TODO
+         //if( distributedMesh.getGhostLevels() > 0 ) {
+         //   pvti.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+         //   pvti.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+         //}
+         if( meshFunction->getEntitiesDimension() == 0 )
+            pvti.template writePPointData< typename MeshFunctionType::RealType >( meshFunctionName );
+         else
+            pvti.template writePCellData< typename MeshFunctionType::RealType >( meshFunctionName );
+         const std::string subfilePath = pvti.addPiece( outputFile, distributedMesh );
+
+         // create a .vti file for local data
+         // TODO: write metadata: step and time
+         using Writer = Meshes::Writers::VTIWriter< typename DistributedGridType::GridType >;
+         std::ofstream subfile( subfilePath );
+         Writer writer( subfile );
+         // NOTE: passing the local mesh to writeImageData does not work correctly, just like meshFunction->write(...)
+         //       (it does not write the correct extent of the subdomain - globalBegin is only in the distributed grid)
+         // NOTE: globalBegin and globalEnd here are without overlaps
+         writer.writeImageData( distributedMesh.getGlobalGrid().getOrigin(),
+                                distributedMesh.getGlobalBegin(),
+                                distributedMesh.getGlobalBegin() + distributedMesh.getLocalSize(),
+                                distributedMesh.getGlobalGrid().getSpaceSteps() );
+         if( meshFunction->getEntitiesDimension() == 0 )
+            writer.writePointData( meshFunction->getData(), meshFunctionName );
+         else
+            writer.writeCellData( meshFunction->getData(), meshFunctionName );
+         // TODO
+         //if( mesh.getGhostLevels() > 0 ) {
+         //   writer.writePointData( mesh.vtkPointGhostTypes(), Meshes::VTK::ghostArrayName() );
+         //   writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
+         //}
+      }
+      else
       {
          // TODO: write metadata: step and time
          meshFunction->write( meshFunctionName, outputFile, "auto" );
@@ -236,66 +262,5 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveDerivatives< MeshType, double >( parameters );
 //   if( realType == "long-double" )
 //      return resolveDerivatives< MeshType, long double >( parameters );
-   return false;
-}
-
-
-template< int Dimension, typename RealType, typename IndexType >
-bool resolveMesh( const std::vector< String >& parsedMeshType,
-                  const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
-   if( parsedMeshType[ 0 ] == "Meshes::Grid" )
-   {
-      typedef Meshes::Grid< Dimension, RealType, Devices::Host, IndexType > MeshType;
-      return resolveRealType< MeshType >( parameters );
-   }
-   std::cerr << "Unknown mesh type." << std::endl;
-   return false;
-}
-
-template< int Dimension, typename RealType >
-bool resolveIndexType( const std::vector< String >& parsedMeshType,
-                       const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
-
-   if( parsedMeshType[ 4 ] == "int" )
-      return resolveMesh< Dimension, RealType, int >( parsedMeshType, parameters );
-   if( parsedMeshType[ 4 ] == "long int" )
-      return resolveMesh< Dimension, RealType, long int >( parsedMeshType, parameters );
-
-   return false;
-}
-
-template< int Dimension >
-bool resolveRealType( const std::vector< String >& parsedMeshType,
-                      const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
-
-   if( parsedMeshType[ 2 ] == "float" )
-      return resolveIndexType< Dimension, float >( parsedMeshType, parameters );
-   if( parsedMeshType[ 2 ] == "double" )
-      return resolveIndexType< Dimension, double >( parsedMeshType, parameters );
-//   if( parsedMeshType[ 2 ] == "long double" )
-//      return resolveIndexType< Dimension, long double >( parsedMeshType, parameters );
-
-   return false;
-}
-
-bool resolveMeshType( const std::vector< String >& parsedMeshType,
-                      const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting dimensions to " << parsedMeshType[ 1 ] << " ... " << std::endl;
-   int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-
-   if( dimensions == 1 )
-      return resolveRealType< 1 >( parsedMeshType, parameters );
-   if( dimensions == 2 )
-      return resolveRealType< 2 >( parsedMeshType, parameters );
-   if( dimensions == 3 )
-      return resolveRealType< 3 >( parsedMeshType, parameters );
-
    return false;
 }
