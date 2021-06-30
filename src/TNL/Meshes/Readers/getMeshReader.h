@@ -20,6 +20,7 @@
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/Readers/VTIReader.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
 
 namespace TNL {
 namespace Meshes {
@@ -48,12 +49,14 @@ getMeshReader( const std::string& fileName,
       return std::make_shared< Readers::VTIReader >( fileName );
    else if( format == "pvtu" )
       return std::make_shared< Readers::PVTUReader >( fileName );
+   else if( format == "pvti" )
+      return std::make_shared< Readers::PVTIReader >( fileName );
 
    if( fileFormat == "auto" )
       std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
    else
       std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
-   std::cerr << " Supported formats are 'ng', 'vtk', 'vtu', 'vti' and 'pvtu'." << std::endl;
+   std::cerr << " Supported formats are 'ng', 'vtk', 'vtu', 'vti', 'pvtu' and 'pvti'." << std::endl;
    return nullptr;
 }
 

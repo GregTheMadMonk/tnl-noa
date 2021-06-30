@@ -133,11 +133,23 @@ public:
    }
 
    template< typename MeshType >
-   void loadMesh( MeshType& mesh )
+   std::enable_if_t< isDistributedGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
+   {
+      throw MeshReaderError( "MeshReader", "the PVTU reader cannot be used to load a distributed structured grid." );
+   }
+
+   template< typename MeshType >
+   std::enable_if_t< ! isDistributedGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
       if( meshType == "" )
          detectMesh();
+
+      // check if we have a distributed unstructured mesh
+      if( meshType != "Meshes::DistributedMesh" )
+         throw MeshReaderError( "MeshReader", "the file does not contain an unstructured mesh, it is " + meshType );
 
       // load the local mesh
       auto& localMesh = mesh.getLocalMesh();

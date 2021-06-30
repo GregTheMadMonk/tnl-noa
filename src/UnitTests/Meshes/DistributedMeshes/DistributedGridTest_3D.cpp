@@ -3,12 +3,18 @@
 
 #ifdef HAVE_MPI
 
+#include <experimental/filesystem>
+
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <TNL/Meshes/Writers/PVTIWriter.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
 
 #include "../../Functions/Functions.h"
+
+namespace fs = std::experimental::filesystem;
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -720,6 +726,58 @@ TEST_F(DistributedGridTest_3D, SynchronizerNeighborTest)
 
 }
 */
+
+TEST_F(DistributedGridTest_3D, PVTIWriterReader)
+{
+   // create a .pvti file (only rank 0 actually writes to the file)
+   const std::string baseName = "DistributedGridTest_3D_" + std::to_string(nproc) + "proc";
+   const std::string mainFilePath = baseName + ".pvti";
+   std::string subfilePath;
+   {
+      std::ofstream file;
+      if( TNL::MPI::GetRank() == 0 )
+         file.open( mainFilePath );
+      using PVTI = Meshes::Writers::PVTIWriter< GridType >;
+      PVTI pvti( file );
+      pvti.writeImageData( *distributedGrid );
+      // TODO
+//      if( mesh.getGhostLevels() > 0 ) {
+//         pvti.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+//         pvti.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+//      }
+      subfilePath = pvti.addPiece( mainFilePath, *distributedGrid );
+
+      // create a .vti file for local data
+      using Writer = Meshes::Writers::VTIWriter< GridType >;
+      std::ofstream subfile( subfilePath );
+      Writer writer( subfile );
+      writer.writeImageData( *localGrid );
+      // TODO
+//      if( mesh.getGhostLevels() > 0 ) {
+//         writer.writePointData( mesh.vtkPointGhostTypes(), Meshes::VTK::ghostArrayName() );
+//         writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
+//      }
+
+      // end of scope closes the files
+   }
+
+   // load and test
+   TNL::MPI::Barrier();
+   Readers::PVTIReader reader( mainFilePath );
+   reader.detectMesh();
+   EXPECT_EQ( reader.getMeshType(), "Meshes::DistributedGrid" );
+   DistributedMesh< GridType > loadedGrid;
+   reader.loadMesh( loadedGrid );
+   EXPECT_EQ( loadedGrid, *distributedGrid );
+
+   // cleanup
+   EXPECT_EQ( fs::remove( subfilePath ), true );
+   TNL::MPI::Barrier();
+   if( TNL::MPI::GetRank() == 0 ) {
+      EXPECT_EQ( fs::remove( mainFilePath ), true );
+      EXPECT_EQ( fs::remove( baseName ), true );
+   }
+}
 #endif
 
 #endif

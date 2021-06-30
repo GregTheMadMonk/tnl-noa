@@ -36,9 +36,9 @@ resolveMeshType( Functor&& functor,
 
    reader->detectMesh();
 
-   if( reader->getMeshType() == "Meshes::Grid" )
+   if( reader->getMeshType() == "Meshes::Grid" || reader->getMeshType() == "Meshes::DistributedGrid" )
       return GridTypeResolver< ConfigTag, Device >::run( *reader, functor );
-   else if( reader->getMeshType() == "Meshes::Mesh" )
+   else if( reader->getMeshType() == "Meshes::Mesh" || reader->getMeshType() == "Meshes::DistributedMesh" )
       return MeshTypeResolver< ConfigTag, Device >::run( *reader, functor );
    else {
       std::cerr << "The mesh type " << reader->getMeshType() << " is not supported." << std::endl;

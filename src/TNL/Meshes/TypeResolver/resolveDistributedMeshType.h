@@ -33,20 +33,9 @@ resolveAndLoadDistributedMesh( Functor&& functor,
                                const std::string& fileName,
                                const std::string& fileFormat = "auto" );
 
-template< typename MeshConfig,
-          typename Device >
+template< typename Mesh >
 bool
-loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh,
-                     const std::string& fileName,
-                     const std::string& fileFormat = "auto" );
-
-// overloads for grids
-template< int Dimension,
-          typename Real,
-          typename Device,
-          typename Index >
-bool
-loadDistributedMesh( DistributedMeshes::DistributedMesh< Grid< Dimension, Real, Device, Index > > &distributedMesh,
+loadDistributedMesh( DistributedMeshes::DistributedMesh< Mesh >& distributedMesh,
                      const std::string& fileName,
                      const std::string& fileFormat = "auto" );
 

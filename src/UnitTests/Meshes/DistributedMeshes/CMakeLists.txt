@@ -66,10 +66,20 @@ else()
    target_link_libraries( DistributedMeshTest ${GTEST_BOTH_LIBRARIES} )
 endif()
 
+
+# external libraries for tests which use mesh readers
+find_package( ZLIB )
 find_package( tinyxml2 QUIET )
-if( tinyxml2_FOUND )
-   target_compile_definitions(DistributedMeshTest PUBLIC "-DHAVE_TINYXML2")
-   target_link_libraries(DistributedMeshTest tinyxml2::tinyxml2)
+
+if( ZLIB_FOUND AND tinyxml2_FOUND )
+   foreach( target IN ITEMS DistributedGridTest_1D DistributedGridTest_2D DistributedGridTest_3D DistributedMeshTest )
+      target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
+      target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
+      target_link_libraries(${target} ${ZLIB_LIBRARIES})
+
+      target_compile_definitions(${target} PUBLIC "-DHAVE_TINYXML2")
+      target_link_libraries(${target} tinyxml2::tinyxml2)
+   endforeach()
 endif()
 
 
