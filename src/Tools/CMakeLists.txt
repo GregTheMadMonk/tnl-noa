@@ -1,5 +1,6 @@
 add_subdirectory(tnl-quickstart)
 
+ADD_EXECUTABLE(tnl-decompose-grid tnl-decompose-grid.cpp )
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
 ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
 ADD_EXECUTABLE(tnl-mesh-converter tnl-mesh-converter.cpp )
@@ -27,7 +28,7 @@ endif()
 
 find_package( ZLIB )
 if( ZLIB_FOUND )
-   foreach( target IN ITEMS tnl-init tnl-diff tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+   foreach( target IN ITEMS tnl-init tnl-diff tnl-decompose-grid tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
       target_compile_definitions(${target} PUBLIC "-DHAVE_ZLIB")
       target_include_directories(${target} PUBLIC ${ZLIB_INCLUDE_DIRS})
       target_link_libraries(${target} ${ZLIB_LIBRARIES})
@@ -36,7 +37,7 @@ endif()
 
 find_package( tinyxml2 QUIET )
 if( tinyxml2_FOUND )
-   foreach( target IN ITEMS tnl-init tnl-diff tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
+   foreach( target IN ITEMS tnl-init tnl-diff tnl-decompose-grid tnl-grid-to-mesh tnl-mesh-converter tnl-game-of-life tnl-test-distributed-mesh )
       target_compile_definitions(${target} PUBLIC "-DHAVE_TINYXML2")
       target_link_libraries(${target} tinyxml2::tinyxml2)
    endforeach()
@@ -68,6 +69,7 @@ ENDIF()
 
 INSTALL( TARGETS tnl-init
                  tnl-diff
+                 tnl-decompose-grid
                  tnl-grid-setup
                  tnl-grid-to-mesh
                  tnl-mesh-converter
