@@ -109,45 +109,8 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
       if( TNL::MPI::GetSize() > 1 )
       {
-         std::ofstream file;
-         if( TNL::MPI::GetRank() == 0 )
-            file.open( outputFile );
-         using PVTI = Meshes::Writers::PVTIWriter< typename DistributedGridType::GridType >;
-         PVTI pvti( file );
          // TODO: write metadata: step and time
-         pvti.writeImageData( distributedMesh );
-         // TODO
-         //if( distributedMesh.getGhostLevels() > 0 ) {
-         //   pvti.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
-         //   pvti.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
-         //}
-         if( meshFunction->getEntitiesDimension() == 0 )
-            pvti.template writePPointData< typename MeshFunctionType::RealType >( meshFunctionName );
-         else
-            pvti.template writePCellData< typename MeshFunctionType::RealType >( meshFunctionName );
-         const std::string subfilePath = pvti.addPiece( outputFile, distributedMesh );
-
-         // create a .vti file for local data
-         // TODO: write metadata: step and time
-         using Writer = Meshes::Writers::VTIWriter< typename DistributedGridType::GridType >;
-         std::ofstream subfile( subfilePath );
-         Writer writer( subfile );
-         // NOTE: passing the local mesh to writeImageData does not work correctly, just like meshFunction->write(...)
-         //       (it does not write the correct extent of the subdomain - globalBegin is only in the distributed grid)
-         // NOTE: globalBegin and globalEnd here are without overlaps
-         writer.writeImageData( distributedMesh.getGlobalGrid().getOrigin(),
-                                distributedMesh.getGlobalBegin(),
-                                distributedMesh.getGlobalBegin() + distributedMesh.getLocalSize(),
-                                distributedMesh.getGlobalGrid().getSpaceSteps() );
-         if( meshFunction->getEntitiesDimension() == 0 )
-            writer.writePointData( meshFunction->getData(), meshFunctionName );
-         else
-            writer.writeCellData( meshFunction->getData(), meshFunctionName );
-         // TODO
-         //if( mesh.getGhostLevels() > 0 ) {
-         //   writer.writePointData( mesh.vtkPointGhostTypes(), Meshes::VTK::ghostArrayName() );
-         //   writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
-         //}
+         Functions::writeDistributedMeshFunction( distributedMesh, *meshFunction, meshFunctionName, outputFile );
       }
       else
       {

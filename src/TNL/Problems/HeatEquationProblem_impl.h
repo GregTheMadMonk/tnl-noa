@@ -20,7 +20,6 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 #include "HeatEquationProblem.h"
 
@@ -142,11 +141,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    if(CommunicatorType::isDistributed())
    {
       std::cout<<"Nodes Distribution: " << this->distributedMeshPointer->printProcessDistr() << std::endl;
-      throw Exceptions::NotImplementedError( "PVTI reader is not implemented yet." );
-//      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-//         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
-//      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-//         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
+      if( ! Functions::readDistributedMeshFunction( *this->distributedMeshPointer, *this->uPointer, "u", initialConditionFile ) )
+      {
+         std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+         return false;
+      }
       synchronizer.setDistributedGrid( &this->distributedMeshPointer.getData() );
       synchronizer.synchronize( *uPointer );
    }
@@ -208,11 +207,7 @@ makeSnapshot( const RealType& time,
    if(CommunicatorType::isDistributed())
    {
       fileName.setExtension( "pvti" );
-      throw Exceptions::NotImplementedError( "PVTI writer is not implemented yet." );
-//      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *uPointer );
-//      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-//        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *uPointer );
+      Functions::writeDistributedMeshFunction( *this->distributedMeshPointer, *this->uPointer, "u", fileName.getFileName() );
    }
    else
    {

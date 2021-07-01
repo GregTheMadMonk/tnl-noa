@@ -1097,6 +1097,41 @@ TEST_F(DistributedGridTest_2D, PVTIWriterReader)
       EXPECT_EQ( fs::remove( baseName ), true );
    }
 }
+
+TEST_F(DistributedGridTest_2D, readDistributedMeshFunction)
+{
+   const std::string baseName = "DistributedGridTest_MeshFunction_2D_" + std::to_string(nproc) + "proc.pvti";
+   const std::string mainFilePath = baseName + ".pvti";
+
+   // evaluate a function
+   dof.setValue( -1 );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+
+   // write the mesh function into a .pvti file
+   EXPECT_TRUE( writeDistributedMeshFunction( *distributedGrid, *meshFunctionPtr, "foo", mainFilePath ) );
+
+   // wait for rank 0 to write the main .pvti file
+   TNL::MPI::Barrier();
+
+   // load the mesh function from the .pvti file
+   DofType loadedDof;
+   loadedDof.setLike( dof );
+   loadedDof.setValue( -2 );
+   MeshFunctionType loadedMeshFunction;
+   loadedMeshFunction.bind( localGrid, loadedDof );
+   EXPECT_TRUE( readDistributedMeshFunction( *distributedGrid, loadedMeshFunction, "foo", mainFilePath ) );
+
+   // compare the dofs (MeshFunction and MeshFunctionView do not have operator==)
+//   EXPECT_EQ( loadedMeshFunction, *meshFunctionPtr );
+   EXPECT_EQ( loadedDof, dof );
+
+   // cleanup
+   TNL::MPI::Barrier();
+   if( TNL::MPI::GetRank() == 0 ) {
+      EXPECT_TRUE( fs::remove( mainFilePath ) );
+      EXPECT_GT( fs::remove_all( baseName ), 1 );
+   }
+}
 #endif
 
 #endif
