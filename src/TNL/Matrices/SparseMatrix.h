@@ -797,7 +797,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * The lambda function `function` should be declared like follows:
        *
        * ```
-       * auto function = [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) mutable { ... }
+       * auto function = [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIdx, const RealType& value ) mutable { ... }
        * ```
        *
        *  The \e localIdx parameter is a rank of the non-zero element in given row.

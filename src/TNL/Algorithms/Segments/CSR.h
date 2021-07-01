@@ -306,7 +306,7 @@ class CSR
        * Declaration of the lambda function \e function is supposed to be
        *
        * ```
-       * auto f = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx ) {...} 
+       * auto f = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx ) {...}
        * ```
        * where \e segmentIdx is index of segment where given element belong to, \e localIdx is rank of the element
        * within the segment and \e globalIdx is index of the element within the related container.

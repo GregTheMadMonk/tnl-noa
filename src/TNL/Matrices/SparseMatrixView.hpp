@@ -417,7 +417,7 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    const auto columnIndexesView = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
-   if( isSymmetric() )
+   if( isSymmetric() && outVectorMultiplicator != 1.0 )
       outVector *= outVectorMultiplicator;
    auto symmetricFetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> ComputeRealType {
       const IndexType column = columnIndexesView[ globalIdx ];
