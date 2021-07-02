@@ -334,13 +334,13 @@ public:
       // load and verify XML
       tinyxml2::XMLError status = dom.LoadFile( fileName.c_str() );
       if( status != XML_SUCCESS )
-         throw MeshReaderError( "XMLVTK", "failed to parse the file as an XML document." );
+         throw MeshReaderError( "XMLVTK", "failed to parse the file " + fileName + " as an XML document." );
 
       // verify root element
       const XMLElement* elem = dom.FirstChildElement();
       verifyElement( elem, "VTKFile" );
       if( elem->NextSibling() )
-         throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file" );
+         throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file " + fileName );
 
       // verify byte order
       const std::string systemByteOrder = (isLittleEndian()) ? "LittleEndian" : "BigEndian";
