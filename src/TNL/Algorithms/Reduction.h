@@ -13,8 +13,9 @@
 #pragma once
 
 #include <utility>  // std::pair
-#include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
+#include <functional>        // reduction functions like std::plus, std::logical_and, std::logical_or etc. - deprecated
 
+#include <TNL/Functional.h>  // replacement of STL functional
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -41,7 +42,7 @@ template<>
 struct Reduction< Devices::Sequential >
 {
    /**
-    * \brief Computes reduction on CPU sequentialy.
+    * \brief Computes reduction on CPU sequentially.
     *
     * \tparam Index is a type for indexing.
     * \tparam Result is a type of the reduction result.
@@ -85,7 +86,7 @@ struct Reduction< Devices::Sequential >
            const Index end,
            Fetch&& fetch,
            Reduce&& reduce,
-           const Result& zero );
+           const Result& zero = Reduce::template getIdempotent< Result >() );
 
    /**
     * \brief Computes sequentially reduction on CPU and returns position of an element of interest.
@@ -137,7 +138,7 @@ struct Reduction< Devices::Sequential >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero );
+                       const Result& zero = Reduce::idempotent );
 };
 
 template<>
@@ -190,6 +191,20 @@ struct Reduction< Devices::Host >
            Reduce&& reduce,
            const Result& zero );
 
+   template< typename Index,
+             typename Fetch,
+             typename Reduce_ >
+   static auto
+   reduce( const Index begin,
+           const Index end,
+           Fetch&& fetch,
+           Reduce_&& reduce_ ) -> decltype( fetch( ( Index ) 0 ) )
+   {
+      using Result = decltype( fetch( ( Index ) 0 ) );
+      return reduce( begin, end, fetch, reduce_, std::remove_reference< Reduce_ >::type::template getIdempotent< Result >() );
+   };
+
+
    /**
     * \brief Computes reduction on CPU and returns position of an element of interest.
     *
@@ -240,7 +255,7 @@ struct Reduction< Devices::Host >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero );
+                       const Result& zero = Reduce::idempotent );
 };
 
 template<>
@@ -291,7 +306,7 @@ struct Reduction< Devices::Cuda >
            const Index end,
            Fetch&& fetch,
            Reduce&& reduce,
-           const Result& zero );
+           const Result& zero = Reduce::idempotent );
 
    /**
     * \brief Computes reduction on GPU and returns position of an element of interest.
@@ -343,8 +358,51 @@ struct Reduction< Devices::Cuda >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero );
+                       const Result& zero = Reduce::idempotent );
 };
+
+template< typename Device,
+          typename Index,
+          typename Result,
+          typename Fetch,
+          typename Reduce >
+Result reduce( const Index begin,
+               const Index end,
+               Fetch&& fetch,
+               Reduce&& reduce,
+               const Result& zero )
+{
+    return Reduction< Device >::reduce( begin, end, fetch, reduce, zero );
+}
+
+template< typename Device,
+          typename Index,
+          typename Fetch,
+          typename Reduce >
+auto reduce( const Index begin,
+             const Index end,
+             Fetch&& fetch,
+             Reduce&& reduce ) -> decltype( Reduction< Device >::reduce( begin, end, fetch, reduce ) )
+{
+   return Reduction< Device >::reduce( begin, end, std::forward< Fetch >( fetch ), std::forward< Reduce >( reduce ) );
+}
+
+
+template< typename Device,
+          typename Index,
+          typename Result,
+          typename Fetch,
+          typename Reduce >
+std::pair< Result, Index >
+reduceWithArgument( const Index begin,
+                    const Index end,
+                    Fetch&& fetch,
+                    Reduce&& reduce,
+                    const Result& zero = Reduce::template getIdempotent< Result >() )
+{
+    return Reduction< Device >::reduceWithArgument( begin, end, fetch, reduce, zero );
+}
+
 
 } // namespace Algorithms
 } // namespace TNL

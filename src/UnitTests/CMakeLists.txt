@@ -6,7 +6,14 @@ ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Meshes )
 ADD_SUBDIRECTORY( Pointers )
 
-set( CPP_TESTS  AssertTest base64Test FileNameTest MathTest ObjectTest StringTest TimerTest TypeInfoTest )
+set( CPP_TESTS  AssertTest
+                base64Test
+                FileNameTest
+                MathTest
+                ObjectTest
+                StringTest
+                TimerTest
+                TypeInfoTest )
 set( CUDA_TESTS  AssertCudaTest )
 if( BUILD_CUDA )
    set( CUDA_TESTS  ${CUDA_TESTS} AllocatorsTest FileTest )
