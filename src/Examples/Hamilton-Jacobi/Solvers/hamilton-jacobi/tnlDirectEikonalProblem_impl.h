@@ -79,11 +79,6 @@ tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-  String param=parameters.getParameter< String >( "distributed-grid-io-type" );
-   if(param=="MpiIO")
-        distributedIOType=Meshes::DistributedMeshes::MpiIO;
-   if(param=="LocalCopy")
-        distributedIOType=Meshes::DistributedMeshes::LocalCopy;
    return true;
 }
 

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   tnlFastSweepingMethod.h
  * Author: oberhuber
  *
@@ -18,7 +18,6 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 template< typename Mesh,
@@ -34,7 +33,7 @@ class tnlDirectEikonalProblem
                                   Index  >
 {
    public:
-   
+
       typedef Real RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
@@ -48,9 +47,9 @@ class tnlDirectEikonalProblem
       using typename BaseType::DofVectorType;
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType >;
-      
+
       typedef Communicator CommunicatorType;
-      
+
       static constexpr bool isTimeDependent() { return false; };
 
       static String getType();
@@ -59,7 +58,7 @@ class tnlDirectEikonalProblem
 
       void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
-      
+
       bool writeEpilog( Logger& logger );
 
 
@@ -69,28 +68,26 @@ class tnlDirectEikonalProblem
       IndexType getDofs() const;
 
       void bindDofs( DofVectorPointer& dofs );
-      
+
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 DofVectorPointer& dofs );
-      
+
       bool makeSnapshot( );
 
       bool solve( DofVectorPointer& dosf );
 
 
       protected:
-         
+
          using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
          DistributedMeshSynchronizerType synchronizer;
 
          MeshFunctionPointer u;
-         
+
          MeshFunctionPointer initialData;
-         
+
          AnisotropyPointer anisotropy;
 
-         Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
-         
    };
 
 #include "tnlDirectEikonalProblem_impl.h"

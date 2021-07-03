@@ -82,12 +82,6 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    }
 
-   String param = parameters.getParameter< String >( "distributed-grid-io-type" );
-   if( param == "MpiIO" )
-        distributedIOType = Meshes::DistributedMeshes::MpiIO;
-   if( param == "LocalCopy" )
-        distributedIOType = Meshes::DistributedMeshes::LocalCopy;
-
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );

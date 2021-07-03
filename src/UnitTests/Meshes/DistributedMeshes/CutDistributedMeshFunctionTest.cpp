@@ -7,7 +7,6 @@
 #include <TNL/Functions/CutMeshFunction.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include "../../Functions/Functions.h"
@@ -606,7 +605,8 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
        MeshFunctionView<CutMeshType> cutMeshFunction;
        cutMeshFunction.bind(cutGrid,cutDof);
 
-        DistributedGridIO<MeshFunctionView<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
+       // FIXME: DistributedGridIO was removed
+//        DistributedGridIO<MeshFunctionView<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
 
         //save globalgrid for debug render
         MPI_Comm group=cutDistributedGrid.getCommunicationGroup();

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#define MPIIO
-
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>
