@@ -22,7 +22,26 @@
 using namespace TNL;
 
 #ifdef HAVE_GTEST
-TEST( ReduceTest, sum )
+
+// test fixture for typed tests
+template< typename Device >
+class ReduceTest : public ::testing::Test
+{
+protected:
+   using DeviceType = Device;
+};
+
+// types for which ArrayTest is instantiated
+using DeviceTypes = ::testing::Types<
+   Devices::Host
+#ifdef HAVE_CUDA
+   ,Devices::Cuda
+#endif
+   >;
+
+TYPED_TEST_SUITE( ReduceTest, DeviceTypes );
+
+TYPED_TEST( ReduceTest, sum )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
@@ -38,7 +57,7 @@ TEST( ReduceTest, sum )
    }
 }
 
-TEST( ReduceTest, min )
+TYPED_TEST( ReduceTest, min )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
@@ -54,7 +73,7 @@ TEST( ReduceTest, min )
    }
 }
 
-TEST( ReduceTest, max )
+TYPED_TEST( ReduceTest, max )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
@@ -71,7 +90,7 @@ TEST( ReduceTest, max )
 }
 
 
-TEST( ReduceTest, logicalAnd )
+TYPED_TEST( ReduceTest, logicalAnd )
 {
    using Array = Containers::Array< bool, Devices::Host >;
    Array a;
@@ -87,7 +106,7 @@ TEST( ReduceTest, logicalAnd )
    }
 }
 
-TEST( ReduceTest, logicalOr )
+TYPED_TEST( ReduceTest, logicalOr )
 {
    using Array = Containers::Array< bool, Devices::Host >;
    Array a;
@@ -103,7 +122,7 @@ TEST( ReduceTest, logicalOr )
    }
 }
 
-TEST( ReduceTest, bitAnd )
+TYPED_TEST( ReduceTest, bitAnd )
 {
    using Array = Containers::Array< char, Devices::Host >;
    Array a;
@@ -119,7 +138,7 @@ TEST( ReduceTest, bitAnd )
    }
 }
 
-TEST( ReduceTest, bitOr )
+TYPED_TEST( ReduceTest, bitOr )
 {
    using Array = Containers::Array< char, Devices::Host >;
    Array a;
