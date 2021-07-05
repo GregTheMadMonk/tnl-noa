@@ -23,6 +23,161 @@ using namespace TNL;
 
 #ifdef HAVE_GTEST
 
+template< typename Device >
+void ReduceTest_sum()
+{
+   using Array = Containers::Array< int, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.setValue( 1 );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Plus<>{} );
+      EXPECT_EQ( res, size );
+   }
+}
+
+template< typename Device >
+void ReduceTest_min()
+{
+   using Array = Containers::Array< int, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Min<>{} );
+      EXPECT_EQ( res, 1 );
+   }
+}
+
+template< typename Device >
+void ReduceTest_max()
+{
+   using Array = Containers::Array< int, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Max<>{} );
+      EXPECT_EQ( res, size );
+   }
+}
+
+template< typename Device >
+void ReduceTest_minWithArg()
+{
+   using Array = Containers::Array< int, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MinWithArg<>{} );
+      EXPECT_EQ( res.first, 1 );
+      EXPECT_EQ( res.second, 0 );
+   }
+}
+
+template< typename Device >
+void ReduceTest_maxWithArg()
+{
+   using Array = Containers::Array< int, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MaxWithArg<>{} );
+      EXPECT_EQ( res.first, size );
+      EXPECT_EQ( res.second, size - 1 );
+   }
+}
+
+template< typename Device >
+void ReduceTest_logicalAnd()
+{
+   using Array = Containers::Array< bool, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalAnd<>{} );
+      EXPECT_EQ( res, false );
+   }
+}
+
+template< typename Device >
+void ReduceTest_logicalOr()
+{
+   using Array = Containers::Array< bool, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalOr<>{} );
+      EXPECT_EQ( res, true );
+   }
+}
+
+template< typename Device >
+void ReduceTest_bitAnd()
+{
+   using Array = Containers::Array< char, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitAnd<>{} );
+      EXPECT_EQ( res, 1 );
+   }
+}
+
+template< typename Device >
+void ReduceTest_bitOr()
+{
+   using Array = Containers::Array< char, Device >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 << ( idx % 8 );} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitOr<>{} );
+      EXPECT_EQ( res, ( char ) 255 );
+   }
+}
+
 // test fixture for typed tests
 template< typename Device >
 class ReduceTest : public ::testing::Test
@@ -43,149 +198,47 @@ TYPED_TEST_SUITE( ReduceTest, DeviceTypes );
 
 TYPED_TEST( ReduceTest, sum )
 {
-   using Array = Containers::Array< int, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.setValue( 1 );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Plus<>{} );
-      EXPECT_EQ( res, size );
-   }
+   ReduceTest_sum< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, min )
 {
-   using Array = Containers::Array< int, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Min<>{} );
-      EXPECT_EQ( res, 1 );
-   }
+   ReduceTest_min< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, max )
 {
-   using Array = Containers::Array< int, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Max<>{} );
-      EXPECT_EQ( res, size );
-   }
+   ReduceTest_max< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, minWithArg )
 {
-   using Array = Containers::Array< int, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Devices::Host >( ( int ) 0, size, fetch, TNL::MinWithArg<>{} );
-      EXPECT_EQ( res.first, 1 );
-      EXPECT_EQ( res.second, 0 );
-   }
+   ReduceTest_minWithArg< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, maxWithArg )
 {
-   using Array = Containers::Array< int, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Devices::Host >( ( int ) 0, size, fetch, TNL::MaxWithArg<>{} );
-      EXPECT_EQ( res.first, size );
-      EXPECT_EQ( res.second, size - 1 );
-   }
+   ReduceTest_maxWithArg< typename TestFixture::DeviceType >();
 }
-
 
 TYPED_TEST( ReduceTest, logicalAnd )
 {
-   using Array = Containers::Array< bool, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::LogicalAnd<>{} );
-      EXPECT_EQ( res, false );
-   }
+   ReduceTest_logicalAnd< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, logicalOr )
 {
-   using Array = Containers::Array< bool, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::LogicalOr<>{} );
-      EXPECT_EQ( res, true );
-   }
+   ReduceTest_logicalOr< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, bitAnd )
 {
-   using Array = Containers::Array< char, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::BitAnd<>{} );
-      EXPECT_EQ( res, 1 );
-   }
+   ReduceTest_bitAnd< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, bitOr )
 {
-   using Array = Containers::Array< char, Devices::Host >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 << ( idx % 8 );} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::BitOr<>{} );
-      EXPECT_EQ( res, ( char ) 255 );
-   }
+   ReduceTest_bitOr< typename TestFixture::DeviceType >();
 }
 
 #endif

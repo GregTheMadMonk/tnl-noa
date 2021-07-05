@@ -70,7 +70,7 @@ struct Reduction< Devices::Sequential >
            const Index end,
            Fetch&& fetch,
            Reduce&& reduce,
-           const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+           const Result& zero );
 
    /**
     * \brief Computes sequentially reduction on CPU and returns position of an element of interest.
@@ -102,7 +102,7 @@ struct Reduction< Devices::Sequential >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+                       const Result& zero );
 };
 
 template<>
@@ -136,7 +136,7 @@ struct Reduction< Devices::Host >
            const Index end,
            Fetch&& fetch,
            Reduce&& reduce,
-           const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+           const Result& zero );
 
    /**
     * \brief Computes reduction on CPU and returns position of an element of interest.
@@ -168,7 +168,7 @@ struct Reduction< Devices::Host >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+                       const Result& zero );
 };
 
 template<>
@@ -201,7 +201,7 @@ struct Reduction< Devices::Cuda >
            const Index end,
            Fetch&& fetch,
            Reduce&& reduce,
-           const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+           const Result& zero );
 
    /**
     * \brief Computes reduction on GPU and returns position of an element of interest.
@@ -234,7 +234,7 @@ struct Reduction< Devices::Cuda >
                        const Index end,
                        Fetch&& fetch,
                        Reduce&& reduce,
-                       const Result& zero = Reduce::template getIdempotent< DeviceType >() );
+                       const Result& zero );
 };
 
       } // namespace detail
