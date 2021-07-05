@@ -89,6 +89,40 @@ TYPED_TEST( ReduceTest, max )
    }
 }
 
+TYPED_TEST( ReduceTest, minWithArg )
+{
+   using Array = Containers::Array< int, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduceWithArgument< Devices::Host >( ( int ) 0, size, fetch, TNL::MinWithArg<>{} );
+      EXPECT_EQ( res.first, 1 );
+      EXPECT_EQ( res.second, 0 );
+   }
+}
+
+TYPED_TEST( ReduceTest, maxWithArg )
+{
+   using Array = Containers::Array< int, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduceWithArgument< Devices::Host >( ( int ) 0, size, fetch, TNL::MaxWithArg<>{} );
+      EXPECT_EQ( res.first, size );
+      EXPECT_EQ( res.second, size - 1 );
+   }
+}
+
 
 TYPED_TEST( ReduceTest, logicalAnd )
 {
