@@ -71,6 +71,17 @@ struct Multiplies
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs * rhs; }
 };
 
+template<>
+struct Multiplies< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return ( T ) 1; };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs * rhs; }
+};
+
+
 template< typename Value = void >
 struct Min
 {
@@ -81,6 +92,17 @@ struct Min
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs < rhs ? lhs : rhs; }
 };
 
+template<>
+struct Min< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return std::numeric_limits< T >::max(); };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs < rhs ? lhs : rhs; }
+};
+
+
 template< typename Value = void >
 struct Max
 {
@@ -89,6 +111,16 @@ struct Max
    static constexpr ValueType idempotent = std::numeric_limits< Value >::min();
 
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs > rhs ? lhs : rhs; }
+};
+
+template<>
+struct Max< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return std::numeric_limits< T >::min(); };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs > rhs ? lhs : rhs; }
 };
 
 template< typename Value = void >
@@ -101,6 +133,16 @@ struct LogicalAnd
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs && rhs; }
 };
 
+template<>
+struct LogicalAnd< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return ( T ) true; };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs && rhs; }
+};
+
 template< typename Value = void >
 struct LogicalOr
 {
@@ -110,6 +152,16 @@ struct LogicalOr
 
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs || rhs; }
 };
+template<>
+struct LogicalOr< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return ( T ) false; };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs || rhs; }
+};
+
 
 template< typename Value = void >
 struct BitAnd
@@ -121,6 +173,16 @@ struct BitAnd
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs & rhs; }
 };
 
+template<>
+struct BitAnd< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return ~static_cast< T >( 0 ); };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs & rhs; }
+};
+
 template< typename Value = void >
 struct BitOr
 {
@@ -130,5 +192,16 @@ struct BitOr
 
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs | rhs; }
 };
+
+template<>
+struct BitOr< void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return static_cast< T >( 0 ); };
+
+   template< typename T >
+   constexpr T operator()( const T& lhs, const T& rhs ) { return lhs | rhs; }
+};
+
 
 } // namespace TNL
