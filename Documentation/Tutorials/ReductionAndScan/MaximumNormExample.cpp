@@ -12,8 +12,8 @@ double maximumNorm( const Vector< double, Device >& v )
 {
    auto view = v.getConstView();
    auto fetch = [=] __cuda_callable__ ( int i ) { return abs( view[ i ] ); };
-   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return max( a, b ); };
-   return Reduction< Device >::reduce( 0, view.getSize(), fetch, reduce, 0.0 );
+   auto reduction = [] __cuda_callable__ ( const double& a, const double& b ) { return max( a, b ); };
+   return reduce< Device >( 0, view.getSize(), fetch, reduction, 0.0 );
 }
 
 int main( int argc, char* argv[] )

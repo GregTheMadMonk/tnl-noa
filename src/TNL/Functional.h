@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <limits>
 
 namespace TNL {

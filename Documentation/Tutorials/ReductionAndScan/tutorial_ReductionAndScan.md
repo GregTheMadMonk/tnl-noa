@@ -34,7 +34,7 @@ Putting everything together gives the following example:
 
 Since TNL vectors cannot be pass to CUDA kernels and so they cannot be captured by CUDA lambdas, we must first get vector view from the vector using a method `getConstView()`.
 
-Note tha we pass `0.0` as the last argument of the method `Reduction< Device >::reduce`. It is an *idempotent element* (see [Idempotence](https://cs.wikipedia.org/wiki/Idempotence)). It is an element which, for given operation, does not change the result. For addition, it is zero. The result looks as follows.
+Note tha we pass `0.0` as the last argument of the method `reduce< Device >`. It is an *idempotent element* (see [Idempotence](https://cs.wikipedia.org/wiki/Idempotence)). It is an element which, for given operation, does not change the result. For addition, it is zero. The result looks as follows.
 
 \include SumExample.out
 

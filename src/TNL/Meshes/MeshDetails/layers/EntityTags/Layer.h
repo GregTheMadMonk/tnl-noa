@@ -137,8 +137,8 @@ public:
       {
          return bool(tags_view[ entityIndex ] & EntityTags::GhostEntity);
       };
-      const GlobalIndexType boundaryEntities = Algorithms::Reduction< Device >::reduce( (GlobalIndexType) 0, tags.getSize(), is_boundary, std::plus<>{}, (GlobalIndexType) 0 );
-      const GlobalIndexType ghostEntities = Algorithms::Reduction< Device >::reduce( (GlobalIndexType) 0, tags.getSize(), is_ghost, std::plus<>{}, (GlobalIndexType) 0 );
+      const GlobalIndexType boundaryEntities = Algorithms::reduce< Device >( (GlobalIndexType) 0, tags.getSize(), is_boundary, std::plus<>{}, (GlobalIndexType) 0 );
+      const GlobalIndexType ghostEntities = Algorithms::reduce< Device >( (GlobalIndexType) 0, tags.getSize(), is_ghost, std::plus<>{}, (GlobalIndexType) 0 );
 
       interiorIndices.setSize( tags.getSize() - boundaryEntities );
       boundaryIndices.setSize( boundaryEntities );
