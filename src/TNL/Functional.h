@@ -12,35 +12,11 @@
 
 namespace TNL {
 
-/*template< typename Value,
-          int size = sizeof( Value ) >
-struct AllBitsTrue
-{
-   static constexpr Value aux = AllBitsTrue< Value, size - 1 >::value << 8;
-   static constexpr Value value = ( Value ) aux | 0xff;
-};
-
-template< typename Value >
-struct AllBitsTrue< Value, 1 >
-{
-   static constexpr Value value = ( Value ) 0xff;
-};
-
-template< typename Value,
-          int size = sizeof( Value ) >
-struct AllBitsFalse
-{
-   static constexpr Value aux = AllBitsFalse< Value, size - 1 >::value << 8;
-   static constexpr Value value = ( Value ) aux | 0x00;
-};
-
-template< typename Value >
-struct AllBitsFalse< Value, 1 >
-{
-   static constexpr Value value = ( Value ) 0x00;
-};*/
-
-
+/**
+ * \brief Replacement of std::plus which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct Plus
 {
@@ -51,6 +27,11 @@ struct Plus
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs + rhs; }
 };
 
+/**
+ * \brief Replacement of std::plus which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct Plus< void >
 {
@@ -61,6 +42,11 @@ struct Plus< void >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs + rhs; }
 };
 
+/**
+ * \brief Replacement of std::multiplies which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct Multiplies
 {
@@ -71,6 +57,11 @@ struct Multiplies
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs * rhs; }
 };
 
+/**
+ * \brief Replacement of std::multiplies which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct Multiplies< void >
 {
@@ -82,6 +73,11 @@ struct Multiplies< void >
 };
 
 
+/**
+ * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct Min
 {
@@ -92,6 +88,11 @@ struct Min
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs < rhs ? lhs : rhs; }
 };
 
+/**
+ * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct Min< void >
 {
@@ -103,6 +104,11 @@ struct Min< void >
 };
 
 
+/**
+ * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct Max
 {
@@ -113,6 +119,11 @@ struct Max
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs > rhs ? lhs : rhs; }
 };
 
+/**
+ * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct Max< void >
 {
@@ -123,6 +134,11 @@ struct Max< void >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs > rhs ? lhs : rhs; }
 };
 
+/**
+ * \brief Replacement of std::logical_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct LogicalAnd
 {
@@ -133,6 +149,11 @@ struct LogicalAnd
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs && rhs; }
 };
 
+/**
+ * \brief Replacement of std::logical_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct LogicalAnd< void >
 {
@@ -143,6 +164,11 @@ struct LogicalAnd< void >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs && rhs; }
 };
 
+/**
+ * \brief Replacement of std::logical_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct LogicalOr
 {
@@ -152,6 +178,12 @@ struct LogicalOr
 
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs || rhs; }
 };
+
+/**
+ * \brief Replacement of std::logical_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct LogicalOr< void >
 {
@@ -163,6 +195,11 @@ struct LogicalOr< void >
 };
 
 
+/**
+ * \brief Replacement of std::bit_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct BitAnd
 {
@@ -173,6 +210,11 @@ struct BitAnd
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs & rhs; }
 };
 
+/**
+ * \brief Replacement of std::bit_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct BitAnd< void >
 {
@@ -183,6 +225,11 @@ struct BitAnd< void >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs & rhs; }
 };
 
+/**
+ * \brief Replacement of std::bit_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * \tparam Value is data type.
+ */
 template< typename Value = void >
 struct BitOr
 {
@@ -193,6 +240,11 @@ struct BitOr
    constexpr Value operator()( const Value& lhs, const Value& rhs ) { return lhs | rhs; }
 };
 
+/**
+ * \brief Replacement of std::bit_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
 template<>
 struct BitOr< void >
 {
@@ -202,6 +254,5 @@ struct BitOr< void >
    template< typename T >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs | rhs; }
 };
-
 
 } // namespace TNL
