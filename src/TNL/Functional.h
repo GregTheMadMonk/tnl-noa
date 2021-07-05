@@ -72,7 +72,6 @@ struct Multiplies< void >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs * rhs; }
 };
 
-
 /**
  * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduce.
  *
@@ -132,6 +131,110 @@ struct Max< void >
 
    template< typename T >
    constexpr T operator()( const T& lhs, const T& rhs ) { return lhs > rhs ? lhs : rhs; }
+};
+
+/**
+ * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ *
+ * \tparam Value is data type.
+ */
+template< typename Value = void, typename Index = void >
+struct MinWithArg
+{
+   using ValueType = Value;
+
+   static constexpr ValueType idempotent = std::numeric_limits< Value >::max();
+
+   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx )
+   {
+      if( lhs > rhs )
+      {
+         lhs = rhs;
+         lhsIdx = rhsIdx;
+      }
+      else if( lhs == rhs && rhsIdx < lhsIdx )
+      {
+         lhsIdx = rhsIdx;
+      }
+   }
+};
+
+/**
+ * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
+template<>
+struct MinWithArg< void, void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return std::numeric_limits< T >::max(); };
+
+   template< typename Value, typename Index >
+   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx )
+   {
+      if( lhs > rhs )
+      {
+         lhs = rhs;
+         lhsIdx = rhsIdx;
+      }
+      else if( lhs == rhs && rhsIdx < lhsIdx )
+      {
+         lhsIdx = rhsIdx;
+      }
+   }
+};
+
+/**
+ * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ *
+ * \tparam Value is data type.
+ */
+template< typename Value = void, typename Index = void >
+struct MaxWithArg
+{
+   using ValueType = Value;
+
+   static constexpr ValueType idempotent = std::numeric_limits< Value >::min();
+
+   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx )
+   {
+      if( lhs < rhs )
+      {
+         lhs = rhs;
+         lhsIdx = rhsIdx;
+      }
+      else if( lhs == rhs && rhsIdx < lhsIdx )
+      {
+         lhsIdx = rhsIdx;
+      }
+   }
+};
+
+/**
+ * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ *
+ * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ */
+template<>
+struct MaxWithArg< void, void >
+{
+   template< typename T >
+   static constexpr T getIdempotent() { return std::numeric_limits< T >::min(); };
+
+   template< typename Value, typename Index >
+   constexpr void operator()( Value& lhs, const Value& rhs, Index& lhsIdx, const Index& rhsIdx )
+   {
+      if( lhs < rhs )
+      {
+         lhs = rhs;
+         lhsIdx = rhsIdx;
+      }
+      else if( lhs == rhs && rhsIdx < lhsIdx )
+      {
+         lhsIdx = rhsIdx;
+      }
+   }
 };
 
 /**
