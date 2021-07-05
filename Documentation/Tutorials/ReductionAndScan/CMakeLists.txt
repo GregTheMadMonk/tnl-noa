@@ -1,45 +1,48 @@
-IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( SumExample SumExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SumExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SumExample.out OUTPUT SumExample.out )
-   CUDA_ADD_EXECUTABLE( ProductExample ProductExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ProductExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ProductExample.out OUTPUT ProductExample.out )
-   CUDA_ADD_EXECUTABLE( ScalarProductExample ScalarProductExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ScalarProductExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ScalarProductExample.out OUTPUT ScalarProductExample.out )
-   CUDA_ADD_EXECUTABLE( MaximumNormExample MaximumNormExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MaximumNormExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MaximumNormExample.out OUTPUT MaximumNormExample.out )
-   CUDA_ADD_EXECUTABLE( ComparisonExample ComparisonExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ComparisonExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ComparisonExample.out OUTPUT ComparisonExample.out )
-   CUDA_ADD_EXECUTABLE( UpdateAndResidueExample UpdateAndResidueExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND UpdateAndResidueExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/UpdateAndResidueExample.out OUTPUT UpdateAndResidueExample.out )
-   CUDA_ADD_EXECUTABLE( MapReduceExample-1 MapReduceExample-1.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-1 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MapReduceExample-1.out OUTPUT MapReduceExample-1.out )
-   CUDA_ADD_EXECUTABLE( MapReduceExample-2 MapReduceExample-2.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-2 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MapReduceExample-2.out OUTPUT MapReduceExample-2.out )
-   CUDA_ADD_EXECUTABLE( MapReduceExample-3 MapReduceExample-3.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-3 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/MapReduceExample-3.out OUTPUT MapReduceExample-3.out )
-   CUDA_ADD_EXECUTABLE( ReductionWithArgument ReductionWithArgument.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ReductionWithArgument > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ReductionWithArgument.out OUTPUT ReductionWithArgument.out )
-   CUDA_ADD_EXECUTABLE( ScanExample ScanExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ScanExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ScanExample.out OUTPUT ScanExample.out )
-   CUDA_ADD_EXECUTABLE( ExclusiveScanExample ExclusiveScanExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND ExclusiveScanExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ExclusiveScanExample.out OUTPUT ExclusiveScanExample.out )
-   CUDA_ADD_EXECUTABLE( SegmentedScanExample SegmentedScanExample.cu )
-   ADD_CUSTOM_COMMAND( COMMAND SegmentedScanExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/SegmentedScanExample.out OUTPUT SegmentedScanExample.out )
-ENDIF()
+set( COMMON_EXAMPLES
+     SumExample
+     SumExampleWithFunctional
+     ProductExample
+     ScalarProductExample
+     MaximumNormExample
+     ComparisonExample
+     UpdateAndResidueExample
+     MapReduceExample-1
+     MapReduceExample-2
+     MapReduceExample-3
+     ReductionWithArgument
+     ReductionWithArgumentWithFunctional
+     ScanExample
+     ExclusiveScanExample
+     SegmentedScanExample
+)
+
+if( BUILD_CUDA )
+   foreach( target IN ITEMS ${COMMON_EXAMPLES} )
+      cuda_add_executable( ${target}-cuda ${target}.cu OPTIONS )
+      add_custom_command( COMMAND ${target}-cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${target}.out )
+   endforeach()
+   foreach( target IN ITEMS ${LONG_EXAMPLES} )
+      cuda_add_executable( ${target}-cuda ${target}.cu OPTIONS )
+      #add_custom_command( COMMAND ${target}-cuda > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      #set( CUDA_OUTPUTS ${CUDA_OUTPUTS} ${target}.out )
+   endforeach()
+else()
+   foreach( target IN ITEMS ${COMMON_EXAMPLES} )
+      add_executable( ${target} ${target}.cpp )
+      add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+   endforeach()
+   foreach( target IN ITEMS ${LONG_EXAMPLES} )
+      add_executable( ${target} ${target}.cpp )
+      #add_custom_command( COMMAND ${target} > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/${target}.out OUTPUT ${target}.out )
+      #set( HOST_OUTPUTS ${HOST_OUTPUTS} ${target}.out )
+   endforeach()
+endif()
+
 
 IF( BUILD_CUDA )
-ADD_CUSTOM_TARGET( TutorialsReduction-cuda ALL DEPENDS
-   SumExample.out
-   ProductExample.out
-   ScalarProductExample.out
-   MaximumNormExample.out
-   ComparisonExample.out
-   UpdateAndResidueExample.out
-   MapReduceExample-1.out
-   MapReduceExample-2.out
-   MapReduceExample-3.out
-   ReductionWithArgument.out
-   ScanExample.out
-   ExclusiveScanExample.out
-   SegmentedScanExample.out )
+   ADD_CUSTOM_TARGET( RunTutorialsReductionAndScanExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
+ELSE()
+   ADD_CUSTOM_TARGET( RunTutorialsReductionAndScanExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()
