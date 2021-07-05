@@ -26,7 +26,7 @@ TEST( ReduceTest, sum )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
-   for( int size = 100; size <= 1000; size *= 10 )
+   for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
       a.setValue( 1 );
@@ -35,10 +35,105 @@ TEST( ReduceTest, sum )
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
       auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Plus<>{} );
       EXPECT_EQ( res, size );
-
    }
 }
 
+TEST( ReduceTest, min )
+{
+   using Array = Containers::Array< int, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Min<>{} );
+      EXPECT_EQ( res, 1 );
+   }
+}
+
+TEST( ReduceTest, max )
+{
+   using Array = Containers::Array< int, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::Max<>{} );
+      EXPECT_EQ( res, size );
+   }
+}
+
+
+TEST( ReduceTest, logicalAnd )
+{
+   using Array = Containers::Array< bool, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::LogicalAnd<>{} );
+      EXPECT_EQ( res, false );
+   }
+}
+
+TEST( ReduceTest, logicalOr )
+{
+   using Array = Containers::Array< bool, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::LogicalOr<>{} );
+      EXPECT_EQ( res, true );
+   }
+}
+
+TEST( ReduceTest, bitAnd )
+{
+   using Array = Containers::Array< char, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::BitAnd<>{} );
+      EXPECT_EQ( res, 1 );
+   }
+}
+
+TEST( ReduceTest, bitOr )
+{
+   using Array = Containers::Array< char, Devices::Host >;
+   Array a;
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 << ( idx % 8 );} );
+      auto a_view = a.getView();
+
+      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
+      auto res = Algorithms::reduce< Devices::Host >( ( int ) 0, size, fetch, TNL::BitOr<>{} );
+      EXPECT_EQ( res, ( char ) 255 );
+   }
+}
 
 #endif
 
