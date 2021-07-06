@@ -24,7 +24,7 @@ double sum( const Vector< double, Device >& v )
     * Finally we call the templated function Reduction and pass number of elements to reduce,
     * lambda defined above and functional representing the reduction operation.
     */
-   return reduce< Device >( 0, view.getSize(), fetch, TNL::Plus<>{} );
+   return reduce< Device >( 0, view.getSize(), fetch, TNL::Plus{} );
 }
 
 int main( int argc, char* argv[] )

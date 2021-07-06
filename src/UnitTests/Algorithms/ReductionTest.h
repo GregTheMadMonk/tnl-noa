@@ -35,7 +35,7 @@ void ReduceTest_sum()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Plus<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Plus{} );
       EXPECT_EQ( res, size );
    }
 }
@@ -52,7 +52,7 @@ void ReduceTest_min()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Min<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Min{} );
       EXPECT_EQ( res, 1 );
    }
 }
@@ -69,7 +69,7 @@ void ReduceTest_max()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Max<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Max{} );
       EXPECT_EQ( res, size );
    }
 }
@@ -86,7 +86,7 @@ void ReduceTest_minWithArg()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MinWithArg<>{} );
+      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MinWithArg{} );
       EXPECT_EQ( res.first, 1 );
       EXPECT_EQ( res.second, 0 );
    }
@@ -104,7 +104,7 @@ void ReduceTest_maxWithArg()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MaxWithArg<>{} );
+      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MaxWithArg{} );
       EXPECT_EQ( res.first, size );
       EXPECT_EQ( res.second, size - 1 );
    }
@@ -122,7 +122,7 @@ void ReduceTest_logicalAnd()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalAnd<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalAnd{} );
       EXPECT_EQ( res, false );
    }
 }
@@ -139,7 +139,7 @@ void ReduceTest_logicalOr()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalOr<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalOr{} );
       EXPECT_EQ( res, true );
    }
 }
@@ -156,7 +156,7 @@ void ReduceTest_bitAnd()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitAnd<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitAnd{} );
       EXPECT_EQ( res, 1 );
    }
 }
@@ -173,7 +173,7 @@ void ReduceTest_bitOr()
       auto a_view = a.getView();
 
       auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitOr<>{} );
+      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitOr{} );
       EXPECT_EQ( res, ( char ) 255 );
    }
 }

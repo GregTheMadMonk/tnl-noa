@@ -19,7 +19,7 @@ double scalarProduct( const Vector< double, Device >& u, const Vector< double, D
    return reduce< Device >(
       0, v_view.getSize(),
       [=] __cuda_callable__ ( int i ) { return u_view[ i ] * v_view[ i ]; },
-      TNL::Plus<>{} );
+      TNL::Plus{} );
 }
 
 int main( int argc, char* argv[] )

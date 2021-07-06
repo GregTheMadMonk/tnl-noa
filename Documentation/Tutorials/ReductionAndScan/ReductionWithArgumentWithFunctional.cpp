@@ -14,7 +14,7 @@ maximumNorm( const Vector< double, Device >& v )
    auto view = v.getConstView();
 
    auto fetch = [=] __cuda_callable__ ( int i ) { return abs( view[ i ] ); };
-   return reduceWithArgument< Device >( 0, view.getSize(), fetch, TNL::MaxWithArg<>{} );
+   return reduceWithArgument< Device >( 0, view.getSize(), fetch, TNL::MaxWithArg{} );
 }
 
 int main( int argc, char* argv[] )

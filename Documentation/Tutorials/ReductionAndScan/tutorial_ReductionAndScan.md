@@ -169,18 +169,18 @@ This example also shows more compact how to evoke the function `reduce` (lines 1
 
 In \ref TNL/Functionals.h you may find probably all operations that can be reasonably used for reduction:
 
-| Functional                        | Reduction operation      |
-|-----------------------------------|--------------------------|
-| \ref TNL::Plus<>                  | Sum                      |
-| \ref TNL::Multiplies<>            | Product                  |
-| \ref TNL::Min<>                   | Minimum                  |
-| \ref TNL::Max<>                   | Maximum                  |
-| \ref TNL::MinWithArg<>            | Minimum with argument    |
-| \ref TNL::MaxWithArg<>            | Maximum with argument    |
-| \ref TNL::LogicalAnd<>            | Logical AND              |
-| \ref TNL::LogicalOr<>             | Logical OR               |
-| \ref TNL::BitAnd<>                | Bit AND                  |
-| \ref TNL::BitOr<>                 | Bit OR                   |
+| Functional                      | Reduction operation      |
+|---------------------------------|--------------------------|
+| \ref TNL::Plus                  | Sum                      |
+| \ref TNL::Multiplies            | Product                  |
+| \ref TNL::Min                   | Minimum                  |
+| \ref TNL::Max                   | Maximum                  |
+| \ref TNL::MinWithArg            | Minimum with argument    |
+| \ref TNL::MaxWithArg            | Maximum with argument    |
+| \ref TNL::LogicalAnd            | Logical AND              |
+| \ref TNL::LogicalOr             | Logical OR               |
+| \ref TNL::BitAnd                | Bit AND                  |
+| \ref TNL::BitOr                 | Bit OR                   |
 
 ## Flexible scan
 
