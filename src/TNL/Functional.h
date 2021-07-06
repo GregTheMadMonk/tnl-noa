@@ -15,7 +15,7 @@
 namespace TNL {
 
 /**
- * \brief Replacement of std::plus which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::plus optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -30,7 +30,7 @@ struct Plus
 };
 
 /**
- * \brief Replacement of std::plus which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::plus optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -45,7 +45,7 @@ struct Plus< void >
 };
 
 /**
- * \brief Replacement of std::multiplies which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::multiplies optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -60,7 +60,7 @@ struct Multiplies
 };
 
 /**
- * \brief Replacement of std::multiplies which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::multiplies optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -75,7 +75,7 @@ struct Multiplies< void >
 };
 
 /**
- * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::min optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -90,7 +90,7 @@ struct Min
 };
 
 /**
- * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::min optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -106,7 +106,7 @@ struct Min< void >
 
 
 /**
- * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::max optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -121,7 +121,7 @@ struct Max
 };
 
 /**
- * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::max optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -136,7 +136,7 @@ struct Max< void >
 };
 
 /**
- * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Replacement of std::min optimized for use with \ref TNL::Algorithms::reduceWithArgument.
  *
  * \tparam Value is data type.
  */
@@ -162,7 +162,7 @@ struct MinWithArg
 };
 
 /**
- * \brief Replacement of std::min which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Replacement of std::min optimized for use with \ref TNL::Algorithms::reduceWithArgument.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -188,7 +188,7 @@ struct MinWithArg< void, void >
 };
 
 /**
- * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Replacement of std::max optimized for use with \ref TNL::Algorithms::reduceWithArgument.
  *
  * \tparam Value is data type.
  */
@@ -214,7 +214,7 @@ struct MaxWithArg
 };
 
 /**
- * \brief Replacement of std::max which is optimized for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Replacement of std::max optimized for use with \ref TNL::Algorithms::reduceWithArgument.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -240,7 +240,7 @@ struct MaxWithArg< void, void >
 };
 
 /**
- * \brief Replacement of std::logical_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::logical_and optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -255,7 +255,7 @@ struct LogicalAnd
 };
 
 /**
- * \brief Replacement of std::logical_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::logical_and optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -270,7 +270,7 @@ struct LogicalAnd< void >
 };
 
 /**
- * \brief Replacement of std::logical_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::logical_or optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -285,7 +285,7 @@ struct LogicalOr
 };
 
 /**
- * \brief Replacement of std::logical_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::logical_or optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -301,7 +301,7 @@ struct LogicalOr< void >
 
 
 /**
- * \brief Replacement of std::bit_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::bit_and optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -316,7 +316,7 @@ struct BitAnd
 };
 
 /**
- * \brief Replacement of std::bit_and which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::bit_and optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
@@ -331,7 +331,7 @@ struct BitAnd< void >
 };
 
 /**
- * \brief Replacement of std::bit_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::bit_or optimized for use with \ref TNL::Algorithms::reduce.
  *
  * \tparam Value is data type.
  */
@@ -346,7 +346,7 @@ struct BitOr
 };
 
 /**
- * \brief Replacement of std::bit_or which is optimized for use with \ref TNL::Algorithms::reduce.
+ * \brief Replacement of std::bit_or optimized for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
