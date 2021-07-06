@@ -3,6 +3,7 @@ set( COMMON_EXAMPLES
      SumExampleWithFunctional
      ProductExample
      ScalarProductExample
+     ScalarProductWithFunctionalExample
      MaximumNormExample
      ComparisonExample
      UpdateAndResidueExample

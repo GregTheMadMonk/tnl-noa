@@ -14,11 +14,11 @@ We will explain the *flexible parallel reduction* on several examples. We start 
 
 We start with simple problem of computing sum of sequence of numbers \f[ s = \sum_{i=1}^n a_i. \f] Sequentialy, such sum can be computed very easily as follows:
 
-\include SequentialSum.cpp
+\includelineno SequentialSum.cpp
 
 Doing the same in CUDA for GPU is, however, much more difficult (see. [Optimizing Parallel Reduction in CUDA](https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf)). The final code has tens of lines and it is something you do not want to write again and again anytime you need to sum a series of numbers. Using TNL and C++ lambda functions we may do the same on few lines of code efficiently and independently on the hardware beneath. Let us first rewrite the previous example using the C++ lambda functions:
 
-\include SequentialSumWithLambdas.cpp
+\includelineno SequentialSumWithLambdas.cpp
 
 As can be seen, we split the reduction into two steps:
 
@@ -26,15 +26,15 @@ As can be seen, we split the reduction into two steps:
    1. Connect the reduction algorithm with given input arrays or vectors (or any other data structure).
    2. Perform operation you need to do with the input data.
    3. Perform another secondary operation simoultanously with the parallel reduction.
-2. `reduce` is operation we want to do after the data fetch. Usually it is summation, multiplication, evaluation of minimum or maximum or some logical operation.
+2. `reduction` is operation we want to do after the data fetch. Usually it is summation, multiplication, evaluation of minimum or maximum or some logical operation.
 
 Putting everything together gives the following example:
 
-\include SumExample.cpp
+\includelineno SumExample.cpp
 
 Since TNL vectors cannot be pass to CUDA kernels and so they cannot be captured by CUDA lambdas, we must first get vector view from the vector using a method `getConstView()`.
 
-Note tha we pass `0.0` as the last argument of the method `reduce< Device >`. It is an *idempotent element* (see [Idempotence](https://cs.wikipedia.org/wiki/Idempotence)). It is an element which, for given operation, does not change the result. For addition, it is zero. The result looks as follows.
+Note tha we pass `0.0` as the last argument of the template function `reduce< Device >`. It is an *idempotent element* (see [Idempotence](https://cs.wikipedia.org/wiki/Idempotence)). It is an element which, for given operation, does not change the result. For addition, it is zero. The result looks as follows.
 
 \include SumExample.out
 
@@ -42,9 +42,9 @@ Sum of vector elements can be also obtained as [`sum(v)`](../html/namespaceTNL.h
 
 ### Product
 
-To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+b` with `a*b` in the definition of `reduce`. We get the following code:
+To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+b` with `a*b` in the definition of `reduction`. We get the following code:
 
-\include ProductExample.cpp
+\includelineno ProductExample.cpp
 
 leading to output like this:
 
@@ -56,7 +56,7 @@ Product of vector elements can be computed using fuction [`product(v)`](../html/
 
 One of the most important operation in the linear algebra is the scalar product of two vectors. Compared to coputing the sum of vector elements we must change the function `fetch` to read elements from both vectors and multiply them. See the following example.
 
-\include ScalarProductExample.cpp
+\includelineno ScalarProductExample.cpp
 
 The result is:
 
@@ -64,11 +64,11 @@ The result is:
 
 Scalar product of vectors `u` and `v` in TNL can be computed by \ref TNL::dot "TNL::dot(u, v)" or simply as \ref TNL::Containers::operator, "(u, v)".
 
-### Maxium norm
+### Maximum norm
 
-Maximum norm of a vector equals modulus of the vector largest element.  Therefore, `fetch` must return the absolute value of the vector elements and `reduce` wil return maximum of given values. Look at the following example.
+Maximum norm of a vector equals modulus of the vector largest element.  Therefore, `fetch` must return the absolute value of the vector elements and `reduction` wil return maximum of given values. Look at the following example.
 
-\include MaximumNormExample.cpp
+\includelineno MaximumNormExample.cpp
 
 The output is:
 
@@ -78,9 +78,9 @@ Maximum norm in TNL is computed by the function \ref TNL::maxNorm.
 
 ### Vectors comparison
 
-Comparison of two vectors involve (parallel) reduction as well. The `fetch` part is responsible for comparison of corresponding vector elements result of which is boolean `true` or `false` for each vector elements. The `reduce` part must perform logical and operation on all of them. We must not forget to change the *idempotent element* to `true`. The code may look as follows:
+Comparison of two vectors involve (parallel) reduction as well. The `fetch` part is responsible for comparison of corresponding vector elements result of which is boolean `true` or `false` for each vector elements. The `reduction` part must perform logical and operation on all of them. We must not forget to change the *idempotent element* to `true`. The code may look as follows:
 
-\include ComparisonExample.cpp
+\includelineno ComparisonExample.cpp
 
 And the output looks as:
 
@@ -96,7 +96,7 @@ In iterative solvers we often need to update a vector and compute the update nor
 
 Together with the vector addition, we may want to compute also \f$L_2\f$-norm of \f$\Delta \bf u\f$ which may indicate convergence. Computing first the addition and then the norm would be inefficient because we would have to fetch the vector \f$\Delta \bf u\f$ twice from the memory. The following example shows how to do the addition and norm computation at the same time.
 
-\include UpdateAndResidueExample.cpp
+\includelineno UpdateAndResidueExample.cpp
 
 The result reads as:
 
@@ -112,7 +112,7 @@ return u_view[ i ] > 0.0 ? u_view[ i ] : 0.0;
 
 to sum up only the positive numbers in the vector.
 
-\include MapReduceExample-1.cpp
+\includelineno MapReduceExample-1.cpp
 
 The result is:
 
@@ -120,7 +120,7 @@ The result is:
 
 Take a look at the following example where the filtering depends on the element indexes rather than values:
 
-\include MapReduceExample-2.cpp
+\includelineno MapReduceExample-2.cpp
 
 The result is:
 
@@ -134,27 +134,53 @@ return u_view[ 2 * i ];
 
 See the following example and compare the execution times.
 
-\include MapReduceExample-3.cpp
+\includelineno MapReduceExample-3.cpp
 
 \include MapReduceExample-3.out
 
 ### Reduction with argument
 
-In some situations we may need to locate given element in the vector. For example index of the smallest or the largest element. `reductionWithArgument` is a function which can do it. In the following example, we modify function for computing the maximum norm of a vedctor. Instead of just computing the value, now we want to get index of the element having the absolute value equal to the max norm. The lambda function `reduction` do not compute only maximum of two given elements anymore, but it must also compute index of the winner. See the following code:
+In some situations we may need to locate given element in the vector. For example index of the smallest or the largest element. `reduceWithArgument` is a function which can do it. In the following example, we modify function for computing the maximum norm of a vector. Instead of just computing the value, now we want to get index of the element having the absolute value equal to the max norm. The lambda function `reduction` do not compute only maximum of two given elements anymore, but it must also compute index of the winner. See the following code:
 
-\include ReductionWithArgument.cpp
+\includelineno ReductionWithArgument.cpp
 
 The definition of the lambda function `reduction` reads as:
 
 ```
-auto reduction = [] __cuda_callable__ ( int& aIdx, const int& bIdx, double& a, const double& b );
+auto reduction = [] __cuda_callable__ ( double& a, const double& b, int& aIdx, const int& bIdx );
 ```
 
-In addition to vector elements valuesd `a` and `b`, it gets also their positions `aIdx` and `bIdx`. The functions is responsible to set `a` to maximum of the two and `aIdx` to the position of the larger element. Note, that the parameters have the above mentioned meaning only in case of computing minimum or maximum.
+In addition to vector elements values `a` and `b`, it gets also their positions `aIdx` and `bIdx`. The functions is responsible to set `a` to maximum of the two and `aIdx` to the position of the larger element. Note, that the parameters have the above mentioned meaning only in case of computing minimum or maximum.
 
 The result looks as:
 
 \include ReductionWithArgument.out
+
+### Using functionals for reduction
+
+You might notice, that the lambda function `reduction` does not take so many different form compared to fetch. In addition, setting the zero (or idempotent) element can be annoying especially when computing minimum or maximum and we need to check std::limits function to make the code working with any type. To make things simpler, TNL offers variants of several functionals known from STL. They can be used instead of the lambda function `reduction` and they also carry the idempotent element. See the following example showing the scalar product of two vectors, now with functional:
+
+\includelineno ScalarProductWithFunctionalExample.cpp
+
+
+This example also shows more compact how to evoke the function `reduce` (lines 19-22). This way, one should be able to perform (parallel) reduction very easily. The result looks as follows:
+
+\include ScalarProductWithFunctionalExample.out
+
+In \ref TNL/Functionals.h you may find probably all operations that can be reasonably used for reduction:
+
+| Functional                        | Reduction operation      |
+|-----------------------------------|--------------------------|
+| \ref TNL::Plus<>                  | Sum                      |
+| \ref TNL::Multiplies<>            | Product                  |
+| \ref TNL::Min<>                   | Minimum                  |
+| \ref TNL::Max<>                   | Maximum                  |
+| \ref TNL::MinWithArg<>            | Minimum with argument    |
+| \ref TNL::MaxWithArg<>            | Maximum with argument    |
+| \ref TNL::LogicalAnd<>            | Logical AND              |
+| \ref TNL::LogicalOr<>             | Logical OR               |
+| \ref TNL::BitAnd<>                | Bit AND                  |
+| \ref TNL::BitOr<>                 | Bit OR                   |
 
 ## Flexible scan
 
@@ -192,7 +218,7 @@ and exclusive prefix sum of the same sequence is
 
 Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
 
-\include ScanExample.cpp
+\includelineno ScanExample.cpp
 
 Scan does not use `fetch` function because the scan must be performed on a vector (the first parameter we pass to the scan). Its complexity is also higher compared to reduction. Thus if one needs to do some operation with the vector elements before the scan, this can be done explicitly and it will not affect the performance significantlty. On the other hand, the scan function takes interval of the vector elements where the scan is performed as its second and third argument. The next argument is the operation to be performed by the scan and the last parameter is the idempotent ("zero") element if the operation.
 
@@ -203,12 +229,12 @@ The result looks as:
 Exclusive scan works the same way, we just need to specify it by the second template parameter which is set to `ScanType::Exclusive`. The call of the scan then looks as
 
 ```
-Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduce, 0.0 );
+Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduction, 0.0 );
 ```
 
 The complete example looks as follows:
 
-\include ExclusiveScanExample.cpp
+\includelineno ExclusiveScanExample.cpp
 
 And the result looks as:
 
@@ -242,7 +268,7 @@ In addition to common scan, we need to encode the segments of the input sequence
 ```
 **Note: Segmented scan is not implemented for CUDA yet.**
 
-\include SegmentedScanExample.cpp
+\includelineno SegmentedScanExample.cpp
 
 The result reads as:
 

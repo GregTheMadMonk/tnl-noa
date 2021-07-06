@@ -23,14 +23,14 @@ double sum( const Vector< double, Device >& v )
    /***
     * Reduction is sum of two numbers.
     */
-   auto reduce_ = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   auto reduction = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
 
    /***
     * Finally we call the templated function Reduction and pass number of elements to reduce,
     * lambdas defined above and finally value of idempotent element, zero in this case, which serve for the
     * reduction initiation.
     */
-   return reduce< Device >( 0, view.getSize(), fetch, reduce_, 0.0 );
+   return reduce< Device >( 0, view.getSize(), fetch, reduction, 0.0 );
 }
 
 int main( int argc, char* argv[] )
