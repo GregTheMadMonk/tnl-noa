@@ -28,6 +28,8 @@ Output is:
 
 Vector expressions work only with `VectorView` not with `Vector`. The expression is evaluated on the same device where the vectors are allocated, this is done automatically. One cannot, however, mix vectors from different devices in one expression. Vector expression may contain any common function like the following:
 
+| Function          | Meaning                                                     |
+|-------------------|-------------------------------------------------------------|
 | \ref TNL::min     | Minimas of input vector expressions elements.               |
 | \ref TNL::max     | Maximas of input vector expressions elements.               |
 | \ref TNL::abs     | Absolute values of input vector expression elements.        |
@@ -66,6 +68,8 @@ Output is:
 
 The following table shows vertical operations that can be used on vector expressions:
 
+| Function             | Meaning                                                                   |
+|----------------------|---------------------------------------------------------------------------|
 | \ref TNL::min        | Minimum of vector expression elements.                                    |
 | \ref TNL::argMin     | Minimum of vector expression elements with index of the smallest element. |
 | \ref TNL::max        | Maximum of vector expression elements.                                    |
