@@ -48,9 +48,9 @@ public:
 
    DistributedMatrix( DistributedMatrix& ) = default;
 
-   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group = MPI::AllGroup() );
+   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group );
 
-   void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group = MPI::AllGroup() );
+   void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group );
 
    const LocalRangeType& getLocalRowRange() const;
 

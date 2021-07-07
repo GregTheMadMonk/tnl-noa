@@ -133,9 +133,9 @@ inline bool Finalized()
 
 inline int GetRank( MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "GetRank cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "GetRank cannot be called with NullGroup" );
    int rank;
    MPI_Comm_rank( group, &rank );
    return rank;
@@ -146,9 +146,9 @@ inline int GetRank( MPI_Comm group = AllGroup() )
 
 inline int GetSize( MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "GetSize cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "GetSize cannot be called with NullGroup" );
    int size;
    MPI_Comm_size( group, &size );
    return size;
@@ -210,9 +210,9 @@ inline void Compute_dims( int nproc, int ndims, int* dims )
 
 inline void Barrier( MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Barrier cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Barrier cannot be called with NullGroup" );
    MPI_Barrier(group);
 #endif
 }
@@ -232,9 +232,9 @@ void Send( const T* data,
            int tag,
            MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Send cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Send cannot be called with NullGroup" );
    MPI_Send( (const void*) data, count, getDataType<T>(), dest, tag, group );
 #endif
 }
@@ -246,9 +246,9 @@ void Recv( T* data,
            int tag,
            MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Recv cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Recv cannot be called with NullGroup" );
    MPI_Recv( (void*) data, count, getDataType<T>(), src, tag, group, MPI_STATUS_IGNORE );
 #endif
 }
@@ -264,9 +264,9 @@ void Sendrecv( const T* sendData,
                int receiveTag,
                MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Sendrecv cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Sendrecv cannot be called with NullGroup" );
    MPI_Sendrecv( (void*) sendData,
                  sendCount,
                  getDataType<T>(),
@@ -291,9 +291,9 @@ MPI_Request Isend( const T* data,
                    int tag,
                    MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Isend cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Isend cannot be called with NullGroup" );
    MPI_Request req;
    MPI_Isend( (const void*) data, count, getDataType<T>(), dest, tag, group, &req );
    return req;
@@ -309,9 +309,9 @@ MPI_Request Irecv( T* data,
                    int tag,
                    MPI_Comm group = AllGroup() )
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Irecv cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Irecv cannot be called with NullGroup" );
    MPI_Request req;
    MPI_Irecv( (void*) data, count, getDataType<T>(), src, tag, group, &req );
    return req;
@@ -327,8 +327,8 @@ void Allreduce( const T* data,
                 const MPI_Op& op,
                 MPI_Comm group)
 {
-#ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
+#ifdef HAVE_MPI
    getTimerAllreduce().start();
    MPI_Allreduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, group );
    getTimerAllreduce().stop();
@@ -344,8 +344,8 @@ void Allreduce( T* data,
                 const MPI_Op& op,
                 MPI_Comm group)
 {
-#ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
+#ifdef HAVE_MPI
    getTimerAllreduce().start();
    MPI_Allreduce( MPI_IN_PLACE, (void*) data, count, getDataType<T>(), op, group );
    getTimerAllreduce().stop();
@@ -360,8 +360,8 @@ void Reduce( const T* data,
              int root,
              MPI_Comm group)
 {
-#ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Reduce cannot be called with NullGroup" );
+#ifdef HAVE_MPI
    MPI_Reduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, root, group );
 #else
    std::memcpy( (void*) reduced_data, (void*) data, count * sizeof(T) );
@@ -371,9 +371,9 @@ void Reduce( const T* data,
 template< typename T >
 void Bcast( T* data, int count, int root, MPI_Comm group)
 {
+   TNL_ASSERT_NE( group, NullGroup(), "Bcast cannot be called with NullGroup" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Bcast cannot be called with NullGroup" );
    MPI_Bcast( (void*) data, count, getDataType<T>(), root, group );
 #endif
 }
@@ -385,8 +385,8 @@ void Alltoall( const T* sendData,
                int receiveCount,
                MPI_Comm group )
 {
-#ifdef HAVE_MPI
    TNL_ASSERT_NE( group, NullGroup(), "Alltoall cannot be called with NullGroup" );
+#ifdef HAVE_MPI
    MPI_Alltoall( (const void*) sendData,
                  sendCount,
                  getDataType<T>(),
