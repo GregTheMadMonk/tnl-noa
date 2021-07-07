@@ -20,6 +20,7 @@
 #include <TNL/Containers/detail/ArrayIO.h>
 #include <TNL/Containers/detail/ArrayAssignment.h>
 #include <TNL/Allocators/Default.h>
+#include <TNL/MPI/getDataType.h>
 
 #include "ArrayView.h"
 
@@ -539,6 +540,16 @@ File& operator>>( File&& file, ArrayView< Value, Device, Index > view )
    File& f = file;
    return f >> view;
 }
+
+template< typename Value, typename Device, typename Index >
+void send( const ArrayView< Value, Device, Index >& view, int dest, int tag, MPI_Comm comm )
+{
+   TNL_ASSERT( false, "Does not work" );
+   auto size = view.getSize();
+   MPI_Send( ( const void* ) size, 1, MPI::getDataType< Index >(), dest, tag, comm );
+   MPI_Send( ( const void* ) view.getData(), view.getSize() * sizeof( Value ), MPI_BYTE, dest, tag, comm );
+}
+
 
 } // namespace Containers
 } // namespace TNL
