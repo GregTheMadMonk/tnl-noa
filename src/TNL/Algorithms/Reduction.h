@@ -257,7 +257,7 @@ reduceWithArgument( const Index begin,
                                                            end,
                                                            std::forward< Fetch >( fetch ),
                                                            std::forward< Reduce >( reduce ),
-                                                           std::remove_reference< Reduce >::type::template getIdempotent< Result >() );
+                                                           reduce.template getIdempotent< Result >() );
 }
 
    } // namespace Algorithms
