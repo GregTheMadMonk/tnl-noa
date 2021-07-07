@@ -17,7 +17,7 @@
 namespace TNL {
 
 /**
- * \brief Extension of std::plus for use with \ref TNL::Algorithms::reduce.
+ * \brief Extension of \ref std::plus<void> for use with \ref TNL::Algorithms::reduce.
  *
  * This is specialization for void type. The real type is deduced just when operator() is evoked.
  */
