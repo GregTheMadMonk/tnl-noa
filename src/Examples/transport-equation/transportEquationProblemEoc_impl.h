@@ -51,7 +51,7 @@ setup( const Config::ParameterContainer& parameters,
        ! this->differentialOperatorPointer->setup( this->getMesh(), parameters, prefix ) ||
        ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix + "boundary-conditions-" ) )
       return false;
-   
+
    /****
     * Render the exact solution
     */
@@ -69,7 +69,7 @@ setup( const Config::ParameterContainer& parameters,
       typedef Functions::OperatorFunction< HeavisideType, VectorNormType > InitialConditionType;
       String velocityFieldType = parameters.getParameter< String >( "velocity-field" );
       if( velocityFieldType == "constant" )
-      {      
+      {
          typedef Operators::Analytic::Shift< Dimension, RealType > ShiftOperatorType;
          typedef Functions::OperatorFunction< ShiftOperatorType, InitialConditionType > ExactSolutionType;
          Pointers::SharedPointer<  ExactSolutionType, Devices::Host > exactSolution;
@@ -87,20 +87,20 @@ setup( const Config::ParameterContainer& parameters,
          evaluator.evaluate( u, exactSolution, time );
          FileName fileName;
          fileName.setFileNameBase( "exact-u-" );
-         fileName.setExtension( "tnl" );
+         fileName.setExtension( "vti" );
          fileName.setIndex( step );
-         u->save( fileName.getFileName() );
+         u->write( "u", fileName.getFileName() );
          while( time < finalTime )
          {
             time += snapshotPeriod;
             if( time > finalTime )
                time = finalTime;
-            exactSolution->getOperator().setShift( time * velocity );            
+            exactSolution->getOperator().setShift( time * velocity );
             std::cerr << time * velocity << std::endl;
             std::cerr << exactSolution->getOperator().getShift() << std::endl;
             evaluator.evaluate( u, exactSolution, time );
             fileName.setIndex( ++step );
-            u->save( fileName.getFileName() );
+            u->write( "u", fileName.getFileName() );
          }
       }
       if( velocityFieldType == "rotation" )
@@ -108,7 +108,7 @@ setup( const Config::ParameterContainer& parameters,
          // TODO: implement this using RotationXY operator
       }
    }
-   
+
    return true;
 }
 
@@ -126,13 +126,9 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    //const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    FileName fileName;
    fileName.setFileNameBase( "exact-u-" );
-   fileName.setExtension( "tnl" );
-   fileName.setIndex( 0 );   
-   try
-   {
-      this->uPointer->boundLoad( fileName.getFileName() );
-   }
-   catch(...)
+   fileName.setExtension( "vti" );
+   fileName.setIndex( 0 );
+   if( ! Functions::readMeshFunction( *this->uPointer, "u", fileName.getFileName() ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << fileName.getFileName() << "." << std::endl;
       return false;

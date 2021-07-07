@@ -15,8 +15,8 @@
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
-   namespace Meshes {
-      namespace DistributedMeshes {
+namespace Meshes {
+namespace DistributedMeshes {
 
 /*
  * TODO: This could work when the MPI directions are rewritten
@@ -32,6 +32,9 @@ getOverlaps( const DistributedMeshType* distributedMesh,
              IndexType subdomainOverlapSize,
              const SubdomainOverlapsType& periodicBoundariesOverlapSize )
 {
+   // initialize to 0
+   lower = upper = 0;
+
    if( ! MPI::isDistributed() )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
@@ -70,6 +73,9 @@ getOverlaps( const DistributedMeshType* distributedMesh,
              const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
              const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
+   // initialize to 0
+   lower = upper = 0;
+
    if( MPI::GetSize() == 1 )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
@@ -101,6 +107,9 @@ getOverlaps( const DistributedMeshType* distributedMesh,
              const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
              const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
+   // initialize to 0
+   lower = upper = 0;
+
    if( MPI::GetSize() == 1 )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
@@ -143,6 +152,9 @@ getOverlaps( const DistributedMeshType* distributedMesh,
              const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize,
              const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize )
 {
+   // initialize to 0
+   lower = upper = 0;
+
    if( MPI::GetSize() == 1 )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
@@ -181,6 +193,6 @@ getOverlaps( const DistributedMeshType* distributedMesh,
       upper[ 2 ] = upperPeriodicBoundariesOverlapSize[ 2 ];
 }
 
-      } // namespace DistributedMeshes
-   } // namespace Meshes
+} // namespace DistributedMeshes
+} // namespace Meshes
 } // namespace TNL

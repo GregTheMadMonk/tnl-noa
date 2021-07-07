@@ -17,7 +17,6 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/Object.h>
 #include <TNL/Logger.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/MeshDetails/ConfigValidator.h>
@@ -64,8 +63,7 @@ class MeshInitializableBase< MeshConfig, Devices::Cuda, MeshType >
 template< typename MeshConfig,
           typename Device = Devices::Host >
 class Mesh
-   : public Object,
-     public ConfigValidator< MeshConfig >,
+   : public ConfigValidator< MeshConfig >,
      public MeshInitializableBase< MeshConfig, Device, Mesh< MeshConfig, Device > >,
      public StorageLayerFamily< MeshConfig, Device >,
      public EntityTags::LayerFamily< MeshConfig, Device, Mesh< MeshConfig, Device > >
@@ -109,10 +107,6 @@ class Mesh
       using Cell = EntityType< getMeshDimension() >;
       using Face = EntityType< getMeshDimension() - 1 >;
       using Vertex = EntityType< 0 >;
-
-      static String getSerializationType();
-
-      virtual String getSerializationTypeVirtual() const;
 
       /**
        * \brief Returns the count of mesh entities of the given dimension.
@@ -264,13 +258,6 @@ class Mesh
       void reorderEntities( const GlobalIndexArray& perm,
                             const GlobalIndexArray& iperm );
 
-
-      void save( File& file ) const;
-
-      void load( File& file );
-
-      using Object::load;
-      using Object::save;
 
       void print( std::ostream& str ) const;
 

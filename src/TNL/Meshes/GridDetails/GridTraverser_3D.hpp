@@ -49,49 +49,49 @@ processEntities(
    if( processOnlyBoundaryEntities )
    {
       GridEntity entity( *gridPointer, begin, gridEntityParameters... );
-      
+
       if( ZOrthogonalBoundary )
          for( entity.getCoordinates().y() = begin.y();
-              entity.getCoordinates().y() <= end.y();
+              entity.getCoordinates().y() < end.y();
               entity.getCoordinates().y() ++ )
             for( entity.getCoordinates().x() = begin.x();
-                 entity.getCoordinates().x() <= end.x();
+                 entity.getCoordinates().x() < end.x();
                  entity.getCoordinates().x() ++ )
             {
                entity.getCoordinates().z() = begin.z();
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-               entity.getCoordinates().z() = end.z();
+               entity.getCoordinates().z() = end.z() - 1;
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
       if( YOrthogonalBoundary )
          for( entity.getCoordinates().z() = begin.z();
-                 entity.getCoordinates().z() <= end.z();
+                 entity.getCoordinates().z() < end.z();
                  entity.getCoordinates().z() ++ )
             for( entity.getCoordinates().x() = begin.x();
-                 entity.getCoordinates().x() <= end.x();
+                 entity.getCoordinates().x() < end.x();
                  entity.getCoordinates().x() ++ )
             {
                entity.getCoordinates().y() = begin.y();
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-               entity.getCoordinates().y() = end.y();
+               entity.getCoordinates().y() = end.y() - 1;
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
       if( XOrthogonalBoundary )
          for( entity.getCoordinates().z() = begin.z();
-              entity.getCoordinates().z() <= end.z();
+              entity.getCoordinates().z() < end.z();
               entity.getCoordinates().z() ++ )
             for( entity.getCoordinates().y() = begin.y();
-                 entity.getCoordinates().y() <= end.y();
+                 entity.getCoordinates().y() < end.y();
                  entity.getCoordinates().y() ++ )
             {
                entity.getCoordinates().x() = begin.x();
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-               entity.getCoordinates().x() = end.x();
+               entity.getCoordinates().x() = end.x() - 1;
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
             }
@@ -106,9 +106,9 @@ processEntities(
             GridEntity entity( *gridPointer, begin, gridEntityParameters... );
 #pragma omp for
             // TODO: g++ 5.5 crashes when coding this loop without auxiliary x and y as bellow
-            for( IndexType z = begin.z(); z <= end.z(); z ++ )
-               for( IndexType y = begin.y(); y <= end.y(); y ++ )
-                  for( IndexType x = begin.x(); x <= end.x(); x ++ )
+            for( IndexType z = begin.z(); z < end.z(); z ++ )
+               for( IndexType y = begin.y(); y < end.y(); y ++ )
+                  for( IndexType x = begin.x(); x < end.x(); x ++ )
                   {
                      entity.getCoordinates().x() = x;
                      entity.getCoordinates().y() = y;
@@ -122,13 +122,13 @@ processEntities(
       {
          GridEntity entity( *gridPointer, begin, gridEntityParameters... );
          for( entity.getCoordinates().z() = begin.z();
-              entity.getCoordinates().z() <= end.z();
+              entity.getCoordinates().z() < end.z();
               entity.getCoordinates().z() ++ )
             for( entity.getCoordinates().y() = begin.y();
-                 entity.getCoordinates().y() <= end.y();
+                 entity.getCoordinates().y() < end.y();
                  entity.getCoordinates().y() ++ )
                for( entity.getCoordinates().x() = begin.x();
-                    entity.getCoordinates().x() <= end.x();
+                    entity.getCoordinates().x() < end.x();
                     entity.getCoordinates().x() ++ )
                   {
                      entity.refresh();
@@ -138,13 +138,13 @@ processEntities(
 #else
       GridEntity entity( *gridPointer, begin, gridEntityParameters... );
       for( entity.getCoordinates().z() = begin.z();
-           entity.getCoordinates().z() <= end.z();
+           entity.getCoordinates().z() < end.z();
            entity.getCoordinates().z() ++ )
          for( entity.getCoordinates().y() = begin.y();
-              entity.getCoordinates().y() <= end.y();
+              entity.getCoordinates().y() < end.y();
               entity.getCoordinates().y() ++ )
             for( entity.getCoordinates().x() = begin.x();
-                 entity.getCoordinates().x() <= end.x();
+                 entity.getCoordinates().x() < end.x();
                  entity.getCoordinates().x() ++ )
                {
                   entity.refresh();
@@ -181,7 +181,7 @@ GridTraverser3D(
    coordinates.y() = begin.y() + Cuda::getGlobalThreadIdx_y( gridIdx );
    coordinates.z() = begin.z() + Cuda::getGlobalThreadIdx_z( gridIdx );
 
-   if( coordinates <= end )
+   if( coordinates < end )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
@@ -202,14 +202,14 @@ template< typename Real,
           typename EntitiesProcessor,
           bool processOnlyBoundaryEntities,
           typename... GridEntityParameters >
-__global__ void 
+__global__ void
 GridTraverser3DBoundaryAlongXY(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
    UserData userData,
    const Index beginX,
    const Index endX,
    const Index beginY,
-   const Index endY,   
+   const Index endY,
    const Index fixedZ,
    const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
@@ -219,9 +219,9 @@ GridTraverser3DBoundaryAlongXY(
 
    coordinates.x() = beginX + Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.y() = beginY + Cuda::getGlobalThreadIdx_y( gridIdx );
-   coordinates.z() = fixedZ;  
-   
-   if( coordinates.x() <= endX && coordinates.y() <= endY )
+   coordinates.z() = fixedZ;
+
+   if( coordinates.x() < endX && coordinates.y() < endY )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
@@ -239,14 +239,14 @@ template< typename Real,
           typename EntitiesProcessor,
           bool processOnlyBoundaryEntities,
           typename... GridEntityParameters >
-__global__ void 
+__global__ void
 GridTraverser3DBoundaryAlongXZ(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
    UserData userData,
    const Index beginX,
    const Index endX,
    const Index beginZ,
-   const Index endZ,   
+   const Index endZ,
    const Index fixedY,
    const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
@@ -257,8 +257,8 @@ GridTraverser3DBoundaryAlongXZ(
    coordinates.x() = beginX + Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.y() = fixedY;
    coordinates.z() = beginZ + Cuda::getGlobalThreadIdx_y( gridIdx );
-   
-   if( coordinates.x() <= endX && coordinates.z() <= endZ )
+
+   if( coordinates.x() < endX && coordinates.z() < endZ )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
@@ -266,7 +266,7 @@ GridTraverser3DBoundaryAlongXZ(
       ( *grid,
         userData,
         entity );
-   }   
+   }
 }
 
 template< typename Real,
@@ -276,14 +276,14 @@ template< typename Real,
           typename EntitiesProcessor,
           bool processOnlyBoundaryEntities,
           typename... GridEntityParameters >
-__global__ void 
+__global__ void
 GridTraverser3DBoundaryAlongYZ(
    const Meshes::Grid< 3, Real, Devices::Cuda, Index >* grid,
    UserData userData,
    const Index beginY,
    const Index endY,
    const Index beginZ,
-   const Index endZ,   
+   const Index endZ,
    const Index fixedX,
    const dim3 gridIdx,
    const GridEntityParameters... gridEntityParameters )
@@ -294,8 +294,8 @@ GridTraverser3DBoundaryAlongYZ(
    coordinates.x() = fixedX;
    coordinates.y() = beginY + Cuda::getGlobalThreadIdx_x( gridIdx );
    coordinates.z() = beginZ + Cuda::getGlobalThreadIdx_y( gridIdx );
-   
-   if( coordinates.y() <= endY && coordinates.z() <= endZ )
+
+   if( coordinates.y() < endY && coordinates.z() < endZ )
    {
       GridEntity entity( *grid, coordinates, gridEntityParameters... );
       entity.refresh();
@@ -303,7 +303,7 @@ GridTraverser3DBoundaryAlongYZ(
       ( *grid,
         userData,
         entity );
-   }   
+   }
 }
 #endif
 
@@ -329,18 +329,18 @@ processEntities(
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
-#ifdef HAVE_CUDA   
-   if( processOnlyBoundaryEntities && 
+#ifdef HAVE_CUDA
+   if( processOnlyBoundaryEntities &&
        ( GridEntity::getEntityDimension() == 3 || GridEntity::getEntityDimension() == 0 ) )
    {
       dim3 cudaBlockSize( 16, 16 );
-      const IndexType entitiesAlongX = end.x() - begin.x() + 1;
-      const IndexType entitiesAlongY = end.y() - begin.y() + 1;
-      const IndexType entitiesAlongZ = end.z() - begin.z() + 1;
-      
+      const IndexType entitiesAlongX = end.x() - begin.x();
+      const IndexType entitiesAlongY = end.y() - begin.y();
+      const IndexType entitiesAlongZ = end.z() - begin.z();
+
       dim3 cudaBlocksCountAlongXY, cudaBlocksCountAlongXZ, cudaBlocksCountAlongYZ,
            cudaGridsCountAlongXY, cudaGridsCountAlongXZ, cudaGridsCountAlongYZ;
-      
+
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongXY, cudaGridsCountAlongXY, entitiesAlongX, entitiesAlongY );
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongXZ, cudaGridsCountAlongXZ, entitiesAlongX, entitiesAlongZ - 2 );
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongYZ, cudaGridsCountAlongYZ, entitiesAlongY - 2, entitiesAlongZ - 2 );
@@ -354,7 +354,7 @@ processEntities(
       const cudaStream_t& s4 = pool.getStream( stream + 3 );
       const cudaStream_t& s5 = pool.getStream( stream + 4 );
       const cudaStream_t& s6 = pool.getStream( stream + 5 );
-      
+
       dim3 gridIdx, gridSize;
       for( gridIdx.y = 0; gridIdx.y < cudaGridsCountAlongXY.y; gridIdx.y++ )
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCountAlongXY.x; gridIdx.x++ )
@@ -449,11 +449,11 @@ processEntities(
    {
       dim3 cudaBlockSize( 8, 8, 8 );
       dim3 cudaBlocksCount, cudaGridsCount;
-      
+
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCount, cudaGridsCount,
-                          end.x() - begin.x() + 1,
-                          end.y() - begin.y() + 1,
-                          end.z() - begin.z() + 1 );
+                          end.x() - begin.x(),
+                          end.y() - begin.y(),
+                          end.z() - begin.z() );
 
       auto& pool = Cuda::StreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );

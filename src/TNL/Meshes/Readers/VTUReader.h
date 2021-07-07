@@ -89,6 +89,9 @@ class VTUReader
                // check array size
                if( array.size() != NumberOfCells )
                   throw MeshReaderError( "VTUReader", "size of the types data array does not match the NumberOfCells attribute" );
+               // check empty mesh
+               if( array.size() == 0 )
+                  return;
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
                // TODO: check only entities of the same dimension (edges, faces and cells separately)

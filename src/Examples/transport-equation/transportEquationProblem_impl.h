@@ -106,11 +106,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   try
-   {
-      this->uPointer->boundLoad( initialConditionFile );
-   }
-   catch(...)
+   if( ! Functions::readMeshFunction( *this->uPointer, "u", initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
@@ -161,9 +157,9 @@ makeSnapshot( const RealType& time,
    printDofs.bind( this->getMesh(), *dofs );
    FileName fileName;
    fileName.setFileNameBase( "u-" );
-   fileName.setExtension( "tnl" );
+   fileName.setExtension( "vti" );
    fileName.setIndex( step );
-   printDofs.save( fileName.getFileName() );
+   printDofs.write( "u", fileName.getFileName() );
    return true;
 }
 
@@ -193,10 +189,10 @@ getExplicitUpdate( const RealType& time,
    this->bindDofs( _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    Pointers::SharedPointer<  MeshFunctionType > u;
-   u->bind( mesh, *_u ); 
+   u->bind( mesh, *_u );
    Pointers::SharedPointer<  MeshFunctionType > fu;
    fu->bind( mesh, *_fu );
-   differentialOperatorPointer->setTau(tau); 
+   differentialOperatorPointer->setTau(tau);
    differentialOperatorPointer->setVelocityField( this->velocityField );
    explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );

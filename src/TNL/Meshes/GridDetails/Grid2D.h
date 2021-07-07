@@ -17,7 +17,6 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Meshes/GridEntityConfig.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
 namespace Meshes {
@@ -25,7 +24,7 @@ namespace Meshes {
 template< typename Real,
           typename Device,
           typename Index >
-class Grid< 2, Real, Device, Index > : public Object
+class Grid< 2, Real, Device, Index >
 {
    public:
 
@@ -35,8 +34,6 @@ class Grid< 2, Real, Device, Index > : public Object
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
 
-   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
- 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
@@ -61,16 +58,6 @@ class Grid< 2, Real, Device, Index > : public Object
    ~Grid() {}
 
    /**
-    * \brief See Grid1D::getSerializationType().
-    */
-   static String getSerializationType();
-
-   /**
-    * \brief See Grid1D::getSerializationTypeVirtual().
-    */
-   virtual String getSerializationTypeVirtual() const;
-
-   /**
     * \brief Sets the size of dimensions.
     * \param xSize Size of dimension x.
     * \param ySize Size of dimension y.
@@ -87,6 +74,26 @@ class Grid< 2, Real, Device, Index > : public Object
     */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
+
+   void setLocalBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalBegin() const;
+
+   void setLocalEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getLocalEnd() const;
+
+   void setInteriorBegin( const CoordinatesType& begin );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorBegin() const;
+
+   void setInteriorEnd( const CoordinatesType& end );
+
+   __cuda_callable__
+   const CoordinatesType& getInteriorEnd() const;
 
    /**
     * \brief See Grid1D::setDomain().
@@ -179,44 +186,19 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
-
-   void setDistMesh(DistributedMeshType * distGrid);
-   
-   DistributedMeshType * getDistributedMesh() const;
-
-   /**
-    * \brief See Grid1D::save( File& file ) const.
-    */
-   void save( File& file ) const;
-
-   /**
-    * \brief See Grid1D::load( File& file ).
-    */
-   void load( File& file );
-
-   /**
-    * \brief See Grid1D::save( const String& fileName ) const.
-    */
-   void save( const String& fileName ) const;
-
-   /**
-    * \brief See Grid1D::load( const String& fileName ).
-    */
-   void load( const String& fileName );
-
    void writeProlog( Logger& logger ) const;
 
    protected:
-   
+
    void computeProportions();
-       
+
    __cuda_callable__
    void computeSpaceStepPowers();
 
    __cuda_callable__
    void computeSpaceSteps();
 
-   CoordinatesType dimensions;
+   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
 
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
@@ -225,9 +207,7 @@ class Grid< 2, Real, Device, Index > : public Object
    PointType spaceSteps;
 
    RealType spaceStepsProducts[ 5 ][ 5 ];
-   
-   DistributedMeshType *distGrid;
- 
+
    template< typename, typename, int >
    friend class GridEntityGetter;
 };

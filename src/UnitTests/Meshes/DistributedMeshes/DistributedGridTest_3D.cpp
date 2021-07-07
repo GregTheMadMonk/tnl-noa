@@ -3,12 +3,18 @@
 
 #ifdef HAVE_MPI
 
+#include <experimental/filesystem>
+
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
+#include <TNL/Meshes/Writers/PVTIWriter.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
 
 #include "../../Functions/Functions.h"
+
+namespace fs = std::experimental::filesystem;
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -600,15 +606,15 @@ typedef typename GridType::PointType PointType;
 typedef DistributedMesh<GridType> DistributedGridType;
 using Synchronizer = DistributedMeshSynchronizer< DistributedGridType >;
 
-class DistributedGirdTest_3D : public ::testing::Test
+class DistributedGridTest_3D : public ::testing::Test
 {
    protected:
 
       DistributedGridType *distributedGrid;
-      DofType *dof;
+      DofType dof;
 
-      Pointers::SharedPointer<GridType> gridptr;
-      Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
+      Pointers::SharedPointer<GridType> localGrid;
+      Pointers::SharedPointer<MeshFunctionType> meshFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,3> > constFunctionEvaluator;
       Pointers::SharedPointer< ConstFunction<double,3>, Host > constFunctionPtr;
@@ -643,83 +649,170 @@ class DistributedGirdTest_3D : public ::testing::Test
          distributedGrid=new DistributedGridType();
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
          distributedGrid->setGlobalGrid( globalGrid );
-         distributedGrid->setupGrid(*gridptr);
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          SubdomainOverlapsGetter< GridType >::
             getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
-         distributedGrid->setupGrid(*gridptr);
-         dof=new DofType(gridptr->template getEntitiesCount< Cell >());
+         // FIXME: DistributedGrid does not have a SharedPointer of the local grid,
+         // the MeshFunction interface is fucked up (it should not require us to put SharedPointer everywhere)
+         *localGrid = distributedGrid->getLocalMesh();
 
-         meshFunctionptr->bind(gridptr,*dof);
+         dof.setSize( localGrid->template getEntitiesCount< Cell >() );
+
+         meshFunctionPtr->bind(localGrid,dof);
          constFunctionPtr->Number=rank;
       }
 
       void TearDown()
       {
-         delete dof;
          delete distributedGrid;
       }
 };
 
-TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
+TEST_F(DistributedGridTest_3D, evaluateAllEntities)
 {
 
     //Check Traversars
     //All entities, witout overlap
-    setDof_3D(*dof,-1);
-    constFunctionEvaluator.evaluateAllEntities( meshFunctionptr , constFunctionPtr );
-    //Printer<GridType,DofType>::print_dof(rank,*gridptr,*dof);
-    check_Boundary_3D(rank, *gridptr, *dof, rank);
-    check_Overlap_3D(rank, *gridptr, *dof, -1);
-    check_Inner_3D(rank, *gridptr, *dof, rank);
+    setDof_3D(dof,-1);
+    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+    check_Boundary_3D(rank, *localGrid, dof, rank);
+    check_Overlap_3D(rank, *localGrid, dof, -1);
+    check_Inner_3D(rank, *localGrid, dof, rank);
 }
 
-TEST_F(DistributedGirdTest_3D, evaluateBoundaryEntities)
+TEST_F(DistributedGridTest_3D, evaluateBoundaryEntities)
 {
     //Boundary entities, witout overlap
-    setDof_3D(*dof,-1);
-    constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionptr , constFunctionPtr );
-    check_Boundary_3D(rank, *gridptr, *dof, rank);
-    check_Overlap_3D(rank, *gridptr, *dof, -1);
-    check_Inner_3D(rank, *gridptr, *dof, -1);
+    setDof_3D(dof,-1);
+    constFunctionEvaluator.evaluateBoundaryEntities( meshFunctionPtr , constFunctionPtr );
+    check_Boundary_3D(rank, *localGrid, dof, rank);
+    check_Overlap_3D(rank, *localGrid, dof, -1);
+    check_Inner_3D(rank, *localGrid, dof, -1);
 }
 
-TEST_F(DistributedGirdTest_3D, evaluateInteriorEntities)
+TEST_F(DistributedGridTest_3D, evaluateInteriorEntities)
 {
     //Inner entities, witout overlap
-    setDof_3D(*dof,-1);
-    constFunctionEvaluator.evaluateInteriorEntities( meshFunctionptr , constFunctionPtr );
-    check_Boundary_3D(rank, *gridptr, *dof, -1);
-    check_Overlap_3D(rank, *gridptr, *dof, -1);
-    check_Inner_3D(rank, *gridptr, *dof, rank);
+    setDof_3D(dof,-1);
+    constFunctionEvaluator.evaluateInteriorEntities( meshFunctionPtr , constFunctionPtr );
+    check_Boundary_3D(rank, *localGrid, dof, -1);
+    check_Overlap_3D(rank, *localGrid, dof, -1);
+    check_Inner_3D(rank, *localGrid, dof, rank);
 }
 
-TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
+TEST_F(DistributedGridTest_3D, LinearFunctionTest)
 {
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid)
-    setDof_3D(*dof,-1);
-    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr, linearFunctionPtr);
+    setDof_3D(dof,-1);
+    linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
     Synchronizer synchronizer;
-    synchronizer.setDistributedGrid( meshFunctionptr->getMesh().getDistributedMesh() );
-    synchronizer.synchronize( *meshFunctionptr );
+    synchronizer.setDistributedGrid( distributedGrid );
+    synchronizer.synchronize( *meshFunctionPtr );
 
-    int count =gridptr->template getEntitiesCount< Cell >();
+    int count =localGrid->template getEntitiesCount< Cell >();
     for(int i=0;i<count;i++)
     {
-            auto entity= gridptr->template getEntity< Cell >(i);
+            auto entity= localGrid->template getEntity< Cell >(i);
             entity.refresh();
-            EXPECT_EQ(meshFunctionptr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function doesnt fit recievd data. " << entity.getCoordinates().x() << " "<<entity.getCoordinates().y() << " "<< gridptr->getDimensions().x() <<" "<<gridptr->getDimensions().y();
+            EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function doesnt fit recievd data. " << entity.getCoordinates().x() << " "<<entity.getCoordinates().y() << " "<< localGrid->getDimensions().x() <<" "<<localGrid->getDimensions().y();
     }
 }
 
 /* not implemented
-TEST_F(DistributedGirdTest_3D, SynchronizerNeighborTest)
+TEST_F(DistributedGridTest_3D, SynchronizerNeighborTest)
 {
 
 }
 */
+
+TEST_F(DistributedGridTest_3D, PVTIWriterReader)
+{
+   // create a .pvti file (only rank 0 actually writes to the file)
+   const std::string baseName = "DistributedGridTest_3D_" + std::to_string(nproc) + "proc";
+   const std::string mainFilePath = baseName + ".pvti";
+   std::string subfilePath;
+   {
+      std::ofstream file;
+      if( TNL::MPI::GetRank() == 0 )
+         file.open( mainFilePath );
+      using PVTI = Meshes::Writers::PVTIWriter< GridType >;
+      PVTI pvti( file );
+      pvti.writeImageData( *distributedGrid );
+      // TODO
+//      if( mesh.getGhostLevels() > 0 ) {
+//         pvti.template writePPointData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+//         pvti.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
+//      }
+      subfilePath = pvti.addPiece( mainFilePath, *distributedGrid );
+
+      // create a .vti file for local data
+      using Writer = Meshes::Writers::VTIWriter< GridType >;
+      std::ofstream subfile( subfilePath );
+      Writer writer( subfile );
+      writer.writeImageData( *localGrid );
+      // TODO
+//      if( mesh.getGhostLevels() > 0 ) {
+//         writer.writePointData( mesh.vtkPointGhostTypes(), Meshes::VTK::ghostArrayName() );
+//         writer.writeCellData( mesh.vtkCellGhostTypes(), Meshes::VTK::ghostArrayName() );
+//      }
+
+      // end of scope closes the files
+   }
+
+   // load and test
+   TNL::MPI::Barrier();
+   Readers::PVTIReader reader( mainFilePath );
+   reader.detectMesh();
+   EXPECT_EQ( reader.getMeshType(), "Meshes::DistributedGrid" );
+   DistributedMesh< GridType > loadedGrid;
+   reader.loadMesh( loadedGrid );
+   EXPECT_EQ( loadedGrid, *distributedGrid );
+
+   // cleanup
+   EXPECT_EQ( fs::remove( subfilePath ), true );
+   TNL::MPI::Barrier();
+   if( TNL::MPI::GetRank() == 0 ) {
+      EXPECT_EQ( fs::remove( mainFilePath ), true );
+      EXPECT_EQ( fs::remove( baseName ), true );
+   }
+}
+
+TEST_F(DistributedGridTest_3D, readDistributedMeshFunction)
+{
+   const std::string baseName = "DistributedGridTest_MeshFunction_3D_" + std::to_string(nproc) + "proc.pvti";
+   const std::string mainFilePath = baseName + ".pvti";
+
+   // evaluate a function
+   dof.setValue( -1 );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+
+   // write the mesh function into a .pvti file
+   EXPECT_TRUE( writeDistributedMeshFunction( *distributedGrid, *meshFunctionPtr, "foo", mainFilePath ) );
+
+   // wait for rank 0 to write the main .pvti file
+   TNL::MPI::Barrier();
+
+   // load the mesh function from the .pvti file
+   DofType loadedDof;
+   loadedDof.setLike( dof );
+   loadedDof.setValue( -2 );
+   MeshFunctionType loadedMeshFunction;
+   loadedMeshFunction.bind( localGrid, loadedDof );
+   EXPECT_TRUE( readDistributedMeshFunction( *distributedGrid, loadedMeshFunction, "foo", mainFilePath ) );
+
+   // compare the dofs (MeshFunction and MeshFunctionView do not have operator==)
+//   EXPECT_EQ( loadedMeshFunction, *meshFunctionPtr );
+   EXPECT_EQ( loadedDof, dof );
+
+   // cleanup
+   TNL::MPI::Barrier();
+   if( TNL::MPI::GetRank() == 0 ) {
+      EXPECT_TRUE( fs::remove( mainFilePath ) );
+      EXPECT_GT( fs::remove_all( baseName ), 1 );
+   }
+}
 #endif
 
 #endif

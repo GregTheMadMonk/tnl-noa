@@ -8,16 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Assert.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
-#include <TNL/Functions/MeshFunctionGnuplotWriter.h>
-#include <TNL/Meshes/Writers/VTKWriter.h>
-#include <TNL/Meshes/Writers/VTUWriter.h>
-
-#pragma once
+#include <TNL/Functions/MeshFunctionIO.h>
 
 namespace TNL {
 namespace Functions {
@@ -78,36 +76,13 @@ MeshFunctionView( const MeshPointer& meshPointer,
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-String
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-getSerializationType()
-{
-   return String( "Functions::MeshFunction< " ) +
-          TNL::getSerializationType< Mesh >() + ", " +
-          convertToString( MeshEntityDimension ) + ", " +
-          getType< Real >() +
-          " >";
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-String
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
 void
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    config.addEntry< String >( prefix + "file", "Dataset for the mesh function." );
+   config.addEntry< String >( prefix + "function-name", "Name of the mesh function in the input file.", "f" );
 }
 
 template< typename Mesh,
@@ -120,16 +95,9 @@ setup( const MeshPointer& meshPointer,
        const String& prefix )
 {
    this->setMesh( meshPointer );
-   if( parameters.checkParameter( prefix + "file" ) )
-   {
-      String fileName = parameters.getParameter< String >( prefix + "file" );
-      this->load( fileName );
-   }
-   else
-   {
-      throw std::runtime_error( "Missing parameter " + prefix + "file." );
-   }
-   return true;
+   const String fileName = parameters.getParameter< String >( prefix + "file" );
+   const String functionName = parameters.getParameter< String >( prefix + "function-name" );
+   return readMeshFunction( *this, functionName, fileName );
 }
 
 template< typename Mesh,
@@ -208,7 +176,7 @@ template< typename Mesh,
           typename Real >
  template< typename Device >
 __cuda_callable__
-const typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::MeshType& 
+const typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::MeshType&
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
 getMesh() const
 {
@@ -228,6 +196,16 @@ getMeshPointer() const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
+typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::MeshPointer&
+MeshFunctionView< Mesh, MeshEntityDimension, Real >::
+getMeshPointer()
+{
+   return this->meshPointer;
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
 typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::IndexType
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
 getDofs( const MeshPointer& meshPointer )
@@ -239,7 +217,7 @@ template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
 __cuda_callable__
-const typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::VectorType& 
+const typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::VectorType&
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
 getData() const
 {
@@ -250,7 +228,7 @@ template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
 __cuda_callable__
-typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::VectorType& 
+typename MeshFunctionView< Mesh, MeshEntityDimension, Real >::VectorType&
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
 getData()
 {
@@ -429,91 +407,13 @@ getMaxNorm() const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-void
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-save( File& file ) const
-{
-   TNL_ASSERT_EQ( this->data.getSize(), this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
-                  "Size of the mesh function data does not match the mesh." );
-   Object::save( file );
-   file << this->data;
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-load( File& file )
-{
-   Object::load( file );
-   file >> this->data;
-   const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
-   if( this->data.getSize() != meshSize )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "mesh function data size does not match the mesh size (expected " + std::to_string(meshSize) + ", got " + std::to_string(this->data.getSize()) + ")." );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-boundLoad( File& file )
-{
-   Object::load( file );
-   file >> this->data.getView();
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-void
-MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-boundLoad( const String& fileName )
-{
-   File file;
-   file.open( fileName, std::ios_base::in );
-   this->boundLoad( file );
-}
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
 bool
 MeshFunctionView< Mesh, MeshEntityDimension, Real >::
-write( const String& fileName,
-       const String& format ) const
+write( const std::string& functionName,
+       const std::string& fileName,
+       const std::string& fileFormat ) const
 {
-   std::fstream file;
-   file.open( fileName.getString(), std::ios::out );
-   if( ! file )
-   {
-      std::cerr << "Unable to open a file " << fileName << "." << std::endl;
-      return false;
-   }
-   if( format == "vtk" ) {
-      Meshes::Writers::VTKWriter< Mesh > writer( file );
-      writer.template writeEntities< getEntitiesDimension() >( *meshPointer );
-      if( MeshFunctionView::getEntitiesDimension() == 0 )
-         writer.writePointData( getData(), "cellFunctionValues", 1 );
-      else
-         writer.writeCellData( getData(), "pointFunctionValues", 1 );
-   }
-   else if( format == "vtu" ) {
-      Meshes::Writers::VTUWriter< Mesh > writer( file );
-      writer.template writeEntities< getEntitiesDimension() >( *meshPointer );
-      if( MeshFunctionView::getEntitiesDimension() == 0 )
-         writer.writePointData( getData(), "cellFunctionValues", 1 );
-      else
-         writer.writeCellData( getData(), "pointFunctionValues", 1 );
-   }
-   else if( format == "gnuplot" )
-      return MeshFunctionGnuplotWriter< MeshFunctionView >::write( *this, file );
-   else {
-      std::cerr << "Unknown output format: " << format << std::endl;
-      return false;
-   }
-   return true;
+   return writeMeshFunction( *this, functionName, fileName, fileFormat );
 }
 
 template< typename Mesh,

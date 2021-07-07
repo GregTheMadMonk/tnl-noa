@@ -27,7 +27,7 @@ namespace PDE {
 template< typename Problem,
           typename TimeStepper >
 class TimeDependentPDESolver
-   : public PDESolver< typename Problem::RealType, 
+   : public PDESolver< typename Problem::RealType,
                        typename Problem::IndexType >,
      public MeshDependentTimeSteps< typename Problem::MeshType,
                                     typename TimeStepper::RealType >
@@ -46,7 +46,7 @@ class TimeDependentPDESolver
       typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
-      
+
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
       TimeDependentPDESolver();
@@ -55,7 +55,7 @@ class TimeDependentPDESolver
                                const String& prefix = "" );
 
       bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+                  const String& prefix = "" );
 
       bool writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters );
@@ -86,7 +86,7 @@ class TimeDependentPDESolver
 
       MeshPointer meshPointer;
 
-      Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
+      Pointers::SharedPointer< Meshes::DistributedMeshes::DistributedMesh<MeshType> > distributedMeshPointer;
 
       DofVectorPointer dofsPointer;
 

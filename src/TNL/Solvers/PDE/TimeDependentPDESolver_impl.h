@@ -39,7 +39,7 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    BaseType::configSetup( config, prefix );
-   config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
+   config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.vti" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addEntry< double >( prefix + "initial-time", "Initial time of the time dependent problem.", 0 );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
@@ -61,19 +61,16 @@ setup( const Config::ParameterContainer& parameters,
    //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
-   this->distributedMesh.setup( parameters, prefix );
    if( Problem::CommunicatorType::isDistributed() ) {
-      if( ! Meshes::loadDistributedMesh( *this->meshPointer, distributedMesh, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadDistributedMesh( *distributedMeshPointer, meshFile, meshFileFormat ) )
          return false;
-      if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
-         return false;
+      problem->setMesh( distributedMeshPointer );
    }
    else {
-      if( ! Meshes::loadMesh( *this->meshPointer, meshFile, meshFileFormat ) )
+      if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
          return false;
+      problem->setMesh( meshPointer );
    }
-
-   problem->setMesh( this->meshPointer );
 
    /****
     * Set-up common data
@@ -141,10 +138,16 @@ writeProlog( Logger& logger,
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   meshPointer->writeProlog( logger );
+   if( Problem::CommunicatorType::isDistributed() )
+      distributedMeshPointer->writeProlog( logger );
+   else
+      meshPointer->writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< String >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
+   if( Problem::CommunicatorType::isDistributed() )
+      logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
+   else
+      logger.writeParameter< double >( "Initial time step:", this->getRefinedTimeStep( *meshPointer, this->timeStep ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -300,8 +303,14 @@ solve()
     * Initialize the time stepper
     */
    this->timeStepper.setProblem( * ( this->problem ) );
-   this->timeStepper.init( this->meshPointer );
-   this->timeStepper.setTimeStep( this->getRefinedTimeStep( this->meshPointer.getData(), this->timeStep ) );
+   if( Problem::CommunicatorType::isDistributed() ) {
+      this->timeStepper.init( distributedMeshPointer->getLocalMesh() );
+      this->timeStepper.setTimeStep( this->getRefinedTimeStep( distributedMeshPointer->getLocalMesh(), this->timeStep ) );
+   }
+   else {
+      this->timeStepper.init( *meshPointer );
+      this->timeStepper.setTimeStep( this->getRefinedTimeStep( *meshPointer, this->timeStep ) );
+   }
    while( step < allSteps )
    {
       RealType tau = min( this->snapshotPeriod,

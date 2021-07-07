@@ -13,18 +13,40 @@
 #include <TNL/File.h>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Functions/TestFunction.h>
-#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 
 #include <TNL/MPI/ScopedInitializer.h>
 #include <TNL/MPI/Config.h>
 
-
 using namespace TNL;
+
+struct TnlInitConfigTag {};
+
+namespace TNL {
+namespace Meshes {
+namespace BuildConfigTags {
+
+// Configure real types
+template<> struct GridRealTag< TnlInitConfigTag, float > { enum { enabled = true }; };
+template<> struct GridRealTag< TnlInitConfigTag, double > { enum { enabled = true }; };
+template<> struct GridRealTag< TnlInitConfigTag, long double > { enum { enabled = false }; };
+
+// Configure index types
+template<> struct GridIndexTag< TnlInitConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< TnlInitConfigTag, int >{ enum { enabled = true }; };
+template<> struct GridIndexTag< TnlInitConfigTag, long int >{ enum { enabled = true }; };
+
+// Unstructured meshes are disabled, only grids can be on input.
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addDelimiter                            ( "General settings:" );
-   config.addEntry< String >( "mesh", "Mesh file. If none is given, a regular rectangular mesh is assumed.", "mesh.tnl" );
+   config.addDelimiter( "General settings:" );
+   config.addEntry< String >( "mesh", "Input mesh file.", "mesh.vti" );
+   config.addEntry< String >( "mesh-function-name", "Name of the mesh function in the VTI files.", "f" );
    config.addEntry< String >( "real-type", "Precision of the function evaluation.", "mesh-real-type" );
       config.addEntryEnum< String >( "mesh-real-type" );
       config.addEntryEnum< String >( "float" );
@@ -41,11 +63,9 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< bool >( "check-output-file", "If the output file already exists, do not recreate it.", false );
    config.addEntry< String >( "help", "Write help." );
 
-   config.addDelimiter                            ( "Functions parameters:" );
+   config.addDelimiter( "Functions parameters:" );
    Functions::TestFunction< 1 >::configSetup( config );
 }
-
-
 
 int main( int argc, char* argv[] )
 {
@@ -60,26 +80,13 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
 
-   String meshFile = parameters. getParameter< String >( "mesh" );
-   String meshType;
-   try
-   {
-      meshType = getObjectType( meshFile );
-   }
-   catch(...)
-   {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   std::vector< String > parsedMeshType = parseObjectType( meshType );
-   if( ! parsedMeshType.size() )
-   {
-      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   if( ! resolveMeshType( parsedMeshType, parameters ) )
-      return EXIT_FAILURE;
+   const String meshFileName = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = "auto";
 
-   return EXIT_SUCCESS;
+   auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
+   {
+      using MeshType = std::decay_t< decltype(mesh) >;
+      return resolveRealType< MeshType >( parameters );
+   };
+   return ! Meshes::resolveMeshType< TnlInitConfigTag, Devices::Host >( wrapper, meshFileName, meshFileFormat );
 }

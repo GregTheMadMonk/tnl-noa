@@ -166,6 +166,10 @@ protected:
    VariantVector
    readAsciiBlock( const char* block ) const
    {
+      // handle empty array
+      if( ! block )
+         return std::vector<T> {};
+
       // creating a copy of the block is rather costly, but so is ASCII parsing
       std::stringstream ss;
       ss << block;
@@ -187,6 +191,10 @@ protected:
    VariantVector
    readBinaryBlock( const char* block ) const
    {
+      // handle empty array
+      if( ! block )
+         return std::vector<T> {};
+
       // skip whitespace at the beginning
       while( *block != '\0' && std::isspace( *block ) )
          ++block;
@@ -250,8 +258,6 @@ protected:
    {
       verifyElement( elem, "DataArray" );
       const char* block = elem->GetText();
-      if( ! block )
-         throw MeshReaderError( "XMLVTK", "the DataArray with Name=\"" + arrayName + "\" does not contain any data" );
       const std::string type = getAttributeString( elem, "type" );
       const std::string format = getAttributeString( elem, "format" );
       if( format == "ascii" ) {
@@ -328,13 +334,13 @@ public:
       // load and verify XML
       tinyxml2::XMLError status = dom.LoadFile( fileName.c_str() );
       if( status != XML_SUCCESS )
-         throw MeshReaderError( "XMLVTK", "failed to parse the file as an XML document." );
+         throw MeshReaderError( "XMLVTK", "failed to parse the file " + fileName + " as an XML document." );
 
       // verify root element
       const XMLElement* elem = dom.FirstChildElement();
       verifyElement( elem, "VTKFile" );
       if( elem->NextSibling() )
-         throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file" );
+         throw MeshReaderError( "XMLVTK", "<VTKFile> is not the only element in the file " + fileName );
 
       // verify byte order
       const std::string systemByteOrder = (isLittleEndian()) ? "LittleEndian" : "BigEndian";

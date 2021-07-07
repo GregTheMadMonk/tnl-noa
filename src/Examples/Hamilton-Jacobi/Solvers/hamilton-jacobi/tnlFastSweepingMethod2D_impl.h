@@ -58,7 +58,8 @@ template< typename Real,
         typename Anisotropy >
 void
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
-solve( const MeshPointer& mesh,
+solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+       const MeshPointer& mesh,
         MeshFunctionPointer& Aux,
         const AnisotropyPointer& anisotropy,
         const MeshFunctionPointer& u )
@@ -69,20 +70,26 @@ solve( const MeshPointer& mesh,
   interfaceMapPtr->setMesh( mesh );
 
   // Setting overlaps ( WITHOUT MPI SHOULD BE 0 )
-  StaticVector vecLowerOverlaps, vecUpperOverlaps;
-  setOverlaps( vecLowerOverlaps, vecUpperOverlaps, mesh );
+  StaticVector vecLowerOverlaps = 0;
+  StaticVector vecUpperOverlaps = 0;
+  if( CommunicatorType::isDistributed() )
+  {
+    //Distributed mesh for MPI overlaps (without MPI null pointer)
+    vecLowerOverlaps = distributedMesh.getLowerOverlap();
+    vecUpperOverlaps = distributedMesh.getUpperOverlap();
+  }
 
   std::cout << "Initiating the interface cells ..." << std::endl;
   BaseType::initInterface( u, auxPtr, interfaceMapPtr, vecLowerOverlaps, vecUpperOverlaps );
 
-  //auxPtr->save( "aux-ini.tnl" );
+  //auxPtr->write( "aux", "aux-ini.vti" );
 
   typename MeshType::Cell cell( *mesh );
 
   IndexType iteration( 0 );
   InterfaceMapType interfaceMap = *interfaceMapPtr;
   MeshFunctionType aux = *auxPtr;
-  synchronizer.setDistributedGrid( aux.getMesh().getDistributedMesh() );
+  synchronizer.setDistributedGrid( &distributedMesh );
   synchronizer.synchronize( aux ); //synchronize initialized overlaps
 
   std::cout << "Calculating the values ..." << std::endl;
@@ -207,8 +214,8 @@ solve( const MeshPointer& mesh,
          this->getNeighbours( BlockIterHost, numBlocksX, numBlocksY );
 
          //std::cout<<std::endl;
-         //String s( "aux-"+ std::to_string(numWhile) + ".tnl");
-         //aux.save( s );
+         //String s( "aux-"+ std::to_string(numWhile) + ".vti");
+         //aux.write( "aux", s );
          }
          if( numWhile == 1 ){
          auxPtr = helpFunc;
@@ -223,19 +230,19 @@ solve( const MeshPointer& mesh,
         boundsFrom[1] = vecLowerOverlaps[1]; boundsTo[1] = mesh->getDimensions().y() - vecUpperOverlaps[1];
         boundsFrom[0] = vecLowerOverlaps[0]; boundsTo[0] = mesh->getDimensions().x() - vecUpperOverlaps[0];
         calculatedBefore = goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save("aux-1.tnl");
+        //aux.write( "aux", "aux-1.vti" );
 
     // UP and LEFL
         boundsFrom[1] = vecLowerOverlaps[1]; boundsTo[1] = mesh->getDimensions().y() - vecUpperOverlaps[1];
         boundsFrom[0] = mesh->getDimensions().x() - 1 - vecUpperOverlaps[0]; boundsTo[0] = -1 + vecLowerOverlaps[0];
         goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save( "aux-2.tnl" );
+        //aux.write( "aux", "aux-2.vti" );
 
     // DOWN and RIGHT
         boundsFrom[1] = mesh->getDimensions().y() - 1 - vecUpperOverlaps[1]; boundsTo[1] = - 1 + vecLowerOverlaps[1];
         boundsFrom[0] = vecLowerOverlaps[0]; boundsTo[0] = mesh->getDimensions().x() - vecUpperOverlaps[0];
         goThroughSweep( boundsFrom, boundsTo, aux, interfaceMap, anisotropy );
-        //aux.save( "aux-3.tnl" );
+        //aux.write( "aux", "aux-3.vti" );
 
     // DOWN and LEFT
         boundsFrom[1] = mesh->getDimensions().y() - 1 - vecUpperOverlaps[1]; boundsTo[1] = - 1 + vecLowerOverlaps[1];
@@ -368,7 +375,7 @@ solve( const MeshPointer& mesh,
 /**----------------------MPI-TO-DO---------------------------------------------**/
 #ifdef HAVE_MPI
       if( CommunicatorType::isDistributed() ){
-        getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
+        getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, distributedMesh );
 
         synchronizer.synchronize( aux );
       }
@@ -383,28 +390,6 @@ solve( const MeshPointer& mesh,
 
 
 // PROTECTED FUNCTIONS:
-
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
-void
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
-setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
-              const MeshPointer& mesh)
-{
-  vecLowerOverlaps[0] = 0; vecLowerOverlaps[1] = 0; vecUpperOverlaps[0] = 0; vecUpperOverlaps[1] = 0;
-#ifdef HAVE_MPI
-  if( CommunicatorType::isDistributed() ) //If we started solver with MPI
-  {
-    //Distributed mesh for MPI overlaps (without MPI null pointer)
-    const Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshPom = mesh->getDistributedMesh();
-    vecLowerOverlaps = meshPom->getLowerOverlap();
-    vecUpperOverlaps = meshPom->getUpperOverlap();
-  }
-#endif
-}
-
-
-
 
 template< typename Real, typename Device, typename Index,
           typename Communicator, typename Anisotropy >
@@ -448,14 +433,13 @@ template< typename Real, typename Device, typename Index,
           typename Communicator, typename Anisotropy >
 void
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
-getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain, const MeshPointer& mesh )
+getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain,
+                       const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh )
 {
-  Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshDistr = mesh->getDistributedMesh();
-
   int calculateFromNeighbours[4] = {0,0,0,0};
-  const int *neighbours = meshDistr->getNeighbors(); // Getting neighbors of distributed mesh
+  const int *neighbours = distributedMesh.getNeighbors(); // Getting neighbors of distributed mesh
   MPI::Request *requestsInformation;
-  requestsInformation = new MPI::Request[ meshDistr->getNeighborsCount() ];
+  requestsInformation = new MPI::Request[ distributedMesh.getNeighborsCount() ];
 
   int neighCount = 0; // should this thread calculate again?
 

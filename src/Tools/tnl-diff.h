@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNL_DIFF_H_
-#define TNL_DIFF_H_
+#pragma once
 
 #include <iomanip>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/FileName.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
@@ -74,7 +74,7 @@ class ExactMatchTest< MeshFunction, Meshes::Grid< 1, Real, Device, Index >, 1 >
                outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
                           << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
                if( verbose )
-                  std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                  std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
                           << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
             }
          }
@@ -166,10 +166,10 @@ class ExactMatchTest< MeshFunction, Meshes::Grid< 3, Real, Device, Index >, 3 >
                   entity.refresh();
                   if( f1.getValue( entity ) != f2.getValue( entity ) )
                   {
-                     outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                     outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
                                 << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
                      if( verbose )
-                        std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                        std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
                                 << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
                   }
                }
@@ -183,6 +183,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
    std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
+   const String meshFunctionName = parameters.getParameter< String >( "mesh-function-name" );
    String mode = parameters. getParameter< String >( "mode" );
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
@@ -210,7 +211,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
    }
    if( verbose )
       std::cout << std::endl;
-   
+
    typedef typename MeshPointer::ObjectType Mesh;
    using MeshFunctionType = Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real >;
    MeshFunctionType v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
@@ -230,8 +231,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
          try
          {
-            v1.load( inputFiles[ i ] );
-            v2.load( inputFiles[ i + 1 ] );
+            Functions::readMeshFunction( v1, meshFunctionName, inputFiles[ i ], "auto" );
+            Functions::readMeshFunction( v2, meshFunctionName, inputFiles[ i + 1 ], "auto" );
          }
          catch(...)
          {
@@ -251,12 +252,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            v1.load( inputFiles[ 0 ] );
+            Functions::readMeshFunction( v1, meshFunctionName, inputFiles[ 0 ], "auto" );
             file1 = inputFiles[ 0 ];
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         v2.load( inputFiles[ i ] );
+         Functions::readMeshFunction( v2, meshFunctionName, inputFiles[ i ], "auto" );
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
          file2 = inputFiles[ i ];
@@ -268,8 +269,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         v1.load( inputFiles[ i - half ] );
-         v2.load( inputFiles[ i ] );
+         Functions::readMeshFunction( v1, meshFunctionName, inputFiles[ i - half ], "auto" );
+         Functions::readMeshFunction( v2, meshFunctionName, inputFiles[ i ], "auto" );
          //if( snapshotPeriod != 0.0 )
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
@@ -305,11 +306,11 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
 
          if( writeDifference )
          {
-            String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.tnl";
+            String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.vti";
             //diff.setLike( v1 );
             diff = v1;
             diff -= v2;
-            diff.save( differenceFileName );
+            diff.write( "diff", differenceFileName );
          }
       }
    }
@@ -558,29 +559,16 @@ bool setValueType( const MeshPointer& meshPointer,
 template< typename Mesh >
 bool processFiles( const Config::ParameterContainer& parameters )
 {
-   int verbose = parameters. getParameter< bool >( "verbose");
-   std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
+   int verbose = parameters.getParameter< int >( "verbose");
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
 
-   /****
-    * Reading the mesh
-    */
-   String meshFile = parameters. getParameter< String >( "mesh" );
-   
-   typedef Pointers::SharedPointer<  Mesh > MeshPointer;
-
+   typedef Pointers::SharedPointer< Mesh > MeshPointer;
    MeshPointer meshPointer;
-   if( meshFile != "" )
-   {
-      try
-      {
-         meshPointer->load( meshFile );
-      }
-      catch(...)
-      {
-         std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
-         return false;
-      }
-   }
+   if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
+      return false;
+
+   std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
 
    String objectType;
    try
@@ -604,31 +592,3 @@ bool processFiles( const Config::ParameterContainer& parameters )
    setValueType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
    return true;
 }
-
-template< int Dim, typename Real >
-bool resolveGridIndexType( const std::vector< String >& parsedMeshType,
-                           const Config::ParameterContainer& parameters )
-{
-   if( parsedMeshType[ 4 ] == "int" )
-      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, int > >( parameters );
-   if( parsedMeshType[ 4 ] == "long int" )
-      return processFiles< Meshes::Grid< Dim, Real, Devices::Host, long int > >( parameters );
-   std::cerr << "Unknown index type " << parsedMeshType[ 4 ] << "." <<  std::endl;
-   return false;
-}
-
-template< int Dim >
-bool resolveGridRealType( const std::vector< String >& parsedMeshType,
-                          const Config::ParameterContainer& parameters )
-{
-   if( parsedMeshType[ 2 ] == "float" )
-      return resolveGridIndexType< Dim, float >( parsedMeshType, parameters );
-   if( parsedMeshType[ 2 ] == "double" )
-      return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
-//   if( parsedMeshType[ 2 ] == "long double" )
-//      return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
-   std::cerr << "Unknown real type " << parsedMeshType[ 2 ] << "." <<  std::endl;
-   return false;
-}
-
-#endif /* TNL_DIFF_H_ */

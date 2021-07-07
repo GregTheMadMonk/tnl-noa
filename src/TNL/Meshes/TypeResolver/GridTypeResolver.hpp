@@ -170,7 +170,7 @@ resolveTerminate( Reader& reader, Functor&& functor )
 {
    std::cerr << "The mesh type " << TNL::getType< GridType >() << " is disabled in the build configuration." << std::endl;
    return false;
-};
+}
 
 template< typename ConfigTag,
           typename Device >
@@ -183,7 +183,7 @@ GridTypeResolver< ConfigTag, Device >::detail< Reader, Functor >::
 resolveTerminate( Reader& reader, Functor&& functor )
 {
    return std::forward<Functor>(functor)( reader, GridType{} );
-};
+}
 
 } // namespace Meshes
 } // namespace TNL

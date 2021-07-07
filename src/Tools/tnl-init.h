@@ -13,14 +13,15 @@
 #include <TNL/MPI/Wrappers.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
+#include <TNL/Meshes/Readers/VTIReader.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
+#include <TNL/Meshes/Writers/PVTIWriter.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
 #include <TNL/FileName.h>
 #include <TNL/Functions/MeshFunction.h>
-
-#include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
-#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 using namespace TNL;
 
@@ -35,28 +36,21 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
    DistributedGridType distributedMesh;
    Pointers::SharedPointer< MeshType > meshPointer;
-   MeshType globalMesh;
 
-   if(TNL::MPI::GetSize() > 1)
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+
+   if( TNL::MPI::GetSize() > 1 )
    {
-       //suppose global mesh loaded from single file
-       String meshFile = parameters.getParameter< String >( "mesh" );
-       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       globalMesh.load( meshFile );
-
-       // TODO: This should work with no overlaps
-       distributedMesh.setGlobalGrid(globalMesh);
-       typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-       SubdomainOverlapsGetter< MeshType >::getOverlaps( &distributedMesh, lowerOverlap, upperOverlap, 1 );
-       distributedMesh.setOverlaps( lowerOverlap, upperOverlap );
-       distributedMesh.setupGrid(*meshPointer);
-    }
-    else
-    {
-       String meshFile = parameters.getParameter< String >( "mesh" );
-       std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       meshPointer->load( meshFile );
-    }
+      Meshes::Readers::PVTIReader reader( meshFile );
+      reader.loadMesh( distributedMesh );
+      *meshPointer = distributedMesh.getLocalMesh();
+   }
+   else
+   {
+      Meshes::Readers::VTIReader reader( meshFile );
+      reader.loadMesh( *meshPointer );
+   }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
    typedef Pointers::SharedPointer<  FunctionType, typename MeshType::DeviceType > FunctionPointer;
@@ -81,7 +75,6 @@ bool renderFunction( const Config::ParameterContainer& parameters )
 
    while( step <= steps )
    {
-
       if( numericalDifferentiation )
       {
         std::cout << "+ -> Computing the finite differences ... " << std::endl;
@@ -107,22 +100,28 @@ bool renderFunction( const Config::ParameterContainer& parameters )
          outputFileName.setExtension( extension.getString() );
          outputFileName.setIndex( step );
          outputFile = outputFileName.getFileName();
-        std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
+         std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
       }
       else
-        std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
+         std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
 
-      if(TNL::MPI::GetSize() > 1)
+      const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
+
+      if( TNL::MPI::GetSize() > 1 )
       {
-         if( ! Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType> ::save(outputFile, *meshFunction ) )
-            return false;
+         // TODO: write metadata: step and time
+         Functions::writeDistributedMeshFunction( distributedMesh, *meshFunction, meshFunctionName, outputFile );
       }
       else
-        meshFunction->save( outputFile);
+      {
+         // TODO: write metadata: step and time
+         meshFunction->write( meshFunctionName, outputFile, "auto" );
+      }
 
       time += tau;
       step ++;
    }
+
    return true;
 }
 
@@ -226,66 +225,5 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveDerivatives< MeshType, double >( parameters );
 //   if( realType == "long-double" )
 //      return resolveDerivatives< MeshType, long double >( parameters );
-   return false;
-}
-
-
-template< int Dimension, typename RealType, typename IndexType >
-bool resolveMesh( const std::vector< String >& parsedMeshType,
-                  const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
-   if( parsedMeshType[ 0 ] == "Meshes::Grid" )
-   {
-      typedef Meshes::Grid< Dimension, RealType, Devices::Host, IndexType > MeshType;
-      return resolveRealType< MeshType >( parameters );
-   }
-   std::cerr << "Unknown mesh type." << std::endl;
-   return false;
-}
-
-template< int Dimension, typename RealType >
-bool resolveIndexType( const std::vector< String >& parsedMeshType,
-                       const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
-
-   if( parsedMeshType[ 4 ] == "int" )
-      return resolveMesh< Dimension, RealType, int >( parsedMeshType, parameters );
-   if( parsedMeshType[ 4 ] == "long int" )
-      return resolveMesh< Dimension, RealType, long int >( parsedMeshType, parameters );
-
-   return false;
-}
-
-template< int Dimension >
-bool resolveRealType( const std::vector< String >& parsedMeshType,
-                      const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
-
-   if( parsedMeshType[ 2 ] == "float" )
-      return resolveIndexType< Dimension, float >( parsedMeshType, parameters );
-   if( parsedMeshType[ 2 ] == "double" )
-      return resolveIndexType< Dimension, double >( parsedMeshType, parameters );
-//   if( parsedMeshType[ 2 ] == "long double" )
-//      return resolveIndexType< Dimension, long double >( parsedMeshType, parameters );
-
-   return false;
-}
-
-bool resolveMeshType( const std::vector< String >& parsedMeshType,
-                      const Config::ParameterContainer& parameters )
-{
-   std::cout << "+ -> Setting dimensions to " << parsedMeshType[ 1 ] << " ... " << std::endl;
-   int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-
-   if( dimensions == 1 )
-      return resolveRealType< 1 >( parsedMeshType, parameters );
-   if( dimensions == 2 )
-      return resolveRealType< 2 >( parsedMeshType, parameters );
-   if( dimensions == 3 )
-      return resolveRealType< 3 >( parsedMeshType, parameters );
-
    return false;
 }

@@ -36,88 +36,66 @@ processBoundaryEntities( const GridPointer& gridPointer,
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
 
-   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
-   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
+   if( gridPointer->getLocalBegin() < gridPointer->getInteriorBegin() && gridPointer->getInteriorEnd() < gridPointer->getLocalEnd() )
    {
+      // 6 boundaries (left, right, down, up, front, back)
       GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 1 >(
-          gridPointer,
-          CoordinatesType( 0, 0, 0 ),
-          gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
-          userData,
+         gridPointer,
+         gridPointer->getInteriorBegin() - 1,
+         gridPointer->getInteriorEnd() + 1,
+         userData,
          asynchronousMode,
-          0 );
+         0 );
    }
-   else // distributed
+   else
    {
-      const CoordinatesType begin = distributedGrid->getLowerOverlap();
-      const CoordinatesType end = gridPointer->getDimensions() - distributedGrid->getUpperOverlap() -
-                                  CoordinatesType( 1, 1, 1 );
-      const int* neighbors = distributedGrid->getNeighbors();
-      if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
-      {
-         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            begin,
-            CoordinatesType( begin.x(), end.y(), end.z() ),
-            userData,
-            asynchronousMode,
-            0 );
-      }
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
-      {
-          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            CoordinatesType( end.x() , begin.y(), begin.z() ),
-            end,
-            userData,
-            asynchronousMode,
-            0 );
-       }
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYmXz ] == -1 )
-      {
-         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            begin,
-            CoordinatesType( end.x(), begin.y(), end.z() ),
-            userData,
-            asynchronousMode,
-            0 );
-      }
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYpXz ] == -1 )
-      {
-         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            CoordinatesType( begin.x(), end.y(), begin.z() ),
-            end,
-            userData,
-            asynchronousMode,
-            0 );
-       }
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZmYzXz ] == -1 )
-      {
-         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            begin,
-            CoordinatesType( end.x(), end.y(), begin.z() ),
-            userData,
-            asynchronousMode,
-            0 );
-      }
-      
-      if( neighbors[ Meshes::DistributedMeshes::ZpYzXz ] == -1 )
-      {
-         GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-            gridPointer,
-            CoordinatesType( begin.x(), begin.y(), end.z() ),
-            end,
-            userData,
-            asynchronousMode,
-            0 );
-      } 
+      const CoordinatesType begin = gridPointer->getLocalBegin();
+      const CoordinatesType end = gridPointer->getLocalEnd();
+      const CoordinatesType skipBegin = gridPointer->getInteriorBegin();
+      const CoordinatesType skipEnd = gridPointer->getInteriorEnd();
+
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         begin,
+         CoordinatesType( end.x(), end.y(), skipBegin.z() ),
+         userData,
+         asynchronousMode,
+         0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( begin.x(), begin.y(), skipEnd.z() ),
+         end,
+         userData,
+         asynchronousMode,
+         0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( begin.x(), begin.y(), skipBegin.z() ),
+         CoordinatesType( end.x(), skipBegin.y(), skipEnd.z() ),
+         userData,
+         asynchronousMode,
+         0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( begin.x(), skipEnd.y(), skipBegin.z() ),
+         CoordinatesType( end.x(), end.y(), skipEnd.z() ),
+         userData,
+         asynchronousMode,
+         0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( begin.x(), skipBegin.y(), skipBegin.z() ),
+         CoordinatesType( skipBegin.x(), skipEnd.y(), skipEnd.z() ),
+         userData,
+         asynchronousMode,
+         0 );
+      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+         gridPointer,
+         CoordinatesType( skipEnd.x(), skipBegin.y(), skipBegin.z() ),
+         CoordinatesType( end.x(), skipEnd.y(), skipEnd.z() ),
+         userData,
+         asynchronousMode,
+         0 );
    }
 }
 
@@ -136,50 +114,14 @@ processInteriorEntities( const GridPointer& gridPointer,
     * Interior cells
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
-   
-   DistributedGridType* distributedGrid = gridPointer->getDistributedMesh();
-   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
-   { 
-      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         CoordinatesType( 1, 1, 1 ),
-         gridPointer->getDimensions() - CoordinatesType( 2, 2, 2 ),
-         userData,
-         asynchronousMode,
-         0 );
-   }
-   else
-   {
-      const int* neighbors = distributedGrid->getNeighbors(); 
-      CoordinatesType begin( distributedGrid->getLowerOverlap());
-      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1,1) );
-      
-      if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
-         begin.x() += 1 ;
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
-         end.x() -= 1;
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYmXz ] == -1 )
-         begin.y() += 1;
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZzYpXz ] == -1 )
-         end.y() -= 1;
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZmYzXz ] == -1 )
-         begin.z() += 1 ;
-       
-      if( neighbors[ Meshes::DistributedMeshes::ZpYzXz ] == -1 )
-         end.z() -= 1;
 
-      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         begin,
-         end,
-         userData,
-         asynchronousMode,
-         0 );
-   }
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+      gridPointer,
+      gridPointer->getInteriorBegin(),
+      gridPointer->getInteriorEnd(),
+      userData,
+      asynchronousMode,
+      0 );
 }
 
 template< typename Real,
@@ -197,31 +139,14 @@ processAllEntities( const GridPointer& gridPointer,
     * All cells
     */
    static_assert( GridEntity::getEntityDimension() == 3, "The entity has wrong dimension." );
- 
-   DistributedGridType* distributedGrid=gridPointer->getDistributedMesh();
-   if( distributedGrid == nullptr || !distributedGrid->isDistributed() )
-   { 
-      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         CoordinatesType( 0, 0, 0 ),
-         gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
-         userData,
-         asynchronousMode,
-         0 );
-   }
-   else
-   {
-      CoordinatesType begin( distributedGrid->getLowerOverlap());
-      CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1,1) );
 
-      GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-         gridPointer,
-         begin,
-         end,
-         userData,
-         asynchronousMode,
-         0 ); 
-   }
+   GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
+      gridPointer,
+      gridPointer->getLocalBegin(),
+      gridPointer->getLocalEnd(),
+      userData,
+      asynchronousMode,
+      0 );
 }
 
 /****
@@ -242,11 +167,11 @@ processBoundaryEntities( const GridPointer& gridPointer,
     * Boundary faces
     */
    static_assert( GridEntity::getEntityDimension() == 2, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0, 0, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 1, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 0, 0 ),
       userData,
       asynchronousMode,
       2,
@@ -256,17 +181,17 @@ processBoundaryEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1, 0, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 0, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 1, 0 ),
       userData,
       asynchronousMode,
       1,
       CoordinatesType( 0, 1, 0 ),
       CoordinatesType( 1, 0, 1 ) );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 0, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 0, 1 ),
       userData,
       asynchronousMode,
       0,
@@ -289,11 +214,11 @@ processInteriorEntities( const GridPointer& gridPointer,
     * Interior faces
     */
    static_assert( GridEntity::getEntityDimension() == 2, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 1, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
+      gridPointer->getDimensions(),
       userData,
       asynchronousMode,
       2,
@@ -303,7 +228,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 1, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
+      gridPointer->getDimensions(),
       userData,
       asynchronousMode,
       1,
@@ -313,7 +238,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
+      gridPointer->getDimensions(),
       userData,
       asynchronousMode,
       0,
@@ -339,7 +264,7 @@ processAllEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 1, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 0, 0 ),
       userData,
       asynchronousMode,
       2,
@@ -349,17 +274,17 @@ processAllEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 0, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 1, 0 ),
       userData,
       asynchronousMode,
       1,
       CoordinatesType( 0, 1, 0 ),
       CoordinatesType( 1, 0, 1 ) );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 0, 1 ),
       userData,
       asynchronousMode,
       0,
@@ -385,11 +310,11 @@ processBoundaryEntities( const GridPointer& gridPointer,
     * Boundary edges
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 0, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 0, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 1, 1 ),
       userData,
       asynchronousMode,
       2,
@@ -399,17 +324,17 @@ processBoundaryEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 0, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 1, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 0, 1 ),
       userData,
       asynchronousMode,
       1,
       CoordinatesType( 1, 0, 1 ),
       CoordinatesType( 0, 1, 0 ) );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 0, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 0, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 1, 0 ),
       userData,
       asynchronousMode,
       0,
@@ -432,11 +357,11 @@ processInteriorEntities( const GridPointer& gridPointer,
     * Interior edges
     */
    static_assert( GridEntity::getEntityDimension() == 1, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 1, 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 1, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 0, 0 ),
       userData,
       asynchronousMode,
       2,
@@ -446,7 +371,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 1, 0, 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 0, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 1, 0 ),
       userData,
       asynchronousMode,
       1,
@@ -456,7 +381,7 @@ processInteriorEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 1, 1, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 0, 1 ),
       userData,
       asynchronousMode,
       0,
@@ -482,31 +407,31 @@ processAllEntities( const GridPointer& gridPointer,
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 0, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 0, 1, 1 ),
       userData,
       asynchronousMode,
       2,
-      CoordinatesType( 0, 1, 1 ),      
+      CoordinatesType( 0, 1, 1 ),
       CoordinatesType( 1, 0, 0 ) );
 
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 1, 0 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 0, 1 ),
       userData,
       asynchronousMode,
       1,
-      CoordinatesType( 1, 0, 1 ),      
+      CoordinatesType( 1, 0, 1 ),
       CoordinatesType( 0, 1, 0 ) );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false, 1, 1, 1, CoordinatesType, CoordinatesType >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions() - CoordinatesType( 0, 0, 1 ),
+      gridPointer->getDimensions() + CoordinatesType( 1, 1, 0 ),
       userData,
       asynchronousMode,
       0,
-      CoordinatesType( 1, 1, 0 ),      
+      CoordinatesType( 1, 1, 0 ),
       CoordinatesType( 0, 0, 1 ) );
 }
 
@@ -528,11 +453,11 @@ processBoundaryEntities( const GridPointer& gridPointer,
     * Boundary vertices
     */
    static_assert( GridEntity::getEntityDimension() == 0, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true, 1, 1, 1 >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions(),
+      gridPointer->getDimensions() + CoordinatesType( 1, 1, 1 ),
       userData,
       asynchronousMode,
       0 );
@@ -553,16 +478,16 @@ processInteriorEntities( const GridPointer& gridPointer,
     * Interior vertices
     */
    static_assert( GridEntity::getEntityDimension() == 0, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
       CoordinatesType( 1, 1, 1 ),
-      gridPointer->getDimensions() - CoordinatesType( 1, 1, 1 ),
+      gridPointer->getDimensions(),
       userData,
       asynchronousMode,
       0 );
 }
- 
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -578,11 +503,11 @@ processAllEntities( const GridPointer& gridPointer,
     * All vertices
     */
    static_assert( GridEntity::getEntityDimension() == 0, "The entity has wrong dimension." );
- 
+
    GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       gridPointer,
       CoordinatesType( 0, 0, 0 ),
-      gridPointer->getDimensions(),
+      gridPointer->getDimensions() + CoordinatesType( 1, 1, 1 ),
       userData,
       asynchronousMode,
       0 );

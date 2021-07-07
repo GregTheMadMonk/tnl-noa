@@ -10,8 +10,6 @@
 
 #pragma once
 
-#define MPIIO
-
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>
@@ -48,10 +46,7 @@ class heatEquationConfig
          config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
-         config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
-         config.addEntry< String >( "distributed-grid-io-type", "Choose Distributed Grid IO Type", "LocalCopy");
-            config.addEntryEnum< String >( "LocalCopy" );
-            config.addEntryEnum< String >( "MpiIO" );
+         config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.vti");
       };
 };
 

@@ -11,13 +11,38 @@
 #include "tnl-diff.h"
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/TypeResolver/resolveMeshType.h>
+
+struct TNLDiffBuildConfigTag {};
+
+namespace TNL {
+namespace Meshes {
+namespace BuildConfigTags {
+
+/****
+ * Turn off support for float and long double.
+ */
+//template<> struct GridRealTag< TNLDiffBuildConfigTag, float > { enum { enabled = false }; };
+template<> struct GridRealTag< TNLDiffBuildConfigTag, long double > { enum { enabled = false }; };
+
+/****
+ * Turn off support for short int and long int indexing.
+ */
+template<> struct GridIndexTag< TNLDiffBuildConfigTag, short int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< TNLDiffBuildConfigTag, long int >{ enum { enabled = false }; };
+
+} // namespace BuildConfigTags
+} // namespace Meshes
+} // namespace TNL
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addEntry< String >( "mesh", "Input mesh file.", "mesh.tnl" );
-   config.addRequiredList< String >( "input-files", "The first set of the input files." );
+   config.addEntry< String >( "mesh", "Input mesh file.", "mesh.vti" );
+   config.addEntry< String >( "mesh-format", "Mesh file format.", "auto" );
+   config.addRequiredList< String >( "input-files", "Input files containing the mesh functions to be compared." );
+   config.addEntry< String >( "mesh-function-name", "Name of the mesh function in the input files.", "f" );
    config.addEntry< String >( "output-file", "File for the output data.", "tnl-diff.log" );
-   config.addEntry< String >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
+   config.addEntry< String >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the first and the second half of the intput files.", "couples" );
       config.addEntryEnum< String >( "couples" );
       config.addEntryEnum< String >( "sequence" );
       config.addEntryEnum< String >( "halves" );
@@ -39,29 +64,12 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   String meshFile = parameters.getParameter< String >( "mesh" );
-   const String meshType = getObjectType( meshFile );
-   std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   const std::vector< String > parsedMeshType = parseObjectType( meshType );
-   if( ! parsedMeshType.size() )
+   const String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
+   auto wrapper = [&] ( const auto& reader, auto&& mesh )
    {
-      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
-      return EXIT_FAILURE;
-   }
-   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
-       parsedMeshType[ 0 ] == "tnlGrid" )        // TODO: remove deprecated type name
-   {
-      const int dimensions = atoi( parsedMeshType[ 1 ].getString() );
-      if( dimensions == 1 )
-         if( ! resolveGridRealType< 1 >( parsedMeshType, parameters ) )
-            return EXIT_FAILURE;
-      if( dimensions == 2 )
-         if( ! resolveGridRealType< 2 >( parsedMeshType, parameters ) )
-            return EXIT_FAILURE;
-      if( dimensions == 3 )
-         if( ! resolveGridRealType< 3 >( parsedMeshType, parameters ) )
-            return EXIT_FAILURE;
-      return EXIT_SUCCESS;
-   }
-   return EXIT_FAILURE;
+      using MeshType = std::decay_t< decltype(mesh) >;
+      return processFiles< MeshType >( parameters );
+   };
+   return ! TNL::Meshes::resolveMeshType< TNLDiffBuildConfigTag, Devices::Host >( wrapper, meshFile, meshFileFormat );
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DistributedGrid_Base.h  -  part common for all Dimensionensions
+                          DistributedGrid.h  -  description
                              -------------------
     begin                : July 07, 2018
     copyright            : (C) 2018 by Tomas Oberhuber
@@ -16,12 +16,9 @@
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
-
 namespace TNL {
 namespace Meshes {
 namespace DistributedMeshes {
-
-
 
 template< int Dimension,
           typename Real,
@@ -29,28 +26,23 @@ template< int Dimension,
           typename Index >
 class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 {
-  public:
-
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Grid< Dimension, Real, Device, IndexType > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef Containers::StaticVector< Dimension, IndexType > CoordinatesType;
-      typedef Containers::StaticVector< Dimension, IndexType > SubdomainOverlapsType;
+   public:
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using GlobalIndexType = Index;
+      using GridType = Grid< Dimension, Real, Device, IndexType >;
+      using PointType = typename GridType::PointType;
+      using CoordinatesType = Containers::StaticVector< Dimension, IndexType >;
+      using SubdomainOverlapsType = Containers::StaticVector< Dimension, IndexType >;
 
       static constexpr int getMeshDimension() { return Dimension; };
 
-      static constexpr int getNeighborsCount() { return DirectionCount<Dimension>::get(); } //c++14 may use Directions::pow3(Dimension)-1
+      static constexpr int getNeighborsCount() { return Directions::i3pow(Dimension)-1; }
 
-      DistributedMesh();
+      DistributedMesh() = default;
 
-      ~DistributedMesh();
-
-      static void configSetup( Config::ConfigDescription& config );
-
-      bool setup( const Config::ParameterContainer& parameters,
-                  const String& prefix );
+      ~DistributedMesh() = default;
 
       void setDomainDecomposition( const CoordinatesType& domainDecomposition );
 
@@ -63,20 +55,21 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       void setOverlaps( const SubdomainOverlapsType& lower,
                         const SubdomainOverlapsType& upper);
 
-      void setupGrid( GridType& grid);
+      // for compatibility with DistributedMesh
+      void setGhostLevels( int levels );
+      int getGhostLevels() const;
 
       bool isDistributed() const;
 
       bool isBoundarySubdomain() const;
 
-      // TODO: replace it with getLowerOverlap() and getUpperOverlap()
-      // It is still being used in cuts set-up
-      const CoordinatesType& getOverlap() const { return this->overlap;};
-
       //currently used overlaps at this subdomain
       const SubdomainOverlapsType& getLowerOverlap() const;
 
       const SubdomainOverlapsType& getUpperOverlap() const;
+
+      // returns the local grid WITH overlap
+      const GridType& getLocalMesh() const;
 
       //number of elements of local sub domain WITHOUT overlap
       // TODO: getSubdomainDimensions
@@ -89,20 +82,10 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       //coordinates of begin of local subdomain without overlaps in global grid
       const CoordinatesType& getGlobalBegin() const;
 
-      //number of elements of local sub domain WITH overlap
-      // TODO: replace with localGrid
-      const CoordinatesType& getLocalGridSize() const;
-
-      //coordinates of begin of local subdomain without overlaps in local grid
-      const CoordinatesType& getLocalBegin() const;
-
       const CoordinatesType& getSubdomainCoordinates() const;
 
-      const PointType& getLocalOrigin() const;
-      const PointType& getSpaceSteps() const;
-
       //aka MPI-communcicator
-      void setCommunicationGroup(MPI_Comm group);
+      void setCommunicationGroup( MPI_Comm group );
       MPI_Comm getCommunicationGroup() const;
 
       template< int EntityDimension >
@@ -129,45 +112,40 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       void writeProlog( Logger& logger );
 
+      bool operator==( const DistributedMesh& other ) const;
+
+      bool operator!=( const DistributedMesh& other ) const;
+
    public:
 
       bool isThereNeighbor(const CoordinatesType &direction) const;
 
       void setupNeighbors();
 
-      void print( std::ostream& str ) const;
+      GridType globalGrid, localGrid;
+      CoordinatesType localSize = 0;
+      CoordinatesType globalBegin = 0;
 
-      GridType globalGrid;
-      PointType localOrigin;
-      CoordinatesType localBegin;
-      CoordinatesType localSize;
-      CoordinatesType localGridSize;
-      CoordinatesType overlap;
-      //CoordinatesType globalDimensions;
-      CoordinatesType globalBegin;
-      PointType spaceSteps;
+      SubdomainOverlapsType lowerOverlap = 0;
+      SubdomainOverlapsType upperOverlap = 0;
 
-      SubdomainOverlapsType lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap;
-
-      CoordinatesType domainDecomposition;
-      CoordinatesType subdomainCoordinates;
+      CoordinatesType domainDecomposition = 0;
+      CoordinatesType subdomainCoordinates = 0;
 
       // TODO: static arrays
       int neighbors[ getNeighborsCount() ];
       int periodicNeighbors[ getNeighborsCount() ];
 
-      IndexType Dimensions;
-      bool distributed;
+      bool distributed = false;
 
-      int rank;
-      int nproc;
-
-      bool isSet;
+      bool isSet = false;
 
       //aka MPI-communicator
-      MPI_Comm group;
-
+      MPI_Comm group = MPI::AllGroup();
 };
+
+template< int Dimension, typename Real, typename Device, typename Index >
+std::ostream& operator<<( std::ostream& str, const DistributedMesh< Grid< Dimension, Real, Device, Index > >& grid );
 
 } // namespace DistributedMeshes
 } // namespace Meshes

@@ -4,51 +4,51 @@
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
-namespace Meshes { 
+namespace Meshes {
 namespace DistributedMeshes {
 
-//index of direction can be written as number in 3-base system 
+//index of direction can be written as number in 3-base system
 //  -> 1 order x axis, 2 order y axis, 3 order z axis
 //  -> 0 - not used, 1 negative direction, 2 positive direction
 //finaly we subtrackt 1 because we dont need (0,0,0) aka 0 aka no direction
 
-//enum Directions2D { Left = 0 , Right = 1 , Up = 2, UpLeft =3, UpRight=4, Down=5, DownLeft=6, DownRight=7 }; 
+//enum Directions2D { Left = 0 , Right = 1 , Up = 2, UpLeft =3, UpRight=4, Down=5, DownLeft=6, DownRight=7 };
 
 /*MEH - osa zed je zdola nahoru, asi---
-enum Directions3D { West = 0 , East = 1 , 
+enum Directions3D { West = 0 , East = 1 ,
                     North = 2, NorthWest = 3, NorthEast = 4,
                     South = 5, SouthWest = 6, SouthEast = 7,
                     Top = 8, TopWest = 9, TopEast =10,
                     TopNorth = 11, TopNorthWest = 12, TopNorthEast = 13,
                     TopSouth = 14, TopSouthWest = 15,TopSouthEast = 16,
-                    Bottom = 17 ,BottomWest = 18 , BottomEast = 19 , 
+                    Bottom = 17 ,BottomWest = 18 , BottomEast = 19 ,
                     BottomNorth = 20, BottomNorthWest = 21, BottomNorthEast = 22,
                     BottomSouth = 23, BottomSouthWest = 24, BottomSouthEast = 25,
                   };*/
 
 /*
 with self
-enum Directions3D { 
-                    ZzYzXz =  0, ZzYzXm =  1, ZzYzXp =  2, 
+enum Directions3D {
+                    ZzYzXz =  0, ZzYzXm =  1, ZzYzXp =  2,
                     ZzYmXz =  3, ZzYmXm =  4, ZzYmXp =  5,
-                    ZzYpXz =  6, ZzYpXm =  7, ZzYpXp =  8,                    
-                    ZmYzXz =  9, ZmYzXm = 10, ZmYzXp = 11, 
+                    ZzYpXz =  6, ZzYpXm =  7, ZzYpXp =  8,
+                    ZmYzXz =  9, ZmYzXm = 10, ZmYzXp = 11,
                     ZmYmXz = 12, ZmYmXm = 13, ZmYmXp = 14,
                     ZmYpXz = 15, ZmYpXm = 16, ZmYpXp = 17,
-                    ZpYzXz = 18, ZpYzXm = 19, ZpYzXp = 20, 
+                    ZpYzXz = 18, ZpYzXm = 19, ZpYzXp = 20,
                     ZpYmXz = 21, ZpYmXm = 22, ZpYmXp = 23,
                     ZpYpXz = 24, ZpYpXm = 25, ZpYpXp = 26
                   };
 */
 
-enum Directions3D { 
-                    ZzYzXm =  0, ZzYzXp =  1, 
+enum Directions3D {
+                    ZzYzXm =  0, ZzYzXp =  1,
                     ZzYmXz =  2, ZzYmXm =  3, ZzYmXp =  4,
-                    ZzYpXz =  5, ZzYpXm =  6, ZzYpXp =  7,                    
-                    ZmYzXz =  8, ZmYzXm =  9, ZmYzXp = 10, 
+                    ZzYpXz =  5, ZzYpXm =  6, ZzYpXp =  7,
+                    ZmYzXz =  8, ZmYzXm =  9, ZmYzXp = 10,
                     ZmYmXz = 11, ZmYmXm = 12, ZmYmXp = 13,
                     ZmYpXz = 14, ZmYpXm = 15, ZmYpXp = 16,
-                    ZpYzXz = 17, ZpYzXm = 18, ZpYzXp = 19, 
+                    ZpYzXz = 17, ZpYzXm = 18, ZpYzXp = 19,
                     ZpYmXz = 20, ZpYmXm = 21, ZpYmXp = 22,
                     ZpYpXz = 23, ZpYpXm = 24, ZpYpXp = 25
                   };
@@ -84,7 +84,7 @@ public:
         }
         return res;
     }
-    
+
 
  /*   static int getDirection(int direction)
     {
@@ -109,21 +109,20 @@ public:
         result+=add(direction3);
         return result-1;
     }*/
-    
-    static int add(int direction)
+
+    static constexpr int add(int direction)
     {
         if(direction==0)
             return 0;
 
         if(direction>0)
-            return 2*pow3(direction-1); //positive direction has higer index
+            return 2*i3pow(direction-1); //positive direction has higer index
         else
-            return pow3(-direction-1);
-
-
+            return i3pow(-direction-1);
     }
 
-    static int pow3(int exp)
+    // return 3^exp
+    static constexpr int i3pow(int exp)
     {
         int ret=1;
         for(int i=0;i<exp;i++)
@@ -132,37 +131,6 @@ public:
     }
 };
 
-//for c++11 -- in c++14 simply 3^dim-1
-template<int dim>
-class DirectionCount
-{
-public:
-    static constexpr int get(){return 0;}
-};
-
-template <>
-class DirectionCount<1>
-{
-public:
-    static constexpr int get(){return 2;}
-};
-
-template <>
-class DirectionCount<2>
-{
-public:
-    static constexpr int get(){return 8;}
-};
-
-template <>
-class DirectionCount<3>
-{
-public:
-    static constexpr int get(){return 26;}
-};
-
-
 } // namespace DistributedMeshes
 } // namespace Meshes
 } // namespace TNL
-

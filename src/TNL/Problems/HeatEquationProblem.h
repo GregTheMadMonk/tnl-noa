@@ -24,7 +24,6 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
-#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 namespace TNL {
@@ -66,7 +65,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 
       void writeProlog( Logger& logger,
                         const Config::ParameterContainer& parameters ) const;
- 
+
       bool writeEpilog( Logger& logger );
 
 
@@ -91,7 +90,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
-      
+
       void applyBoundaryConditions( const RealType& time,
                                     DofVectorPointer& dofs );
 
@@ -127,8 +126,6 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                            RightHandSide,
                                            Solvers::PDE::BackwardTimeDiscretisation,
                                            DofVectorType > systemAssembler;
-
-     Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
 
      bool catchExceptions = true;
 };

@@ -12,18 +12,21 @@
 
 #pragma once
 
+#include <memory>
 #include <experimental/filesystem>
 
 #include <TNL/Meshes/Readers/NetgenReader.h>
 #include <TNL/Meshes/Readers/VTKReader.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
+#include <TNL/Meshes/Readers/VTIReader.h>
 #include <TNL/Meshes/Readers/PVTUReader.h>
+#include <TNL/Meshes/Readers/PVTIReader.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Readers {
 
-std::shared_ptr< Readers::MeshReader >
+inline std::shared_ptr< MeshReader >
 getMeshReader( const std::string& fileName,
                const std::string& fileFormat )
 {
@@ -42,14 +45,18 @@ getMeshReader( const std::string& fileName,
       return std::make_shared< Readers::VTKReader >( fileName );
    else if( format == "vtu" )
       return std::make_shared< Readers::VTUReader >( fileName );
+   else if( format == "vti" )
+      return std::make_shared< Readers::VTIReader >( fileName );
    else if( format == "pvtu" )
       return std::make_shared< Readers::PVTUReader >( fileName );
+   else if( format == "pvti" )
+      return std::make_shared< Readers::PVTIReader >( fileName );
 
    if( fileFormat == "auto" )
       std::cerr << "File '" << fileName << "' has unsupported format (based on the file extension): " << format << ".";
    else
       std::cerr << "Unsupported fileFormat parameter: " << fileFormat << ".";
-   std::cerr << " Supported formats are 'vtk', 'vtu', 'pvtu' and 'ng'." << std::endl;
+   std::cerr << " Supported formats are 'ng', 'vtk', 'vtu', 'vti', 'pvtu' and 'pvti'." << std::endl;
    return nullptr;
 }
 

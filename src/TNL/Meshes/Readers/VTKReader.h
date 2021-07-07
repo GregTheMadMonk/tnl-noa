@@ -15,6 +15,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <map>
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/Endianness.h>
@@ -189,6 +190,12 @@ public:
             }
             offsetsArray.push_back( connectivityArray.size() );
          }
+         else {
+            // skip the entity
+            const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
+            for( int v = 0; v < subvertices; v++ )
+               skipValue( dataFormat, inputFile, "int" );
+         }
       }
 
       // set cell types
@@ -317,6 +324,8 @@ protected:
                // skip the points coordinates
                for( std::int32_t j = 0; j < components * tuples; j++ )
                   skipValue( dataFormat, str, datatype );
+               // skip end of line (or any whitespace)
+               str >> std::ws;
             }
          }
          else if( name == "POINTS" ) {
@@ -327,6 +336,8 @@ protected:
             // skip the values
             for( std::int32_t j = 0; j < 3 * points_count; j++ )
                skipValue( dataFormat, str, datatype );
+            // skip end of line (or any whitespace)
+            str >> std::ws;
          }
          else if( name == "CELLS" ) {
             sectionPositions.insert( {"CELLS", currentPosition} );
@@ -336,6 +347,8 @@ protected:
             // skip the values
             for( std::int32_t j = 0; j < values_count; j++ )
                skipValue( dataFormat, str, "int" );
+            // skip end of line (or any whitespace)
+            str >> std::ws;
          }
          else if( name == "CELL_TYPES" ) {
             sectionPositions.insert( {"CELL_TYPES", currentPosition} );
@@ -346,6 +359,8 @@ protected:
             for( std::int32_t j = 0; j < count; j++ )
                // cell types are stored with great redundancy as int32 in the VTK file
                skipValue( dataFormat, str, "int" );
+            // skip end of line (or any whitespace)
+            str >> std::ws;
          }
          else if( name == "CELL_DATA" || name == "POINT_DATA" ) {
             if( cells_count == 0 || points_count == 0 )
@@ -423,6 +438,8 @@ protected:
                      // skip the points coordinates
                      for( std::int32_t j = 0; j < components * tuples; j++ )
                         skipValue( dataFormat, str, datatype );
+                     // skip end of line (or any whitespace)
+                     str >> std::ws;
                   }
                   continue;
                }
@@ -435,6 +452,8 @@ protected:
                // skip the values
                for( std::int32_t j = 0; j < elements * values_per_element; j++ )
                   skipValue( dataFormat, str, datatype );
+               // skip end of line (or any whitespace)
+               str >> std::ws;
             }
          }
          else

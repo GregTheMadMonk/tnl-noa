@@ -86,22 +86,6 @@ getMeshDimension()
 }
 
 template< typename MeshConfig, typename Device >
-String
-Mesh< MeshConfig, Device >::
-getSerializationType()
-{
-   return String( "Meshes::Mesh< ") + TNL::getType< MeshConfig >() + " >";
-}
-
-template< typename MeshConfig, typename Device >
-String
-Mesh< MeshConfig, Device >::
-getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-}
-
-template< typename MeshConfig, typename Device >
    template< int Dimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
@@ -340,43 +324,6 @@ reorderEntities( const GlobalIndexArray& perm,
    this->template updateEntityTagsLayer< Dimension >();
 }
 
-
-template< typename MeshConfig, typename Device >
-void
-Mesh< MeshConfig, Device >::
-save( File& file ) const
-{
-   // saving via host is necessary due to segment-based sparse matrices
-   if( std::is_same< Device, Devices::Cuda >::value ) {
-      Mesh< MeshConfig, Devices::Host > hostMesh;
-      hostMesh = *this;
-      hostMesh.save( file );
-   }
-   else {
-      Object::save( file );
-      StorageBaseType::save( file );
-      EntityTagsLayerFamily::save( file );
-   }
-}
-
-template< typename MeshConfig, typename Device >
-void
-Mesh< MeshConfig, Device >::
-load( File& file )
-{
-   // loading via host is necessary for the initialization of the dual graph (and due to segment-based sparse matrices)
-   if( std::is_same< Device, Devices::Cuda >::value ) {
-      Mesh< MeshConfig, Devices::Host > hostMesh;
-      hostMesh.load( file );
-      *this = hostMesh;
-   }
-   else {
-      Object::load( file );
-      StorageBaseType::load( file );
-      EntityTagsLayerFamily::load( file );
-      this->initializeDualGraph( *this );
-   }
-}
 
 template< typename MeshConfig, typename Device >
 void

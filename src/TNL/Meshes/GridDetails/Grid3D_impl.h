@@ -14,7 +14,6 @@
 #include <iomanip>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Meshes/GridDetails/GnuplotWriter.h>
 #include <TNL/Meshes/GridDetails/GridEntityGetter_impl.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter3D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
@@ -38,8 +37,7 @@ Grid< 3, Real, Device, Index > :: Grid()
   numberOfDzEdges( 0 ),
   numberOfDxAndDyEdges( 0 ),
   numberOfEdges( 0 ),
-  numberOfVertices( 0 ),
-  distGrid(nullptr)
+  numberOfVertices( 0 )
 {
 }
 
@@ -58,32 +56,11 @@ Grid< 3, Real, Device, Index >::Grid( const Index xSize, const Index ySize, cons
   numberOfDzEdges( 0 ),
   numberOfDxAndDyEdges( 0 ),
   numberOfEdges( 0 ),
-  numberOfVertices( 0 ),
-  distGrid(nullptr)
+  numberOfVertices( 0 )
 {
    this->setDimensions( xSize, ySize, zSize );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Grid< 3, Real, Device, Index > :: getSerializationType()
-{
-   return String( "Meshes::Grid< " ) +
-          convertToString( getMeshDimension() ) + ", " +
-          getType< RealType >() + ", " +
-          getType< Devices::Host >() + ", " +
-          getType< IndexType >() + " >";
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Grid< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-};
 
 template< typename Real,
           typename Device,
@@ -97,9 +74,9 @@ void Grid< 3, Real, Device, Index > :: computeSpaceSteps()
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
       this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
-      
+
       this->computeSpaceStepPowers();
-      
+
    }
 };
 
@@ -107,7 +84,7 @@ template< typename Real,
           typename Device,
           typename Index >
 void Grid< 3, Real, Device, Index > :: computeSpaceStepPowers()
-{      
+{
       const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
       const RealType& hz = this->spaceSteps.z();
@@ -203,9 +180,9 @@ template< typename Real,
           typename Index >
 void Grid< 3, Real, Device, Index > :: setSpaceSteps(const PointType& steps)
 {
-     this->spaceSteps=steps;    
+     this->spaceSteps=steps;
      computeSpaceStepPowers();
-     computeProportions(); 
+     computeProportions();
 }
 
 
@@ -214,9 +191,9 @@ template< typename Real,
           typename Index >
 void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
-   TNL_ASSERT_GT( xSize, 0, "Grid size must be positive." );
-   TNL_ASSERT_GT( ySize, 0, "Grid size must be positive." );
-   TNL_ASSERT_GT( zSize, 0, "Grid size must be positive." );
+   TNL_ASSERT_GE( xSize, 0, "Grid size must be non-negative." );
+   TNL_ASSERT_GE( ySize, 0, "Grid size must be non-negative." );
+   TNL_ASSERT_GE( zSize, 0, "Grid size must be non-negative." );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -241,6 +218,12 @@ void Grid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const I
    this->cellZNeighborsStep = xSize * ySize;
 
    computeSpaceSteps();
+
+   // only default behaviour, DistributedGrid must use the setters explicitly after setDimensions
+   localBegin = 0;
+   interiorBegin = 1;
+   localEnd = dimensions;
+   interiorEnd = dimensions - 1;
 }
 
 template< typename Real,
@@ -259,6 +242,79 @@ const typename Grid< 3, Real, Device, Index > :: CoordinatesType&
    Grid< 3, Real, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+void Grid< 3, Real, Device, Index >::setLocalBegin( const CoordinatesType& begin )
+{
+   localBegin = begin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+__cuda_callable__
+const typename Grid< 3, Real, Device, Index >::CoordinatesType&
+   Grid< 3, Real, Device, Index >::getLocalBegin() const
+{
+   return localBegin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+void Grid< 3, Real, Device, Index >::setLocalEnd( const CoordinatesType& end )
+{
+   localEnd = end;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+__cuda_callable__
+const typename Grid< 3, Real, Device, Index >::CoordinatesType&
+   Grid< 3, Real, Device, Index >::
+   getLocalEnd() const
+{
+   return localEnd;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+void Grid< 3, Real, Device, Index >::setInteriorBegin( const CoordinatesType& begin )
+{
+   interiorBegin = begin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+__cuda_callable__
+const typename Grid< 3, Real, Device, Index >::CoordinatesType&
+   Grid< 3, Real, Device, Index >::getInteriorBegin() const
+{
+   return interiorBegin;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+void Grid< 3, Real, Device, Index >::setInteriorEnd( const CoordinatesType& end )
+{
+   interiorEnd = end;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index  >
+__cuda_callable__
+const typename Grid< 3, Real, Device, Index >::CoordinatesType&
+   Grid< 3, Real, Device, Index >::getInteriorEnd() const
+{
+   return interiorEnd;
 }
 
 template< typename Real,
@@ -432,69 +488,10 @@ Real Grid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
-void Grid< 3, Real, Device, Index >:: setDistMesh(DistributedMeshType * distMesh)
-{
-    this->distGrid=distMesh;
-}
-   
-template< typename Real,
-          typename Device,
-          typename Index >
-DistributedMeshes::DistributedMesh <Grid< 3, Real, Device, Index >> * 
-Grid< 3, Real, Device, Index >:: getDistributedMesh(void) const
-{
-    return this->distGrid;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index > :: save( File& file ) const
-{
-   Object::save( file );
-   this->origin.save( file );
-   this->proportions.save( file );
-   this->dimensions.save( file );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::load( File& file )
-{
-   Object :: load( file );
-   CoordinatesType dimensions;
-   this->origin.load( file );
-   this->proportions.load( file );
-   dimensions.load( file );
-   this->setDimensions( dimensions );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::save( const String& fileName ) const
-{
-   Object::save( fileName );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void Grid< 3, Real, Device, Index >::load( const String& fileName )
-{
-   Object::load( fileName );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void
 Grid< 3, Real, Device, Index >::
 writeProlog( Logger& logger ) const
 {
-   if( this->getDistributedMesh() && this->getDistributedMesh()->isDistributed() )
-      return this->getDistributedMesh()->writeProlog( logger );   
    logger.writeParameter( "Dimension:", getMeshDimension() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );

@@ -89,18 +89,6 @@ public:
                DualGraphLayer< MeshConfig, Device >::operator==( layer ) );
    }
 
-   void save( File& file ) const
-   {
-      file << points;
-      BaseType::save( file );
-   }
-
-   void load( File& file )
-   {
-      file >> points;
-      BaseType::load( file );
-   }
-
    void print( std::ostream& str ) const
    {
       str << "Vertex coordinates are: " << points << std::endl;
@@ -282,22 +270,6 @@ public:
       return *this;
    }
 
-   void save( File& file ) const
-   {
-      SubentityStorageBaseType::save( file );
-      SuperentityStorageBaseType::save( file );
-      file.save( &entitiesCount, 1 );
-      BaseType::save( file );
-   }
-
-   void load( File& file )
-   {
-      SubentityStorageBaseType::load( file );
-      SuperentityStorageBaseType::load( file );
-      file.load( &entitiesCount, 1 );
-      BaseType::load( file );
-   }
-
    void print( std::ostream& str ) const
    {
       str << "Number of entities with dimension " << DimensionTag::value << ": " << entitiesCount << std::endl;
@@ -366,9 +338,6 @@ protected:
 
    void setEntitiesCount() {}
    void getEntitiesCount() const {}
-
-   void save( File& file ) const {}
-   void load( File& file ) {}
 
    void print( std::ostream& str ) const {}
 

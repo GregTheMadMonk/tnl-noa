@@ -22,7 +22,6 @@ template< typename Mesh,
           int MeshEntityDimension = Mesh::getMeshDimension(),
           typename Real = typename Mesh::RealType >
 class MeshFunctionView :
-   public Object,
    public Domain< Mesh::getMeshDimension(), MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
@@ -53,10 +52,6 @@ class MeshFunctionView :
       MeshFunctionView( const MeshPointer& meshPointer,
                         Pointers::SharedPointer<  Vector >& data,
                         const IndexType& offset = 0 );
-
-      static String getSerializationType();
-
-      virtual String getSerializationTypeVirtual() const;
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -89,6 +84,8 @@ class MeshFunctionView :
 
       const MeshPointer& getMeshPointer() const;
 
+      MeshPointer& getMeshPointer();
+
       static IndexType getDofs( const MeshPointer& meshPointer );
 
       __cuda_callable__ const VectorType& getData() const;
@@ -118,6 +115,7 @@ class MeshFunctionView :
 
       __cuda_callable__
       RealType& operator[]( const IndexType& meshEntityIndex );
+
       __cuda_callable__
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
@@ -136,20 +134,9 @@ class MeshFunctionView :
 
       RealType getMaxNorm() const;
 
-      void save( File& file ) const;
-
-      void load( File& file );
-
-      void boundLoad( File& file );
-
-      void boundLoad( const String& fileName );
-
-      bool write( const String& fileName,
-                  const String& format = "vtk" ) const;
-
-      using Object::save;
-
-      using Object::load;
+      bool write( const std::string& functionName,
+                  const std::string& fileName,
+                  const std::string& fileFormat = "auto" ) const;
 
    protected:
 

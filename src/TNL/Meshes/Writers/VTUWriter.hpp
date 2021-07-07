@@ -479,7 +479,8 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
       throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
 
    // write DataArray header
-   str << "<DataArray type=\"" << VTK::getTypeName( array[0] ) << "\"";
+   using ValueType = decltype(array[0]);
+   str << "<DataArray type=\"" << VTK::getTypeName( ValueType{} ) << "\"";
    str << " Name=\"" << name << "\"";
    if( numberOfComponents > 0 )
       str << " NumberOfComponents=\"" << numberOfComponents << "\"";

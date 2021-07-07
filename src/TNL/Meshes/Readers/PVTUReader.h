@@ -15,6 +15,7 @@
 #include <experimental/filesystem>
 
 #include <TNL/MPI/Wrappers.h>
+#include <TNL/MPI/Utils.h>
 #include <TNL/Meshes/Readers/VTUReader.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 
@@ -132,11 +133,23 @@ public:
    }
 
    template< typename MeshType >
-   void loadMesh( MeshType& mesh )
+   std::enable_if_t< isDistributedGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
+   {
+      throw MeshReaderError( "MeshReader", "the PVTU reader cannot be used to load a distributed structured grid." );
+   }
+
+   template< typename MeshType >
+   std::enable_if_t< ! isDistributedGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
       if( meshType == "" )
          detectMesh();
+
+      // check if we have a distributed unstructured mesh
+      if( meshType != "Meshes::DistributedMesh" )
+         throw MeshReaderError( "MeshReader", "the file does not contain an unstructured mesh, it is " + meshType );
 
       // load the local mesh
       auto& localMesh = mesh.getLocalMesh();
@@ -204,8 +217,20 @@ public:
       // reset arrays since they are not needed anymore
       this->pointTags = this->cellTags = pointGlobalIndices = cellGlobalIndices = {};
 
-      // set the communication group
-      mesh.setCommunicationGroup( group );
+      // check if we need to split the communicator
+      const Index minCount = MPI::reduce( TNL::min( pointsCount, cellsCount ), MPI_MIN );
+      if( minCount == 0 ) {
+         // split the communicator, remove the ranks which did not get a subdomain
+         const int color = (pointsCount > 0 && cellsCount > 0) ? 0 : MPI_UNDEFINED;
+         const MPI_Comm subgroup = MPI::Comm_split( group, color, 0 );
+
+         // set the communication group
+         mesh.setCommunicationGroup( subgroup );
+      }
+      else {
+         // set the communication group
+         mesh.setCommunicationGroup( group );
+      }
    }
 
    virtual VariantVector

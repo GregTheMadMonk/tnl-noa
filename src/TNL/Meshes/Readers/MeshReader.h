@@ -18,6 +18,7 @@
 
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/VTKTraits.h>
+#include <TNL/Meshes/Traits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -84,16 +85,80 @@ public:
     * \brief Method which loads the intermediate mesh representation into a
     * mesh object.
     *
+    * This overload applies to structured grids, i.e. \ref TNL::Meshes::Grid.
+    *
     * When the method exits, the intermediate mesh representation is destroyed
     * to save memory. However, depending on the specific file format, the mesh
     * file may remain open so that the user can load additional data.
     */
    template< typename MeshType >
-   void loadMesh( MeshType& mesh )
+   std::enable_if_t< isGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
    {
       // check that detectMesh has been called
       if( meshType == "" )
          detectMesh();
+
+      // check if we have a grid
+      if( meshType != "Meshes::Grid" )
+         throw MeshReaderError( "MeshReader", "the file does not contain a structured grid, it is " + meshType );
+
+      if( getMeshDimension() != mesh.getMeshDimension() )
+         throw MeshReaderError( "MeshReader", "cannot load a " + std::to_string(getMeshDimension()) + "-dimensional "
+                                              "grid into a mesh of type " + std::string(getType(mesh)) );
+
+      // check that the grid attributes were set
+      if( gridExtent.size() != 6 )
+         throw MeshReaderError( "MeshReader", "gridExtent has invalid size: " + std::to_string(gridExtent.size()) + " (should be 6)" );
+      if( gridOrigin.size() != 3 )
+         throw MeshReaderError( "MeshReader", "gridOrigin has invalid size: " + std::to_string(gridOrigin.size()) + " (should be 3)" );
+      if( gridSpacing.size() != 3 )
+         throw MeshReaderError( "MeshReader", "gridSpacing has invalid size: " + std::to_string(gridSpacing.size()) + " (should be 3)" );
+
+      // split the extent into begin and end
+      typename MeshType::CoordinatesType begin, end;
+      for( int i = 0; i < begin.getSize(); i++ ) {
+         begin[i] = gridExtent[2 * i];
+         end[i] = gridExtent[2 * i + 1];
+      }
+      mesh.setDimensions(end - begin);
+
+      // transform the origin and calculate proportions
+      typename MeshType::PointType origin, proportions;
+      for( int i = 0; i < origin.getSize(); i++ ) {
+         origin[i] = gridOrigin[i] + begin[i] * gridSpacing[i];
+         proportions[i] = (end[i] - begin[i]) * gridSpacing[i];
+      }
+      mesh.setDomain( origin, proportions );
+   }
+
+   /**
+    * \brief Method which loads the intermediate mesh representation into a
+    * mesh object.
+    *
+    * This overload applies to unstructured meshes, i.e. \ref TNL::Meshes::Mesh.
+    *
+    * When the method exits, the intermediate mesh representation is destroyed
+    * to save memory. However, depending on the specific file format, the mesh
+    * file may remain open so that the user can load additional data.
+    */
+   template< typename MeshType >
+   std::enable_if_t< ! isGrid< MeshType >::value >
+   loadMesh( MeshType& mesh )
+   {
+      // check that detectMesh has been called
+      if( meshType == "" )
+         detectMesh();
+
+      // check if we have an unstructured mesh
+      if( meshType != "Meshes::Mesh" )
+         throw MeshReaderError( "MeshReader", "the file does not contain an unstructured mesh, it is " + meshType );
+
+      // skip empty mesh (the cell shape is indeterminate)
+      if( NumberOfPoints == 0 && NumberOfCells == 0 ) {
+         mesh = MeshType {};
+         return;
+      }
 
       // check that the cell shape mathes
       const VTK::EntityShape meshCellShape = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
@@ -102,7 +167,6 @@ public:
                                             + "of cells used in the file (" + VTK::getShapeName(cellShape) + ")" );
 
       using MeshBuilder = MeshBuilder< MeshType >;
-      using IndexType = typename MeshType::GlobalIndexType;
       using PointType = typename MeshType::PointType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
@@ -147,7 +211,7 @@ public:
       pointsArray = connectivityArray = offsetsArray = typesArray = {};
 
       if( ! meshBuilder.build( mesh ) )
-         throw MeshReaderError( "VTKReader", "MeshBuilder failed" );
+         throw MeshReaderError( "MeshReader", "MeshBuilder failed" );
    }
 
    virtual VariantVector
@@ -218,6 +282,10 @@ protected:
    int meshDimension, worldDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
 
+   // intermediate representation of a grid (this is relevant only for TNL::Meshes::Grid)
+   std::vector< std::int64_t > gridExtent;
+   std::vector< double > gridOrigin, gridSpacing;
+
    // intermediate representation of the unstructured mesh (matches the VTU
    // file format, other formats have to be converted)
    VariantVector pointsArray, connectivityArray, offsetsArray, typesArray;
@@ -230,6 +298,10 @@ protected:
       NumberOfPoints = NumberOfCells = 0;
       meshDimension = worldDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
+
+      gridExtent = {};
+      gridOrigin = gridSpacing = {};
+
       pointsArray = connectivityArray = offsetsArray = typesArray = {};
       pointsType = connectivityType = offsetsType = typesType = "";
    }

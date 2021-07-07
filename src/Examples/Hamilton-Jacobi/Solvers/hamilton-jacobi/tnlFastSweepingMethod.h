@@ -21,7 +21,7 @@ template< typename Mesh,
         typename Communicator,
         typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class FastSweepingMethod
-{   
+{
 };
 
 template< typename Real,
@@ -33,9 +33,9 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, 
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-  
+
   public:
-    
+
     typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
     typedef Real RealType;
     typedef Device DeviceType;
@@ -44,28 +44,29 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, 
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-    
-    
+
+
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;
     using typename BaseType::InterfaceMapPointer;
     using typename BaseType::MeshFunctionPointer;
-   
-    
+
+
     FastSweepingMethod();
-    
+
     const IndexType& getMaxIterations() const;
-    
+
     void setMaxIterations( const IndexType& maxIterations );
-    
-    void solve( const MeshPointer& mesh,
+
+    void solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+            const MeshPointer& mesh,
             MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
             MeshFunctionPointer& u );
-    
-    
+
+
     protected:
-      
+
       const IndexType maxIterations;
 };
 
@@ -78,9 +79,9 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-  
+
   public:
-    
+
     typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
     typedef Real RealType;
     typedef Device DeviceType;
@@ -89,43 +90,42 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
     typedef Communicator CommunicatorType;
     typedef Containers::StaticVector< 2, Index > StaticVector;
-    
+
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
     using MPI = Communicators::MpiCommunicator;
-    
+
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;
     using typename BaseType::InterfaceMapPointer;
     using typename BaseType::MeshFunctionPointer;
     using typename BaseType::ArrayContainer;
-        
+
     FastSweepingMethod();
-    
+
     const IndexType& getMaxIterations() const;
-    
+
     void setMaxIterations( const IndexType& maxIterations );
-    
-    void solve( const MeshPointer& mesh,
+
+    void solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+            const MeshPointer& mesh,
             MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
             const MeshFunctionPointer& u );
-    
+
     protected:
-      
+
       using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
       DistributedMeshSynchronizerType synchronizer;
 
       const IndexType maxIterations;
-    
-      void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
-              const MeshPointer& mesh);
-      
-      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo, 
+
+      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
               MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
               const AnisotropyPointer& anisotropy );
-      
-      void getInfoFromNeighbours( int& calculated, int& calculateAgain, const MeshPointer& mesh );
+
+      void getInfoFromNeighbours( int& calculated, int& calculateAgain,
+                                  const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh );
 };
 
 template< typename Real,
@@ -137,9 +137,9 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-  
+
   public:
-    
+
     typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
     typedef Real RealType;
     typedef Device DeviceType;
@@ -148,45 +148,44 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
     typedef Communicator CommunicatorType;
     typedef Containers::StaticVector< 3, Index > StaticVector;
-    
+
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
     using MPI = Communicators::MpiCommunicator;
-    
+
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;
     using typename BaseType::InterfaceMapPointer;
-    using typename BaseType::MeshFunctionPointer;   
+    using typename BaseType::MeshFunctionPointer;
     using typename BaseType::ArrayContainer;
-    
-    
+
+
     FastSweepingMethod();
-    
+
     const IndexType& getMaxIterations() const;
-    
+
     void setMaxIterations( const IndexType& maxIterations );
-    
-    void solve( const MeshPointer& mesh,
+
+    void solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
+            const MeshPointer& mesh,
             MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
             MeshFunctionPointer& u );
-    
-    
+
+
     protected:
-      
+
       using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer< Meshes::DistributedMeshes::DistributedMesh< typename MeshFunctionType::MeshType > >;
       DistributedMeshSynchronizerType synchronizer;
 
       const IndexType maxIterations;
-      
-      void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
-              const MeshPointer& mesh);
-      
-      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo, 
+
+      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
               MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
               const AnisotropyPointer& anisotropy );
-      
-      void getInfoFromNeighbours( int& calculated, int& calculateAgain, const MeshPointer& mesh );
+
+      void getInfoFromNeighbours( int& calculated, int& calculateAgain,
+                                  const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh );
 };
 
 

@@ -9,8 +9,11 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Config/parseCommandLine.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Images/DicomSeries.h>
 #include <TNL/FileName.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
 
 using namespace TNL;
 
@@ -19,7 +22,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addDelimiter( "General parameters" );
    config.addList         < String >( "dicom-files",   "Input DICOM files." );
    config.addList         < String >( "dicom-series",   "Input DICOM series." );
-   config.addEntry        < String >( "mesh-file",     "Mesh file.", "mesh.tnl" );
+   config.addEntry        < String >( "mesh-file",     "Mesh file.", "mesh.vti" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
    config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
@@ -60,7 +63,10 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
          roi.setGrid( grid, verbose );
          vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
          std::cout << "Writing grid to file " << meshFile << std::endl;
-         grid.save( meshFile );
+         using Writer = Meshes::Writers::VTIWriter< GridType >;
+         std::ofstream file( meshFile );
+         Writer writer( file );
+         writer.writeImageData( grid );
       }
       std::cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << std::endl;
       for( int imageIdx = 0; imageIdx < dicomSeries.getImagesCount(); imageIdx++ )

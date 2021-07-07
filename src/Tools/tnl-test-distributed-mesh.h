@@ -28,21 +28,12 @@ namespace TNL {
 namespace Meshes {
 namespace BuildConfigTags {
 
-/****
- * Turn off support for float and long double.
- */
-template<> struct GridRealTag< MyConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MyConfigTag, long double > { enum { enabled = false }; };
+// disable all grids
+template< int Dimension, typename Real, typename Device, typename Index >
+struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >
+{ enum { enabled = false }; };
 
-/****
- * Turn off support for short int and long int indexing.
- */
-template<> struct GridIndexTag< MyConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = false }; };
-
-/****
- * Unstructured meshes.
- */
+// Meshes are enabled only for topologies explicitly listed below.
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { enum { enabled = true }; };
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };

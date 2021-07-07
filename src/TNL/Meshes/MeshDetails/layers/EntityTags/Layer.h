@@ -206,17 +206,6 @@ public:
       return ghostsOffset;
    }
 
-   void save( File& file ) const
-   {
-      file << tags;
-   }
-
-   void load( File& file )
-   {
-      file >> tags;
-      updateEntityTagsLayer( DimensionTag() );
-   }
-
    void print( std::ostream& str ) const
    {
       str << "Boundary tags for entities of dimension " << DimensionTag::value << " are: ";
@@ -284,9 +273,6 @@ protected:
    void getInteriorIndices( DimensionTag ) const {}
    void getGhostEntitiesCount() const;
    void getGhostEntitiesOffset() const;
-
-   void save( File& file ) const {}
-   void load( File& file ) {}
 
    void print( std::ostream& str ) const {}
 
