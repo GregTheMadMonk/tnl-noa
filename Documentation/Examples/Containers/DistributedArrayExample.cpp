@@ -13,11 +13,12 @@ template< typename Device >
 void distributedArrayExample()
 {
    using ArrayType = Containers::DistributedArray< int, Device >;
+   using LocalArrayType = Containers::Array< int, Device >;
    using IndexType = typename ArrayType::IndexType;
    using LocalRangeType = typename ArrayType::LocalRangeType;
 
    const MPI_Comm group = TNL::MPI::AllGroup();
-   const int rank = TNL::MPI::GetRank(group);
+   //const int rank = TNL::MPI::GetRank(group);
    const int nproc = TNL::MPI::GetSize(group);
 
    /***
@@ -28,6 +29,9 @@ void distributedArrayExample()
 
    const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( size, group );
    ArrayType a( localRange, ghosts, size, group );
+   a.forElements( 0, size, [=] __cuda_callable__ ( const int idx, int& value ) { value = idx; } );
+   //LocalArrayType localArray = a;
+   //std::cout << a << std::endl;
 
 }
 
