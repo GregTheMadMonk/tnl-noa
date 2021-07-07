@@ -921,7 +921,7 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag, MPI_Comm comm )
 {
 #ifdef HAVE_MPI
-   TNL_ASSERT( false, "Does not work" );
+   TNL_ASSERT_TRUE( false, "Does not work" );
    MPI_Status status;
    Index size;
    MPI_Recv( ( void* ) size, 1, MPI::getDataType< Index >(), src, tag, comm, &status );
