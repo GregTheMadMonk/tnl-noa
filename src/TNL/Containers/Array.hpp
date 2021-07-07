@@ -920,6 +920,7 @@ void send( const Array< Value, Device, Index, Allocator >& array, int dest, int 
 template< typename Value, typename Device, typename Index, typename Allocator >
 void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag, MPI_Comm comm )
 {
+#ifdef HAVE_MPI
    TNL_ASSERT( false, "Does not work" );
    MPI_Status status;
    Index size;
@@ -927,7 +928,7 @@ void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag,
    std::cerr << "Size = " << size << std::endl;
    array.setSize( size );
    MPI_Recv( ( void* ) array.getData(), size * sizeof( Value ), MPI_BYTE, src, tag, comm, &status );
-
+#endif
 }
 
 

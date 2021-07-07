@@ -47,5 +47,6 @@ enum {
 #define MPI_CART               1                       /* cartesian topology */
 #define MPI_GRAPH              2                       /* graph topology */
 #define MPI_KEYVAL_INVALID     -1                      /* invalid key value */
+#define MPI_COMM_WORLD         0
 
 #endif
