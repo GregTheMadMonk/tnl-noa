@@ -518,8 +518,8 @@ print( std::ostream& str ) const
       }
       str << " ]";
    }
-   else send( this->localData, 0, 0, this->group );
-   return str;*/
+   else send( this->localData, 0, 0, this->group );*/
+   return str;
 }
 
 } // namespace Containers
