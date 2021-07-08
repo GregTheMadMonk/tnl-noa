@@ -21,7 +21,7 @@
 namespace TNL {
 namespace Containers {
 
-// Specifies a subrange [begin, end) of a range [0, gloablSize).
+// Specifies a subrange [begin, end) of a range [0, globalSize).
 template< typename Index >
 class Subrange
 {

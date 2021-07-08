@@ -438,6 +438,37 @@ operator!=( const Array& array ) const
 template< typename Value,
           typename Device,
           typename Index >
+   template< typename Function >
+void
+DistributedArrayView< Value, Device, Index >::
+forElements( IndexType begin, IndexType end, Function&& f )
+{
+   IndexType localBegin = max( begin, localRange.getBegin() );
+   IndexType localEnd = min( end, localRange.getEnd() );
+   auto local_f = [=] __cuda_callable__ ( const IndexType& idx, ValueType& value ) mutable {
+      f( idx + localRange.getBegin(), value );
+   };
+   this->localData.forElements( localBegin - localRange.getBegin(),
+                                localEnd - localRange.getBegin(),
+                                local_f );
+
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void
+DistributedArrayView< Value, Device, Index >::
+forElements( IndexType begin, IndexType end, Function&& f ) const
+{
+
+}
+
+
+template< typename Value,
+          typename Device,
+          typename Index >
 bool
 DistributedArrayView< Value, Device, Index >::
 containsValue( ValueType value ) const
@@ -463,6 +494,32 @@ containsOnlyValue( ValueType value ) const
       MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
    }
    return result;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+std::ostream&
+DistributedArrayView< Value, Device, Index >::
+print( std::ostream& str ) const
+{
+   // The following does not work properly
+   /*if( MPI::GetRank( group ) == 0 )
+   {
+      str << "[ ";
+      for( IndexType i = 0; i < localData.getSize(); i++ )
+         str << ", " << localData.getElement( i );
+      for( int proc = 1; proc < MPI::GetSize( group ); proc++ )
+      {
+         Array< std::remove_const_t< Value >, Device, Index > localArray;
+         receive( localArray, proc, 0, group );
+         for( IndexType i = 0; i < localArray.getSize(); i++ )
+            str << ", " << localArray.getElement( i );
+      }
+      str << " ]";
+   }
+   else send( this->localData, 0, 0, this->group );*/
+   return str;
 }
 
 } // namespace Containers

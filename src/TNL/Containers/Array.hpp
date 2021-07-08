@@ -911,5 +911,26 @@ File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array )
    return f >> array;
 }
 
+template< typename Value, typename Device, typename Index, typename Allocator >
+void send( const Array< Value, Device, Index, Allocator >& array, int dest, int tag, MPI_Comm comm )
+{
+   send( array.getConstView(), dest, tag, comm );
+}
+
+template< typename Value, typename Device, typename Index, typename Allocator >
+void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag, MPI_Comm comm )
+{
+#ifdef HAVE_MPI
+   TNL_ASSERT_TRUE( false, "Does not work" );
+   MPI_Status status;
+   Index size;
+   MPI_Recv( ( void* ) size, 1, MPI::getDataType< Index >(), src, tag, comm, &status );
+   std::cerr << "Size = " << size << std::endl;
+   array.setSize( size );
+   MPI_Recv( ( void* ) array.getData(), size * sizeof( Value ), MPI_BYTE, src, tag, comm, &status );
+#endif
+}
+
+
 } // namespace Containers
 } // namespace TNL

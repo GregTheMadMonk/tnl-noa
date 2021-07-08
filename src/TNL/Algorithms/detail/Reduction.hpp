@@ -26,7 +26,8 @@
 #endif
 
 namespace TNL {
-namespace Algorithms {
+   namespace Algorithms {
+      namespace detail {
 
 /****
  * Arrays smaller than the following constant
@@ -499,5 +500,6 @@ reduceWithArgument( const Index begin,
    }
 }
 
-} // namespace Algorithms
+      } // namespace detail
+   } // namespace Algorithms
 } // namespace TNL

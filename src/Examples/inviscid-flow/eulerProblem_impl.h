@@ -175,7 +175,10 @@ makeSnapshot( const RealType& time,
   physicalVariablesGetter.getVelocity( this->conservativeVariables, this->velocity );
   physicalVariablesGetter.getPressure( this->conservativeVariables, this->gamma, this->pressure );
 
-   FileName fileName;
+  TNL_ASSERT_TRUE( false, "The following does not work." );
+   // nvcc 10.1.243
+   // TNL/Functions/VectorField.h|404| error #2986: cannot use an entity undefined in device code
+  /* FileName fileName;
    fileName.setExtension( "vti" );
    fileName.setIndex( step );
    fileName.setFileNameBase( "density-" );
@@ -189,7 +192,7 @@ makeSnapshot( const RealType& time,
 
    fileName.setFileNameBase( "energy-" );
    this->conservativeVariables->getEnergy()->write( "energy", fileName.getFileName() );
-
+   */
    return true;
 }
 

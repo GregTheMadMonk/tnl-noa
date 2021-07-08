@@ -16,8 +16,8 @@ double updateAndResidue( Vector< double, Device >& u, const Vector< double, Devi
       const double& add = delta_u_view[ i ];
       u_view[ i ] += tau * add;
       return add * add; };
-   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
-   return sqrt( Reduction< Device >::reduce( 0, u_view.getSize(), fetch, reduce, 0.0 ) );
+   auto reduction = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   return sqrt( reduce< Device >( 0, u_view.getSize(), fetch, reduction, 0.0 ) );
 }
 
 int main( int argc, char* argv[] )

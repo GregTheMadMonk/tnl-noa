@@ -12,14 +12,14 @@ void scan( Vector< double, Device >& v )
    /***
     * Reduction is sum of two numbers.
     */
-   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   auto reduction = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
 
    /***
     * As parameters, we pass vector on which the scan is to be performed, interval
     * where the scan is performed, lambda function which is used by the scan and
     * zero element (idempotent) of the 'sum' operation.
     */
-   Scan< Device >::perform( v, 0, v.getSize(), reduce, 0.0 );
+   Scan< Device >::perform( v, 0, v.getSize(), reduction, 0.0 );
 }
 
 int main( int argc, char* argv[] )
@@ -45,4 +45,3 @@ int main( int argc, char* argv[] )
 #endif
    return EXIT_SUCCESS;
 }
-

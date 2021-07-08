@@ -389,7 +389,7 @@ reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, 
 
    ValueType* d = this->getData();
    auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
+   return Algorithms::reduce< DeviceType >( begin, end, main_fetch, reduce, zero );
 }
 
 template< typename Value,
@@ -407,7 +407,7 @@ reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, 
 
    const ValueType* d = this->getData();
    auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::Reduction< DeviceType >::reduce( begin, end, main_fetch, reduce, zero );
+   return Algorithms::reduce< DeviceType >( begin, end, main_fetch, reduce, zero );
 }
 
 template< typename Value,
@@ -539,6 +539,18 @@ File& operator>>( File&& file, ArrayView< Value, Device, Index > view )
    File& f = file;
    return f >> view;
 }
+
+template< typename Value, typename Device, typename Index >
+void send( const ArrayView< Value, Device, Index >& view, int dest, int tag, MPI_Comm comm )
+{
+#ifdef HAVE_MPI
+   TNL_ASSERT_TRUE( false, "Does not work" );
+   auto size = view.getSize();
+   MPI_Send( ( const void* ) size, 1, MPI::getDataType< Index >(), dest, tag, comm );
+   MPI_Send( ( const void* ) view.getData(), view.getSize() * sizeof( Value ), MPI_BYTE, dest, tag, comm );
+#endif
+}
+
 
 } // namespace Containers
 } // namespace TNL

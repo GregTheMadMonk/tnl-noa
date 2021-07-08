@@ -14,15 +14,7 @@ maximumNorm( const Vector< double, Device >& v )
    auto view = v.getConstView();
 
    auto fetch = [=] __cuda_callable__ ( int i ) { return abs( view[ i ] ); };
-   auto reduction = [] __cuda_callable__ ( double& a, const double& b, int& aIdx, const int& bIdx ) {
-      if( a < b ) {
-         a = b;
-         aIdx = bIdx;
-      }
-      else if( a == b && bIdx < aIdx )
-         aIdx = bIdx;
-   };
-   return reduceWithArgument< Device >( 0, view.getSize(), fetch, reduction, std::numeric_limits< double >::max() );
+   return reduceWithArgument< Device >( 0, view.getSize(), fetch, TNL::MaxWithArg{} );
 }
 
 int main( int argc, char* argv[] )

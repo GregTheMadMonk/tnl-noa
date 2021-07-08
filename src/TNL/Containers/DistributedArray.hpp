@@ -453,6 +453,30 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
+   template< typename Function >
+void
+DistributedArray< Value, Device, Index, Allocator >::
+forElements( IndexType begin, IndexType end, Function&& f )
+{
+   this->view.forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Function >
+void
+DistributedArray< Value, Device, Index, Allocator >::
+forElements( IndexType begin, IndexType end, Function&& f ) const
+{
+   this->view.forElements( begin, end, f );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
 bool
 DistributedArray< Value, Device, Index, Allocator >::
 containsValue( ValueType value ) const

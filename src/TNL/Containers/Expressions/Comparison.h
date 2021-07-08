@@ -68,7 +68,7 @@ struct VectorComparison< T1, T2, false >
       const auto view_a = a.getConstView();
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] == view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 };
 
@@ -100,7 +100,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
       const auto view_a = a.getConstView();
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] > view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool GE( const T1& a, const T2& b )
@@ -115,7 +115,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
       const auto view_a = a.getConstView();
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] >= view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LT( const T1& a, const T2& b )
@@ -130,7 +130,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
       const auto view_a = a.getConstView();
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] < view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LE( const T1& a, const T2& b )
@@ -145,7 +145,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
       const auto view_a = a.getConstView();
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] <= view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 };
 
@@ -162,7 +162,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return a == view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool NE( const T1& a, const T2& b )
@@ -177,7 +177,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return a > view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool GE( const T1& a, const T2& b )
@@ -187,7 +187,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return a >= view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LT( const T1& a, const T2& b )
@@ -197,7 +197,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return a < view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LE( const T1& a, const T2& b )
@@ -207,7 +207,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 
       const auto view_b = b.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return a <= view_b[ i ]; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, b.getSize(), fetch, std::logical_and<>{}, true );
    }
 };
 
@@ -224,7 +224,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
       const auto view_a = a.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] == b; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool NE( const T1& a, const T2& b )
@@ -239,7 +239,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
       const auto view_a = a.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] > b; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool GE( const T1& a, const T2& b )
@@ -249,7 +249,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
       const auto view_a = a.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] >= b; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LT( const T1& a, const T2& b )
@@ -259,7 +259,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
       const auto view_a = a.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] < b; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 
    static bool LE( const T1& a, const T2& b )
@@ -269,7 +269,7 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 
       const auto view_a = a.getConstView();
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return view_a[ i ] <= b; };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, a.getSize(), fetch, std::logical_and<>{}, true );
    }
 };
 

@@ -170,12 +170,73 @@ public:
    template< typename Array >
    bool operator!=( const Array& array ) const;
 
+      /**
+       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
+       *
+       * The lambda function is supposed to be declared as
+       *
+       * ```
+       * f( IndexType elementIdx, ValueType& elementValue )
+       * ```
+       *
+       * where
+       *
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
+       *
+       * This is performed at the same place where the array is allocated,
+       * i.e. it is efficient even on GPU.
+       *
+       * \param begin The beginning of the array elements interval.
+       * \param end The end of the array elements interval.
+       * \param f The lambda function to be processed.
+       *
+       * \par Example
+       * \include Containers/ArrayExample_forElements.cpp
+       * \par Output
+       * \include ArrayExample_forElements.out
+       *
+       */
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& f );
+
+      /**
+       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+       *
+       * The lambda function is supposed to be declared as
+       *
+       * ```
+       * f( IndexType elementIdx, ValueType& elementValue )
+       * ```
+       *
+       * where
+       *
+       * - \e elementIdx is an index of the array element being currently processed
+       * - \e elementValue is a value of the array element being currently processed
+       *
+       * This is performed at the same place where the array is allocated,
+       * i.e. it is efficient even on GPU.
+       *
+       * \param begin The beginning of the array elements interval.
+       * \param end The end of the array elements interval.
+       * \param f The lambda function to be processed.
+       *
+       * \par Example
+       * \include Containers/ArrayExample_forElements.cpp
+       * \par Output
+       * \include ArrayExample_forElements.out
+       *
+       */
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& f ) const;
+
    // Checks if there is an element with given value in this array
    bool containsValue( ValueType value ) const;
 
    // Checks if all elements in this array have the same given value
    bool containsOnlyValue( ValueType value ) const;
 
+   std::ostream& print( std::ostream& str ) const;
 protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
@@ -186,6 +247,16 @@ protected:
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;
    int valuesPerElement = 1;
 };
+
+
+template< typename Value,
+          typename Device = Devices::Host,
+          typename Index = int >
+std::ostream& operator<<( std::ostream& str, const DistributedArrayView< Value, Device, Index >& view )
+{
+   return view.print( str );
+}
+
 
 } // namespace Containers
 } // namespace TNL
