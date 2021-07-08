@@ -11,36 +11,32 @@
 #pragma once
 
 #include <functional>
-#include <algorithm>
 #include <limits>
+
+#include <TNL/Math.h>
 
 namespace TNL {
 
 /**
  * \brief Extension of \ref std::plus<void> for use with \ref TNL::Algorithms::reduce.
- *
  */
 struct Plus : public std::plus< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return ( T ) 0; };
+   static constexpr T getIdempotent() { return 0; };
 };
 
 /**
- * \brief Extension of std::multiplies for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::multiplies<void> for use with \ref TNL::Algorithms::reduce.
  */
 struct Multiplies : public std::multiplies< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return ( T ) 1; };
+   static constexpr T getIdempotent() { return 1; };
 };
 
 /**
- * \brief Extension of std::min for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Function object implementing `min(x, y)` for use with \ref TNL::Algorithms::reduce.
  */
 struct Min
 {
@@ -48,13 +44,16 @@ struct Min
    static constexpr T getIdempotent() { return std::numeric_limits< T >::max(); };
 
    template< typename Value >
-   constexpr Value operator()( const Value& lhs, const Value& rhs ) const { return lhs < rhs ? lhs : rhs; }
+   constexpr Value operator()( const Value& lhs, const Value& rhs ) const
+   {
+      // use argument-dependent lookup and make TNL::min available for unqualified calls
+      using TNL::min;
+      return min( lhs, rhs );
+   }
 };
 
 /**
- * \brief Extension of std::max for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Function object implementing `max(x, y)` for use with \ref TNL::Algorithms::reduce.
  */
 struct Max
 {
@@ -62,13 +61,16 @@ struct Max
    static constexpr T getIdempotent() { return std::numeric_limits< T >::min(); };
 
    template< typename Value >
-   constexpr Value operator()( const Value& lhs, const Value& rhs ) const { return lhs > rhs ? lhs : rhs; }
+   constexpr Value operator()( const Value& lhs, const Value& rhs ) const
+   {
+      // use argument-dependent lookup and make TNL::max available for unqualified calls
+      using TNL::max;
+      return max( lhs, rhs );
+   }
 };
 
 /**
- * \brief Extension of std::min for use with \ref TNL::Algorithms::reduceWithArgument.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::min<void> for use with \ref TNL::Algorithms::reduceWithArgument.
  */
 struct MinWithArg
 {
@@ -91,9 +93,7 @@ struct MinWithArg
 };
 
 /**
- * \brief Extension of std::max for use with \ref TNL::Algorithms::reduceWithArgument.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::max<void> for use with \ref TNL::Algorithms::reduceWithArgument.
  */
 struct MaxWithArg
 {
@@ -116,31 +116,25 @@ struct MaxWithArg
 };
 
 /**
- * \brief Extension of std::logical_and for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::logical_and<void> for use with \ref TNL::Algorithms::reduce.
  */
 struct LogicalAnd : public std::logical_and< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return ( T ) true; };
+   static constexpr T getIdempotent() { return true; };
 };
 
 /**
- * \brief Extension of std::logical_or for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::logical_or<void> for use with \ref TNL::Algorithms::reduce.
  */
 struct LogicalOr : public std::logical_or< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return ( T ) false; };
+   static constexpr T getIdempotent() { return false; };
 };
 
 /**
- * \brief Extension of std::bit_and for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::bit_and<void> for use with \ref TNL::Algorithms::reduce.
  */
 struct BitAnd : public std::bit_and< void >
 {
@@ -149,14 +143,12 @@ struct BitAnd : public std::bit_and< void >
 };
 
 /**
- * \brief Extension of std::bit_or for use with \ref TNL::Algorithms::reduce.
- *
- * This is specialization for void type. The real type is deduced just when operator() is evoked.
+ * \brief Extension of \ref std::bit_or<void> for use with \ref TNL::Algorithms::reduce.
  */
 struct BitOr : public std::bit_or< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return static_cast< T >( 0 ); };
+   static constexpr T getIdempotent() { return 0; };
 };
 
 } // namespace TNL
