@@ -172,7 +172,6 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             ( *this )[ j ]->getData().setElement( i, v[ j ] );
       }
 
-      __cuda_callable__
       VectorType getElement( const IndexType i ) const
       {
          VectorType v;
@@ -417,7 +416,6 @@ class VectorField< Size, MeshFunctionView< Mesh, MeshEntityDimension, Real > >
             ( *this )[ j ]->getData().setElement( i, v[ j ] );
       }
 
-      __cuda_callable__
       VectorType getElement( const IndexType i ) const
       {
          VectorType v;
