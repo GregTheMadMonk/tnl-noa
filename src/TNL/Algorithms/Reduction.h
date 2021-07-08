@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include <utility>  // std::pair
-#include <functional>        // reduction functions like std::plus, std::logical_and, std::logical_or etc.
+#include <utility>  // std::pair, std::forward
 
-#include <TNL/Functional.h>  // modification of STL functionals made more suitable reduction
+#include <TNL/Functional.h>  // extension of STL functionals for reduction
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -122,8 +121,7 @@ template< typename Device,
 auto reduce( const Index begin,
              const Index end,
              Fetch&& fetch,
-             Reduce&& reduce ) -> decltype( detail::Reduction< Device >::reduce( begin, end, std::forward< Fetch >( fetch ), std::forward< Reduce >( reduce ),
-                                                   std::remove_reference< Reduce >::type::template getIdempotent< decltype( fetch( ( Index ) 0 ) ) >() ) )
+             Reduce&& reduce )
 {
    using Result = decltype( fetch( ( Index ) 0 ) );
    return detail::Reduction< Device >::reduce( begin,
@@ -249,8 +247,7 @@ auto
 reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
-                    Reduce&& reduce ) -> decltype( detail::Reduction< Device >::reduceWithArgument( begin, end, fetch, reduce,
-                                                   std::remove_reference< Reduce >::type::template getIdempotent<  decltype( fetch( ( Index ) 0 ) ) >() ) )
+                    Reduce&& reduce )
 {
    using Result = decltype( fetch( ( Index ) 0 ) );
    return detail::Reduction< Device >::reduceWithArgument( begin,
