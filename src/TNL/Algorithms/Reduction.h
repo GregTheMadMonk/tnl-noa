@@ -13,9 +13,9 @@
 #pragma once
 
 #include <utility>  // std::pair
-#include <functional>        // reduction functions like std::plus, std::logical_and, std::logical_or etc. - deprecated
+#include <functional>        // reduction functions like std::plus, std::logical_and, std::logical_or etc.
 
-#include <TNL/Functional.h>  // replacement of STL functional
+#include <TNL/Functional.h>  // modification of STL functionals made more suitable reduction
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
