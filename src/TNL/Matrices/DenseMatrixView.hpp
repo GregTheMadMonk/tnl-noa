@@ -849,7 +849,7 @@ operator==( const Matrix& m ) const
    {
       return view1.getRow( i ) == view2.getRow( i );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
+   return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
 }
 
 template< typename Real,

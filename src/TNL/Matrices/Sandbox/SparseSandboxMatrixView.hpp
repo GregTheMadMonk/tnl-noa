@@ -171,7 +171,7 @@ getNonzeroElementsCount() const
       auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
          return ( columns_view[ i ] != paddingIndex );
       };
-      return Algorithms::Reduction< DeviceType >::reduce( ( IndexType ) 0, this->columnIndexes.getSize(), fetch, std::plus<>{}, 0 );
+      return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->columnIndexes.getSize(), fetch, std::plus<>{}, 0 );
    }
    else
    {
@@ -901,7 +901,7 @@ operator==( const Matrix& m ) const
    {
       return view1.getRow( i ) == view2.getRow( i );
    };
-   return Algorithms::Reduction< DeviceType >::reduce( 0, this->getRows(), fetch, std::logical_and<>{}, true );
+   return Algorithms::reduce< DeviceType >( 0, this->getRows(), fetch, std::logical_and<>{}, true );
 }
 
 template< typename Real,
