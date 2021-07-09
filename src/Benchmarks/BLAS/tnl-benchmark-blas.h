@@ -22,6 +22,8 @@
 #include "vector-operations.h"
 #include "triad.h"
 #include "spmv.h"
+#include "dense-mv.h"
+
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
@@ -100,6 +102,18 @@ runBlasBenchmarks( Benchmark<> & benchmark,
       } ));
       benchmarkSpmvSynthetic< Real >( benchmark, size, elementsPerRow );
    }
+
+   // Dense matrix-vector multiplication
+   benchmark.newBenchmark( String("Dense matrix-vector multiplication (") + precision + ")",
+                           metadata );
+   for( std::size_t size = 10; size <= 20000; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "rows", convertToString( size ) },
+         { "columns", convertToString( size ) }
+      } ));
+      benchmarkDenseMVSynthetic< Real >( benchmark, size );
+   }
+
 }
 
 void
