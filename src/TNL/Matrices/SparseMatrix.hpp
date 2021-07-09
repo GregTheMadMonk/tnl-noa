@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include <functional>
 #include <sstream>
-#include <TNL/Algorithms/Reduction.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
 namespace TNL {

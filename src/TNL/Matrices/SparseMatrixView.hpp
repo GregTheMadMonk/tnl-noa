@@ -12,7 +12,7 @@
 
 #include <functional>
 #include <TNL/Matrices/SparseMatrixView.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Matrices/details/SparseMatrix.h>
 

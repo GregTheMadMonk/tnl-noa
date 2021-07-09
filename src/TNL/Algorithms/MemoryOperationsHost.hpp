@@ -16,7 +16,7 @@
 
 #include <TNL/Algorithms/MemoryOperations.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 
 namespace TNL {
 namespace Algorithms {

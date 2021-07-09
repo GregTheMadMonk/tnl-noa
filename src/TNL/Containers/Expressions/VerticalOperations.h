@@ -13,7 +13,7 @@
 #include <limits>
 #include <type_traits>
 
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
 
 ////

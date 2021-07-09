@@ -16,7 +16,7 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/detail/Reduction.h>
 #include <TNL/Algorithms/detail/CudaReductionKernel.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 

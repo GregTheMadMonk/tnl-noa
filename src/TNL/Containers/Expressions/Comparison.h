@@ -14,7 +14,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace TNL {

@@ -17,7 +17,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Math.h>
 
 using Dense_host_float = TNL::Matrices::DenseMatrix< float, TNL::Devices::Host, int >;

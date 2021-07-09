@@ -17,7 +17,7 @@
 #include <TNL/Algorithms/MemoryOperations.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {

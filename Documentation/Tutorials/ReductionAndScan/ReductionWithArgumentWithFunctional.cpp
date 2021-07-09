@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 
 using namespace TNL;
 using namespace TNL::Containers;

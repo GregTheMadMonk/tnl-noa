@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Reduction.h  -  description
+                          reduce.h  -  description
                              -------------------
     begin                : Oct 28, 2010
     copyright            : (C) 2010 by Tomas Oberhuber et al.
@@ -21,10 +21,10 @@
 #include <TNL/Algorithms/detail/Reduction.h>
 
 namespace TNL {
-   namespace Algorithms {
+namespace Algorithms {
 
 /**
- * \brief Reduction implements [(parallel) reduction](https://en.wikipedia.org/wiki/Reduce_(parallel_pattern)) for vectors and arrays.
+ * \brief \e reduce implements [(parallel) reduction](https://en.wikipedia.org/wiki/Reduce_(parallel_pattern)) for vectors and arrays.
  *
  * Reduction can be used for operations having one or more vectors (or arrays) elements is input and returning
  * one number (or element) as output. Some examples of such operations can be vectors/arrays comparison,
@@ -35,14 +35,14 @@ namespace TNL {
  * \tparam Index is a type for indexing.
  * \tparam Result is a type of the reduction result.
  * \tparam Fetch is a lambda function for fetching the input data.
- * \tparam Reduce is a lambda function performing the reduction.
+ * \tparam Reduction is a lambda function performing the reduction.
  *
  * \e Device can be on of the following \ref TNL::Devices::Sequential, \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
- * \param reduce is a lambda function defining the reduction operation.
+ * \param reduction is a lambda function defining the reduction operation.
  * \param zero is the idempotent element for the reduction operation, i.e. element which
  *             does not change the result of the reduction.
  * \return result of the reduction
@@ -53,10 +53,10 @@ namespace TNL {
  * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
  * ```
  *
- * The `reduce` lambda function takes two variables which are supposed to be reduced:
+ * The `reduction` lambda function takes two variables which are supposed to be reduced:
  *
  * ```
- * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+ * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  *
  * \par Example
@@ -71,14 +71,14 @@ template< typename Device,
           typename Index,
           typename Result,
           typename Fetch,
-          typename Reduce >
+          typename Reduction >
 Result reduce( const Index begin,
                const Index end,
                Fetch&& fetch,
-               Reduce&& reduce,
+               Reduction&& reduction,
                const Result& zero )
 {
-    return detail::Reduction< Device >::reduce( begin, end, std::forward< Fetch >( fetch ), std::forward< Reduce >( reduce ), zero );
+    return detail::Reduction< Device >::reduce( begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), zero );
 }
 
 /**
@@ -87,17 +87,17 @@ Result reduce( const Index begin,
  * \tparam Device parameter says on what device the reduction is gonna be performed.
  * \tparam Index is a type for indexing.
  * \tparam Fetch is a lambda function for fetching the input data.
- * \tparam Reduce is a functional performing the reduction.
+ * \tparam Reduction is a functional performing the reduction.
  *
  * \e Device can be on of the following \ref TNL::Devices::Sequential, \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
- * \e Reduce can be one of the following \ref TNL::Plus, \ref TNL::Multiplies, \ref TNL::Min, \ref TNL::Max, \ref TNL::LogicalAnd,
+ * \e Reduction can be one of the following \ref TNL::Plus, \ref TNL::Multiplies, \ref TNL::Min, \ref TNL::Max, \ref TNL::LogicalAnd,
  *    \ref TNL::LogicalOr, \ref TNL::BitAnd or \ref TNL::BitOr.
  *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
- * \param reduce is a lambda function defining the reduction operation.
+ * \param reduction is a lambda function defining the reduction operation.
  * \return result of the reduction
  *
  * The `fetch` lambda function takes one argument which is index of the element to be fetched:
@@ -117,18 +117,18 @@ Result reduce( const Index begin,
 template< typename Device,
           typename Index,
           typename Fetch,
-          typename Reduce >
+          typename Reduction >
 auto reduce( const Index begin,
              const Index end,
              Fetch&& fetch,
-             Reduce&& reduce )
+             Reduction&& reduction )
 {
    using Result = decltype( fetch( ( Index ) 0 ) );
    return detail::Reduction< Device >::reduce( begin,
                                                end,
                                                std::forward< Fetch >( fetch ),
-                                               std::forward< Reduce >( reduce ),
-                                               reduce.template getIdempotent< Result >() );
+                                               std::forward< Reduction >( reduction ),
+                                               reduction.template getIdempotent< Result >() );
 }
 
 /**
@@ -141,7 +141,7 @@ auto reduce( const Index begin,
  * \tparam Device parameter says on what device the reduction is gonna be performed.
  * \tparam Index is a type for indexing.
  * \tparam Result is a type of the reduction result.
- * \tparam Reduce is a lambda function performing the reduction.
+ * \tparam Reduction is a lambda function performing the reduction.
  * \tparam Fetch is a lambda function for fetching the input data.
  *
  * \e Device can be on of the following \ref TNL::Devices::Sequential, \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
@@ -149,7 +149,7 @@ auto reduce( const Index begin,
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
- * \param reduce is a lambda function defining the reduction operation and managing the elements positions.
+ * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
  * \param zero is the idempotent element for the reduction operation, i.e. element which
  *             does not change the result of the reduction.
  * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
@@ -161,10 +161,10 @@ auto reduce( const Index begin,
  * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
  * ```
  *
- * The `reduce` lambda function takes two variables which are supposed to be reduced:
+ * The `reduction` lambda function takes two variables which are supposed to be reduced:
  *
  * ```
- * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
+ * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
  * ```
  *
  * \par Example
@@ -179,18 +179,18 @@ template< typename Device,
           typename Index,
           typename Result,
           typename Fetch,
-          typename Reduce >
+          typename Reduction >
 std::pair< Result, Index >
 reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
-                    Reduce&& reduce,
+                    Reduction&& reduction,
                     const Result& zero )
 {
     return detail::Reduction< Device >::reduceWithArgument( begin,
                                                             end,
                                                             std::forward< Fetch >( fetch ),
-                                                            std::forward< Reduce >( reduce ),
+                                                            std::forward< Reduction >( reduction ),
                                                             zero );
 }
 
@@ -204,16 +204,17 @@ reduceWithArgument( const Index begin,
  * \tparam Device parameter says on what device the reduction is gonna be performed.
  * \tparam Index is a type for indexing.
  * \tparam Result is a type of the reduction result.
- * \tparam Reduce is a functional performing the reduction.
+ * \tparam Reduction is a functional performing the reduction.
  * \tparam Fetch is a lambda function for fetching the input data.
  *
  * \e Device can be on of the following \ref TNL::Devices::Sequential, \ref TNL::Devices::Host and \ref TNL::Devices::Cuda.
  *
- * \e Reduce can be one of \ref TNL::MinWithArg, \ref TNL::MaxWithArg.
+ * \e Reduction can be one of \ref TNL::MinWithArg, \ref TNL::MaxWithArg.
+ *
  * \param begin defines range [begin, end) of indexes which will be used for the reduction.
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
- * \param reduce is a lambda function defining the reduction operation and managing the elements positions.
+ * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
  * \param zero is the idempotent element for the reduction operation, i.e. element which
  *             does not change the result of the reduction.
  * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
@@ -225,10 +226,10 @@ reduceWithArgument( const Index begin,
  * auto fetch = [=] __cuda_callable__ ( Index i ) { return ... };
  * ```
  *
- * The `reduce` lambda function takes two variables which are supposed to be reduced:
+ * The `reduction` lambda function takes two variables which are supposed to be reduced:
  *
  * ```
- * auto reduce = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
+ * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b, Index& aIdx, const Index& bIdx ) { return ... };
  * ```
  *
  * \par Example
@@ -242,20 +243,20 @@ reduceWithArgument( const Index begin,
 template< typename Device,
           typename Index,
           typename Fetch,
-          typename Reduce >
+          typename Reduction >
 auto
 reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
-                    Reduce&& reduce )
+                    Reduction&& reduction )
 {
    using Result = decltype( fetch( ( Index ) 0 ) );
    return detail::Reduction< Device >::reduceWithArgument( begin,
                                                            end,
                                                            std::forward< Fetch >( fetch ),
-                                                           std::forward< Reduce >( reduce ),
-                                                           reduce.template getIdempotent< Result >() );
+                                                           std::forward< Reduction >( reduction ),
+                                                           reduction.template getIdempotent< Result >() );
 }
 
-   } // namespace Algorithms
+} // namespace Algorithms
 } // namespace TNL

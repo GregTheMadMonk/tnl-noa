@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ReductionTest.h  -  description
+                          reduceTest.h  -  description
                              -------------------
     begin                : Jul 2, 2021
     copyright            : (C) 2021 by Tomas Oberhuber et al.
@@ -13,7 +13,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
