@@ -331,7 +331,7 @@ CSRLightKernel< Index, Device >::
 init( const Offsets& offsets )
 {
    const Index segmentsCount = offsets.getSize() - 1;
-   size_t neededThreads = segmentsCount * 32;//warpSize;
+   //size_t neededThreads = segmentsCount * 32;//warpSize;
 
    const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
    if( elementsInSegment <= 2 )
