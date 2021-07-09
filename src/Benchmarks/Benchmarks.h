@@ -347,6 +347,15 @@ inline Benchmark::MetadataMap getHardwareMetadata()
    const String deviceArch = convertToString( Cuda::DeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
                              convertToString( Cuda::DeviceInfo::getArchitectureMinor( activeGPU ) );
 #endif
+
+#ifdef HAVE_MPI
+   int nproc = 1;
+   // check if MPI was initialized (some benchmarks do not initialize MPI even when
+   // they are built with HAVE_MPI and thus MPI::GetSize() cannot be used blindly)
+   if( TNL::MPI::Initialized() )
+      nproc = TNL::MPI::GetSize();
+#endif
+
    Benchmark::MetadataMap metadata {
        { "host name", SystemInfo::getHostname() },
        { "architecture", SystemInfo::getArchitecture() },
@@ -354,7 +363,7 @@ inline Benchmark::MetadataMap getHardwareMetadata()
        { "system release", SystemInfo::getSystemRelease() },
        { "start time", SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", convertToString( TNL::MPI::GetSize() ) },
+       { "number of MPI processes", convertToString( nproc ) },
 #endif
        { "OpenMP enabled", convertToString( Devices::Host::isOMPEnabled() ) },
        { "OpenMP threads", convertToString( Devices::Host::getMaxThreadsCount() ) },
