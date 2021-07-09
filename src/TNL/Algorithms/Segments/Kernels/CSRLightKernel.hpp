@@ -273,9 +273,9 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
                        const Index threadsPerSegment )
    {
 #ifdef HAVE_CUDA
-      const int threads = 128;
+      const size_t threads = 128;
       Index blocks, groupSize;
-      int  neededThreads = threadsPerSegment * ( last - first );
+      size_t  neededThreads = threadsPerSegment * ( last - first );
 
       for (Index grid = 0; neededThreads != 0; ++grid)
       {
