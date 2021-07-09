@@ -29,9 +29,9 @@ struct DistributedScan
             typename DistributedVector::IndexType begin,
             typename DistributedVector::IndexType end,
             const Reduction& reduction,
-            const typename DistributedVector::RealType zero )
+            const typename DistributedVector::ValueType zero )
    {
-      using RealType = typename DistributedVector::RealType;
+      using ValueType = typename DistributedVector::ValueType;
       using DeviceType = typename DistributedVector::DeviceType;
 
       const auto group = v.getCommunicationGroup();
@@ -43,23 +43,23 @@ struct DistributedScan
 
          // perform first phase on the local data
          auto localView = v.getLocalView();
-         const auto blockShifts = Scan< DeviceType, Type >::performFirstPhase( localView, begin, end, reduction, zero );
-         const RealType localSum = blockShifts.getElement( blockShifts.getSize() - 1 );
+         const auto block_results = Scan< DeviceType, Type >::performFirstPhase( localView, begin, end, reduction, zero );
+         const ValueType local_result = block_results.getElement( block_results.getSize() - 1 );
 
-         // exchange local sums between ranks
+         // exchange local results between ranks
          const int nproc = MPI::GetSize( group );
-         RealType dataForScatter[ nproc ];
-         for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localSum;
-         Containers::Vector< RealType, Devices::Host > rankSums( nproc );
+         ValueType dataForScatter[ nproc ];
+         for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = local_result;
+         Containers::Vector< ValueType, Devices::Host > rank_results( nproc );
          // NOTE: exchanging general data types does not work with MPI
-         MPI::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
+         MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, group );
 
-         // compute the scan of the per-rank sums
-         Scan< Devices::Host, ScanType::Exclusive >::perform( rankSums, 0, nproc, reduction, zero );
+         // compute the scan of the per-rank results
+         Scan< Devices::Host, ScanType::Exclusive >::perform( rank_results, 0, nproc, reduction, zero );
 
-         // perform second phase: shift by the per-block and per-rank offsets
+         // perform the second phase, using the per-block and per-rank results
          const int rank = MPI::GetRank( group );
-         Scan< DeviceType, Type >::performSecondPhase( localView, blockShifts, begin, end, reduction, rankSums[ rank ] );
+         Scan< DeviceType, Type >::performSecondPhase( localView, block_results, begin, end, reduction, rank_results[ rank ] );
       }
    }
 };

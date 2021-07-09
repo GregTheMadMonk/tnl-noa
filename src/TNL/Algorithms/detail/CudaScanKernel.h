@@ -34,7 +34,7 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
                          const int elementsInBlock,
                          const Real* input,
                          Real* output,
-                         Real* auxArray )
+                         Real* blockResults )
 {
    Real* sharedData = TNL::Cuda::getSharedMemory< Real >();
    Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2 ];
@@ -147,11 +147,11 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
    {
       if( scanType == ScanType::Exclusive )
       {
-         auxArray[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ],
-                                             sharedData[ Cuda::getInterleaving( lastElementInBlock ) ] );
+         blockResults[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ],
+                                                 sharedData[ Cuda::getInterleaving( lastElementInBlock ) ] );
       }
       else
-         auxArray[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ];
+         blockResults[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ];
    }
 }
 
@@ -164,12 +164,12 @@ cudaSecondPhaseBlockScan( Reduction reduction,
                           const int elementsInBlock,
                           const Index gridIdx,
                           const Index maxGridSize,
-                          const Real* auxArray,
+                          const Real* blockResults,
                           Real* data,
                           Real shift )
 {
    if( gridIdx > 0 || blockIdx.x > 0 )
-      shift = reduction( shift, auxArray[ gridIdx * maxGridSize + blockIdx.x - 1 ] );
+      shift = reduction( shift, blockResults[ gridIdx * maxGridSize + blockIdx.x - 1 ] );
    const int readOffset = blockIdx.x * elementsInBlock;
    int readIdx = threadIdx.x;
    while( readIdx < elementsInBlock && readOffset + readIdx < size )
@@ -248,9 +248,9 @@ struct CudaScanKernelLauncher
       const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
       //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
-      // allocate array for the block sums
-      Containers::Array< Real, Devices::Cuda > blockSums;
-      blockSums.setSize( numberOfBlocks );
+      // allocate array for the block results
+      Containers::Array< Real, Devices::Cuda > blockResults;
+      blockResults.setSize( numberOfBlocks );
 
       // loop over all grids
       for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
@@ -278,20 +278,20 @@ struct CudaScanKernelLauncher
               elementsInBlock,
               &deviceInput[ gridOffset ],
               &deviceOutput[ gridOffset ],
-              &blockSums.getData()[ gridIdx * maxGridSize() ] );
+              &blockResults.getData()[ gridIdx * maxGridSize() ] );
       }
 
       // synchronize the null-stream after all grids
       cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
 
-      // blockSums now contains sums of numbers in each block. The first phase
-      // ends by computing prefix-sum of this array.
+      // blockResults now contains scan results for each block. The first phase
+      // ends by computing an exclusive scan of this array.
       if( numberOfBlocks > 1 ) {
          CudaScanKernelLauncher< ScanType::Inclusive, Real, Index >::perform(
-            blockSums.getSize(),
-            blockSums.getData(),
-            blockSums.getData(),
+            blockResults.getSize(),
+            blockResults.getData(),
+            blockResults.getData(),
             reduction,
             zero,
             blockSize );
@@ -301,8 +301,8 @@ struct CudaScanKernelLauncher
       // to check if we test the algorithm with more than one CUDA grid.
       gridsCount() = numberOfGrids;
 
-      // blockSums now contains shift values for each block - to be used in the second phase
-      return blockSums;
+      // blockResults now contains shift values for each block - to be used in the second phase
+      return blockResults;
    }
 
    /****
@@ -363,10 +363,8 @@ struct CudaScanKernelLauncher
       TNL_CHECK_CUDA_DEVICE;
    }
 
-   /****
-    * The following serves for setting smaller maxGridSize so that we can force
-    * the prefix sum in CUDA to run with more the one grids in unit tests.
-    */
+   // The following serves for setting smaller maxGridSize so that we can force
+   // the scan in CUDA to run with more than one grid in unit tests.
    static int& maxGridSize()
    {
       static int maxGridSize = Cuda::getMaxGridSize();

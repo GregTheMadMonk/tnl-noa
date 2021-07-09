@@ -33,9 +33,9 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
-   // sequential prefix-sum does not need a second phase
+   // sequential scan does not need a second phase
    performFirstPhase( v, begin, end, reduction, zero );
 }
 
@@ -48,33 +48,31 @@ performFirstPhase( Vector& v,
                    const typename Vector::IndexType begin,
                    const typename Vector::IndexType end,
                    const Reduction& reduction,
-                   const typename Vector::RealType zero )
+                   const typename Vector::ValueType zero )
 {
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
-
-   // FIXME: StaticArray does not have getElement() which is used in DistributedScan
-//   return Containers::StaticArray< 1, RealType > block_sums;
-   Containers::Array< RealType, Devices::Host > block_sums( 1 );
-   block_sums[ 0 ] = zero;
 
    if( Type == ScanType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
          v[ i ] = reduction( v[ i ], v[ i - 1 ] );
-      block_sums[ 0 ] = v[ end - 1 ];
    }
-   else // Exclusive prefix sum
+   else // Exclusive scan
    {
-      RealType aux = zero;
+      ValueType aux = zero;
       for( IndexType i = begin; i < end; i++ ) {
-         const RealType x = v[ i ];
+         const ValueType x = v[ i ];
          v[ i ] = aux;
          aux = reduction( aux, x );
       }
-      block_sums[ 0 ] = aux;
    }
 
-   return block_sums;
+   // sequential scan = one block, so the exclusive scan is trivially [zero]
+   // FIXME: StaticArray does not have getElement() which is used in DistributedScan
+//   Containers::StaticArray< 1, ValueType > block_results;
+   Containers::Array< ValueType, Devices::Host > block_results( 1 );
+   block_results[ 0 ] = zero;
+   return block_results;
 }
 
 template< ScanType Type >
@@ -88,7 +86,7 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::RealType shift )
+                    const typename Vector::ValueType shift )
 {
    using IndexType = typename Vector::IndexType;
 
@@ -105,7 +103,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
 #ifdef HAVE_OPENMP
    if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() >= 2 ) {
@@ -128,50 +126,50 @@ performFirstPhase( Vector& v,
                    const typename Vector::IndexType begin,
                    const typename Vector::IndexType end,
                    const Reduction& reduction,
-                   const typename Vector::RealType zero )
+                   const typename Vector::ValueType zero )
 {
 #ifdef HAVE_OPENMP
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
    const int threads = Devices::Host::getMaxThreadsCount();
-   Containers::Array< RealType > block_sums( threads + 1 );
-   block_sums[ 0 ] = zero;
+   Containers::Array< ValueType > block_results( threads + 1 );
 
    #pragma omp parallel num_threads(threads)
    {
       // init
       const int thread_idx = omp_get_thread_num();
-      RealType block_sum = zero;
+      ValueType block_result = zero;
 
-      // perform prefix-sum on blocks statically assigned to threads
+      // perform scan on blocks statically assigned to threads
       if( Type == ScanType::Inclusive ) {
          #pragma omp for schedule(static)
          for( IndexType i = begin; i < end; i++ ) {
-            block_sum = reduction( block_sum, v[ i ] );
-            v[ i ] = block_sum;
+            block_result = reduction( block_result, v[ i ] );
+            v[ i ] = block_result;
          }
       }
       else {
          #pragma omp for schedule(static)
          for( IndexType i = begin; i < end; i++ ) {
-            const RealType x = v[ i ];
-            v[ i ] = block_sum;
-            block_sum = reduction( block_sum, x );
+            const ValueType x = v[ i ];
+            v[ i ] = block_result;
+            block_result = reduction( block_result, x );
          }
       }
 
-      // write the block sums into the buffer
-      block_sums[ thread_idx + 1 ] = block_sum;
+      // write the block result into the buffer
+      block_results[ thread_idx + 1 ] = block_result;
    }
 
-   // block_sums now contains sums of numbers in each block. The first phase
-   // ends by computing prefix-sum of this array.
+   // block_results now contains scan results for each block. The first phase
+   // ends by computing an exclusive scan of this array.
+   block_results[ 0 ] = zero;
    for( int i = 1; i < threads + 1; i++ )
-      block_sums[ i ] = reduction( block_sums[ i ], block_sums[ i - 1 ] );
+      block_results[ i ] = reduction( block_results[ i ], block_results[ i - 1 ] );
 
-   // block_sums now contains shift values for each block - to be used in the second phase
-   return block_sums;
+   // block_results now contains shift values for each block - to be used in the second phase
+   return block_results;
 #else
    return Scan< Devices::Sequential, Type >::performFirstPhase( v, begin, end, reduction, zero );
 #endif
@@ -188,10 +186,10 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::RealType shift )
+                    const typename Vector::ValueType shift )
 {
 #ifdef HAVE_OPENMP
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
    const int threads = blockShifts.getSize() - 1;
@@ -200,7 +198,7 @@ performSecondPhase( Vector& v,
    #pragma omp parallel num_threads(threads)
    {
       const int thread_idx = omp_get_thread_num();
-      const RealType offset = reduction( blockShifts[ thread_idx ], shift );
+      const ValueType offset = reduction( blockShifts[ thread_idx ], shift );
 
       // shift intermediate results by the offset
       #pragma omp for schedule(static)
@@ -221,13 +219,13 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
 #ifdef HAVE_CUDA
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
-   detail::CudaScanKernelLauncher< Type, RealType, IndexType >::perform(
+   detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::perform(
       end - begin,
       &v.getData()[ begin ],  // input
       &v.getData()[ begin ],  // output
@@ -247,13 +245,13 @@ performFirstPhase( Vector& v,
                    const typename Vector::IndexType begin,
                    const typename Vector::IndexType end,
                    const Reduction& reduction,
-                   const typename Vector::RealType zero )
+                   const typename Vector::ValueType zero )
 {
 #ifdef HAVE_CUDA
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
-   return detail::CudaScanKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
+   return detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::performFirstPhase(
       end - begin,
       &v.getData()[ begin ],  // input
       &v.getData()[ begin ],  // output
@@ -275,13 +273,13 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::RealType shift )
+                    const typename Vector::ValueType shift )
 {
 #ifdef HAVE_CUDA
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
-   detail::CudaScanKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
+   detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::performSecondPhase(
       end - begin,
       &v.getData()[ begin ],  // output
       blockShifts.getData(),
@@ -304,9 +302,9 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
    if( Type == ScanType::Inclusive )
@@ -315,13 +313,13 @@ perform( Vector& v,
          if( ! flags[ i ] )
             v[ i ] = reduction( v[ i ], v[ i - 1 ] );
    }
-   else // Exclusive prefix sum
+   else // Exclusive scan
    {
-       RealType aux( v[ begin ] );
+      ValueType aux( v[ begin ] );
       v[ begin ] = zero;
       for( IndexType i = begin + 1; i < end; i++ )
       {
-         RealType x = v[ i ];
+         ValueType x = v[ i ];
          if( flags[ i ] )
             aux = zero;
          v[ i ] = aux;
@@ -341,7 +339,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
 #ifdef HAVE_OPENMP
    // TODO: parallelize with OpenMP
@@ -362,10 +360,10 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType zero )
+         const typename Vector::ValueType zero )
 {
 #ifdef HAVE_CUDA
-   using RealType = typename Vector::RealType;
+   using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
    throw Exceptions::NotImplementedError( "Segmented scan (prefix sum) is not implemented for CUDA." );

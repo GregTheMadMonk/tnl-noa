@@ -134,7 +134,7 @@ struct Scan< Devices::Sequential, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename Reduction >
@@ -143,7 +143,7 @@ struct Scan< Devices::Sequential, Type >
                       const typename Vector::IndexType begin,
                       const typename Vector::IndexType end,
                       const Reduction& reduction,
-                      const typename Vector::RealType zero );
+                      const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename BlockShifts,
@@ -154,7 +154,7 @@ struct Scan< Devices::Sequential, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::RealType shift );
+                       const typename Vector::ValueType shift );
 };
 
 template< ScanType Type >
@@ -194,7 +194,7 @@ struct Scan< Devices::Host, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename Reduction >
@@ -203,7 +203,7 @@ struct Scan< Devices::Host, Type >
                       const typename Vector::IndexType begin,
                       const typename Vector::IndexType end,
                       const Reduction& reduction,
-                      const typename Vector::RealType zero );
+                      const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename BlockShifts,
@@ -214,7 +214,7 @@ struct Scan< Devices::Host, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::RealType shift );
+                       const typename Vector::ValueType shift );
 };
 
 template< ScanType Type >
@@ -254,7 +254,7 @@ struct Scan< Devices::Cuda, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename Reduction >
@@ -263,7 +263,7 @@ struct Scan< Devices::Cuda, Type >
                       const typename Vector::IndexType begin,
                       const typename Vector::IndexType end,
                       const Reduction& reduction,
-                      const typename Vector::RealType zero );
+                      const typename Vector::ValueType zero );
 
    template< typename Vector,
              typename BlockShifts,
@@ -274,7 +274,7 @@ struct Scan< Devices::Cuda, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::RealType shift );
+                       const typename Vector::ValueType shift );
 };
 
 template< ScanType Type >
@@ -318,7 +318,7 @@ struct SegmentedScan< Devices::Sequential, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 };
 
 template< ScanType Type >
@@ -362,7 +362,7 @@ struct SegmentedScan< Devices::Host, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 };
 
 template< ScanType Type >
@@ -408,7 +408,7 @@ struct SegmentedScan< Devices::Cuda, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::RealType zero );
+            const typename Vector::ValueType zero );
 };
 
 } // namespace Algorithms
