@@ -22,6 +22,8 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+enum EllpackKernelType { Scalar, Vector, Vector2, Vector4, Vector8, Vector16 };
+
 template< typename Device,
           typename Index,
           ElementsOrganization Organization = Segments::DefaultElementsOrganization< Device >::getOrganization(),

@@ -19,6 +19,124 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+#ifdef HAVE_CUDA
+template< typename Index,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          typename Real >
+__global__ void
+EllpackCudaReductionKernelFull( Index first, Index last, Fetch fetch, const Reduction reduction, ResultKeeper keep, const Real zero, Index segmentSize )
+{
+   const int warpSize = 32;
+   const int gridID = 0;
+   const Index segmentIdx = first + ((gridID * TNL::Cuda::getMaxGridXSize() ) + (blockIdx.x * blockDim.x) + threadIdx.x) / warpSize;
+   if (segmentIdx >= last)
+      return;
+
+   Real result = zero;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Index begin = segmentIdx * segmentSize;
+   const Index end = begin + segmentSize;
+
+   /* Calculate result */
+   Index localIdx( 0 );
+   bool compute( true );
+   for( Index i = begin + laneID; i < end; i += warpSize)
+      result = reduction( result, fetch( segmentIdx, localIdx++, i, compute ) );
+
+   /* Reduction */
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result, 16 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  8 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  4 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  2 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  1 ) );
+   /* Write result */
+   if( laneID == 0 )
+      keep( segmentIdx, result );
+}
+
+template< typename Index,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          typename Real >
+__global__ void
+EllpackCudaReductionKernelCompact( Index first, Index last, Fetch fetch, const Reduction reduction, ResultKeeper keep, const Real zero, Index segmentSize )
+{
+   const int warpSize = 32;
+   const int gridID = 0;
+   const Index segmentIdx = first + ((gridID * TNL::Cuda::getMaxGridXSize() ) + (blockIdx.x * blockDim.x) + threadIdx.x) / warpSize;
+   if (segmentIdx >= last)
+      return;
+
+   Real result = zero;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Index begin = segmentIdx * segmentSize;
+   const Index end = begin + segmentSize;
+
+   /* Calculate result */
+   bool compute( true );
+   for( Index i = begin + laneID; i < end; i += warpSize)
+      result = reduction( result, fetch( i, compute ) );
+
+   /* Reduction */
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result, 16 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  8 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  4 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  2 ) );
+   result = reduction( result, __shfl_down_sync(0xFFFFFFFF, result,  1 ) );
+   /* Write result */
+   if( laneID == 0 )
+      keep( segmentIdx, result );
+
+}
+#endif
+
+template< typename Index,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          typename Real,
+          bool FullFetch = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+struct EllpackCudaReductionDispatcher
+{
+   static void
+   exec( Index first, Index last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Index segmentSize )
+   {
+   #ifdef HAVE_CUDA
+      const Index segmentsCount = last - first;
+      const Index threadsCount = segmentsCount * 32;
+      const Index blocksCount = Cuda::getNumberOfBlocks( threadsCount, 256 );
+      dim3 blockSize( 256 );
+      dim3 gridSize( blocksCount );
+      EllpackCudaReductionKernelFull<<< gridSize, blockSize >>>( first, last, fetch, reduction, keeper, zero, segmentSize );
+      cudaDeviceSynchronize();
+   #endif
+   }
+};
+
+template< typename Index,
+          typename Fetch,
+          typename Reduction,
+          typename ResultKeeper,
+          typename Real >
+struct EllpackCudaReductionDispatcher< Index, Fetch, Reduction, ResultKeeper, Real, false >
+{
+   static void
+   exec( Index first, Index last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Index segmentSize )
+   {
+   #ifdef HAVE_CUDA
+      const Index segmentsCount = last - first;
+      const Index threadsCount = segmentsCount * 32;
+      const Index blocksCount = Cuda::getNumberOfBlocks( threadsCount, 256 );
+      dim3 blockSize( 256 );
+      dim3 gridSize( blocksCount );
+      EllpackCudaReductionKernelCompact<<< gridSize, blockSize >>>( first, last, fetch, reduction, keeper, zero, segmentSize );
+      cudaDeviceSynchronize();
+   #endif
+   }
+};
 
 template< typename Device,
           typename Index,
@@ -277,18 +395,23 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
    using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( Organization == RowMajorOrder )
    {
-      const IndexType segmentSize = this->segmentSize;
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
-         const IndexType begin = segmentIdx * segmentSize;
-         const IndexType end = begin + segmentSize;
-         RealType aux( zero );
-         IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType j = begin; j < end && compute; j++  )
-            aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
-         keeper( segmentIdx, aux );
-      };
-      Algorithms::ParallelFor< Device >::exec( first, last, l );
+      if( std::is_same< Device, Devices::Cuda >::value )
+         EllpackCudaReductionDispatcher< IndexType, Fetch, Reduction, ResultKeeper, Real>::exec( first, last, fetch, reduction, keeper, zero, segmentSize );
+      else
+      {
+         const IndexType segmentSize = this->segmentSize;
+         auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
+            const IndexType begin = segmentIdx * segmentSize;
+            const IndexType end = begin + segmentSize;
+            RealType aux( zero );
+            IndexType localIdx( 0 );
+            bool compute( true );
+            for( IndexType j = begin; j < end && compute; j++  )
+               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+            keeper( segmentIdx, aux );
+         };
+         Algorithms::ParallelFor< Device >::exec( first, last, l );
+      }
    }
    else
    {
