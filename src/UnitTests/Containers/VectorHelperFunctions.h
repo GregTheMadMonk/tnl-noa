@@ -30,7 +30,7 @@ void setLinearSequence( Vector& deviceVector )
 
 template< typename Vector >
 void setConstantSequence( Vector& deviceVector,
-                          typename Vector::RealType v )
+                          typename Vector::ValueType v )
 {
    deviceVector.setValue( v );
 }
@@ -38,7 +38,7 @@ void setConstantSequence( Vector& deviceVector,
 template< typename Vector >
 void setOscilatingLinearSequence( Vector& deviceVector )
 {
-   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getSize(); i++ )
@@ -48,9 +48,9 @@ void setOscilatingLinearSequence( Vector& deviceVector )
 
 template< typename Vector >
 void setOscilatingConstantSequence( Vector& deviceVector,
-                                    typename Vector::RealType v )
+                                    typename Vector::ValueType v )
 {
-   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getSize(); i++ )
@@ -61,7 +61,7 @@ void setOscilatingConstantSequence( Vector& deviceVector,
 template< typename Vector >
 void setNegativeLinearSequence( Vector& deviceVector )
 {
-   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
    a.setLike( deviceVector );
 #ifdef DISTRIBUTED_VECTOR
@@ -80,12 +80,12 @@ void setNegativeLinearSequence( Vector& deviceVector )
 
 template< typename Vector >
 void setOscilatingSequence( Vector& deviceVector,
-                            typename Vector::RealType v )
+                            typename Vector::ValueType v )
 {
 #ifdef STATIC_VECTOR
    Vector a;
 #else
-   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
    a.setLike( deviceVector );
 #endif

@@ -8,7 +8,6 @@ set( CPP_TESTS
          StaticVectorOperationsTest
          StaticVectorOfStaticVectorsTest
          VectorTest
-         VectorPrefixSumTest
          VectorEvaluateAndReduceTest
          VectorBinaryOperationsTest
          VectorUnaryOperationsTest
@@ -19,7 +18,6 @@ set( CUDA_TESTS
          ArrayTestCuda
          ArrayViewTestCuda
          VectorTestCuda
-         VectorPrefixSumTestCuda
          VectorEvaluateAndReduceTestCuda
          VectorBinaryOperationsTestCuda
          VectorUnaryOperationsTestCuda
@@ -56,16 +54,6 @@ if( ${BUILD_MPI} )
       TARGET_LINK_LIBRARIES( DistributedArrayTest ${GTEST_BOTH_LIBRARIES} )
    endif()
 
-   ADD_EXECUTABLE( DistributedVectorTest DistributedVectorTest.cpp )
-   TARGET_COMPILE_OPTIONS( DistributedVectorTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( DistributedVectorTest ${GTEST_BOTH_LIBRARIES} )
-
-   if( BUILD_CUDA )
-      CUDA_ADD_EXECUTABLE( DistributedVectorTestCuda DistributedVectorTestCuda.cu
-                           OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedVectorTestCuda ${GTEST_BOTH_LIBRARIES} )
-   endif()
-
    ADD_EXECUTABLE( DistributedVectorBinaryOperationsTest DistributedVectorBinaryOperationsTest.cpp )
    TARGET_COMPILE_OPTIONS( DistributedVectorBinaryOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DistributedVectorBinaryOperationsTest ${GTEST_BOTH_LIBRARIES} )
@@ -93,10 +81,6 @@ if( ${BUILD_MPI} )
    ADD_TEST( NAME DistributedArrayTest COMMAND "mpirun" ${mpi_test_parameters})
    ADD_TEST( NAME DistributedArrayTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTest${CMAKE_EXECUTABLE_SUFFIX}" )
-   ADD_TEST( NAME DistributedVectorTest COMMAND "mpirun" ${mpi_test_parameters})
-   ADD_TEST( NAME DistributedVectorTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTest${CMAKE_EXECUTABLE_SUFFIX}" )
-
    SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorBinaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
    ADD_TEST( NAME DistributedVectorBinaryOperationsTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
@@ -110,10 +94,6 @@ if( ${BUILD_MPI} )
    ADD_TEST( NAME DistributedVectorVerticalOperationsTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
 
    if( BUILD_CUDA )
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
-      ADD_TEST( NAME DistributedVectorTestCuda COMMAND "mpirun" ${mpi_test_parameters})
-      ADD_TEST( NAME DistributedVectorTestCuda_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
-
       SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorBinaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
       ADD_TEST( NAME DistributedVectorBinaryOperationsTestCuda_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedVectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
