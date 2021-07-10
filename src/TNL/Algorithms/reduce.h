@@ -15,9 +15,6 @@
 #include <utility>  // std::pair, std::forward
 
 #include <TNL/Functional.h>  // extension of STL functionals for reduction
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
 #include <TNL/Algorithms/detail/Reduction.h>
 
 namespace TNL {
@@ -78,7 +75,11 @@ Result reduce( const Index begin,
                Reduction&& reduction,
                const Result& zero )
 {
-    return detail::Reduction< Device >::reduce( begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), zero );
+   return detail::Reduction< Device >::reduce( begin,
+                                               end,
+                                               std::forward< Fetch >( fetch ),
+                                               std::forward< Reduction >( reduction ),
+                                               zero );
 }
 
 /**
@@ -187,11 +188,11 @@ reduceWithArgument( const Index begin,
                     Reduction&& reduction,
                     const Result& zero )
 {
-    return detail::Reduction< Device >::reduceWithArgument( begin,
-                                                            end,
-                                                            std::forward< Fetch >( fetch ),
-                                                            std::forward< Reduction >( reduction ),
-                                                            zero );
+   return detail::Reduction< Device >::reduceWithArgument( begin,
+                                                           end,
+                                                           std::forward< Fetch >( fetch ),
+                                                           std::forward< Reduction >( reduction ),
+                                                           zero );
 }
 
 /**
