@@ -13,6 +13,7 @@
 #pragma once
 
 #include "Scan.h"
+#include "reduce.h"
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
@@ -35,24 +36,10 @@ perform( Vector& v,
          const Reduction& reduction,
          const typename Vector::ValueType zero )
 {
-   // sequential scan does not need a second phase
-   performFirstPhase( v, begin, end, reduction, zero );
-}
-
-template< ScanType Type >
-   template< typename Vector,
-             typename Reduction >
-auto
-Scan< Devices::Sequential, Type >::
-performFirstPhase( Vector& v,
-                   const typename Vector::IndexType begin,
-                   const typename Vector::IndexType end,
-                   const Reduction& reduction,
-                   const typename Vector::ValueType zero )
-{
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   // simple sequential algorithm - not split into phases
    ValueType aux = zero;
    if( Type == ScanType::Inclusive ) {
       for( IndexType i = begin; i < end; i++ )
@@ -66,12 +53,25 @@ performFirstPhase( Vector& v,
          aux = reduction( aux, x );
       }
    }
+}
 
-   // sequential scan = one block, so the exclusive scan is trivially [zero]
+template< ScanType Type >
+   template< typename Vector,
+             typename Reduction >
+auto
+Scan< Devices::Sequential, Type >::
+performFirstPhase( Vector& v,
+                   const typename Vector::IndexType begin,
+                   const typename Vector::IndexType end,
+                   const Reduction& reduction,
+                   const typename Vector::ValueType zero )
+{
    // FIXME: StaticArray does not have getElement() which is used in DistributedScan
-//   Containers::StaticArray< 1, ValueType > block_results;
-   Containers::Array< ValueType, Devices::Host > block_results( 1 );
+//   Containers::StaticArray< 2, ValueType > block_results;
+   Containers::Array< typename Vector::ValueType, Devices::Sequential > block_results( 2 );
+   // artificial first phase - only reduce the block
    block_results[ 0 ] = zero;
+   block_results[ 1 ] = reduce< Devices::Sequential >( begin, end, v, reduction, zero );
    return block_results;
 }
 
@@ -86,12 +86,10 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::ValueType shift )
+                    const typename Vector::ValueType zero )
 {
-   using IndexType = typename Vector::IndexType;
-
-   for( IndexType i = begin; i < end; i++ )
-      v[ i ] = reduction( v[ i ], shift );
+   // artificial second phase - only one block, use the shift as the initial value
+   perform( v, begin, end, reduction, reduction( zero, blockShifts[ 0 ] ) );
 }
 
 template< ScanType Type >
@@ -159,14 +157,12 @@ performFirstPhase( Vector& v,
       }
 
       // write the block result into the buffer
-      block_results[ thread_idx + 1 ] = block_result;
+      block_results[ thread_idx ] = block_result;
    }
 
    // block_results now contains scan results for each block. The first phase
    // ends by computing an exclusive scan of this array.
-   block_results[ 0 ] = zero;
-   for( int i = 1; i < threads + 1; i++ )
-      block_results[ i ] = reduction( block_results[ i ], block_results[ i - 1 ] );
+   Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, 0, threads + 1, reduction, zero );
 
    // block_results now contains shift values for each block - to be used in the second phase
    return block_results;
@@ -186,7 +182,7 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::ValueType shift )
+                    const typename Vector::ValueType zero )
 {
 #ifdef HAVE_OPENMP
    using ValueType = typename Vector::ValueType;
@@ -198,7 +194,7 @@ performSecondPhase( Vector& v,
    #pragma omp parallel num_threads(threads)
    {
       const int thread_idx = omp_get_thread_num();
-      const ValueType offset = reduction( blockShifts[ thread_idx ], shift );
+      const ValueType offset = reduction( zero, blockShifts[ thread_idx ] );
 
       // shift intermediate results by the offset
       #pragma omp for schedule(static)
@@ -206,7 +202,7 @@ performSecondPhase( Vector& v,
          v[ i ] = reduction( v[ i ], offset );
    }
 #else
-   Scan< Devices::Sequential, Type >::performSecondPhase( v, blockShifts, begin, end, reduction, shift );
+   Scan< Devices::Sequential, Type >::performSecondPhase( v, blockShifts, begin, end, reduction, zero );
 #endif
 }
 
@@ -273,7 +269,7 @@ performSecondPhase( Vector& v,
                     const typename Vector::IndexType begin,
                     const typename Vector::IndexType end,
                     const Reduction& reduction,
-                    const typename Vector::ValueType shift )
+                    const typename Vector::ValueType zero )
 {
 #ifdef HAVE_CUDA
    using ValueType = typename Vector::ValueType;
@@ -284,7 +280,7 @@ performSecondPhase( Vector& v,
       &v.getData()[ begin ],  // output
       blockShifts.getData(),
       reduction,
-      shift );
+      zero );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

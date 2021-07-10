@@ -168,8 +168,7 @@ cudaSecondPhaseBlockScan( Reduction reduction,
                           Real* data,
                           Real shift )
 {
-   if( gridIdx > 0 || blockIdx.x > 0 )
-      shift = reduction( shift, blockResults[ gridIdx * maxGridSize + blockIdx.x - 1 ] );
+   shift = reduction( shift, blockResults[ gridIdx * maxGridSize + blockIdx.x ] );
    const int readOffset = blockIdx.x * elementsInBlock;
    int readIdx = threadIdx.x;
    while( readIdx < elementsInBlock && readOffset + readIdx < size )
@@ -250,7 +249,8 @@ struct CudaScanKernelLauncher
 
       // allocate array for the block results
       Containers::Array< Real, Devices::Cuda > blockResults;
-      blockResults.setSize( numberOfBlocks );
+      blockResults.setSize( numberOfBlocks + 1 );
+      blockResults.setElement( 0, zero );
 
       // loop over all grids
       for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
@@ -278,7 +278,8 @@ struct CudaScanKernelLauncher
               elementsInBlock,
               &deviceInput[ gridOffset ],
               &deviceOutput[ gridOffset ],
-              &blockResults.getData()[ gridIdx * maxGridSize() ] );
+              // blockResults are shifted by 1, because the 0-th element should stay zero
+              &blockResults.getData()[ gridIdx * maxGridSize() + 1 ] );
       }
 
       // synchronize the null-stream after all grids
@@ -288,6 +289,8 @@ struct CudaScanKernelLauncher
       // blockResults now contains scan results for each block. The first phase
       // ends by computing an exclusive scan of this array.
       if( numberOfBlocks > 1 ) {
+         // we perform an inclusive scan, but the 0-th is zero and block results
+         // were shifted by 1, so effectively we get an exclusive scan
          CudaScanKernelLauncher< ScanType::Inclusive, Real, Index >::perform(
             blockResults.getSize(),
             blockResults.getData(),

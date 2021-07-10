@@ -154,7 +154,7 @@ struct Scan< Devices::Sequential, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::ValueType shift );
+                       const typename Vector::ValueType zero );
 };
 
 template< ScanType Type >
@@ -214,7 +214,7 @@ struct Scan< Devices::Host, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::ValueType shift );
+                       const typename Vector::ValueType zero );
 };
 
 template< ScanType Type >
@@ -274,7 +274,7 @@ struct Scan< Devices::Cuda, Type >
                        const typename Vector::IndexType begin,
                        const typename Vector::IndexType end,
                        const Reduction& reduction,
-                       const typename Vector::ValueType shift );
+                       const typename Vector::ValueType zero );
 };
 
 template< ScanType Type >
