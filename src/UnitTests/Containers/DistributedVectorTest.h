@@ -77,6 +77,7 @@ protected:
 
 // types for which DistributedVectorTest is instantiated
 using DistributedVectorTypes = ::testing::Types<
+   DistributedVector< double, Devices::Sequential, int >,
    DistributedVector< double, Devices::Host, int >
 #ifdef HAVE_CUDA
    ,
