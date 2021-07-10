@@ -123,7 +123,7 @@ auto reduce( const Index begin,
              Fetch&& fetch,
              Reduction&& reduction )
 {
-   using Result = decltype( fetch( ( Index ) 0 ) );
+   using Result = std::decay_t< decltype( fetch( 0 ) ) >;
    return detail::Reduction< Device >::reduce( begin,
                                                end,
                                                std::forward< Fetch >( fetch ),
@@ -250,7 +250,7 @@ reduceWithArgument( const Index begin,
                     Fetch&& fetch,
                     Reduction&& reduction )
 {
-   using Result = decltype( fetch( ( Index ) 0 ) );
+   using Result = std::decay_t< decltype( fetch( 0 ) ) >;
    return detail::Reduction< Device >::reduceWithArgument( begin,
                                                            end,
                                                            std::forward< Fetch >( fetch ),
