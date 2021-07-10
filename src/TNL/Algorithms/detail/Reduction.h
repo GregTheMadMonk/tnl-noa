@@ -40,8 +40,6 @@ struct Reduction;
 template<>
 struct Reduction< Devices::Sequential >
 {
-   using DeviceType = Devices::Sequential;
-
    /**
     * \brief Computes reduction on CPU sequentially.
     *
@@ -106,8 +104,6 @@ struct Reduction< Devices::Sequential >
 template<>
 struct Reduction< Devices::Host >
 {
-   using DeviceType = Devices::Host;
-
    /**
     * \brief Computes reduction on CPU.
     *
@@ -172,8 +168,6 @@ struct Reduction< Devices::Host >
 template<>
 struct Reduction< Devices::Cuda >
 {
-   using DeviceType = Devices::Cuda;
-
    /**
     * \brief Computes reduction on GPU.
     *
