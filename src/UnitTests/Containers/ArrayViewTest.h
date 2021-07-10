@@ -60,7 +60,24 @@ protected:
 // types for which ArrayViewTest is instantiated
 using ViewTypes = ::testing::Types<
 #ifndef HAVE_CUDA
-    ArrayView< int,    Devices::Host, short >
+   // we can't test all types because the argument list would be too long...
+//    ArrayView< int,    Devices::Sequential, short >
+//   ,ArrayView< long,   Devices::Sequential, short >
+//   ,ArrayView< float,  Devices::Sequential, short >
+//   ,ArrayView< double, Devices::Sequential, short >
+//   ,ArrayView< MyData, Devices::Sequential, short >
+//   ,ArrayView< int,    Devices::Sequential, int >
+//   ,ArrayView< long,   Devices::Sequential, int >
+//   ,ArrayView< float,  Devices::Sequential, int >
+//   ,ArrayView< double, Devices::Sequential, int >
+//   ,ArrayView< MyData, Devices::Sequential, int >
+    ArrayView< int,    Devices::Sequential, long >
+   ,ArrayView< long,   Devices::Sequential, long >
+   ,ArrayView< float,  Devices::Sequential, long >
+   ,ArrayView< double, Devices::Sequential, long >
+   ,ArrayView< MyData, Devices::Sequential, long >
+
+   ,ArrayView< int,    Devices::Host, short >
    ,ArrayView< long,   Devices::Host, short >
    ,ArrayView< float,  Devices::Host, short >
    ,ArrayView< double, Devices::Host, short >
@@ -98,6 +115,8 @@ using ViewTypes = ::testing::Types<
    // (but we can't test all types because the argument list would be too long...)
 #ifndef HAVE_CUDA
    ,
+   VectorView< float,  Devices::Sequential, long >,
+   VectorView< double, Devices::Sequential, long >,
    VectorView< float,  Devices::Host, long >,
    VectorView< double, Devices::Host, long >
 #endif
@@ -219,6 +238,20 @@ TYPED_TEST( ArrayViewTest, reset )
 }
 
 template< typename Value, typename Index >
+void testArrayViewElementwiseAccess( Array< Value, Devices::Sequential, Index >&& a )
+{
+   a.setSize( 10 );
+   using ViewType = ArrayView< Value, Devices::Sequential, Index >;
+   ViewType u( a );
+   for( int i = 0; i < 10; i++ ) {
+      u.setElement( i, i );
+      EXPECT_EQ( u.getData()[ i ], i );
+      EXPECT_EQ( u.getElement( i ), i );
+      EXPECT_EQ( u[ i ], i );
+   }
+}
+
+template< typename Value, typename Index >
 void testArrayViewElementwiseAccess( Array< Value, Devices::Host, Index >&& a )
 {
    a.setSize( 10 );
@@ -274,7 +307,7 @@ void ArrayViewEvaluateTest( ArrayType& u )
    ViewType v( u );
 
    v.forAllElements( [] __cuda_callable__ ( IndexType i, ValueType& value ) { value = 3 * i % 4; } );
-   
+
    for( int i = 0; i < 10; i++ )
    {
       EXPECT_EQ( u.getElement( i ), 3 * i % 4 );

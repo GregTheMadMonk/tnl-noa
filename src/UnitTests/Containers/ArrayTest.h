@@ -64,6 +64,23 @@ protected:
 // types for which ArrayTest is instantiated
 using ArrayTypes = ::testing::Types<
 #ifndef HAVE_CUDA
+   // we can't test all types because the argument list would be too long...
+//   Array< int,    Devices::Sequential, short >,
+//   Array< long,   Devices::Sequential, short >,
+//   Array< float,  Devices::Sequential, short >,
+//   Array< double, Devices::Sequential, short >,
+//   Array< MyData, Devices::Sequential, short >,
+//   Array< int,    Devices::Sequential, int >,
+//   Array< long,   Devices::Sequential, int >,
+//   Array< float,  Devices::Sequential, int >,
+//   Array< double, Devices::Sequential, int >,
+//   Array< MyData, Devices::Sequential, int >,
+   Array< int,    Devices::Sequential, long >,
+   Array< long,   Devices::Sequential, long >,
+   Array< float,  Devices::Sequential, long >,
+   Array< double, Devices::Sequential, long >,
+   Array< MyData, Devices::Sequential, long >,
+
    Array< int,    Devices::Host, short >,
    Array< long,   Devices::Host, short >,
    Array< float,  Devices::Host, short >,
@@ -102,6 +119,8 @@ using ArrayTypes = ::testing::Types<
    // (but we can't test all types because the argument list would be too long...)
 #ifndef HAVE_CUDA
    ,
+   Vector< float,  Devices::Sequential, long >,
+   Vector< double, Devices::Sequential, long >,
    Vector< float,  Devices::Host, long >,
    Vector< double, Devices::Host, long >
 #endif
@@ -359,6 +378,18 @@ TYPED_TEST( ArrayTest, reset )
 }
 
 template< typename Value, typename Index >
+void testArrayElementwiseAccess( Array< Value, Devices::Sequential, Index >&& u )
+{
+   u.setSize( 10 );
+   for( int i = 0; i < 10; i++ ) {
+      u.setElement( i, i );
+      EXPECT_EQ( u.getData()[ i ], i );
+      EXPECT_EQ( u.getElement( i ), i );
+      EXPECT_EQ( u[ i ], i );
+   }
+}
+
+template< typename Value, typename Index >
 void testArrayElementwiseAccess( Array< Value, Devices::Host, Index >&& u )
 {
    u.setSize( 10 );
@@ -400,6 +431,11 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    using ArrayType = typename TestFixture::ArrayType;
 
    testArrayElementwiseAccess( ArrayType() );
+}
+
+template< typename Value, typename Index >
+void test_setElement_on_device( const Array< Value, Devices::Sequential, Index >& )
+{
 }
 
 template< typename Value, typename Index >
