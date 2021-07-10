@@ -15,6 +15,7 @@
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Algorithms/Scan.h>
+#include <TNL/Algorithms/SegmentedScan.h>
 
 namespace TNL {
 namespace Containers {

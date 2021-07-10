@@ -10,7 +10,7 @@ set( COMMON_TESTS
          unrolledForTest
 )
 
-set( CPP_TESTS )
+set( CPP_TESTS SegmentedScanTest )
 set( CUDA_TESTS )
 if( BUILD_CUDA )
    set( CUDA_TESTS  ${CUDA_TESTS} ${COMMON_TESTS} )
