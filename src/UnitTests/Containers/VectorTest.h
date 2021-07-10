@@ -261,7 +261,7 @@ TEST( VectorSpecialCasesTest, reductionOfEmptyVector )
    EXPECT_EQ( product(v), 1 );
    EXPECT_EQ( logicalAnd(v), true );
    EXPECT_EQ( logicalOr(v), false );
-   EXPECT_EQ( binaryAnd(v), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryAnd(v), ~0 );
    EXPECT_EQ( binaryOr(v), 0 );
 
    EXPECT_EQ( min(v_view), std::numeric_limits< int >::max() );
@@ -272,7 +272,7 @@ TEST( VectorSpecialCasesTest, reductionOfEmptyVector )
    EXPECT_EQ( product(v_view), 1 );
    EXPECT_EQ( logicalAnd(v_view), true );
    EXPECT_EQ( logicalOr(v_view), false );
-   EXPECT_EQ( binaryAnd(v_view), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryAnd(v_view), ~0 );
    EXPECT_EQ( binaryOr(v_view), 0 );
 }
 
