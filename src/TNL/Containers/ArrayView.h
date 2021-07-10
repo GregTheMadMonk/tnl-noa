@@ -371,6 +371,20 @@ public:
    const Value& operator[]( IndexType i ) const;
 
    /**
+    * \brief Accesses the \e i-th element of the array.
+    *
+    * Equivalent to \ref operator[], with the same notes and caveats.
+    */
+   __cuda_callable__ Value& operator()( IndexType i );
+
+   /**
+    * \brief Accesses the \e i-th element of the array.
+    *
+    * Equivalent to \ref operator[], with the same notes and caveats.
+    */
+   __cuda_callable__ const Value& operator()( IndexType i ) const;
+
+   /**
     * \brief Compares the array view with another array-like container.
     *
     * \tparam ArrayT The type of the parameter can be any array-like

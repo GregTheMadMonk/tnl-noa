@@ -499,6 +499,20 @@ class Array
       __cuda_callable__ const Value& operator[]( IndexType i ) const;
 
       /**
+       * \brief Accesses the \e i-th element of the array.
+       *
+       * Equivalent to \ref operator[], with the same notes and caveats.
+       */
+      __cuda_callable__ Value& operator()( IndexType i );
+
+      /**
+       * \brief Accesses the \e i-th element of the array.
+       *
+       * Equivalent to \ref operator[], with the same notes and caveats.
+       */
+      __cuda_callable__ const Value& operator()( IndexType i ) const;
+
+      /**
        * \brief Copy-assignment operator for copying data from another array.
        *
        * \param array Reference to the source array.

@@ -190,6 +190,21 @@ Value& StaticArray< Size, Value >::operator[]( int i )
    TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
    return data[ i ];
 }
+
+template< int Size, typename Value >
+__cuda_callable__
+const Value& StaticArray< Size, Value >::operator()( int i ) const
+{
+   return operator[]( i );
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+Value& StaticArray< Size, Value >::operator()( int i )
+{
+   return operator[]( i );
+}
+
 template< int Size, typename Value >
 __cuda_callable__
 Value& StaticArray< Size, Value >::x()

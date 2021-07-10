@@ -89,6 +89,12 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
    }
 
    __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
+   }
+
+   __cuda_callable__
    IndexType getSize() const
    {
       return op1.getSize();
@@ -129,6 +135,12 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
    RealType operator[]( const IndexType i ) const
    {
       return Operation::evaluate( op1[ i ], op2 );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__
@@ -175,6 +187,12 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
    }
 
    __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
+   }
+
+   __cuda_callable__
    IndexType getSize() const
    {
       return op2.getSize();
@@ -216,6 +234,12 @@ struct UnaryExpressionTemplate
    RealType operator[]( const IndexType i ) const
    {
       return Operation::evaluate( operand[ i ] );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__

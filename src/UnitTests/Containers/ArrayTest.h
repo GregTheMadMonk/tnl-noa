@@ -386,6 +386,7 @@ void testArrayElementwiseAccess( Array< Value, Devices::Sequential, Index >&& u 
       EXPECT_EQ( u.getData()[ i ], i );
       EXPECT_EQ( u.getElement( i ), i );
       EXPECT_EQ( u[ i ], i );
+      EXPECT_EQ( u( i ), i );
    }
 }
 
@@ -398,15 +399,17 @@ void testArrayElementwiseAccess( Array< Value, Devices::Host, Index >&& u )
       EXPECT_EQ( u.getData()[ i ], i );
       EXPECT_EQ( u.getElement( i ), i );
       EXPECT_EQ( u[ i ], i );
+      EXPECT_EQ( u( i ), i );
    }
 }
 
 #ifdef HAVE_CUDA
 template< typename ValueType, typename IndexType >
-__global__ void testSetGetElementKernel( Array< ValueType, Devices::Cuda, IndexType >* u )
+__global__ void testSetGetElementKernel( Array< ValueType, Devices::Cuda, IndexType >* u,
+                                         Array< ValueType, Devices::Cuda, IndexType >* v )
 {
-   if( threadIdx.x < ( *u ).getSize() )
-      ( *u )[ threadIdx.x ] = threadIdx.x;
+   if( threadIdx.x < u->getSize() )
+      ( *u )[ threadIdx.x ] = ( *v )( threadIdx.x ) = threadIdx.x;
 }
 #endif /* HAVE_CUDA */
 
@@ -414,14 +417,16 @@ template< typename Value, typename Index >
 void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 {
 #ifdef HAVE_CUDA
-   u.setSize( 10 );
    using ArrayType = Array< Value, Devices::Cuda, Index >;
-   Pointers::DevicePointer< ArrayType > kernel_u( u );
-   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >() );
+   u.setSize( 10 );
+   ArrayType v( 10 );
+   Pointers::DevicePointer< ArrayType > kernel_u( u ), kernel_v( v );
+   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >(), &kernel_v.template modifyData< Devices::Cuda >() );
    cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
+      EXPECT_EQ( v.getElement( i ), i );
    }
 #endif
 }

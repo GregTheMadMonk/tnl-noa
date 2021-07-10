@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayView_impl.h  -  description
+                          ArrayView.hpp  -  description
                              -------------------
     begin                : Sep 1, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -271,6 +271,28 @@ operator[]( IndexType i ) const
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return data[ i ];
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Value&
+ArrayView< Value, Device, Index >::
+operator()( IndexType i )
+{
+   return operator[]( i );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+const Value&
+ArrayView< Value, Device, Index >::
+operator()( IndexType i ) const
+{
+   return operator[]( i );
 }
 
 template< typename Value,

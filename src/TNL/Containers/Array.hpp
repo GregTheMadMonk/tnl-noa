@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Array_impl.h  -  description
+                          Array.hpp  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -553,6 +553,30 @@ operator[]( IndexType i ) const
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return this->data[ i ];
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+__cuda_callable__
+Value&
+Array< Value, Device, Index, Allocator >::
+operator()( IndexType i )
+{
+   return operator[]( i );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+__cuda_callable__
+const Value&
+Array< Value, Device, Index, Allocator >::
+operator()( IndexType i ) const
+{
+   return operator[]( i );
 }
 
 template< typename Value,

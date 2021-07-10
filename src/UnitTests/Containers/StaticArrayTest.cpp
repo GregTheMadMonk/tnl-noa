@@ -117,6 +117,8 @@ void checkCoordinates( StaticArray< 1, Value >& u )
    EXPECT_EQ( u.x(), 0 );
    u.x() += 1;
    EXPECT_EQ( u.x(), 1 );
+   EXPECT_EQ( u[ 0 ], 1 );
+   EXPECT_EQ( u( 0 ), 1 );
 }
 
 template< typename Value >
@@ -127,7 +129,11 @@ void checkCoordinates( StaticArray< 2, Value >& u )
    u.x() += 1;
    u.y() += 1;
    EXPECT_EQ( u.x(), 1 );
+   EXPECT_EQ( u[ 0 ], 1 );
+   EXPECT_EQ( u( 0 ), 1 );
    EXPECT_EQ( u.y(), 2 );
+   EXPECT_EQ( u[ 1 ], 2 );
+   EXPECT_EQ( u( 1 ), 2 );
 }
 
 template< typename Value >
@@ -140,8 +146,14 @@ void checkCoordinates( StaticArray< 3, Value >& u )
    u.y() += 1;
    u.z() += 1;
    EXPECT_EQ( u.x(), 1 );
+   EXPECT_EQ( u[ 0 ], 1 );
+   EXPECT_EQ( u( 0 ), 1 );
    EXPECT_EQ( u.y(), 2 );
+   EXPECT_EQ( u[ 1 ], 2 );
+   EXPECT_EQ( u( 1 ), 2 );
    EXPECT_EQ( u.z(), 3 );
+   EXPECT_EQ( u[ 2 ], 3 );
+   EXPECT_EQ( u( 2 ), 3 );
 }
 
 template< int _size, typename Value >

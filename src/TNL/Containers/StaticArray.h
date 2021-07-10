@@ -136,6 +136,22 @@ public:
    Value& operator[]( int i );
 
    /**
+    * \brief Accesses specified element at the position \e i and returns a constant reference to its value.
+    *
+    * Equivalent to \ref operator[].
+    */
+   __cuda_callable__
+   const Value& operator()( int i ) const;
+
+   /**
+    * \brief Accesses specified element at the position \e i and returns a reference to its value.
+    *
+    * Equivalent to \ref operator[].
+    */
+   __cuda_callable__
+   Value& operator()( int i );
+
+   /**
     * \brief Returns reference to the first coordinate.
     */
    __cuda_callable__
