@@ -53,13 +53,13 @@ performFirstPhase( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   ValueType aux = zero;
    if( Type == ScanType::Inclusive ) {
-      for( IndexType i = begin + 1; i < end; i++ )
-         v[ i ] = reduction( v[ i ], v[ i - 1 ] );
+      for( IndexType i = begin; i < end; i++ )
+         v[ i ] = aux = reduction( aux, v[ i ] );
    }
    else // Exclusive scan
    {
-      ValueType aux = zero;
       for( IndexType i = begin; i < end; i++ ) {
          const ValueType x = v[ i ];
          v[ i ] = aux;
