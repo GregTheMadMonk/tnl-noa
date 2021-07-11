@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Algorithms/scan.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -35,7 +36,7 @@ class CSR
             view = sizes;
          }
          offsets.setElement( sizes.getSize(), 0 );
-         offsets.template scan< Algorithms::ScanType::Exclusive >();
+         inplaceExclusiveScan( offsets );
       }
 
       template< typename CSROffsets >

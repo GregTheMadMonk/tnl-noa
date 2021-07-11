@@ -16,6 +16,7 @@
 #include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Array.h>
+#include "ScanType.h"
 
 namespace TNL {
 namespace Algorithms {

@@ -4,7 +4,7 @@
 
 #include <TNL/Arithmetics/Quad.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Scan.h>
+#include <TNL/Algorithms/scan.h>
 
 #include "../Containers/VectorHelperFunctions.h"
 
@@ -101,21 +101,21 @@ TYPED_TEST( ScanTest, inclusiveScan )
 
    setConstantSequence( v, 0 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -123,21 +123,21 @@ TYPED_TEST( ScanTest, inclusiveScan )
    // test views
    setConstantSequence( v, 0 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -147,28 +147,28 @@ TYPED_TEST( ScanTest, inclusiveScan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -176,29 +176,29 @@ TYPED_TEST( ScanTest, inclusiveScan )
       // test views
       setConstantSequence( v, 0 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Inclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
 
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
 #endif
    }
 }
@@ -220,21 +220,21 @@ TYPED_TEST( ScanTest, exclusiveScan )
 
    setConstantSequence( v, 0 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -242,21 +242,21 @@ TYPED_TEST( ScanTest, exclusiveScan )
    // test views
    setConstantSequence( v, 0 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -266,28 +266,28 @@ TYPED_TEST( ScanTest, exclusiveScan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -295,29 +295,29 @@ TYPED_TEST( ScanTest, exclusiveScan )
       // test views
       setConstantSequence( v, 0 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
-      Algorithms::Scan< DeviceType, ScanType::Exclusive >::perform( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
+      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
 
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
 #endif
    }
 }

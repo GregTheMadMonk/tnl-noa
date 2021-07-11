@@ -17,6 +17,7 @@
 #include "../Benchmarks.h"
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Algorithms/scan.h>
 #include "CommonVectorOperations.h"
 #include "VectorOperations.h"
 
@@ -566,13 +567,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Inclusive scan
    auto inclusiveScanHost = [&]() {
-      hostVector.scan();
+      Algorithms::inplaceInclusiveScan( hostVector );
    };
    benchmark.setOperation( "inclusive scan", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU ET", inclusiveScanHost );
 #ifdef HAVE_CUDA
    auto inclusiveScanCuda = [&]() {
-      deviceVector.scan();
+      Algorithms::inplaceInclusiveScan( deviceVector );
    };
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", inclusiveScanCuda );
 #endif
@@ -580,13 +581,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Exclusive scan
    auto exclusiveScanHost = [&]() {
-      hostVector.template scan< Algorithms::ScanType::Exclusive >();
+      Algorithms::inplaceExclusiveScan( hostVector );
    };
    benchmark.setOperation( "exclusive scan", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU ET", exclusiveScanHost );
 #ifdef HAVE_CUDA
    auto exclusiveScanCuda = [&]() {
-      deviceVector.template scan< Algorithms::ScanType::Exclusive >();
+      Algorithms::inplaceExclusiveScan( deviceVector );
    };
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusiveScanCuda );
 #endif

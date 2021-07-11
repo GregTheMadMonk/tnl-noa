@@ -11,11 +11,11 @@ set( COMMON_TESTS
 )
 
 set( CPP_TESTS
-         ScanTest
+         scanTest
          SegmentedScanTest
 )
 set( CUDA_TESTS
-         ScanTestCuda
+         scanTestCuda
 )
 if( BUILD_CUDA )
    set( CUDA_TESTS  ${CUDA_TESTS} ${COMMON_TESTS} )
@@ -40,23 +40,23 @@ endif()
 
 
 if( ${BUILD_MPI} )
-   ADD_EXECUTABLE( DistributedScanTest DistributedScanTest.cpp )
-   TARGET_COMPILE_OPTIONS( DistributedScanTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( DistributedScanTest ${GTEST_BOTH_LIBRARIES} )
+   ADD_EXECUTABLE( distributedScanTest distributedScanTest.cpp )
+   TARGET_COMPILE_OPTIONS( distributedScanTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( distributedScanTest ${GTEST_BOTH_LIBRARIES} )
 
    if( BUILD_CUDA )
-      CUDA_ADD_EXECUTABLE( DistributedScanTestCuda DistributedScanTestCuda.cu
+      CUDA_ADD_EXECUTABLE( distributedScanTestCuda distributedScanTestCuda.cu
                            OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedScanTestCuda ${GTEST_BOTH_LIBRARIES} )
+      TARGET_LINK_LIBRARIES( distributedScanTestCuda ${GTEST_BOTH_LIBRARIES} )
    endif()
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedScanTest${CMAKE_EXECUTABLE_SUFFIX}" )
-   ADD_TEST( NAME DistributedScanTest COMMAND "mpirun" ${mpi_test_parameters})
-   ADD_TEST( NAME DistributedScanTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedScanTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/distributedScanTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME distributedScanTest COMMAND "mpirun" ${mpi_test_parameters})
+   ADD_TEST( NAME distributedScanTest_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/distributedScanTest${CMAKE_EXECUTABLE_SUFFIX}" )
 
    if( BUILD_CUDA )
-      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedScanTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
-      ADD_TEST( NAME DistributedScanTestCuda COMMAND "mpirun" ${mpi_test_parameters})
-      ADD_TEST( NAME DistributedScanTestCuda_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DistributedScanTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/distributedScanTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      ADD_TEST( NAME distributedScanTestCuda COMMAND "mpirun" ${mpi_test_parameters})
+      ADD_TEST( NAME distributedScanTestCuda_nodistr COMMAND "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/distributedScanTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
    endif()
 endif()

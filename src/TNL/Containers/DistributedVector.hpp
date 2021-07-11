@@ -13,7 +13,6 @@
 #pragma once
 
 #include "DistributedVector.h"
-#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -248,18 +247,6 @@ operator/=( Scalar c )
 {
    getView() /= c;
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< Algorithms::ScanType Type >
-void
-DistributedVector< Real, Device, Index, Allocator >::
-scan( IndexType begin, IndexType end )
-{
-   getView().template scan< Type >( begin, end );
 }
 
 } // namespace Containers

@@ -15,74 +15,18 @@
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Algorithms/detail/ScanType.h>
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
-/**
- * \brief Scan (or prefix sum) type - inclusive or exclusive.
- *
- * See \ref TNL::Algorithms::Scan.
- */
-enum class ScanType {
-   Exclusive,
-   Inclusive
-};
-
-/**
- * \brief Computes scan (or prefix sum) on a vector.
- *
- * [Scan (or prefix sum)](https://en.wikipedia.org/wiki/Prefix_sum) operation turns a sequence
- * \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
- *
- * \f[
- * s_i = \sum_{j=1}^i a_i.
- * \f]
- * Exclusive scan (or prefix sum) is defined as
- *
- * \f[
- * \sigma_i = \sum_{j=1}^{i-1} a_i.
- * \f]
- *
- * \tparam Device parameter says on what device the reduction is gonna be performed.
- * \tparam Type parameter says if inclusive or exclusive is scan is to be computed.
- *
- * See \ref Scan< Devices::Host, Type > and \ref Scan< Devices::Cuda, Type >.
- */
-template< typename Device,
-          ScanType Type = ScanType::Inclusive >
+template< typename Device, ScanType Type >
 struct Scan;
 
 template< ScanType Type >
 struct Scan< Devices::Sequential, Type >
 {
-   /**
-    * \brief Computes scan (prefix sum) sequentially.
-    *
-    * \tparam Vector type vector being used for the scan.
-    * \tparam Reduction lambda function defining the reduction operation
-    *
-    * \param v input vector, the result of scan is stored in the same vector
-    * \param begin the first element in the array to be scanned
-    * \param end the last element in the array to be scanned
-    * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    *
-    * \include ReductionAndScan/ScanExample.cpp
-    *
-    * \par Output
-    *
-    * \include ScanExample.out
-    */
    template< typename Vector,
              typename Reduction >
    static void
@@ -116,33 +60,6 @@ struct Scan< Devices::Sequential, Type >
 template< ScanType Type >
 struct Scan< Devices::Host, Type >
 {
-   /**
-    * \brief Computes scan (prefix sum) using OpenMP.
-    *
-    * \tparam Vector type vector being used for the scan.
-    * \tparam Reduction lambda function defining the reduction operation
-    *
-    * \param v input vector, the result of scan is stored in the same vector
-    * \param begin the first element in the array to be scanned
-    * \param end the last element in the array to be scanned
-    * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    *
-    * \include ReductionAndScan/ScanExample.cpp
-    *
-    * \par Output
-    *
-    * \include ScanExample.out
-    */
    template< typename Vector,
              typename Reduction >
    static void
@@ -176,33 +93,6 @@ struct Scan< Devices::Host, Type >
 template< ScanType Type >
 struct Scan< Devices::Cuda, Type >
 {
-   /**
-    * \brief Computes scan (prefix sum) on GPU.
-    *
-    * \tparam Vector type vector being used for the scan.
-    * \tparam Reduction lambda function defining the reduction operation
-    *
-    * \param v input vector, the result of scan is stored in the same vector
-    * \param begin the first element in the array to be scanned
-    * \param end the last element in the array to be scanned
-    * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    *
-    * \include ReductionAndScan/ScanExample.cpp
-    *
-    * \par Output
-    *
-    * \include ScanExample.out
-    */
    template< typename Vector,
              typename Reduction >
    static void
@@ -233,7 +123,8 @@ struct Scan< Devices::Cuda, Type >
                        const typename Vector::ValueType zero );
 };
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL
 
-#include <TNL/Algorithms/Scan.hpp>
+#include "Scan.hpp"

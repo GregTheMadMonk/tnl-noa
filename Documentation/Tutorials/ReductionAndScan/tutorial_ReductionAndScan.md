@@ -216,29 +216,35 @@ and exclusive prefix sum of the same sequence is
 [0,1,4,9,16,25,36]
 ```
 
-Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
-
-\includelineno ScanExample.cpp
-
-Scan does not use `fetch` function because the scan must be performed on a vector (the first parameter we pass to the scan). Its complexity is also higher compared to reduction. Thus if one needs to do some operation with the vector elements before the scan, this can be done explicitly and it will not affect the performance significantlty. On the other hand, the scan function takes interval of the vector elements where the scan is performed as its second and third argument. The next argument is the operation to be performed by the scan and the last parameter is the idempotent ("zero") element if the operation.
-
-The result looks as:
-
-\include ScanExample.out
-
-Exclusive scan works the same way, we just need to specify it by the second template parameter which is set to `ScanType::Exclusive`. The call of the scan then looks as
+Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on summation, however product or logical operations could be handy as well. In TNL, scan is implemented in similar way as reduction and uses the same functors as the reduction operation. The following example shows how it works:
 
 ```
-Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduction, 0.0 );
+inplaceInclusiveScan( array, 0, array.getSize(), TNL::Plus{} );
+```
+
+This is equivalent to the following shortened call (the second, third and fourth parameters have a default value):
+
+```
+inplaceInclusiveScan( array );
 ```
 
 The complete example looks as follows:
 
-\includelineno ExclusiveScanExample.cpp
+\includelineno inplaceInclusiveScanExample.cpp
+
+Scan does not use `fetch` function because the scan must be performed on an array. Its complexity is also higher compared to reduction. Thus if one needs to do some operation with the array elements before the scan, this can be done explicitly and it will not affect the performance significantly. On the other hand, the scan function takes interval of the vector elements where the scan is performed as its second and third argument. The next argument is the operation to be performed by the scan and the last parameter is the idempotent ("zero") element of the operation.
+
+The result looks as:
+
+\include inplaceInclusiveScanExample.out
+
+Exclusive scan works similarly. The complete example looks as follows:
+
+\includelineno inplaceExclusiveScanExample.cpp
 
 And the result looks as:
 
-\include ExclusiveScanExample.out
+\include inplaceExclusiveScanExample.out
 
 ### Segmented scan
 

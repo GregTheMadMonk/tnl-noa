@@ -19,7 +19,7 @@
 namespace TNL {
 namespace Algorithms {
 
-template< ScanType Type >
+template< detail::ScanType Type >
    template< typename Vector,
              typename Reduction,
              typename Flags >
@@ -35,7 +35,7 @@ perform( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
-   if( Type == ScanType::Inclusive )
+   if( Type == detail::ScanType::Inclusive )
    {
       for( IndexType i = begin + 1; i < end; i++ )
          if( ! flags[ i ] )
@@ -56,7 +56,7 @@ perform( Vector& v,
    }
 }
 
-template< ScanType Type >
+template< detail::ScanType Type >
    template< typename Vector,
              typename Reduction,
              typename Flags >
@@ -77,7 +77,7 @@ perform( Vector& v,
 #endif
 }
 
-template< ScanType Type >
+template< detail::ScanType Type >
    template< typename Vector,
              typename Reduction,
              typename Flags >

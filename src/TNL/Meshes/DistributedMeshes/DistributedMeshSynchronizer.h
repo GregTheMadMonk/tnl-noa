@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/Algorithms/scan.h>
 #include <TNL/Containers/ByteArraySynchronizer.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/DenseMatrix.h>
@@ -383,7 +384,7 @@ public:
             // scan the rowPointers array to convert
             Containers::VectorView< GlobalIndexType, Devices::Host, GlobalIndexType > rowPointersView;
             rowPointersView.bind( recv_rowPointers );
-            rowPointersView.template scan< Algorithms::ScanType::Exclusive >();
+            Algorithms::inplaceExclusiveScan( rowPointersView );
          }
 
          // allocate column indices

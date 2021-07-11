@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/scan.h>
 #include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Algorithms/Segments/Ellpack.h>
 
@@ -152,7 +153,7 @@ setSegmentsSizes( const SizesHolder& sizes )
       slice_segment_size_view[ i ] = res;
    };
    ellpack.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
-   this->sliceOffsets.template scan< Algorithms::ScanType::Exclusive >();
+   inplaceExclusiveScan( this->sliceOffsets );
    this->size = sum( sizes );
    this->alignedSize = this->sliceOffsets.getElement( slicesCount );
 }

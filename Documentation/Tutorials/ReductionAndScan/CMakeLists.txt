@@ -12,8 +12,8 @@ set( COMMON_EXAMPLES
      MapReduceExample-3
      ReductionWithArgument
      ReductionWithArgumentWithFunctional
-     ScanExample
-     ExclusiveScanExample
+     inplaceInclusiveScanExample
+     inplaceExclusiveScanExample
      SegmentedScanExample
 )
 

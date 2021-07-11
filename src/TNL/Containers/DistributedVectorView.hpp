@@ -13,7 +13,6 @@
 #pragma once
 
 #include "DistributedVectorView.h"
-#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -286,20 +285,6 @@ operator/=( Scalar c )
       this->startSynchronization();
    }
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< Algorithms::ScanType Type >
-void
-DistributedVectorView< Real, Device, Index >::
-scan( IndexType begin, IndexType end )
-{
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
-   this->startSynchronization();
 }
 
 } // namespace Containers

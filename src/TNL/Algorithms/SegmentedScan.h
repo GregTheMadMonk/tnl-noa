@@ -12,11 +12,13 @@
 
 #pragma once
 
+// TODO: move this into the detail namespace, create dispatching functions like
+// inplaceInclusiveSegmentedScan, inplaceExclusiveSegmentedScan, etc.
+
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-
-#include "Scan.h"  // only for the ScanType
+#include <TNL/Algorithms/detail/ScanType.h>
 
 namespace TNL {
 namespace Algorithms {
@@ -61,10 +63,10 @@ namespace Algorithms {
  * **Note: Segmented scan is not implemented for CUDA yet.**
  */
 template< typename Device,
-          ScanType Type = ScanType::Inclusive >
+          detail::ScanType Type = detail::ScanType::Inclusive >
 struct SegmentedScan;
 
-template< ScanType Type >
+template< detail::ScanType Type >
 struct SegmentedScan< Devices::Sequential, Type >
 {
    /**
@@ -108,7 +110,7 @@ struct SegmentedScan< Devices::Sequential, Type >
             const typename Vector::ValueType zero );
 };
 
-template< ScanType Type >
+template< detail::ScanType Type >
 struct SegmentedScan< Devices::Host, Type >
 {
    /**
@@ -152,7 +154,7 @@ struct SegmentedScan< Devices::Host, Type >
             const typename Vector::ValueType zero );
 };
 
-template< ScanType Type >
+template< detail::ScanType Type >
 struct SegmentedScan< Devices::Cuda, Type >
 {
    /**

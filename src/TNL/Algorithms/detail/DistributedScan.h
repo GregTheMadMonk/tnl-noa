@@ -12,27 +12,29 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Scan.h>
-#include <TNL/Containers/Vector.h>
+#include "Scan.h"
+
+#include <TNL/Containers/Array.h>
 #include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
 template< ScanType Type >
 struct DistributedScan
 {
-   template< typename DistributedVector,
+   template< typename DistributedArray,
              typename Reduction >
    static void
-   perform( DistributedVector& v,
-            typename DistributedVector::IndexType begin,
-            typename DistributedVector::IndexType end,
-            const Reduction& reduction,
-            const typename DistributedVector::ValueType zero )
+   perform( DistributedArray& v,
+            typename DistributedArray::IndexType begin,
+            typename DistributedArray::IndexType end,
+            Reduction&& reduction,
+            typename DistributedArray::ValueType zero )
    {
-      using ValueType = typename DistributedVector::ValueType;
-      using DeviceType = typename DistributedVector::DeviceType;
+      using ValueType = typename DistributedArray::ValueType;
+      using DeviceType = typename DistributedArray::DeviceType;
 
       const auto group = v.getCommunicationGroup();
       if( group != MPI::NullGroup() ) {
@@ -50,7 +52,7 @@ struct DistributedScan
          const int nproc = MPI::GetSize( group );
          ValueType dataForScatter[ nproc ];
          for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = local_result;
-         Containers::Vector< ValueType, Devices::Host > rank_results( nproc );
+         Containers::Array< ValueType, Devices::Host > rank_results( nproc );
          // NOTE: exchanging general data types does not work with MPI
          MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, group );
 
@@ -64,5 +66,6 @@ struct DistributedScan
    }
 };
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL

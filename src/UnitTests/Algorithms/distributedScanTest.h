@@ -8,7 +8,7 @@
 #include <TNL/Containers/DistributedArray.h>
 #include <TNL/Containers/DistributedArrayView.h>
 #include <TNL/Containers/Partitioner.h>
-#include <TNL/Algorithms/DistributedScan.h>
+#include <TNL/Algorithms/distributedScan.h>
 
 #define DISTRIBUTED_VECTOR
 #include "../Containers/VectorHelperFunctions.h"
@@ -98,21 +98,21 @@ TYPED_TEST( DistributedScanTest, inclusiveScan )
 
    setConstantSequence( v, 0 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -120,21 +120,21 @@ TYPED_TEST( DistributedScanTest, inclusiveScan )
    // test views
    setConstantSequence( v, 0 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -144,28 +144,28 @@ TYPED_TEST( DistributedScanTest, inclusiveScan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
 
       setConstantSequence( v, 1 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i + 1 );
 
       setLinearSequence( v );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -173,29 +173,29 @@ TYPED_TEST( DistributedScanTest, inclusiveScan )
       // test views
       setConstantSequence( v, 0 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
 
       setConstantSequence( v, 1 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i + 1 );
 
       setLinearSequence( v );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Inclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
 
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
 #endif
    }
 }
@@ -217,21 +217,21 @@ TYPED_TEST( DistributedScanTest, exclusiveScan )
 
    setConstantSequence( v, 0 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -239,21 +239,21 @@ TYPED_TEST( DistributedScanTest, exclusiveScan )
    // test views
    setConstantSequence( v, 0 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host.setValue( -1 );
-   DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -263,28 +263,28 @@ TYPED_TEST( DistributedScanTest, exclusiveScan )
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
 
       setConstantSequence( v, 0 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
 
       setConstantSequence( v, 1 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i );
 
       setLinearSequence( v );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -292,29 +292,29 @@ TYPED_TEST( DistributedScanTest, exclusiveScan )
       // test views
       setConstantSequence( v, 0 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], 0 );
 
       setConstantSequence( v, 1 );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], i );
 
       setLinearSequence( v );
       v_host.setValue( -1 );
-      DistributedScan< ScanType::Exclusive >::perform( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
+      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
          EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
 
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
+      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
 #endif
    }
 }

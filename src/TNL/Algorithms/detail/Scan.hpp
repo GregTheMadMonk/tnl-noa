@@ -13,16 +13,17 @@
 #pragma once
 
 #include "Scan.h"
-#include "reduce.h"
+#include "CudaScanKernel.h"
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Algorithms/detail/CudaScanKernel.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Algorithms {
+namespace detail {
 
 template< ScanType Type >
    template< typename Vector,
@@ -305,5 +306,6 @@ performSecondPhase( Vector& v,
 #endif
 }
 
+} // namespace detail
 } // namespace Algorithms
 } // namespace TNL

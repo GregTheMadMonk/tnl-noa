@@ -174,9 +174,6 @@ public:
              typename...,
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVector& operator/=( const Vector& vector );
-
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void scan( IndexType begin = 0, IndexType end = 0 );
 };
 
 // Enable expression templates for DistributedVector

@@ -14,6 +14,7 @@
 
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
+#include <TNL/Algorithms/scan.h>
 
 namespace TNL {
 namespace Meshes {
@@ -238,7 +239,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
                      globalOffsets.getData(), 1,
                      mesh.getCommunicationGroup() );
    }
-   globalOffsets.template scan< Algorithms::ScanType::Exclusive >();
+   Algorithms::inplaceExclusiveScan( globalOffsets );
 
    // 3. assign global indices to the local entities and a padding index to ghost entities
    //    (later we can check the padding index to know if an index was set or not)

@@ -13,6 +13,7 @@
 #include <math.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/scan.h>
 #include <TNL/Algorithms/Segments/BiEllpack.h>
 #include <TNL/Algorithms/Segments/Ellpack.h>
 
@@ -345,7 +346,7 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
       this->performRowBubbleSort( segmentsSizes );
       this->computeColumnSizes( segmentsSizes );
 
-      this->groupPointers.template scan< Algorithms::ScanType::Exclusive >();
+      inplaceExclusiveScan( this->groupPointers );
 
       this->verifyRowPerm( segmentsSizes );
       //this->verifyRowLengths( segmentsSizes ); // TODO: I am not sure what this test is doing.
