@@ -336,7 +336,7 @@ template< typename Device,
 auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
+   return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowToSliceMapping.getView(),
       slices.getView(),
       rowToChunkMapping.getView(),
@@ -370,7 +370,7 @@ template< typename Device,
 __cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,

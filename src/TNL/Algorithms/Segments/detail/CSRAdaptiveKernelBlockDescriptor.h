@@ -13,7 +13,7 @@
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 enum class Type {
    /* LONG = 0!!! Non zero value rewrites index[1] */
@@ -245,7 +245,7 @@ std::ostream& operator<< ( std::ostream& str, const CSRAdaptiveKernelBlockDescri
    block.print( str );
    return str;
 }
-         } // namespace details
+         } // namespace detail
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

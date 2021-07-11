@@ -15,7 +15,7 @@
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 template< typename Device,
           typename Index >
@@ -110,7 +110,7 @@ class CSR
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 };
-         } // namespace details
+         } // namespace detail
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

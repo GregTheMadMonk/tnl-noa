@@ -13,8 +13,8 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/BiEllpackView.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
-//#include <TNL/Algorithms/Segments/details/BiEllpack.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+//#include <TNL/Algorithms/Segments/detail/BiEllpack.h>
 #include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
@@ -158,19 +158,19 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
          rowPermArray,
          groupPointers,
          segmentIdx );
 #else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSize(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSize(
          rowPermArray,
          groupPointers,
          segmentIdx );
 #endif
    }
    else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentSizeDirect(
          rowPermArray,
          groupPointers,
          segmentIdx );
@@ -206,13 +206,13 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
          rowPermArray,
          groupPointers,
          segmentIdx,
          localIdx );
 #else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndex(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndex(
          rowPermArray,
          groupPointers,
          segmentIdx,
@@ -220,7 +220,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
 #endif
    }
    else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getGlobalIndexDirect(
          rowPermArray,
          groupPointers,
          segmentIdx,
@@ -239,19 +239,19 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
          rowPermArray,
          groupPointers,
          segmentIdx );
 #else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentView(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentView(
          rowPermArray,
          groupPointers,
          segmentIdx );
 #endif
    }
    else
-      return details::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
+      return detail::BiEllpack< IndexType, DeviceType, Organization, WarpSize >::getSegmentViewDirect(
          rowPermArray,
          groupPointers,
          segmentIdx );
@@ -272,7 +272,7 @@ forElements( IndexType first, IndexType last, Function&& f ) const
       const IndexType strip = segmentIdx / getWarpSize();
       const IndexType firstGroupInStrip = strip * ( getLogWarpSize() + 1 );
       const IndexType rowStripPerm = segmentsPermutationView[ segmentIdx ] - strip * getWarpSize();
-      const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( segmentsPermutationView, segmentIdx );
+      const IndexType groupsCount = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( segmentsPermutationView, segmentIdx );
       IndexType groupHeight = getWarpSize();
       //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
       bool compute( true );
@@ -357,7 +357,7 @@ void
 BiEllpackView< Device, Index, Organization, WarpSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( this->getStorageSize() == 0 )
       return;
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -366,7 +366,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          const IndexType stripIdx = segmentIdx / getWarpSize();
          const IndexType groupIdx = stripIdx * ( getLogWarpSize() + 1 );
          const IndexType inStripIdx = rowPermArray[ segmentIdx ] - stripIdx * getWarpSize();
-         const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCount( rowPermArray, segmentIdx );
+         const IndexType groupsCount = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCount( rowPermArray, segmentIdx );
          IndexType globalIdx = groupPointers[ groupIdx ];
          IndexType groupHeight = getWarpSize();
          IndexType localIdx( 0 );
@@ -380,7 +380,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          //          << std::endl;
          for( IndexType group = 0; group < groupsCount && compute; group++ )
          {
-            const IndexType groupSize = details::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getGroupSize( groupPointers, stripIdx, group );
+            const IndexType groupSize = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getGroupSize( groupPointers, stripIdx, group );
             IndexType groupWidth = groupSize / groupHeight;
             const IndexType globalIdxBack = globalIdx;
             //std::cerr << "  groupSize = " << groupSize
@@ -395,8 +395,8 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
                //std::cerr << "    segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx
                //         << " groupWidth = " << groupWidth << " groupHeight = " << groupHeight
                //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx
-               //          << " fetch = " << details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
-               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+               //          << " fetch = " << detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
+               aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
                if( Organization == RowMajorOrder )
                   globalIdx ++;
                else
@@ -425,7 +425,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          dim3 cudaGridSize = Cuda::getMaxGridSize();
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         details::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
+         detail::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
          cudaThreadSynchronize();
@@ -535,7 +535,7 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
    const IndexType strip = segmentIdx / getWarpSize();
    const IndexType firstGroupInStrip = strip * ( getLogWarpSize() + 1 );
    const IndexType rowStripPerm = rowPermArray[ segmentIdx ] - strip * getWarpSize();
-   const IndexType groupsCount = details::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( rowPermArray, segmentIdx );
+   const IndexType groupsCount = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( rowPermArray, segmentIdx );
    IndexType groupHeight = getWarpSize();
    bool compute( true );
    IndexType localIdx( 0 );

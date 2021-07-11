@@ -14,7 +14,7 @@
 #include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 #include <TNL/Algorithms/Segments/CSRVectorKernel.h>
 
 namespace TNL {
@@ -58,7 +58,7 @@ void segmentsReductionCSRKernelVector(
     for( Index globalIdx = offsets[ segmentIdx ] + localIdx; globalIdx < endIdx; globalIdx += TNL::Cuda::getWarpSize() )
     {
         TNL_ASSERT_LT( globalIdx, endIdx, "" );
-        aux = reduce( aux, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
+        aux = reduce( aux, detail::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
         localIdx += TNL::Cuda::getWarpSize();
     }
 

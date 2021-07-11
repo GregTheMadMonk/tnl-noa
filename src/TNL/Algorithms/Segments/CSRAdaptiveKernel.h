@@ -14,10 +14,10 @@
 #include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 #include <TNL/Algorithms/Segments/CSRScalarKernel.h>
 #include <TNL/Algorithms/Segments/CSRAdaptiveKernelView.h>
-#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelBlockDescriptor.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -65,7 +65,7 @@ struct CSRAdaptiveKernel
 
    static constexpr int MaxValueSizeLog() { return ViewType::MaxValueSizeLog; };
 
-   static int getSizeValueLog( const int& i ) { return details::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
+   static int getSizeValueLog( const int& i ) { return detail::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
 
    static TNL::String getKernelType();
 
@@ -98,7 +98,7 @@ struct CSRAdaptiveKernel
       Index findLimit( const Index start,
                      const Offsets& offsets,
                      const Index size,
-                     details::Type &type,
+                     detail::Type &type,
                      size_t &sum );
 
       template< int SizeOfValue,

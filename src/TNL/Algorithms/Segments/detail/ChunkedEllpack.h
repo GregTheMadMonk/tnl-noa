@@ -13,12 +13,12 @@
 #include <type_traits>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/details/CheckLambdas.h>
+#include <TNL/Algorithms/Segments/detail/CheckLambdas.h>
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 /***
  * In the ChunkedEllpack, the segments are split into slices. This is done
@@ -65,7 +65,7 @@ class ChunkedEllpack
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using OffsetsHolderView = typename OffsetsHolder::ViewType;
       using SegmentsSizes = OffsetsHolder;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
@@ -233,7 +233,7 @@ class ChunkedEllpack
 #ifdef HAVE_CUDA
 template< typename Index,
           typename Fetch,
-          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+          bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct ChunkedEllpackSegmentsReductionDispatcher{};
 
 template< typename Index, typename Fetch >
@@ -304,7 +304,7 @@ void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
 }
 #endif
 
-         } //namespace details
+         } //namespace detail
       } //namespace Segments
    } //namespace Algorithms
 } //namepsace TNL

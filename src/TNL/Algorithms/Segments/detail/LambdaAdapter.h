@@ -15,7 +15,7 @@
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 template< typename Index,
           typename Lambda,
@@ -50,7 +50,7 @@ struct FetchLambdaAdapter< Index, Lambda, false >
    }
 };
 
-         } // namespace details
+         } // namespace detail
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

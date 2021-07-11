@@ -16,7 +16,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -39,7 +39,7 @@ class ChunkedEllpackView
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< Index >, Organization >;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
@@ -230,7 +230,7 @@ class ChunkedEllpackView
                                                   Args_... args );
 
       template< typename Index_, typename Fetch_, bool B_ >
-      friend struct details::ChunkedEllpackSegmentsReductionDispatcher;
+      friend struct detail::ChunkedEllpackSegmentsReductionDispatcher;
 #endif
 };
       } // namespace Segments

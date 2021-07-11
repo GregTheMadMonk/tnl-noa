@@ -13,7 +13,7 @@
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 // This can be used for tunning the number of CUDA threads per block depending on the size of Value
 // TODO: Perform some tests
@@ -106,7 +106,7 @@ getSizeValueLogConstexpr( const int i )
    return 6;
 };
 
-         } // namespace details
+         } // namespace detail
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

@@ -13,12 +13,12 @@
 #include <type_traits>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/details/CheckLambdas.h>
+#include <TNL/Algorithms/Segments/detail/CheckLambdas.h>
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 template< typename Index,
           typename Device,
@@ -292,7 +292,7 @@ template< typename Index,
           typename Fetch,
           int BlockDim = 256,
           int WarpSize = 32,
-          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+          bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct BiEllpackSegmentsReductionDispatcher{};
 
 template< typename Index, typename Fetch, int BlockDim, int WarpSize >
@@ -364,7 +364,7 @@ void BiEllpackSegmentsReductionKernel( View biEllpack,
 }
 #endif
 
-         } //namespace details
+         } //namespace detail
       } //namespace Segments
    } //namespace Algorithms
 } //namepsace TNL

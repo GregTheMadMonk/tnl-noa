@@ -301,7 +301,7 @@ verifyRowLengths( const SizesHolder& segmentsSizes )
       const IndexType begin = this->groupPointers.getElement( groupBegin ) * getWarpSize() + rowStripPerm * stripLength;
       IndexType elementPtr = begin;
       IndexType rowLength = 0;
-      const IndexType groupsCount = details::BiEllpack< Index, Device, Organization, WarpSize >::getActiveGroupsCount( this->rowPermArray.getConstView(), segmentIdx );
+      const IndexType groupsCount = detail::BiEllpack< Index, Device, Organization, WarpSize >::getActiveGroupsCount( this->rowPermArray.getConstView(), segmentIdx );
       for( IndexType group = 0; group < groupsCount; group++ )
       {
          std::cerr << "groupIdx = " << group << " groupLength = " << this->getGroupLength( strip, group ) << std::endl;
@@ -386,7 +386,7 @@ template< typename Device,
 auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::BiEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
+   return detail::BiEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowPermArray.getConstView(),
       groupPointers.getConstView(),
       segmentIdx );
@@ -422,7 +422,7 @@ template< typename Device,
 __cuda_callable__ auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getGlobalIndex( const IndexType segmentIdx, const IndexType localIdx ) const -> IndexType
 {
-      return details::BiEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
+      return detail::BiEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowPermArray.getConstView(),
          groupPointers.getConstView(),
          segmentIdx,
@@ -588,7 +588,7 @@ template< typename Device,
 auto BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getStripLength( const IndexType stripIdx ) const -> IndexType
 {
-   return details::BiEllpack< Index, Device, Organization, WarpSize >::getStripLength( this->groupPointers.getConstView(), stripIdx );
+   return detail::BiEllpack< Index, Device, Organization, WarpSize >::getStripLength( this->groupPointers.getConstView(), stripIdx );
 }
 
 template< typename Device,

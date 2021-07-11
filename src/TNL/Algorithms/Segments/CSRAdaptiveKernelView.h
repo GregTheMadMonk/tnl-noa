@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
-#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelParameters.h>
+#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -26,12 +26,12 @@ struct CSRAdaptiveKernelView
    using DeviceType = Device;
    using ViewType = CSRAdaptiveKernelView< Index, Device >;
    using ConstViewType = CSRAdaptiveKernelView< Index, Device >;
-   using BlocksType = TNL::Containers::Vector< details::CSRAdaptiveKernelBlockDescriptor< Index >, Device, Index >;
+   using BlocksType = TNL::Containers::Vector< detail::CSRAdaptiveKernelBlockDescriptor< Index >, Device, Index >;
    using BlocksView = typename BlocksType::ViewType;
 
-   static constexpr int MaxValueSizeLog = details::CSRAdaptiveKernelParameters<>::MaxValueSizeLog;
+   static constexpr int MaxValueSizeLog = detail::CSRAdaptiveKernelParameters<>::MaxValueSizeLog;
 
-   static int getSizeValueLog( const int& i ) { return details::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
+   static int getSizeValueLog( const int& i ) { return detail::CSRAdaptiveKernelParameters<>::getSizeValueLog( i ); };
 
    CSRAdaptiveKernelView() = default;
 

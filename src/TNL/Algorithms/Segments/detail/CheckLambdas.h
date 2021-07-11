@@ -14,7 +14,7 @@
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
-         namespace details {
+         namespace detail {
 
 template< typename Index,
           typename Lambda >
@@ -34,7 +34,7 @@ class CheckFetchLambda
       static constexpr bool hasAllParameters() { return value; };
 };
 
-         } // namespace details
+         } // namespace detail
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL
