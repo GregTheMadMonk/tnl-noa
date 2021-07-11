@@ -15,6 +15,7 @@
 #include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 //#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
+#include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
    namespace Algorithms {

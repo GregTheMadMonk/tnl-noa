@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include <TNL/Math.h>
 #include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
@@ -246,7 +244,6 @@ struct CudaScanKernelLauncher
       const int elementsInBlock = 8 * blockSize;
       const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
       const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
-      //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
       // allocate array for the block results
       Containers::Array< Real, Devices::Cuda > blockResults;
@@ -260,7 +257,6 @@ struct CudaScanKernelLauncher
          Index currentSize = size - gridOffset;
          if( currentSize / elementsInBlock > maxGridSize() )
             currentSize = maxGridSize() * elementsInBlock;
-         //std::cerr << "GridIdx = " << gridIdx << " grid size = " << currentSize << std::endl;
 
          // setup block and grid size
          dim3 cudaBlockSize, cudaGridSize;
@@ -343,7 +339,6 @@ struct CudaScanKernelLauncher
          Index currentSize = size - gridOffset;
          if( currentSize / elementsInBlock > maxGridSize() )
             currentSize = maxGridSize() * elementsInBlock;
-         //std::cerr << "GridIdx = " << gridIdx << " grid size = " << currentSize << std::endl;
 
          // setup block and grid size
          dim3 cudaBlockSize, cudaGridSize;

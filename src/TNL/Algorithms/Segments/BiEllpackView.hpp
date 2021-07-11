@@ -15,6 +15,7 @@
 #include <TNL/Algorithms/Segments/BiEllpackView.h>
 #include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
 //#include <TNL/Algorithms/Segments/details/BiEllpack.h>
+#include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -391,9 +392,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
                globalIdx += inStripIdx;
             for( IndexType j = 0; j < groupWidth && compute; j++ )
             {
-               //std::cerr << "    segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx 
+               //std::cerr << "    segmentIdx = " << segmentIdx << " groupIdx = " << groupIdx
                //         << " groupWidth = " << groupWidth << " groupHeight = " << groupHeight
-               //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx 
+               //          << " localIdx = " << localIdx << " globalIdx = " << globalIdx
                //          << " fetch = " << details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) << std::endl;
                aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
                if( Organization == RowMajorOrder )
@@ -496,7 +497,7 @@ printStructure( std::ostream& str ) const
       {
          const IndexType groupSize = groupPointers.getElement( groupIdx + 1 ) - groupPointers.getElement( groupIdx );
          const IndexType groupWidth = groupSize / groupHeight;
-         str << "\tGroup: " << groupIdx << " size = " << groupSize << " width = " << groupWidth << " height = " << groupHeight 
+         str << "\tGroup: " << groupIdx << " size = " << groupSize << " width = " << groupWidth << " height = " << groupHeight
              << " offset = " << groupPointers.getElement( groupIdx ) << std::endl;
          groupHeight /= 2;
       }
@@ -607,13 +608,13 @@ segmentsReductionKernel( IndexType gridIdx,
 
    /////
    // Fetch group pointers to shared memory
-   //bool b1 = ( threadIdx.x <= warpsCount * groupsInStrip ); 
+   //bool b1 = ( threadIdx.x <= warpsCount * groupsInStrip );
    //bool b2 = ( firstGroupIdx + threadIdx.x % groupsInStrip < this->groupPointers.getSize() );
    //printf( "tid = %d warpsCount * groupsInStrip = %d firstGroupIdx + threadIdx.x = %d this->groupPointers.getSize() = %d read = %d %d\n",
    //   threadIdx.x, warpsCount * groupsInStrip,
    //   firstGroupIdx + threadIdx.x,
    //   this->groupPointers.getSize(), ( int ) b1, ( int ) b2 );
-   if( threadIdx.x <= warpsCount * groupsInStrip && 
+   if( threadIdx.x <= warpsCount * groupsInStrip &&
       firstGroupInBlock + threadIdx.x < this->groupPointers.getSize() )
    {
       sharedGroupPointers[ threadIdx.x ] = this->groupPointers[ firstGroupInBlock + threadIdx.x ];
@@ -634,7 +635,7 @@ segmentsReductionKernel( IndexType gridIdx,
          IndexType groupEnd = sharedGroupPointers[ sharedGroupOffset + group + 1 ];
          TNL_ASSERT_LT( groupBegin, this->getStorageSize(), "" );
          //if( groupBegin >= this->getStorageSize() )
-         //   printf( "tid = %d sharedGroupOffset + group + 1 = %d strip = %d group = %d groupBegin = %d groupEnd = %d this->getStorageSize() = %d\n", 
+         //   printf( "tid = %d sharedGroupOffset + group + 1 = %d strip = %d group = %d groupBegin = %d groupEnd = %d this->getStorageSize() = %d\n",
          //      threadIdx.x, sharedGroupOffset + group + 1, strip, group, groupBegin, groupEnd, this->getStorageSize() );
          TNL_ASSERT_LT( groupEnd, this->getStorageSize(), "" );
          if( groupEnd - groupBegin > 0 )
@@ -675,7 +676,7 @@ segmentsReductionKernel( IndexType gridIdx,
             {
                temp[ threadIdx.x ] = reduction( temp[ threadIdx.x ], fetch( globalIdx, compute ) );
                //if( strip == 1 )
-               //   printf( "tid %d fetch %f temp %f \n", threadIdx.x, fetch( globalIdx, compute ), temp[ threadIdx.x ] );               
+               //   printf( "tid %d fetch %f temp %f \n", threadIdx.x, fetch( globalIdx, compute ), temp[ threadIdx.x ] );
                globalIdx += getWarpSize();
             }
             // TODO: reduction via templates
