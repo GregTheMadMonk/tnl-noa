@@ -810,7 +810,7 @@ TEST_F(DistributedGridTest_3D, readDistributedMeshFunction)
    TNL::MPI::Barrier();
    if( TNL::MPI::GetRank() == 0 ) {
       EXPECT_TRUE( fs::remove( mainFilePath ) );
-      EXPECT_GT( fs::remove_all( baseName ), 1 );
+      EXPECT_GT( fs::remove_all( baseName ), 1u );
    }
 }
 #endif
