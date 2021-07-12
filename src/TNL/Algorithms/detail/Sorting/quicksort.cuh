@@ -3,8 +3,8 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Scan.h>
-#include "task.h"
-#include "quicksort_kernel.cuh"
+#include <TNL/Algorithms/detail/Sorting/task.h>
+#include <TNL/Algorithms/detail/Sorting/quicksort_kernel.cuh>
 
 #include <iostream>
 #define deb(x) std::cout << #x << " = " << x << std::endl;
@@ -16,6 +16,10 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
+
+namespace TNL {
+    namespace Algorithms {
+        namespace detail {
 
 template <typename Value>
 class QUICKSORT
@@ -312,7 +316,7 @@ int QUICKSORT<Value>::getSetsNeeded(int elemPerBlock) const
         return size / elemPerBlock + (size % elemPerBlock != 0);
     };
     auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
-    return Algorithms::Reduction<Devices::Cuda>::reduce(0, host_1stPhaseTasksAmount, fetch, reduction, 0);
+    return Algorithms::reduce<Devices::Cuda>(0, host_1stPhaseTasksAmount, fetch, reduction, 0);
 }
 
 template <typename Value>
@@ -437,3 +441,7 @@ void quicksort(ArrayView<Value, Devices::Cuda> arr)
 {
     quicksort(arr, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
 }
+
+        } // namespace detail
+    } // namespace Algorithms
+}// namespace TNL

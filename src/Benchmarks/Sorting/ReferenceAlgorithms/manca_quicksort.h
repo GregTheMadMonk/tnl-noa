@@ -217,8 +217,8 @@ inline __device__ void compareInclusive(Type &idata, Type &idata2, volatile Type
 }
 
 #include <assert.h>
-#include <helper_cuda.h>
-#include <scan_common.h>
+#include "helpers/helper_cuda.h"
+#include "helpers/scan_common.h"
 
 //All three kernels run 512 threads per workgroup
 //Must be a power of two
@@ -654,9 +654,9 @@ size_t scanInclusiveLarge(
 
 
 #include <thrust/scan.h>
-#include <helper_cuda.h>
-#include <helper_timer.h>
-#include <scan_common.h>
+#include "helpers/helper_cuda.h"
+#include "helpers/helper_timer.h"
+#include "helpers/scan_common.h"
 
 extern __shared__ uint sMemory[];
 
@@ -1121,7 +1121,7 @@ void sort(Type *ddata, Type *outputData, uint size, uint threadCount, int device
     uint nblock = 10 * blocks;
     int partition_max = 262144;
 
-    unsigned long long int total = partition_max * sizeof(Block<Type>) + nblock * sizeof(Partition<Type>) + 2 * partition_max * sizeof(uint) + 3 * (size) * sizeof(Type);
+    //unsigned long long int total = partition_max * sizeof(Block<Type>) + nblock * sizeof(Partition<Type>) + 2 * partition_max * sizeof(uint) + 3 * (size) * sizeof(Type);
 
     //Allocating and initializing CUDA arrays
     sdkCreateTimer(&htimer);

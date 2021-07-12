@@ -10,7 +10,7 @@ bool is_sorted(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, const 
 
     auto fetch = [=] __cuda_callable__(int i) { return !Cmp(arr[i], arr[i - 1]); };
     auto reduction = [] __cuda_callable__(bool a, bool b) { return a && b; };
-    return TNL::Algorithms::Reduction<TNL::Devices::Cuda>::reduce(1, arr.getSize(), fetch, reduction, true);
+    return TNL::Algorithms::reduce<TNL::Devices::Cuda>(1, arr.getSize(), fetch, reduction, true);
 }
 
 template <typename Value>

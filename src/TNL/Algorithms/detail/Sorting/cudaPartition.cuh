@@ -1,8 +1,8 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include "../util/reduction.cuh"
-#include "task.h"
+#include <TNL/Algorithms/detail/Sorting/reduction.cuh>
+#include <TNL/Algorithms/detail/Sorting/task.h>
 
 using namespace TNL;
 using namespace TNL::Containers;

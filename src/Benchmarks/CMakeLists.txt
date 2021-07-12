@@ -5,6 +5,7 @@ add_subdirectory( SpMV )
 add_subdirectory( DistSpMV )
 add_subdirectory( LinearSolvers )
 add_subdirectory( ODESolvers )
+add_subdirectory( Sorting )
 add_subdirectory( Traversers )
 
 set( headers

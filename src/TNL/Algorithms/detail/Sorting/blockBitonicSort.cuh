@@ -1,5 +1,5 @@
 #pragma once
-#include "helpers.h"
+#include <TNL/Algorithms/detail/Sorting/helpers.h>
 #include <TNL/Containers/Array.h>
 
 /**

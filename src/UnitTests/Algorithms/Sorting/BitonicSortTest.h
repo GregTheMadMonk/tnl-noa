@@ -7,8 +7,8 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
-#include "../../src/bitonicSort/bitonicSort.h"
-#include "../../src/util/algorithm.h"
+#include <TNL/Algorithms/detail/Sorting/bitonicSort.h>
+#include <TNL/Algorithms/detail/Sorting/algorithm.h>
 
 //----------------------------------------------------------------------------------
 

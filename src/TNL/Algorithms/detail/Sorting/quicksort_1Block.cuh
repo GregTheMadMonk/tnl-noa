@@ -2,9 +2,9 @@
 
 #include <TNL/Containers/Array.h>
 #include "cassert"
-#include "../bitonicSort/bitonicSort.h"
-#include "../util/reduction.cuh"
-#include "cudaPartition.cuh"
+#include <TNL/Algorithms/detail/Sorting/bitonicSort.h>
+#include <TNL/Algorithms/detail/Sorting/reduction.cuh>
+#include <TNL/Algorithms/detail/Sorting/cudaPartition.cuh>
 
 using namespace TNL;
 using namespace TNL::Containers;

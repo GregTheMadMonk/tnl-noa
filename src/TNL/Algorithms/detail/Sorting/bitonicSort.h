@@ -1,9 +1,11 @@
 #pragma once
 #include <TNL/Containers/Array.h>
-#include "blockBitonicSort.cuh"
-#include "helpers.h"
+#include <TNL/Algorithms/detail/Sorting/blockBitonicSort.cuh>
+#include <TNL/Algorithms/detail/Sorting/helpers.h>
 
-//---------------------------------------------
+namespace TNL {
+    namespace Algorithms {
+        namespace detail {
 
 /**
  * this kernel simulates 1 exchange 
@@ -356,3 +358,7 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
     }
     cudaDeviceSynchronize();
 }
+
+        } // namespace detail
+    } // namespace Algorithms
+} // namespace TNL

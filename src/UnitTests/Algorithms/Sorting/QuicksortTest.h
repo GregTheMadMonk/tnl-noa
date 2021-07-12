@@ -8,8 +8,8 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
-#include "../../src/quicksort/quicksort.cuh"
-#include "../../src/util/algorithm.h"
+#include <TNL/Algorithms/detail/Sorting/quicksort.cuh>
+#include <TNL/Algorithms/detail/Sorting/algorithm.h>
 
 //----------------------------------------------------------------------------------
 
