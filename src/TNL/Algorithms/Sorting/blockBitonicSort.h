@@ -1,5 +1,5 @@
 #pragma once
-#include <TNL/Algorithms/detail/Sorting/helpers.h>
+#include <TNL/Algorithms/Sorting/helpers.h>
 #include <TNL/Containers/Array.h>
 
 #ifdef HAVE_CUDA

@@ -6,8 +6,8 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/detail/Sorting/quicksort.h>
-#include <TNL/Algorithms/detail/Sorting/algorithm.h>
+#include <TNL/Algorithms/Sort.h>
+#include <TNL/Algorithms/Sorting/quicksort.h>
 
 #if defined HAVE_CUDA_&& defined HAVE_GTEST
 #include <thrust/sort.h>
@@ -25,7 +25,7 @@ TEST(selectedSize, size15)
     auto view = cudaArr.getView();
     EXPECT_EQ(15, view.getSize()) << "size not 15" << std::endl;
     quicksort(view);
-    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
 TEST(multiblock, 32768_decreasingNegative)
@@ -38,7 +38,7 @@ TEST(multiblock, 32768_decreasingNegative)
     auto view = cudaArr.getView();
 
     quicksort(view);
-    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
 TEST(randomGenerated, smallArray_randomVal)
@@ -54,7 +54,7 @@ TEST(randomGenerated, smallArray_randomVal)
 
         auto view = cudaArr.getView();
         quicksort(view);
-        EXPECT_TRUE(is_sorted(view));
+        EXPECT_TRUE(Algorithms::isSorted(view));
     }
 }
 
@@ -71,7 +71,7 @@ TEST(randomGenerated, bigArray_randomVal)
 
         auto view = cudaArr.getView();
         quicksort(view);
-        EXPECT_TRUE(is_sorted(view));
+        EXPECT_TRUE(Algorithms::isSorted(view));
     }
 }
 
@@ -169,7 +169,7 @@ TEST(types, struct_3D_points)
     //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
     //std::cout << view << std::endl;
     quicksort(view);
-    EXPECT_TRUE(is_sorted(view));
+    EXPECT_TRUE(Algorithms::isSorted(view));
 }
 
 struct TMPSTRUCT_64b{
@@ -194,7 +194,7 @@ TEST(types, struct_64b)
     //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
     //std::cout << view << std::endl;
     quicksort(view);
-    EXPECT_TRUE(is_sorted(view));
+    EXPECT_TRUE(Algorithms::isSorted(view));
 }
 
 #endif

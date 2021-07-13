@@ -2,10 +2,10 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/detail/Sorting/reduction.h>
-#include <TNL/Algorithms/detail/Sorting/task.h>
-#include <TNL/Algorithms/detail/Sorting/cudaPartition.h>
-#include <TNL/Algorithms/detail/Sorting/quicksort_1Block.h>
+#include <TNL/Algorithms/Sorting/reduction.h>
+#include <TNL/Algorithms/Sorting/task.h>
+#include <TNL/Algorithms/Sorting/cudaPartition.h>
+#include <TNL/Algorithms/Sorting/quicksort_1Block.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
