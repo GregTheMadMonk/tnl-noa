@@ -64,6 +64,8 @@ inplaceInclusiveScan( Array& array,
                       Reduction&& reduction,
                       typename Array::ValueType zero )
 {
+   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
+                  "zero is not an idempotent value of the reduction operation" );
    using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive >;
    Scan::perform( array, begin, end, std::forward< Reduction >( reduction ), zero );
 }
@@ -134,6 +136,8 @@ inplaceExclusiveScan( Array& array,
                       Reduction&& reduction,
                       typename Array::ValueType zero )
 {
+   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
+                  "zero is not an idempotent value of the reduction operation" );
    using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive >;
    Scan::perform( array, begin, end, std::forward< Reduction >( reduction ), zero );
 }

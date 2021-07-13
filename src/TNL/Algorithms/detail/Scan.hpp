@@ -107,6 +107,9 @@ perform( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   if( end <= begin )
+      return;
+
    const IndexType size = end - begin;
    const int max_threads = Devices::Host::getMaxThreadsCount();
    const IndexType block_size = TNL::max( 1024, TNL::roundUpDivision( size, max_threads ) );
@@ -157,6 +160,12 @@ performFirstPhase( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   if( end <= begin ) {
+      Containers::Array< typename Vector::ValueType, Devices::Sequential > block_results( 1 );
+      block_results.setValue( zero );
+      return block_results;
+   }
+
    const IndexType size = end - begin;
    const int max_threads = Devices::Host::getMaxThreadsCount();
    const IndexType block_size = TNL::max( 1024, TNL::roundUpDivision( size, max_threads ) );
@@ -204,6 +213,9 @@ performSecondPhase( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   if( end <= begin )
+      return;
+
    const IndexType size = end - begin;
    const int max_threads = Devices::Host::getMaxThreadsCount();
    const IndexType block_size = TNL::max( 1024, TNL::roundUpDivision( size, max_threads ) );
@@ -241,6 +253,9 @@ perform( Vector& v,
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
 
+   if( end <= begin )
+      return;
+
    detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::perform(
       end - begin,
       &v.getData()[ begin ],  // input
@@ -266,6 +281,12 @@ performFirstPhase( Vector& v,
 #ifdef HAVE_CUDA
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
+
+   if( end <= begin ) {
+      Containers::Array< typename Vector::ValueType, Devices::Cuda > block_results( 1 );
+      block_results.setValue( zero );
+      return block_results;
+   }
 
    return detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::performFirstPhase(
       end - begin,
@@ -294,6 +315,9 @@ performSecondPhase( Vector& v,
 #ifdef HAVE_CUDA
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
+
+   if( end <= begin )
+      return;
 
    detail::CudaScanKernelLauncher< Type, ValueType, IndexType >::performSecondPhase(
       end - begin,

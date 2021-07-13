@@ -1,23 +1,18 @@
 #pragma once
 
 #ifdef HAVE_GTEST
+#include <gtest/gtest.h>
 
 #include <TNL/Arithmetics/Quad.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/scan.h>
-
-#include "../Containers/VectorHelperFunctions.h"
-
-#include "gtest/gtest.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Arithmetics;
 using namespace TNL::Algorithms;
-
-// should be small enough to have fast tests, but larger than minGPUReductionDataSize
-// and large enough to require multiple CUDA blocks for reduction
-constexpr int ARRAY_TEST_SIZE = 10000;
+using namespace TNL::Algorithms::detail;
 
 // test fixture for typed tests
 template< typename Array >
@@ -25,7 +20,67 @@ class ScanTest : public ::testing::Test
 {
 protected:
    using ArrayType = Array;
-   using ViewType = ArrayView< typename Array::ValueType, typename Array::DeviceType, typename Array::IndexType >;
+   using ValueType = typename ArrayType::ValueType;
+   using DeviceType = typename ArrayType::DeviceType;
+   using IndexType = typename ArrayType::IndexType;
+   using ArrayView = Containers::ArrayView< ValueType, DeviceType, IndexType >;
+   using VectorView = Containers::VectorView< ValueType, DeviceType, IndexType >;
+   using HostArrayType = typename ArrayType::template Self< ValueType, Devices::Sequential >;
+
+   ArrayType a, b, c;
+   ArrayView a_view, b_view, c_view;
+   VectorView av_view, bv_view, cv_view;
+   HostArrayType array_host, input_host, expected_host;
+
+   // should be small enough to have fast tests, but larger than minGPUReductionDataSize
+   // and large enough to require multiple CUDA blocks for reduction
+   // also should be a prime number to cause non-uniform distribution of the work
+   const int size = 9377;
+
+   ScanTest()
+   {
+      resetWorkingArrays();
+      input_host = expected_host = a;
+   }
+
+   void resetWorkingArrays()
+   {
+      a.setSize( size );
+      a.setValue( -1 );
+      c = b = a;
+      a_view.bind( a );
+      b_view.bind( b );
+      c_view.bind( c );
+      av_view.bind( a );
+      bv_view.bind( b );
+      cv_view.bind( c );
+
+      // make sure that we perform tests with multiple CUDA grids
+#ifdef HAVE_CUDA
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
+      {
+         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+      }
+#endif
+   }
+
+   template< Algorithms::detail::ScanType ScanType >
+   void checkResult( const ArrayType& array )
+   {
+#ifdef HAVE_CUDA
+      // skip the check for too small arrays
+      if( array.getSize() > 256 )
+         EXPECT_GT( ( CudaScanKernelLauncher< ScanType, ValueType, IndexType >::gridsCount() ), 1 );
+#endif
+
+      array_host = array;
+
+      for( int i = 0; i < array.getSize(); i++ )
+         EXPECT_EQ( array_host[ i ], expected_host[ i ] ) << "arrays differ at index i = " << i;
+   }
 };
 
 // types for which ScanTest is instantiated
@@ -85,244 +140,317 @@ using ArrayTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( ScanTest, ArrayTypes );
 
-TYPED_TEST( ScanTest, inclusiveScan )
+TYPED_TEST( ScanTest, inplaceInclusiveScan_zero_array )
 {
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-   using ValueType = typename ArrayType::ValueType;
-   using DeviceType = typename ArrayType::DeviceType;
-   using IndexType = typename ArrayType::IndexType;
-   using HostArrayType = typename ArrayType::template Self< ValueType, Devices::Sequential >;
-   const int size = ARRAY_TEST_SIZE;
+   using ValueType = typename TestFixture::ValueType;
 
-   ArrayType v( size );
-   ViewType v_view( v );
-   HostArrayType v_host( size );
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
 
-   setConstantSequence( v, 0 );
-   v_host = -1;
-   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   // general overload, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setConstantSequence( v, 1 );
-   v_host = -1;
-   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setLinearSequence( v );
-   v_host = -1;
-   inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   // general overload, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   // test views
-   setConstantSequence( v, 0 );
-   v_host = -1;
-   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setConstantSequence( v, 1 );
-   v_host = -1;
-   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0, this->size, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setLinearSequence( v );
-   v_host = -1;
-   inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->size );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setConstantSequence( v, 0 );
-      v_host = -1;
-      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-      setConstantSequence( v, 1 );
-      v_host = -1;
-      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setLinearSequence( v );
-      v_host = -1;
-      inplaceInclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-      // test views
-      setConstantSequence( v, 0 );
-      v_host = -1;
-      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
-
-      setConstantSequence( v, 1 );
-      v_host = -1;
-      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
-
-      setLinearSequence( v );
-      v_host = -1;
-      inplaceInclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
-
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
-#endif
-   }
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
-TYPED_TEST( ScanTest, exclusiveScan )
+TYPED_TEST( ScanTest, inplaceInclusiveScan_constant_sequence )
 {
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-   using ValueType = typename ArrayType::ValueType;
-   using DeviceType = typename ArrayType::DeviceType;
-   using IndexType = typename ArrayType::IndexType;
-   using HostArrayType = typename ArrayType::template Self< ValueType, Devices::Sequential >;
-   const int size = ARRAY_TEST_SIZE;
+   using ValueType = typename TestFixture::ValueType;
 
-   ArrayType v;
-   v.setSize( size );
-   ViewType v_view( v );
-   HostArrayType v_host( size );
+   this->input_host.setValue( 1 );
+   for( int i = 0; i < this->size; i++ )
+      this->expected_host[ i ] = i + 1;
 
-   setConstantSequence( v, 0 );
-   v_host = -1;
-   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   // general overload, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setConstantSequence( v, 1 );
-   v_host = -1;
-   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setLinearSequence( v );
-   v_host = -1;
-   inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   // general overload, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   // test views
-   setConstantSequence( v, 0 );
-   v_host = -1;
-   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setConstantSequence( v, 1 );
-   v_host = -1;
-   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0, this->size, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setLinearSequence( v );
-   v_host = -1;
-   inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->size );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setConstantSequence( v, 0 );
-      v_host = -1;
-      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-      setConstantSequence( v, 1 );
-      v_host = -1;
-      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setLinearSequence( v );
-      v_host = -1;
-      inplaceExclusiveScan( v, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-      // test views
-      setConstantSequence( v, 0 );
-      v_host = -1;
-      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
-
-      setConstantSequence( v, 1 );
-      v_host = -1;
-      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
-
-      setLinearSequence( v );
-      v_host = -1;
-      inplaceExclusiveScan( v_view, 0, size, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
-
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
-#endif
-   }
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
-// TODO: test scan with custom begin and end parameters
+TYPED_TEST( ScanTest, inplaceInclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   for( int i = 0; i < this->size; i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i + 1)) / 2;
+   }
+
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inplaceExclusiveScan_zero_array )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
+
+   // general overload, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0, this->size, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->size );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inplaceExclusiveScan_constant_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 1 );
+   for( int i = 0; i < this->size; i++ )
+      this->expected_host[ i ] = i;
+
+   // general overload, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0, this->size, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->size );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inplaceExclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   for( int i = 0; i < this->size; i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i - 1)) / 2;
+   }
+
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+
+TYPED_TEST( ScanTest, inplace_multiplication )
+{
+   this->input_host.setSize( 10 );
+   this->input_host.setValue( 2 );
+   this->expected_host = this->input_host;
+
+   // exclusive scan test
+   int value = 1;
+   for( int i = 0; i < this->expected_host.getSize(); i++ ) {
+      this->expected_host[ i ] = value;
+      value *= 2;
+   }
+
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   // inclusive scan test
+   for( int i = 0; i < this->expected_host.getSize(); i++ )
+      this->expected_host[ i ] *= 2;
+
+   this->a.reset();
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inplace_custom_begin_end )
+{
+   using IndexType = typename TestFixture::IndexType;
+
+   const IndexType begin = 42;
+   const IndexType end = this->size - begin;
+
+   // exclusive scan test
+   this->input_host.setValue( 1 );
+   this->expected_host.setValue( 1 );
+   for( int i = begin; i < end; i++ )
+      this->expected_host[ i ] = i - begin;
+
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   // inclusive scan test
+   for( int i = begin; i < end; i++ )
+      this->expected_host[ i ]++;
+
+   this->a.reset();
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inplace_empty_range )
+{
+   using IndexType = typename TestFixture::IndexType;
+
+   this->input_host.setSize( 42 );
+   this->input_host.setValue( 1 );
+   this->expected_host = this->input_host;
+
+   const IndexType begin = 2;
+   const IndexType end = 1;
+
+   // exclusive scan test
+   this->a = this->input_host;
+   inplaceExclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   // inclusive scan test
+   this->a.reset();
+   this->a = this->input_host;
+   inplaceInclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
 
 #endif // HAVE_GTEST
 

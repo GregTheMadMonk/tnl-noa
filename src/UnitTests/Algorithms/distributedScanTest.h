@@ -1,12 +1,10 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <limits>
-
 #include <gtest/gtest.h>
 
 #include <TNL/Containers/DistributedArray.h>
-#include <TNL/Containers/DistributedArrayView.h>
+#include <TNL/Containers/DistributedVectorView.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Algorithms/distributedScan.h>
 
@@ -16,6 +14,7 @@
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Algorithms;
+using namespace TNL::Algorithms::detail;
 using namespace TNL::MPI;
 
 /*
@@ -34,49 +33,91 @@ protected:
    using DeviceType = typename DistributedArray::DeviceType;
    using IndexType = typename DistributedArray::IndexType;
    using DistributedArrayType = DistributedArray;
-   using VectorViewType = typename DistributedArrayType::LocalViewType;
    using DistributedArrayView = Containers::DistributedArrayView< ValueType, DeviceType, IndexType >;
+   using DistributedVectorView = Containers::DistributedVectorView< ValueType, DeviceType, IndexType >;
    using HostDistributedArrayType = typename DistributedArrayType::template Self< ValueType, Devices::Sequential >;
+   using LocalRangeType = typename DistributedArray::LocalRangeType;
+   using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
+   using HostSynchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< Devices::Sequential >;
 
    const MPI_Comm group = AllGroup();
 
-   DistributedArrayType v;
-   DistributedArrayView v_view;
-   HostDistributedArrayType v_host;
+   DistributedArrayType a, b, c;
+   DistributedArrayView a_view, b_view, c_view;
+   DistributedVectorView av_view, bv_view, cv_view;
+   HostDistributedArrayType array_host, input_host, expected_host;
 
    const int rank = GetRank(group);
    const int nproc = GetSize(group);
 
    // should be small enough to have fast tests, but large enough to test
    // scan with multiple CUDA grids
-   const int globalSize = 10000 * nproc;
+   // also should be a prime number to cause non-uniform distribution of the work
+   const int globalSize = 9377 * nproc;
+
+   LocalRangeType localRange;
 
    // some arbitrary value (but must be 0 if not distributed)
    const int ghosts = (nproc > 1) ? 4 : 0;
 
    DistributedScanTest()
    {
-      using LocalRangeType = typename DistributedArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
-      v.setDistribution( localRange, ghosts, globalSize, group );
+      resetWorkingArrays();
+      input_host = a;
+      input_host.setSynchronizer( std::make_shared<HostSynchronizer>( a.getLocalRange(), ghosts / 2, group ) );
+      expected_host = input_host;
+   }
 
-      using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
-      using HostSynchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< Devices::Sequential >;
-      v.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
-      v_view.setSynchronizer( v.getSynchronizer() );
-      v_host.setSynchronizer( std::make_shared<HostSynchronizer>( localRange, ghosts / 2, group ) );
+   void resetWorkingArrays()
+   {
+      localRange = Partitioner< IndexType >::splitRange( globalSize, group );
+      a.setDistribution( localRange, ghosts, globalSize, group );
+      a.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
 
-      v_view.bind( v );
-      setConstantSequence( v, 1 );
+      a.setValue( -1 );
+      c = b = a;
+      a_view.bind( a );
+      b_view.bind( b );
+      c_view.bind( c );
+      av_view.bind( a );
+      bv_view.bind( b );
+      cv_view.bind( c );
+
+      // make sure that we perform tests with multiple CUDA grids
+#ifdef HAVE_CUDA
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
+      {
+         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+      }
+#endif
+   }
+
+   template< Algorithms::detail::ScanType ScanType >
+   void checkResult( const DistributedArrayType& array, bool check_cuda_grids = true )
+   {
+#ifdef HAVE_CUDA
+      // skip the check for too small arrays
+      if( check_cuda_grids && array.getLocalRange().getSize() > 256 )
+         EXPECT_GT( ( CudaScanKernelLauncher< ScanType, ValueType, IndexType >::gridsCount() ), 1 );
+#endif
+
+      array_host = array;
+
+      for( int i = a.getLocalRange().getBegin(); i < a.getLocalRange().getEnd(); i++ )
+         EXPECT_EQ( array_host[ i ], expected_host[ i ] ) << "arrays differ at index i = " << i;
    }
 };
 
 // types for which DistributedScanTest is instantiated
 using DistributedArrayTypes = ::testing::Types<
+#ifndef HAVE_CUDA
    DistributedArray< double, Devices::Sequential, int >,
    DistributedArray< double, Devices::Host, int >
+#endif
 #ifdef HAVE_CUDA
-   ,
    DistributedArray< double, Devices::Cuda, int >
 #endif
 >;
@@ -85,238 +126,325 @@ TYPED_TEST_SUITE( DistributedScanTest, DistributedArrayTypes );
 
 // TODO: test that horizontal operations are computed for ghost values without synchronization
 
-TYPED_TEST( DistributedScanTest, inclusiveScan )
+TYPED_TEST( DistributedScanTest, distributedInplaceInclusiveScan_zero_array )
 {
-   using ValueType = typename TestFixture::DistributedArrayType::ValueType;
-   using DeviceType = typename TestFixture::DistributedArrayType::DeviceType;
-   using IndexType = typename TestFixture::DistributedArrayType::IndexType;
+   using ValueType = typename TestFixture::ValueType;
 
-   auto& v = this->v;
-   auto& v_view = this->v_view;
-   auto& v_host = this->v_host;
-   const auto localRange = v.getLocalRange();
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
 
-   setConstantSequence( v, 0 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   // general overload, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setConstantSequence( v, 1 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setLinearSequence( v );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   // general overload, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   // test views
-   setConstantSequence( v, 0 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setConstantSequence( v, 1 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0, this->globalSize, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setLinearSequence( v );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->globalSize );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setConstantSequence( v, 0 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+   this->resetWorkingArrays();
 
-      setConstantSequence( v, 1 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], i + 1 );
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setLinearSequence( v );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-      // test views
-      setConstantSequence( v, 0 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
-
-      setConstantSequence( v, 1 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], i + 1 );
-
-      setLinearSequence( v );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceInclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
-
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
-#endif
-   }
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
-TYPED_TEST( DistributedScanTest, exclusiveScan )
+TYPED_TEST( DistributedScanTest, distributedInplaceInclusiveScan_constant_sequence )
 {
-   using ValueType = typename TestFixture::DistributedArrayType::ValueType;
-   using DeviceType = typename TestFixture::DistributedArrayType::DeviceType;
-   using IndexType = typename TestFixture::DistributedArrayType::IndexType;
+   using ValueType = typename TestFixture::ValueType;
 
-   auto& v = this->v;
-   auto& v_view = this->v_view;
-   auto& v_host = this->v_host;
-   const auto localRange = v.getLocalRange();
+   this->input_host.setValue( 1 );
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ )
+      this->expected_host[ i ] = i + 1;
 
-   // FIXME: tests should work in all cases
-   if( std::is_same< ValueType, float >::value )
-      return;
+   // general overload, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setConstantSequence( v, 0 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setConstantSequence( v, 1 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
+   // general overload, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setLinearSequence( v );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   // test views
-   setConstantSequence( v, 0 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0, this->globalSize, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   setConstantSequence( v, 1 );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v_view;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
+   this->resetWorkingArrays();
 
-   setLinearSequence( v );
-   v_host.setValue( -1 );
-   Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-   v_host = v;
-   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->globalSize );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+   this->resetWorkingArrays();
 
-      setConstantSequence( v, 0 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
 
-      setConstantSequence( v, 1 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], i );
+   this->resetWorkingArrays();
 
-      setLinearSequence( v );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
 
-      // test views
-      setConstantSequence( v, 0 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+TYPED_TEST( DistributedScanTest, distributedInplaceInclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
 
-      setConstantSequence( v, 1 );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], i );
-
-      setLinearSequence( v );
-      v_host.setValue( -1 );
-      Algorithms::distributedInplaceExclusiveScan( v_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
-      EXPECT_GT( ( Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::gridsCount() ), 1  );
-      v_host = v;
-      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
-         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
-
-      Algorithms::detail::CudaScanKernelLauncher< Algorithms::detail::ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
-#endif
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i + 1)) / 2;
    }
+
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( DistributedScanTest, distributedInplaceExclusiveScan_zero_array )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
+
+   // general overload, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0, this->globalSize, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->globalSize );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+TYPED_TEST( DistributedScanTest, distributedInplaceExclusiveScan_constant_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 1 );
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ )
+      this->expected_host[ i ] = i;
+
+   // general overload, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0, this->globalSize, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->globalSize );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default end, array view
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin and end, array
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+TYPED_TEST( DistributedScanTest, distributedInplaceExclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i - 1)) / 2;
+   }
+
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a_view, 0, this->globalSize, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+
+TYPED_TEST( DistributedScanTest, inplace_multiplication )
+{
+   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 10, this->group );
+   this->input_host.setDistribution( this->localRange, 0, 10, this->group );
+   this->input_host.setValue( 2 );
+   this->expected_host = this->input_host;
+
+   // exclusive scan test
+   int value = 1;
+   for( int i = 0; i < this->localRange.getEnd(); i++ ) {
+      if( this->localRange.getBegin() <= i )
+         this->expected_host[ i ] = value;
+      value *= 2;
+   }
+
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
+   this->template checkResult< ScanType::Exclusive >( this->a );
+
+   // inclusive scan test
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ )
+      this->expected_host[ i ] *= 2;
+
+   this->a.reset();
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
+   this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( DistributedScanTest, inplace_custom_begin_end )
+{
+   using IndexType = typename TestFixture::IndexType;
+
+   // make it span multiple processes
+   const IndexType begin = 42;
+   const IndexType end = (this->nproc > 1) ? this->globalSize / this->nproc + begin : this->globalSize - begin;
+
+   // exclusive scan test
+   this->input_host.setValue( 1 );
+   this->expected_host.setValue( 1 );
+   int value = 0;
+   for( int i = begin; i < end; i++ ) {
+      if( this->localRange.getBegin() <= i && i < this->localRange.getEnd() )
+         this->expected_host[ i ] = value;
+      value++;
+   }
+
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Exclusive >( this->a, false );
+
+   // inclusive scan test
+   for( int i = begin; i < end; i++ )
+      if( this->localRange.getBegin() <= i && i < this->localRange.getEnd() )
+         this->expected_host[ i ]++;
+
+   this->a.reset();
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Inclusive >( this->a, false );
+}
+
+TYPED_TEST( DistributedScanTest, inplace_empty_range )
+{
+   using IndexType = typename TestFixture::IndexType;
+
+   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 42, this->group );
+   this->input_host.setDistribution( this->localRange, 0, 42, this->group );
+   this->input_host.setValue( 1 );
+   this->expected_host = this->input_host;
+
+   const IndexType begin = 2;
+   const IndexType end = 1;
+
+   // exclusive scan test
+   this->a = this->input_host;
+   distributedInplaceExclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Exclusive >( this->a, false );
+
+   // inclusive scan test
+   this->a.reset();
+   this->a = this->input_host;
+   distributedInplaceInclusiveScan( this->a, begin, end );
+   this->template checkResult< ScanType::Inclusive >( this->a, false );
 }
 
 #endif  // HAVE_GTEST

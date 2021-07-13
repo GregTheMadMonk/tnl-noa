@@ -373,6 +373,7 @@ struct CudaScanKernelLauncher
    static void resetMaxGridSize()
    {
       maxGridSize() = Cuda::getMaxGridSize();
+      gridsCount() = -1;
    }
 
    static int& gridsCount()
