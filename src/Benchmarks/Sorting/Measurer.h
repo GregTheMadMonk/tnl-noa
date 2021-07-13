@@ -3,6 +3,7 @@
 #include <vector>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Algorithms/Sort.h>
 
 #ifdef HAVE_CUDA
 #include "ReferenceAlgorithms/manca_quicksort.h"
@@ -69,7 +70,7 @@ struct Measurer
                Sorter::sort(view);
          }
 
-         if(!is_sorted(view))
+         if( ! Algorithms::isSorted( view ) )
                wrongAnsCnt++;
       }
       return accumulate(resAcc.begin(), resAcc.end(), 0.0) / resAcc.size();
