@@ -90,10 +90,12 @@ int main(int argc, char *argv[])
         start< QuicksortSorter >(cout, "\t");
         std::cout << "Bitonic sort on GPU ... " << std::endl;
         start< BitonicSortSorter >( cout, "\t" );
+#ifdef HAVE_CUDA
         std::cout << "Manca quicksort on GPU ... " << std::endl;
         start< MancaQuicksortSorter >( cout, "\t" );
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
         start< CedermanQuicksortSorter >( cout, "\t" );
+#endif
     }
     else
     {
@@ -104,10 +106,12 @@ int main(int argc, char *argv[])
         start< QuicksortSorter >(out, ",");
         std::cout << "Bitonic sort on GPU ... " << std::endl;
         start< BitonicSortSorter >(out, ",");
+#ifdef HAVE_CUDA
         std::cout << "Manca quicksort on GPU ... " << std::endl;
         start< MancaQuicksortSorter >( out, "," );
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
         start< CedermanQuicksortSorter >( out, "," );
+#endif
     }
     return 0;
 }

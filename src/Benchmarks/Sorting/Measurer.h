@@ -3,8 +3,12 @@
 #include <vector>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Array.h>
+
+#ifdef HAVE_CUDA
 #include "ReferenceAlgorithms/manca_quicksort.h"
 #include "ReferenceAlgorithms/cederman_qsort.h"
+#endif
+
 #include "timer.h"
 
 using namespace TNL;
@@ -27,6 +31,7 @@ struct STLSorter
     static void sort( std::vector< Value >& vec ) { std::sort( vec.begin(), vec.end() ); };
 };
 
+#ifdef HAVE_CUDA
 struct MancaQuicksortSorter
 {
    static void sort( Containers::ArrayView< int, Devices::Cuda >& array )
@@ -44,6 +49,8 @@ struct CedermanQuicksortSorter
       gpuqsort( ( unsigned int * ) array.getData(), ( unsigned int ) array.getSize() );
    }
 };
+#endif
+
 
 template< typename Sorter >
 struct Measurer
