@@ -4,7 +4,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Scan.h>
 #include <TNL/Algorithms/detail/Sorting/task.h>
-#include <TNL/Algorithms/detail/Sorting/quicksort_kernel.cuh>
+#include <TNL/Algorithms/detail/Sorting/quicksort_kernel.h>
 
 #include <iostream>
 #define deb(x) std::cout << #x << " = " << x << std::endl;

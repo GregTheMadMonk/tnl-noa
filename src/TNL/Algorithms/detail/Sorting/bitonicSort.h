@@ -1,6 +1,6 @@
 #pragma once
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/detail/Sorting/blockBitonicSort.cuh>
+#include <TNL/Algorithms/detail/Sorting/blockBitonicSort.h>
 #include <TNL/Algorithms/detail/Sorting/helpers.h>
 
 namespace TNL {

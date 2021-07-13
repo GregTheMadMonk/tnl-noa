@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/detail/Sorting/reduction.cuh>
+#include <TNL/Algorithms/detail/Sorting/reduction.h>
 #include <TNL/Algorithms/detail/Sorting/task.h>
 
 #ifdef HAVE_CUDA

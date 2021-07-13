@@ -18,7 +18,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Algorithms/detail/Sorting/bitonicSort.h>
-#include <TNL/Algorithms/detail/Sorting/quicksort.cuh>
+#include <TNL/Algorithms/detail/Sorting/quicksort.h>
 #include <TNL/Algorithms/detail/Sorting/algorithm.h>
 
 namespace TNL {
