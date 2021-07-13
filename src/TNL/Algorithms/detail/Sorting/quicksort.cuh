@@ -96,7 +96,7 @@ public:
     int getSetsNeeded(int elemPerBlock) const;
 
     /**
-     * returns the optimal amount of elements per thread needed for phase 
+     * returns the optimal amount of elements per thread needed for phase
      * */
     int getElemPerBlock() const;
 
@@ -132,6 +132,7 @@ template <typename Value>
 template <typename CMP>
 void QUICKSORT<Value>::sort(const CMP &Cmp)
 {
+#ifdef HAVE_CUDA
     firstPhase(Cmp);
 
     int total2ndPhase = host_1stPhaseTasksAmount + host_2ndPhaseTasksAmount;
@@ -157,8 +158,7 @@ void QUICKSORT<Value>::sort(const CMP &Cmp)
         out << iteration << std::endl;
     }
 #endif
-
-    return;
+#endif
 }
 
 //---------------------------------------------------------------------------------------------
@@ -167,6 +167,7 @@ template <typename Value>
 template <typename CMP>
 void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
 {
+#ifdef HAVE_CUDA
     while (host_1stPhaseTasksAmount > 0)
     {
         if (host_1stPhaseTasksAmount >= maxTasks)
@@ -220,7 +221,7 @@ void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
 
         /**
          * check if partition procedure can use shared memory for coalesced write after reordering
-         * 
+         *
          * move elements smaller than pivot to the left and bigger to the right
          * note: pivot isnt inserted in the middle yet
          * */
@@ -243,7 +244,7 @@ void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
         /**
          * fill in the gap between smaller and bigger with elements == pivot
          * after writing also create new tasks, each task generates at max 2 tasks
-         * 
+         *
          * tasks smaller than desired_2ndPhasElemPerBlock go into 2nd phase
          * bigger need more blocks to partition and are written into newTask
          * with iteration %2, rotate between the 2 tasks array to save from copying
@@ -261,6 +262,7 @@ void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
         processNewTasks();
         iteration++;
     }
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -269,6 +271,7 @@ template <typename Value>
 template <typename CMP>
 void QUICKSORT<Value>::secondPhase(const CMP &Cmp)
 {
+#ifdef HAVE_CUDA
     int total2ndPhase = host_1stPhaseTasksAmount + host_2ndPhaseTasksAmount;
     const int stackSize = 32;
     auto &leftoverTasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
@@ -302,6 +305,7 @@ void QUICKSORT<Value>::secondPhase(const CMP &Cmp)
         cudaQuickSort2ndPhase<Value, CMP, stackSize>
             <<<total2ndPhase, threadsPerBlock, externSharedByteSize>>>(arr, aux, Cmp, tasks2, elemInShared, desired_2ndPhasElemPerBlock);
     }
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -342,7 +346,7 @@ template <typename Value>
 template <typename CMP>
 int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
 {
-
+#ifdef HAVE_CUDA
     auto &src = iteration % 2 == 0 ? arr : aux;
     auto &tasks = iteration % 2 == 0 ? cuda_tasks : cuda_newTasks;
 
@@ -352,7 +356,7 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
     cudaCalcBlocksNeeded<<<blocks, threadsPerBlock>>>(tasks.getView(0, host_1stPhaseTasksAmount), elemPerBlock,
                                                       cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
     //cuda_reductionTaskInitMem[i] == how many blocks task i needs
-    
+
     auto reduce = [] __cuda_callable__(const int &a, const int &b) { return a + b; };
 
     Algorithms::Scan<Devices::Cuda, Algorithms::ScanType::Inclusive >::
@@ -375,6 +379,9 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
 
     cuda_newTasksAmount.setElement(0, 0); //resets new element counter
     return blocksNeeded;
+#else
+    return -1;
+#endif
 }
 
 template <typename Value>
@@ -391,6 +398,7 @@ void QUICKSORT<Value>::processNewTasks()
 template <typename Value, typename CMP>
 void quicksort(ArrayView<Value, Devices::Cuda> arr, const CMP &Cmp)
 {
+#ifdef HAVE_CUDA
     cudaDeviceProp deviceProp;
     cudaGetDeviceProperties(&deviceProp, 0);
 
@@ -406,7 +414,7 @@ void quicksort(ArrayView<Value, Devices::Cuda> arr, const CMP &Cmp)
      * the goal is to use shared memory as often as possible
      * each thread in a block will process n elements, n==multiplier
      * + 1 reserved for pivot (statically allocating Value type throws weird error, hence it needs to be dynamic)
-     * 
+     *
      * blockDim*multiplier*sizeof(Value) + 1*sizeof(Value) <= maxSharable
      * */
     int elemPerBlock = (maxSharable - sizeof(Value)) / sizeof(Value); //try to use up all of shared memory to store elements
@@ -434,6 +442,7 @@ void quicksort(ArrayView<Value, Devices::Cuda> arr, const CMP &Cmp)
 
     QUICKSORT<Value> sorter(arr, maxBlocks, blockDim, multiplier * blockDim, maxSharable);
     sorter.sort(Cmp);
+#endif
 }
 
 template <typename Value>

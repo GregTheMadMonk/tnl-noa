@@ -1,7 +1,11 @@
 #pragma once
+
+#ifdef HAVE_CUDA
+
 /**
  * https://developer.nvidia.com/blog/faster-parallel-reductions-kepler/
  * */
+
 
 __device__ int warpReduceSum(int initVal)
 {
@@ -69,7 +73,7 @@ __device__ int blockInclusivePrefixSum(int value)
     if (wid == 0)
         shared[lane] = warpInclusivePrefixSum(tmp2) - tmp2;
     __syncthreads();
-    
+
     tmp += shared[wid];
     return tmp;
 }
@@ -97,7 +101,7 @@ __device__ int blockCmpReduce(int val, const Operator & Cmp)
 
     if (lane == 0)
         shared[wid] = val;
-    __syncthreads(); 
+    __syncthreads();
 
     val = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : shared[0];
 
@@ -106,7 +110,9 @@ __device__ int blockCmpReduce(int val, const Operator & Cmp)
 
     if(threadIdx.x == 0)
         shared[0] = val;
-    __syncthreads(); 
+    __syncthreads();
 
     return shared[0];
 }
+
+#endif

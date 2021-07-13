@@ -1,6 +1,8 @@
 #pragma once
 #include <TNL/Math.h>
 
+#ifdef HAVE_CUDA
+
 // Inline PTX call to return index of highest non-zero bit in a word
 static __device__ __forceinline__ unsigned int __btflo(unsigned int word)
 {
@@ -34,3 +36,5 @@ __cuda_callable__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &Cm
     if (ascending == Cmp(b, a))
         TNL::swap(a, b);
 }
+
+#endif

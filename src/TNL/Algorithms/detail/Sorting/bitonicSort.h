@@ -7,8 +7,10 @@ namespace TNL {
     namespace Algorithms {
         namespace detail {
 
+#ifdef HAVE_CUDA
+
 /**
- * this kernel simulates 1 exchange 
+ * this kernel simulates 1 exchange
  * splits input arr that is bitonic into 2 bitonic sequences
  */
 template <typename Value, typename CMP>
@@ -42,7 +44,7 @@ __global__ void bitonicMergeGlobal(TNL::Containers::ArrayView<Value, TNL::Device
 /**
  * simulates many layers of merge
  * turns input that is a bitonic sequence into 1 monotonic sequence
- * 
+ *
  * this version uses shared memory to do the operations
  * */
 template <typename Value, typename CMP>
@@ -110,7 +112,7 @@ template <typename Value, typename CMP>
 __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> arr, CMP Cmp)
 {
     extern __shared__ int externMem[];
-    
+
     Value * sharedMem = (Value *)externMem;
     int sharedMemLen = 2*blockDim.x;
 
@@ -154,14 +156,14 @@ __global__ void bitoniSort1stStepSharedMemory(TNL::Containers::ArrayView<Value, 
     for (int i = threadIdx.x; myBlockStart + i < myBlockEnd; i += blockDim.x)
         arr[myBlockStart + i] = sharedMem[i];
 }
+#endif
 
-//---------------------------------------------
-//---------------------------------------------
 
 template <typename Value, typename CMP>
 void bitonicSortWithShared(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> view, const CMP &Cmp,
                            int gridDim, int blockDim, int sharedMemLen, int sharedMemSize)
 {
+#ifdef HAVE_CUDA
     int paddedSize = closestPow2(view.getSize());
 
     bitoniSort1stStepSharedMemory<<<gridDim, blockDim, sharedMemSize>>>(view, Cmp);
@@ -188,6 +190,7 @@ void bitonicSortWithShared(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda>
         }
     }
     cudaDeviceSynchronize();
+#endif
 }
 
 //---------------------------------------------
@@ -198,6 +201,7 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> view,
                  int gridDim, int blockDim)
 
 {
+#ifdef HAVE_CUDA
     int paddedSize = closestPow2(view.getSize());
 
     for (int monotonicSeqLen = 2; monotonicSeqLen <= paddedSize; monotonicSeqLen *= 2)
@@ -208,12 +212,14 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> view,
         }
     }
     cudaDeviceSynchronize();
+#endif
 }
 
 //---------------------------------------------
 template <typename Value, typename CMP>
 void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, int begin, int end, const CMP &Cmp)
 {
+#ifdef HAVE_CUDA
     auto view = src.getView(begin, end);
 
     int threadsNeeded = view.getSize() / 2 + (view.getSize() % 2 != 0);
@@ -245,6 +251,7 @@ void bitonicSort(TNL::Containers::ArrayView<Value, TNL::Devices::Cuda> src, int 
         int gridDim = threadsNeeded / maxThreadsPerBlock + (threadsNeeded % maxThreadsPerBlock != 0);
         bitonicSort(view, Cmp, gridDim, maxThreadsPerBlock);
     }
+#endif
 }
 
 //---------------------------------------------
@@ -300,6 +307,7 @@ void bitonicSort(std::vector<Value> &vec)
 //---------------------------------------------
 //---------------------------------------------
 
+#ifdef HAVE_CUDA
 template <typename FETCH, typename CMP, typename SWAP>
 __global__ void bitonicMergeGlobal(int size, FETCH Fetch, CMP Cmp, SWAP Swap,
                                    int monotonicSeqLen, int bitonicLen)
@@ -358,7 +366,7 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
     }
     cudaDeviceSynchronize();
 }
-
+#endif
         } // namespace detail
     } // namespace Algorithms
 } // namespace TNL

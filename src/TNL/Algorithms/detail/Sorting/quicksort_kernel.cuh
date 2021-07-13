@@ -10,7 +10,7 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-//-----------------------------------------------------------
+#ifdef HAVE_CUDA
 
 __device__ void writeNewTask(int begin, int end, int iteration, int maxElemFor2ndPhase,
                              ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
@@ -246,4 +246,4 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
     }
 }
 
-//-----------------------------------------------------------
+#endif

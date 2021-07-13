@@ -2,6 +2,8 @@
 #include <TNL/Algorithms/detail/Sorting/helpers.h>
 #include <TNL/Containers/Array.h>
 
+#ifdef HAVE_CUDA
+
 /**
  * IMPORTANT: all threads in block have to call this function to work properly
  * the size of src isn't limited, but for optimal efficiency, no more than 8*blockDim.x should be used
@@ -98,3 +100,5 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
         }
     }
 }
+
+#endif

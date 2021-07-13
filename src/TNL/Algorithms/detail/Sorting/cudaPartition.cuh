@@ -4,6 +4,8 @@
 #include <TNL/Algorithms/detail/Sorting/reduction.cuh>
 #include <TNL/Algorithms/detail/Sorting/task.h>
 
+#ifdef HAVE_CUDA
+
 using namespace TNL;
 using namespace TNL::Containers;
 
@@ -204,3 +206,5 @@ __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
         copyData(srcView, dst, Cmp, destSmaller, destBigger, pivot);
     }
 }
+
+#endif

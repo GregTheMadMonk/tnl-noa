@@ -1,25 +1,31 @@
-#include "gtest/gtest.h"
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <random>
-#include <thrust/sort.h>
-#include <thrust/execution_policy.h>
+
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
 #include <TNL/Algorithms/detail/Sorting/quicksort.cuh>
 #include <TNL/Algorithms/detail/Sorting/algorithm.h>
 
-//----------------------------------------------------------------------------------
+#if defined HAVE_CUDA_&& defined HAVE_GTEST
+#include <thrust/sort.h>
+#include <thrust/execution_policy.h>
+
+#include <gtest/gtest.h>
+
+using namespace TNL;
+using namespace TNL::Algorithms;
+using namespace TNL::Algorithms::detail;
 
 TEST(selectedSize, size15)
 {
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
     auto view = cudaArr.getView();
-    ASSERT_EQ(15, view.getSize()) << "size not 15" << std::endl;
+    EXPECT_EQ(15, view.getSize()) << "size not 15" << std::endl;
     quicksort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 TEST(multiblock, 32768_decreasingNegative)
@@ -27,12 +33,12 @@ TEST(multiblock, 32768_decreasingNegative)
     std::vector<int> arr(1<<15);
     for (size_t i = 0; i < arr.size(); i++)
         arr[i] = -i;
-    
+
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
     auto view = cudaArr.getView();
 
     quicksort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 TEST(randomGenerated, smallArray_randomVal)
@@ -48,7 +54,7 @@ TEST(randomGenerated, smallArray_randomVal)
 
         auto view = cudaArr.getView();
         quicksort(view);
-        ASSERT_TRUE(is_sorted(view));
+        EXPECT_TRUE(is_sorted(view));
     }
 }
 
@@ -65,7 +71,7 @@ TEST(randomGenerated, bigArray_randomVal)
 
         auto view = cudaArr.getView();
         quicksort(view);
-        ASSERT_TRUE(is_sorted(view));
+        EXPECT_TRUE(is_sorted(view));
     }
 }
 
@@ -83,7 +89,7 @@ TEST(noLostElement, smallArray)
 
     std::sort(arr.begin(), arr.end());
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr2(arr);
-    ASSERT_TRUE(view == cudaArr2.getView());
+    EXPECT_TRUE(view == cudaArr2.getView());
 }
 
 TEST(noLostElement, midSizedArray)
@@ -100,7 +106,7 @@ TEST(noLostElement, midSizedArray)
 
     std::sort(arr.begin(), arr.end());
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr2(arr);
-    ASSERT_TRUE(view == cudaArr2.getView());
+    EXPECT_TRUE(view == cudaArr2.getView());
 }
 
 TEST(noLostElement, bigSizedArray)
@@ -119,7 +125,7 @@ TEST(noLostElement, bigSizedArray)
 
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr2(arr);
     thrust::sort(thrust::device, cudaArr2.getData(), cudaArr2.getData() + cudaArr2.getSize());
-    ASSERT_TRUE(view == cudaArr2.getView());
+    EXPECT_TRUE(view == cudaArr2.getView());
 }
 
 TEST(types, type_double)
@@ -138,7 +144,7 @@ TEST(types, type_double)
 
     TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr2(arr);
     thrust::sort(thrust::device, cudaArr2.getData(), cudaArr2.getData() + cudaArr2.getSize());
-    ASSERT_TRUE(view == cudaArr2.getView());
+    EXPECT_TRUE(view == cudaArr2.getView());
 }
 
 struct TMPSTRUCT_xyz{
@@ -163,7 +169,7 @@ TEST(types, struct_3D_points)
     //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
     //std::cout << view << std::endl;
     quicksort(view);
-    ASSERT_TRUE(is_sorted(view));
+    EXPECT_TRUE(is_sorted(view));
 }
 
 struct TMPSTRUCT_64b{
@@ -188,14 +194,9 @@ TEST(types, struct_64b)
     //thrust::sort(thrust::device, cudaArr.getData(), cudaArr.getData() + cudaArr.getSize());
     //std::cout << view << std::endl;
     quicksort(view);
-    ASSERT_TRUE(is_sorted(view));
+    EXPECT_TRUE(is_sorted(view));
 }
 
-//----------------------------------------------------------------------------------
+#endif
 
-int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-
-    return RUN_ALL_TESTS();
-}
+#include "../../main.h"

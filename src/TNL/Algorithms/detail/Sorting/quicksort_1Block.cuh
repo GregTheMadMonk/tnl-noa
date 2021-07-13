@@ -9,6 +9,8 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+#ifdef HAVE_CUDA
+
 template <typename Value, typename CMP>
 __device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
                            ArrayView<Value, TNL::Devices::Cuda> dst,
@@ -232,3 +234,5 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
         }
     }
 }
+
+#endif

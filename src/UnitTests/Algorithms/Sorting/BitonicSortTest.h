@@ -1,4 +1,3 @@
-#include "gtest/gtest.h"
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -10,7 +9,13 @@
 #include <TNL/Algorithms/detail/Sorting/bitonicSort.h>
 #include <TNL/Algorithms/detail/Sorting/algorithm.h>
 
-//----------------------------------------------------------------------------------
+#if defined HAVE_GTEST && defined HAVE_CUDA
+#include <gtest/gtest.h>
+
+
+using namespace TNL;
+using namespace TNL::Algorithms;
+using namespace TNL::Algorithms::detail;
 
 TEST(permutations, allPermutationSize_2_to_7)
 {
@@ -27,8 +32,8 @@ TEST(permutations, allPermutationSize_2_to_7)
 
             bitonicSort(view);
 
-            ASSERT_TRUE(is_sorted(view)) << "failed " << i << std::endl;
-        } 
+            EXPECT_TRUE(is_sorted(view)) << "failed " << i << std::endl;
+        }
         while (std::next_permutation(orig.begin(), orig.end()));
     }
 }
@@ -52,7 +57,7 @@ TEST(permutations, allPermutationSize_8)
 
         bitonicSort(view);
 
-        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+        EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
     while (std::next_permutation(orig.begin(), orig.end()));
 }
@@ -76,20 +81,18 @@ TEST(permutations, somePermutationSize9)
 
         bitonicSort(view);
 
-        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+        EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
     while (std::next_permutation(orig.begin(), orig.end()));
 }
-
-//-----------------------------------------------------------------------
 
 TEST(selectedSize, size15)
 {
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
     auto view = cudaArr.getView();
-    ASSERT_EQ(15, view.getSize()) << "size not 15" << std::endl;
+    EXPECT_EQ(15, view.getSize()) << "size not 15" << std::endl;
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 TEST(multiblock, 32768_decreasingNegative)
@@ -97,12 +100,12 @@ TEST(multiblock, 32768_decreasingNegative)
     std::vector<int> arr(1<<15);
     for (size_t i = 0; i < arr.size(); i++)
         arr[i] = -i;
-    
+
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
     auto view = cudaArr.getView();
 
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 TEST(randomGenerated, smallArray_randomVal)
@@ -118,7 +121,7 @@ TEST(randomGenerated, smallArray_randomVal)
 
         auto view = cudaArr.getView();
         bitonicSort(view);
-        ASSERT_TRUE(is_sorted(view));
+        EXPECT_TRUE(is_sorted(view));
     }
 }
 
@@ -133,7 +136,7 @@ TEST(randomGenerated, bigArray_all0)
 
         auto view = cudaArr.getView();
         bitonicSort(view);
-        ASSERT_TRUE(is_sorted(view));
+        EXPECT_TRUE(is_sorted(view));
     }
 }
 
@@ -142,7 +145,7 @@ TEST(nonIntegerType, float_notPow2)
     TNL::Containers::Array<float, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 TEST(nonIntegerType, double_notPow2)
@@ -150,7 +153,7 @@ TEST(nonIntegerType, double_notPow2)
     TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
 }
 
 
@@ -168,7 +171,7 @@ TEST(nonIntegerType, struct)
     TNL::Containers::Array<TMPSTRUCT, TNL::Devices::Cuda> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view));
+    EXPECT_TRUE(is_sorted(view));
 }
 
 struct TMPSTRUCT_64b{
@@ -190,7 +193,7 @@ TEST(nonIntegerType, struct_64b)
     TNL::Containers::Array<TMPSTRUCT_64b, TNL::Devices::Cuda> cudaArr(vec);
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view));
+    EXPECT_TRUE(is_sorted(view));
 }
 
 struct TMPSTRUCT_128b{
@@ -212,7 +215,7 @@ TEST(nonIntegerType, struct_128b)
     TNL::Containers::Array<TMPSTRUCT_128b, TNL::Devices::Cuda> cudaArr(vec);
     auto view = cudaArr.getView();
     bitonicSort(view);
-    ASSERT_TRUE(is_sorted(view));
+    EXPECT_TRUE(is_sorted(view));
 }
 
 //error bypassing
@@ -229,13 +232,13 @@ TEST(sortWithFunction, descending)
     auto view = cudaArr.getView();
     descendingSort(view);
 
-    ASSERT_FALSE(is_sorted(view)) << "result " << view << std::endl;
-    
-    ASSERT_TRUE(view.getElement(0) == 9);
-    ASSERT_TRUE(view.getElement(1) == 6);
-    ASSERT_TRUE(view.getElement(2) == 4);
-    ASSERT_TRUE(view.getElement(3) == 3);
-    ASSERT_TRUE(view.getElement(4) == 2);
+    EXPECT_FALSE(is_sorted(view)) << "result " << view << std::endl;
+
+    EXPECT_TRUE(view.getElement(0) == 9);
+    EXPECT_TRUE(view.getElement(1) == 6);
+    EXPECT_TRUE(view.getElement(2) == 4);
+    EXPECT_TRUE(view.getElement(3) == 3);
+    EXPECT_TRUE(view.getElement(4) == 2);
 }
 
 TEST(sortstdVector, stdvector)
@@ -246,7 +249,7 @@ TEST(sortstdVector, stdvector)
 
     bitonicSort(arr);
 
-    ASSERT_TRUE(std::is_sorted(arr.begin(), arr.end()));
+    EXPECT_TRUE(std::is_sorted(arr.begin(), arr.end()));
 }
 
 TEST(sortRange, secondHalf)
@@ -258,9 +261,9 @@ TEST(sortRange, secondHalf)
 
     bitonicSort(arr, s, 19);
 
-    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.end()));
-    ASSERT_TRUE(arr[0] == -1); 
-    ASSERT_TRUE(arr[s-1] == -1); 
+    EXPECT_TRUE(std::is_sorted(arr.begin() + s, arr.end()));
+    EXPECT_TRUE(arr[0] == -1);
+    EXPECT_TRUE(arr[s-1] == -1);
 }
 
 TEST(sortRange, middle)
@@ -276,11 +279,11 @@ TEST(sortRange, middle)
 
     bitonicSort(arr, s, e);
 
-    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
-    ASSERT_TRUE(arr[0] == -1); 
-    ASSERT_TRUE(arr.back() == -1); 
-    ASSERT_TRUE(arr[s-1] == -1); 
-    ASSERT_TRUE(arr[e] == -1); 
+    EXPECT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
+    EXPECT_TRUE(arr[0] == -1);
+    EXPECT_TRUE(arr.back() == -1);
+    EXPECT_TRUE(arr[s-1] == -1);
+    EXPECT_TRUE(arr[e] == -1);
 }
 
 TEST(sortRange, middleMultiBlock)
@@ -297,15 +300,15 @@ TEST(sortRange, middleMultiBlock)
 
     bitonicSort(arr, s, e);
 
-    ASSERT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
+    EXPECT_TRUE(std::is_sorted(arr.begin() + s, arr.begin() + e));
 
-    ASSERT_TRUE(arr[0] == -1); 
-    ASSERT_TRUE(arr[std::rand() % s] == -1); 
-    ASSERT_TRUE(arr[s-1] == -1); 
+    EXPECT_TRUE(arr[0] == -1);
+    EXPECT_TRUE(arr[std::rand() % s] == -1);
+    EXPECT_TRUE(arr[s-1] == -1);
 
-    ASSERT_TRUE(arr[e] == -1);
-    ASSERT_TRUE(arr[e + (std::rand() % (size - e))] == -1);
-    ASSERT_TRUE(arr.back() == -1); 
+    EXPECT_TRUE(arr[e] == -1);
+    EXPECT_TRUE(arr[e + (std::rand() % (size - e))] == -1);
+    EXPECT_TRUE(arr.back() == -1);
 }
 
 template<typename TYPE>
@@ -334,7 +337,7 @@ TEST(fetchAndSwap, oneBlockSort)
         TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
         fetchAndSwapSorter(view);
-        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+        EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
     while (std::next_permutation(orig.begin(), orig.end()));
 }
@@ -350,7 +353,7 @@ TEST(fetchAndSwap, typeDouble)
         TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
         fetchAndSwapSorter(view);
-        ASSERT_TRUE(is_sorted(view)) << "result " << view << std::endl;
+        EXPECT_TRUE(is_sorted(view)) << "result " << view << std::endl;
     }
     while (std::next_permutation(orig.begin(), orig.end()));
 }
@@ -371,21 +374,15 @@ TEST(fetchAndSwap, sortMiddle)
     int from = 3, to = 8;
 
     fetchAndSwap_sortMiddle(view, from, to);
-    ASSERT_TRUE(is_sorted(view.getView(3, 8))) << "result " << view << std::endl;
+    EXPECT_TRUE(is_sorted(view.getView(3, 8))) << "result " << view << std::endl;
 
     for(size_t i = 0; i < orig.size(); i++)
     {
         if(i < from || i >= to)
-            ASSERT_TRUE(view.getElement(i) == orig[i]);
+            EXPECT_TRUE(view.getElement(i) == orig[i]);
     }
 }
 
+#endif
 
-//----------------------------------------------------------------------------------
-
-int main(int argc, char **argv)
-{
-    testing::InitGoogleTest(&argc, argv);
-
-    return RUN_ALL_TESTS();
-}
+#include "../../main.h"
