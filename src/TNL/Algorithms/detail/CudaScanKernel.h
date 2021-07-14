@@ -348,7 +348,7 @@ struct CudaScanKernelLauncher
          // run the kernel
          cudaSecondPhaseBlockScan<<< cudaGridSize, cudaBlockSize >>>
             ( reduction,
-              size,
+              currentSize,
               elementsInBlock,
               gridIdx,
               (Index) maxGridSize(),
