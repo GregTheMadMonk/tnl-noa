@@ -17,7 +17,9 @@ using namespace TNL;
 struct QuicksortSorter
 {
     template< typename Array >
-    static void sort( Array& array ) { Algorithms::detail::quicksort( array ); };
+    static void sort( Array& array ) {
+       Algorithms::Sorting::Quicksort::sort( array );
+    };
 };
 
 struct BitonicSortSorter

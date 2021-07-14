@@ -1,7 +1,7 @@
 #pragma once
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/Sorting/blockBitonicSort.h>
-#include <TNL/Algorithms/Sorting/helpers.h>
+#include <TNL/Algorithms/Sorting/detail/helpers.h>
 
 namespace TNL {
     namespace Algorithms {
@@ -303,6 +303,13 @@ void bitonicSort(std::vector<Value> &vec)
 {
     bitonicSort(vec, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
 }
+
+template <typename Value>
+void bitonicSort( TNL::Containers::Array< Value, TNL::Devices::Host > &vec)
+{
+    bitonicSort(vec, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
+}
+
 
 //---------------------------------------------
 //---------------------------------------------

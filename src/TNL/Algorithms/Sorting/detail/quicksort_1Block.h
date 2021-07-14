@@ -1,10 +1,22 @@
+/***************************************************************************
+                          quicksort_1Block.h  -  description
+                             -------------------
+    begin                : Jul 13, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Xuan Thang Nguyen
+
 #pragma once
 
 #include <TNL/Containers/Array.h>
 #include "cassert"
 #include <TNL/Algorithms/Sorting/bitonicSort.h>
-#include <TNL/Algorithms/Sorting/reduction.h>
-#include <TNL/Algorithms/Sorting/cudaPartition.h>
+#include <TNL/Algorithms/Sorting/detail/reduction.h>
+#include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
 
 using namespace TNL;
 using namespace TNL::Containers;

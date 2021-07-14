@@ -241,18 +241,18 @@ TEST(sortWithFunction, descending)
     EXPECT_TRUE(view.getElement(4) == 2);
 }
 
-TEST(sortstdVector, stdvector)
+/*TEST(sortHostArray, hostArray)
 {
-    std::vector<int> arr(84561);
-    for(size_t i = 0; i < arr.size(); i++)
+    TNL::Containers::Array< int > arr( 84561 );
+    for( size_t i = 0; i < arr.getSize(); i++ )
         arr[i] = -i;
 
     bitonicSort(arr);
 
-    EXPECT_TRUE(std::Algorithms::isSorted(arr.begin(), arr.end()));
-}
+    EXPECT_TRUE( TNL::Algorithms::isSorted(arr) );
+}*/
 
-TEST(sortRange, secondHalf)
+/*TEST(sortRange, secondHalf)
 {
     std::vector<int> arr(19);
     int s = 19/2;
@@ -261,7 +261,7 @@ TEST(sortRange, secondHalf)
 
     bitonicSort(arr, s, 19);
 
-    EXPECT_TRUE(std::Algorithms::isSorted(arr.begin() + s, arr.end()));
+    EXPECT_TRUE(TNL::Algorithms::isSorted(arr.begin() + s, arr.end()));
     EXPECT_TRUE(arr[0] == -1);
     EXPECT_TRUE(arr[s-1] == -1);
 }
@@ -279,7 +279,7 @@ TEST(sortRange, middle)
 
     bitonicSort(arr, s, e);
 
-    EXPECT_TRUE(std::Algorithms::isSorted(arr.begin() + s, arr.begin() + e));
+    EXPECT_TRUE(TNL::Algorithms::isSorted(arr.begin() + s, arr.begin() + e));
     EXPECT_TRUE(arr[0] == -1);
     EXPECT_TRUE(arr.back() == -1);
     EXPECT_TRUE(arr[s-1] == -1);
@@ -300,7 +300,7 @@ TEST(sortRange, middleMultiBlock)
 
     bitonicSort(arr, s, e);
 
-    EXPECT_TRUE(std::Algorithms::isSorted(arr.begin() + s, arr.begin() + e));
+    EXPECT_TRUE(TNL::Algorithms::isSorted(arr.begin() + s, arr.begin() + e));
 
     EXPECT_TRUE(arr[0] == -1);
     EXPECT_TRUE(arr[std::rand() % s] == -1);
@@ -309,7 +309,7 @@ TEST(sortRange, middleMultiBlock)
     EXPECT_TRUE(arr[e] == -1);
     EXPECT_TRUE(arr[e + (std::rand() % (size - e))] == -1);
     EXPECT_TRUE(arr.back() == -1);
-}
+}*/
 
 template<typename TYPE>
 void fetchAndSwapSorter(TNL::Containers::ArrayView<TYPE, TNL::Devices::Cuda> view)

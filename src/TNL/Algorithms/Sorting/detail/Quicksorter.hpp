@@ -1,136 +1,133 @@
+/***************************************************************************
+                          Quicksorter.h  -  description
+                             -------------------
+    begin                : Jul 13, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Xuan Thang Nguyen, Tomas Oberhuber
+
 #pragma once
 
-#include <TNL/Containers/Array.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Scan.h>
-#include <TNL/Algorithms/Sorting/task.h>
-#include <TNL/Algorithms/Sorting/quicksort_kernel.h>
-
-#include <iostream>
-#define deb(x) std::cout << #x << " = " << x << std::endl;
-
-#ifdef CHECK_RESULT_SORT
-#include "../util/algorithm.h"
-#include <fstream>
-#endif
-
-using namespace TNL;
-using namespace TNL::Containers;
+#include <TNL/Functional.h>
+#include <TNL/Algorithms/Sorting/detail/task.h>
+#include <TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
+#include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
+#include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
 
 namespace TNL {
     namespace Algorithms {
-        namespace detail {
+        namespace Sorting {
 
-template <typename Value>
-class QUICKSORT
+
+template< typename Value >
+   template< typename Array, typename Compare >
+void
+Quicksorter< Value, Devices::Cuda >::
+sort( Array& arr, const Compare& cmp )
 {
-    int maxBlocks, threadsPerBlock, desiredElemPerBlock, maxSharable; //kernel config
+#ifdef HAVE_CUDA
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, 0);
 
-    //--------------------------------------
+    /**
+     * for every block there is a bit of shared memory reserved, the actual value can slightly differ
+     * */
+    int sharedReserve = sizeof(int) * (16 + 3 * 32);
+    int maxSharable = deviceProp.sharedMemPerBlock - sharedReserve;
 
-    Array<Value, Devices::Cuda> auxMem;
-    ArrayView<Value, Devices::Cuda> arr, aux;
+    int blockDim = 512; //best case
 
-    //--------------------------------------
+    /**
+     * the goal is to use shared memory as often as possible
+     * each thread in a block will process n elements, n==multiplier
+     * + 1 reserved for pivot (statically allocating Value type throws weird error, hence it needs to be dynamic)
+     *
+     * blockDim*multiplier*sizeof(Value) + 1*sizeof(Value) <= maxSharable
+     * */
+    int elemPerBlock = (maxSharable - sizeof(Value)) / sizeof(Value); //try to use up all of shared memory to store elements
+    const int maxBlocks = (1 << 20);
+    const int maxMultiplier = 8;
+    int multiplier = min(elemPerBlock / blockDim, maxMultiplier);
 
-    int desired_2ndPhasElemPerBlock;
-    const int g_maxTasks = 1 << 14;
-    int maxTasks;
-
-    //--------------------------------------
-
-    //cuda side task initialization and storing
-    Array<TASK, Devices::Cuda> cuda_tasks, cuda_newTasks, cuda_2ndPhaseTasks; //1 set of 2 rotating tasks and 2nd phase
-    Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  //is in reality 1 integer each
-
-    Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-    Vector<int, Devices::Cuda> cuda_reductionTaskInitMem;
-
-    //--------------------------------------
-
-    int host_1stPhaseTasksAmount = 0, host_2ndPhaseTasksAmount = 0;
-    int iteration = 0;
-
-    //--------------------------------------------------------------------------------------
-    //--------------------------------------------------------------------------------------
-public:
-    QUICKSORT(ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable)
-        : maxBlocks(gridDim), threadsPerBlock(blockDim),
-          desiredElemPerBlock(desiredElemPerBlock), maxSharable(maxSharable),
-
-          arr(arr.getView()), auxMem(arr.getSize()), aux(auxMem.getView()),
-
-          desired_2ndPhasElemPerBlock(desiredElemPerBlock),
-          maxTasks(min(arr.getSize(), g_maxTasks)),
-
-          cuda_tasks(maxTasks), cuda_newTasks(maxTasks), cuda_2ndPhaseTasks(maxTasks),
-          cuda_newTasksAmount(1), cuda_2ndPhaseTasksAmount(1),
-
-          cuda_blockToTaskMapping(maxBlocks),
-          cuda_reductionTaskInitMem(maxTasks)
+    if (multiplier <= 0) //a block cant store 512 elements, sorting some really big data
     {
-        if (arr.getSize() > desired_2ndPhasElemPerBlock)
-        {
-            cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
-            host_1stPhaseTasksAmount = 1;
-        }
-        else
-        {
-            cuda_2ndPhaseTasks.setElement(0, TASK(0, arr.getSize(), 0));
-            host_2ndPhaseTasksAmount = 1;
-        }
+        blockDim = 256; //try to fit 256 elements
+        multiplier = min(elemPerBlock / blockDim, maxMultiplier);
 
-        cuda_2ndPhaseTasksAmount = 0;
-        TNL_CHECK_CUDA_DEVICE;
+        if (multiplier <= 0)
+        {
+            //worst case scenario, shared memory cant be utilized at all because of the sheer size of Value
+            //sort has to be done with the use of global memory alone
+
+            this->init(arr, maxBlocks, 512, 0, 0);
+            this->performSort( cmp );
+            return;
+        }
     }
-    //--------------------------------------------------------------------------------------
 
-    template <typename CMP>
-    void sort(const CMP &Cmp);
+    TNL_ASSERT_LE( blockDim * multiplier * sizeof(Value), maxSharable,"" );
 
-    //--------------------------------------------------------------------------------------
+    this->init(arr, maxBlocks, blockDim, multiplier * blockDim, maxSharable);
+    this->performSort( cmp );
+#endif
+}
 
-    /**
-     * returns how many blocks are needed to start sort phase 1 if @param elemPerBlock were to be used
-     * */
-    int getSetsNeeded(int elemPerBlock) const;
+template< typename Value >
+   template< typename Array >
+void
+Quicksorter< Value, Devices::Cuda >::
+sort( Array& arr )
+{
+   this->sort(arr, [] __cuda_callable__( const Value& a, const Value& b ) { return a < b; } );
+}
 
-    /**
-     * returns the optimal amount of elements per thread needed for phase
-     * */
-    int getElemPerBlock() const;
+template< typename Value >
+void
+Quicksorter< Value, Devices::Cuda >::
+init( ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable)
+{
+   this->maxBlocks = gridDim;
+   this->threadsPerBlock = blockDim;
+   this->desiredElemPerBlock = desiredElemPerBlock;
+   this->maxSharable = maxSharable;
+   this->arr.bind( arr );
+   this->auxMem.setSize( arr.getSize() );
+   this->aux.bind( auxMem.getView() );
+   this->desired_2ndPhasElemPerBlock = desiredElemPerBlock;
+   this->maxTasks = min( arr.getSize(), g_maxTasks );
+   this->cuda_tasks.setSize(maxTasks);
+   this->cuda_newTasks.setSize(maxTasks);
+   this->cuda_2ndPhaseTasks.setSize(maxTasks);
+   this->cuda_newTasksAmount.setSize(1);
+   this->cuda_2ndPhaseTasksAmount.setSize(1);
+   this->cuda_blockToTaskMapping.setSize(maxBlocks);
+   this->cuda_reductionTaskInitMem.setSize(maxTasks);
 
-    /**
-     * returns the amount of blocks needed to start phase 1 while also initializing all tasks
-     * */
-    template <typename CMP>
-    int initTasks(int elemPerBlock, const CMP &Cmp);
+   if (arr.getSize() > desired_2ndPhasElemPerBlock)
+   {
+      cuda_tasks.setElement(0, TASK(0, arr.getSize(), 0));
+      host_1stPhaseTasksAmount = 1;
+   }
+   else
+   {
+      cuda_2ndPhaseTasks.setElement(0, TASK(0, arr.getSize(), 0));
+      host_2ndPhaseTasksAmount = 1;
+   }
 
-    /**
-     * does the 1st phase of quicksort until out of task memory or each task is small enough
-     * for correctness, secondphase method needs to be called to sort each subsequences
-     * */
-    template <typename CMP>
-    void firstPhase(const CMP &Cmp);
+   cuda_2ndPhaseTasksAmount = 0;
+   TNL_CHECK_CUDA_DEVICE;
+}
 
-    /**
-     * update necessary variables after 1 phase1 sort
-     * */
-    void processNewTasks();
 
-    /**
-     * sorts all leftover tasks
-     * */
-    template <typename CMP>
-    void secondPhase(const CMP &Cmp);
-};
-
-//---------------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------------
-
-template <typename Value>
-template <typename CMP>
-void QUICKSORT<Value>::sort(const CMP &Cmp)
+template< typename Value >
+   template< typename CMP >
+void
+Quicksorter< Value, Devices::Cuda >::
+performSort( const CMP &Cmp )
 {
 #ifdef HAVE_CUDA
     firstPhase(Cmp);
@@ -161,11 +158,11 @@ void QUICKSORT<Value>::sort(const CMP &Cmp)
 #endif
 }
 
-//---------------------------------------------------------------------------------------------
-
-template <typename Value>
-template <typename CMP>
-void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
+template< typename Value >
+   template< typename CMP >
+void
+Quicksorter< Value, Devices::Cuda >::
+firstPhase( const CMP &Cmp )
 {
 #ifdef HAVE_CUDA
     while (host_1stPhaseTasksAmount > 0)
@@ -265,11 +262,11 @@ void QUICKSORT<Value>::firstPhase(const CMP &Cmp)
 #endif
 }
 
-//----------------------------------------------------------------------
-
-template <typename Value>
-template <typename CMP>
-void QUICKSORT<Value>::secondPhase(const CMP &Cmp)
+template< typename Value >
+   template< typename CMP >
+void
+Quicksorter< Value, Devices::Cuda >::
+secondPhase(const CMP &Cmp)
 {
 #ifdef HAVE_CUDA
     int total2ndPhase = host_1stPhaseTasksAmount + host_2ndPhaseTasksAmount;
@@ -308,23 +305,39 @@ void QUICKSORT<Value>::secondPhase(const CMP &Cmp)
 #endif
 }
 
-//----------------------------------------------------------------------
-
-template <typename Value>
-int QUICKSORT<Value>::getSetsNeeded(int elemPerBlock) const
+template< typename Value >
+int getSetsNeededFunction(int elemPerBlock, const Quicksorter< Value, Devices::Cuda >& quicksort )
 {
-    auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
+    auto view = quicksort.iteration % 2 == 0 ? quicksort.cuda_tasks.getConstView() : quicksort.cuda_newTasks.getConstView();
+    auto fetch = [=] __cuda_callable__(int i) -> int {
+        const auto &task = view[i];
+        int size = task.partitionEnd - task.partitionBegin;
+        return size / elemPerBlock + (size % elemPerBlock != 0);
+    };
+    auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
+    return Algorithms::reduce<Devices::Cuda>( 0, quicksort.host_1stPhaseTasksAmount, fetch, reduction, 0 );
+}
+
+template< typename Value >
+int
+Quicksorter< Value, Devices::Cuda >::
+getSetsNeeded(int elemPerBlock) const
+{
+    /*auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
     auto fetch = [=] __cuda_callable__(int i) {
         const auto &task = view[i];
         int size = task.partitionEnd - task.partitionBegin;
         return size / elemPerBlock + (size % elemPerBlock != 0);
     };
     auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
-    return Algorithms::reduce<Devices::Cuda>(0, host_1stPhaseTasksAmount, fetch, reduction, 0);
+    return Algorithms::reduce<Devices::Cuda>(0, host_1stPhaseTasksAmount, fetch, reduction, 0);*/
+    return getSetsNeededFunction< Value >( elemPerBlock, *this );
 }
 
-template <typename Value>
-int QUICKSORT<Value>::getElemPerBlock() const
+template< typename Value >
+int
+Quicksorter< Value, Devices::Cuda >::
+getElemPerBlock() const
 {
     return desiredElemPerBlock;
 
@@ -342,9 +355,11 @@ int QUICKSORT<Value>::getElemPerBlock() const
     return setsNeeded * threadsPerBlock;
 }
 
-template <typename Value>
-template <typename CMP>
-int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
+template< typename Value >
+   template< typename CMP >
+int
+Quicksorter< Value, Devices::Cuda >::
+initTasks(int elemPerBlock, const CMP &Cmp)
 {
 #ifdef HAVE_CUDA
     auto &src = iteration % 2 == 0 ? arr : aux;
@@ -357,10 +372,10 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
                                                       cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
     //cuda_reductionTaskInitMem[i] == how many blocks task i needs
 
-    auto reduce = [] __cuda_callable__(const int &a, const int &b) { return a + b; };
+    //auto reduce = [] __cuda_callable__(const int &a, const int &b) { return a + b; };
 
     Algorithms::Scan<Devices::Cuda, Algorithms::ScanType::Inclusive >::
-        perform(cuda_reductionTaskInitMem, 0, cuda_reductionTaskInitMem.getSize(), reduce, 0);
+        perform(cuda_reductionTaskInitMem, 0, cuda_reductionTaskInitMem.getSize(), TNL::Plus{}, 0);
     //cuda_reductionTaskInitMem[i] == how many blocks task [0..i] need
 
     int blocksNeeded = cuda_reductionTaskInitMem.getElement(host_1stPhaseTasksAmount - 1);
@@ -385,72 +400,15 @@ int QUICKSORT<Value>::initTasks(int elemPerBlock, const CMP &Cmp)
 }
 
 template <typename Value>
-void QUICKSORT<Value>::processNewTasks()
+void
+Quicksorter< Value, Devices::Cuda >::
+processNewTasks()
 {
     host_1stPhaseTasksAmount = min(cuda_newTasksAmount.getElement(0), maxTasks);
     host_2ndPhaseTasksAmount = min(cuda_2ndPhaseTasksAmount.getElement(0), maxTasks);
 }
 
-//-----------------------------------------------------------
-//-----------------------------------------------------------
-//-----------------------------------------------------------
 
-template <typename Value, typename CMP>
-void quicksort(ArrayView<Value, Devices::Cuda> arr, const CMP &Cmp)
-{
-#ifdef HAVE_CUDA
-    cudaDeviceProp deviceProp;
-    cudaGetDeviceProperties(&deviceProp, 0);
-
-    /**
-     * for every block there is a bit of shared memory reserved, the actual value can slightly differ
-     * */
-    int sharedReserve = sizeof(int) * (16 + 3 * 32);
-    int maxSharable = deviceProp.sharedMemPerBlock - sharedReserve;
-
-    int blockDim = 512; //best case
-
-    /**
-     * the goal is to use shared memory as often as possible
-     * each thread in a block will process n elements, n==multiplier
-     * + 1 reserved for pivot (statically allocating Value type throws weird error, hence it needs to be dynamic)
-     *
-     * blockDim*multiplier*sizeof(Value) + 1*sizeof(Value) <= maxSharable
-     * */
-    int elemPerBlock = (maxSharable - sizeof(Value)) / sizeof(Value); //try to use up all of shared memory to store elements
-    const int maxBlocks = (1 << 20);
-    const int maxMultiplier = 8;
-    int multiplier = min(elemPerBlock / blockDim, maxMultiplier);
-
-    if (multiplier <= 0) //a block cant store 512 elements, sorting some really big data
-    {
-        blockDim = 256; //try to fit 256 elements
-        multiplier = min(elemPerBlock / blockDim, maxMultiplier);
-
-        if (multiplier <= 0)
-        {
-            //worst case scenario, shared memory cant be utilized at all because of the sheer size of Value
-            //sort has to be done with the use of global memory alone
-
-            QUICKSORT<Value> sorter(arr, maxBlocks, 512, 0, 0);
-            sorter.sort(Cmp);
-            return;
-        }
-    }
-
-    assert(blockDim * multiplier * sizeof(Value) <= maxSharable);
-
-    QUICKSORT<Value> sorter(arr, maxBlocks, blockDim, multiplier * blockDim, maxSharable);
-    sorter.sort(Cmp);
-#endif
-}
-
-template <typename Value>
-void quicksort(ArrayView<Value, Devices::Cuda> arr)
-{
-    quicksort(arr, [] __cuda_callable__(const Value &a, const Value &b) { return a < b; });
-}
-
-        } // namespace detail
+        } // namespace Sorting
     } // namespace Algorithms
-}// namespace TNL
+} // namespace TNL

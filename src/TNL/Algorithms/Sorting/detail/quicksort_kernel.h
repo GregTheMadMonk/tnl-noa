@@ -1,14 +1,28 @@
+/***************************************************************************
+                          quicksort_kernel.h  -  description
+                             -------------------
+    begin                : Jul 13, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber et al.
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Xuan Thang Nguyen
+
 #pragma once
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Sorting/reduction.h>
-#include <TNL/Algorithms/Sorting/task.h>
-#include <TNL/Algorithms/Sorting/cudaPartition.h>
-#include <TNL/Algorithms/Sorting/quicksort_1Block.h>
+#include <TNL/Algorithms/Sorting/detail/reduction.h>
+#include <TNL/Algorithms/Sorting/detail/task.h>
+#include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
+#include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
 
-using namespace TNL;
-using namespace TNL::Containers;
+
+namespace TNL {
+   namespace Algorithms {
+      namespace Sorting {
 
 #ifdef HAVE_CUDA
 
@@ -247,3 +261,7 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 }
 
 #endif
+
+      } // namespace Sorting
+   } // namespace Algorithms
+} // namespace TNL
