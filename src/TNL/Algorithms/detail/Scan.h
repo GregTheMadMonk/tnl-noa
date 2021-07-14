@@ -27,100 +27,127 @@ struct Scan;
 template< ScanType Type >
 struct Scan< Devices::Sequential, Type >
 {
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static void
-   perform( Vector& v,
-            const typename Vector::IndexType begin,
-            const typename Vector::IndexType end,
-            const Reduction& reduction,
-            const typename Vector::ValueType zero );
+   perform( const InputArray& input,
+            OutputArray& output,
+            typename InputArray::IndexType begin,
+            typename InputArray::IndexType end,
+            typename OutputArray::IndexType outputBegin,
+            Reduction&& reduction,
+            typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static auto
-   performFirstPhase( Vector& v,
-                      const typename Vector::IndexType begin,
-                      const typename Vector::IndexType end,
-                      const Reduction& reduction,
-                      const typename Vector::ValueType zero );
+   performFirstPhase( const InputArray& input,
+                      OutputArray& output,
+                      typename InputArray::IndexType begin,
+                      typename InputArray::IndexType end,
+                      typename OutputArray::IndexType outputBegin,
+                      Reduction&& reduction,
+                      typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename BlockShifts,
              typename Reduction >
    static void
-   performSecondPhase( Vector& v,
+   performSecondPhase( const InputArray& input,
+                       OutputArray& output,
                        const BlockShifts& blockShifts,
-                       const typename Vector::IndexType begin,
-                       const typename Vector::IndexType end,
-                       const Reduction& reduction,
-                       const typename Vector::ValueType zero );
+                       typename InputArray::IndexType begin,
+                       typename InputArray::IndexType end,
+                       typename OutputArray::IndexType outputBegin,
+                       Reduction&& reduction,
+                       typename OutputArray::ValueType zero );
 };
 
 template< ScanType Type >
 struct Scan< Devices::Host, Type >
 {
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static void
-   perform( Vector& v,
-            const typename Vector::IndexType begin,
-            const typename Vector::IndexType end,
-            const Reduction& reduction,
-            const typename Vector::ValueType zero );
+   perform( const InputArray& input,
+            OutputArray& output,
+            typename InputArray::IndexType begin,
+            typename InputArray::IndexType end,
+            typename OutputArray::IndexType outputBegin,
+            Reduction&& reduction,
+            typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static auto
-   performFirstPhase( Vector& v,
-                      const typename Vector::IndexType begin,
-                      const typename Vector::IndexType end,
-                      const Reduction& reduction,
-                      const typename Vector::ValueType zero );
+   performFirstPhase( const InputArray& input,
+                      OutputArray& output,
+                      typename InputArray::IndexType begin,
+                      typename InputArray::IndexType end,
+                      typename OutputArray::IndexType outputBegin,
+                      Reduction&& reduction,
+                      typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename BlockShifts,
              typename Reduction >
    static void
-   performSecondPhase( Vector& v,
+   performSecondPhase( const InputArray& input,
+                       OutputArray& output,
                        const BlockShifts& blockShifts,
-                       const typename Vector::IndexType begin,
-                       const typename Vector::IndexType end,
-                       const Reduction& reduction,
-                       const typename Vector::ValueType zero );
+                       typename InputArray::IndexType begin,
+                       typename InputArray::IndexType end,
+                       typename OutputArray::IndexType outputBegin,
+                       Reduction&& reduction,
+                       typename OutputArray::ValueType zero );
 };
 
 template< ScanType Type >
 struct Scan< Devices::Cuda, Type >
 {
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static void
-   perform( Vector& v,
-            const typename Vector::IndexType begin,
-            const typename Vector::IndexType end,
-            const Reduction& reduction,
-            const typename Vector::ValueType zero );
+   perform( const InputArray& input,
+            OutputArray& output,
+            typename InputArray::IndexType begin,
+            typename InputArray::IndexType end,
+            typename OutputArray::IndexType outputBegin,
+            Reduction&& reduction,
+            typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename Reduction >
    static auto
-   performFirstPhase( Vector& v,
-                      const typename Vector::IndexType begin,
-                      const typename Vector::IndexType end,
-                      const Reduction& reduction,
-                      const typename Vector::ValueType zero );
+   performFirstPhase( const InputArray& input,
+                      OutputArray& output,
+                      typename InputArray::IndexType begin,
+                      typename InputArray::IndexType end,
+                      typename OutputArray::IndexType outputBegin,
+                      Reduction&& reduction,
+                      typename OutputArray::ValueType zero );
 
-   template< typename Vector,
+   template< typename InputArray,
+             typename OutputArray,
              typename BlockShifts,
              typename Reduction >
    static void
-   performSecondPhase( Vector& v,
+   performSecondPhase( const InputArray& input,
+                       OutputArray& output,
                        const BlockShifts& blockShifts,
-                       const typename Vector::IndexType begin,
-                       const typename Vector::IndexType end,
-                       const Reduction& reduction,
-                       const typename Vector::ValueType zero );
+                       typename InputArray::IndexType begin,
+                       typename InputArray::IndexType end,
+                       typename OutputArray::IndexType outputBegin,
+                       Reduction&& reduction,
+                       typename OutputArray::ValueType zero );
 };
 
 } // namespace detail

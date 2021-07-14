@@ -59,10 +59,10 @@ protected:
 #ifdef HAVE_CUDA
       if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
-         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Inclusive, ValueType, IndexType >::maxGridSize() = 3;
-         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Exclusive, ValueType, IndexType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Inclusive >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive >::maxGridSize() = 3;
       }
 #endif
    }
@@ -73,7 +73,7 @@ protected:
 #ifdef HAVE_CUDA
       // skip the check for too small arrays
       if( array.getSize() > 256 )
-         EXPECT_GT( ( CudaScanKernelLauncher< ScanType, ValueType, IndexType >::gridsCount() ), 1 );
+         EXPECT_GT( ( CudaScanKernelLauncher< ScanType >::gridsCount() ), 1 );
 #endif
 
       array_host = array;
@@ -140,6 +140,66 @@ using ArrayTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( ScanTest, ArrayTypes );
 
+TYPED_TEST( ScanTest, inclusiveScan_zero_array )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
+
+   // general overload, array
+   this->a = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size, 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->size, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default outputBegin, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   // overload with default reduction operation and default end and outputBegin, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin, end and outputBegin, array
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+}
+
 TYPED_TEST( ScanTest, inplaceInclusiveScan_zero_array )
 {
    using ValueType = typename TestFixture::ValueType;
@@ -186,6 +246,67 @@ TYPED_TEST( ScanTest, inplaceInclusiveScan_zero_array )
    this->a = this->input_host;
    inplaceInclusiveScan( this->a_view );
    this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, inclusiveScan_constant_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 1 );
+   for( int i = 0; i < this->size; i++ )
+      this->expected_host[ i ] = i + 1;
+
+   // general overload, array
+   this->a = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size, 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->size, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default outputBegin, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   // overload with default reduction operation and default end and outputBegin, array view
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin, end and outputBegin, array
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
 }
 
 TYPED_TEST( ScanTest, inplaceInclusiveScan_constant_sequence )
@@ -237,6 +358,28 @@ TYPED_TEST( ScanTest, inplaceInclusiveScan_constant_sequence )
    this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
+TYPED_TEST( ScanTest, inclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   for( int i = 0; i < this->size; i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i + 1)) / 2;
+   }
+
+   this->a = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   inclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+}
+
 TYPED_TEST( ScanTest, inplaceInclusiveScan_linear_sequence )
 {
    using ValueType = typename TestFixture::ValueType;
@@ -255,6 +398,66 @@ TYPED_TEST( ScanTest, inplaceInclusiveScan_linear_sequence )
    this->a = this->input_host;
    inplaceInclusiveScan( this->a_view, 0, this->size, std::plus<>{}, (ValueType) 0 );
    this->template checkResult< ScanType::Inclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, exclusiveScan_zero_array )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 0 );
+   this->expected_host.setValue( 0 );
+
+   // general overload, array
+   this->a = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size, 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->size, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default outputBegin, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   // overload with default reduction operation and default end and outputBegin, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin, end and outputBegin, array
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
 }
 
 TYPED_TEST( ScanTest, inplaceExclusiveScan_zero_array )
@@ -303,6 +506,67 @@ TYPED_TEST( ScanTest, inplaceExclusiveScan_zero_array )
    this->a = this->input_host;
    inplaceExclusiveScan( this->a_view );
    this->template checkResult< ScanType::Exclusive >( this->a );
+}
+
+TYPED_TEST( ScanTest, exclusiveScan_constant_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   this->input_host.setValue( 1 );
+   for( int i = 0; i < this->size; i++ )
+      this->expected_host[ i ] = i;
+
+   // general overload, array
+   this->a = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // general overload, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with TNL functional, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size, 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation, array
+   this->a = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->size, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default outputBegin, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   // overload with default reduction operation and default end and outputBegin, array view
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   // overload with default reduction operation and default begin, end and outputBegin, array
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
 }
 
 TYPED_TEST( ScanTest, inplaceExclusiveScan_constant_sequence )
@@ -354,6 +618,28 @@ TYPED_TEST( ScanTest, inplaceExclusiveScan_constant_sequence )
    this->template checkResult< ScanType::Exclusive >( this->a );
 }
 
+TYPED_TEST( ScanTest, exclusiveScan_linear_sequence )
+{
+   using ValueType = typename TestFixture::ValueType;
+
+   for( int i = 0; i < this->size; i++ ) {
+      this->input_host[ i ] = i;
+      this->expected_host[ i ] = (i * (i - 1)) / 2;
+   }
+
+   this->a = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+
+   this->resetWorkingArrays();
+
+   this->a = this->input_host;
+   exclusiveScan( this->a_view, this->b_view, 0, this->size, 0, std::plus<>{}, (ValueType) 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
+}
+
 TYPED_TEST( ScanTest, inplaceExclusiveScan_linear_sequence )
 {
    using ValueType = typename TestFixture::ValueType;
@@ -375,7 +661,7 @@ TYPED_TEST( ScanTest, inplaceExclusiveScan_linear_sequence )
 }
 
 
-TYPED_TEST( ScanTest, inplace_multiplication )
+TYPED_TEST( ScanTest, multiplication )
 {
    this->input_host.setSize( 10 );
    this->input_host.setValue( 2 );
@@ -389,6 +675,10 @@ TYPED_TEST( ScanTest, inplace_multiplication )
    }
 
    this->a = this->input_host;
+   this->b = this->input_host;
+   exclusiveScan( this->a, this->b, 0, this->a.getSize(), 0, TNL::Multiplies{} );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceExclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
    this->template checkResult< ScanType::Exclusive >( this->a );
 
@@ -396,13 +686,16 @@ TYPED_TEST( ScanTest, inplace_multiplication )
    for( int i = 0; i < this->expected_host.getSize(); i++ )
       this->expected_host[ i ] *= 2;
 
-   this->a.reset();
    this->a = this->input_host;
+   this->b = this->input_host;
+   inclusiveScan( this->a, this->b, 0, this->a.getSize(), 0, TNL::Multiplies{} );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceInclusiveScan( this->a, 0, this->a.getSize(), TNL::Multiplies{} );
    this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
-TYPED_TEST( ScanTest, inplace_custom_begin_end )
+TYPED_TEST( ScanTest, custom_begin_end )
 {
    using IndexType = typename TestFixture::IndexType;
 
@@ -416,6 +709,10 @@ TYPED_TEST( ScanTest, inplace_custom_begin_end )
       this->expected_host[ i ] = i - begin;
 
    this->a = this->input_host;
+   this->b = this->input_host;
+   exclusiveScan( this->a, this->b, begin, end, begin );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceExclusiveScan( this->a, begin, end );
    this->template checkResult< ScanType::Exclusive >( this->a );
 
@@ -423,13 +720,16 @@ TYPED_TEST( ScanTest, inplace_custom_begin_end )
    for( int i = begin; i < end; i++ )
       this->expected_host[ i ]++;
 
-   this->a.reset();
    this->a = this->input_host;
+   this->b = this->input_host;
+   inclusiveScan( this->a, this->b, begin, end, begin );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceInclusiveScan( this->a, begin, end );
    this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
-TYPED_TEST( ScanTest, inplace_empty_range )
+TYPED_TEST( ScanTest, empty_range )
 {
    using IndexType = typename TestFixture::IndexType;
 
@@ -442,12 +742,19 @@ TYPED_TEST( ScanTest, inplace_empty_range )
 
    // exclusive scan test
    this->a = this->input_host;
+   this->b = this->input_host;
+   exclusiveScan( this->a, this->b, begin, end, 0 );
+   this->template checkResult< ScanType::Exclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceExclusiveScan( this->a, begin, end );
    this->template checkResult< ScanType::Exclusive >( this->a );
 
    // inclusive scan test
-   this->a.reset();
    this->a = this->input_host;
+   this->b = this->input_host;
+   inclusiveScan( this->a, this->b, begin, end, 0 );
+   this->template checkResult< ScanType::Inclusive >( this->b );
+   EXPECT_EQ( this->a, this->input_host );
    inplaceInclusiveScan( this->a, begin, end );
    this->template checkResult< ScanType::Inclusive >( this->a );
 }

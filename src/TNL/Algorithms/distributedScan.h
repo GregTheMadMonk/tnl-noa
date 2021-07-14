@@ -47,6 +47,152 @@ namespace Algorithms {
  * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
  * ```
  */
+template< typename InputDistributedArray,
+          typename OutputDistributedArray,
+          typename Reduction >
+void
+distributedInclusiveScan( const InputDistributedArray& input,
+                          OutputDistributedArray& output,
+                          typename InputDistributedArray::IndexType begin,
+                          typename InputDistributedArray::IndexType end,
+                          Reduction&& reduction,
+                          typename OutputDistributedArray::ValueType zero )
+{
+   static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
+                  "The input and output arrays must have the same device type." );
+   TNL_ASSERT_EQ( input.getCommunicationGroup(), output.getCommunicationGroup(),
+                  "The input and output arrays must have the same MPI communicator." );
+   TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
+                  "The input and output arrays must have the same local range on all ranks." );
+   using Scan = detail::DistributedScan< detail::ScanType::Inclusive >;
+   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   output.startSynchronization();
+}
+
+/**
+ * \brief Overload of \ref distributedInclusiveScan which uses a TNL functional
+ *        object for reduction. \ref TNL::Plus is used by default.
+ *
+ * The idempotent value is taken as `reduction.template getIdempotent< typename OutputDistributedArray::ValueType >()`.
+ * See \ref distributedInclusiveScan for the explanation of other parameters.
+ * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
+ */
+template< typename InputDistributedArray,
+          typename OutputDistributedArray,
+          typename Reduction = TNL::Plus >
+void
+distributedInclusiveScan( const InputDistributedArray& input,
+                          OutputDistributedArray& output,
+                          typename InputDistributedArray::IndexType begin = 0,
+                          typename InputDistributedArray::IndexType end = 0,
+                          Reduction&& reduction = TNL::Plus{} )
+{
+   if( end == 0 )
+      end = input.getSize();
+   constexpr typename OutputDistributedArray::ValueType zero = Reduction::template getIdempotent< typename OutputDistributedArray::ValueType >();
+   distributedInclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+}
+
+/**
+ * \brief Computes an exclusive scan (or prefix sum) of a distributed array in-place.
+ *
+ * [Exclusive scan (or prefix sum)](https://en.wikipedia.org/wiki/Prefix_sum)
+ * operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence
+ * \f$\sigma_1, \ldots, \sigma_n\f$ defined as
+ *
+ * \f[
+ * \sigma_i = \sum_{j=1}^{i-1} a_i.
+ * \f]
+ *
+ * \tparam DistributedArray type of the distributed array to be scanned
+ * \tparam Reduction type of the reduction functor
+ *
+ * \param array input array, the result of scan is stored in the same array
+ * \param begin the first element in the array to be scanned
+ * \param end the last element in the array to be scanned
+ * \param reduction functor implementing the reduction operation
+ * \param zero is the idempotent element for the reduction operation, i.e. element which
+ *             does not change the result of the reduction.
+ *
+ * The reduction functor takes two variables to be reduced:
+ *
+ * ```
+ * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+ * ```
+ */
+template< typename InputDistributedArray,
+          typename OutputDistributedArray,
+          typename Reduction >
+void
+distributedExclusiveScan( const InputDistributedArray& input,
+                          OutputDistributedArray& output,
+                          typename InputDistributedArray::IndexType begin,
+                          typename InputDistributedArray::IndexType end,
+                          Reduction&& reduction,
+                          typename OutputDistributedArray::ValueType zero )
+{
+   static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
+                  "The input and output arrays must have the same device type." );
+   TNL_ASSERT_EQ( input.getCommunicationGroup(), output.getCommunicationGroup(),
+                  "The input and output arrays must have the same MPI communicator." );
+   TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
+                  "The input and output arrays must have the same local range on all ranks." );
+   using Scan = detail::DistributedScan< detail::ScanType::Exclusive >;
+   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   output.startSynchronization();
+}
+
+/**
+ * \brief Overload of \ref distributedExclusiveScan which uses a TNL functional
+ *        object for reduction. \ref TNL::Plus is used by default.
+ *
+ * The idempotent value is taken as `reduction.template getIdempotent< typename OutputDistributedArray::ValueType >()`.
+ * See \ref distributedExclusiveScan for the explanation of other parameters.
+ * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
+ */
+template< typename InputDistributedArray,
+          typename OutputDistributedArray,
+          typename Reduction = TNL::Plus >
+void
+distributedExclusiveScan( const InputDistributedArray& input,
+                          OutputDistributedArray& output,
+                          typename InputDistributedArray::IndexType begin = 0,
+                          typename InputDistributedArray::IndexType end = 0,
+                          Reduction&& reduction = TNL::Plus{} )
+{
+   if( end == 0 )
+      end = input.getSize();
+   constexpr typename OutputDistributedArray::ValueType zero = Reduction::template getIdempotent< typename OutputDistributedArray::ValueType >();
+   distributedExclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+}
+
+/**
+ * \brief Computes an inclusive scan (or prefix sum) of a distributed array in-place.
+ *
+ * [Inclusive scan (or prefix sum)](https://en.wikipedia.org/wiki/Prefix_sum)
+ * operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence
+ * \f$s_1, \ldots, s_n\f$ defined as
+ *
+ * \f[
+ * s_i = \sum_{j=1}^i a_i.
+ * \f]
+ *
+ * \tparam DistributedArray type of the distributed array to be scanned
+ * \tparam Reduction type of the reduction functor
+ *
+ * \param array input array, the result of scan is stored in the same array
+ * \param begin the first element in the array to be scanned
+ * \param end the last element in the array to be scanned
+ * \param reduction functor implementing the reduction operation
+ * \param zero is the idempotent element for the reduction operation, i.e. element which
+ *             does not change the result of the reduction.
+ *
+ * The reduction functor takes two variables to be reduced:
+ *
+ * ```
+ * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+ * ```
+ */
 template< typename DistributedArray,
           typename Reduction >
 void
@@ -57,7 +203,7 @@ distributedInplaceInclusiveScan( DistributedArray& array,
                                  typename DistributedArray::ValueType zero )
 {
    using Scan = detail::DistributedScan< detail::ScanType::Inclusive >;
-   Scan::perform( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
    array.startSynchronization();
 }
 
@@ -120,7 +266,7 @@ distributedInplaceExclusiveScan( DistributedArray& array,
                                  typename DistributedArray::ValueType zero )
 {
    using Scan = detail::DistributedScan< detail::ScanType::Exclusive >;
-   Scan::perform( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
    array.startSynchronization();
 }
 

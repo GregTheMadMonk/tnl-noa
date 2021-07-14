@@ -177,9 +177,7 @@ cudaSecondPhaseBlockScan( Reduction reduction,
    }
 }
 
-template< ScanType scanType,
-          typename Real,
-          typename Index >
+template< ScanType scanType >
 struct CudaScanKernelLauncher
 {
    /****
@@ -194,12 +192,14 @@ struct CudaScanKernelLauncher
     *              `reduction(zero, x) == x` for any `x`.
     * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction >
+   template< typename Reduction,
+             typename Real,
+             typename Index >
    static void
    perform( const Index size,
             const Real* deviceInput,
             Real* deviceOutput,
-            Reduction& reduction,
+            Reduction&& reduction,
             const Real zero,
             const int blockSize = 256 )
    {
@@ -231,12 +231,14 @@ struct CudaScanKernelLauncher
     *              `reduction(zero, x) == x` for any `x`.
     * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction >
+   template< typename Reduction,
+             typename Real,
+             typename Index >
    static auto
    performFirstPhase( const Index size,
                       const Real* deviceInput,
                       Real* deviceOutput,
-                      Reduction& reduction,
+                      Reduction&& reduction,
                       const Real zero,
                       const int blockSize = 256 )
    {
@@ -288,7 +290,7 @@ struct CudaScanKernelLauncher
       if( numberOfBlocks > 1 ) {
          // we perform an inclusive scan, but the 0-th is zero and block results
          // were shifted by 1, so effectively we get an exclusive scan
-         CudaScanKernelLauncher< ScanType::Inclusive, Real, Index >::perform(
+         CudaScanKernelLauncher< ScanType::Inclusive >::perform(
             blockResults.getSize(),
             blockResults.getData(),
             blockResults.getData(),
@@ -318,14 +320,16 @@ struct CudaScanKernelLauncher
     *               the neutral value).
     * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction >
+   template< typename Reduction,
+             typename Real,
+             typename Index >
    static void
    performSecondPhase( const Index size,
                        Real* deviceOutput,
                        const Real* blockShifts,
-                       Reduction& reduction,
+                       Reduction&& reduction,
                        const Real shift,
-                       const Index blockSize = 256 )
+                       const int blockSize = 256 )
    {
       // compute the number of grids
       const int elementsInBlock = 8 * blockSize;
