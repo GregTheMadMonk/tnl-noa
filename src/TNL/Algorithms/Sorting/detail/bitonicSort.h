@@ -1,11 +1,11 @@
 #pragma once
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sorting/blockBitonicSort.h>
+#include <TNL/Algorithms/Sorting/detail/blockBitonicSort.h>
 #include <TNL/Algorithms/Sorting/detail/helpers.h>
 
 namespace TNL {
     namespace Algorithms {
-        namespace detail {
+        namespace Sorting {
 
 #ifdef HAVE_CUDA
 

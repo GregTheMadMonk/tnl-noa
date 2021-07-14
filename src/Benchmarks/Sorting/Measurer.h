@@ -25,7 +25,7 @@ struct QuicksortSorter
 struct BitonicSortSorter
 {
     template< typename Array >
-    static void sort( Array& array ) { Algorithms::detail::bitonicSort( array ); };
+    static void sort( Array& array ) { Algorithms::Sorting::BitonicSort::sort( array ); };
 };
 
 struct STLSorter

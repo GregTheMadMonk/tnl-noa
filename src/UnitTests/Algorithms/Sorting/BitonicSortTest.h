@@ -6,7 +6,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/Sorting/bitonicSort.h>
+#include <TNL/Algorithms/Sorting/BitonicSort.h>
 #include <TNL/Algorithms/Sort.h>
 
 #if defined HAVE_GTEST && defined HAVE_CUDA
@@ -15,7 +15,7 @@
 
 using namespace TNL;
 using namespace TNL::Algorithms;
-using namespace TNL::Algorithms::detail;
+using namespace TNL::Algorithms::Sorting;
 
 TEST(permutations, allPermutationSize_2_to_7)
 {
@@ -30,7 +30,7 @@ TEST(permutations, allPermutationSize_2_to_7)
             TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
             auto view = cudaArr.getView();
 
-            bitonicSort(view);
+            BitonicSort::sort(view);
 
             EXPECT_TRUE( Algorithms::isSorted( view ) ) << "failed " << i << std::endl;
         }
@@ -55,7 +55,7 @@ TEST(permutations, allPermutationSize_8)
         TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
 
-        bitonicSort(view);
+        BitonicSort::sort(view);
 
         EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
     }
@@ -79,7 +79,7 @@ TEST(permutations, somePermutationSize9)
         TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
         auto view = cudaArr.getView();
 
-        bitonicSort(view);
+        BitonicSort::sort(view);
 
         EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
     }
@@ -91,7 +91,7 @@ TEST(selectedSize, size15)
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr{5, 9, 4, 8, 6, 1, 2, 3, 4, 8, 1, 6, 9, 4, 9};
     auto view = cudaArr.getView();
     EXPECT_EQ(15, view.getSize()) << "size not 15" << std::endl;
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
@@ -104,7 +104,7 @@ TEST(multiblock, 32768_decreasingNegative)
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
     auto view = cudaArr.getView();
 
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
@@ -120,7 +120,7 @@ TEST(randomGenerated, smallArray_randomVal)
         TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(arr);
 
         auto view = cudaArr.getView();
-        bitonicSort(view);
+        BitonicSort::sort(view);
         EXPECT_TRUE(Algorithms::isSorted(view));
     }
 }
@@ -135,7 +135,7 @@ TEST(randomGenerated, bigArray_all0)
         TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(size);
 
         auto view = cudaArr.getView();
-        bitonicSort(view);
+        BitonicSort::sort(view);
         EXPECT_TRUE(Algorithms::isSorted(view));
     }
 }
@@ -144,7 +144,7 @@ TEST(nonIntegerType, float_notPow2)
 {
     TNL::Containers::Array<float, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
@@ -152,7 +152,7 @@ TEST(nonIntegerType, double_notPow2)
 {
     TNL::Containers::Array<double, TNL::Devices::Cuda> cudaArr{5.0, 9.4, 4.6, 8.9, 6.2, 1.15184, 2.23};
     auto view = cudaArr.getView();
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
 }
 
@@ -170,7 +170,7 @@ TEST(nonIntegerType, struct)
 {
     TNL::Containers::Array<TMPSTRUCT, TNL::Devices::Cuda> cudaArr{TMPSTRUCT(5), TMPSTRUCT(6), TMPSTRUCT(9), TMPSTRUCT(1)};
     auto view = cudaArr.getView();
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view));
 }
 
@@ -192,7 +192,7 @@ TEST(nonIntegerType, struct_64b)
 
     TNL::Containers::Array<TMPSTRUCT_64b, TNL::Devices::Cuda> cudaArr(vec);
     auto view = cudaArr.getView();
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view));
 }
 
@@ -214,7 +214,7 @@ TEST(nonIntegerType, struct_128b)
 
     TNL::Containers::Array<TMPSTRUCT_128b, TNL::Devices::Cuda> cudaArr(vec);
     auto view = cudaArr.getView();
-    bitonicSort(view);
+    BitonicSort::sort(view);
     EXPECT_TRUE(Algorithms::isSorted(view));
 }
 

@@ -14,7 +14,7 @@
 
 #include <TNL/Containers/Array.h>
 #include "cassert"
-#include <TNL/Algorithms/Sorting/bitonicSort.h>
+#include <TNL/Algorithms/Sorting/detail/bitonicSort.h>
 #include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
 
