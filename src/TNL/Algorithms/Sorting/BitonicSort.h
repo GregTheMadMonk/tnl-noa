@@ -32,6 +32,11 @@ struct BitonicSort
       bitonicSort( array, compare );
    }
 
+   template< typename Index, typename Fetch, typename Compare, typename Swap >
+   void static inplaceSort( const Index begin, const Index end, const Fetch& fetch, const Compare& compare, const Swap& swap )
+   {
+      bitonicSort( begin, end, fetch, compare, swap );
+   }
 };
 
       } // namespace Sorting
