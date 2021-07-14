@@ -1090,3 +1090,11 @@ int gpuqsort(unsigned int *data, unsigned int size, unsigned int blockscount, un
 		return 0;
 	}
 }
+
+struct CedermanQuicksort
+{
+   static void sort( Containers::ArrayView< int, Devices::Cuda >& array )
+   {
+      gpuqsort( ( unsigned int * ) array.getData(), ( unsigned int ) array.getSize() );
+   }
+};

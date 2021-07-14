@@ -21,7 +21,8 @@ using namespace std;
 #endif
 
 using namespace TNL;
-
+using namespace TNL::Algorithms;
+using namespace TNL::Algorithms::Sorting;
 
 template< typename Sorter >
 void start(ostream & out, string delim)
@@ -85,32 +86,32 @@ int main(int argc, char *argv[])
     if(argc == 1)
     {
         std::cout << "STL sort on CPU ... " << std::endl;
-        start< STLSorter >( cout, "\t" );
+        start< STLSort >( cout, "\t" );
         std::cout << "Quicksort on GPU ... " << std::endl;
-        start< QuicksortSorter >(cout, "\t");
+        start< Quicksort >(cout, "\t");
         std::cout << "Bitonic sort on GPU ... " << std::endl;
-        start< BitonicSortSorter >( cout, "\t" );
+        start< BitonicSort >( cout, "\t" );
 #ifdef HAVE_CUDA
         std::cout << "Manca quicksort on GPU ... " << std::endl;
-        start< MancaQuicksortSorter >( cout, "\t" );
+        start< MancaQuicksort >( cout, "\t" );
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
-        start< CedermanQuicksortSorter >( cout, "\t" );
+        start< CedermanQuicksort >( cout, "\t" );
 #endif
     }
     else
     {
         std::ofstream out(argv[1]);
         std::cout << "STL sort on CPU ... " << std::endl;
-        start< STLSorter >( out, "," );
+        start< STLSort >( out, "," );
         std::cout << "Quicksort on GPU ... " << std::endl;
-        start< QuicksortSorter >(out, ",");
+        start< Quicksort >(out, ",");
         std::cout << "Bitonic sort on GPU ... " << std::endl;
-        start< BitonicSortSorter >(out, ",");
+        start< BitonicSort >(out, ",");
 #ifdef HAVE_CUDA
         std::cout << "Manca quicksort on GPU ... " << std::endl;
-        start< MancaQuicksortSorter >( out, "," );
+        start< MancaQuicksort >( out, "," );
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
-        start< CedermanQuicksortSorter >( out, "," );
+        start< CedermanQuicksort >( out, "," );
 #endif
     }
     return 0;

@@ -1315,3 +1315,13 @@ void CUDA_Quicksort_64(double* inputData,double* outputData, uint dataSize, uint
 	sort<double>(inputData,outputData, dataSize,threadCount,Device,wallClock);
 
 }
+
+struct MancaQuicksort
+{
+   static void sort( Containers::ArrayView< int, Devices::Cuda >& array )
+   {
+      double timer;
+      CUDA_Quicksort( ( unsigned * ) array.getData(),  (unsigned * ) array.getData(), array.getSize(), 256, 0, &timer );
+      //return;
+   }
+};
