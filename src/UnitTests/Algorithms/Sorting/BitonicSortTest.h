@@ -371,7 +371,7 @@ TEST(fetchAndSwap, sortMiddle)
     std::vector<int> orig{5, 9, 4, 54, 21, 6, 7, 9, 0, 9, 42, 4};
     TNL::Containers::Array<int, TNL::Devices::Cuda> cudaArr(orig);
     auto view = cudaArr.getView();
-    int from = 3, to = 8;
+    size_t from = 3, to = 8;
 
     fetchAndSwap_sortMiddle(view, from, to);
     EXPECT_TRUE(Algorithms::isSorted(view.getView(3, 8))) << "result " << view << std::endl;
