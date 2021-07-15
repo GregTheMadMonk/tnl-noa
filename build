@@ -39,6 +39,13 @@ BUILD_TESTS="no"
 BUILD_MATRIX_TESTS="no"
 BUILD_DOC="no"
 
+# external dependencies
+CUDA_SAMPLES_DIR=none
+
+if [[ x"$CUDA_SAMPLES_PATH" != "x" ]]; then
+   CUDA_SAMPLES_DIR=${CUDA_SAMPLES_PATH}
+fi
+
 function print_usage()
 {
     cat << EOF
@@ -85,6 +92,9 @@ Options for the 'tests' and 'matrix-tests' targets:
     --tests-jobs=NUM                      Number of processes to be used for the unit tests. It is $TEST_JOBS by default.
     --with-coverage=yes/no                Enables code coverage reports for unit tests (lcov is required). '$WITH_COVERAGE' by default.
     --with-system-gtest=yes/no            Use GTest installed in the local system and do not download the latest version. '$WITH_SYSTEM_GTEST' by default.
+
+External dependencies:
+   --cuda-samples-dir=PATH                CUDA samples are used by some reference algorithms used in benchmarks. '$CUDA_SAMPLES_PATH` by default.
 EOF
 }
 
@@ -120,6 +130,7 @@ for option in "$@"; do
         --with-coverage=*     ) WITH_COVERAGE="${option#*=}" ;;
         --with-ci-flags=*     ) WITH_CI_FLAGS="${option#*=}" ;;
         --with-system-gtest=* ) WITH_SYSTEM_GTEST="${option#*=}" ;;
+        --cuda-samples-path=*  ) CUDA_SAMPLES_DIR="${option#*=}" ;;
         -*                    )
             echo "Unknown option $option. Use --help for more information." >&2
             exit 1
@@ -216,6 +227,7 @@ cmake_command=(
          -DBUILD_MATRIX_TESTS=${BUILD_MATRIX_TESTS}
          -DBUILD_PYTHON=${BUILD_PYTHON}
          -DBUILD_DOC=${BUILD_DOC}
+         -DCUDA_SAMPLES_DIR=${CUDA_SAMPLES_DIR}
 )
 
 # Skip running cmake if it was already run and the cmake command is the same.
