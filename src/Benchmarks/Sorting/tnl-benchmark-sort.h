@@ -92,8 +92,10 @@ int main(int argc, char *argv[])
         std::cout << "Bitonic sort on GPU ... " << std::endl;
         start< BitonicSort >( cout, "\t" );
 #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA_SAMPLES
         std::cout << "Manca quicksort on GPU ... " << std::endl;
         start< MancaQuicksort >( cout, "\t" );
+#endif
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
         start< CedermanQuicksort >( cout, "\t" );
 #endif
@@ -108,8 +110,10 @@ int main(int argc, char *argv[])
         std::cout << "Bitonic sort on GPU ... " << std::endl;
         start< BitonicSort >(out, ",");
 #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA_SAMPLES
         std::cout << "Manca quicksort on GPU ... " << std::endl;
         start< MancaQuicksort >( out, "," );
+#endif
         std::cout << "Cederman quicksort on GPU ... " << std::endl;
         start< CedermanQuicksort >( out, "," );
 #endif

@@ -8,20 +8,15 @@
 #include <TNL/Algorithms/Sorting/STLSort.h>
 
 #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA_SAMPLES
 #include "ReferenceAlgorithms/MancaQuicksort.h"
+#endif
 #include "ReferenceAlgorithms/CedermanQuicksort.h"
 #endif
 
 #include "timer.h"
 
 using namespace TNL;
-
-/*struct STLSorter
-{
-    template< typename Value >
-    static void sort( std::vector< Value >& vec ) { std::sort( vec.begin(), vec.end() ); };
-};*/
-
 
 template< typename Sorter >
 struct Measurer

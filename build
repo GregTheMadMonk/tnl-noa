@@ -94,7 +94,7 @@ Options for the 'tests' and 'matrix-tests' targets:
     --with-system-gtest=yes/no            Use GTest installed in the local system and do not download the latest version. '$WITH_SYSTEM_GTEST' by default.
 
 External dependencies:
-   --cuda-samples-dir=PATH                CUDA samples are used by some reference algorithms used in benchmarks. '$CUDA_SAMPLES_PATH` by default.
+   --cuda-samples-path=PATH                CUDA samples are used by some reference algorithms used in benchmarks. '$CUDA_SAMPLES_PATH' by default.
 EOF
 }
 
@@ -130,7 +130,7 @@ for option in "$@"; do
         --with-coverage=*     ) WITH_COVERAGE="${option#*=}" ;;
         --with-ci-flags=*     ) WITH_CI_FLAGS="${option#*=}" ;;
         --with-system-gtest=* ) WITH_SYSTEM_GTEST="${option#*=}" ;;
-        --cuda-samples-path=*  ) CUDA_SAMPLES_DIR="${option#*=}" ;;
+        --cuda-samples-path=* ) CUDA_SAMPLES_DIR="${option#*=}" ;;
         -*                    )
             echo "Unknown option $option. Use --help for more information." >&2
             exit 1

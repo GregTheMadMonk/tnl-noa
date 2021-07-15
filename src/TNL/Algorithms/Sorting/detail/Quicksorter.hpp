@@ -69,7 +69,7 @@ sort( Array& arr, const Compare& cmp )
         }
     }
 
-    TNL_ASSERT_LE( blockDim * multiplier * sizeof(Value), maxSharable,"" );
+    TNL_ASSERT_LE( ( int ) ( blockDim * multiplier * sizeof(Value) ), maxSharable,"" );
 
     this->init(arr, maxBlocks, blockDim, multiplier * blockDim, maxSharable);
     this->performSort( cmp );
