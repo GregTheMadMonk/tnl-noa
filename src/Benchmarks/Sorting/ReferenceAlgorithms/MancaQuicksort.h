@@ -1040,7 +1040,7 @@ __global__ void bucketAssign(Block<Type> *bucket, uint *npartitions, int nbucket
             //else
             bucket[i + nbucket].done = (from - orgbeg) > 1024 && (minPiv != maxPiv);
             bucket[i + nbucket].select = select;
-            bucket[i + nbucket].minPiv = 0xffffffffffffffff;
+            bucket[i + nbucket].minPiv = ( Type ) 0xffffffffffffffff;
             bucket[i + nbucket].maxPiv = 0;
             //bucket[i+nbucket].finish=false;
 
@@ -1061,7 +1061,7 @@ __global__ void bucketAssign(Block<Type> *bucket, uint *npartitions, int nbucket
             //	else
             bucket[i].done = (orgend - end) > 1024 && (minPiv != maxPiv);
             bucket[i].select = select;
-            bucket[i].minPiv = 0xffffffffffffffff;
+            bucket[i].minPiv = ( Type ) 0xffffffffffffffff;
             bucket[i].maxPiv = 0;
             //bucket[i].finish=false;
 
@@ -1090,7 +1090,7 @@ __global__ void init(Type *data, Block<Type> *bucket, uint *npartitions, int siz
         bucket[i].done = false + i == 0;
         bucket[i].select = false;
         bucket[i].maxPiv = 0x0;
-        bucket[i].minPiv = 0xffffffffffffffff;
+        bucket[i].minPiv = ( Type ) 0xffffffffffffffff;
         //bucket[i].pivot  = 0+ (i==0)*((min(min(data[0],data[size/2]),data[size-1]) + max(max(data[0],data[size/2]),data[size-1]))/2);
         bucket[i].pivot = data[size / 2];
     }
