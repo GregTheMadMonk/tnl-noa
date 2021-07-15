@@ -12,17 +12,37 @@
 
 #pragma once
 
-#include <utility>  // std::pair, std::forward
-
-#include <TNL/Devices/Sequential.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Algorithms/Sorting/BitonicSort.h>
-#include <TNL/Algorithms/Sorting/Quicksort.h>
+#include <TNL/Algorithms/Sorting/DefaultSorter.h>
 
 namespace TNL {
    namespace Algorithms {
 
+
+template< typename Array,
+          typename Sorter = typename Sorting::DefaultSorter< typename Array::DeviceType >::SorterType >
+void sort( Array& array )
+{
+   Sorter::sort( array );
+}
+
+template< typename Array,
+          typename Compare,
+          typename Sorter = typename Sorting::DefaultSorter< typename Array::DeviceType >::SorterType >
+void sort( Array& array, const Compare& compare )
+{
+   Sorter::sort( array, compare );
+}
+
+template< typename Device,
+          typename Index,
+          typename Fetch,
+          typename Compare,
+          typename Swap,
+          typename Sorter = typename Sorting::DefaultInplaceSorter< Device >::SorterType >
+void inplaceSort( const Index begin, const Index end, const Fetch& fetch, const Compare& compare, const Swap& swap )
+{
+   Sorter::inplaceSort( begin, end, fetch, compare, swap );
+}
 
 template <typename Array, typename Function>
 bool isSorted( const Array& arr, const Function& cmp )
