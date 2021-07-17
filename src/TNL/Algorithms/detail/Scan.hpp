@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <utility>  // std::forward
+
 #include "Scan.h"
 #include "CudaScanKernel.h"
 
@@ -275,10 +277,12 @@ perform( const InputArray& input,
       return;
 
    detail::CudaScanKernelLauncher< Type >::perform(
-      end - begin,
-      &input.getData()[ begin ],
-      &output.getData()[ outputBegin ],
-      reduction,
+      input,
+      output,
+      begin,
+      end,
+      outputBegin,
+      std::forward< Reduction >( reduction ),
       zero );
 #else
    throw Exceptions::CudaSupportMissing();
@@ -307,10 +311,12 @@ performFirstPhase( const InputArray& input,
    }
 
    return detail::CudaScanKernelLauncher< Type >::performFirstPhase(
-      end - begin,
-      &input.getData()[ begin ],
-      &output.getData()[ outputBegin ],
-      reduction,
+      input,
+      output,
+      begin,
+      end,
+      outputBegin,
+      std::forward< Reduction >( reduction ),
       zero );
 #else
    throw Exceptions::CudaSupportMissing();
@@ -338,10 +344,13 @@ performSecondPhase( const InputArray& input,
       return;
 
    detail::CudaScanKernelLauncher< Type >::performSecondPhase(
-      end - begin,
-      &output.getData()[ outputBegin ],
-      blockShifts.getData(),
-      reduction,
+      input,
+      output,
+      blockShifts,
+      begin,
+      end,
+      outputBegin,
+      std::forward< Reduction >( reduction ),
       zero );
 #else
    throw Exceptions::CudaSupportMissing();

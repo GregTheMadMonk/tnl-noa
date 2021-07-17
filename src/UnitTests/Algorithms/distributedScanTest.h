@@ -733,6 +733,28 @@ TYPED_TEST( DistributedScanTest, empty_range )
    this->template checkResult< ScanType::Inclusive >( this->a, false );
 }
 
+TYPED_TEST( DistributedScanTest, vector_expression )
+{
+   this->a.setValue( 2 );
+   this->b.setValue( 1 );
+
+   // exclusive scan test
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ )
+      this->expected_host[ i ] = i;
+
+   this->c.setValue( 0 );
+   distributedExclusiveScan( this->av_view - this->bv_view, this->c, 0, this->a.getSize(), TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->c );
+
+   // inclusive scan test
+   for( int i = this->localRange.getBegin(); i < this->localRange.getEnd(); i++ )
+      this->expected_host[ i ]++;
+
+   this->c.setValue( 0 );
+   distributedInclusiveScan( this->av_view - this->bv_view, this->c, 0, this->a.getSize(), TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->c );
+}
+
 #endif  // HAVE_GTEST
 
 #include "../main_mpi.h"

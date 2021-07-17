@@ -22,122 +22,138 @@ namespace detail {
 
 #ifdef HAVE_CUDA
 
-template< typename Real,
-          typename Reduction,
-          typename Index >
+template< ScanType scanType,
+          int blockSize,
+          int valuesPerThread,
+          typename InputView,
+          typename OutputView,
+          typename Reduction >
 __global__ void
-cudaFirstPhaseBlockScan( const ScanType scanType,
-                         Reduction reduction,
-                         const Real zero,
-                         const Index size,
-                         const int elementsInBlock,
-                         const Real* input,
-                         Real* output,
-                         Real* blockResults )
+CudaScanKernelFirstPhase( const InputView input,
+                          OutputView output,
+                          typename InputView::IndexType begin,
+                          typename InputView::IndexType end,
+                          typename OutputView::IndexType outputBegin,
+                          Reduction reduction,
+                          typename OutputView::ValueType zero,
+                          typename OutputView::ValueType* blockResults )
 {
-   Real* sharedData = TNL::Cuda::getSharedMemory< Real >();
-   Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2 ];
-   Real* warpSums = &auxData[ blockDim.x ];
+   using ValueType = typename OutputView::ValueType;
+   using IndexType = typename InputView::IndexType;
 
-   const Index lastElementIdx = size - blockIdx.x * elementsInBlock;
-   const Index lastElementInBlock = TNL::min( lastElementIdx, elementsInBlock );
+   // verify the configuration
+   TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaScanKernelFirstPhase" );
+   static_assert( blockSize / Cuda::getWarpSize() <= Cuda::getWarpSize(),
+                  "blockSize is too large, it would not be possible to scan warpResults using one warp" );
+
+   // calculate indices
+   constexpr int maxElementsInBlock = blockSize * valuesPerThread;
+   const int remainingElements = end - begin - blockIdx.x * maxElementsInBlock;
+   const int elementsInBlock = TNL::min( remainingElements, maxElementsInBlock );
+
+   // update global array offsets for the thread
+   const int threadOffset = blockIdx.x * maxElementsInBlock + threadIdx.x;
+   begin += threadOffset;
+   outputBegin += threadOffset;
+
+   // allocate shared memory
+   constexpr int shmemElements = maxElementsInBlock + maxElementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2;
+   __shared__ ValueType sharedData[ shmemElements ];  // accessed via Cuda::getInterleaving()
+   __shared__ ValueType chunkResults[ blockSize ];
+   __shared__ ValueType warpResults[ Cuda::getWarpSize() ];
 
    /***
     * Load data into the shared memory.
     */
-   const int blockOffset = blockIdx.x * elementsInBlock;
    int idx = threadIdx.x;
    if( scanType == ScanType::Exclusive )
    {
       if( idx == 0 )
          sharedData[ 0 ] = zero;
-      while( idx < elementsInBlock && blockOffset + idx < size )
+      while( idx < elementsInBlock )
       {
-         sharedData[ Cuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
+         sharedData[ Cuda::getInterleaving( idx + 1 ) ] = input[ begin ];
+         begin += blockDim.x;
          idx += blockDim.x;
       }
    }
    else
    {
-      while( idx < elementsInBlock && blockOffset + idx < size )
+      while( idx < elementsInBlock )
       {
-         sharedData[ Cuda::getInterleaving( idx ) ] = input[ blockOffset + idx ];
+         sharedData[ Cuda::getInterleaving( idx ) ] = input[ begin ];
+         begin += blockDim.x;
          idx += blockDim.x;
       }
    }
+   __syncthreads();
 
    /***
-    * Perform the sequential prefix-sum.
+    * Perform the sequential scan of the chunk in shared memory.
     */
-   __syncthreads();
-   const int chunkSize = elementsInBlock / blockDim.x;
-   const int chunkOffset = threadIdx.x * chunkSize;
-   const int numberOfChunks = roundUpDivision( lastElementInBlock, chunkSize );
-
-   if( chunkOffset < lastElementInBlock )
-   {
-      auxData[ threadIdx.x ] =
-         sharedData[ Cuda::getInterleaving( chunkOffset ) ];
-   }
+   const int chunkOffset = threadIdx.x * valuesPerThread;
+   const int numberOfChunks = roundUpDivision( elementsInBlock, valuesPerThread );
 
    int chunkPointer = 1;
-   while( chunkPointer < chunkSize &&
-          chunkOffset + chunkPointer < lastElementInBlock )
+   while( chunkPointer < valuesPerThread && chunkOffset + chunkPointer < elementsInBlock )
    {
       sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ] =
          reduction( sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
                     sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
-      auxData[ threadIdx.x ] =
-         sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ];
       chunkPointer++;
    }
 
+   // store the result of the sequential reduction of the chunk in chunkResults
+   chunkResults[ threadIdx.x ] = sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ];
+   __syncthreads();
+
    /***
-    *  Perform the parallel prefix-sum inside warps.
+    * Perform the parallel scan on chunkResults inside warps.
     */
    const int threadInWarpIdx = threadIdx.x % Cuda::getWarpSize();
    const int warpIdx = threadIdx.x / Cuda::getWarpSize();
    for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
       if( threadInWarpIdx >= stride && threadIdx.x < numberOfChunks )
-         auxData[ threadIdx.x ] = reduction( auxData[ threadIdx.x ], auxData[ threadIdx.x - stride ] );
+         chunkResults[ threadIdx.x ] = reduction( chunkResults[ threadIdx.x ], chunkResults[ threadIdx.x - stride ] );
       __syncwarp();
    }
 
    if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
-      warpSums[ warpIdx ] = auxData[ threadIdx.x ];
+      warpResults[ warpIdx ] = chunkResults[ threadIdx.x ];
    __syncthreads();
 
    /****
-    * Compute prefix-sum of warp sums using one warp
+    * Perform the scan of warpResults using one warp.
     */
    if( warpIdx == 0 )
       for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
          if( threadInWarpIdx >= stride )
-            warpSums[ threadIdx.x ] = reduction( warpSums[ threadIdx.x ], warpSums[ threadIdx.x - stride ] );
+            warpResults[ threadIdx.x ] = reduction( warpResults[ threadIdx.x ], warpResults[ threadIdx.x - stride ] );
          __syncwarp();
       }
    __syncthreads();
 
    /****
-    * Shift the warp prefix-sums.
+    * Shift chunkResults by the warpResults.
     */
    if( warpIdx > 0 )
-      auxData[ threadIdx.x ] = reduction( auxData[ threadIdx.x ], warpSums[ warpIdx - 1 ] );
+      chunkResults[ threadIdx.x ] = reduction( chunkResults[ threadIdx.x ], warpResults[ warpIdx - 1 ] );
    __syncthreads();
 
    /***
-    *  Store the result back in global memory.
+    * Store the result back in global memory.
     */
    idx = threadIdx.x;
-   while( idx < elementsInBlock && blockOffset + idx < size )
+   while( idx < elementsInBlock )
    {
-      const int chunkIdx = idx / chunkSize;
-      Real chunkShift( zero );
+      const int chunkIdx = idx / valuesPerThread;
+      ValueType chunkShift = zero;
       if( chunkIdx > 0 )
-         chunkShift = auxData[ chunkIdx - 1 ];
+         chunkShift = chunkResults[ chunkIdx - 1 ];
+      output[ outputBegin ] =
       sharedData[ Cuda::getInterleaving( idx ) ] =
          reduction( sharedData[ Cuda::getInterleaving( idx ) ], chunkShift );
-      output[ blockOffset + idx ] = sharedData[ Cuda::getInterleaving( idx ) ];
+      outputBegin += blockDim.x;
       idx += blockDim.x;
    }
    __syncthreads();
@@ -146,137 +162,165 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
    {
       if( scanType == ScanType::Exclusive )
       {
-         blockResults[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ],
-                                                 sharedData[ Cuda::getInterleaving( lastElementInBlock ) ] );
+         blockResults[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( elementsInBlock - 1 ) ],
+                                                 sharedData[ Cuda::getInterleaving( elementsInBlock ) ] );
       }
       else
-         blockResults[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ];
+         blockResults[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( elementsInBlock - 1 ) ];
    }
 }
 
-template< typename Real,
-          typename Reduction,
-          typename Index >
+template< int blockSize,
+          int valuesPerThread,
+          typename OutputView,
+          typename Reduction >
 __global__ void
-cudaSecondPhaseBlockScan( Reduction reduction,
-                          const Index size,
-                          const int elementsInBlock,
-                          const Index gridIdx,
-                          const Index maxGridSize,
-                          const Real* blockResults,
-                          Real* data,
-                          Real shift )
+CudaScanKernelSecondPhase( OutputView output,
+                           typename OutputView::IndexType outputBegin,
+                           typename OutputView::IndexType outputEnd,
+                           Reduction reduction,
+                           int gridOffset,
+                           const typename OutputView::ValueType* blockResults,
+                           typename OutputView::ValueType shift )
 {
-   shift = reduction( shift, blockResults[ gridIdx * maxGridSize + blockIdx.x ] );
-   const int readOffset = blockIdx.x * elementsInBlock;
-   int readIdx = threadIdx.x;
-   while( readIdx < elementsInBlock && readOffset + readIdx < size )
+   // load the block result into a __shared__ variable first
+   __shared__ typename OutputView::ValueType blockResult;
+   if( threadIdx.x == 0 )
+      blockResult = blockResults[ gridOffset + blockIdx.x ];
+
+   // update the output offset for the thread
+   TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaScanKernelFirstPhase" );
+   constexpr int maxElementsInBlock = blockSize * valuesPerThread;
+   const int threadOffset = blockIdx.x * maxElementsInBlock + threadIdx.x;
+   outputBegin += threadOffset;
+
+   // update the block shift
+   __syncthreads();
+   shift = reduction( shift, blockResult );
+
+   int valueIdx = 0;
+   while( valueIdx < valuesPerThread && outputBegin < outputEnd )
    {
-      data[ readIdx + readOffset ] = reduction( data[ readIdx + readOffset ], shift );
-      readIdx += blockDim.x;
+      output[ outputBegin ] = reduction( output[ outputBegin ], shift );
+      outputBegin += blockDim.x;
+      valueIdx++;
    }
 }
 
-template< ScanType scanType >
+/**
+ * \tparam blockSize  The CUDA block size to be used for kernel launch.
+ * \tparam valuesPerThread  Number of elements processed by each thread sequentially.
+ */
+template< ScanType scanType,
+          int blockSize = 256,
+          int valuesPerThread = 8 >
 struct CudaScanKernelLauncher
 {
    /****
     * \brief Performs both phases of prefix sum.
     *
-    * \param size  Number of elements to be scanned.
-    * \param deviceInput  Pointer to input data on GPU.
-    * \param deviceOutput  Pointer to output array on GPU, can be the same as input.
+    * \param input the input array to be scanned
+    * \param output the array where the result will be stored
+    * \param begin the first element in the array to be scanned
+    * \param end the last element in the array to be scanned
+    * \param outputBegin the first element in the output array to be written. There
+    *                    must be at least `end - begin` elements in the output
+    *                    array starting at the position given by `outputBegin`.
     * \param reduction  Symmetric binary function representing the reduction operation
     *                   (usually addition, i.e. an instance of \ref std::plus).
     * \param zero  Neutral element for given reduction operation, i.e. value such that
     *              `reduction(zero, x) == x` for any `x`.
-    * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction,
-             typename Real,
-             typename Index >
+   template< typename InputArray,
+             typename OutputArray,
+             typename Reduction >
    static void
-   perform( const Index size,
-            const Real* deviceInput,
-            Real* deviceOutput,
+   perform( const InputArray& input,
+            OutputArray& output,
+            typename InputArray::IndexType begin,
+            typename InputArray::IndexType end,
+            typename OutputArray::IndexType outputBegin,
             Reduction&& reduction,
-            const Real zero,
-            const int blockSize = 256 )
+            typename OutputArray::ValueType zero )
    {
       const auto blockShifts = performFirstPhase(
-         size,
-         deviceInput,
-         deviceOutput,
+         input,
+         output,
+         begin,
+         end,
+         outputBegin,
          reduction,
-         zero,
-         blockSize );
+         zero );
       performSecondPhase(
-         size,
-         deviceOutput,
-         blockShifts.getData(),
+         input,
+         output,
+         blockShifts,
+         begin,
+         end,
+         outputBegin,
          reduction,
-         zero,
-         blockSize );
+         zero );
    }
 
    /****
     * \brief Performs the first phase of prefix sum.
     *
-    * \param size  Number of elements to be scanned.
-    * \param deviceInput  Pointer to input data on GPU.
-    * \param deviceOutput  Pointer to output array on GPU, can be the same as input.
+    * \param input the input array to be scanned
+    * \param output the array where the result will be stored
+    * \param begin the first element in the array to be scanned
+    * \param end the last element in the array to be scanned
+    * \param outputBegin the first element in the output array to be written. There
+    *                    must be at least `end - begin` elements in the output
+    *                    array starting at the position given by `outputBegin`.
     * \param reduction  Symmetric binary function representing the reduction operation
     *                   (usually addition, i.e. an instance of \ref std::plus).
     * \param zero  Neutral value for given reduction operation, i.e. value such that
     *              `reduction(zero, x) == x` for any `x`.
-    * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction,
-             typename Real,
-             typename Index >
+   template< typename InputArray,
+             typename OutputArray,
+             typename Reduction >
    static auto
-   performFirstPhase( const Index size,
-                      const Real* deviceInput,
-                      Real* deviceOutput,
+   performFirstPhase( const InputArray& input,
+                      OutputArray& output,
+                      typename InputArray::IndexType begin,
+                      typename InputArray::IndexType end,
+                      typename OutputArray::IndexType outputBegin,
                       Reduction&& reduction,
-                      const Real zero,
-                      const int blockSize = 256 )
+                      typename OutputArray::ValueType zero )
    {
+      using Index = typename InputArray::IndexType;
+
       // compute the number of grids
-      const int elementsInBlock = 8 * blockSize;
-      const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
+      constexpr int maxElementsInBlock = blockSize * valuesPerThread;
+      const Index numberOfBlocks = roundUpDivision( end - begin, maxElementsInBlock );
       const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
 
       // allocate array for the block results
-      Containers::Array< Real, Devices::Cuda > blockResults;
+      Containers::Array< typename OutputArray::ValueType, Devices::Cuda > blockResults;
       blockResults.setSize( numberOfBlocks + 1 );
       blockResults.setElement( 0, zero );
 
       // loop over all grids
       for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
-         // compute current grid size and size of data to be scanned
-         const Index gridOffset = gridIdx * maxGridSize() * elementsInBlock;
-         Index currentSize = size - gridOffset;
-         if( currentSize / elementsInBlock > maxGridSize() )
-            currentSize = maxGridSize() * elementsInBlock;
+         // compute current grid offset and size of data to be scanned
+         const Index gridOffset = gridIdx * maxGridSize() * maxElementsInBlock;
+         const Index currentSize = TNL::min( end - begin - gridOffset, maxGridSize() * maxElementsInBlock );
 
          // setup block and grid size
          dim3 cudaBlockSize, cudaGridSize;
          cudaBlockSize.x = blockSize;
-         cudaGridSize.x = roundUpDivision( currentSize, elementsInBlock );
+         cudaGridSize.x = roundUpDivision( currentSize, maxElementsInBlock );
 
          // run the kernel
-         const std::size_t sharedDataSize = elementsInBlock +
-                                            elementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2;
-         const std::size_t sharedMemory = ( sharedDataSize + blockSize + Cuda::getWarpSize() ) * sizeof( Real );
-         cudaFirstPhaseBlockScan<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-            ( scanType,
+         CudaScanKernelFirstPhase< scanType, blockSize, valuesPerThread ><<< cudaGridSize, cudaBlockSize >>>
+            ( input.getConstView(),
+              output.getView(),
+              begin + gridOffset,
+              begin + gridOffset + currentSize,
+              outputBegin + gridOffset,
               reduction,
               zero,
-              currentSize,
-              elementsInBlock,
-              &deviceInput[ gridOffset ],
-              &deviceOutput[ gridOffset ],
               // blockResults are shifted by 1, because the 0-th element should stay zero
               &blockResults.getData()[ gridIdx * maxGridSize() + 1 ] );
       }
@@ -291,12 +335,13 @@ struct CudaScanKernelLauncher
          // we perform an inclusive scan, but the 0-th is zero and block results
          // were shifted by 1, so effectively we get an exclusive scan
          CudaScanKernelLauncher< ScanType::Inclusive >::perform(
+            blockResults,
+            blockResults,
+            0,
             blockResults.getSize(),
-            blockResults.getData(),
-            blockResults.getData(),
+            0,
             reduction,
-            zero,
-            blockSize );
+            zero );
       }
 
       // Store the number of CUDA grids for the purpose of unit testing, i.e.
@@ -310,55 +355,61 @@ struct CudaScanKernelLauncher
    /****
     * \brief Performs the second phase of prefix sum.
     *
-    * \param size  Number of elements to be scanned.
-    * \param deviceOutput  Pointer to output array on GPU.
+    * \param input the input array to be scanned
+    * \param output the array where the result will be stored
     * \param blockShifts  Pointer to a GPU array containing the block shifts. It is the
     *                     result of the first phase.
+    * \param begin the first element in the array to be scanned
+    * \param end the last element in the array to be scanned
+    * \param outputBegin the first element in the output array to be written. There
+    *                    must be at least `end - begin` elements in the output
+    *                    array starting at the position given by `outputBegin`.
     * \param reduction  Symmetric binary function representing the reduction operation
     *                   (usually addition, i.e. an instance of \ref std::plus).
     * \param shift  A constant shifting all elements of the array (usually `zero`, i.e.
     *               the neutral value).
-    * \param blockSize  The CUDA block size to be used for kernel launch.
     */
-   template< typename Reduction,
-             typename Real,
-             typename Index >
+   template< typename InputArray,
+             typename OutputArray,
+             typename BlockShifts,
+             typename Reduction >
    static void
-   performSecondPhase( const Index size,
-                       Real* deviceOutput,
-                       const Real* blockShifts,
+   performSecondPhase( const InputArray& input,
+                       OutputArray& output,
+                       const BlockShifts& blockShifts,
+                       typename InputArray::IndexType begin,
+                       typename InputArray::IndexType end,
+                       typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       const Real shift,
-                       const int blockSize = 256 )
+                       typename OutputArray::ValueType zero )
    {
+      using Index = typename InputArray::IndexType;
+
       // compute the number of grids
-      const int elementsInBlock = 8 * blockSize;
-      const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
+      constexpr int maxElementsInBlock = blockSize * valuesPerThread;
+      const Index numberOfBlocks = roundUpDivision( end - begin, maxElementsInBlock );
       const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
 
       // loop over all grids
       for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
-         // compute current grid size and size of data to be scanned
-         const Index gridOffset = gridIdx * maxGridSize() * elementsInBlock;
-         Index currentSize = size - gridOffset;
-         if( currentSize / elementsInBlock > maxGridSize() )
-            currentSize = maxGridSize() * elementsInBlock;
+         // compute current grid offset and size of data to be scanned
+         const Index gridOffset = gridIdx * maxGridSize() * maxElementsInBlock;
+         const Index currentSize = TNL::min( end - begin - gridOffset, maxGridSize() * maxElementsInBlock );
 
          // setup block and grid size
          dim3 cudaBlockSize, cudaGridSize;
          cudaBlockSize.x = blockSize;
-         cudaGridSize.x = roundUpDivision( currentSize, elementsInBlock );
+         cudaGridSize.x = roundUpDivision( currentSize, maxElementsInBlock );
 
          // run the kernel
-         cudaSecondPhaseBlockScan<<< cudaGridSize, cudaBlockSize >>>
-            ( reduction,
-              currentSize,
-              elementsInBlock,
-              gridIdx,
-              (Index) maxGridSize(),
-              blockShifts,
-              &deviceOutput[ gridOffset ],
-              shift );
+         CudaScanKernelSecondPhase< blockSize, valuesPerThread ><<< cudaGridSize, cudaBlockSize >>>
+            ( output.getView(),
+              outputBegin + gridOffset,
+              outputBegin + gridOffset + currentSize,
+              reduction,
+              gridIdx * maxGridSize(),
+              blockShifts.getData(),
+              zero );
       }
 
       // synchronize the null-stream after all grids

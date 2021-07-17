@@ -759,6 +759,28 @@ TYPED_TEST( ScanTest, empty_range )
    this->template checkResult< ScanType::Inclusive >( this->a );
 }
 
+TYPED_TEST( ScanTest, vector_expression )
+{
+   this->a.setValue( 2 );
+   this->b.setValue( 1 );
+
+   // exclusive scan test
+   for( int i = 0; i < this->size; i++ )
+      this->expected_host[ i ] = i;
+
+   this->c.setValue( 0 );
+   exclusiveScan( this->av_view - this->bv_view, this->c, 0, this->a.getSize(), 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Exclusive >( this->c );
+
+   // inclusive scan test
+   for( int i = 0; i < this->expected_host.getSize(); i++ )
+      this->expected_host[ i ]++;
+
+   this->c.setValue( 0 );
+   inclusiveScan( this->av_view - this->bv_view, this->c, 0, this->a.getSize(), 0, TNL::Plus{} );
+   this->template checkResult< ScanType::Inclusive >( this->c );
+}
+
 #endif // HAVE_GTEST
 
 #include "../main.h"
