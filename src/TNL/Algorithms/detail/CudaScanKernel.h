@@ -57,75 +57,63 @@ CudaScanKernelFirstPhase( const InputView input,
    outputBegin += threadOffset;
 
    // allocate shared memory
-   constexpr int shmemElements = maxElementsInBlock + maxElementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2;
+   constexpr int shmemElements = maxElementsInBlock + maxElementsInBlock / Cuda::getNumberOfSharedMemoryBanks();
    __shared__ ValueType sharedData[ shmemElements ];  // accessed via Cuda::getInterleaving()
-   __shared__ ValueType chunkResults[ blockSize ];
+   __shared__ ValueType chunkResults[ blockSize + blockSize / Cuda::getNumberOfSharedMemoryBanks() ];  // accessed via Cuda::getInterleaving()
    __shared__ ValueType warpResults[ Cuda::getWarpSize() ];
 
-   /***
-    * Load data into the shared memory.
-    */
-   int idx = threadIdx.x;
-   if( scanType == ScanType::Exclusive )
+   // Load data into the shared memory.
    {
-      if( idx == 0 )
-         sharedData[ 0 ] = zero;
-      while( idx < elementsInBlock )
-      {
-         sharedData[ Cuda::getInterleaving( idx + 1 ) ] = input[ begin ];
-         begin += blockDim.x;
-         idx += blockDim.x;
-      }
-   }
-   else
-   {
+      int idx = threadIdx.x;
       while( idx < elementsInBlock )
       {
          sharedData[ Cuda::getInterleaving( idx ) ] = input[ begin ];
          begin += blockDim.x;
          idx += blockDim.x;
       }
+      // fill the remaining (maxElementsInBlock - elementsInBlock) values with zero
+      // (this helps to avoid divergent branches in the blocks below)
+      while( idx < maxElementsInBlock )
+      {
+         sharedData[ Cuda::getInterleaving( idx ) ] = zero;
+         idx += blockDim.x;
+      }
    }
    __syncthreads();
 
-   /***
-    * Perform the sequential scan of the chunk in shared memory.
-    */
+   // Perform sequential reduction of the chunk in shared memory.
    const int chunkOffset = threadIdx.x * valuesPerThread;
-   const int numberOfChunks = roundUpDivision( elementsInBlock, valuesPerThread );
-
-   int chunkPointer = 1;
-   while( chunkPointer < valuesPerThread && chunkOffset + chunkPointer < elementsInBlock )
+   const int chunkResultIdx = Cuda::getInterleaving( threadIdx.x );
    {
-      sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ] =
-         reduction( sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
-                    sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
-      chunkPointer++;
-   }
+      ValueType chunkResult = sharedData[ Cuda::getInterleaving( chunkOffset ) ];
+      #pragma unroll
+      for( int i = 1; i < valuesPerThread; i++ )
+         chunkResult = reduction( chunkResult, sharedData[ Cuda::getInterleaving( chunkOffset + i ) ] );
 
-   // store the result of the sequential reduction of the chunk in chunkResults
-   chunkResults[ threadIdx.x ] = sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ];
+      // store the result of the sequential reduction of the chunk in chunkResults
+      chunkResults[ chunkResultIdx ] = chunkResult;
+   }
    __syncthreads();
 
-   /***
-    * Perform the parallel scan on chunkResults inside warps.
-    */
+   // Perform the parallel scan on chunkResults inside warps.
    const int threadInWarpIdx = threadIdx.x % Cuda::getWarpSize();
    const int warpIdx = threadIdx.x / Cuda::getWarpSize();
+   #pragma unroll
    for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
-      if( threadInWarpIdx >= stride && threadIdx.x < numberOfChunks )
-         chunkResults[ threadIdx.x ] = reduction( chunkResults[ threadIdx.x ], chunkResults[ threadIdx.x - stride ] );
+      if( threadInWarpIdx >= stride ) {
+         chunkResults[ chunkResultIdx ] = reduction( chunkResults[ chunkResultIdx ], chunkResults[ Cuda::getInterleaving( threadIdx.x - stride ) ] );
+      }
       __syncwarp();
    }
 
+   // The last thread in warp stores the intermediate result in warpResults.
    if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
-      warpResults[ warpIdx ] = chunkResults[ threadIdx.x ];
+      warpResults[ warpIdx ] = chunkResults[ chunkResultIdx ];
    __syncthreads();
 
-   /****
-    * Perform the scan of warpResults using one warp.
-    */
+   // Perform the scan of warpResults using one warp.
    if( warpIdx == 0 )
+      #pragma unroll
       for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
          if( threadInWarpIdx >= stride )
             warpResults[ threadIdx.x ] = reduction( warpResults[ threadIdx.x ], warpResults[ threadIdx.x - stride ] );
@@ -133,40 +121,44 @@ CudaScanKernelFirstPhase( const InputView input,
       }
    __syncthreads();
 
-   /****
-    * Shift chunkResults by the warpResults.
-    */
+   // Shift chunkResults by the warpResults.
    if( warpIdx > 0 )
-      chunkResults[ threadIdx.x ] = reduction( chunkResults[ threadIdx.x ], warpResults[ warpIdx - 1 ] );
+      chunkResults[ chunkResultIdx ] = reduction( chunkResults[ chunkResultIdx ], warpResults[ warpIdx - 1 ] );
    __syncthreads();
 
-   /***
-    * Store the result back in global memory.
-    */
-   idx = threadIdx.x;
-   while( idx < elementsInBlock )
+   // Downsweep step: scan the chunks and use the chunk result as the initial value.
    {
-      const int chunkIdx = idx / valuesPerThread;
-      ValueType chunkShift = zero;
-      if( chunkIdx > 0 )
-         chunkShift = chunkResults[ chunkIdx - 1 ];
-      output[ outputBegin ] =
-      sharedData[ Cuda::getInterleaving( idx ) ] =
-         reduction( sharedData[ Cuda::getInterleaving( idx ) ], chunkShift );
-      outputBegin += blockDim.x;
-      idx += blockDim.x;
+      ValueType value = zero;
+      if( threadIdx.x > 0 )
+         value = chunkResults[ Cuda::getInterleaving( threadIdx.x - 1 ) ];
+
+      #pragma unroll
+      for( int i = 0; i < valuesPerThread; i++ )
+      {
+         const int sharedIdx = Cuda::getInterleaving( chunkOffset + i );
+         const ValueType inputValue = sharedData[ sharedIdx ];
+         if( scanType == ScanType::Exclusive )
+            sharedData[ sharedIdx ] = value;
+         value = reduction( value, inputValue );
+         if( scanType == ScanType::Inclusive )
+            sharedData[ sharedIdx ] = value;
+      }
+
+      // The last thread of the block stores the block result in the global memory.
+      if( blockResults && threadIdx.x == blockDim.x - 1 )
+         blockResults[ blockIdx.x ] = value;
    }
    __syncthreads();
 
-   if( threadIdx.x == 0 )
+   // Store the result back in the global memory.
    {
-      if( scanType == ScanType::Exclusive )
+      int idx = threadIdx.x;
+      while( idx < elementsInBlock )
       {
-         blockResults[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( elementsInBlock - 1 ) ],
-                                                 sharedData[ Cuda::getInterleaving( elementsInBlock ) ] );
+         output[ outputBegin ] = sharedData[ Cuda::getInterleaving( idx ) ];
+         outputBegin += blockDim.x;
+         idx += blockDim.x;
       }
-      else
-         blockResults[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( elementsInBlock - 1 ) ];
    }
 }
 
