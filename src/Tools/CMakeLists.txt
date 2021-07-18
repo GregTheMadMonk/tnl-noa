@@ -63,8 +63,7 @@ endif()
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch
-            RUNTIME DESTINATION bin
-            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+            DESTINATION bin )
 ENDIF()
 
 INSTALL( TARGETS tnl-init
@@ -79,6 +78,6 @@ INSTALL( TARGETS tnl-init
                  tnl-image-converter
          DESTINATION bin )
 
-INSTALL( FILES tnl-err2eoc
-               tnl-log-to-html.py
+INSTALL( PROGRAMS tnl-err2eoc
+                  tnl-log-to-html.py
          DESTINATION bin )
