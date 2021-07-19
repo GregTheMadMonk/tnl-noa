@@ -25,7 +25,7 @@ TEST(selectedSize, size15)
    auto view = cudaArr.getView();
    EXPECT_EQ(15, view.getSize()) << "size not 15" << std::endl;
    Quicksort::sort( view );
-   EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
+   EXPECT_TRUE(Algorithms::isAscending(view)) << "result " << view << std::endl;
 }
 
 TEST(multiblock, 32768_decreasingNegative)
@@ -38,7 +38,7 @@ TEST(multiblock, 32768_decreasingNegative)
    auto view = cudaArr.getView();
    Quicksort::sort( view );
 
-   EXPECT_TRUE(Algorithms::isSorted(view)) << "result " << view << std::endl;
+   EXPECT_TRUE(Algorithms::isAscending(view)) << "result " << view << std::endl;
 }
 
 TEST(randomGenerated, smallArray_randomVal)
@@ -54,7 +54,7 @@ TEST(randomGenerated, smallArray_randomVal)
       auto view = cudaArr.getView();
       Quicksort::sort( view );
 
-      EXPECT_TRUE(Algorithms::isSorted(view));
+      EXPECT_TRUE(Algorithms::isAscending(view));
     }
 }
 
@@ -70,7 +70,7 @@ TEST(randomGenerated, bigArray_randomVal)
 
       auto view = cudaArr.getView();
       Quicksort::sort( view );
-      EXPECT_TRUE(Algorithms::isSorted(view));
+      EXPECT_TRUE(Algorithms::isAscending(view));
     }
 }
 
@@ -169,7 +169,7 @@ TEST(types, struct_3D_points)
    //std::cout << view << std::endl;
    Quicksort::sort( view );
 
-   EXPECT_TRUE(Algorithms::isSorted(view));
+   EXPECT_TRUE(Algorithms::isAscending(view));
 }
 
 struct TMPSTRUCT_64b{
@@ -195,7 +195,7 @@ TEST(types, struct_64b)
    //std::cout << view << std::endl;
    Quicksort::sort( view );
 
-   EXPECT_TRUE(Algorithms::isSorted(view));
+   EXPECT_TRUE(Algorithms::isAscending(view));
 }
 
 #endif

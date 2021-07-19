@@ -32,10 +32,13 @@ struct BitonicSort
       bitonicSort( array, compare );
    }
 
-   template< typename Index, typename Fetch, typename Compare, typename Swap >
-   void static inplaceSort( const Index begin, const Index end, const Fetch& fetch, const Compare& compare, const Swap& swap )
+   template< typename Device, typename Index, typename Compare, typename Swap >
+   void static inplaceSort( const Index begin, const Index end, const Compare& compare, const Swap& swap )
    {
-      bitonicSort( begin, end, fetch, compare, swap );
+      if( std::is_same< Device, Devices::Cuda >::value )
+         bitonicSort( begin, end, compare, swap );
+      else
+         TNL_ASSERT( false, std::cerr <<  "inplace bitonic sort for CPU is not implemented" << std::endl );
    }
 };
 

@@ -37,7 +37,7 @@ struct Measurer
                Sorter::sort(view);
          }
 
-         if( ! Algorithms::isSorted( view ) )
+         if( ! Algorithms::isAscending( view ) )
                wrongAnsCnt++;
       }
       return accumulate(resAcc.begin(), resAcc.end(), 0.0) / resAcc.size();

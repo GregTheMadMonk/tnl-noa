@@ -56,7 +56,7 @@ vector<int> generateDecreasing(int size)
 
     for(int i = 0; i < size; i++)
         vec[i] = size - i;
-            
+
     return vec;
 }
 
@@ -74,7 +74,7 @@ vector<int> generateGaussian(int size)
 	for (int i = 0; i < size; ++i)
     {
 		int value = 0;
-		for (int j = 0; j < 4; ++j) 
+		for (int j = 0; j < 4; ++j)
 			value += rand()%16384;
 
 		vec[i] = value /4;
