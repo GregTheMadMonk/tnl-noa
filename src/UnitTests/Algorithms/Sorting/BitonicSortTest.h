@@ -314,10 +314,10 @@ TEST(sortRange, middleMultiBlock)
 template<typename TYPE>
 void fetchAndSwapSorter(TNL::Containers::ArrayView<TYPE, TNL::Devices::Cuda> view)
 {
-    auto Fetch = [=]__cuda_callable__(int i){return view[i];};
-    auto Cmp = [=]__cuda_callable__(const TYPE & a, const TYPE & b){return a < b;};
+    //auto Fetch = [=]__cuda_callable__(int i){return view[i];};
+    auto Cmp = [=]__cuda_callable__(const int i, const int j ){return view[ i ]  < view[ j ];};
     auto Swap = [=] __cuda_callable__ (int i, int j) mutable {TNL::swap(view[i], view[j]);};
-    bitonicSort(0, view.getSize(), Fetch, Cmp, Swap);
+    bitonicSort(0, view.getSize(), Cmp, Swap);
 }
 
 TEST(fetchAndSwap, oneBlockSort)
@@ -360,10 +360,10 @@ TEST(fetchAndSwap, typeDouble)
 
 void fetchAndSwap_sortMiddle(TNL::Containers::ArrayView<int, TNL::Devices::Cuda> view, int from, int to)
 {
-    auto Fetch = [=]__cuda_callable__(int i){return view[i];};
-    auto Cmp = [=]__cuda_callable__(const int & a, const int & b){return a < b;};
-    auto Swap = [=] __cuda_callable__ (int i, int j) mutable {TNL::swap(view[i], view[j]);};
-    bitonicSort(from, to, Fetch, Cmp, Swap);
+    //auto Fetch = [=]__cuda_callable__(int i){return view[i];};
+    auto Cmp = [=]__cuda_callable__(const int i, const int j ){ return view[ i ] < view[ j ]; };
+    auto Swap = [=] __cuda_callable__ (int i, int j) mutable { TNL::swap(view[i], view[j]); };
+    bitonicSort(from, to, Cmp, Swap);
 }
 
 TEST(fetchAndSwap, sortMiddle)

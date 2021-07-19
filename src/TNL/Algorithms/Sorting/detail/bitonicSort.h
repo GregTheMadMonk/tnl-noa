@@ -315,8 +315,8 @@ void bitonicSort( TNL::Containers::Array< Value, TNL::Devices::Host > &vec)
 //---------------------------------------------
 
 #ifdef HAVE_CUDA
-template <typename FETCH, typename CMP, typename SWAP>
-__global__ void bitonicMergeGlobal(int size, FETCH Fetch, CMP Cmp, SWAP Swap,
+template< typename CMP, typename SWAP>
+__global__ void bitonicMergeGlobal(int size, CMP Cmp, SWAP Swap,
                                    int monotonicSeqLen, int bitonicLen)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -336,12 +336,12 @@ __global__ void bitonicMergeGlobal(int size, FETCH Fetch, CMP Cmp, SWAP Swap,
     if ((monotonicSeqIdx + 1) * monotonicSeqLen >= size) //special case for part with no "partner" to be merged with in next phase
         ascending = true;
 
-    if (ascending == Cmp(Fetch(e), Fetch(s)))
+    if( ascending == Cmp(e, s) )
         Swap(s, e);
 }
 
-template <typename FETCH, typename CMP, typename SWAP>
-void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
+template< typename CMP, typename SWAP >
+void bitonicSort(int begin, int end, const CMP &Cmp, SWAP Swap)
 {
     int size = end - begin;
     int paddedSize = closestPow2(size);
@@ -352,9 +352,9 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
     int threadsPerBlock = maxThreadsPerBlock;
     int blocks = threadsNeeded / threadsPerBlock + (threadsNeeded % threadsPerBlock != 0);
 
-    auto fetchWithOffset =
-        [=] __cuda_callable__(int i) {
-            return Fetch(i + begin);
+    auto compareWithOffset =
+        [=] __cuda_callable__(int i, int j) {
+            return Cmp(i + begin, j + begin);
         };
 
     auto swapWithOffset =
@@ -367,7 +367,7 @@ void bitonicSort(int begin, int end, FETCH Fetch, const CMP &Cmp, SWAP Swap)
         for (int bitonicLen = monotonicSeqLen; bitonicLen > 1; bitonicLen /= 2)
         {
             bitonicMergeGlobal<<<blocks, threadsPerBlock>>>(
-                size, fetchWithOffset, Cmp, swapWithOffset,
+                size, compareWithOffset, swapWithOffset,
                 monotonicSeqLen, bitonicLen);
         }
     }
