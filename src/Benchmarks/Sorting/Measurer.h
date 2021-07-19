@@ -10,10 +10,10 @@
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUDA_SAMPLES
 #include "ReferenceAlgorithms/MancaQuicksort.h"
+#include "ReferenceAlgorithms/NvidiaBitonicSort.h"
 #endif
 #include "ReferenceAlgorithms/CedermanQuicksort.h"
 #include "ReferenceAlgorithms/ThrustRadixsort.h"
-#include "ReferenceAlgorithms/NvidiaBitonicSort.h"
 #endif
 
 #include "timer.h"

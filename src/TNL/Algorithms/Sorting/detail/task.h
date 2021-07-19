@@ -12,6 +12,10 @@
 
 #pragma once
 
+namespace TNL {
+    namespace Algorithms {
+        namespace Sorting {
+
 struct TASK
 {
     //start and end position of array to read and write from
@@ -58,3 +62,7 @@ std::ostream& operator<<(std::ostream & out, const TASK & task)
     out << " | " << "pivotIdx: " << task.pivotIdx;
     return out << " ] ";
 }
+
+        } // namespace Sorting
+    } // namespace Algorithms
+} // namespace TNL

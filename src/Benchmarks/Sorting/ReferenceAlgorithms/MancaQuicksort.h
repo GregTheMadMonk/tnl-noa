@@ -1318,7 +1318,7 @@ void CUDA_Quicksort_64(double* inputData,double* outputData, uint dataSize, uint
 
 struct MancaQuicksort
 {
-   static void sort( Containers::ArrayView< int, Devices::Cuda >& array )
+   static void sort( TNL::Containers::ArrayView< int, TNL::Devices::Cuda >& array )
    {
       double timer;
       CUDA_Quicksort( ( unsigned * ) array.getData(),  (unsigned * ) array.getData(), array.getSize(), 256, 0, &timer );

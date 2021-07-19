@@ -18,22 +18,23 @@
 #include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
 
-using namespace TNL;
-using namespace TNL::Containers;
+namespace TNL {
+    namespace Algorithms {
+        namespace Sorting {
 
 #ifdef HAVE_CUDA
 
 template <typename Value, typename CMP>
-__device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
-                           ArrayView<Value, TNL::Devices::Cuda> dst,
-                           const CMP &Cmp, Value *sharedMem)
+__device__ void externSort( Containers::ArrayView<Value, TNL::Devices::Cuda> src,
+                            Containers::ArrayView<Value, TNL::Devices::Cuda> dst,
+                            const CMP &Cmp, Value *sharedMem)
 {
     bitonicSort_Block(src, dst, sharedMem, Cmp);
 }
 
 template <typename Value, typename CMP>
-__device__ void externSort(ArrayView<Value, TNL::Devices::Cuda> src,
-                           const CMP &Cmp)
+__device__ void externSort( Containers::ArrayView<Value, TNL::Devices::Cuda> src,
+                            const CMP &Cmp)
 {
     bitonicSort_Block(src, Cmp);
 }
@@ -50,11 +51,11 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 //---------------------------------------------------------------
 
 template <typename Value, typename CMP, int stackSize, bool useShared>
-__device__ void singleBlockQuickSort(ArrayView<Value, TNL::Devices::Cuda> arr,
-                                     ArrayView<Value, TNL::Devices::Cuda> aux,
-                                     const CMP &Cmp, int _iteration,
-                                     Value *sharedMem, int memSize,
-                                     int maxBitonicSize)
+__device__ void singleBlockQuickSort( Containers::ArrayView<Value, TNL::Devices::Cuda> arr,
+                                      Containers::ArrayView<Value, TNL::Devices::Cuda> aux,
+                                      const CMP &Cmp, int _iteration,
+                                      Value *sharedMem, int memSize,
+                                      int maxBitonicSize)
 {
     if (arr.getSize() <= maxBitonicSize)
     {
@@ -248,3 +249,7 @@ __device__ void stackPush(int stackArrBegin[], int stackArrEnd[],
 }
 
 #endif
+
+        } // namespace Sorting
+    } // namespace Algorithms
+} // namespace TNL

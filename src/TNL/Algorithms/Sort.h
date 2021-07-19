@@ -35,13 +35,12 @@ void sort( Array& array, const Compare& compare )
 
 template< typename Device,
           typename Index,
-          typename Fetch,
           typename Compare,
           typename Swap,
           typename Sorter = typename Sorting::DefaultInplaceSorter< Device >::SorterType >
-void inplaceSort( const Index begin, const Index end, const Fetch& fetch, const Compare& compare, const Swap& swap )
+void sort( const Index begin, const Index end, const Compare& compare, const Swap& swap )
 {
-   Sorter::inplaceSort( begin, end, fetch, compare, swap );
+   Sorter::inplaceSort( begin, end, compare, swap );
 }
 
 template <typename Array, typename Function>

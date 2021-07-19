@@ -88,7 +88,7 @@ sort( Array& arr )
 template< typename Value >
 void
 Quicksorter< Value, Devices::Cuda >::
-init( ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable)
+init( Containers::ArrayView<Value, Devices::Cuda> arr, int gridDim, int blockDim, int desiredElemPerBlock, int maxSharable)
 {
    this->maxBlocks = gridDim;
    this->threadsPerBlock = blockDim;

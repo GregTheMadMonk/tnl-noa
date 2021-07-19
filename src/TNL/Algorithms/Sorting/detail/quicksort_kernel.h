@@ -27,13 +27,13 @@ namespace TNL {
 #ifdef HAVE_CUDA
 
 __device__ void writeNewTask(int begin, int end, int iteration, int maxElemFor2ndPhase,
-                             ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                             ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt);
+                             Containers::ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+                             Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt);
 
 //-----------------------------------------------------------
 
-__global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
-                                     VectorView<int, Devices::Cuda> blocksNeeded)
+__global__ void cudaCalcBlocksNeeded(Containers::ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
+                                     Containers::VectorView<int, Devices::Cuda> blocksNeeded)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= cuda_tasks.getSize())
@@ -47,10 +47,10 @@ __global__ void cudaCalcBlocksNeeded(ArrayView<TASK, Devices::Cuda> cuda_tasks, 
 //-----------------------------------------------------------
 
 template <typename Value, typename CMP>
-__global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
-                             ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
-                             VectorView<int, Devices::Cuda> cuda_reductionTaskInitMem,
-                             ArrayView<Value, Devices::Cuda> src, CMP Cmp)
+__global__ void cudaInitTask(Containers::ArrayView<TASK, Devices::Cuda> cuda_tasks,
+                             Containers::ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
+                             Containers::VectorView<int, Devices::Cuda> cuda_reductionTaskInitMem,
+                             Containers::ArrayView<Value, Devices::Cuda> src, CMP Cmp)
 {
     if (blockIdx.x >= cuda_tasks.getSize())
         return;
@@ -71,10 +71,10 @@ __global__ void cudaInitTask(ArrayView<TASK, Devices::Cuda> cuda_tasks,
 //----------------------------------------------------
 
 template <typename Value, typename CMP, bool useShared>
-__global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
+__global__ void cudaQuickSort1stPhase(Containers::ArrayView<Value, Devices::Cuda> arr, Containers::ArrayView<Value, Devices::Cuda> aux,
                                       const CMP &Cmp, int elemPerBlock,
-                                      ArrayView<TASK, Devices::Cuda> tasks,
-                                      ArrayView<int, Devices::Cuda> taskMapping)
+                                      Containers::ArrayView<TASK, Devices::Cuda> tasks,
+                                      Containers::ArrayView<int, Devices::Cuda> taskMapping)
 {
     extern __shared__ int externMem[];
     Value *piv = (Value *)externMem;
@@ -99,9 +99,9 @@ __global__ void cudaQuickSort1stPhase(ArrayView<Value, Devices::Cuda> arr, Array
 //----------------------------------------------------
 
 template <typename Value>
-__global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux, int maxElemFor2ndPhase,
-                               ArrayView<TASK, Devices::Cuda> tasks, ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                               ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
+__global__ void cudaWritePivot(Containers::ArrayView<Value, Devices::Cuda> arr, Containers::ArrayView<Value, Devices::Cuda> aux, int maxElemFor2ndPhase,
+                               Containers::ArrayView<TASK, Devices::Cuda> tasks, Containers::ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+                               Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     extern __shared__ int externMem[];
     Value *piv = (Value *)externMem;
@@ -149,8 +149,8 @@ __global__ void cudaWritePivot(ArrayView<Value, Devices::Cuda> arr, ArrayView<Va
 //-----------------------------------------------------------
 
 __device__ void writeNewTask(int begin, int end, int iteration, int maxElemFor2ndPhase,
-                             ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
-                             ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
+                             Containers::ArrayView<TASK, Devices::Cuda> newTasks, int *newTasksCnt,
+                             Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks, int *secondPhaseTasksCnt)
 {
     int size = end - begin;
     if (size < 0)
@@ -197,9 +197,9 @@ __device__ void writeNewTask(int begin, int end, int iteration, int maxElemFor2n
 //-----------------------------------------------------------
 
 template <typename Value, typename CMP, int stackSize>
-__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
+__global__ void cudaQuickSort2ndPhase(Containers::ArrayView<Value, Devices::Cuda> arr, Containers::ArrayView<Value, Devices::Cuda> aux,
                                       CMP Cmp,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
+                                      Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks,
                                       int elemInShared, int maxBitonicSize)
 {
     extern __shared__ int externMem[];
@@ -226,10 +226,10 @@ __global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, Array
 }
 
 template <typename Value, typename CMP, int stackSize>
-__global__ void cudaQuickSort2ndPhase(ArrayView<Value, Devices::Cuda> arr, ArrayView<Value, Devices::Cuda> aux,
+__global__ void cudaQuickSort2ndPhase(Containers::ArrayView<Value, Devices::Cuda> arr, Containers::ArrayView<Value, Devices::Cuda> aux,
                                       CMP Cmp,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
-                                      ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
+                                      Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks1,
+                                      Containers::ArrayView<TASK, Devices::Cuda> secondPhaseTasks2,
                                       int elemInShared, int maxBitonicSize)
 {
     extern __shared__ int externMem[];

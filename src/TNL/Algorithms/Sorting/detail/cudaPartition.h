@@ -16,10 +16,11 @@
 #include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/task.h>
 
-#ifdef HAVE_CUDA
+namespace TNL {
+   namespace Algorithms {
+      namespace Sorting {
 
-using namespace TNL;
-using namespace TNL::Containers;
+#ifdef HAVE_CUDA
 
 template <typename Value, typename Device, typename CMP>
 __device__ Value pickPivot(TNL::Containers::ArrayView<Value, Device> src, const CMP &Cmp)
@@ -86,10 +87,10 @@ __device__ int pickPivotIdx(TNL::Containers::ArrayView<Value, Device> src, const
 //-----------------------------------------------------------
 
 template <typename Value, typename CMP>
-__device__ void countElem(ArrayView<Value, Devices::Cuda> arr,
-                          const CMP &Cmp,
-                          int &smaller, int &bigger,
-                          const Value &pivot)
+__device__ void countElem( Containers::ArrayView<Value, Devices::Cuda> arr,
+                           const CMP &Cmp,
+                           int &smaller, int &bigger,
+                           const Value &pivot)
 {
     for (int i = threadIdx.x; i < arr.getSize(); i += blockDim.x)
     {
@@ -104,14 +105,14 @@ __device__ void countElem(ArrayView<Value, Devices::Cuda> arr,
 //-----------------------------------------------------------
 
 template <typename Value, typename CMP>
-__device__ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
-                               ArrayView<Value, Devices::Cuda> dst,
-                               const CMP &Cmp,
-                               Value *sharedMem,
-                               int smallerStart, int biggerStart,
-                               int smallerTotal, int biggerTotal,
-                               int smallerOffset, int biggerOffset, //exclusive prefix sum of elements
-                               const Value &pivot)
+__device__ void copyDataShared( Containers::ArrayView<Value, Devices::Cuda> src,
+                                Containers::ArrayView<Value, Devices::Cuda> dst,
+                                const CMP &Cmp,
+                                Value *sharedMem,
+                                int smallerStart, int biggerStart,
+                                int smallerTotal, int biggerTotal,
+                                int smallerOffset, int biggerOffset, //exclusive prefix sum of elements
+                                const Value &pivot)
 {
 
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
@@ -134,11 +135,11 @@ __device__ void copyDataShared(ArrayView<Value, Devices::Cuda> src,
 }
 
 template <typename Value, typename CMP>
-__device__ void copyData(ArrayView<Value, Devices::Cuda> src,
-                         ArrayView<Value, Devices::Cuda> dst,
-                         const CMP &Cmp,
-                         int smallerStart, int biggerStart,
-                         const Value &pivot)
+__device__ void copyData( Containers::ArrayView<Value, Devices::Cuda> src,
+                          Containers::ArrayView<Value, Devices::Cuda> dst,
+                          const CMP &Cmp,
+                          int smallerStart, int biggerStart,
+                          const Value &pivot)
 {
     for (int i = threadIdx.x; i < src.getSize(); i += blockDim.x)
     {
@@ -165,12 +166,12 @@ __device__ void copyData(ArrayView<Value, Devices::Cuda> src,
 //----------------------------------------------------------------------------------
 
 template <typename Value, typename CMP, bool useShared>
-__device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
-                              ArrayView<Value, Devices::Cuda> dst,
-                              const CMP &Cmp,
-                              Value *sharedMem,
-                              const Value &pivot,
-                              int elemPerBlock, TASK &task)
+__device__ void cudaPartition( Containers::ArrayView<Value, Devices::Cuda> src,
+                               Containers::ArrayView<Value, Devices::Cuda> dst,
+                               const CMP &Cmp,
+                               Value *sharedMem,
+                               const Value &pivot,
+                               int elemPerBlock, TASK &task)
 {
     static __shared__ int smallerStart, biggerStart;
 
@@ -220,3 +221,7 @@ __device__ void cudaPartition(ArrayView<Value, Devices::Cuda> src,
 }
 
 #endif
+
+      } // namespace Sorting
+   } // namespace Algorithms
+} // namespace TNL

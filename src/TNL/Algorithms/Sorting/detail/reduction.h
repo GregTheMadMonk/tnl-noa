@@ -12,6 +12,10 @@
 
 #pragma once
 
+namespace TNL {
+    namespace Algorithms {
+        namespace Sorting {
+
 #ifdef HAVE_CUDA
 
 /**
@@ -38,7 +42,7 @@ __device__ int blockReduceSum(int val)
 
     if (lane == 0)
         shared[wid] = val;
-    __syncthreads(); 
+    __syncthreads();
 
     val = (threadIdx.x < blockDim.x / warpSize) ? shared[lane] : 0;
 
@@ -47,7 +51,7 @@ __device__ int blockReduceSum(int val)
 
     if(threadIdx.x == 0)
         shared[0] = val;
-    __syncthreads(); 
+    __syncthreads();
 
     return shared[0];
 }
@@ -128,3 +132,7 @@ __device__ int blockCmpReduce(int val, const Operator & Cmp)
 }
 
 #endif
+
+        } // namespace Sorting
+    } // namespace Algorithms
+} // namespace TNL

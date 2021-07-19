@@ -2,6 +2,7 @@
 #include <thrust/execution_policy.h>
 #include <TNL/Containers/Array.h>
 
+namespace TNL {
 
 struct ThrustRadixsort
 {
@@ -11,3 +12,5 @@ struct ThrustRadixsort
       cudaDeviceSynchronize();
    }
 };
+
+} // namespace TNL

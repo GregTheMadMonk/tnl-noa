@@ -13,6 +13,10 @@
 #pragma once
 #include <TNL/Math.h>
 
+namespace TNL {
+    namespace Algorithms {
+        namespace Sorting {
+
 #ifdef HAVE_CUDA
 
 // Inline PTX call to return index of highest non-zero bit in a word
@@ -50,3 +54,6 @@ __cuda_callable__ void cmpSwap(Value &a, Value &b, bool ascending, const CMP &Cm
 }
 
 #endif
+        } //namespace Sorting
+    } //namespace Algorithms
+} // namespace TNL

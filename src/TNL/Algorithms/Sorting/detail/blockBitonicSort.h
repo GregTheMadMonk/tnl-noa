@@ -2,6 +2,10 @@
 #include <TNL/Algorithms/Sorting/detail/helpers.h>
 #include <TNL/Containers/Array.h>
 
+namespace TNL {
+    namespace Algorithms {
+        namespace Sorting {
+
 #ifdef HAVE_CUDA
 
 /**
@@ -102,3 +106,6 @@ __device__ void bitonicSort_Block(TNL::Containers::ArrayView<Value, TNL::Devices
 }
 
 #endif
+        } // namespace Sorting
+    } // namespace Algorithms
+} // namespace TNL

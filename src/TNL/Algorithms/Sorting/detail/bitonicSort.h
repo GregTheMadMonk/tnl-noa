@@ -374,6 +374,6 @@ void bitonicSort(int begin, int end, const CMP &Cmp, SWAP Swap)
     cudaDeviceSynchronize();
 }
 #endif
-        } // namespace detail
+        } // namespace Sorting
     } // namespace Algorithms
 } // namespace TNL
