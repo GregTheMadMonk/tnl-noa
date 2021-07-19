@@ -83,40 +83,49 @@ void start(ostream & out, string delim)
 
 int main(int argc, char *argv[])
 {
-    if(argc == 1)
-    {
-        std::cout << "STL sort on CPU ... " << std::endl;
-        start< STLSort >( cout, "\t" );
-        std::cout << "Quicksort on GPU ... " << std::endl;
-        start< Quicksort >(cout, "\t");
-        std::cout << "Bitonic sort on GPU ... " << std::endl;
-        start< BitonicSort >( cout, "\t" );
+   if(argc == 1)
+   {
 #ifdef HAVE_CUDA
+      std::cout << "Quicksort on GPU ... " << std::endl;
+      start< Quicksort >(cout, "\t");
+      std::cout << "Bitonic sort on GPU ... " << std::endl;
+      start< BitonicSort >( cout, "\t" );
 #ifdef HAVE_CUDA_SAMPLES
-        std::cout << "Manca quicksort on GPU ... " << std::endl;
-        start< MancaQuicksort >( cout, "\t" );
+      std::cout << "Manca quicksort on GPU ... " << std::endl;
+      start< MancaQuicksort >( cout, "\t" );
+      std::cout << "Nvidia bitonic sort on GPU ... " << std::endl;
+      start< NvidiaBitonicSort >( cout, "\t" );
 #endif
-        std::cout << "Cederman quicksort on GPU ... " << std::endl;
-        start< CedermanQuicksort >( cout, "\t" );
+      std::cout << "Cederman quicksort on GPU ... " << std::endl;
+      start< CedermanQuicksort >( cout, "\t" );
+      std::cout << "Thrust radixsort on GPU ... " << std::endl;
+      start< ThrustRadixsort >( cout, "\t" );
 #endif
-    }
-    else
-    {
-        std::ofstream out(argv[1]);
-        std::cout << "STL sort on CPU ... " << std::endl;
-        start< STLSort >( out, "," );
-        std::cout << "Quicksort on GPU ... " << std::endl;
-        start< Quicksort >(out, ",");
-        std::cout << "Bitonic sort on GPU ... " << std::endl;
-        start< BitonicSort >(out, ",");
+      std::cout << "STL sort on CPU ... " << std::endl;
+      start< STLSort >( cout, "\t" );
+   }
+   else
+   {
+      std::ofstream out(argv[1]);
 #ifdef HAVE_CUDA
+      std::cout << "Quicksort on GPU ... " << std::endl;
+      start< Quicksort >(out, ",");
+      std::cout << "Bitonic sort on GPU ... " << std::endl;
+      start< BitonicSort >(out, ",");
+
 #ifdef HAVE_CUDA_SAMPLES
-        std::cout << "Manca quicksort on GPU ... " << std::endl;
-        start< MancaQuicksort >( out, "," );
+      std::cout << "Manca quicksort on GPU ... " << std::endl;
+      start< MancaQuicksort >( out, "," );
+      std::cout << "Nvidia bitonic sort on GPU ... " << std::endl;
+      start< NvidiaBitonicSort >( out, "," );
 #endif
-        std::cout << "Cederman quicksort on GPU ... " << std::endl;
-        start< CedermanQuicksort >( out, "," );
+      std::cout << "Cederman quicksort on GPU ... " << std::endl;
+      start< CedermanQuicksort >( out, "," );
+      std::cout << "Thrust radixsort on GPU ... " << std::endl;
+      start< ThrustRadixsort >( out, "," );
 #endif
+      std::cout << "STL sort on CPU ... " << std::endl;
+      start< STLSort >( out, "," );
     }
     return 0;
 }

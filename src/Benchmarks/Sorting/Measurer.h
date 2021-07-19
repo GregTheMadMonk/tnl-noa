@@ -12,6 +12,8 @@
 #include "ReferenceAlgorithms/MancaQuicksort.h"
 #endif
 #include "ReferenceAlgorithms/CedermanQuicksort.h"
+#include "ReferenceAlgorithms/ThrustRadixsort.h"
+#include "ReferenceAlgorithms/NvidiaBitonicSort.h"
 #endif
 
 #include "timer.h"
