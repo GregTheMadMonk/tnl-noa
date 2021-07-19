@@ -217,8 +217,8 @@ inline __device__ void compareInclusive(Type &idata, Type &idata2, volatile Type
 }
 
 #include <assert.h>
-#include <helper_cuda.h>
-#include <../../6_Advanced/scan/scan_common.h>
+#include <common/inc/helper_cuda.h>
+#include <6_Advanced/scan/scan_common.h>
 
 //All three kernels run 512 threads per workgroup
 //Must be a power of two
@@ -654,9 +654,9 @@ size_t scanInclusiveLarge(
 
 
 #include <thrust/scan.h>
-#include <helper_cuda.h>
-#include <helper_timer.h>
-#include <../../6_Advanced/scan/scan_common.h>
+#include <common/inc/helper_cuda.h>
+#include <common/inc/helper_timer.h>
+#include <6_Advanced/scan/scan_common.h>
 
 extern __shared__ uint sMemory[];
 

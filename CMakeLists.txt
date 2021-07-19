@@ -255,7 +255,7 @@ if( ${WITH_CUDA} )
         set( CMAKE_EXECUTABLE_SUFFIX "${executable_suffix_backup}" )
     endif()
     if( NOT CUDA_SAMPLES_DIR STREQUAL "none" )
-      set( CUDA_SAMPLES_FLAGS "-I${CUDA_SAMPLES_DIR}/common/inc -DHAVE_CUDA_SAMPLES")
+      set( CUDA_SAMPLES_FLAGS "-I${CUDA_SAMPLES_DIR} -DHAVE_CUDA_SAMPLES")
     endif()
 endif()
 
