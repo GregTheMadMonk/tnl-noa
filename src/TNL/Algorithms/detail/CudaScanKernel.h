@@ -116,7 +116,7 @@ CudaScanKernelFirstPhase( const InputView input,
    // Perform the scan of warpResults using one warp.
    if( warpIdx == 0 )
       #pragma unroll
-      for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
+      for( int stride = 1; stride < blockSize / Cuda::getWarpSize(); stride *= 2 ) {
          if( threadInWarpIdx >= stride )
             warpResults[ threadIdx.x ] = reduction( warpResults[ threadIdx.x ], warpResults[ threadIdx.x - stride ] );
          __syncwarp();
