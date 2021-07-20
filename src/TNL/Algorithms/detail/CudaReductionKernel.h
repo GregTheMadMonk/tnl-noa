@@ -23,23 +23,7 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-/****
- * The performance of this kernel is very sensitive to register usage.
- * Compile with --ptxas-options=-v and configure these constants for given
- * architecture so that there are no local memory spills.
- */
-static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 2
-static constexpr int Reduction_registersPerThread = 32;   // empirically determined optimal value
-
 #ifdef HAVE_CUDA
-// __CUDA_ARCH__ is defined only in device code!
-#if (__CUDA_ARCH__ == 750 )
-   // Turing has a limit of 1024 threads per multiprocessor
-   static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
-#else
-   static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
-#endif
-
 /*
  * nvcc (as of 10.2) is totally fucked up, in some cases it does not recognize the
  * std::plus<void>::operator() function to be constexpr and hence __host__ __device__
@@ -64,6 +48,215 @@ auto CudaReductionFunctorWrapper( Reduction&& reduction, Arg1&& arg1, Arg2&& arg
 #endif
 }
 
+/* Template for cooperative reduction across the CUDA block of threads.
+ * It is a *cooperative* operation - all threads must call the operation,
+ * otherwise it will deadlock!
+ *
+ * The default implementation is generic and the reduction is done using
+ * shared memory. Specializations can be made based on `Reduction` and
+ * `ValueType`, e.g. using the `__shfl_sync` intrinsics for supported
+ * value types.
+ */
+template< int blockSize,
+          typename Reduction,
+          typename ValueType >
+struct CudaBlockReduce
+{
+   // storage to be allocated in shared memory
+   struct Storage
+   {
+      // when there is only one warp per blockSize.x, we need to allocate two warps
+      // worth of shared memory so that we don't index shared memory out of bounds
+      ValueType data[ (blockSize <= 32) ? 2 * blockSize : blockSize ];
+   };
+
+   /* Cooperative reduction across the CUDA block - each thread will get the
+    * result of the reduction
+    *
+    * \param reduction   The binary reduction functor.
+    * \param threadValue Value of the calling thread to be reduced.
+    * \param tid         Index of the calling thread (usually `threadIdx.x`,
+    *                    unless you know what you are doing).
+    * \param storage     Auxiliary storage (must be allocated as a __shared__
+    *                    variable).
+    */
+   __device__ static
+   ValueType
+   reduce( const Reduction& reduction,
+           ValueType threadValue,
+           int tid,
+           Storage& storage )
+   {
+      storage.data[ tid ] = threadValue;
+      __syncthreads();
+
+      if( blockSize >= 1024 ) {
+         if( tid < 512 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 512 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 512 ) {
+         if( tid < 256 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 256 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 256 ) {
+         if( tid < 128 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 128 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 128 ) {
+         if( tid <  64 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 64 ] );
+         __syncthreads();
+      }
+
+      // This runs in one warp so we use __syncwarp() instead of __syncthreads().
+      if( tid < 32 ) {
+         if( blockSize >= 64 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 32 ] );
+         __syncwarp();
+         // Note that here we do not have to check if tid < 16 etc, because we have
+         // 2 * blockSize.x elements of shared memory per block, so we do not
+         // access out of bounds. The results for the upper half will be undefined,
+         // but unused anyway.
+         if( blockSize >= 32 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 16 ] );
+         __syncwarp();
+         if( blockSize >= 16 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 8 ] );
+         __syncwarp();
+         if( blockSize >=  8 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 4 ] );
+         __syncwarp();
+         if( blockSize >=  4 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 2 ] );
+         __syncwarp();
+         if( blockSize >=  2 )
+            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 1 ] );
+      }
+
+      __syncthreads();
+      return storage.data[ 0 ];
+   }
+};
+
+/* Template for cooperative reduction with argument across the CUDA block of
+ * threads. It is a *cooperative* operation - all threads must call the
+ * operation, otherwise it will deadlock!
+ *
+ * The default implementation is generic and the reduction is done using
+ * shared memory. Specializations can be made based on `Reduction` and
+ * `ValueType`, e.g. using the `__shfl_sync` intrinsics for supported
+ * value types.
+ */
+template< int blockSize,
+          typename Reduction,
+          typename ValueType,
+          typename IndexType >
+struct CudaBlockReduceWithArgument
+{
+   // storage to be allocated in shared memory
+   struct Storage
+   {
+      // when there is only one warp per blockSize.x, we need to allocate two warps
+      // worth of shared memory so that we don't index shared memory out of bounds
+      ValueType data[ (blockSize <= 32) ? 2 * blockSize : blockSize ];
+      IndexType idx [ (blockSize <= 32) ? 2 * blockSize : blockSize ];
+   };
+
+   /* Cooperative reduction with argument across the CUDA block - each thread
+    * will get the pair of the result of the reduction and the index
+    *
+    * \param reduction   The binary reduction functor.
+    * \param threadValue Value of the calling thread to be reduced.
+    * \param threadIndex Index value of the calling thread to be reduced.
+    * \param tid         Index of the calling thread (usually `threadIdx.x`,
+    *                    unless you know what you are doing).
+    * \param storage     Auxiliary storage (must be allocated as a __shared__
+    *                    variable).
+    */
+   __device__ static
+   std::pair< ValueType, IndexType >
+   reduceWithArgument( const Reduction& reduction,
+                       ValueType threadValue,
+                       IndexType threadIndex,
+                       int tid,
+                       Storage& storage )
+   {
+      storage.data[ tid ] = threadValue;
+      storage.idx[ tid ] = threadIndex;
+      __syncthreads();
+
+      if( blockSize >= 1024 ) {
+         if( tid < 512 )
+            reduction( storage.data[ tid ], storage.data[ tid + 512 ], storage.idx[ tid ], storage.idx[ tid + 512 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 512 ) {
+         if( tid < 256 )
+            reduction( storage.data[ tid ], storage.data[ tid + 256 ], storage.idx[ tid ], storage.idx[ tid + 256 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 256 ) {
+         if( tid < 128 )
+            reduction( storage.data[ tid ], storage.data[ tid + 128 ], storage.idx[ tid ], storage.idx[ tid + 128 ] );
+         __syncthreads();
+      }
+      if( blockSize >= 128 ) {
+         if( tid <  64 )
+            reduction( storage.data[ tid ], storage.data[ tid + 64 ], storage.idx[ tid ], storage.idx[ tid + 64 ] );
+         __syncthreads();
+      }
+
+      // This runs in one warp so we use __syncwarp() instead of __syncthreads().
+      if( tid < 32 ) {
+         if( blockSize >= 64 )
+            reduction( storage.data[ tid ], storage.data[ tid + 32 ], storage.idx[ tid ], storage.idx[ tid + 32 ] );
+         __syncwarp();
+         // Note that here we do not have to check if tid < 16 etc, because we have
+         // 2 * blockSize.x elements of shared memory per block, so we do not
+         // access out of bounds. The results for the upper half will be undefined,
+         // but unused anyway.
+         if( blockSize >= 32 )
+            reduction( storage.data[ tid ], storage.data[ tid + 16 ], storage.idx[ tid ], storage.idx[ tid + 16 ] );
+         __syncwarp();
+         if( blockSize >= 16 )
+            reduction( storage.data[ tid ], storage.data[ tid + 8 ], storage.idx[ tid ], storage.idx[ tid + 8 ] );
+         __syncwarp();
+         if( blockSize >=  8 )
+            reduction( storage.data[ tid ], storage.data[ tid + 4 ], storage.idx[ tid ], storage.idx[ tid + 4 ] );
+         __syncwarp();
+         if( blockSize >=  4 )
+            reduction( storage.data[ tid ], storage.data[ tid + 2 ], storage.idx[ tid ], storage.idx[ tid + 2 ] );
+         __syncwarp();
+         if( blockSize >=  2 )
+            reduction( storage.data[ tid ], storage.data[ tid + 1 ], storage.idx[ tid ], storage.idx[ tid + 1 ] );
+      }
+
+      __syncthreads();
+      return std::make_pair( storage.data[ 0 ], storage.idx[ 0 ] );
+   }
+};
+#endif
+
+/****
+ * The performance of this kernel is very sensitive to register usage.
+ * Compile with --ptxas-options=-v and configure these constants for given
+ * architecture so that there are no local memory spills.
+ */
+static constexpr int Reduction_maxThreadsPerBlock = 256;  // must be a power of 2
+static constexpr int Reduction_registersPerThread = 32;   // empirically determined optimal value
+
+#ifdef HAVE_CUDA
+// __CUDA_ARCH__ is defined only in device code!
+#if (__CUDA_ARCH__ == 750 )
+   // Turing has a limit of 1024 threads per multiprocessor
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 4;
+#else
+   static constexpr int Reduction_minBlocksPerMultiprocessor = 8;
+#endif
+
 template< int blockSize,
           typename Result,
           typename DataFetcher,
@@ -71,95 +264,49 @@ template< int blockSize,
           typename Index >
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
-CudaReductionKernel( const Result zero,
+CudaReductionKernel( Result initialValue,
                      DataFetcher dataFetcher,
                      const Reduction reduction,
-                     const Index begin,
-                     const Index end,
+                     Index begin,
+                     Index end,
                      Result* output )
 {
    TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaReductionKernel" );
-   // when there is only one warp per blockSize.x, we need to allocate two warps
-   // worth of shared memory so that we don't index shared memory out of bounds
-   constexpr int shmemElements = (blockSize <= 32) ? 2 * blockSize : blockSize;
-   __shared__ Result sdata[shmemElements];
 
-   // Get the thread id (tid), global thread id (gid) and gridSize.
-   const Index tid = threadIdx.x;
-         Index gid = begin + blockIdx.x * blockDim.x + threadIdx.x;
+   // allocate shared memory
+   using BlockReduce = CudaBlockReduce< blockSize, Reduction, Result >;
+   __shared__ typename BlockReduce::Storage storage;
+
+   // Calculate the grid size (stride of the sequential reduction loop).
    const Index gridSize = blockDim.x * gridDim.x;
-
-   sdata[ tid ] = zero;
+   // Shift the input lower bound by the thread index in the grid.
+   begin += blockIdx.x * blockDim.x + threadIdx.x;
 
    // Start with the sequential reduction and push the result into the shared memory.
-   while( gid + 4 * gridSize < end ) {
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + gridSize ) );
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
-      gid += 4 * gridSize;
+   while( begin + 4 * gridSize < end ) {
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin ) );
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin + gridSize ) );
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin + 2 * gridSize ) );
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin + 3 * gridSize ) );
+      begin += 4 * gridSize;
    }
-   while( gid + 2 * gridSize < end ) {
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid + gridSize ) );
-      gid += 2 * gridSize;
+   while( begin + 2 * gridSize < end ) {
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin ) );
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin + gridSize ) );
+      begin += 2 * gridSize;
    }
-   while( gid < end ) {
-      sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], dataFetcher( gid ) );
-      gid += gridSize;
+   while( begin < end ) {
+      initialValue = CudaReductionFunctorWrapper( reduction, initialValue, dataFetcher( begin ) );
+      begin += gridSize;
    }
    __syncthreads();
 
    // Perform the parallel reduction.
-   if( blockSize >= 1024 ) {
-      if( tid < 512 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 512 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 512 ) {
-      if( tid < 256 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 256 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 256 ) {
-      if( tid < 128 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 128 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 128 ) {
-      if( tid <  64 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 64 ] );
-      __syncthreads();
-   }
-
-   // This runs in one warp so we use __syncwarp() instead of __syncthreads().
-   if( tid < 32 ) {
-      if( blockSize >= 64 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 32 ] );
-      __syncwarp();
-      // Note that here we do not have to check if tid < 16 etc, because we have
-      // 2 * blockSize.x elements of shared memory per block, so we do not
-      // access out of bounds. The results for the upper half will be undefined,
-      // but unused anyway.
-      if( blockSize >= 32 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 16 ] );
-      __syncwarp();
-      if( blockSize >= 16 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 8 ] );
-      __syncwarp();
-      if( blockSize >=  8 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 4 ] );
-      __syncwarp();
-      if( blockSize >=  4 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 2 ] );
-      __syncwarp();
-      if( blockSize >=  2 )
-         sdata[ tid ] = CudaReductionFunctorWrapper( reduction, sdata[ tid ], sdata[ tid + 1 ] );
-   }
+   initialValue = BlockReduce::reduce( reduction, initialValue, threadIdx.x, storage );
 
    // Store the result back in the global memory.
-   if( tid == 0 )
-      output[ blockIdx.x ] = sdata[ 0 ];
+   if( threadIdx.x == 0 )
+      output[ blockIdx.x ] = initialValue;
 }
 
 template< int blockSize,
@@ -169,131 +316,85 @@ template< int blockSize,
           typename Index >
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
-CudaReductionWithArgumentKernel( const Result zero,
+CudaReductionWithArgumentKernel( Result initialValue,
                                  DataFetcher dataFetcher,
                                  const Reduction reduction,
-                                 const Index begin,
-                                 const Index end,
+                                 Index begin,
+                                 Index end,
                                  Result* output,
                                  Index* idxOutput,
                                  const Index* idxInput = nullptr )
 {
    TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaReductionKernel" );
-   // when there is only one warp per blockSize.x, we need to allocate two warps
-   // worth of shared memory so that we don't index shared memory out of bounds
-   constexpr int shmemElements = (blockSize <= 32) ? 2 * blockSize : blockSize;
-   __shared__ Result sdata[shmemElements];
-   __shared__ Index sidx[shmemElements];
 
-   // Get the thread id (tid), global thread id (gid) and gridSize.
-   const Index tid = threadIdx.x;
-         Index gid = begin + blockIdx.x * blockDim.x + threadIdx.x;
+   // allocate shared memory
+   using BlockReduce = CudaBlockReduceWithArgument< blockSize, Reduction, Result, Index >;
+   __shared__ typename BlockReduce::Storage storage;
+
+   // Calculate the grid size (stride of the sequential reduction loop).
    const Index gridSize = blockDim.x * gridDim.x;
+   // Shift the input lower bound by the thread index in the grid.
+   begin += blockIdx.x * blockDim.x + threadIdx.x;
+
+   // TODO: initialIndex should be passed as an argument to the kernel
+   Index initialIndex;
 
    // Start with the sequential reduction and push the result into the shared memory.
    if( idxInput ) {
-      if( gid < end ) {
-         sdata[ tid ] = dataFetcher( gid );
-         sidx[ tid ] = idxInput[ gid ];
-         gid += gridSize;
-      } else {
-         sdata[ tid ] = zero;
+      if( begin < end ) {
+         initialValue = dataFetcher( begin );
+         initialIndex = idxInput[ begin ];
+         begin += gridSize;
       }
-      while( gid + 4 * gridSize < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
-         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
-         reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], idxInput[ gid + 2 * gridSize ] );
-         reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], idxInput[ gid + 3 * gridSize ] );
-         gid += 4 * gridSize;
+      while( begin + 4 * gridSize < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, idxInput[ begin ] );
+         reduction( initialValue, dataFetcher( begin + gridSize ), initialIndex, idxInput[ begin + gridSize ] );
+         reduction( initialValue, dataFetcher( begin + 2 * gridSize ), initialIndex, idxInput[ begin + 2 * gridSize ] );
+         reduction( initialValue, dataFetcher( begin + 3 * gridSize ), initialIndex, idxInput[ begin + 3 * gridSize ] );
+         begin += 4 * gridSize;
       }
-      while( gid + 2 * gridSize < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
-         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], idxInput[ gid + gridSize ] );
-         gid += 2 * gridSize;
+      while( begin + 2 * gridSize < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, idxInput[ begin ] );
+         reduction( initialValue, dataFetcher( begin + gridSize ), initialIndex, idxInput[ begin + gridSize ] );
+         begin += 2 * gridSize;
       }
-      while( gid < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], idxInput[ gid ] );
-         gid += gridSize;
+      while( begin < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, idxInput[ begin ] );
+         begin += gridSize;
       }
    }
    else {
-      if( gid < end ) {
-         sdata[ tid ] = dataFetcher( gid );
-         sidx[ tid ] = gid;
-         gid += gridSize;
-      } else {
-         sdata[ tid ] = zero;
+      if( begin < end ) {
+         initialValue = dataFetcher( begin );
+         initialIndex = begin;
+         begin += gridSize;
       }
-      while( gid + 4 * gridSize < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
-         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
-         reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ), sidx[ tid ], gid + 2 * gridSize );
-         reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ), sidx[ tid ], gid + 3 * gridSize );
-         gid += 4 * gridSize;
+      while( begin + 4 * gridSize < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, begin );
+         reduction( initialValue, dataFetcher( begin + gridSize ), initialIndex, begin + gridSize );
+         reduction( initialValue, dataFetcher( begin + 2 * gridSize ), initialIndex, begin + 2 * gridSize );
+         reduction( initialValue, dataFetcher( begin + 3 * gridSize ), initialIndex, begin + 3 * gridSize );
+         begin += 4 * gridSize;
       }
-      while( gid + 2 * gridSize < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
-         reduction( sdata[ tid ], dataFetcher( gid + gridSize ), sidx[ tid ], gid + gridSize );
-         gid += 2 * gridSize;
+      while( begin + 2 * gridSize < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, begin );
+         reduction( initialValue, dataFetcher( begin + gridSize ), initialIndex, begin + gridSize );
+         begin += 2 * gridSize;
       }
-      while( gid < end ) {
-         reduction( sdata[ tid ], dataFetcher( gid ), sidx[ tid ], gid );
-         gid += gridSize;
+      while( begin < end ) {
+         reduction( initialValue, dataFetcher( begin ), initialIndex, begin );
+         begin += gridSize;
       }
    }
    __syncthreads();
 
    // Perform the parallel reduction.
-   if( blockSize >= 1024 ) {
-      if( tid < 512 )
-         reduction( sdata[ tid ], sdata[ tid + 512 ], sidx[ tid ], sidx[ tid + 512 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 512 ) {
-      if( tid < 256 )
-         reduction( sdata[ tid ], sdata[ tid + 256 ], sidx[ tid ], sidx[ tid + 256 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 256 ) {
-      if( tid < 128 )
-         reduction( sdata[ tid ], sdata[ tid + 128 ], sidx[ tid ], sidx[ tid + 128 ] );
-      __syncthreads();
-   }
-   if( blockSize >= 128 ) {
-      if( tid <  64 )
-         reduction( sdata[ tid ], sdata[ tid + 64 ], sidx[ tid ], sidx[ tid + 64 ] );
-      __syncthreads();
-   }
-
-   // This runs in one warp so we use __syncwarp() instead of __syncthreads().
-   if( tid < 32 ) {
-      if( blockSize >= 64 )
-         reduction( sdata[ tid ], sdata[ tid + 32 ], sidx[ tid ], sidx[ tid + 32 ] );
-      __syncwarp();
-      // Note that here we do not have to check if tid < 16 etc, because we have
-      // 2 * blockSize.x elements of shared memory per block, so we do not
-      // access out of bounds. The results for the upper half will be undefined,
-      // but unused anyway.
-      if( blockSize >= 32 )
-         reduction( sdata[ tid ], sdata[ tid + 16 ], sidx[ tid ], sidx[ tid + 16 ] );
-      __syncwarp();
-      if( blockSize >= 16 )
-         reduction( sdata[ tid ], sdata[ tid + 8 ], sidx[ tid ], sidx[ tid + 8 ] );
-      __syncwarp();
-      if( blockSize >=  8 )
-         reduction( sdata[ tid ], sdata[ tid + 4 ], sidx[ tid ], sidx[ tid + 4 ] );
-      __syncwarp();
-      if( blockSize >=  4 )
-         reduction( sdata[ tid ], sdata[ tid + 2 ], sidx[ tid ], sidx[ tid + 2 ] );
-      __syncwarp();
-      if( blockSize >=  2 )
-         reduction( sdata[ tid ], sdata[ tid + 1 ], sidx[ tid ], sidx[ tid + 1 ] );
-   }
+   const std::pair< Result, Index > result = BlockReduce::reduceWithArgument( reduction, initialValue, initialIndex, threadIdx.x, storage );
 
    // Store the result back in the global memory.
-   if( tid == 0 ) {
-      output[ blockIdx.x ] = sdata[ 0 ];
-      idxOutput[ blockIdx.x ] = sidx[ 0 ];
+   if( threadIdx.x == 0 ) {
+      output[ blockIdx.x ] = result.first;
+      idxOutput[ blockIdx.x ] = result.second;
    }
 }
 #endif
