@@ -852,6 +852,24 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       DenseMatrix& operator=( const DenseMatrix& matrix );
 
       /**
+       * \brief Assignment operator with the same organization.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
+       */
+      template< typename RHSReal, typename RHSDevice, typename RHSIndex, typename RHSRealAllocator >
+      DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, Organization, RHSRealAllocator >& matrix );
+
+      /**
+       * \brief Assignment operator with matrix view having the same elements organization.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
+       */
+      template< typename RHSReal, typename RHSDevice, typename RHSIndex >
+      DenseMatrix& operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, Organization >& matrix );
+
+      /**
        * \brief Assignment operator with other dense matrices.
        *
        * \param matrix is the right-hand side matrix.
@@ -860,6 +878,16 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename RHSReal, typename RHSDevice, typename RHSIndex,
                  ElementsOrganization RHSOrganization, typename RHSRealAllocator >
       DenseMatrix& operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix );
+
+      /**
+       * \brief Assignment operator with other dense matrices.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return reference to this matrix.
+       */
+      template< typename RHSReal, typename RHSDevice, typename RHSIndex,
+                 ElementsOrganization RHSOrganization >
+      DenseMatrix& operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization >& matrix );
 
       /**
        * \brief Assignment operator with other (sparse) types of matrices.

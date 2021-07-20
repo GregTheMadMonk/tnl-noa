@@ -1068,8 +1068,34 @@ DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 operator=( const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix )
 {
-   setLike( matrix );
-   this->values = matrix.values;
+   return this->operator=( matrix.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename RHSReal, typename RHSDevice, typename RHSIndex, typename RHSRealAllocator >
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, Organization, RHSRealAllocator >& matrix )
+{
+   return this->operator=( matrix.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename RHSReal, typename RHSDevice, typename RHSIndex >
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, Organization >& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.getValues();
    return *this;
 }
 
@@ -1084,9 +1110,23 @@ DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 operator=( const DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >& matrix )
 {
-   using RHSMatrix = DenseMatrix< RHSReal, RHSDevice, RHSIndex, RHSOrganization, RHSRealAllocator >;
+   return this->operator=( matrix.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename RHSReal, typename RHSDevice, typename RHSIndex,
+             ElementsOrganization RHSOrganization >
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization >& matrix )
+{
+   using RHSMatrix = DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization >;
    using RHSIndexType = typename RHSMatrix::IndexType;
-   using RHSRealType = typename RHSMatrix::RealType;
+   using RHSRealType = std::remove_const_t< typename RHSMatrix::RealType >;
    using RHSDeviceType = typename RHSMatrix::DeviceType;
 
    this->setLike( matrix );
