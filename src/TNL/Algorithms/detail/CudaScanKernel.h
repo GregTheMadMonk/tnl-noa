@@ -21,6 +21,230 @@ namespace Algorithms {
 namespace detail {
 
 #ifdef HAVE_CUDA
+/* Template for cooperative scan across the CUDA block of threads.
+ * It is a *cooperative* operation - all threads must call the operation,
+ * otherwise it will deadlock!
+ *
+ * The default implementation is generic and the reduction is done using
+ * shared memory. Specializations can be made based on `Reduction` and
+ * `ValueType`, e.g. using the `__shfl_sync` intrinsics for supported
+ * value types.
+ */
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction,
+          typename ValueType >
+struct CudaBlockScan
+{
+   // storage to be allocated in shared memory
+   struct Storage
+   {
+      ValueType chunkResults[ blockSize + blockSize / Cuda::getNumberOfSharedMemoryBanks() ];  // accessed via Cuda::getInterleaving()
+      ValueType warpResults[ Cuda::getWarpSize() ];
+   };
+
+   /* Cooperative scan across the CUDA block - each thread will get the
+    * result of the scan according to its ID.
+    *
+    * \param reduction    The binary reduction functor.
+    * \param zero         Neutral element for given reduction operation, i.e.
+    *                     value such that `reduction(zero, x) == x` for any `x`.
+    * \param threadValue  Value of the calling thread to be reduced.
+    * \param tid          Index of the calling thread (usually `threadIdx.x`,
+    *                     unless you know what you are doing).
+    * \param storage      Auxiliary storage (must be allocated as a __shared__
+    *                     variable).
+    */
+   __device__ static
+   ValueType
+   scan( const Reduction& reduction,
+         ValueType zero,
+         ValueType threadValue,
+         int tid,
+         Storage& storage )
+   {
+      // verify the configuration
+      TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaBlockScan::scan" );
+      static_assert( blockSize / Cuda::getWarpSize() <= Cuda::getWarpSize(),
+                     "blockSize is too large, it would not be possible to scan warpResults using one warp" );
+
+      // Store the threadValue in the shared memory.
+      const int chunkResultIdx = Cuda::getInterleaving( tid );
+      storage.chunkResults[ chunkResultIdx ] = threadValue;
+      __syncthreads();
+
+      // Perform the parallel scan on chunkResults inside warps.
+      const int threadInWarpIdx = tid % Cuda::getWarpSize();
+      const int warpIdx = tid / Cuda::getWarpSize();
+      #pragma unroll
+      for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
+         if( threadInWarpIdx >= stride ) {
+            storage.chunkResults[ chunkResultIdx ] = reduction( storage.chunkResults[ chunkResultIdx ], storage.chunkResults[ Cuda::getInterleaving( tid - stride ) ] );
+         }
+         __syncwarp();
+      }
+      threadValue = storage.chunkResults[ chunkResultIdx ];
+
+      // The last thread in warp stores the intermediate result in warpResults.
+      if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
+         storage.warpResults[ warpIdx ] = threadValue;
+      __syncthreads();
+
+      // Perform the scan of warpResults using one warp.
+      if( warpIdx == 0 )
+         #pragma unroll
+         for( int stride = 1; stride < blockSize / Cuda::getWarpSize(); stride *= 2 ) {
+            if( threadInWarpIdx >= stride )
+               storage.warpResults[ tid ] = reduction( storage.warpResults[ tid ], storage.warpResults[ tid - stride ] );
+            __syncwarp();
+         }
+      __syncthreads();
+
+      // Shift threadValue by the warpResults.
+      if( warpIdx > 0 )
+         threadValue = reduction( threadValue, storage.warpResults[ warpIdx - 1 ] );
+
+      // Shift the result for exclusive scan.
+      if( scanType == ScanType::Exclusive ) {
+         storage.chunkResults[ chunkResultIdx ] = threadValue;
+         __syncthreads();
+         threadValue = (tid == 0) ? zero : storage.chunkResults[ Cuda::getInterleaving( tid - 1 ) ];
+      }
+
+      __syncthreads();
+      return threadValue;
+   }
+};
+
+/* Template for cooperative scan of a data tile in the global memory.
+ * It is a *cooperative* operation - all threads must call the operation,
+ * otherwise it will deadlock!
+ */
+template< ScanType scanType,
+          int blockSize,
+          int valuesPerThread,
+          typename Reduction,
+          typename ValueType >
+struct CudaTileScan
+{
+   using BlockScan = CudaBlockScan< ScanType::Exclusive, blockSize, Reduction, ValueType >;
+
+   // storage to be allocated in shared memory
+   struct Storage
+   {
+      ValueType data[ blockSize * valuesPerThread ];
+      typename BlockScan::Storage blockScanStorage;
+   };
+
+   /* Cooperative scan of a data tile in the global memory - each thread will
+    * get the result of its chunk (i.e. the last value of the (inclusive) scan
+    * in the chunk) according to the thread ID.
+    *
+    * \param input        The input array to be scanned.
+    * \param output       The array where the result will be stored.
+    * \param begin        The first element in the array to be scanned.
+    * \param end          the last element in the array to be scanned.
+    * \param outputBegin  The first element in the output array to be written. There
+    *                     must be at least `end - begin` elements in the output
+    *                     array starting at the position given by `outputBegin`.
+    * \param reduction    The binary reduction functor.
+    * \param zero         Neutral element for given reduction operation, i.e.
+    *                     value such that `reduction(zero, x) == x` for any `x`.
+    * \param shift        A global shift to be applied to all elements in the
+    *                     chunk processed by this thread.
+    * \param storage      Auxiliary storage (must be allocated as a __shared__
+    *                     variable).
+    */
+   template< typename InputView,
+             typename OutputView >
+   __device__ static
+   ValueType
+   scan( const InputView input,
+         OutputView output,
+         typename InputView::IndexType begin,
+         typename InputView::IndexType end,
+         typename OutputView::IndexType outputBegin,
+         const Reduction& reduction,
+         ValueType zero,
+         ValueType shift,
+         Storage& storage )
+   {
+      // verify the configuration
+      TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaTileScan::scan" );
+      static_assert( valuesPerThread % 2,
+                     "valuesPerThread must be odd, otherwise there would be shared memory bank conflicts "
+                     "when threads access their chunks in shared memory sequentially" );
+
+      // calculate indices
+      constexpr int maxElementsInBlock = blockSize * valuesPerThread;
+      const int remainingElements = end - begin - blockIdx.x * maxElementsInBlock;
+      const int elementsInBlock = TNL::min( remainingElements, maxElementsInBlock );
+
+      // update global array offsets for the thread
+      const int threadOffset = blockIdx.x * maxElementsInBlock + threadIdx.x;
+      begin += threadOffset;
+      outputBegin += threadOffset;
+
+      // Load data into the shared memory.
+      {
+         int idx = threadIdx.x;
+         while( idx < elementsInBlock )
+         {
+            storage.data[ idx ] = input[ begin ];
+            begin += blockDim.x;
+            idx += blockDim.x;
+         }
+         // fill the remaining (maxElementsInBlock - elementsInBlock) values with zero
+         // (this helps to avoid divergent branches in the blocks below)
+         while( idx < maxElementsInBlock )
+         {
+            storage.data[ idx ] = zero;
+            idx += blockDim.x;
+         }
+      }
+      __syncthreads();
+
+      // Perform sequential reduction of the thread's chunk in shared memory.
+      const int chunkOffset = threadIdx.x * valuesPerThread;
+      ValueType value = storage.data[ chunkOffset ];
+      #pragma unroll
+      for( int i = 1; i < valuesPerThread; i++ )
+         value = reduction( value, storage.data[ chunkOffset + i ] );
+
+      // Scan the spine to obtain the initial value ("offset") for the downsweep.
+      value = BlockScan::scan( reduction, zero, value, threadIdx.x, storage.blockScanStorage );
+
+      // Apply the global shift.
+      value = reduction( value, shift );
+
+      // Downsweep step: scan the chunks and use the result of spine scan as the initial value.
+      #pragma unroll
+      for( int i = 0; i < valuesPerThread; i++ )
+      {
+         const ValueType inputValue = storage.data[ chunkOffset + i ];
+         if( scanType == ScanType::Exclusive )
+            storage.data[ chunkOffset + i ] = value;
+         value = reduction( value, inputValue );
+         if( scanType == ScanType::Inclusive )
+            storage.data[ chunkOffset + i ] = value;
+      }
+      __syncthreads();
+
+      // Store the result back in the global memory.
+      {
+         int idx = threadIdx.x;
+         while( idx < elementsInBlock )
+         {
+            output[ outputBegin ] = storage.data[ idx ];
+            outputBegin += blockDim.x;
+            idx += blockDim.x;
+         }
+      }
+
+      // Return the last (inclusive) scan value of the chunk processed by this thread.
+      return value;
+   }
+};
 
 template< ScanType scanType,
           int blockSize,
@@ -39,128 +263,17 @@ CudaScanKernelFirstPhase( const InputView input,
                           typename OutputView::ValueType* blockResults )
 {
    using ValueType = typename OutputView::ValueType;
-   using IndexType = typename InputView::IndexType;
-
-   // verify the configuration
-   TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaScanKernelFirstPhase" );
-   static_assert( blockSize / Cuda::getWarpSize() <= Cuda::getWarpSize(),
-                  "blockSize is too large, it would not be possible to scan warpResults using one warp" );
-   static_assert( valuesPerThread % 2,
-                  "valuesPerThread must be odd, otherwise there would be shared memory bank conflicts "
-                  "when threads access their chunks in sharedData sequentially" );
-
-   // calculate indices
-   constexpr int maxElementsInBlock = blockSize * valuesPerThread;
-   const int remainingElements = end - begin - blockIdx.x * maxElementsInBlock;
-   const int elementsInBlock = TNL::min( remainingElements, maxElementsInBlock );
-
-   // update global array offsets for the thread
-   const int threadOffset = blockIdx.x * maxElementsInBlock + threadIdx.x;
-   begin += threadOffset;
-   outputBegin += threadOffset;
+   using TileScan = CudaTileScan< scanType, blockSize, valuesPerThread, Reduction, ValueType >;
 
    // allocate shared memory
-   __shared__ ValueType sharedData[ maxElementsInBlock ];
-   __shared__ ValueType chunkResults[ blockSize + blockSize / Cuda::getNumberOfSharedMemoryBanks() ];  // accessed via Cuda::getInterleaving()
-   __shared__ ValueType warpResults[ Cuda::getWarpSize() ];
+   __shared__ typename TileScan::Storage storage;
 
-   // Load data into the shared memory.
-   {
-      int idx = threadIdx.x;
-      while( idx < elementsInBlock )
-      {
-         sharedData[ idx ] = input[ begin ];
-         begin += blockDim.x;
-         idx += blockDim.x;
-      }
-      // fill the remaining (maxElementsInBlock - elementsInBlock) values with zero
-      // (this helps to avoid divergent branches in the blocks below)
-      while( idx < maxElementsInBlock )
-      {
-         sharedData[ idx ] = zero;
-         idx += blockDim.x;
-      }
-   }
-   __syncthreads();
+   // scan from input into output
+   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, zero, zero, storage );
 
-   // Perform sequential reduction of the chunk in shared memory.
-   const int chunkOffset = threadIdx.x * valuesPerThread;
-   const int chunkResultIdx = Cuda::getInterleaving( threadIdx.x );
-   {
-      ValueType chunkResult = sharedData[ chunkOffset ];
-      #pragma unroll
-      for( int i = 1; i < valuesPerThread; i++ )
-         chunkResult = reduction( chunkResult, sharedData[ chunkOffset + i ] );
-
-      // store the result of the sequential reduction of the chunk in chunkResults
-      chunkResults[ chunkResultIdx ] = chunkResult;
-   }
-   __syncthreads();
-
-   // Perform the parallel scan on chunkResults inside warps.
-   const int threadInWarpIdx = threadIdx.x % Cuda::getWarpSize();
-   const int warpIdx = threadIdx.x / Cuda::getWarpSize();
-   #pragma unroll
-   for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
-      if( threadInWarpIdx >= stride ) {
-         chunkResults[ chunkResultIdx ] = reduction( chunkResults[ chunkResultIdx ], chunkResults[ Cuda::getInterleaving( threadIdx.x - stride ) ] );
-      }
-      __syncwarp();
-   }
-
-   // The last thread in warp stores the intermediate result in warpResults.
-   if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
-      warpResults[ warpIdx ] = chunkResults[ chunkResultIdx ];
-   __syncthreads();
-
-   // Perform the scan of warpResults using one warp.
-   if( warpIdx == 0 )
-      #pragma unroll
-      for( int stride = 1; stride < blockSize / Cuda::getWarpSize(); stride *= 2 ) {
-         if( threadInWarpIdx >= stride )
-            warpResults[ threadIdx.x ] = reduction( warpResults[ threadIdx.x ], warpResults[ threadIdx.x - stride ] );
-         __syncwarp();
-      }
-   __syncthreads();
-
-   // Shift chunkResults by the warpResults.
-   if( warpIdx > 0 )
-      chunkResults[ chunkResultIdx ] = reduction( chunkResults[ chunkResultIdx ], warpResults[ warpIdx - 1 ] );
-   __syncthreads();
-
-   // Downsweep step: scan the chunks and use the chunk result as the initial value.
-   {
-      ValueType value = zero;
-      if( threadIdx.x > 0 )
-         value = chunkResults[ Cuda::getInterleaving( threadIdx.x - 1 ) ];
-
-      #pragma unroll
-      for( int i = 0; i < valuesPerThread; i++ )
-      {
-         const ValueType inputValue = sharedData[ chunkOffset + i ];
-         if( scanType == ScanType::Exclusive )
-            sharedData[ chunkOffset + i ] = value;
-         value = reduction( value, inputValue );
-         if( scanType == ScanType::Inclusive )
-            sharedData[ chunkOffset + i ] = value;
-      }
-
-      // The last thread of the block stores the block result in the global memory.
-      if( blockResults && threadIdx.x == blockDim.x - 1 )
-         blockResults[ blockIdx.x ] = value;
-   }
-   __syncthreads();
-
-   // Store the result back in the global memory.
-   {
-      int idx = threadIdx.x;
-      while( idx < elementsInBlock )
-      {
-         output[ outputBegin ] = sharedData[ idx ];
-         outputBegin += blockDim.x;
-         idx += blockDim.x;
-      }
-   }
+   // The last thread of the block stores the block result in the global memory.
+   if( blockResults && threadIdx.x == blockDim.x - 1 )
+      blockResults[ blockIdx.x ] = value;
 }
 
 template< int blockSize,
