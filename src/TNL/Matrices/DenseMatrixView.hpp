@@ -19,6 +19,54 @@
 namespace TNL {
 namespace Matrices {
 
+#ifdef HAVE_CUDA
+template< typename Matrix, typename InVector, typename OutVector >
+__global__ void
+DenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int begin, const int end, int gridIdx )
+{
+   using Real = typename Matrix::RealType;
+   using Index = typename Matrix::IndexType;
+   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   __shared__ Real inVectorCache[ inVectorCacheSize ];
+
+   const int rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x + begin;
+
+   Real result( 0.0 );
+   Index columnIdx( 0 );
+   const auto& values = matrix.getValues();
+   const auto& rowsCount = matrix.getRows();
+   Index valuesPtr = rowIdx;
+
+   while( columnIdx < matrix.getColumns() )
+   {
+      const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
+      Index matrixColIdx = columnIdx + threadIdx.x;
+      Index cacheColIdx = threadIdx.x;
+      while( matrixColIdx < lastIdx )
+      {
+         inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
+         cacheColIdx += 256;
+         matrixColIdx += 256;
+      }
+      __syncthreads();
+
+      matrixColIdx = columnIdx;
+      cacheColIdx = 0;
+      if( rowIdx < end )
+         while( matrixColIdx < lastIdx )
+         {
+            result += values[ valuesPtr ] * inVectorCache[ cacheColIdx ];
+            cacheColIdx++;
+            matrixColIdx++;
+            valuesPtr += rowsCount;
+         }
+      columnIdx = lastIdx;
+   }
+   if( rowIdx < end )
+      outVector[ rowIdx ] = result;
+}
+#endif
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -535,6 +583,33 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    if( end == 0 )
       end = this->getRows();
+
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   {
+#ifdef HAVE_CUDA
+      if( Organization == Algorithms::Segments::ColumnMajorOrder )
+      {
+         const size_t threadsCount = end - begin;
+         const size_t blocksCount = roundUpDivision( threadsCount, 256 );
+         const size_t gridsCount = roundUpDivision( blocksCount, Cuda::getMaxGridSize() );
+         const size_t sharedMemSize = 20480;
+         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ )
+         {
+            dim3 blocks( Cuda::getMaxGridSize() );
+            if( gridIdx == gridsCount - 1 )
+               blocks = blocksCount % Cuda::getMaxGridSize();
+            DenseMatrixViewVectorMultiplicationKernel<<< blocks, 256, sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
+         }
+         TNL_CHECK_CUDA_DEVICE;
+         return;
+      }
+#endif
+   }
+
+   /***
+    * The rest is general implementation based on segments
+    */
+
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
