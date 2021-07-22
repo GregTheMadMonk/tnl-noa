@@ -30,7 +30,8 @@ struct Scan< Devices::Sequential, Type, PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
-   static void
+   // returns the last value of inclusive scan (reduction of the whole input)
+   static typename OutputArray::ValueType
    perform( const InputArray& input,
             OutputArray& output,
             typename InputArray::IndexType begin,
