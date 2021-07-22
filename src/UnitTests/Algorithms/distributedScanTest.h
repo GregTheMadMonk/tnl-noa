@@ -87,14 +87,14 @@ protected:
 #ifdef HAVE_CUDA
       if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
-         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase >::maxGridSize() = 3;
-         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase >::maxGridSize() = 3;
-         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase >::maxGridSize() = 3;
-         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase, ValueType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase, ValueType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase, ValueType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase, ValueType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::maxGridSize() = 3;
       }
 #endif
    }
@@ -106,8 +106,8 @@ protected:
       // skip the check for too small arrays
       if( check_cuda_grids && array.getLocalRange().getSize() > 256 ) {
          // we don't care which kernel launcher was actually used
-         const auto gridsCount = TNL::max( CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInFirstPhase >::gridsCount(),
-                                           CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInSecondPhase >::gridsCount() );
+         const auto gridsCount = TNL::max( CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInFirstPhase, ValueType >::gridsCount(),
+                                           CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInSecondPhase, ValueType >::gridsCount() );
          EXPECT_GT( gridsCount, 1 );
       }
 #endif

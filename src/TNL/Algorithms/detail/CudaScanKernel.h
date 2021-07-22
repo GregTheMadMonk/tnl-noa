@@ -436,7 +436,10 @@ CudaScanKernelUniformShift( OutputView output,
  */
 template< ScanType scanType,
           ScanPhaseType phaseType,
-          int blockSize = 256,
+          typename ValueType,
+          // use blockSize=256 for 32-bit value types, scale with sizeof(ValueType)
+          // to keep shared memory requirements constant
+          int blockSize = 256 * 4 / sizeof(ValueType),
           // valuesPerThread should be odd to avoid shared memory bank conflicts
           int valuesPerThread = 7 >
 struct CudaScanKernelLauncher
@@ -520,6 +523,7 @@ struct CudaScanKernelLauncher
                       Reduction&& reduction,
                       typename OutputArray::ValueType zero )
    {
+      static_assert( std::is_same< ValueType, typename OutputArray::ValueType >::value, "invalid configuration of ValueType" );
       using Index = typename InputArray::IndexType;
 
       if( end - begin <= blockSize * valuesPerThread ) {
@@ -639,7 +643,7 @@ struct CudaScanKernelLauncher
 
          // blockResults now contains scan results for each block. The first phase
          // ends by computing an exclusive scan of this array.
-         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::perform(
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase, ValueType >::perform(
             blockResults,
             blockResults,
             0,
@@ -689,6 +693,7 @@ struct CudaScanKernelLauncher
                        typename OutputArray::ValueType zero,
                        typename OutputArray::ValueType shift )
    {
+      static_assert( std::is_same< ValueType, typename OutputArray::ValueType >::value, "invalid configuration of ValueType" );
       using Index = typename InputArray::IndexType;
 
       // if the input was already scanned with just one block in the first phase,

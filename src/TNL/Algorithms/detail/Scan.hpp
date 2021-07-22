@@ -278,7 +278,7 @@ perform( const InputArray& input,
    if( end <= begin )
       return;
 
-   detail::CudaScanKernelLauncher< Type, PhaseType >::perform(
+   detail::CudaScanKernelLauncher< Type, PhaseType, typename OutputArray::ValueType >::perform(
       input,
       output,
       begin,
@@ -312,7 +312,7 @@ performFirstPhase( const InputArray& input,
       return block_results;
    }
 
-   return detail::CudaScanKernelLauncher< Type, PhaseType >::performFirstPhase(
+   return detail::CudaScanKernelLauncher< Type, PhaseType, typename OutputArray::ValueType >::performFirstPhase(
       input,
       output,
       begin,
@@ -346,7 +346,7 @@ performSecondPhase( const InputArray& input,
    if( end <= begin )
       return;
 
-   detail::CudaScanKernelLauncher< Type, PhaseType >::performSecondPhase(
+   detail::CudaScanKernelLauncher< Type, PhaseType, typename OutputArray::ValueType >::performSecondPhase(
       input,
       output,
       blockShifts,
