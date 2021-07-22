@@ -21,6 +21,11 @@ enum class ScanType {
    Inclusive
 };
 
+enum class ScanPhaseType {
+   WriteInFirstPhase,
+   WriteInSecondPhase
+};
+
 } // namespace detail
 } // namespace Algorithms
 } // namespace TNL

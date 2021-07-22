@@ -64,7 +64,8 @@ distributedInclusiveScan( const InputDistributedArray& input,
                   "The input and output arrays must have the same MPI communicator." );
    TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );
-   using Scan = detail::DistributedScan< detail::ScanType::Inclusive >;
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   using Scan = detail::DistributedScan< detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
    output.startSynchronization();
 }
@@ -137,7 +138,8 @@ distributedExclusiveScan( const InputDistributedArray& input,
                   "The input and output arrays must have the same MPI communicator." );
    TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );
-   using Scan = detail::DistributedScan< detail::ScanType::Exclusive >;
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   using Scan = detail::DistributedScan< detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
    output.startSynchronization();
 }
@@ -202,7 +204,7 @@ distributedInplaceInclusiveScan( DistributedArray& array,
                                  Reduction&& reduction,
                                  typename DistributedArray::ValueType zero )
 {
-   using Scan = detail::DistributedScan< detail::ScanType::Inclusive >;
+   using Scan = detail::DistributedScan< detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
    array.startSynchronization();
 }
@@ -265,7 +267,7 @@ distributedInplaceExclusiveScan( DistributedArray& array,
                                  Reduction&& reduction,
                                  typename DistributedArray::ValueType zero )
 {
-   using Scan = detail::DistributedScan< detail::ScanType::Exclusive >;
+   using Scan = detail::DistributedScan< detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
    array.startSynchronization();
 }

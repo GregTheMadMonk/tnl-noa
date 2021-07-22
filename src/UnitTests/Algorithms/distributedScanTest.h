@@ -87,10 +87,14 @@ protected:
 #ifdef HAVE_CUDA
       if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
-         CudaScanKernelLauncher< ScanType::Inclusive >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Inclusive >::maxGridSize() = 3;
-         CudaScanKernelLauncher< ScanType::Exclusive >::resetMaxGridSize();
-         CudaScanKernelLauncher< ScanType::Exclusive >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInFirstPhase >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInFirstPhase >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Inclusive, ScanPhaseType::WriteInSecondPhase >::maxGridSize() = 3;
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::resetMaxGridSize();
+         CudaScanKernelLauncher< ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::maxGridSize() = 3;
       }
 #endif
    }
@@ -100,8 +104,12 @@ protected:
    {
 #ifdef HAVE_CUDA
       // skip the check for too small arrays
-      if( check_cuda_grids && array.getLocalRange().getSize() > 256 )
-         EXPECT_GT( ( CudaScanKernelLauncher< ScanType >::gridsCount() ), 1 );
+      if( check_cuda_grids && array.getLocalRange().getSize() > 256 ) {
+         // we don't care which kernel launcher was actually used
+         const auto gridsCount = TNL::max( CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInFirstPhase >::gridsCount(),
+                                           CudaScanKernelLauncher< ScanType, ScanPhaseType::WriteInSecondPhase >::gridsCount() );
+         EXPECT_GT( gridsCount, 1 );
+      }
 #endif
 
       array_host = array;

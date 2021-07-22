@@ -21,7 +21,7 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
 struct DistributedScan
 {
    template< typename InputDistributedArray,
@@ -48,7 +48,7 @@ struct DistributedScan
          // perform first phase on the local data
          const auto inputLocalView = input.getConstLocalView();
          auto outputLocalView = output.getLocalView();
-         const auto block_results = Scan< DeviceType, Type >::performFirstPhase( inputLocalView, outputLocalView, begin, end, begin, reduction, zero );
+         const auto block_results = Scan< DeviceType, Type, PhaseType >::performFirstPhase( inputLocalView, outputLocalView, begin, end, begin, reduction, zero );
          const ValueType local_result = block_results.getElement( block_results.getSize() - 1 );
 
          // exchange local results between ranks
@@ -60,11 +60,11 @@ struct DistributedScan
          MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, group );
 
          // compute the scan of the per-rank results
-         Scan< Devices::Host, ScanType::Exclusive >::perform( rank_results, rank_results, 0, nproc, 0, reduction, zero );
+         Scan< Devices::Host, ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::perform( rank_results, rank_results, 0, nproc, 0, reduction, zero );
 
          // perform the second phase, using the per-block and per-rank results
          const int rank = MPI::GetRank( group );
-         Scan< DeviceType, Type >::performSecondPhase( inputLocalView, outputLocalView, block_results, begin, end, begin, reduction, rank_results[ rank ] );
+         Scan< DeviceType, Type, PhaseType >::performSecondPhase( inputLocalView, outputLocalView, block_results, begin, end, begin, reduction, zero, rank_results[ rank ] );
       }
    }
 };

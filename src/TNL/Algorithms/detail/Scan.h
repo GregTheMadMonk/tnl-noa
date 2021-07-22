@@ -21,11 +21,11 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-template< typename Device, ScanType Type >
+template< typename Device, ScanType Type, ScanPhaseType PhaseType = ScanPhaseType::WriteInSecondPhase >
 struct Scan;
 
-template< ScanType Type >
-struct Scan< Devices::Sequential, Type >
+template< ScanType Type, ScanPhaseType PhaseType >
+struct Scan< Devices::Sequential, Type, PhaseType >
 {
    template< typename InputArray,
              typename OutputArray,
@@ -63,11 +63,12 @@ struct Scan< Devices::Sequential, Type >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero );
+                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType shift );
 };
 
-template< ScanType Type >
-struct Scan< Devices::Host, Type >
+template< ScanType Type, ScanPhaseType PhaseType >
+struct Scan< Devices::Host, Type, PhaseType >
 {
    template< typename InputArray,
              typename OutputArray,
@@ -105,11 +106,12 @@ struct Scan< Devices::Host, Type >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero );
+                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType shift );
 };
 
-template< ScanType Type >
-struct Scan< Devices::Cuda, Type >
+template< ScanType Type, ScanPhaseType PhaseType >
+struct Scan< Devices::Cuda, Type, PhaseType >
 {
    template< typename InputArray,
              typename OutputArray,
@@ -147,7 +149,8 @@ struct Scan< Devices::Cuda, Type >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero );
+                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType shift );
 };
 
 } // namespace detail

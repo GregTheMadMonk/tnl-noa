@@ -27,12 +27,12 @@ namespace TNL {
 namespace Algorithms {
 namespace detail {
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 void
-Scan< Devices::Sequential, Type >::
+Scan< Devices::Sequential, Type, PhaseType >::
 perform( const InputArray& input,
          OutputArray& output,
          typename InputArray::IndexType begin,
@@ -59,12 +59,12 @@ perform( const InputArray& input,
    }
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 auto
-Scan< Devices::Sequential, Type >::
+Scan< Devices::Sequential, Type, PhaseType >::
 performFirstPhase( const InputArray& input,
                    OutputArray& output,
                    typename InputArray::IndexType begin,
@@ -80,13 +80,13 @@ performFirstPhase( const InputArray& input,
    return block_results;
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename BlockShifts,
              typename Reduction >
 void
-Scan< Devices::Sequential, Type >::
+Scan< Devices::Sequential, Type, PhaseType >::
 performSecondPhase( const InputArray& input,
                     OutputArray& output,
                     const BlockShifts& blockShifts,
@@ -94,18 +94,19 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero )
+                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType shift )
 {
    // artificial second phase - only one block, use the shift as the initial value
-   perform( input, output, begin, end, outputBegin, reduction, reduction( zero, blockShifts[ 0 ] ) );
+   perform( input, output, begin, end, outputBegin, reduction, reduction( zero, reduction( shift, blockShifts[ 0 ] ) ) );
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 void
-Scan< Devices::Host, Type >::
+Scan< Devices::Host, Type, PhaseType >::
 perform( const InputArray& input,
          OutputArray& output,
          typename InputArray::IndexType begin,
@@ -158,12 +159,12 @@ perform( const InputArray& input,
       Scan< Devices::Sequential, Type >::perform( input, output, begin, end, outputBegin, reduction, zero );
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 auto
-Scan< Devices::Host, Type >::
+Scan< Devices::Host, Type, PhaseType >::
 performFirstPhase( const InputArray& input,
                    OutputArray& output,
                    typename InputArray::IndexType begin,
@@ -212,13 +213,13 @@ performFirstPhase( const InputArray& input,
       return Scan< Devices::Sequential, Type >::performFirstPhase( input, output, begin, end, outputBegin, reduction, zero );
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename BlockShifts,
              typename Reduction >
 void
-Scan< Devices::Host, Type >::
+Scan< Devices::Host, Type, PhaseType >::
 performSecondPhase( const InputArray& input,
                     OutputArray& output,
                     const BlockShifts& blockShifts,
@@ -226,7 +227,8 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero )
+                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType shift )
 {
 #ifdef HAVE_OPENMP
    using IndexType = typename InputArray::IndexType;
@@ -250,20 +252,20 @@ performSecondPhase( const InputArray& input,
          const IndexType block_output_begin = outputBegin + block_offset;
 
          // phase 2: per-block scan using the block results as initial values
-         Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, reduction( zero, blockShifts[ block_idx ] ) );
+         Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, reduction( zero, reduction( shift, blockShifts[ block_idx ] ) ) );
       }
    }
    else
 #endif
-      Scan< Devices::Sequential, Type >::performSecondPhase( input, output, blockShifts, begin, end, outputBegin, reduction, zero );
+      Scan< Devices::Sequential, Type >::performSecondPhase( input, output, blockShifts, begin, end, outputBegin, reduction, zero, shift );
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 void
-Scan< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type, PhaseType >::
 perform( const InputArray& input,
          OutputArray& output,
          typename InputArray::IndexType begin,
@@ -276,7 +278,7 @@ perform( const InputArray& input,
    if( end <= begin )
       return;
 
-   detail::CudaScanKernelLauncher< Type >::perform(
+   detail::CudaScanKernelLauncher< Type, PhaseType >::perform(
       input,
       output,
       begin,
@@ -289,12 +291,12 @@ perform( const InputArray& input,
 #endif
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename Reduction >
 auto
-Scan< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type, PhaseType >::
 performFirstPhase( const InputArray& input,
                    OutputArray& output,
                    typename InputArray::IndexType begin,
@@ -310,7 +312,7 @@ performFirstPhase( const InputArray& input,
       return block_results;
    }
 
-   return detail::CudaScanKernelLauncher< Type >::performFirstPhase(
+   return detail::CudaScanKernelLauncher< Type, PhaseType >::performFirstPhase(
       input,
       output,
       begin,
@@ -323,13 +325,13 @@ performFirstPhase( const InputArray& input,
 #endif
 }
 
-template< ScanType Type >
+template< ScanType Type, ScanPhaseType PhaseType >
    template< typename InputArray,
              typename OutputArray,
              typename BlockShifts,
              typename Reduction >
 void
-Scan< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type, PhaseType >::
 performSecondPhase( const InputArray& input,
                     OutputArray& output,
                     const BlockShifts& blockShifts,
@@ -337,13 +339,14 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero )
+                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType shift )
 {
 #ifdef HAVE_CUDA
    if( end <= begin )
       return;
 
-   detail::CudaScanKernelLauncher< Type >::performSecondPhase(
+   detail::CudaScanKernelLauncher< Type, PhaseType >::performSecondPhase(
       input,
       output,
       blockShifts,
@@ -351,7 +354,8 @@ performSecondPhase( const InputArray& input,
       end,
       outputBegin,
       std::forward< Reduction >( reduction ),
-      zero );
+      zero,
+      shift );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

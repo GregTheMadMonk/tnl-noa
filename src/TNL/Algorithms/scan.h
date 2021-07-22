@@ -77,7 +77,8 @@ inclusiveScan( const InputArray& input,
                   "The input and output arrays must have the same device type." );
    TNL_ASSERT_EQ( reduction( zero, zero ), zero,
                   "zero is not an idempotent value of the reduction operation" );
-   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Inclusive >;
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
 }
 
@@ -163,7 +164,8 @@ exclusiveScan( const InputArray& input,
                   "The input and output arrays must have the same device type." );
    TNL_ASSERT_EQ( reduction( zero, zero ), zero,
                   "zero is not an idempotent value of the reduction operation" );
-   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Exclusive >;
+   // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
+   using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
    Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
 }
 
@@ -238,7 +240,7 @@ inplaceInclusiveScan( Array& array,
 {
    TNL_ASSERT_EQ( reduction( zero, zero ), zero,
                   "zero is not an idempotent value of the reduction operation" );
-   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive >;
+   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), zero );
 }
 
@@ -310,7 +312,7 @@ inplaceExclusiveScan( Array& array,
 {
    TNL_ASSERT_EQ( reduction( zero, zero ), zero,
                   "zero is not an idempotent value of the reduction operation" );
-   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive >;
+   using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
    Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), zero );
 }
 
