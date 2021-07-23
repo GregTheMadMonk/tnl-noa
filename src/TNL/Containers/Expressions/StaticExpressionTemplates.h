@@ -60,6 +60,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 {
    using VectorOperandType = T1;
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -114,6 +115,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 {
    using VectorOperandType = T1;
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -162,6 +164,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
 {
    using VectorOperandType = T2;
    using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -211,6 +214,7 @@ struct StaticUnaryExpressionTemplate
 {
    using VectorOperandType = T1;
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "The operand of static expression is not static, i.e. based on static vector." );

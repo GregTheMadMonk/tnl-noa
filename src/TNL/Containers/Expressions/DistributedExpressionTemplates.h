@@ -57,6 +57,7 @@ template< typename T1,
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using LocalRangeType = typename T1::LocalRangeType;
@@ -155,6 +156,7 @@ template< typename T1,
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using LocalRangeType = typename T1::LocalRangeType;
@@ -236,6 +238,7 @@ template< typename T1,
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
    using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using LocalRangeType = typename T2::LocalRangeType;
@@ -318,6 +321,7 @@ template< typename T1,
 struct DistributedUnaryExpressionTemplate
 {
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using LocalRangeType = typename T1::LocalRangeType;
