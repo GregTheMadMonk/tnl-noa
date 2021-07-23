@@ -81,8 +81,9 @@ struct SegmentedScan< Devices::Sequential, Type >
     * \param begin the first element in the array to be scanned
     * \param end the last element in the array to be scanned
     * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
+    * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *                 for the reduction operation, i.e. element which does not
+    *                 change the result of the reduction.
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
     *
@@ -107,7 +108,7 @@ struct SegmentedScan< Devices::Sequential, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::ValueType zero );
+            const typename Vector::ValueType identity );
 };
 
 template< detail::ScanType Type >
@@ -125,8 +126,9 @@ struct SegmentedScan< Devices::Host, Type >
     * \param begin the first element in the array to be scanned
     * \param end the last element in the array to be scanned
     * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
+    * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *                 for the reduction operation, i.e. element which does not
+    *                 change the result of the reduction.
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
     *
@@ -151,7 +153,7 @@ struct SegmentedScan< Devices::Host, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::ValueType zero );
+            const typename Vector::ValueType identity );
 };
 
 template< detail::ScanType Type >
@@ -169,8 +171,9 @@ struct SegmentedScan< Devices::Cuda, Type >
     * \param begin the first element in the array to be scanned
     * \param end the last element in the array to be scanned
     * \param reduction lambda function implementing the reduction operation
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
+    * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *                 for the reduction operation, i.e. element which does not
+    *                 change the result of the reduction.
     *
     * The reduction lambda function takes two variables which are supposed to be reduced:
     *
@@ -197,7 +200,7 @@ struct SegmentedScan< Devices::Cuda, Type >
             const typename Vector::IndexType begin,
             const typename Vector::IndexType end,
             const Reduction& reduction,
-            const typename Vector::ValueType zero );
+            const typename Vector::ValueType identity );
 };
 
 } // namespace Algorithms

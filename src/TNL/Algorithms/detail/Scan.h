@@ -38,7 +38,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
             typename InputArray::IndexType end,
             typename OutputArray::IndexType outputBegin,
             Reduction&& reduction,
-            typename OutputArray::ValueType zero );
+            typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -50,7 +50,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
                       typename InputArray::IndexType end,
                       typename OutputArray::IndexType outputBegin,
                       Reduction&& reduction,
-                      typename OutputArray::ValueType zero );
+                      typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -64,7 +64,7 @@ struct Scan< Devices::Sequential, Type, PhaseType >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType identity,
                        typename OutputArray::ValueType shift );
 };
 
@@ -81,7 +81,7 @@ struct Scan< Devices::Host, Type, PhaseType >
             typename InputArray::IndexType end,
             typename OutputArray::IndexType outputBegin,
             Reduction&& reduction,
-            typename OutputArray::ValueType zero );
+            typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -93,7 +93,7 @@ struct Scan< Devices::Host, Type, PhaseType >
                       typename InputArray::IndexType end,
                       typename OutputArray::IndexType outputBegin,
                       Reduction&& reduction,
-                      typename OutputArray::ValueType zero );
+                      typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -107,7 +107,7 @@ struct Scan< Devices::Host, Type, PhaseType >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType identity,
                        typename OutputArray::ValueType shift );
 };
 
@@ -124,7 +124,7 @@ struct Scan< Devices::Cuda, Type, PhaseType >
             typename InputArray::IndexType end,
             typename OutputArray::IndexType outputBegin,
             Reduction&& reduction,
-            typename OutputArray::ValueType zero );
+            typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -136,7 +136,7 @@ struct Scan< Devices::Cuda, Type, PhaseType >
                       typename InputArray::IndexType end,
                       typename OutputArray::IndexType outputBegin,
                       Reduction&& reduction,
-                      typename OutputArray::ValueType zero );
+                      typename OutputArray::ValueType identity );
 
    template< typename InputArray,
              typename OutputArray,
@@ -150,7 +150,7 @@ struct Scan< Devices::Cuda, Type, PhaseType >
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType identity,
                        typename OutputArray::ValueType shift );
 };
 

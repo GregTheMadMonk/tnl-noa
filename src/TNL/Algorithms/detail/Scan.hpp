@@ -39,12 +39,12 @@ perform( const InputArray& input,
          typename InputArray::IndexType end,
          typename OutputArray::IndexType outputBegin,
          Reduction&& reduction,
-         typename OutputArray::ValueType zero )
+         typename OutputArray::ValueType identity )
 {
    using ValueType = typename OutputArray::ValueType;
 
    // simple sequential algorithm - not split into phases
-   ValueType aux = zero;
+   ValueType aux = identity;
    if( Type == ScanType::Inclusive ) {
       for( ; begin < end; begin++, outputBegin++ )
          output[ outputBegin ] = aux = reduction( aux, input[ begin ] );
@@ -73,11 +73,11 @@ performFirstPhase( const InputArray& input,
                    typename InputArray::IndexType end,
                    typename OutputArray::IndexType outputBegin,
                    Reduction&& reduction,
-                   typename OutputArray::ValueType zero )
+                   typename OutputArray::ValueType identity )
 {
    if( end <= begin ) {
       Containers::Array< typename OutputArray::ValueType, Devices::Sequential > block_results( 1 );
-      block_results.setValue( zero );
+      block_results.setValue( identity );
       return block_results;
    }
 
@@ -87,8 +87,8 @@ performFirstPhase( const InputArray& input,
       {
          // artificial second phase - pre-scan the block
          Containers::Array< typename OutputArray::ValueType, Devices::Sequential > block_results( 2 );
-         block_results[ 0 ] = zero;
-         block_results[ 1 ] = perform( input, output, begin, end, outputBegin, reduction, zero );
+         block_results[ 0 ] = identity;
+         block_results[ 1 ] = perform( input, output, begin, end, outputBegin, reduction, identity );
          return block_results;
       }
 
@@ -96,8 +96,8 @@ performFirstPhase( const InputArray& input,
       {
          // artificial first phase - only reduce the block
          Containers::Array< typename OutputArray::ValueType, Devices::Sequential > block_results( 2 );
-         block_results[ 0 ] = zero;
-         block_results[ 1 ] = reduce< Devices::Sequential >( begin, end, input, reduction, zero );
+         block_results[ 0 ] = identity;
+         block_results[ 1 ] = reduce< Devices::Sequential >( begin, end, input, reduction, identity );
          return block_results;
       }
    };
@@ -117,7 +117,7 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType identity,
                     typename OutputArray::ValueType shift )
 {
    switch( PhaseType )
@@ -153,7 +153,7 @@ perform( const InputArray& input,
          typename InputArray::IndexType end,
          typename OutputArray::IndexType outputBegin,
          Reduction&& reduction,
-         typename OutputArray::ValueType zero )
+         typename OutputArray::ValueType identity )
 {
 #ifdef HAVE_OPENMP
    using ValueType = typename OutputArray::ValueType;
@@ -184,14 +184,14 @@ perform( const InputArray& input,
             case ScanPhaseType::WriteInFirstPhase:
             {
                // step 1: pre-scan the block and save the result of the block reduction
-               block_results[ block_idx ] = Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, zero );
+               block_results[ block_idx ] = Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, identity );
 
                #pragma omp barrier
 
                // step 2: scan the block results
                #pragma omp single
                {
-                  Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, zero );
+                  Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, identity );
                }
 
                // step 3: uniform shift of the pre-scanned block
@@ -206,14 +206,14 @@ perform( const InputArray& input,
             case ScanPhaseType::WriteInSecondPhase:
             {
                // step 1: per-block reductions, write the result into the buffer
-               block_results[ block_idx ] = reduce< Devices::Sequential >( block_begin, block_end, input, reduction, zero );
+               block_results[ block_idx ] = reduce< Devices::Sequential >( block_begin, block_end, input, reduction, identity );
 
                #pragma omp barrier
 
                // step 2: scan the block results
                #pragma omp single
                {
-                  Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, zero );
+                  Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, identity );
                }
 
                // step 3: per-block scan using the block results as initial values
@@ -226,7 +226,7 @@ perform( const InputArray& input,
    }
    else
 #endif
-      Scan< Devices::Sequential, Type >::perform( input, output, begin, end, outputBegin, reduction, zero );
+      Scan< Devices::Sequential, Type >::perform( input, output, begin, end, outputBegin, reduction, identity );
 }
 
 template< ScanType Type, ScanPhaseType PhaseType >
@@ -241,7 +241,7 @@ performFirstPhase( const InputArray& input,
                    typename InputArray::IndexType end,
                    typename OutputArray::IndexType outputBegin,
                    Reduction&& reduction,
-                   typename OutputArray::ValueType zero )
+                   typename OutputArray::ValueType identity )
 {
 #ifdef HAVE_OPENMP
    using ValueType = typename OutputArray::ValueType;
@@ -249,7 +249,7 @@ performFirstPhase( const InputArray& input,
 
    if( end <= begin ) {
       Containers::Array< ValueType, Devices::Sequential > block_results( 1 );
-      block_results.setValue( zero );
+      block_results.setValue( identity );
       return block_results;
    }
 
@@ -275,28 +275,28 @@ performFirstPhase( const InputArray& input,
             case ScanPhaseType::WriteInFirstPhase:
             {
                // pre-scan the block, write the result of the block reduction into the buffer
-               block_results[ block_idx ] = Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, zero );
+               block_results[ block_idx ] = Scan< Devices::Sequential, Type >::perform( input, output, block_begin, block_end, block_output_begin, reduction, identity );
                break;
             }
 
             case ScanPhaseType::WriteInSecondPhase:
             {
                // upsweep: per-block reductions, write the result into the buffer
-               block_results[ block_idx ] = reduce< Devices::Sequential >( block_begin, block_end, input, reduction, zero );
+               block_results[ block_idx ] = reduce< Devices::Sequential >( block_begin, block_end, input, reduction, identity );
                break;
             }
          }
       }
 
       // spine step: scan the block results
-      Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, zero );
+      Scan< Devices::Sequential, ScanType::Exclusive >::perform( block_results, block_results, 0, blocks + 1, 0, reduction, identity );
 
       // block_results now contains shift values for each block - to be used in the second phase
       return block_results;
    }
    else
 #endif
-      return Scan< Devices::Sequential, Type >::performFirstPhase( input, output, begin, end, outputBegin, reduction, zero );
+      return Scan< Devices::Sequential, Type >::performFirstPhase( input, output, begin, end, outputBegin, reduction, identity );
 }
 
 template< ScanType Type, ScanPhaseType PhaseType >
@@ -313,7 +313,7 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType identity,
                     typename OutputArray::ValueType shift )
 {
 #ifdef HAVE_OPENMP
@@ -362,7 +362,7 @@ performSecondPhase( const InputArray& input,
    }
    else
 #endif
-      Scan< Devices::Sequential, Type >::performSecondPhase( input, output, blockShifts, begin, end, outputBegin, reduction, zero, shift );
+      Scan< Devices::Sequential, Type >::performSecondPhase( input, output, blockShifts, begin, end, outputBegin, reduction, identity, shift );
 }
 
 template< ScanType Type, ScanPhaseType PhaseType >
@@ -377,7 +377,7 @@ perform( const InputArray& input,
          typename InputArray::IndexType end,
          typename OutputArray::IndexType outputBegin,
          Reduction&& reduction,
-         typename OutputArray::ValueType zero )
+         typename OutputArray::ValueType identity )
 {
 #ifdef HAVE_CUDA
    if( end <= begin )
@@ -390,7 +390,7 @@ perform( const InputArray& input,
       end,
       outputBegin,
       std::forward< Reduction >( reduction ),
-      zero );
+      identity );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -408,12 +408,12 @@ performFirstPhase( const InputArray& input,
                    typename InputArray::IndexType end,
                    typename OutputArray::IndexType outputBegin,
                    Reduction&& reduction,
-                   typename OutputArray::ValueType zero )
+                   typename OutputArray::ValueType identity )
 {
 #ifdef HAVE_CUDA
    if( end <= begin ) {
       Containers::Array< typename OutputArray::ValueType, Devices::Cuda > block_results( 1 );
-      block_results.setValue( zero );
+      block_results.setValue( identity );
       return block_results;
    }
 
@@ -424,7 +424,7 @@ performFirstPhase( const InputArray& input,
       end,
       outputBegin,
       std::forward< Reduction >( reduction ),
-      zero );
+      identity );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -444,7 +444,7 @@ performSecondPhase( const InputArray& input,
                     typename InputArray::IndexType end,
                     typename OutputArray::IndexType outputBegin,
                     Reduction&& reduction,
-                    typename OutputArray::ValueType zero,
+                    typename OutputArray::ValueType identity,
                     typename OutputArray::ValueType shift )
 {
 #ifdef HAVE_CUDA
@@ -459,7 +459,7 @@ performSecondPhase( const InputArray& input,
       end,
       outputBegin,
       std::forward< Reduction >( reduction ),
-      zero,
+      identity,
       shift );
 #else
    throw Exceptions::CudaSupportMissing();

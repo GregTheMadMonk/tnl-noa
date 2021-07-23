@@ -23,7 +23,7 @@ namespace TNL {
 struct Plus : public std::plus< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return 0; }
+   static constexpr T getIdentity() { return 0; }
 };
 
 /**
@@ -32,7 +32,7 @@ struct Plus : public std::plus< void >
 struct Multiplies : public std::multiplies< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return 1; }
+   static constexpr T getIdentity() { return 1; }
 };
 
 /**
@@ -41,7 +41,7 @@ struct Multiplies : public std::multiplies< void >
 struct Min
 {
    template< typename T >
-   static constexpr T getIdempotent()
+   static constexpr T getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -63,7 +63,7 @@ struct Min
 struct Max
 {
    template< typename T >
-   static constexpr T getIdempotent()
+   static constexpr T getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -85,7 +85,7 @@ struct Max
 struct MinWithArg
 {
    template< typename T >
-   static constexpr T getIdempotent()
+   static constexpr T getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -113,7 +113,7 @@ struct MinWithArg
 struct MaxWithArg
 {
    template< typename T >
-   static constexpr T getIdempotent()
+   static constexpr T getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -141,7 +141,7 @@ struct MaxWithArg
 struct LogicalAnd : public std::logical_and< void >
 {
    template< typename T >
-   static constexpr T getIdempotent()
+   static constexpr T getIdentity()
    {
       static_assert( std::numeric_limits< T >::is_specialized,
                      "std::numeric_limits is not specialized for the requested type" );
@@ -155,7 +155,7 @@ struct LogicalAnd : public std::logical_and< void >
 struct LogicalOr : public std::logical_or< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return 0; }
+   static constexpr T getIdentity() { return 0; }
 };
 
 /**
@@ -164,7 +164,7 @@ struct LogicalOr : public std::logical_or< void >
 struct BitAnd : public std::bit_and< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return ~static_cast< T >( 0 ); }
+   static constexpr T getIdentity() { return ~static_cast< T >( 0 ); }
 };
 
 /**
@@ -173,7 +173,7 @@ struct BitAnd : public std::bit_and< void >
 struct BitOr : public std::bit_or< void >
 {
    template< typename T >
-   static constexpr T getIdempotent() { return 0; }
+   static constexpr T getIdentity() { return 0; }
 };
 
 } // namespace TNL

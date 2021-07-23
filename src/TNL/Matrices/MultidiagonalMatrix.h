@@ -47,7 +47,7 @@ namespace Matrices {
  * are \f$\{-3,-1,0,1,3\}\f$. Advantage is that we do not store the column indexes
  * explicitly as it is in \ref SparseMatrix. This can reduce significantly the
  * memory requirements which also means better performance. See the following table
- * for the storage requirements comparison between \ref TNL::Matrices::MultidiagonalMatrix 
+ * for the storage requirements comparison between \ref TNL::Matrices::MultidiagonalMatrix
  * and \ref TNL::Matrices::SparseMatrix.
  *
  *  Real   | Index     |      SparseMatrix    | MultidiagonalMatrix | Ratio
@@ -614,7 +614,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceRows.cpp
@@ -622,7 +624,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -641,7 +643,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceRows.cpp
@@ -649,7 +653,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -666,7 +670,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceAllRows.cpp
@@ -674,7 +680,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
@@ -691,7 +697,9 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/MultidiagonalMatrix/MultidiagonalMatrixExample_reduceAllRows.cpp
@@ -699,7 +707,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include MultidiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Method for iteration over matrix rows for constant instances.

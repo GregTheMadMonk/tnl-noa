@@ -44,8 +44,9 @@ namespace Algorithms {
  *                    must be at least `end - begin` elements in the output
  *                    array starting at the position given by `outputBegin`.
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e.
- *             element which does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -71,22 +72,23 @@ inclusiveScan( const InputArray& input,
                typename InputArray::IndexType end,
                typename OutputArray::IndexType outputBegin,
                Reduction&& reduction,
-               typename OutputArray::ValueType zero )
+               typename OutputArray::ValueType identity )
 {
    static_assert( std::is_same< typename InputArray::DeviceType, typename OutputArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
-                  "zero is not an idempotent value of the reduction operation" );
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
+                  "identity is not an identity element of the reduction operation" );
    // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
    using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
-   Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename OutputArray::ValueType >()`.
+ * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
+ * taken as `reduction.template getIdentity< typename OutputArray::ValueType >()`.
  * See \ref inclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
@@ -103,8 +105,8 @@ inclusiveScan( const InputArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType zero = Reduction::template getIdempotent< typename OutputArray::ValueType >();
-   inclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
+   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   inclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -131,8 +133,9 @@ inclusiveScan( const InputArray& input,
  *                    must be at least `end - begin` elements in the output
  *                    array starting at the position given by `outputBegin`.
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e.
- *             element which does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -158,22 +161,23 @@ exclusiveScan( const InputArray& input,
                typename InputArray::IndexType end,
                typename OutputArray::IndexType outputBegin,
                Reduction&& reduction,
-               typename OutputArray::ValueType zero )
+               typename OutputArray::ValueType identity )
 {
    static_assert( std::is_same< typename InputArray::DeviceType, typename OutputArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
-                  "zero is not an idempotent value of the reduction operation" );
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
+                  "identity is not an identity element of the reduction operation" );
    // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
    using Scan = detail::Scan< typename OutputArray::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
-   Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref exclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename OutputArray::ValueType >()`.
+ * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
+ * taken as `reduction.template getIdentity< typename OutputArray::ValueType >()`.
  * See \ref exclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
@@ -190,8 +194,8 @@ exclusiveScan( const InputArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputArray::ValueType zero = Reduction::template getIdempotent< typename OutputArray::ValueType >();
-   exclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), zero );
+   constexpr typename OutputArray::ValueType identity = Reduction::template getIdentity< typename OutputArray::ValueType >();
+   exclusiveScan( input, output, begin, end, outputBegin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -212,8 +216,9 @@ exclusiveScan( const InputArray& input,
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -236,19 +241,20 @@ inplaceInclusiveScan( Array& array,
                       typename Array::IndexType begin,
                       typename Array::IndexType end,
                       Reduction&& reduction,
-                      typename Array::ValueType zero )
+                      typename Array::ValueType identity )
 {
-   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
-                  "zero is not an idempotent value of the reduction operation" );
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
+                  "identity is not an identity element of the reduction operation" );
    using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
-   Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inplaceInclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename Array::ValueType >()`.
+ * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
+ * taken as `reduction.template getIdentity< typename Array::ValueType >()`.
  * See \ref inplaceInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
@@ -262,8 +268,8 @@ inplaceInclusiveScan( Array& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType zero = Reduction::template getIdempotent< typename Array::ValueType >();
-   inplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   inplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -284,8 +290,9 @@ inplaceInclusiveScan( Array& array,
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -308,19 +315,20 @@ inplaceExclusiveScan( Array& array,
                       typename Array::IndexType begin,
                       typename Array::IndexType end,
                       Reduction&& reduction,
-                      typename Array::ValueType zero )
+                      typename Array::ValueType identity )
 {
-   TNL_ASSERT_EQ( reduction( zero, zero ), zero,
-                  "zero is not an idempotent value of the reduction operation" );
+   TNL_ASSERT_EQ( reduction( identity, identity ), identity,
+                  "identity is not an identity element of the reduction operation" );
    using Scan = detail::Scan< typename Array::DeviceType, detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
-   Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, begin, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
  * \brief Overload of \ref inplaceExclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename Array::ValueType >()`.
+ * The [identity element](https://en.wikipedia.org/wiki/Identity_element) is
+ * taken as `reduction.template getIdentity< typename Array::ValueType >()`.
  * See \ref inplaceExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
@@ -334,8 +342,8 @@ inplaceExclusiveScan( Array& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename Array::ValueType zero = Reduction::template getIdempotent< typename Array::ValueType >();
-   inplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename Array::ValueType identity = Reduction::template getIdentity< typename Array::ValueType >();
+   inplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 } // namespace Algorithms

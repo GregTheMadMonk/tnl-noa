@@ -701,7 +701,9 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_reduceRows.cpp
@@ -709,7 +711,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity );
 
       /**
        * \brief Method for performing general reduction on matrix rows for constant instances.
@@ -728,7 +730,9 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_reduceRows.cpp
@@ -736,7 +740,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
-      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -753,7 +757,9 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_reduceAllRows.cpp
@@ -761,7 +767,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity );
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows for constant instances.
@@ -778,7 +784,9 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_reduceAllRows.cpp
@@ -786,7 +794,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include DenseMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Computes product of matrix and vector.
@@ -964,7 +972,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
 /**
  * \brief Insertion operator for dense matrix and output stream.
- * 
+ *
  * \param str is the output stream.
  * \param matrix is the dense matrix.
  * \return  reference to the stream.

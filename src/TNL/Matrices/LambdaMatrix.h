@@ -388,7 +388,9 @@ class LambdaMatrix
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceRows.cpp
@@ -396,7 +398,7 @@ class LambdaMatrix
        * \include LambdaMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Method for performing general reduction on ALL matrix rows.
@@ -413,7 +415,9 @@ class LambdaMatrix
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/LambdaMatrix/LambdaMatrixExample_reduceAllRows.cpp
@@ -421,7 +425,7 @@ class LambdaMatrix
        * \include LambdaMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Computes product of matrix and vector.

@@ -35,7 +35,7 @@ auto ExpressionMin( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Min{}, TNL::Min::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Min{}, TNL::Min::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -46,7 +46,7 @@ auto ExpressionArgMin( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduceWithArgument< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::MinWithArg{}, TNL::MinWithArg::template getIdempotent< ResultType >() );
+   return Algorithms::reduceWithArgument< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::MinWithArg{}, TNL::MinWithArg::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -57,7 +57,7 @@ auto ExpressionMax( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Max{}, TNL::Max::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Max{}, TNL::Max::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -68,7 +68,7 @@ auto ExpressionArgMax( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduceWithArgument< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::MaxWithArg{}, TNL::MaxWithArg::template getIdempotent< ResultType >() );
+   return Algorithms::reduceWithArgument< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::MaxWithArg{}, TNL::MaxWithArg::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -79,7 +79,7 @@ auto ExpressionSum( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Plus{}, TNL::Plus::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Plus{}, TNL::Plus::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -90,7 +90,7 @@ auto ExpressionProduct( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Multiplies{}, TNL::Multiplies::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::Multiplies{}, TNL::Multiplies::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -101,7 +101,7 @@ auto ExpressionLogicalAnd( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::LogicalAnd{}, TNL::LogicalAnd::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::LogicalAnd{}, TNL::LogicalAnd::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -112,7 +112,7 @@ auto ExpressionLogicalOr( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::LogicalOr{}, TNL::LogicalOr::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::LogicalOr{}, TNL::LogicalOr::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -123,7 +123,7 @@ auto ExpressionBinaryAnd( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::BitAnd{}, TNL::BitAnd::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::BitAnd{}, TNL::BitAnd::template getIdentity< ResultType >() );
 }
 
 template< typename Expression >
@@ -134,7 +134,7 @@ auto ExpressionBinaryOr( const Expression& expression )
    using IndexType = typename Expression::IndexType;
 
    const auto view = expression.getConstView();
-   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::BitOr{}, TNL::BitOr::template getIdempotent< ResultType >() );
+   return Algorithms::reduce< typename Expression::DeviceType >( ( IndexType ) 0, expression.getSize(), view, TNL::BitOr{}, TNL::BitOr::template getIdentity< ResultType >() );
 }
 
 } // namespace Expressions

@@ -44,8 +44,9 @@ namespace Algorithms {
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
  * \param reduction is a lambda function defining the reduction operation.
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  * \return result of the reduction
  *
  * The `fetch` lambda function takes one argument which is index of the element to be fetched:
@@ -77,13 +78,13 @@ Result reduce( const Index begin,
                const Index end,
                Fetch&& fetch,
                Reduction&& reduction,
-               const Result& zero )
+               const Result& identity )
 {
    return detail::Reduction< Device >::reduce( begin,
                                                end,
                                                std::forward< Fetch >( fetch ),
                                                std::forward< Reduction >( reduction ),
-                                               zero );
+                                               identity );
 }
 
 /**
@@ -135,7 +136,7 @@ auto reduce( const Index begin,
                             end,
                             std::forward< Fetch >( fetch ),
                             std::forward< Reduction >( reduction ),
-                            reduction.template getIdempotent< Result >() );
+                            reduction.template getIdentity< Result >() );
 }
 
 /**
@@ -148,7 +149,7 @@ auto reduce( const Index begin,
  * - `array.getSize()` as the end of the interval for reduction,
  * - `array.getConstView()` as the `fetch` functor,
  * - `reduction` as the reduction operation,
- * - and `zero` as the idempotent element of the reduction.
+ * - and `identity` as the identity element of the reduction.
  *
  * \par Example
  *
@@ -164,13 +165,13 @@ template< typename Array,
           typename Result >
 auto reduce( const Array& array,
              Reduction&& reduction,
-             Result zero )
+             Result identity )
 {
    return reduce< Device >( (typename Array::IndexType) 0,
                             array.getSize(),
                             array.getConstView(),
                             std::forward< Reduction >( reduction ),
-                            zero );
+                            identity );
 }
 
 /**
@@ -187,7 +188,7 @@ auto reduce( const Array& array,
  * - `array.getSize()` as the end of the interval for reduction,
  * - `array.getConstView()` as the `fetch` functor,
  * - `reduction` as the reduction operation,
- * - and the idempotent element obtained from the reduction functional object.
+ * - and the identity element obtained from the reduction functional object.
  *
  * \par Example
  *
@@ -206,7 +207,7 @@ auto reduce( const Array& array,
    using ValueType = typename Array::ValueType;
    return reduce< Array, Device >( array,
                                    std::forward< Reduction >( reduction ),
-                                   reduction.template getIdempotent< ValueType >() );
+                                   reduction.template getIdentity< ValueType >() );
 }
 
 /**
@@ -229,8 +230,9 @@ auto reduce( const Array& array,
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
  * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first`
  *         is the element position and `pair.second` is the reduction result.
  *
@@ -264,13 +266,13 @@ reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
                     Reduction&& reduction,
-                    const Result& zero )
+                    const Result& identity )
 {
    return detail::Reduction< Device >::reduceWithArgument( begin,
                                                            end,
                                                            std::forward< Fetch >( fetch ),
                                                            std::forward< Reduction >( reduction ),
-                                                           zero );
+                                                           identity );
 }
 
 /**
@@ -291,8 +293,9 @@ reduceWithArgument( const Index begin,
  * \param end defines range [begin, end) of indexes which will be used for the reduction.
  * \param fetch is a lambda function fetching the input data.
  * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first`
  *         is the element position and `pair.second` is the reduction result.
  *
@@ -331,7 +334,7 @@ reduceWithArgument( const Index begin,
                                         end,
                                         std::forward< Fetch >( fetch ),
                                         std::forward< Reduction >( reduction ),
-                                        reduction.template getIdempotent< Result >() );
+                                        reduction.template getIdentity< Result >() );
 }
 
 /**
@@ -344,7 +347,7 @@ reduceWithArgument( const Index begin,
  * - `array.getSize()` as the end of the interval for reduction,
  * - `array.getConstView()` as the `fetch` functor,
  * - `reduction` as the reduction operation,
- * - and `zero` as the idempotent element of the reduction.
+ * - and `identity` as the identity element of the reduction.
  *
  * \par Example
  *
@@ -360,13 +363,13 @@ template< typename Array,
           typename Result >
 auto reduceWithArgument( const Array& array,
                          Reduction&& reduction,
-                         Result zero )
+                         Result identity )
 {
    return reduceWithArgument< Device >( (typename Array::IndexType) 0,
                                         array.getSize(),
                                         array.getConstView(),
                                         std::forward< Reduction >( reduction ),
-                                        zero );
+                                        identity );
 }
 
 /**
@@ -381,7 +384,7 @@ auto reduceWithArgument( const Array& array,
  * - `array.getSize()` as the end of the interval for reduction,
  * - `array.getConstView()` as the `fetch` functor,
  * - `reduction` as the reduction operation,
- * - and the idempotent element obtained from the reduction functional object.
+ * - and the identity element obtained from the reduction functional object.
  *
  * \par Example
  *
@@ -400,7 +403,7 @@ auto reduceWithArgument( const Array& array,
    using ValueType = typename Array::ValueType;
    return reduceWithArgument< Array, Device >( array,
                                                std::forward< Reduction >( reduction ),
-                                               reduction.template getIdempotent< ValueType >() );
+                                               reduction.template getIdentity< ValueType >() );
 }
 
 } // namespace Algorithms

@@ -131,19 +131,19 @@ TYPED_TEST( SegmentedScanTest, inclusive )
    flags_copy = flags_view;
 
    v = 0;
-   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), 0 );
    flags_view = flags_copy;
 
    v = 1;
-   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), ( i % 5 ) + 1 );
    flags_view = flags_copy;
 
    setLinearSequence( v );
-   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 1; i < size; i++ )
    {
       if( flags.getElement( i ) )
@@ -154,19 +154,19 @@ TYPED_TEST( SegmentedScanTest, inclusive )
    flags_view = flags_copy;
 
    v_view = 0;
-   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_view.getElement( i ), 0 );
    flags_view = flags_copy;
 
    v_view = 1;
-   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_view.getElement( i ), ( i % 5 ) + 1 );
    flags_view = flags_copy;
 
    setLinearSequence( v );
-   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdempotent< ValueType >() );
+   SegmentedScan< DeviceType >::perform( v_view, flags_view, 0, size, TNL::Plus{}, TNL::Plus::template getIdentity< ValueType >() );
    for( int i = 1; i < size; i++ )
    {
       if( flags.getElement( i ) )

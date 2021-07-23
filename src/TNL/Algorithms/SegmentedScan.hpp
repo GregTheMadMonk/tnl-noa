@@ -30,7 +30,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::ValueType zero )
+         const typename Vector::ValueType identity )
 {
    using ValueType = typename Vector::ValueType;
    using IndexType = typename Vector::IndexType;
@@ -44,12 +44,12 @@ perform( Vector& v,
    else // Exclusive scan
    {
       ValueType aux( v[ begin ] );
-      v[ begin ] = zero;
+      v[ begin ] = identity;
       for( IndexType i = begin + 1; i < end; i++ )
       {
          ValueType x = v[ i ];
          if( flags[ i ] )
-            aux = zero;
+            aux = identity;
          v[ i ] = aux;
          aux = reduction( aux, x );
       }
@@ -67,13 +67,13 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::ValueType zero )
+         const typename Vector::ValueType identity )
 {
 #ifdef HAVE_OPENMP
    // TODO: parallelize with OpenMP
-   SegmentedScan< Devices::Sequential, Type >::perform( v, flags, begin, end, reduction, zero );
+   SegmentedScan< Devices::Sequential, Type >::perform( v, flags, begin, end, reduction, identity );
 #else
-   SegmentedScan< Devices::Sequential, Type >::perform( v, flags, begin, end, reduction, zero );
+   SegmentedScan< Devices::Sequential, Type >::perform( v, flags, begin, end, reduction, identity );
 #endif
 }
 
@@ -88,7 +88,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::ValueType zero )
+         const typename Vector::ValueType identity )
 {
 #ifdef HAVE_CUDA
    using ValueType = typename Vector::ValueType;

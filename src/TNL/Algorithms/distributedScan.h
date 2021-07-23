@@ -38,8 +38,9 @@ namespace Algorithms {
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -56,7 +57,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
                           typename InputDistributedArray::IndexType begin,
                           typename InputDistributedArray::IndexType end,
                           Reduction&& reduction,
-                          typename OutputDistributedArray::ValueType zero )
+                          typename OutputDistributedArray::ValueType identity )
 {
    static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
@@ -66,7 +67,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
                   "The input and output arrays must have the same local range on all ranks." );
    // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
    using Scan = detail::DistributedScan< detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInFirstPhase >;
-   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
    output.startSynchronization();
 }
 
@@ -74,7 +75,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
  * \brief Overload of \ref distributedInclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename OutputDistributedArray::ValueType >()`.
+ * The identity element is taken as `reduction.template getIdentity< typename OutputDistributedArray::ValueType >()`.
  * See \ref distributedInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
@@ -90,8 +91,8 @@ distributedInclusiveScan( const InputDistributedArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputDistributedArray::ValueType zero = Reduction::template getIdempotent< typename OutputDistributedArray::ValueType >();
-   distributedInclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename OutputDistributedArray::ValueType identity = Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
+   distributedInclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -112,8 +113,9 @@ distributedInclusiveScan( const InputDistributedArray& input,
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -130,7 +132,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
                           typename InputDistributedArray::IndexType begin,
                           typename InputDistributedArray::IndexType end,
                           Reduction&& reduction,
-                          typename OutputDistributedArray::ValueType zero )
+                          typename OutputDistributedArray::ValueType identity )
 {
    static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
@@ -140,7 +142,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
                   "The input and output arrays must have the same local range on all ranks." );
    // TODO: check if evaluating the input is expensive (e.g. a vector expression), otherwise use WriteInSecondPhase (optimal for array-to-array)
    using Scan = detail::DistributedScan< detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInFirstPhase >;
-   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
    output.startSynchronization();
 }
 
@@ -148,7 +150,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
  * \brief Overload of \ref distributedExclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename OutputDistributedArray::ValueType >()`.
+ * The identity element is taken as `reduction.template getIdentity< typename OutputDistributedArray::ValueType >()`.
  * See \ref distributedExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `input.getSize()`.
  */
@@ -164,8 +166,8 @@ distributedExclusiveScan( const InputDistributedArray& input,
 {
    if( end == 0 )
       end = input.getSize();
-   constexpr typename OutputDistributedArray::ValueType zero = Reduction::template getIdempotent< typename OutputDistributedArray::ValueType >();
-   distributedExclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename OutputDistributedArray::ValueType identity = Reduction::template getIdentity< typename OutputDistributedArray::ValueType >();
+   distributedExclusiveScan( input, output, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -186,8 +188,9 @@ distributedExclusiveScan( const InputDistributedArray& input,
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -202,10 +205,10 @@ distributedInplaceInclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin,
                                  typename DistributedArray::IndexType end,
                                  Reduction&& reduction,
-                                 typename DistributedArray::ValueType zero )
+                                 typename DistributedArray::ValueType identity )
 {
    using Scan = detail::DistributedScan< detail::ScanType::Inclusive, detail::ScanPhaseType::WriteInSecondPhase >;
-   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), identity );
    array.startSynchronization();
 }
 
@@ -213,7 +216,7 @@ distributedInplaceInclusiveScan( DistributedArray& array,
  * \brief Overload of \ref distributedInplaceInclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename DistributedArray::ValueType >()`.
+ * The identity element is taken as `reduction.template getIdentity< typename DistributedArray::ValueType >()`.
  * See \ref distributedInplaceInclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
@@ -227,8 +230,8 @@ distributedInplaceInclusiveScan( DistributedArray& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename DistributedArray::ValueType zero = Reduction::template getIdempotent< typename DistributedArray::ValueType >();
-   distributedInplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename DistributedArray::ValueType identity = Reduction::template getIdentity< typename DistributedArray::ValueType >();
+   distributedInplaceInclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 /**
@@ -249,8 +252,9 @@ distributedInplaceInclusiveScan( DistributedArray& array,
  * \param begin the first element in the array to be scanned
  * \param end the last element in the array to be scanned
  * \param reduction functor implementing the reduction operation
- * \param zero is the idempotent element for the reduction operation, i.e. element which
- *             does not change the result of the reduction.
+ * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+ *                 for the reduction operation, i.e. element which does not
+ *                 change the result of the reduction.
  *
  * The reduction functor takes two variables to be reduced:
  *
@@ -265,10 +269,10 @@ distributedInplaceExclusiveScan( DistributedArray& array,
                                  typename DistributedArray::IndexType begin,
                                  typename DistributedArray::IndexType end,
                                  Reduction&& reduction,
-                                 typename DistributedArray::ValueType zero )
+                                 typename DistributedArray::ValueType identity )
 {
    using Scan = detail::DistributedScan< detail::ScanType::Exclusive, detail::ScanPhaseType::WriteInSecondPhase >;
-   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), zero );
+   Scan::perform( array, array, begin, end, std::forward< Reduction >( reduction ), identity );
    array.startSynchronization();
 }
 
@@ -276,7 +280,7 @@ distributedInplaceExclusiveScan( DistributedArray& array,
  * \brief Overload of \ref distributedInplaceExclusiveScan which uses a TNL functional
  *        object for reduction. \ref TNL::Plus is used by default.
  *
- * The idempotent value is taken as `reduction.template getIdempotent< typename DistributedArray::ValueType >()`.
+ * The identity element is taken as `reduction.template getIdentity< typename DistributedArray::ValueType >()`.
  * See \ref distributedInplaceExclusiveScan for the explanation of other parameters.
  * Note that when `end` equals 0 (the default), it is set to `array.getSize()`.
  */
@@ -290,8 +294,8 @@ distributedInplaceExclusiveScan( DistributedArray& array,
 {
    if( end == 0 )
       end = array.getSize();
-   constexpr typename DistributedArray::ValueType zero = Reduction::template getIdempotent< typename DistributedArray::ValueType >();
-   distributedInplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), zero );
+   constexpr typename DistributedArray::ValueType identity = Reduction::template getIdentity< typename DistributedArray::ValueType >();
+   distributedInplaceExclusiveScan( array, begin, end, std::forward< Reduction >( reduction ), identity );
 }
 
 } // namespace Algorithms

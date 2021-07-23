@@ -356,7 +356,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
@@ -364,9 +364,8 @@ reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep&
    const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
-   const auto zero = zero_;
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      Real_ sum( zero );
+      Real_ sum = identity;
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
          const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
@@ -385,7 +384,7 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero_ )
+reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
    using Real_ = decltype( fetch( IndexType(), IndexType(), RealType() ) );
    const auto values_view = this->values.getConstView();
@@ -393,9 +392,8 @@ reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep&
    const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
-   const auto zero = zero_;
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      Real_ sum( zero );
+      Real_ sum = identity;
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
          const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
@@ -414,9 +412,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -426,9 +424,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,

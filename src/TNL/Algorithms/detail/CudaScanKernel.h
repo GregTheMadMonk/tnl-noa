@@ -47,8 +47,8 @@ struct CudaBlockScan
     * result of the scan according to its ID.
     *
     * \param reduction    The binary reduction functor.
-    * \param zero         Neutral element for given reduction operation, i.e.
-    *                     value such that `reduction(zero, x) == x` for any `x`.
+    * \param identity     Neutral element for given reduction operation, i.e.
+    *                     value such that `reduction(identity, x) == x` for any `x`.
     * \param threadValue  Value of the calling thread to be reduced.
     * \param tid          Index of the calling thread (usually `threadIdx.x`,
     *                     unless you know what you are doing).
@@ -58,7 +58,7 @@ struct CudaBlockScan
    __device__ static
    ValueType
    scan( const Reduction& reduction,
-         ValueType zero,
+         ValueType identity,
          ValueType threadValue,
          int tid,
          Storage& storage )
@@ -108,7 +108,7 @@ struct CudaBlockScan
       if( scanType == ScanType::Exclusive ) {
          storage.chunkResults[ chunkResultIdx ] = threadValue;
          __syncthreads();
-         threadValue = (tid == 0) ? zero : storage.chunkResults[ Cuda::getInterleaving( tid - 1 ) ];
+         threadValue = (tid == 0) ? identity : storage.chunkResults[ Cuda::getInterleaving( tid - 1 ) ];
       }
 
       __syncthreads();
@@ -148,8 +148,8 @@ struct CudaTileScan
     *                     must be at least `end - begin` elements in the output
     *                     array starting at the position given by `outputBegin`.
     * \param reduction    The binary reduction functor.
-    * \param zero         Neutral element for given reduction operation, i.e.
-    *                     value such that `reduction(zero, x) == x` for any `x`.
+    * \param identity     Neutral element for given reduction operation, i.e.
+    *                     value such that `reduction(identity, x) == x` for any `x`.
     * \param shift        A global shift to be applied to all elements in the
     *                     chunk processed by this thread.
     * \param storage      Auxiliary storage (must be allocated as a __shared__
@@ -165,7 +165,7 @@ struct CudaTileScan
          typename InputView::IndexType end,
          typename OutputView::IndexType outputBegin,
          const Reduction& reduction,
-         ValueType zero,
+         ValueType identity,
          ValueType shift,
          Storage& storage )
    {
@@ -194,11 +194,11 @@ struct CudaTileScan
             begin += blockDim.x;
             idx += blockDim.x;
          }
-         // fill the remaining (maxElementsInBlock - elementsInBlock) values with zero
+         // fill the remaining (maxElementsInBlock - elementsInBlock) values with identity
          // (this helps to avoid divergent branches in the blocks below)
          while( idx < maxElementsInBlock )
          {
-            storage.data[ idx ] = zero;
+            storage.data[ idx ] = identity;
             idx += blockDim.x;
          }
       }
@@ -212,7 +212,7 @@ struct CudaTileScan
          value = reduction( value, storage.data[ chunkOffset + i ] );
 
       // Scan the spine to obtain the initial value ("offset") for the downsweep.
-      value = BlockScan::scan( reduction, zero, value, threadIdx.x, storage.blockScanStorage );
+      value = BlockScan::scan( reduction, identity, value, threadIdx.x, storage.blockScanStorage );
 
       // Apply the global shift.
       value = reduction( value, shift );
@@ -258,7 +258,7 @@ CudaScanKernelUpsweep( const InputView input,
                        typename InputView::IndexType begin,
                        typename InputView::IndexType end,
                        Reduction reduction,
-                       ValueType zero,
+                       ValueType identity,
                        ValueType* reductionResults )
 {
    // verify the configuration
@@ -293,11 +293,11 @@ CudaScanKernelUpsweep( const InputView input,
          begin += blockDim.x;
          idx += blockDim.x;
       }
-      // fill the remaining (maxElementsInBlock - elementsInBlock) values with zero
+      // fill the remaining (maxElementsInBlock - elementsInBlock) values with identity
       // (this helps to avoid divergent branches in the blocks below)
       while( idx < maxElementsInBlock )
       {
-         storage.data[ idx ] = zero;
+         storage.data[ idx ] = identity;
          idx += blockDim.x;
       }
    }
@@ -335,7 +335,7 @@ CudaScanKernelDownsweep( const InputView input,
                          typename InputView::IndexType end,
                          typename OutputView::IndexType outputBegin,
                          Reduction reduction,
-                         typename OutputView::ValueType zero,
+                         typename OutputView::ValueType identity,
                          typename OutputView::ValueType shift,
                          const typename OutputView::ValueType* reductionResults )
 {
@@ -349,7 +349,7 @@ CudaScanKernelDownsweep( const InputView input,
    shift = reduction( shift, reductionResults[ blockIdx.x ] );
 
    // scan from input into output
-   TileScan::scan( input, output, begin, end, outputBegin, reduction, zero, shift, storage );
+   TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, shift, storage );
 }
 
 /* CudaScanKernelParallel - scan each tile of the input separately in each CUDA
@@ -369,7 +369,7 @@ CudaScanKernelParallel( const InputView input,
                         typename InputView::IndexType end,
                         typename OutputView::IndexType outputBegin,
                         Reduction reduction,
-                        typename OutputView::ValueType zero,
+                        typename OutputView::ValueType identity,
                         typename OutputView::ValueType* blockResults )
 {
    using ValueType = typename OutputView::ValueType;
@@ -379,7 +379,7 @@ CudaScanKernelParallel( const InputView input,
    __shared__ typename TileScan::Storage storage;
 
    // scan from input into output
-   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, zero, zero, storage );
+   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, identity, storage );
 
    // The last thread of the block stores the block result in the global memory.
    if( blockResults && threadIdx.x == blockDim.x - 1 )
@@ -454,10 +454,10 @@ struct CudaScanKernelLauncher
     * \param outputBegin the first element in the output array to be written. There
     *                    must be at least `end - begin` elements in the output
     *                    array starting at the position given by `outputBegin`.
-    * \param reduction  Symmetric binary function representing the reduction operation
-    *                   (usually addition, i.e. an instance of \ref std::plus).
-    * \param zero  Neutral element for given reduction operation, i.e. value such that
-    *              `reduction(zero, x) == x` for any `x`.
+    * \param reduction Symmetric binary function representing the reduction operation
+    *                  (usually addition, i.e. an instance of \ref std::plus).
+    * \param identity Neutral element for given reduction operation, i.e.
+    *                 value such that `reduction(identity, x) == x` for any `x`.
     */
    template< typename InputArray,
              typename OutputArray,
@@ -469,7 +469,7 @@ struct CudaScanKernelLauncher
             typename InputArray::IndexType end,
             typename OutputArray::IndexType outputBegin,
             Reduction&& reduction,
-            typename OutputArray::ValueType zero )
+            typename OutputArray::ValueType identity )
    {
       const auto blockShifts = performFirstPhase(
          input,
@@ -478,7 +478,7 @@ struct CudaScanKernelLauncher
          end,
          outputBegin,
          reduction,
-         zero );
+         identity );
 
       // if the first-phase kernel was launched with just one block, skip the second phase
       if( blockShifts.getSize() <= 2 )
@@ -492,8 +492,8 @@ struct CudaScanKernelLauncher
          end,
          outputBegin,
          reduction,
-         zero,
-         zero );
+         identity,
+         identity );
    }
 
    /****
@@ -506,10 +506,10 @@ struct CudaScanKernelLauncher
     * \param outputBegin the first element in the output array to be written. There
     *                    must be at least `end - begin` elements in the output
     *                    array starting at the position given by `outputBegin`.
-    * \param reduction  Symmetric binary function representing the reduction operation
-    *                   (usually addition, i.e. an instance of \ref std::plus).
-    * \param zero  Neutral value for given reduction operation, i.e. value such that
-    *              `reduction(zero, x) == x` for any `x`.
+    * \param reduction Symmetric binary function representing the reduction operation
+    *                  (usually addition, i.e. an instance of \ref std::plus).
+    * \param identity Neutral element for given reduction operation, i.e.
+    *                 value such that `reduction(identity, x) == x` for any `x`.
     */
    template< typename InputArray,
              typename OutputArray,
@@ -521,7 +521,7 @@ struct CudaScanKernelLauncher
                       typename InputArray::IndexType end,
                       typename OutputArray::IndexType outputBegin,
                       Reduction&& reduction,
-                      typename OutputArray::ValueType zero )
+                      typename OutputArray::ValueType identity )
    {
       static_assert( std::is_same< ValueType, typename OutputArray::ValueType >::value, "invalid configuration of ValueType" );
       using Index = typename InputArray::IndexType;
@@ -530,7 +530,7 @@ struct CudaScanKernelLauncher
          // allocate array for the block results
          Containers::Array< typename OutputArray::ValueType, Devices::Cuda > blockResults;
          blockResults.setSize( 2 );
-         blockResults.setElement( 0, zero );
+         blockResults.setElement( 0, identity );
 
          // run the kernel with just 1 block
          if( end - begin <= blockSize )
@@ -541,8 +541,8 @@ struct CudaScanKernelLauncher
                  end,
                  outputBegin,
                  reduction,
-                 zero,
-                 // blockResults are shifted by 1, because the 0-th element should stay zero
+                 identity,
+                 // blockResults are shifted by 1, because the 0-th element should stay identity
                  &blockResults.getData()[ 1 ] );
          else if( end - begin <= blockSize * 3 )
             CudaScanKernelParallel< scanType, blockSize, 3 ><<< 1, blockSize >>>
@@ -552,8 +552,8 @@ struct CudaScanKernelLauncher
                  end,
                  outputBegin,
                  reduction,
-                 zero,
-                 // blockResults are shifted by 1, because the 0-th element should stay zero
+                 identity,
+                 // blockResults are shifted by 1, because the 0-th element should stay identity
                  &blockResults.getData()[ 1 ] );
          else if( end - begin <= blockSize * 5 )
             CudaScanKernelParallel< scanType, blockSize, 5 ><<< 1, blockSize >>>
@@ -563,8 +563,8 @@ struct CudaScanKernelLauncher
                  end,
                  outputBegin,
                  reduction,
-                 zero,
-                 // blockResults are shifted by 1, because the 0-th element should stay zero
+                 identity,
+                 // blockResults are shifted by 1, because the 0-th element should stay identity
                  &blockResults.getData()[ 1 ] );
          else
             CudaScanKernelParallel< scanType, blockSize, valuesPerThread ><<< 1, blockSize >>>
@@ -574,8 +574,8 @@ struct CudaScanKernelLauncher
                  end,
                  outputBegin,
                  reduction,
-                 zero,
-                 // blockResults are shifted by 1, because the 0-th element should stay zero
+                 identity,
+                 // blockResults are shifted by 1, because the 0-th element should stay identity
                  &blockResults.getData()[ 1 ] );
 
          // synchronize the null-stream
@@ -621,7 +621,7 @@ struct CudaScanKernelLauncher
                        begin + gridOffset + currentSize,
                        outputBegin + gridOffset,
                        reduction,
-                       zero,
+                       identity,
                        &blockResults.getData()[ gridIdx * maxGridSize() ] );
                   break;
 
@@ -631,7 +631,7 @@ struct CudaScanKernelLauncher
                        begin + gridOffset,
                        begin + gridOffset + currentSize,
                        reduction,
-                       zero,
+                       identity,
                        &blockResults.getData()[ gridIdx * maxGridSize() ] );
                   break;
             }
@@ -650,7 +650,7 @@ struct CudaScanKernelLauncher
             blockResults.getSize(),
             0,
             reduction,
-            zero );
+            identity );
 
          // Store the number of CUDA grids for the purpose of unit testing, i.e.
          // to check if we test the algorithm with more than one CUDA grid.
@@ -673,10 +673,12 @@ struct CudaScanKernelLauncher
     * \param outputBegin the first element in the output array to be written. There
     *                    must be at least `end - begin` elements in the output
     *                    array starting at the position given by `outputBegin`.
-    * \param reduction  Symmetric binary function representing the reduction operation
-    *                   (usually addition, i.e. an instance of \ref std::plus).
-    * \param shift  A constant shifting all elements of the array (usually `zero`, i.e.
-    *               the neutral value).
+    * \param reduction Symmetric binary function representing the reduction operation
+    *                  (usually addition, i.e. an instance of \ref std::plus).
+    * \param identity Neutral element for given reduction operation, i.e.
+    *                 value such that `reduction(identity, x) == x` for any `x`.
+    * \param shift A constant shifting all elements of the array (usually
+    *              `identity`, i.e. the neutral value).
     */
    template< typename InputArray,
              typename OutputArray,
@@ -690,7 +692,7 @@ struct CudaScanKernelLauncher
                        typename InputArray::IndexType end,
                        typename OutputArray::IndexType outputBegin,
                        Reduction&& reduction,
-                       typename OutputArray::ValueType zero,
+                       typename OutputArray::ValueType identity,
                        typename OutputArray::ValueType shift )
    {
       static_assert( std::is_same< ValueType, typename OutputArray::ValueType >::value, "invalid configuration of ValueType" );
@@ -745,7 +747,7 @@ struct CudaScanKernelLauncher
                        begin + gridOffset + currentSize,
                        outputBegin + gridOffset,
                        reduction,
-                       zero,
+                       identity,
                        shift,
                        &blockShifts.getData()[ gridIdx * maxGridSize() ] );
                   break;

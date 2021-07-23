@@ -29,7 +29,9 @@ struct Multireduction< Devices::Sequential >
 {
    /**
     * Parameters:
-    *    zero: starting value for reduction
+    *    identity: the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *              for the reduction operation, i.e. element which does not
+    *              change the result of the reduction
     *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
@@ -45,7 +47,7 @@ struct Multireduction< Devices::Sequential >
              typename Reduction,
              typename Index >
    static constexpr void
-   reduce( const Result zero,
+   reduce( const Result identity,
            DataFetcher dataFetcher,
            const Reduction reduction,
            const Index size,
@@ -58,7 +60,9 @@ struct Multireduction< Devices::Host >
 {
    /**
     * Parameters:
-    *    zero: starting value for reduction
+    *    identity: the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *              for the reduction operation, i.e. element which does not
+    *              change the result of the reduction
     *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
@@ -74,7 +78,7 @@ struct Multireduction< Devices::Host >
              typename Reduction,
              typename Index >
    static void
-   reduce( const Result zero,
+   reduce( const Result identity,
            DataFetcher dataFetcher,
            const Reduction reduction,
            const Index size,
@@ -87,7 +91,9 @@ struct Multireduction< Devices::Cuda >
 {
    /**
     * Parameters:
-    *    zero: starting value for reduction
+    *    identity: the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+    *              for the reduction operation, i.e. element which does not
+    *              change the result of the reduction
     *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
@@ -103,7 +109,7 @@ struct Multireduction< Devices::Cuda >
              typename Reduction,
              typename Index >
    static void
-   reduce( const Result zero,
+   reduce( const Result identity,
            DataFetcher dataFetcher,
            const Reduction reduction,
            const Index size,

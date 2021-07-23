@@ -262,7 +262,7 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
    using FetchType = decltype( fetch( IndexType(), IndexType(), RealType() ) );
 
@@ -272,13 +272,13 @@ reduceRows( IndexType first, IndexType last, Fetch& fetch, const Reduce& reduce,
    auto matrixElements = this->matrixElementsLambda;
    auto processRow = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       const IndexType rowLength = rowLengths( rows, columns, rowIdx );
-      FetchType result( zero );
+      FetchType result = identity;
       for( IndexType localIdx = 0; localIdx < rowLength; localIdx++ )
       {
         IndexType elementColumn( 0 );
         RealType elementValue( 0.0 );
         matrixElements( rows, columns, rowIdx, localIdx, elementColumn, elementValue );
-        FetchType fetchValue( zero );
+        FetchType fetchValue = identity;
         if( elementValue != 0.0 )
             fetchValue = fetch( rowIdx, elementColumn, elementValue );
         result = reduce( result, fetchValue );
@@ -296,9 +296,9 @@ template< typename MatrixElementsLambda,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename MatrixElementsLambda,
@@ -444,7 +444,7 @@ print( std::ostream& str ) const
 
 /**
  * \brief Insertion operator for dense matrix and output stream.
- * 
+ *
  * \param str is the output stream.
  * \param matrix is the lambda matrix.
  * \return reference to the stream.
