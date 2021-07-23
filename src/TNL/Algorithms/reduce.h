@@ -118,18 +118,18 @@ Result reduce( const Index begin,
 template< typename Device,
           typename Index,
           typename Fetch,
-          typename Reduction >
+          typename Reduction = TNL::Plus >
 auto reduce( const Index begin,
              const Index end,
              Fetch&& fetch,
-             Reduction&& reduction )
+             Reduction&& reduction = TNL::Plus{} )
 {
    using Result = std::decay_t< decltype( fetch( 0 ) ) >;
-   return detail::Reduction< Device >::reduce( begin,
-                                               end,
-                                               std::forward< Fetch >( fetch ),
-                                               std::forward< Reduction >( reduction ),
-                                               reduction.template getIdempotent< Result >() );
+   return reduce< Device >( begin,
+                            end,
+                            std::forward< Fetch >( fetch ),
+                            std::forward< Reduction >( reduction ),
+                            reduction.template getIdempotent< Result >() );
 }
 
 /**
@@ -153,7 +153,7 @@ auto reduce( const Index begin,
  * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
  * \param zero is the idempotent element for the reduction operation, i.e. element which
  *             does not change the result of the reduction.
- * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
+ * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first`
  *         is the element position and `pair.second` is the reduction result.
  *
  * The `fetch` lambda function takes one argument which is index of the element to be fetched:
@@ -218,7 +218,7 @@ reduceWithArgument( const Index begin,
  * \param reduction is a lambda function defining the reduction operation and managing the elements positions.
  * \param zero is the idempotent element for the reduction operation, i.e. element which
  *             does not change the result of the reduction.
- * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first'
+ * \return result of the reduction in a form of std::pair< Index, Result> structure. `pair.first`
  *         is the element position and `pair.second` is the reduction result.
  *
  * The `fetch` lambda function takes one argument which is index of the element to be fetched:
@@ -252,11 +252,11 @@ reduceWithArgument( const Index begin,
                     Reduction&& reduction )
 {
    using Result = std::decay_t< decltype( fetch( 0 ) ) >;
-   return detail::Reduction< Device >::reduceWithArgument( begin,
-                                                           end,
-                                                           std::forward< Fetch >( fetch ),
-                                                           std::forward< Reduction >( reduction ),
-                                                           reduction.template getIdempotent< Result >() );
+   return reduceWithArgument< Device >( begin,
+                                        end,
+                                        std::forward< Fetch >( fetch ),
+                                        std::forward< Reduction >( reduction ),
+                                        reduction.template getIdempotent< Result >() );
 }
 
 } // namespace Algorithms
