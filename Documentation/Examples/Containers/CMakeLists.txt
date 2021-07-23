@@ -1,10 +1,8 @@
 set( COMMON_EXAMPLES
          ArrayExample
          ArrayExample_forElements
-         ArrayExample_reduceElements
          ArrayViewExample
          ArrayViewExample_forElements
-         ArrayViewExample_reduceElements
          VectorExample
 )
 

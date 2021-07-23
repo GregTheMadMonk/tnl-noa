@@ -1,4 +1,4 @@
-#include <TNL/Containers/Array.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/reduce.h>
 
 using namespace TNL;
@@ -10,29 +10,23 @@ void reduceArrayExample()
     * Create new arrays
     */
    const int size = 10;
-   Containers::Array< float, Device > a( size );
+   Containers::Vector< float, Device > a( size );
 
    /****
     * Initiate the elements of array `a`
     */
-   a.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = i; } );
+   a.forAllElements( [] __cuda_callable__ ( int i, float& value ) { value = 3 - i; } );
 
    /****
-    * Sum all elements of array `a`
+    * Reduce all elements of array `a`
     */
-   float sum_total = Algorithms::reduce( a, TNL::Plus{} );
-
-   /****
-    * Sum last 5 elements of array `a`
-    */
-   float sum_last_five = Algorithms::reduce( a.getConstView( 5, 10 ), TNL::Plus{} );
+   std::pair< float, int > result_total = Algorithms::reduceWithArgument( TNL::abs( a ), TNL::MaxWithArg{} );
 
    /****
     * Print the results
     */
    std::cout << " a = " << a << std::endl;
-   std::cout << " sum of all elements = " << sum_total << std::endl;
-   std::cout << " sum of last 5 elements = " << sum_last_five << std::endl;
+   std::cout << " abs-max of all elements = " << result_total.first << " at position " << result_total.second << std::endl;
 }
 
 int main( int argc, char* argv[] )

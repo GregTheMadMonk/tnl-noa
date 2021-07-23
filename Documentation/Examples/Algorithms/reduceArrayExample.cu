@@ -1,1 +1,1 @@
-ArrayExample_reduceElements.cpp
+reduceArrayExample.cpp

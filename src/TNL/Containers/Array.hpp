@@ -760,62 +760,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   return this->getView().reduceElements( begin, end, fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   return this->getConstView().reduceElements( begin, end, fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   return this->getView().reduceEachElement( fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   return this->getConstView().reduceEachElement( fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
 bool
 Array< Value, Device, Index, Allocator >::
 containsValue( ValueType value,

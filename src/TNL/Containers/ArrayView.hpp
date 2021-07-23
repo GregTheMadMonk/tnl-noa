@@ -399,68 +399,6 @@ forAllElements( Function&& f ) const
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-ArrayView< Value, Device, Index >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   if( ! this->data )
-      return zero;
-
-   ValueType* d = this->getData();
-   auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::reduce< DeviceType >( begin, end, main_fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-ArrayView< Value, Device, Index >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   if( ! this->data )
-      return;
-
-   const ValueType* d = this->getData();
-   auto main_fetch = [=] __cuda_callable__ ( IndexType i ) mutable -> Result { return fetch( i, d[ i ] ); };
-   return Algorithms::reduce< DeviceType >( begin, end, main_fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-ArrayView< Value, Device, Index >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-ArrayView< Value, Device, Index >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   return this->reduceElements( 0, this->getSize(), fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 bool
 ArrayView< Value, Device, Index >::
 containsValue( ValueType value,
