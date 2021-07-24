@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Containers/Expressions/VerticalOperations.h>
 #include <TNL/MPI/Wrappers.h>
+#include <TNL/Algorithms/reduce.h>
 
 namespace TNL {
 namespace Containers {
@@ -26,7 +26,7 @@ auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< d
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionMin( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Min{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_MIN, expression.getCommunicationGroup() );
    }
    return result;
@@ -46,7 +46,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
    const auto group = expression.getCommunicationGroup();
    if( group != MPI::NullGroup() ) {
       // compute local argMin
-      ResultType localResult = ExpressionArgMin( expression.getConstLocalView() );
+      ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MinWithArg{} );
       // transform local index to global index
       localResult.second += expression.getLocalRange().getBegin();
 
@@ -62,15 +62,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
       auto fetch = [_data] ( IndexType i ) { return _data[ i ].first; };
-      auto reduction = [] ( RealType& a, const RealType& b, IndexType& aIdx, const IndexType& bIdx ) {
-         if( a > b ) {
-            a = b;
-            aIdx = bIdx;
-         }
-         else if( a == b && bIdx < aIdx )
-            aIdx = bIdx;
-      };
-      result = Algorithms::reduceWithArgument< Devices::Host >( (IndexType) 0, (IndexType) nproc, fetch, reduction, std::numeric_limits< RealType >::max() );
+      result = Algorithms::reduceWithArgument< Devices::Host >( (IndexType) 0, (IndexType) nproc, fetch, TNL::MinWithArg{} );
       result.second = gatheredResults[ result.second ].second;
    }
    return result;
@@ -85,7 +77,7 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::decay_t< d
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::lowest();
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionMax( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Max{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_MAX, expression.getCommunicationGroup() );
    }
    return result;
@@ -105,7 +97,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
    const auto group = expression.getCommunicationGroup();
    if( group != MPI::NullGroup() ) {
       // compute local argMax
-      ResultType localResult = ExpressionArgMax( expression.getConstLocalView() );
+      ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MaxWithArg{} );
       // transform local index to global index
       localResult.second += expression.getLocalRange().getBegin();
 
@@ -121,15 +113,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
       auto fetch = [_data] ( IndexType i ) { return _data[ i ].first; };
-      auto reduction = [] ( RealType& a, const RealType& b, IndexType& aIdx, const IndexType& bIdx ) {
-         if( a < b ) {
-            a = b;
-            aIdx = bIdx;
-         }
-         else if( a == b && bIdx < aIdx )
-            aIdx = bIdx;
-      };
-      result = Algorithms::reduceWithArgument< Devices::Host >( ( IndexType ) 0, (IndexType) nproc, fetch, reduction, std::numeric_limits< RealType >::lowest() );
+      result = Algorithms::reduceWithArgument< Devices::Host >( ( IndexType ) 0, (IndexType) nproc, fetch, TNL::MaxWithArg{} );
       result.second = gatheredResults[ result.second ].second;
    }
    return result;
@@ -142,7 +126,7 @@ auto DistributedExpressionSum( const Expression& expression ) -> std::decay_t< d
 
    ResultType result = 0;
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionSum( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Plus{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_SUM, expression.getCommunicationGroup() );
    }
    return result;
@@ -155,7 +139,7 @@ auto DistributedExpressionProduct( const Expression& expression ) -> std::decay_
 
    ResultType result = 1;
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionProduct( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Multiplies{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_PROD, expression.getCommunicationGroup() );
    }
    return result;
@@ -170,7 +154,7 @@ auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::dec
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionLogicalAnd( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::LogicalAnd{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_LAND, expression.getCommunicationGroup() );
    }
    return result;
@@ -183,7 +167,7 @@ auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::deca
 
    ResultType result = 0;
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionLogicalOr( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::LogicalOr{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_LOR, expression.getCommunicationGroup() );
    }
    return result;
@@ -198,7 +182,7 @@ auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::deca
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionLogicalBinaryAnd( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitAnd{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_BAND, expression.getCommunicationGroup() );
    }
    return result;
@@ -211,7 +195,7 @@ auto DistributedExpressionBinaryOr( const Expression& expression ) -> std::decay
 
    ResultType result = 0;
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
-      const ResultType localResult = ExpressionBinaryOr( expression.getConstLocalView() );
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitOr{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_BOR, expression.getCommunicationGroup() );
    }
    return result;

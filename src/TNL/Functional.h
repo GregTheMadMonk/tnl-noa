@@ -80,7 +80,7 @@ struct Max
 };
 
 /**
- * \brief Extension of \ref std::min<void> for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Function object implementing `argmin(x, y, i, j)` for use with \ref TNL::Algorithms::reduceWithArgument.
  */
 struct MinWithArg
 {
@@ -108,7 +108,7 @@ struct MinWithArg
 };
 
 /**
- * \brief Extension of \ref std::max<void> for use with \ref TNL::Algorithms::reduceWithArgument.
+ * \brief Function object implementing `argmax(x, y, i, j)` for use with \ref TNL::Algorithms::reduceWithArgument.
  */
 struct MaxWithArg
 {

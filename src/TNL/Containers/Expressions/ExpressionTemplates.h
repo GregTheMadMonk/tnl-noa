@@ -18,7 +18,7 @@
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
 #include <TNL/Containers/Expressions/HorizontalOperations.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
+#include <TNL/Algorithms/reduce.h>
 
 namespace TNL {
 namespace Containers {
@@ -370,7 +370,7 @@ template< typename ET1, typename ET2,
 auto
 operator,( const ET1& a, const ET2& b )
 {
-   return ExpressionSum( a * b );
+   return Algorithms::reduce( a * b, TNL::Plus{} );
 }
 
 template< typename ET1, typename ET2,
@@ -662,7 +662,7 @@ template< typename ET1,
 auto
 min( const ET1& a )
 {
-   return ExpressionMin( a );
+   return Algorithms::reduce( a, TNL::Min{} );
 }
 
 template< typename ET1,
@@ -670,7 +670,7 @@ template< typename ET1,
 auto
 argMin( const ET1& a )
 {
-   return ExpressionArgMin( a );
+   return Algorithms::reduceWithArgument( a, TNL::MinWithArg{} );
 }
 
 template< typename ET1,
@@ -678,7 +678,7 @@ template< typename ET1,
 auto
 max( const ET1& a )
 {
-   return ExpressionMax( a );
+   return Algorithms::reduce( a, TNL::Max{} );
 }
 
 template< typename ET1,
@@ -686,7 +686,7 @@ template< typename ET1,
 auto
 argMax( const ET1& a )
 {
-   return ExpressionArgMax( a );
+   return Algorithms::reduceWithArgument( a, TNL::MaxWithArg{} );
 }
 
 template< typename ET1,
@@ -694,7 +694,7 @@ template< typename ET1,
 auto
 sum( const ET1& a )
 {
-   return ExpressionSum( a );
+   return Algorithms::reduce( a, TNL::Plus{} );
 }
 
 template< typename ET1,
@@ -743,7 +743,7 @@ template< typename ET1,
 auto
 product( const ET1& a )
 {
-   return ExpressionProduct( a );
+   return Algorithms::reduce( a, TNL::Multiplies{} );
 }
 
 template< typename ET1,
@@ -751,7 +751,7 @@ template< typename ET1,
 auto
 logicalAnd( const ET1& a )
 {
-   return ExpressionLogicalAnd( a );
+   return Algorithms::reduce( a, TNL::LogicalAnd{} );
 }
 
 template< typename ET1,
@@ -759,7 +759,7 @@ template< typename ET1,
 auto
 logicalOr( const ET1& a )
 {
-   return ExpressionLogicalOr( a );
+   return Algorithms::reduce( a, TNL::LogicalOr{} );
 }
 
 template< typename ET1,
@@ -767,7 +767,7 @@ template< typename ET1,
 auto
 binaryAnd( const ET1& a )
 {
-   return ExpressionBinaryAnd( a );
+   return Algorithms::reduce( a, TNL::BitAnd{} );
 }
 
 template< typename ET1,
@@ -775,7 +775,7 @@ template< typename ET1,
 auto
 binaryOr( const ET1& a )
 {
-   return ExpressionBinaryOr( a );
+   return Algorithms::reduce( a, TNL::BitOr{} );
 }
 
 #endif // DOXYGEN_ONLY

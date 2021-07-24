@@ -16,6 +16,7 @@
 
 #include <TNL/Functional.h>  // extension of STL functionals for reduction
 #include <TNL/Algorithms/detail/Reduction.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>  // RemoveET
 
 namespace TNL {
 namespace Algorithms {
@@ -131,7 +132,7 @@ auto reduce( const Index begin,
              Fetch&& fetch,
              Reduction&& reduction = TNL::Plus{} )
 {
-   using Result = std::decay_t< decltype( fetch( 0 ) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch(0), fetch(0) ) ) >;
    return reduce< Device >( begin,
                             end,
                             std::forward< Fetch >( fetch ),
@@ -204,10 +205,10 @@ template< typename Array,
 auto reduce( const Array& array,
              Reduction&& reduction = TNL::Plus{} )
 {
-   using ValueType = typename Array::ValueType;
+   using Result = Containers::Expressions::RemoveET< decltype( reduction( array(0), array(0) ) ) >;
    return reduce< Array, Device >( array,
                                    std::forward< Reduction >( reduction ),
-                                   reduction.template getIdentity< ValueType >() );
+                                   reduction.template getIdentity< Result >() );
 }
 
 /**
@@ -329,7 +330,7 @@ reduceWithArgument( const Index begin,
                     Fetch&& fetch,
                     Reduction&& reduction )
 {
-   using Result = std::decay_t< decltype( fetch( 0 ) ) >;
+   using Result = Containers::Expressions::RemoveET< decltype( fetch(0) ) >;
    return reduceWithArgument< Device >( begin,
                                         end,
                                         std::forward< Fetch >( fetch ),
@@ -400,10 +401,10 @@ template< typename Array,
 auto reduceWithArgument( const Array& array,
                          Reduction&& reduction )
 {
-   using ValueType = typename Array::ValueType;
+   using Result = Containers::Expressions::RemoveET< decltype( array(0) ) >;
    return reduceWithArgument< Array, Device >( array,
                                                std::forward< Reduction >( reduction ),
-                                               reduction.template getIdentity< ValueType >() );
+                                               reduction.template getIdentity< Result >() );
 }
 
 } // namespace Algorithms
