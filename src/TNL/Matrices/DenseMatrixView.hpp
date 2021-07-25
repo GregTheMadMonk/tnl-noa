@@ -724,7 +724,8 @@ vectorProduct( const InVector& inVector,
    if( end == 0 )
       end = this->getRows();
 
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value &&
+      matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 )
    {
 #ifdef HAVE_CUDA
       if( Organization == Algorithms::Segments::ColumnMajorOrder )

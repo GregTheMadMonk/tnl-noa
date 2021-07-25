@@ -105,7 +105,8 @@ benchmarkDenseMVSynthetic( Benchmark<> & benchmark,
    };
    benchmark.time< Devices::Cuda >( reset, "GPU row", rowMajorMvCuda );
 
-   //std::cerr << "Diff. = " << TNL::max( abs( outCudaVector2 - outCudaVector1 ) ) << std::endl;
+   auto diff = TNL::max( abs( outCudaVector2 - outCudaVector1 ) );
+   //std::cerr << outCudaVector1 << std::endl << outCudaVector2 << std::endl;
 
    rowMajorCudaMatrix.reset();
    columnMajorCudaMatrix.setDimensions( size, size );
@@ -123,6 +124,7 @@ benchmarkDenseMVSynthetic( Benchmark<> & benchmark,
    };
    benchmark.time< Devices::Cuda >( reset, "GPU cublas", mvCublas );
 
+   //std::cerr << "Diff. = " << diff << std::endl;
 #endif
 }
 
