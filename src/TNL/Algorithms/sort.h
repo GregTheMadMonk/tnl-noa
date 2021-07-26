@@ -26,6 +26,7 @@ namespace TNL {
  *    or \ref TNL::Algorithms::Sorting::BitonicSort for sorting on CUDA GPU.
  *
  * \param array is an instance of array/array view/vector/vector view for sorting.
+ * \param sorter is an instance of sorter.
  *
  * \par Example
  *
@@ -38,10 +39,10 @@ namespace TNL {
  */
 template< typename Array,
           typename Sorter = typename Sorting::DefaultSorter< typename Array::DeviceType >::SorterType >
-void ascendingSort( Array& array )
+void ascendingSort( Array& array, const Sorter& sorter = Sorter{} )
 {
    using ValueType = typename Array::ValueType;
-   Sorter::sort( array, [] __cuda_callable__ ( const ValueType& a, const ValueType& b ) { return a < b; } );
+   sorter.sort( array, [] __cuda_callable__ ( const ValueType& a, const ValueType& b ) { return a < b; } );
 }
 
 /**
@@ -53,6 +54,7 @@ void ascendingSort( Array& array )
  *    or \ref TNL::Algorithms::Sorting::BitonicSort for sorting on CUDA GPU.
  *
  * \param array is an instance of array/array view/vector/vector view for sorting.
+ * \param sorter is an instance of sorter.
  *
  * \par Example
  *
@@ -65,10 +67,10 @@ void ascendingSort( Array& array )
  */
 template< typename Array,
           typename Sorter = typename Sorting::DefaultSorter< typename Array::DeviceType >::SorterType >
-void descendingSort( Array& array )
+void descendingSort( Array& array, const Sorter& sorter = Sorter{} )
 {
    using ValueType = typename Array::ValueType;
-   Sorter::sort( array, [] __cuda_callable__ ( const ValueType& a, const ValueType& b ) { return a < b; } );
+   sorter.sort( array, [] __cuda_callable__ ( const ValueType& a, const ValueType& b ) { return a < b; } );
 }
 
 /**
@@ -86,6 +88,7 @@ void descendingSort( Array& array )
  *
  * \param array is an instance of array/array view/vector/vector view for sorting.
  * \param compare is an instance of the lambda function for comparison of two elements.
+ * \param sorter is an instance of sorter.
  *
  * \par Example
  *
@@ -99,9 +102,9 @@ void descendingSort( Array& array )
 template< typename Array,
           typename Compare,
           typename Sorter = typename Sorting::DefaultSorter< typename Array::DeviceType >::SorterType >
-void sort( Array& array, const Compare& compare )
+void sort( Array& array, const Compare& compare, const Sorter& sorter = Sorter{} )
 {
-   Sorter::sort( array, compare );
+   sorter.sort( array, compare );
 }
 
 /**
@@ -123,6 +126,7 @@ void sort( Array& array, const Compare& compare )
  *
  * \param array is an instance of array/array view/vector/vector view for sorting.
  * \param compare is an instance of the lambda function for comparison of two elements.
+ * \param sorter is an instance of sorter.
  *
  * \par Example
  *
@@ -138,9 +142,9 @@ template< typename Device,
           typename Compare,
           typename Swap,
           typename Sorter = typename Sorting::DefaultInplaceSorter< Device >::SorterType >
-void sort( const Index begin, const Index end, Compare&& compare, Swap&& swap )
+void sort( const Index begin, const Index end, Compare&& compare, Swap&& swap, const Sorter& sorter = Sorter{} )
 {
-   Sorter::template inplaceSort< Device, Index >( begin, end, compare, swap );
+   sorter.template inplaceSort< Device, Index >( begin, end, compare, swap );
 }
 
 /**
@@ -155,6 +159,7 @@ void sort( const Index begin, const Index end, Compare&& compare, Swap&& swap )
  *  ```
  * \param arr is an instance of tested array.
  * \param compare is an instance of the lambda function for elements comparison.
+ * \param sorter is an instance of sorter.
  *
  * \return true if the array is sorted in ascending order.
  * \return false  if the array is NOT sorted in ascending order.
