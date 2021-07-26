@@ -49,10 +49,9 @@ int main( int argc, char* argv[] )
    /***
     * Firstly, test the sorting on CPU.
     */
-   // Currently this does not work on CPU.
-   //std::cout << "Sorting on CPU ... " << std::endl;
-   //Array< int, Devices::Host > host_array;
-   //sort( host_array );
+   std::cout << "Sorting on CPU ... " << std::endl;
+   Array< int, Devices::Host > host_array;
+   sort( host_array );
 
 #ifdef HAVE_CUDA
    /***

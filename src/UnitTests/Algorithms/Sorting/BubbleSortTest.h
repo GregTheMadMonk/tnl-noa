@@ -9,7 +9,7 @@
 #include <TNL/Algorithms/Sorting/BubbleSort.h>
 #include <TNL/Algorithms/sort.h>
 
-#if defined HAVE_GTEST && defined HAVE_CUDA
+#if defined HAVE_GTEST
 #include <gtest/gtest.h>
 
 
@@ -22,7 +22,7 @@ void fetchAndSwapSorter( TNL::Containers::ArrayView< TYPE, TNL::Devices::Host > 
 {
     auto Cmp = [=]__cuda_callable__(const int i, const int j ){return view[ i ]  < view[ j ];};
     auto Swap = [=] __cuda_callable__ (int i, int j) mutable {TNL::swap(view[i], view[j]);};
-    bubbleSort(0, view.getSize(), Cmp, Swap);
+    BubbleSort::inplaceSort< TNL::Devices::Host >(0, view.getSize(), Cmp, Swap);
 }
 
 TEST(fetchAndSwap, oneBlockSort)
@@ -68,7 +68,7 @@ void fetchAndSwap_sortMiddle(TNL::Containers::ArrayView<int, TNL::Devices::Host>
     //auto Fetch = [=]__cuda_callable__(int i){return view[i];};
     auto Cmp = [=]__cuda_callable__(const int i, const int j ){ return view[ i ] < view[ j ]; };
     auto Swap = [=] __cuda_callable__ (int i, int j) mutable { TNL::swap(view[i], view[j]); };
-    bubbleSort(from, to, Cmp, Swap);
+    BubbleSort::inplaceSort< TNL::Devices::Host >(from, to, Cmp, Swap);
 }
 
 TEST(fetchAndSwap, sortMiddle)
@@ -83,8 +83,10 @@ TEST(fetchAndSwap, sortMiddle)
 
     for(size_t i = 0; i < orig.size(); i++)
     {
-        if(i < from || i >= to)
+        if( i < from || i >= to )
+        {
             EXPECT_TRUE(view.getElement(i) == orig[i]);
+        }
     }
 }
 

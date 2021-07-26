@@ -13,6 +13,7 @@
 #pragma once
 
 #include <algorithm>
+#include <TNL/Assert.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -21,28 +22,34 @@ namespace TNL {
 struct BubbleSort
 {
    template< typename Device, typename Index, typename Compare, typename Swap >
-   void static inplaceSort( const Index begin, const Index end, const Compare& compare, const Swap& swap )
+   void static inplaceSort( const Index begin, const Index end, Compare& compare, Swap& swap )
    {
       if( std::is_same< Device, Devices::Host >::value )
       {
-         Index left( begin ), right( end );
+         Index left( begin ), right( end -1 );
          while( left < right )
          {
-            int lastChange;
+            //int lastChange( end -1 );
             for( int j = left; j < right - 1; j++ )
-                  if( ! compare( j, j+1 ) )
-                  {
-                     swap( j, j+1 );
-                     lastChange = j;
-                  }
-            right = lastChange;
-            for( int j = right - 1; j >= left; j-- )
-                  if( ! compare( j, j+1 ) )
-                  {
-                     swap( j, j+1 );
-                     lastChange = j;
-                  }
-            left = lastChange + 1;
+            {
+               TNL_ASSERT_LT( j+1, end, "" );
+               if( ! compare( j, j+1 ) )
+               {
+                  swap( j, j+1 );
+                  //lastChange = j;
+               }
+            }
+            right--; //lastChange;
+            for( int j = right; j >= left; j-- )
+            {
+               TNL_ASSERT_LT( j+1, end, "" );
+               if( ! compare( j, j+1 ) )
+               {
+                  swap( j, j+1 );
+                  //lastChange = j;
+               }
+            }
+            left++; //lastChange;
          }
       }
       else

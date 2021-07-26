@@ -138,7 +138,7 @@ template< typename Device,
           typename Compare,
           typename Swap,
           typename Sorter = typename Sorting::DefaultInplaceSorter< Device >::SorterType >
-void sort( const Index begin, const Index end, const Compare& compare, const Swap& swap )
+void sort( const Index begin, const Index end, Compare&& compare, Swap&& swap )
 {
    Sorter::template inplaceSort< Device, Index >( begin, end, compare, swap );
 }
