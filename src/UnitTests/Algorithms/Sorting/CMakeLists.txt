@@ -1,5 +1,6 @@
 set( COMMON_TESTS
          BitonicSortTest
+         BubbleSortTest
          QuicksortTest
 )
 

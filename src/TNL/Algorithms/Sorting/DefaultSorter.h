@@ -18,6 +18,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Algorithms/Sorting/BitonicSort.h>
+#include <TNL/Algorithms/Sorting/BubbleSort.h>
 #include <TNL/Algorithms/Sorting/Quicksort.h>
 #include <TNL/Algorithms/Sorting/STLSort.h>
 
@@ -42,6 +43,12 @@ struct DefaultSorter< Devices::Cuda >
 
 template< typename Device >
 struct DefaultInplaceSorter;
+
+template<>
+struct DefaultInplaceSorter< Devices::Host >
+{
+   using SorterType = Algorithms::Sorting::BubbleSort;
+};
 
 template<>
 struct DefaultInplaceSorter< Devices::Cuda >
