@@ -36,6 +36,12 @@ struct DefaultSorter< Devices::Host >
 };
 
 template<>
+struct DefaultSorter< Devices::Sequential >
+{
+   using SorterType = Algorithms::Sorting::STLSort;
+};
+
+template<>
 struct DefaultSorter< Devices::Cuda >
 {
    using SorterType = Algorithms::Sorting::Quicksort;
@@ -46,6 +52,12 @@ struct DefaultInplaceSorter;
 
 template<>
 struct DefaultInplaceSorter< Devices::Host >
+{
+   using SorterType = Algorithms::Sorting::BubbleSort;
+};
+
+template<>
+struct DefaultInplaceSorter< Devices::Sequential >
 {
    using SorterType = Algorithms::Sorting::BubbleSort;
 };

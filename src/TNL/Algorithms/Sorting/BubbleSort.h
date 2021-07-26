@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <TNL/Assert.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -24,7 +25,8 @@ struct BubbleSort
    template< typename Device, typename Index, typename Compare, typename Swap >
    void static inplaceSort( const Index begin, const Index end, Compare& compare, Swap& swap )
    {
-      if( std::is_same< Device, Devices::Host >::value )
+      if( std::is_same< Device, Devices::Host >::value ||
+          std::is_same< Device, Devices::Sequential >::value )
       {
          Index left( begin ), right( end -1 );
          while( left < right )
@@ -53,7 +55,7 @@ struct BubbleSort
          }
       }
       else
-         TNL_ASSERT( false, std::cerr <<  "inplace bubble sort is implemented only for CPU" << std::endl );
+         throw Exceptions::NotImplementedError();
    }
 };
 
