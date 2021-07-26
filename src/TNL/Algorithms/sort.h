@@ -210,7 +210,7 @@ template< typename Array >
 bool isDescending( const Array& arr)
 {
    using Value = typename Array::ValueType;
-   return isSorted( arr, [] __cuda_callable__( const Value& a, const Value& b ) { return a < b; });
+   return isSorted( arr, [] __cuda_callable__( const Value& a, const Value& b ) { return a > b; });
 }
 
    } // namespace Algorithms
