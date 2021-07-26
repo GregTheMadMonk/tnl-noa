@@ -6,7 +6,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
-#include <TNL/Algorithms/Sort.h>
+#include <TNL/Algorithms/sort.h>
 #include <TNL/Algorithms/Sorting/Quicksort.h>
 
 #if defined HAVE_CUDA && defined HAVE_GTEST

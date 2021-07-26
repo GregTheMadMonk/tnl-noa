@@ -7,7 +7,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Algorithms/MemoryOperations.h>
 #include <TNL/Algorithms/Sorting/BitonicSort.h>
-#include <TNL/Algorithms/Sort.h>
+#include <TNL/Algorithms/sort.h>
 
 #if defined HAVE_GTEST && defined HAVE_CUDA
 #include <gtest/gtest.h>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Sort.h  -  description
+                          sort.h  -  description
                              -------------------
     begin                : Jul 12, 2021
     copyright            : (C) 2021 by Tomas Oberhuber et al.

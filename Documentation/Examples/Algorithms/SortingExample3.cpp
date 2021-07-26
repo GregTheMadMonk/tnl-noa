@@ -1,6 +1,6 @@
 #include <iostream>
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sort.h>
+#include <TNL/Algorithms/sort.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
