@@ -1,13 +1,7 @@
-ADD_SUBDIRECTORY( Segments )
-ADD_SUBDIRECTORY( Sorting )
-
 set( COMMON_TESTS
-         MemoryOperationsTest
-         MultireductionTest
-         ParallelForTest
-         ReductionTest
-         staticForTest
-         unrolledForTest
+         BitonicSortTest
+         BubbleSortTest
+         QuicksortTest
 )
 
 set( CPP_TESTS )
