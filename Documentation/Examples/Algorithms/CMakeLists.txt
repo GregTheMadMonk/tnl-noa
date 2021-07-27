@@ -6,8 +6,6 @@ set( COMMON_EXAMPLES
    SortingExample3
    ParallelForExample
    SequentialForExample
-   unrolledForExample.out
-   staticForExample.out
 )
 
 set( HOST_EXAMPLES
