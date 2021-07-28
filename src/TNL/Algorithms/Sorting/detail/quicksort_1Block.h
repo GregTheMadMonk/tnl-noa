@@ -15,8 +15,7 @@
 #include <TNL/Containers/Array.h>
 #include "cassert"
 #include <TNL/Algorithms/Sorting/detail/bitonicSort.h>
-#include <TNL/Algorithms/Sorting/detail/reduction.h>
-#include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
+#include <TNL/Algorithms/detail/CudaScanKernel.h>
 
 namespace TNL {
     namespace Algorithms {
@@ -134,8 +133,10 @@ __device__ void singleBlockQuickSort( Containers::ArrayView<Value, TNL::Devices:
         countElem(src.getView(begin, end), Cmp, smaller, bigger, pivot);
 
         //synchronization is in this function already
-        int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
-        int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
+        using BlockScan = Algorithms::detail::CudaBlockScan< Algorithms::detail::ScanType::Inclusive, 0, TNL::Plus, int >;
+        __shared__ typename BlockScan::Storage storage;
+        int smallerPrefSumInc = BlockScan::scan( TNL::Plus{}, 0, smaller, threadIdx.x, storage );
+        int biggerPrefSumInc = BlockScan::scan( TNL::Plus{}, 0, bigger, threadIdx.x, storage );
 
         if (threadIdx.x == blockDim.x - 1) //has sum of all smaller and greater elements than pivot in src
         {

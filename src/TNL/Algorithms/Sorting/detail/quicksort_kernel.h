@@ -13,8 +13,6 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/task.h>
 #include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
 #include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
@@ -33,7 +31,7 @@ __device__ void writeNewTask(int begin, int end, int iteration, int maxElemFor2n
 //-----------------------------------------------------------
 
 __global__ void cudaCalcBlocksNeeded(Containers::ArrayView<TASK, Devices::Cuda> cuda_tasks, int elemPerBlock,
-                                     Containers::VectorView<int, Devices::Cuda> blocksNeeded)
+                                     Containers::ArrayView<int, Devices::Cuda> blocksNeeded)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= cuda_tasks.getSize())
@@ -49,7 +47,7 @@ __global__ void cudaCalcBlocksNeeded(Containers::ArrayView<TASK, Devices::Cuda> 
 template <typename Value, typename CMP>
 __global__ void cudaInitTask(Containers::ArrayView<TASK, Devices::Cuda> cuda_tasks,
                              Containers::ArrayView<int, Devices::Cuda> cuda_blockToTaskMapping,
-                             Containers::VectorView<int, Devices::Cuda> cuda_reductionTaskInitMem,
+                             Containers::ArrayView<int, Devices::Cuda> cuda_reductionTaskInitMem,
                              Containers::ArrayView<Value, Devices::Cuda> src, CMP Cmp)
 {
     if (blockIdx.x >= cuda_tasks.getSize())
