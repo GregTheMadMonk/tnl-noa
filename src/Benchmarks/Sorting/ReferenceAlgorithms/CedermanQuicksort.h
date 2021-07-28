@@ -942,14 +942,14 @@ int GPUQSort<element>::sort(element *data, unsigned int size, unsigned int block
 	// we need to sort the order in which the blocks
 	// are sorted to avoid poor scheduling decisions
 	unsigned int sortblocks[MAXBLOCKS * 2];
-	for (int i = 0; i < worksize; i++)
+	for (unsigned int i = 0; i < worksize; i++)
 		sortblocks[i] = ((workset[i].end - workset[i].beg) << (int)round(log((float)(MAXBLOCKS * 4.0f)) / log(2.0f))) + i;
 	std::sort(&sortblocks[0], &sortblocks[worksize]);
 
 	if (worksize != 0)
 	{
 		// Copy the block assignments to the GPU
-		for (int i = 0; i < worksize; i++)
+		for (unsigned int i = 0; i < worksize; i++)
 		{
 			unsigned int q = (worksize - 1) - (sortblocks[i] & (MAXBLOCKS * 4 - 1));
 
