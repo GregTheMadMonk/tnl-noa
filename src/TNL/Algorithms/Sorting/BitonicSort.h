@@ -13,6 +13,7 @@
 #pragma once
 
 #include <TNL/Algorithms/Sorting/detail/bitonicSort.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -38,12 +39,10 @@ struct BitonicSort
       if( std::is_same< Device, Devices::Cuda >::value )
          bitonicSort( begin, end, compare, swap );
       else
-         TNL_ASSERT( false, std::cerr <<  "inplace bitonic sort for CPU is not implemented" << std::endl );
+         throw Exceptions::NotImplementedError( "inplace bitonic sort is implemented only for CUDA" );
    }
 };
 
       } // namespace Sorting
    } // namespace Algorithms
 } //namespace TNL
-
-

@@ -36,5 +36,3 @@ struct STLSort
       } // namespace Sorting
    } // namespace Algorithms
 } //namespace TNL
-
-

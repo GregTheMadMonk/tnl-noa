@@ -14,8 +14,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/Scan.h>
-#include <TNL/Algorithms//Sorting/detail/task.h>
+#include <TNL/Algorithms/Sorting/detail/task.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -106,6 +105,6 @@ class Quicksorter< Value, Devices::Cuda >
 
         } // namespace Sorting
     } // namespace Algorithms
-}// namespace TNL
+} // namespace TNL
 
 #include <TNL/Algorithms/Sorting/detail/Quicksorter.hpp>

@@ -17,11 +17,11 @@
 #include <TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
 #include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
 #include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
+#include <TNL/Algorithms/Scan.h>
 
 namespace TNL {
     namespace Algorithms {
         namespace Sorting {
-
 
 template< typename Value >
    template< typename Array, typename Compare >
@@ -407,7 +407,6 @@ processNewTasks()
     host_1stPhaseTasksAmount = min(cuda_newTasksAmount.getElement(0), maxTasks);
     host_2ndPhaseTasksAmount = min(cuda_2ndPhaseTasksAmount.getElement(0), maxTasks);
 }
-
 
         } // namespace Sorting
     } // namespace Algorithms

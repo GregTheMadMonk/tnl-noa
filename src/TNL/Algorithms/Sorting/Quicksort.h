@@ -39,5 +39,3 @@ struct Quicksort
       } // namespace Sorting
    } // namespace Algorithms
 } //namespace TNL
-
-

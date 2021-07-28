@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <utility>  // std::pair, std::forward
-
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -30,13 +28,13 @@ template< typename Device >
 struct DefaultSorter;
 
 template<>
-struct DefaultSorter< Devices::Host >
+struct DefaultSorter< Devices::Sequential >
 {
    using SorterType = Algorithms::Sorting::STLSort;
 };
 
 template<>
-struct DefaultSorter< Devices::Sequential >
+struct DefaultSorter< Devices::Host >
 {
    using SorterType = Algorithms::Sorting::STLSort;
 };
@@ -51,13 +49,13 @@ template< typename Device >
 struct DefaultInplaceSorter;
 
 template<>
-struct DefaultInplaceSorter< Devices::Host >
+struct DefaultInplaceSorter< Devices::Sequential >
 {
    using SorterType = Algorithms::Sorting::BubbleSort;
 };
 
 template<>
-struct DefaultInplaceSorter< Devices::Sequential >
+struct DefaultInplaceSorter< Devices::Host >
 {
    using SorterType = Algorithms::Sorting::BubbleSort;
 };

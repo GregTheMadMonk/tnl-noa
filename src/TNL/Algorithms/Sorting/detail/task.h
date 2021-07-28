@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TASK.h  -  description
+                          task.h  -  description
                              -------------------
     begin                : Jul 13, 2021
     copyright            : (C) 2021 by Tomas Oberhuber et al.
@@ -11,6 +11,10 @@
 // Implemented by: Xuan Thang Nguyen
 
 #pragma once
+
+#include <iostream>
+
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
     namespace Algorithms {
@@ -54,7 +58,7 @@ struct TASK
     TASK() = default;
 };
 
-std::ostream& operator<<(std::ostream & out, const TASK & task)
+inline std::ostream& operator<<(std::ostream & out, const TASK & task)
 {
     out << "[ ";
     out << task.partitionBegin << " - " << task.partitionEnd;
