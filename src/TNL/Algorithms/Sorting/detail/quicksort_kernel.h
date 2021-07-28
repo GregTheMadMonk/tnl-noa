@@ -14,6 +14,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/task.h>
 #include <TNL/Algorithms/Sorting/detail/cudaPartition.h>
 #include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
