@@ -68,43 +68,43 @@ struct CudaBlockScan
       static_assert( blockSize / Cuda::getWarpSize() <= Cuda::getWarpSize(),
                      "blockSize is too large, it would not be possible to scan warpResults using one warp" );
 
-      // Store the threadValue in the shared memory.
+      // store the threadValue in the shared memory
       const int chunkResultIdx = Cuda::getInterleaving( tid );
       storage.chunkResults[ chunkResultIdx ] = threadValue;
       __syncthreads();
 
-      // Perform the parallel scan on chunkResults inside warps.
-      const int threadInWarpIdx = tid % Cuda::getWarpSize();
-      const int warpIdx = tid / Cuda::getWarpSize();
+      // perform the parallel scan on chunkResults inside warps
+      const int lane_id = tid % Cuda::getWarpSize();
+      const int warp_id = tid / Cuda::getWarpSize();
       #pragma unroll
       for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
-         if( threadInWarpIdx >= stride ) {
+         if( lane_id >= stride ) {
             storage.chunkResults[ chunkResultIdx ] = reduction( storage.chunkResults[ chunkResultIdx ], storage.chunkResults[ Cuda::getInterleaving( tid - stride ) ] );
          }
          __syncwarp();
       }
       threadValue = storage.chunkResults[ chunkResultIdx ];
 
-      // The last thread in warp stores the intermediate result in warpResults.
-      if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
-         storage.warpResults[ warpIdx ] = threadValue;
+      // the last thread in warp stores the intermediate result in warpResults
+      if( lane_id == Cuda::getWarpSize() - 1 )
+         storage.warpResults[ warp_id ] = threadValue;
       __syncthreads();
 
-      // Perform the scan of warpResults using one warp.
-      if( warpIdx == 0 )
+      // perform the scan of warpResults using one warp
+      if( warp_id == 0 )
          #pragma unroll
          for( int stride = 1; stride < blockSize / Cuda::getWarpSize(); stride *= 2 ) {
-            if( threadInWarpIdx >= stride )
+            if( lane_id >= stride )
                storage.warpResults[ tid ] = reduction( storage.warpResults[ tid ], storage.warpResults[ tid - stride ] );
             __syncwarp();
          }
       __syncthreads();
 
-      // Shift threadValue by the warpResults.
-      if( warpIdx > 0 )
-         threadValue = reduction( threadValue, storage.warpResults[ warpIdx - 1 ] );
+      // shift threadValue by the warpResults
+      if( warp_id > 0 )
+         threadValue = reduction( threadValue, storage.warpResults[ warp_id - 1 ] );
 
-      // Shift the result for exclusive scan.
+      // shift the result for exclusive scan
       if( scanType == ScanType::Exclusive ) {
          storage.chunkResults[ chunkResultIdx ] = threadValue;
          __syncthreads();
@@ -115,6 +115,164 @@ struct CudaBlockScan
       return threadValue;
    }
 };
+
+template< ScanType scanType,
+          int __unused,  // the __shfl implementation does not depend on the blockSize
+          typename Reduction,
+          typename ValueType >
+struct CudaBlockScanShfl
+{
+   // storage to be allocated in shared memory
+   struct Storage
+   {
+      ValueType warpResults[ Cuda::getWarpSize() ];
+   };
+
+   /* Cooperative scan across the CUDA block - each thread will get the
+    * result of the scan according to its ID.
+    *
+    * \param reduction    The binary reduction functor.
+    * \param identity     Neutral element for given reduction operation, i.e.
+    *                     value such that `reduction(identity, x) == x` for any `x`.
+    * \param threadValue  Value of the calling thread to be reduced.
+    * \param tid          Index of the calling thread (usually `threadIdx.x`,
+    *                     unless you know what you are doing).
+    * \param storage      Auxiliary storage (must be allocated as a __shared__
+    *                     variable).
+    */
+   __device__ static
+   ValueType
+   scan( const Reduction& reduction,
+         ValueType identity,
+         ValueType threadValue,
+         int tid,
+         Storage& storage )
+   {
+      const int lane_id = tid % Cuda::getWarpSize();
+      const int warp_id = tid / Cuda::getWarpSize();
+
+      // perform the parallel scan across warps
+      ValueType total;
+      threadValue = warpScan< scanType >( reduction, identity, threadValue, lane_id, total );
+
+      // the last thread in warp stores the result of inclusive scan in warpResults
+      if( lane_id == Cuda::getWarpSize() - 1 )
+         storage.warpResults[ warp_id ] = total;
+      __syncthreads();
+
+      // the first warp performs the scan of warpResults
+      if( warp_id == 0 ) {
+         // read from shared memory only if that warp existed
+         if( tid < blockDim.x / Cuda::getWarpSize() )
+            total = storage.warpResults[ lane_id ];
+         else
+            total = identity;
+         storage.warpResults[ lane_id ] = warpScan< ScanType::Inclusive >( reduction, identity, total, lane_id, total );
+      }
+      __syncthreads();
+
+      // shift threadValue by the warpResults
+      if( warp_id > 0 )
+         threadValue = reduction( threadValue, storage.warpResults[ warp_id - 1 ] );
+
+      __syncthreads();
+      return threadValue;
+   }
+
+   /* Helper function.
+    * Cooperative scan across the warp - each thread will get the result of the
+    * scan according to its ID.
+    * return value = thread's result of the *warpScanType* scan
+    * total = thread's result of the *inclusive* scan
+    */
+   template< ScanType warpScanType >
+   __device__ static
+   ValueType
+   warpScan( const Reduction& reduction,
+             ValueType identity,
+             ValueType threadValue,
+             int lane_id,
+             ValueType& total )
+   {
+      constexpr unsigned mask = 0xffffffff;
+
+      // perform an inclusive scan
+      #pragma unroll
+      for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
+         const ValueType otherValue = __shfl_up_sync( mask, threadValue, stride );
+         if( lane_id >= stride )
+            threadValue = reduction( threadValue, otherValue );
+      }
+
+      // set the result of the inclusive scan
+      total = threadValue;
+
+      // shift the result for exclusive scan
+      if( warpScanType == ScanType::Exclusive ) {
+         threadValue = __shfl_up_sync( mask, threadValue, 1 );
+         if( lane_id == 0 )
+            threadValue = identity;
+      }
+
+      return threadValue;
+   }
+};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, int >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, int >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, unsigned int >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned int >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, long >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, long >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, unsigned long >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned long >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, long long >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, long long >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, unsigned long long >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, unsigned long long >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, float >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, float >
+{};
+
+template< ScanType scanType,
+          int blockSize,
+          typename Reduction >
+struct CudaBlockScan< scanType, blockSize, Reduction, double >
+: public CudaBlockScanShfl< scanType, blockSize, Reduction, double >
+{};
 
 /* Template for cooperative scan of a data tile in the global memory.
  * It is a *cooperative* operation - all threads must call the operation,
