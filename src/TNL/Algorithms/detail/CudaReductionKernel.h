@@ -24,30 +24,6 @@ namespace Algorithms {
 namespace detail {
 
 #ifdef HAVE_CUDA
-/*
- * nvcc (as of 10.2) is totally fucked up, in some cases it does not recognize the
- * std::plus<void>::operator() function to be constexpr and hence __host__ __device__
- * (for example, when the arguments are StaticVector<3, double> etc). Hence, we use
- * this wrapper which triggers only a warning and not an error as is the case when
- * the reduction functor is called from a __global__ or __device__ function. Let's
- * hope it works otherwise...
- */
-template< typename Reduction, typename Arg1, typename Arg2 >
-__host__ __device__
-auto CudaReductionFunctorWrapper( Reduction&& reduction, Arg1&& arg1, Arg2&& arg2 )
-{
-// let's suppress the aforementioned warning...
-#ifdef __NVCC__
-#pragma push
-#pragma diag_suppress 2979  // error number for nvcc 10.2
-#pragma diag_suppress 3123  // error number for nvcc 11.1
-#endif
-   return std::forward<Reduction>(reduction)( std::forward<Arg1>(arg1), std::forward<Arg2>(arg2) );
-#ifdef __NVCC__
-#pragma pop
-#endif
-}
-
 /* Template for cooperative reduction across the CUDA block of threads.
  * It is a *cooperative* operation - all threads must call the operation,
  * otherwise it will deadlock!
@@ -95,48 +71,48 @@ struct CudaBlockReduce
 
       if( blockSize >= 1024 ) {
          if( tid < 512 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 512 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 512 ] );
          __syncthreads();
       }
       if( blockSize >= 512 ) {
          if( tid < 256 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 256 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 256 ] );
          __syncthreads();
       }
       if( blockSize >= 256 ) {
          if( tid < 128 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 128 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 128 ] );
          __syncthreads();
       }
       if( blockSize >= 128 ) {
          if( tid <  64 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 64 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 64 ] );
          __syncthreads();
       }
 
       // This runs in one warp so we use __syncwarp() instead of __syncthreads().
       if( tid < 32 ) {
          if( blockSize >= 64 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 32 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 32 ] );
          __syncwarp();
          // Note that here we do not have to check if tid < 16 etc, because we have
          // 2 * blockSize.x elements of shared memory per block, so we do not
          // access out of bounds. The results for the upper half will be undefined,
          // but unused anyway.
          if( blockSize >= 32 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 16 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 16 ] );
          __syncwarp();
          if( blockSize >= 16 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 8 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 8 ] );
          __syncwarp();
          if( blockSize >=  8 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 4 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 4 ] );
          __syncwarp();
          if( blockSize >=  4 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 2 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 2 ] );
          __syncwarp();
          if( blockSize >=  2 )
-            storage.data[ tid ] = CudaReductionFunctorWrapper( reduction, storage.data[ tid ], storage.data[ tid + 1 ] );
+            storage.data[ tid ] = reduction( storage.data[ tid ], storage.data[ tid + 1 ] );
       }
 
       __syncthreads();
@@ -422,19 +398,19 @@ CudaReductionKernel( DataFetcher dataFetcher,
    // Start with the sequential reduction and push the result into the shared memory.
    Result result = identity;
    while( begin + 4 * gridSize < end ) {
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin ) );
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin + gridSize ) );
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin + 2 * gridSize ) );
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin + 3 * gridSize ) );
+      result = reduction( result, dataFetcher( begin ) );
+      result = reduction( result, dataFetcher( begin + gridSize ) );
+      result = reduction( result, dataFetcher( begin + 2 * gridSize ) );
+      result = reduction( result, dataFetcher( begin + 3 * gridSize ) );
       begin += 4 * gridSize;
    }
    while( begin + 2 * gridSize < end ) {
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin ) );
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin + gridSize ) );
+      result = reduction( result, dataFetcher( begin ) );
+      result = reduction( result, dataFetcher( begin + gridSize ) );
       begin += 2 * gridSize;
    }
    while( begin < end ) {
-      result = CudaReductionFunctorWrapper( reduction, result, dataFetcher( begin ) );
+      result = reduction( result, dataFetcher( begin ) );
       begin += gridSize;
    }
    __syncthreads();
