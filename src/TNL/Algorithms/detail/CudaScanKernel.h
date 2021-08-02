@@ -430,6 +430,10 @@ CudaScanKernelUpsweep( const InputView input,
    union Shared {
       ValueType data[ blockSize * valuesPerThread ];
       typename BlockReduce::Storage blockReduceStorage;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
    };
    __shared__ Shared storage;
 
@@ -501,13 +505,20 @@ CudaScanKernelDownsweep( const InputView input,
    using TileScan = CudaTileScan< scanType, blockSize, valuesPerThread, Reduction, ValueType >;
 
    // allocate shared memory
-   __shared__ typename TileScan::Storage storage;
+   union Shared {
+      typename TileScan::Storage tileScanStorage;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
+   };
+   __shared__ Shared storage;
 
    // load the reduction of the previous tiles
    shift = reduction( shift, reductionResults[ blockIdx.x ] );
 
    // scan from input into output
-   TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, shift, storage );
+   TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, shift, storage.tileScanStorage );
 }
 
 /* CudaScanKernelParallel - scan each tile of the input separately in each CUDA
@@ -534,10 +545,17 @@ CudaScanKernelParallel( const InputView input,
    using TileScan = CudaTileScan< scanType, blockSize, valuesPerThread, Reduction, ValueType >;
 
    // allocate shared memory
-   __shared__ typename TileScan::Storage storage;
+   union Shared {
+      typename TileScan::Storage tileScanStorage;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
+   };
+   __shared__ Shared storage;
 
    // scan from input into output
-   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, identity, storage );
+   const ValueType value = TileScan::scan( input, output, begin, end, outputBegin, reduction, identity, identity, storage.tileScanStorage );
 
    // The last thread of the block stores the block result in the global memory.
    if( blockResults && threadIdx.x == blockDim.x - 1 )
@@ -565,9 +583,16 @@ CudaScanKernelUniformShift( OutputView output,
                             typename OutputView::ValueType shift )
 {
    // load the block result into a __shared__ variable first
-   __shared__ typename OutputView::ValueType blockResult;
+   union Shared {
+      typename OutputView::ValueType blockResult;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
+   };
+   __shared__ Shared storage;
    if( threadIdx.x == 0 )
-      blockResult = blockResults[ blockIdx.x ];
+      storage.blockResult = blockResults[ blockIdx.x ];
 
    // update the output offset for the thread
    TNL_ASSERT_EQ( blockDim.x, blockSize, "unexpected block size in CudaScanKernelUniformShift" );
@@ -577,7 +602,7 @@ CudaScanKernelUniformShift( OutputView output,
 
    // update the block shift
    __syncthreads();
-   shift = reduction( shift, blockResult );
+   shift = reduction( shift, storage.blockResult );
 
    int valueIdx = 0;
    while( valueIdx < valuesPerThread && outputBegin < outputEnd )

@@ -6,16 +6,17 @@ set( COMMON_TESTS
          MemoryOperationsTest
          MultireductionTest
          ParallelForTest
-         reduceTest
          staticForTest
          unrolledForTest
 )
 
 set( CPP_TESTS
+         reduceTest
          scanTest
          SegmentedScanTest
 )
 set( CUDA_TESTS
+         reduceTestCuda
          scanTestCuda
 )
 if( BUILD_CUDA )

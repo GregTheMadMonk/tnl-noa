@@ -7,6 +7,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/scan.h>
+#include "../CustomScalar.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -95,32 +96,38 @@ protected:
 // TODO: Quad must be fixed
 using ArrayTypes = ::testing::Types<
 #ifndef HAVE_CUDA
+   Array< CustomScalar< int >, Devices::Sequential, short >,
    Array< int,            Devices::Sequential, short >,
    Array< long,           Devices::Sequential, short >,
    Array< double,         Devices::Sequential, short >,
    //Array< Quad< float >,  Devices::Sequential, short >,
    //Array< Quad< double >, Devices::Sequential, short >,
+   Array< CustomScalar< int >, Devices::Sequential, int >,
    Array< int,            Devices::Sequential, int >,
    Array< long,           Devices::Sequential, int >,
    Array< double,         Devices::Sequential, int >,
    //Array< Quad< float >,  Devices::Sequential, int >,
    //Array< Quad< double >, Devices::Sequential, int >,
+   Array< CustomScalar< int >, Devices::Sequential, long >,
    Array< int,            Devices::Sequential, long >,
    Array< long,           Devices::Sequential, long >,
    Array< double,         Devices::Sequential, long >,
    //Array< Quad< float >,  Devices::Sequential, long >,
    //Array< Quad< double >, Devices::Sequential, long >,
 
+   Array< CustomScalar< int >, Devices::Host, short >,
    Array< int,            Devices::Host, short >,
    Array< long,           Devices::Host, short >,
    Array< double,         Devices::Host, short >,
    //Array< Quad< float >,  Devices::Host, short >,
    //Array< Quad< double >, Devices::Host, short >,
+   Array< CustomScalar< int >, Devices::Host, int >,
    Array< int,            Devices::Host, int >,
    Array< long,           Devices::Host, int >,
    Array< double,         Devices::Host, int >,
    //Array< Quad< float >,  Devices::Host, int >,
    //Array< Quad< double >, Devices::Host, int >,
+   Array< CustomScalar< int >, Devices::Host, long >,
    Array< int,            Devices::Host, long >,
    Array< long,           Devices::Host, long >,
    Array< double,         Devices::Host, long >
@@ -128,16 +135,19 @@ using ArrayTypes = ::testing::Types<
    //Array< Quad< double >, Devices::Host, long >
 #endif
 #ifdef HAVE_CUDA
+   Array< CustomScalar< int >, Devices::Cuda, short >,  // the scan kernel for CustomScalar is not specialized with __shfl instructions
    Array< int,            Devices::Cuda, short >,
    Array< long,           Devices::Cuda, short >,
    Array< double,         Devices::Cuda, short >,
    //Array< Quad< float >,  Devices::Cuda, short >,
    //Array< Quad< double >, Devices::Cuda, short >,
+   Array< CustomScalar< int >, Devices::Cuda, int >,  // the scan kernel for CustomScalar is not specialized with __shfl instructions
    Array< int,            Devices::Cuda, int >,
    Array< long,           Devices::Cuda, int >,
    Array< double,         Devices::Cuda, int >,
    //Array< Quad< float >,  Devices::Cuda, int >,
    //Array< Quad< double >, Devices::Cuda, int >,
+   Array< CustomScalar< int >, Devices::Cuda, long >,  // the scan kernel for CustomScalar is not specialized with __shfl instructions
    Array< int,            Devices::Cuda, long >,
    Array< long,           Devices::Cuda, long >,
    Array< double,         Devices::Cuda, long >

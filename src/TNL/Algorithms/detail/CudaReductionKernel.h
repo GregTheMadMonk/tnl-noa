@@ -388,7 +388,14 @@ CudaReductionKernel( DataFetcher dataFetcher,
 
    // allocate shared memory
    using BlockReduce = CudaBlockReduce< blockSize, Reduction, Result >;
-   __shared__ typename BlockReduce::Storage storage;
+   union Shared {
+      typename BlockReduce::Storage blockReduceStorage;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
+   };
+   __shared__ Shared storage;
 
    // Calculate the grid size (stride of the sequential reduction loop).
    const Index gridSize = blockDim.x * gridDim.x;
@@ -416,7 +423,7 @@ CudaReductionKernel( DataFetcher dataFetcher,
    __syncthreads();
 
    // Perform the parallel reduction.
-   result = BlockReduce::reduce( reduction, identity, result, threadIdx.x, storage );
+   result = BlockReduce::reduce( reduction, identity, result, threadIdx.x, storage.blockReduceStorage );
 
    // Store the result back in the global memory.
    if( threadIdx.x == 0 )
@@ -443,7 +450,14 @@ CudaReductionWithArgumentKernel( DataFetcher dataFetcher,
 
    // allocate shared memory
    using BlockReduce = CudaBlockReduceWithArgument< blockSize, Reduction, Result, Index >;
-   __shared__ typename BlockReduce::Storage storage;
+   union Shared {
+      typename BlockReduce::Storage blockReduceStorage;
+
+      // initialization is not allowed for __shared__ variables, so we need to
+      // disable initialization in the implicit default constructor
+      Shared() {}
+   };
+   __shared__ Shared storage;
 
    // Calculate the grid size (stride of the sequential reduction loop).
    const Index gridSize = blockDim.x * gridDim.x;
@@ -504,7 +518,7 @@ CudaReductionWithArgumentKernel( DataFetcher dataFetcher,
    __syncthreads();
 
    // Perform the parallel reduction.
-   const std::pair< Result, Index > result_pair = BlockReduce::reduceWithArgument( reduction, identity, result, initialIndex, threadIdx.x, storage );
+   const std::pair< Result, Index > result_pair = BlockReduce::reduceWithArgument( reduction, identity, result, initialIndex, threadIdx.x, storage.blockReduceStorage );
 
    // Store the result back in the global memory.
    if( threadIdx.x == 0 ) {

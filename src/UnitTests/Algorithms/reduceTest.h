@@ -1,244 +1,280 @@
-/***************************************************************************
-                          reduceTest.h  -  description
-                             -------------------
-    begin                : Jul 2, 2021
-    copyright            : (C) 2021 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
-
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/reduce.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
-#endif
+
+#include <TNL/Arithmetics/Quad.h>
+#include <TNL/Containers/Array.h>
+#include <TNL/Algorithms/reduce.h>
+#include "../CustomScalar.h"
 
 using namespace TNL;
+using namespace TNL::Containers;
+using namespace TNL::Arithmetics;
+using namespace TNL::Algorithms;
+using namespace TNL::Algorithms::detail;
 
-#ifdef HAVE_GTEST
-
-template< typename Device >
-void ReduceTest_sum()
+// test fixture for typed tests
+template< typename Array >
+class ReduceTest : public ::testing::Test
 {
-   using Array = Containers::Array< int, Device >;
-   Array a;
+protected:
+   using ArrayType = Array;
+};
+
+// types for which ReduceTest is instantiated
+// TODO: Quad must be fixed
+using ArrayTypes = ::testing::Types<
+#ifndef HAVE_CUDA
+   Array< CustomScalar< int >, Devices::Sequential, int >,
+   Array< int,            Devices::Sequential, int >,
+   Array< long,           Devices::Sequential, int >,
+   Array< double,         Devices::Sequential, int >,
+   //Array< Quad< float >,  Devices::Sequential, int >,
+   //Array< Quad< double >, Devices::Sequential, int >,
+   Array< CustomScalar< int >, Devices::Sequential, long >,
+   Array< int,            Devices::Sequential, long >,
+   Array< long,           Devices::Sequential, long >,
+   Array< double,         Devices::Sequential, long >,
+   //Array< Quad< float >,  Devices::Sequential, long >,
+   //Array< Quad< double >, Devices::Sequential, long >,
+
+   Array< CustomScalar< int >, Devices::Host, int >,
+   Array< int,            Devices::Host, int >,
+   Array< long,           Devices::Host, int >,
+   Array< double,         Devices::Host, int >,
+   //Array< Quad< float >,  Devices::Host, int >,
+   //Array< Quad< double >, Devices::Host, int >,
+   Array< CustomScalar< int >, Devices::Host, long >,
+   Array< int,            Devices::Host, long >,
+   Array< long,           Devices::Host, long >,
+   Array< double,         Devices::Host, long >
+   //Array< Quad< float >,  Devices::Host, long >,
+   //Array< Quad< double >, Devices::Host, long >
+#endif
+#ifdef HAVE_CUDA
+   Array< CustomScalar< int >, Devices::Cuda, int >,  // the reduction kernel for CustomScalar is not specialized with __shfl instructions
+   Array< int,            Devices::Cuda, int >,
+   Array< long,           Devices::Cuda, int >,
+   Array< double,         Devices::Cuda, int >,
+   //Array< Quad< float >,  Devices::Cuda, int >,
+   //Array< Quad< double >, Devices::Cuda, int >,
+   Array< CustomScalar< int >, Devices::Cuda, long >,  // the reduction kernel for CustomScalar is not specialized with __shfl instructions
+   Array< int,            Devices::Cuda, long >,
+   Array< long,           Devices::Cuda, long >,
+   Array< double,         Devices::Cuda, long >
+   //Array< Quad< float >,  Devices::Cuda, long >,
+   //Array< Quad< double >, Devices::Cuda, long >
+#endif
+>;
+
+TYPED_TEST_SUITE( ReduceTest, ArrayTypes );
+
+template< typename Array >
+void iota( Array& array, typename Array::ValueType start = 0 )
+{
+   array.forAllElements( [start] __cuda_callable__
+                         ( typename Array::IndexType idx, typename Array::ValueType& value )
+                         { value = idx + start; }
+                       );
+}
+
+template< typename Array >
+void mod( Array& array, typename Array::IndexType mod = 0 )
+{
+   array.forAllElements( [mod] __cuda_callable__
+                         ( typename Array::IndexType idx, typename Array::ValueType& value )
+                         { value = idx % mod; }
+                       );
+}
+
+TYPED_TEST( ReduceTest, sum )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
       a.setValue( 1 );
-      auto a_view = a.getView();
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Plus{} );
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::Plus{} );
       EXPECT_EQ( res, size );
+
+      res = reduce( a, TNL::Plus{} );
+      EXPECT_EQ( res, size );
+   }
+
+   const int size = 9377;
+   a.setSize( size );
+   iota( a );
+   auto res = reduce( a, TNL::Plus{} );
+   EXPECT_EQ( res, (size * (size - 1)) / 2 );
+}
+
+TYPED_TEST( ReduceTest, product )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
+   a.setSize( 10 );
+   a.setValue( 2 );
+
+   int result = 1;
+   for( int size = 0; size < a.getSize(); size++ )
+   {
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::Multiplies{} );
+      EXPECT_EQ( res, result );
+      result *= 2;
    }
 }
 
-template< typename Device >
-void ReduceTest_min()
+TYPED_TEST( ReduceTest, min )
 {
-   using Array = Containers::Array< int, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
+      iota( a, 1 );
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Min{} );
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::Min{} );
       EXPECT_EQ( res, 1 );
    }
 }
 
-template< typename Device >
-void ReduceTest_max()
+TYPED_TEST( ReduceTest, max )
 {
-   using Array = Containers::Array< int, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
+      iota( a, 1 );
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::Max{} );
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::Max{} );
       EXPECT_EQ( res, size );
    }
 }
 
-template< typename Device >
-void ReduceTest_minWithArg()
+TYPED_TEST( ReduceTest, minWithArg )
 {
-   using Array = Containers::Array< int, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
+      iota( a, 1 );
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MinWithArg{} );
+      auto res = reduceWithArgument< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::MinWithArg{} );
       EXPECT_EQ( res.first, 1 );
       EXPECT_EQ( res.second, 0 );
    }
 }
 
-template< typename Device >
-void ReduceTest_maxWithArg()
+TYPED_TEST( ReduceTest, maxWithArg )
 {
-   using Array = Containers::Array< int, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, int& value ) { value = idx + 1;} );
-      auto a_view = a.getView();
+      iota( a, 1 );
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduceWithArgument< Device >( ( int ) 0, size, fetch, TNL::MaxWithArg{} );
+      auto res = reduceWithArgument< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::MaxWithArg{} );
       EXPECT_EQ( res.first, size );
       EXPECT_EQ( res.second, size - 1 );
    }
 }
 
-template< typename Device >
-void ReduceTest_logicalAnd()
+TYPED_TEST( ReduceTest, logicalAnd )
 {
-   using Array = Containers::Array< bool, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
-      auto a_view = a.getView();
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalAnd{} );
+      mod( a, 2 );
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::LogicalAnd{} );
       EXPECT_EQ( res, false );
-   }
-}
 
-template< typename Device >
-void ReduceTest_logicalOr()
-{
-   using Array = Containers::Array< bool, Device >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, bool& value ) { value = ( bool ) ( idx % 2 ); } );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::LogicalOr{} );
+      a.setValue( 1 );
+      res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::LogicalAnd{} );
       EXPECT_EQ( res, true );
    }
 }
 
-template< typename Device >
-void ReduceTest_bitAnd()
+TYPED_TEST( ReduceTest, logicalOr )
 {
-   using Array = Containers::Array< char, Device >;
-   Array a;
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
    for( int size = 100; size <= 1000000; size *= 10 )
    {
       a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
-      auto a_view = a.getView();
 
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitAnd{} );
+      mod( a, 2 );
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::LogicalOr{} );
+      EXPECT_EQ( res, true );
+
+      a.setValue( 0 );
+      res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::LogicalOr{} );
+      EXPECT_EQ( res, false );
+   }
+}
+
+// bitwise AND (&) is not defined for floating-point types
+template< typename ArrayType >
+std::enable_if_t< std::is_integral< typename ArrayType::ValueType >::value >
+test_bitAnd( ArrayType& a )
+{
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( typename ArrayType::IndexType idx, typename ArrayType::ValueType& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
+
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::BitAnd{} );
       EXPECT_EQ( res, 1 );
    }
 }
 
-template< typename Device >
-void ReduceTest_bitOr()
+template< typename ArrayType >
+std::enable_if_t< ! std::is_integral< typename ArrayType::ValueType >::value >
+test_bitAnd( ArrayType& a )
 {
-   using Array = Containers::Array< char, Device >;
-   Array a;
-   for( int size = 100; size <= 1000000; size *= 10 )
-   {
-      a.setSize( size );
-      a.forAllElements( [] __cuda_callable__ ( int idx, char& value ) { value = 1 << ( idx % 8 );} );
-      auto a_view = a.getView();
-
-      auto fetch = [=] __cuda_callable__ ( int idx ) { return a_view[ idx ]; };
-      auto res = Algorithms::reduce< Device >( ( int ) 0, size, fetch, TNL::BitOr{} );
-      EXPECT_EQ( res, ( char ) 255 );
-   }
-}
-
-// test fixture for typed tests
-template< typename Device >
-class ReduceTest : public ::testing::Test
-{
-protected:
-   using DeviceType = Device;
-};
-
-// types for which ArrayTest is instantiated
-using DeviceTypes = ::testing::Types<
-   Devices::Host
-#ifdef HAVE_CUDA
-   ,Devices::Cuda
-#endif
-   >;
-
-TYPED_TEST_SUITE( ReduceTest, DeviceTypes );
-
-TYPED_TEST( ReduceTest, sum )
-{
-   ReduceTest_sum< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, min )
-{
-   ReduceTest_min< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, max )
-{
-   ReduceTest_max< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, minWithArg )
-{
-   ReduceTest_minWithArg< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, maxWithArg )
-{
-   ReduceTest_maxWithArg< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, logicalAnd )
-{
-   ReduceTest_logicalAnd< typename TestFixture::DeviceType >();
-}
-
-TYPED_TEST( ReduceTest, logicalOr )
-{
-   ReduceTest_logicalOr< typename TestFixture::DeviceType >();
 }
 
 TYPED_TEST( ReduceTest, bitAnd )
 {
-   ReduceTest_bitAnd< typename TestFixture::DeviceType >();
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
+   test_bitAnd( a );
+}
+
+// bitwise OR (|) is not defined for floating-point types
+template< typename ArrayType >
+std::enable_if_t< std::is_integral< typename ArrayType::ValueType >::value >
+test_bitOr( ArrayType& a )
+{
+   for( int size = 100; size <= 1000000; size *= 10 )
+   {
+      a.setSize( size );
+      a.forAllElements( [] __cuda_callable__ ( typename ArrayType::IndexType idx, typename ArrayType::ValueType& value ) { value = 1 << ( idx % 8 );} );
+
+      auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::BitOr{} );
+      EXPECT_EQ( res, 255 );
+   }
+}
+
+template< typename ArrayType >
+std::enable_if_t< ! std::is_integral< typename ArrayType::ValueType >::value >
+test_bitOr( ArrayType& a )
+{
 }
 
 TYPED_TEST( ReduceTest, bitOr )
 {
-   ReduceTest_bitOr< typename TestFixture::DeviceType >();
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType a;
+   test_bitOr( a );
 }
 
 #endif

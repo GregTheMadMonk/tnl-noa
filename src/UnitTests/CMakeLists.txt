@@ -8,6 +8,7 @@ ADD_SUBDIRECTORY( Pointers )
 
 set( CPP_TESTS  AssertTest
                 base64Test
+                CustomScalarTest
                 FileNameTest
                 MathTest
                 ObjectTest
