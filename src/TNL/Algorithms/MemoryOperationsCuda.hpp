@@ -185,37 +185,5 @@ compare( const Element1* destination,
    return reduce< Devices::Cuda >( ( Index ) 0, size, fetch, std::logical_and<>{}, true );
 }
 
-template< typename Element,
-          typename Index >
-bool
-MemoryOperations< Devices::Cuda >::
-containsValue( const Element* data,
-               const Index size,
-               const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, (Index) 0, "" );
-
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
-   return reduce< Devices::Cuda >( ( Index ) 0, size, fetch, std::logical_or<>{}, false );
-}
-
-template< typename Element,
-          typename Index >
-bool
-MemoryOperations< Devices::Cuda >::
-containsOnlyValue( const Element* data,
-                   const Index size,
-                   const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
-
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
-   return reduce< Devices::Cuda >( ( Index ) 0, size, fetch, std::logical_and<>{}, true );
-}
-
 } // namespace Algorithms
 } // namespace TNL

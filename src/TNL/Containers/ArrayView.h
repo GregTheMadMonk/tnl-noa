@@ -542,44 +542,6 @@ public:
    void forAllElements( Function&& f ) const;
 
    /**
-    * \brief Checks if there is an element with value \e v.
-    *
-    * By default, all elements of the array view are checked. If \e begin or
-    * \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are checked.
-    *
-    * \param value The value to be checked.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
-    * \return `true` if there is _at least one_ element in the sub-interval
-    *         `[begin, end)` which has the value \e value.
-    */
-   bool containsValue( ValueType value,
-                       IndexType begin = 0,
-                       IndexType end = 0 ) const;
-
-   /**
-    * \brief Checks if all elements have the same value \e v.
-    *
-    * By default, all elements of the array view are checked. If \e begin or
-    * \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are checked.
-    *
-    * \param value The value to be checked.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
-    * \return `true` if _all_ elements in the sub-interval `[begin, end)`
-    *         have the same value \e value.
-    */
-   bool containsOnlyValue( ValueType value,
-                           IndexType begin = 0,
-                           IndexType end = 0 ) const;
-
-   /**
     * \brief Method for saving the data to a binary file \e fileName.
     *
     * \param fileName The output file name.

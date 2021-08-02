@@ -14,6 +14,7 @@
 #pragma once
 
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Algorithms/contains.h>
 
 template< typename Real,
         typename Device,
@@ -323,7 +324,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
 
            oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
 
-           calculateCudaBlocksAgain = blockCalculationIndicator.containsValue(1);
+           calculateCudaBlocksAgain = Algorithms::contains( blockCalculationIndicator, 1);
           */
   /**------------------------------------------------------------------------------------------------*/
 
@@ -349,7 +350,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
           TNL_CHECK_CUDA_DEVICE;
 
           // "Parallel reduction" to see if we should calculate again calculateCudaBlocksAgain
-          calculateCudaBlocksAgain = blockCalculationIndicator.containsValue(1);
+          calculateCudaBlocksAgain = Algorithms::contains( blockCalculationIndicator, 1);
 
           // When we change something then we should caclucate again in the next passage of MPI ( calculated = true )
          if( calculateCudaBlocksAgain ){

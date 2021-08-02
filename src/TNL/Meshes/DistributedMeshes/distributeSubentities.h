@@ -15,6 +15,7 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 #include <TNL/Meshes/MeshDetails/layers/EntityTags/Traits.h>
 #include <TNL/Algorithms/scan.h>
+#include <TNL/Algorithms/contains.h>
 
 namespace TNL {
 namespace Meshes {
@@ -391,7 +392,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
       if( all_done )
          break;
    }
-   if( mesh.template getGlobalIndices< Dimension >().containsValue( padding_index ) )
+   if( Algorithms::contains( mesh.template getGlobalIndices< Dimension >(), padding_index ) )
       throw std::runtime_error( "some global indices were left unset" );
 
    // 7. reorder the entities to make sure that global indices are sorted

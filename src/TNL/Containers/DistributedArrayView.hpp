@@ -475,36 +475,6 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
 template< typename Value,
           typename Device,
           typename Index >
-bool
-DistributedArrayView< Value, Device, Index >::
-containsValue( ValueType value ) const
-{
-   bool result = false;
-   if( group != MPI::NullGroup() ) {
-      const bool localResult = localData.containsValue( value );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LOR, group );
-   }
-   return result;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-DistributedArrayView< Value, Device, Index >::
-containsOnlyValue( ValueType value ) const
-{
-   bool result = true;
-   if( group != MPI::NullGroup() ) {
-      const bool localResult = localData.containsOnlyValue( value );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
-   }
-   return result;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 std::ostream&
 DistributedArrayView< Value, Device, Index >::
 print( std::ostream& str ) const

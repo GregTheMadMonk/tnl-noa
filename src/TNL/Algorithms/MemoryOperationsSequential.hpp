@@ -147,43 +147,5 @@ compare( const Element1* destination,
    return true;
 }
 
-template< typename Element,
-          typename Index >
-__cuda_callable__
-bool
-MemoryOperations< Devices::Sequential >::
-containsValue( const Element* data,
-               const Index size,
-               const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
-
-   for( Index i = 0; i < size; i++ )
-      if( data[ i ] == value )
-         return true;
-   return false;
-}
-
-template< typename Element,
-          typename Index >
-__cuda_callable__
-bool
-MemoryOperations< Devices::Sequential >::
-containsOnlyValue( const Element* data,
-                   const Index size,
-                   const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
-
-   for( Index i = 0; i < size; i++ )
-      if( ! ( data[ i ] == value ) )
-         return false;
-   return true;
-}
-
 } // namespace Algorithms
 } // namespace TNL

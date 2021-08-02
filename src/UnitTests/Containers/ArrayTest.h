@@ -512,40 +512,6 @@ TYPED_TEST( ArrayTest, forElements )
    testArrayForEachElement< typename TestFixture::ArrayType >();
 }
 
-TYPED_TEST( ArrayTest, containsValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   ArrayType array;
-   array.setSize( 1024 );
-
-   for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, i % 10 );
-
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( array.containsValue( i ) );
-
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( array.containsValue( i ) );
-}
-
-TYPED_TEST( ArrayTest, containsOnlyValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   ArrayType array;
-   array.setSize( 1024 );
-
-   for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, i % 10 );
-
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( array.containsOnlyValue( i ) );
-
-   array.setValue( 100 );
-   EXPECT_TRUE( array.containsOnlyValue( 100 ) );
-}
-
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;

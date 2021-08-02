@@ -760,40 +760,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-bool
-Array< Value, Device, Index, Allocator >::
-containsValue( ValueType value,
-               IndexType begin,
-               IndexType end ) const
-{
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == 0 )
-      end = this->getSize();
-
-   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-Array< Value, Device, Index, Allocator >::
-containsOnlyValue( ValueType value,
-                   IndexType begin,
-                   IndexType end ) const
-{
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == 0 )
-      end = this->getSize();
-
-   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
 void
 Array< Value, Device, Index, Allocator >::
 save( const String& fileName ) const

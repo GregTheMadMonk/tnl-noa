@@ -361,44 +361,6 @@ TYPED_TEST( ArrayViewTest, evaluate )
    ArrayViewEvaluateTest( u );
 }
 
-TYPED_TEST( ArrayViewTest, containsValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-
-   ArrayType a;
-   a.setSize( 1024 );
-   ViewType v = a.getView();
-
-   for( int i = 0; i < v.getSize(); i++ )
-      v.setElement( i, i % 10 );
-
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( v.containsValue( i ) );
-
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( v.containsValue( i ) );
-}
-
-TYPED_TEST( ArrayViewTest, containsOnlyValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
-
-   ArrayType a;
-   a.setSize( 1024 );
-   ViewType v = a.getView();
-
-   for( int i = 0; i < v.getSize(); i++ )
-      v.setElement( i, i % 10 );
-
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( v.containsOnlyValue( i ) );
-
-   a.setValue( 100 );
-   EXPECT_TRUE( v.containsOnlyValue( 100 ) );
-}
-
 TYPED_TEST( ArrayViewTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;

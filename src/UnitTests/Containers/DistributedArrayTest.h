@@ -291,43 +291,6 @@ TYPED_TEST( DistributedArrayTest, comparisonOperators )
    EXPECT_TRUE( u == v );
 }
 
-TYPED_TEST( DistributedArrayTest, containsValue )
-{
-   using IndexType = typename TestFixture::IndexType;
-
-   const auto localRange = this->distributedArray.getLocalRange();
-
-   for( int i = 0; i < localRange.getSize(); i++ ) {
-      const IndexType gi = localRange.getGlobalIndex( i );
-      this->distributedArray.setElement( gi, i % 10 );
-   }
-
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( this->distributedArray.containsValue( i ) );
-
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( this->distributedArray.containsValue( i ) );
-}
-
-TYPED_TEST( DistributedArrayTest, containsOnlyValue )
-{
-   using IndexType = typename TestFixture::IndexType;
-
-   const auto localRange = this->distributedArray.getLocalRange();
-
-   for( int i = 0; i < localRange.getSize(); i++ ) {
-      const IndexType gi = localRange.getGlobalIndex( i );
-      this->distributedArray.setElement( gi, i % 10 );
-   }
-
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( this->distributedArray.containsOnlyValue( i ) );
-
-   this->distributedArray.setValue( 100 );
-   this->distributedArray.waitForSynchronization();
-   EXPECT_TRUE( this->distributedArray.containsOnlyValue( 100 ) );
-}
-
 TYPED_TEST( DistributedArrayTest, empty )
 {
    EXPECT_GT( this->distributedArray.getSize(), 0 );

@@ -81,20 +81,6 @@ struct MemoryOperations< Devices::Sequential >
    static bool compare( const Element1* destination,
                         const Element2* source,
                         const Index size );
-
-   template< typename Element,
-             typename Index >
-   __cuda_callable__
-   static bool containsValue( const Element* data,
-                              const Index size,
-                              const Element& value );
-
-   template< typename Element,
-             typename Index >
-   __cuda_callable__
-   static bool containsOnlyValue( const Element* data,
-                                  const Index size,
-                                  const Element& value );
 };
 
 template<>
@@ -155,18 +141,6 @@ struct MemoryOperations< Devices::Host >
    static bool compare( const Element1* destination,
                         const Element2* source,
                         const Index size );
-
-   template< typename Element,
-             typename Index >
-   static bool containsValue( const Element* data,
-                              const Index size,
-                              const Element& value );
-
-   template< typename Element,
-             typename Index >
-   static bool containsOnlyValue( const Element* data,
-                                  const Index size,
-                                  const Element& value );
 };
 
 template<>
@@ -224,18 +198,6 @@ struct MemoryOperations< Devices::Cuda >
    static bool compare( const Element1* destination,
                         const Element2* source,
                         const Index size );
-
-   template< typename Element,
-             typename Index >
-   static bool containsValue( const Element* data,
-                              const Index size,
-                              const Element& value );
-
-   template< typename Element,
-             typename Index >
-   static bool containsOnlyValue( const Element* data,
-                                  const Index size,
-                                  const Element& value );
 };
 
 } // namespace Algorithms

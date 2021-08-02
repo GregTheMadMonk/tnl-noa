@@ -399,34 +399,6 @@ forAllElements( Function&& f ) const
 template< typename Value,
           typename Device,
           typename Index >
-bool
-ArrayView< Value, Device, Index >::
-containsValue( ValueType value,
-               IndexType begin,
-               IndexType end ) const
-{
-   if( end == 0 )
-      end = this->getSize();
-   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-ArrayView< Value, Device, Index >::
-containsOnlyValue( ValueType value,
-                   IndexType begin,
-                   IndexType end ) const
-{
-   if( end == 0 )
-      end = this->getSize();
-   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 void
 ArrayView< Value, Device, Index >::
 save( const String& fileName ) const

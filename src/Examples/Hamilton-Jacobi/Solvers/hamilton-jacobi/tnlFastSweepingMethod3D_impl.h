@@ -14,6 +14,7 @@
 #pragma once
 
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Algorithms/contains.h>
 
 template< typename Real,
         typename Device,
@@ -336,8 +337,8 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
           BlockIterDevice = BlockIterPom;
           Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 
-          // .containsValue(1) is actually parallel reduction implemented in TNL
-          BlockIterD = BlockIterDevice.containsValue(1);
+          // contains(...) is actually parallel reduction implemented in TNL
+          BlockIterD = Algorithms::contains( BlockIterDevice, 1);
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
 

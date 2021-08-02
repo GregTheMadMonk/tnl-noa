@@ -41,16 +41,6 @@ void arrayExample()
    std::cout << "a1 = " << a1 << std::endl;
 
    /***
-    * Simple array values checks can be done as follows ...
-    */
-   if( a1.containsValue( 1 ) )
-      std::cout << "a1 contains value 1." << std::endl;
-   if( a1.containsValue( size ) )
-      std::cout << "a1 contains value " << size << "." << std::endl;
-   if( a1.containsOnlyValue( 0 ) )
-      std::cout << "a2 contains only value 0." << std::endl;
-
-   /***
     * You may swap array data with the swap method.
     */
    a1.swap( a2 );

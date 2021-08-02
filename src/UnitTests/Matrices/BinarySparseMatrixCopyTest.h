@@ -20,6 +20,7 @@
 #include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Algorithms/Segments/Ellpack.h>
 #include <TNL/Algorithms/Segments/SlicedEllpack.h>
+#include <TNL/Algorithms/contains.h>
 
 template< typename Device, typename Index, typename IndexAllocator >
 using EllpackSegments = TNL::Algorithms::Segments::Ellpack< Device, Index, IndexAllocator >;
@@ -492,7 +493,7 @@ void multidiagonalMatrixAssignment()
    MultidiagonalHost hostMatrix( rows, columns, diagonals );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             hostMatrix.setElement( i, j, TNL::min( i + j, 1 ) );
 
    Matrix matrix;
@@ -509,7 +510,7 @@ void multidiagonalMatrixAssignment()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
       {
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
          else
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
@@ -524,7 +525,7 @@ void multidiagonalMatrixAssignment()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
       {
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
          else
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );

@@ -144,44 +144,6 @@ TYPED_TEST( MemoryOperationsTest, compareWithConversion_host )
    allocator2.deallocate( data2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( MemoryOperationsTest, containsValue_host )
-{
-   using ValueType = typename TestFixture::ValueType;
-   using Allocator = Allocators::Host< ValueType >;
-
-   Allocator allocator;
-   ValueType* data = allocator.allocate( ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      data[ i ] = i % 10;
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( ( MemoryOperations< Devices::Host >::containsValue( data, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( ( MemoryOperations< Devices::Host >::containsValue( data, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-
-   allocator.deallocate( data, ARRAY_TEST_SIZE );
-}
-
-TYPED_TEST( MemoryOperationsTest, containsOnlyValue_host )
-{
-   using ValueType = typename TestFixture::ValueType;
-   using Allocator = Allocators::Host< ValueType >;
-
-   Allocator allocator;
-   ValueType* data = allocator.allocate( ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      data[ i ] = i % 10;
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( ( MemoryOperations< Devices::Host >::containsOnlyValue( data, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      data[ i ] = 10;
-   EXPECT_TRUE( ( MemoryOperations< Devices::Host >::containsOnlyValue( data, ARRAY_TEST_SIZE, (ValueType) 10 ) ) );
-
-   allocator.deallocate( data, ARRAY_TEST_SIZE );
-}
-
 
 #ifdef HAVE_CUDA
 TYPED_TEST( MemoryOperationsTest, allocateMemory_cuda )
@@ -352,58 +314,6 @@ TYPED_TEST( MemoryOperationsTest, compareWithConversions_cuda )
    hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
    cudaAllocator1.deallocate( deviceData, ARRAY_TEST_SIZE );
    cudaAllocator2.deallocate( deviceData2, ARRAY_TEST_SIZE );
-}
-
-TYPED_TEST( MemoryOperationsTest, containsValue_cuda )
-{
-   using ValueType = typename TestFixture::ValueType;
-   using HostAllocator = Allocators::Host< ValueType >;
-   using CudaAllocator = Allocators::Cuda< ValueType >;
-
-   HostAllocator hostAllocator;
-   CudaAllocator cudaAllocator;
-   ValueType* hostData = hostAllocator.allocate( ARRAY_TEST_SIZE );
-   ValueType* deviceData = cudaAllocator.allocate( ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      hostData[ i ] = i % 10;
-   MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( ( MemoryOperations< Devices::Cuda >::containsValue( deviceData, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( ( MemoryOperations< Devices::Cuda >::containsValue( deviceData, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-
-   hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
-   cudaAllocator.deallocate( deviceData, ARRAY_TEST_SIZE );
-}
-
-TYPED_TEST( MemoryOperationsTest, containsOnlyValue_cuda )
-{
-   using ValueType = typename TestFixture::ValueType;
-   using HostAllocator = Allocators::Host< ValueType >;
-   using CudaAllocator = Allocators::Cuda< ValueType >;
-
-   HostAllocator hostAllocator;
-   CudaAllocator cudaAllocator;
-   ValueType* hostData = hostAllocator.allocate( ARRAY_TEST_SIZE );
-   ValueType* deviceData = cudaAllocator.allocate( ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      hostData[ i ] = i % 10;
-   MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
-
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( ( MemoryOperations< Devices::Cuda >::containsOnlyValue( deviceData, ARRAY_TEST_SIZE, (ValueType) i ) ) );
-
-   for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      hostData[ i ] = 10;
-   MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
-
-   EXPECT_TRUE( ( MemoryOperations< Devices::Cuda >::containsOnlyValue( deviceData, ARRAY_TEST_SIZE, (ValueType) 10 ) ) );
-
-   hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
-   cudaAllocator.deallocate( deviceData, ARRAY_TEST_SIZE );
 }
 #endif // HAVE_CUDA
 #endif // HAVE_GTEST

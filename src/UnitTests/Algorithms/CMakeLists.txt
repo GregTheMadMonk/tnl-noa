@@ -2,6 +2,7 @@ ADD_SUBDIRECTORY( Segments )
 ADD_SUBDIRECTORY( Sorting )
 
 set( COMMON_TESTS
+         containsTest
          MemoryOperationsTest
          MultireductionTest
          ParallelForTest
