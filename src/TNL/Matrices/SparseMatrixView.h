@@ -451,7 +451,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
        *
        * ```
-       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const RealType& value ) { ... };
        * ```
        *
        * \tparam FetchValue is type returned by the Fetch lambda function.
