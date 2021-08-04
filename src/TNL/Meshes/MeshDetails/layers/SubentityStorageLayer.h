@@ -138,7 +138,6 @@ protected:
       return *this;
    }
 
-
    void print( std::ostream& str ) const
    {
       BaseType::print( str );
@@ -299,6 +298,216 @@ protected:
 
 private:
    NeighborCountsArray subentitiesCounts;
+   SubentityMatrixType matrix;
+   
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
+   friend class SubentityStorageLayer;
+};
+
+/****
+ *       Mesh subentity storage layer with specializations
+ *
+ *  SUBENTITY STORAGE     DYNAMIC TOPOLOGY     TOPOLOGY     Subdimension
+ *        TRUE                  TRUE           Polygon           0
+ */
+template< typename MeshConfig,
+          typename Device >
+class SubentityStorageLayer< MeshConfig,
+                             Device,
+                             Topologies::Polygon,
+                             DimensionTag< 0 >,
+                             true,
+                             true >
+   : public SubentityStorageLayer< MeshConfig, Device, Topologies::Polygon, typename DimensionTag< 0 >::Increment >
+{
+   using EntityTopology = Topologies::Polygon;
+   using SubdimensionTag = DimensionTag< 0 >;
+   using BaseType       = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
+
+protected:
+   using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+
+   SubentityStorageLayer() = default;
+
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
+   {
+      BaseType::operator=( other );
+      subentitiesCounts = other.subentitiesCounts;
+      matrix = other.matrix;
+      return *this;
+   }
+
+   template< typename Device_ >
+   SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      BaseType::operator=( other );
+      subentitiesCounts = other.subentitiesCounts;
+      matrix = other.matrix;
+      return *this;
+   }
+
+   void print( std::ostream& str ) const
+   {
+      BaseType::print( str );
+      str << "Adjacency matrix for subentities with dimension " << SubdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
+      str << matrix << std::endl;
+   }
+
+   bool operator==( const SubentityStorageLayer& layer ) const
+   {
+      return ( BaseType::operator==( layer ) &&
+               subentitiesCounts == layer.subentitiesCounts &&
+               matrix == layer.matrix );
+   }
+
+protected:
+   using BaseType::setSubentitiesCounts;
+   void setSubentitiesCounts( SubdimensionTag, const NeighborCountsArray& counts )
+   {
+      subentitiesCounts = counts;
+   }
+
+   using BaseType::getSubentitiesCount;
+   __cuda_callable__
+   LocalIndexType getSubentitiesCount( SubdimensionTag, const GlobalIndexType entityIndex ) const
+   {
+      return subentitiesCounts[ entityIndex ];
+   }
+
+   // Subdimension 1 has identical subentitiesCounts as Subdimension 0
+   __cuda_callable__
+   LocalIndexType getSubentitiesCount( typename SubdimensionTag::Increment, const GlobalIndexType entityIndex ) const
+   {
+      return subentitiesCounts[ entityIndex ];
+   }
+
+   using BaseType::getSubentitiesMatrix;
+   __cuda_callable__
+   SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag )
+   {
+      return matrix;
+   }
+
+   __cuda_callable__
+   const SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag ) const
+   {
+      return matrix;
+   }
+
+private:
+   NeighborCountsArray subentitiesCounts;
+   SubentityMatrixType matrix;
+   
+   // friend class is needed for templated assignment operators
+   template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
+   friend class SubentityStorageLayer;
+};
+
+/****
+ *       Mesh subentity storage layer with specializations
+ *
+ *  SUBENTITY STORAGE     DYNAMIC TOPOLOGY     TOPOLOGY     Subdimension
+ *        TRUE                  TRUE           Polygon           1
+ */
+template< typename MeshConfig,
+          typename Device >
+class SubentityStorageLayer< MeshConfig,
+                             Device,
+                             Topologies::Polygon,
+                             DimensionTag< 1 >,
+                             true,
+                             true >
+   : public SubentityStorageLayer< MeshConfig, Device, Topologies::Polygon, typename DimensionTag< 1 >::Increment >
+{
+   using EntityTopology = Topologies::Polygon;
+   using SubdimensionTag = DimensionTag< 1 >;
+   using BaseType       = SubentityStorageLayer< MeshConfig, Device, EntityTopology, typename SubdimensionTag::Increment >;
+   using MeshTraitsType = MeshTraits< MeshConfig, Device >;
+
+protected:
+   using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+
+   SubentityStorageLayer() = default;
+
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
+   {
+      operator=( other );
+   }
+
+   template< typename Device_ >
+   SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      operator=( other );
+   }
+
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
+   {
+      BaseType::operator=( other );
+      matrix = other.matrix;
+      return *this;
+   }
+
+   template< typename Device_ >
+   SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
+   {
+      BaseType::operator=( other );
+      matrix = other.matrix;
+      return *this;
+   }
+
+   void print( std::ostream& str ) const
+   {
+      BaseType::print( str );
+      str << "Adjacency matrix for subentities with dimension " << SubdimensionTag::value << " of entities with dimension " << EntityTopology::dimension << " is: " << std::endl;
+      str << matrix << std::endl;
+   }
+
+   bool operator==( const SubentityStorageLayer& layer ) const
+   {
+      return ( BaseType::operator==( layer ) &&
+               matrix == layer.matrix );
+   }
+
+protected:
+   using BaseType::setSubentitiesCounts;
+   void setSubentitiesCounts( SubdimensionTag, const NeighborCountsArray& counts )
+   {}
+
+   // getSubentitiesCount for subdimension 1 is defined in the specialization for subdimension 0
+
+   using BaseType::getSubentitiesMatrix;
+   __cuda_callable__
+   SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag )
+   {
+      return matrix;
+   }
+
+   __cuda_callable__
+   const SubentityMatrixType& getSubentitiesMatrix( SubdimensionTag ) const
+   {
+      return matrix;
+   }
+
+private:
    SubentityMatrixType matrix;
    
    // friend class is needed for templated assignment operators
