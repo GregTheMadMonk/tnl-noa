@@ -120,6 +120,50 @@ template< class Key,
           class Hash,
           class KeyEqual,
           class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::begin()
+{
+   return map.begin();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::const_iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::begin() const
+{
+   return map.begin();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::end()
+{
+   return map.end();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::const_iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::end() const
+{
+   return map.end();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
 std::ostream& operator<<( std::ostream& str, UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >& set )
 {
    set.print( str );
