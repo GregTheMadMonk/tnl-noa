@@ -76,7 +76,17 @@ struct Max
    }
 };
 
-struct Minus
+struct UnaryPlus
+{
+   template< typename T1 >
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( +a )
+   {
+      return +a;
+   }
+};
+
+struct UnaryMinus
 {
    template< typename T1 >
    __cuda_callable__

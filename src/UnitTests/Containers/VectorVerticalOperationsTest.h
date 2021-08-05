@@ -28,6 +28,7 @@
 #endif
 
 #include "VectorHelperFunctions.h"
+#include "../CustomScalar.h"
 
 #include "gtest/gtest.h"
 
@@ -112,11 +113,13 @@ protected:
    #ifndef HAVE_CUDA
       DistributedVector<           double, Devices::Host, int >,
       DistributedVectorView<       double, Devices::Host, int >,
-      DistributedVectorView< const double, Devices::Host, int >
+      DistributedVectorView< const double, Devices::Host, int >,
+      DistributedVector< CustomScalar< double >, Devices::Host, int >
    #else
       DistributedVector<           double, Devices::Cuda, int >,
       DistributedVectorView<       double, Devices::Cuda, int >,
-      DistributedVectorView< const double, Devices::Cuda, int >
+      DistributedVectorView< const double, Devices::Cuda, int >,
+      DistributedVector< CustomScalar< double >, Devices::Cuda, int >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
@@ -126,7 +129,7 @@ protected:
          StaticVector< 2, StaticVector< 3, double > >,
          StaticVector< 3, StaticVector< 3, double > >,
          StaticVector< 4, StaticVector< 3, double > >,
-         StaticVector< 5, StaticVector< 3, double > >
+         StaticVector< 5, StaticVector< 3, CustomScalar< double > > >
       >;
    #else
       using VectorTypes = ::testing::Types<
@@ -138,8 +141,8 @@ protected:
          StaticVector< 3, double >,
          StaticVector< 4, int >,
          StaticVector< 4, double >,
-         StaticVector< 5, int >,
-         StaticVector< 5, double >
+         StaticVector< 5, CustomScalar< int > >,
+         StaticVector< 5, CustomScalar< double > >
       >;
    #endif
 #else
@@ -160,14 +163,18 @@ protected:
          VectorView< int,       Devices::Host >,
          VectorView< const int, Devices::Host >,
          Vector<     double,    Devices::Host >,
-         VectorView< double,    Devices::Host >
+         VectorView< double,    Devices::Host >,
+         Vector<     CustomScalar< int >, Devices::Host >,
+         VectorView< CustomScalar< int >, Devices::Host >
       #endif
       #ifdef HAVE_CUDA
          Vector<     int,       Devices::Cuda >,
          VectorView< int,       Devices::Cuda >,
          VectorView< const int, Devices::Cuda >,
          Vector<     double,    Devices::Cuda >,
-         VectorView< double,    Devices::Cuda >
+         VectorView< double,    Devices::Cuda >,
+         Vector<     CustomScalar< int >, Devices::Cuda >,
+         VectorView< CustomScalar< int >, Devices::Cuda >
       #endif
       >;
    #endif

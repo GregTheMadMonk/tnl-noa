@@ -388,6 +388,17 @@ dot( const ET1& a, const ET2& b )
 }
 
 ////
+// Unary expression plus
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+operator+( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, UnaryPlus >( a );
+}
+
+////
 // Unary expression minus
 template< typename ET1,
           typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
@@ -395,7 +406,7 @@ __cuda_callable__
 auto
 operator-( const ET1& a )
 {
-   return StaticUnaryExpressionTemplate< ET1, Minus >( a );
+   return StaticUnaryExpressionTemplate< ET1, UnaryMinus >( a );
 }
 
 ////

@@ -382,13 +382,23 @@ dot( const ET1& a, const ET2& b )
 }
 
 ////
+// Unary expression plus
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+operator+( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, UnaryPlus >( a );
+}
+
+////
 // Unary expression minus
 template< typename ET1,
           typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
 auto
 operator-( const ET1& a )
 {
-   return UnaryExpressionTemplate< ET1, Minus >( a );
+   return UnaryExpressionTemplate< ET1, UnaryMinus >( a );
 }
 
 ////

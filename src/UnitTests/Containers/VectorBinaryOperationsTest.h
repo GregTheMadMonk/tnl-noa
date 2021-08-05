@@ -28,6 +28,7 @@
 #endif
 
 #include "VectorHelperFunctions.h"
+#include "../CustomScalar.h"
 
 #include "gtest/gtest.h"
 
@@ -163,8 +164,8 @@ protected:
             DistributedVectorView< short, Devices::Host, int > >,
       Pair< DistributedVectorView< int,   Devices::Host, int >,
             DistributedVector<     short, Devices::Host, int > >,
-      Pair< DistributedVectorView< int,   Devices::Host, int >,
-            DistributedVectorView< short, Devices::Host, int > >
+      Pair< DistributedVectorView< CustomScalar< int >,   Devices::Host, int >,
+            DistributedVectorView< CustomScalar< short >, Devices::Host, int > >
    #else
       Pair< DistributedVector<     int,   Devices::Cuda, int >,
             DistributedVector<     short, Devices::Cuda, int > >,
@@ -172,8 +173,8 @@ protected:
             DistributedVectorView< short, Devices::Cuda, int > >,
       Pair< DistributedVectorView< int,   Devices::Cuda, int >,
             DistributedVector<     short, Devices::Cuda, int > >,
-      Pair< DistributedVectorView< int,   Devices::Cuda, int >,
-            DistributedVectorView< short, Devices::Cuda, int > >
+      Pair< DistributedVectorView< CustomScalar< int >,   Devices::Cuda, int >,
+            DistributedVectorView< CustomScalar< short >, Devices::Cuda, int > >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
@@ -183,20 +184,21 @@ protected:
          Pair< StaticVector< 2, StaticVector< 3, int > >,  StaticVector< 2, StaticVector< 3, short > > >,
          Pair< StaticVector< 3, StaticVector< 3, int > >,  StaticVector< 3, StaticVector< 3, short > > >,
          Pair< StaticVector< 4, StaticVector< 3, int > >,  StaticVector< 4, StaticVector< 3, short > > >,
-         Pair< StaticVector< 5, StaticVector< 3, int > >,  StaticVector< 5, StaticVector< 3, short > > >
+         Pair< StaticVector< 5, StaticVector< 3, int > >,  StaticVector< 5, StaticVector< 3, short > > >,
+         Pair< StaticVector< 5, StaticVector< 3, CustomScalar< int > > >,  StaticVector< 5, StaticVector< 3, CustomScalar< short > > > >
       >;
    #else
       using VectorPairs = ::testing::Types<
-         Pair< StaticVector< 1, int >,     StaticVector< 1, short >    >,
+         Pair< StaticVector< 1, int    >,  StaticVector< 1, short  > >,
          Pair< StaticVector< 1, double >,  StaticVector< 1, double > >,
-         Pair< StaticVector< 2, int >,     StaticVector< 2, short >    >,
+         Pair< StaticVector< 2, int    >,  StaticVector< 2, short  > >,
          Pair< StaticVector< 2, double >,  StaticVector< 2, double > >,
-         Pair< StaticVector< 3, int >,     StaticVector< 3, short >    >,
+         Pair< StaticVector< 3, int    >,  StaticVector< 3, short  > >,
          Pair< StaticVector< 3, double >,  StaticVector< 3, double > >,
-         Pair< StaticVector< 4, int >,     StaticVector< 4, short >    >,
+         Pair< StaticVector< 4, int    >,  StaticVector< 4, short  > >,
          Pair< StaticVector< 4, double >,  StaticVector< 4, double > >,
-         Pair< StaticVector< 5, int >,     StaticVector< 5, short >    >,
-         Pair< StaticVector< 5, double >,  StaticVector< 5, double > >
+         Pair< StaticVector< 5, int    >,  StaticVector< 5, CustomScalar< short > > >,
+         Pair< StaticVector< 5, double >,  StaticVector< 5, CustomScalar< double > > >
       >;
    #endif
 #else
@@ -217,33 +219,25 @@ protected:
    #else
       using VectorPairs = ::testing::Types<
       #ifndef HAVE_CUDA
-         Pair< Vector<     int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-         Pair< VectorView< int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-         Pair< VectorView< const int, Devices::Host >, Vector<     int,       Devices::Host > >,
-         Pair< Vector<     int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-         Pair< Vector<     int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-         Pair< VectorView< int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-         Pair< VectorView< const int, Devices::Host >, VectorView< int,       Devices::Host > >,
-         Pair< VectorView< const int, Devices::Host >, VectorView< const int, Devices::Host > >,
-         Pair< VectorView< int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-         Pair< Vector<     double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-         Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-         Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
-         Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
+         Pair< Vector<     int,                 Devices::Host >, Vector<     int,                          Devices::Host > >,
+         Pair< VectorView< int,                 Devices::Host >, Vector<     int,                          Devices::Host > >,
+         Pair< VectorView< const int,           Devices::Host >, Vector<     int,                          Devices::Host > >,
+         Pair< Vector<     CustomScalar< int >, Devices::Host >, VectorView< CustomScalar< double >,       Devices::Host > >,
+         Pair< Vector<     CustomScalar< int >, Devices::Host >, VectorView< const CustomScalar< double >, Devices::Host > >,
+         Pair< VectorView< CustomScalar< int >, Devices::Host >, VectorView< CustomScalar< double >,       Devices::Host > >,
+         Pair< VectorView< const int,           Devices::Host >, VectorView< int,                          Devices::Host > >,
+         Pair< VectorView< const int,           Devices::Host >, VectorView< const int,                    Devices::Host > >,
+         Pair< VectorView< int,                 Devices::Host >, VectorView< const int,                    Devices::Host > >
       #else
-         Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-         Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-         Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-         Pair< Vector<     int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-         Pair< Vector<     int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-         Pair< VectorView< int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-         Pair< VectorView< const int, Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-         Pair< VectorView< const int, Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-         Pair< VectorView< int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-         Pair< Vector<     double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-         Pair< VectorView< double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-         Pair< Vector<     double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >,
-         Pair< VectorView< double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >
+         Pair< Vector<     int,                 Devices::Cuda >, Vector<     int,                          Devices::Cuda > >,
+         Pair< VectorView< int,                 Devices::Cuda >, Vector<     int,                          Devices::Cuda > >,
+         Pair< VectorView< const int,           Devices::Cuda >, Vector<     int,                          Devices::Cuda > >,
+         Pair< Vector<     CustomScalar< int >, Devices::Cuda >, VectorView< CustomScalar< double >,       Devices::Cuda > >,
+         Pair< Vector<     CustomScalar< int >, Devices::Cuda >, VectorView< const CustomScalar< double >, Devices::Cuda > >,
+         Pair< VectorView< CustomScalar< int >, Devices::Cuda >, VectorView< CustomScalar< double >,       Devices::Cuda > >,
+         Pair< VectorView< const int,           Devices::Cuda >, VectorView< int,                          Devices::Cuda > >,
+         Pair< VectorView< const int,           Devices::Cuda >, VectorView< const int,                    Devices::Cuda > >,
+         Pair< VectorView< int,                 Devices::Cuda >, VectorView< const int,                    Devices::Cuda > >
       #endif
       >;
    #endif

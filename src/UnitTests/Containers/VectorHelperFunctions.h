@@ -28,11 +28,10 @@ void setLinearSequence( Vector& deviceVector )
    deviceVector = a;
 }
 
-template< typename Vector >
-void setConstantSequence( Vector& deviceVector,
-                          typename Vector::ValueType v )
+template< typename Vector, typename Value >
+void setConstantSequence( Vector& deviceVector, Value v )
 {
-   deviceVector.setValue( v );
+   deviceVector.setValue( typename Vector::ValueType( v ) );
 }
 
 template< typename Vector >
@@ -47,8 +46,7 @@ void setOscilatingLinearSequence( Vector& deviceVector )
 }
 
 template< typename Vector >
-void setOscilatingConstantSequence( Vector& deviceVector,
-                                    typename Vector::ValueType v )
+void setOscilatingConstantSequence( Vector& deviceVector )
 {
    using HostVector = typename Vector::template Self< typename Vector::ValueType, TNL::Devices::Host >;
    HostVector a;
@@ -78,9 +76,8 @@ void setNegativeLinearSequence( Vector& deviceVector )
    deviceVector = a;
 }
 
-template< typename Vector >
-void setOscilatingSequence( Vector& deviceVector,
-                            typename Vector::ValueType v )
+template< typename Vector, typename Value >
+void setOscilatingSequence( Vector& deviceVector, Value v )
 {
 #ifdef STATIC_VECTOR
    Vector a;

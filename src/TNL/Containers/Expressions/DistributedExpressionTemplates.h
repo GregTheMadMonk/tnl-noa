@@ -517,13 +517,23 @@ dot( const ET1& a, const ET2& b )
 }
 
 ////
+// Unary expression plus
+template< typename ET1,
+          typename..., typename = EnableIfDistributedUnaryExpression_t< ET1 >, typename = void, typename = void >
+auto
+operator+( const ET1& a )
+{
+   return DistributedUnaryExpressionTemplate< ET1, UnaryPlus >( a );
+}
+
+////
 // Unary expression minus
 template< typename ET1,
           typename..., typename = EnableIfDistributedUnaryExpression_t< ET1 >, typename = void, typename = void >
 auto
 operator-( const ET1& a )
 {
-   return DistributedUnaryExpressionTemplate< ET1, Minus >( a );
+   return DistributedUnaryExpressionTemplate< ET1, UnaryMinus >( a );
 }
 
 ////

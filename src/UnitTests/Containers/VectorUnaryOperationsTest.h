@@ -28,6 +28,7 @@
 #endif
 
 #include "VectorHelperFunctions.h"
+#include "../CustomScalar.h"
 
 #include "gtest/gtest.h"
 
@@ -76,11 +77,13 @@ protected:
    #ifndef HAVE_CUDA
       DistributedVector<           double, Devices::Host, int >,
       DistributedVectorView<       double, Devices::Host, int >,
-      DistributedVectorView< const double, Devices::Host, int >
+      DistributedVectorView< const double, Devices::Host, int >,
+      DistributedVector< CustomScalar< double >, Devices::Host, int >
    #else
       DistributedVector<           double, Devices::Cuda, int >,
       DistributedVectorView<       double, Devices::Cuda, int >,
-      DistributedVectorView< const double, Devices::Cuda, int >
+      DistributedVectorView< const double, Devices::Cuda, int >,
+      DistributedVector< CustomScalar< double >, Devices::Cuda, int >
    #endif
    >;
 #elif defined(STATIC_VECTOR)
@@ -90,7 +93,7 @@ protected:
          StaticVector< 2, StaticVector< 3, double > >,
          StaticVector< 3, StaticVector< 3, double > >,
          StaticVector< 4, StaticVector< 3, double > >,
-         StaticVector< 5, StaticVector< 3, double > >
+         StaticVector< 5, StaticVector< 3, CustomScalar< double > > >
       >;
    #else
       using VectorTypes = ::testing::Types<
@@ -102,8 +105,8 @@ protected:
          StaticVector< 3, double >,
          StaticVector< 4, int >,
          StaticVector< 4, double >,
-         StaticVector< 5, int >,
-         StaticVector< 5, double >
+         StaticVector< 5, CustomScalar< int > >,
+         StaticVector< 5, CustomScalar< double > >
       >;
    #endif
 #else
@@ -111,10 +114,12 @@ protected:
       using VectorTypes = ::testing::Types<
       #ifndef HAVE_CUDA
          Vector<     StaticVector< 3, double >, Devices::Host >,
-         VectorView< StaticVector< 3, double >, Devices::Host >
+         VectorView< StaticVector< 3, double >, Devices::Host >,
+         VectorView< StaticVector< 3, CustomScalar< double > >, Devices::Host >
       #else
          Vector<     StaticVector< 3, double >, Devices::Cuda >,
-         VectorView< StaticVector< 3, double >, Devices::Cuda >
+         VectorView< StaticVector< 3, double >, Devices::Cuda >,
+         VectorView< StaticVector< 3, CustomScalar< double > >, Devices::Cuda >
       #endif
       >;
    #else
@@ -124,14 +129,18 @@ protected:
          VectorView< int,       Devices::Host >,
          VectorView< const int, Devices::Host >,
          Vector<     double,    Devices::Host >,
-         VectorView< double,    Devices::Host >
+         VectorView< double,    Devices::Host >,
+         Vector<     CustomScalar< int >, Devices::Host >,
+         VectorView< CustomScalar< int >, Devices::Host >
       #endif
       #ifdef HAVE_CUDA
          Vector<     int,       Devices::Cuda >,
          VectorView< int,       Devices::Cuda >,
          VectorView< const int, Devices::Cuda >,
          Vector<     double,    Devices::Cuda >,
-         VectorView< double,    Devices::Cuda >
+         VectorView< double,    Devices::Cuda >,
+         Vector<     CustomScalar< int >, Devices::Cuda >,
+         VectorView< CustomScalar< int >, Devices::Cuda >
       #endif
       >;
    #endif
@@ -164,7 +173,7 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       const double h = (double) (end - begin) / _size;         \
       for( int i = 0; i < _size; i++ )                         \
       {                                                        \
-         const RealType x = begin + i * h;                     \
+         const RealType x = begin + RealType( i * h );         \
          V1[ i ] = x;                                          \
          expected[ i ] = function(x);                          \
       }                                                        \
@@ -209,7 +218,7 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       const double h = (double) (end - begin) / size;          \
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ ) \
       {                                                        \
-         const RealType x = begin + i * h;                     \
+         const RealType x = begin + RealType( i * h );         \
          _V1h[ i ] = x;                                        \
          expected_h[ i ] = function(x);                        \
       }                                                        \
@@ -229,11 +238,12 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    #define SETUP_UNARY_VECTOR_TEST( size ) \
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
+      using ValueType = typename VectorType::ValueType;        \
                                                                \
       VectorType _V1( size ), _V2( size );                     \
                                                                \
-      _V1 = 1;                                                 \
-      _V2 = 2;                                                 \
+      _V1 = ValueType( 1 );                                    \
+      _V2 = ValueType( 2 );                                    \
                                                                \
       VectorOrView V1( _V1 ), V2( _V2 );                       \
 
@@ -251,7 +261,7 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       const double h = (double) (end - begin) / size;          \
       for( int i = 0; i < size; i++ )                          \
       {                                                        \
-         const RealType x = begin + i * h;                     \
+         const RealType x = begin + RealType( i * h );         \
          _V1h[ i ] = x;                                        \
          expected_h[ i ] = function(x);                        \
       }                                                        \
