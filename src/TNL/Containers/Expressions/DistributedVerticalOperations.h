@@ -174,7 +174,7 @@ auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::deca
 }
 
 template< typename Expression >
-auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] | expression[0] ) >
+auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] & expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] & expression[0] ) >;
 
@@ -197,6 +197,19 @@ auto DistributedExpressionBinaryOr( const Expression& expression ) -> std::decay
    if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitOr{} );
       MPI::Allreduce( &localResult, &result, 1, MPI_BOR, expression.getCommunicationGroup() );
+   }
+   return result;
+}
+
+template< typename Expression >
+auto DistributedExpressionBinaryXor( const Expression& expression ) -> std::decay_t< decltype( expression[0] ^ expression[0] ) >
+{
+   using ResultType = std::decay_t< decltype( expression[0] ^ expression[0] ) >;
+
+   ResultType result = 0;
+   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+      const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitXor{} );
+      MPI::Allreduce( &localResult, &result, 1, MPI_BXOR, expression.getCommunicationGroup() );
    }
    return result;
 }
