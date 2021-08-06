@@ -27,20 +27,11 @@ namespace TNL {
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< ! HasSubscriptOperator<T1>::value && ! HasSubscriptOperator<T2>::value, bool > = true >
-__cuda_callable__
-ResultType min( const T1& a, const T2& b )
+          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
+constexpr ResultType min( const T1& a, const T2& b )
 {
-#if __cplusplus >= 201402L
    // std::min is constexpr since C++14 so it can be reused directly
    return std::min( (ResultType) a, (ResultType) b );
-#else
- #if defined(__CUDA_ARCH__)
-   return ::min( (ResultType) a, (ResultType) b );
- #else
-   return std::min( (ResultType) a, (ResultType) b );
- #endif
-#endif
 }
 
 /**
@@ -49,8 +40,7 @@ ResultType min( const T1& a, const T2& b )
  * The inputs are folded with the \ref min function from the left to the right.
  */
 template< typename T1, typename T2, typename T3, typename... Ts >
-__cuda_callable__
-typename std::common_type< T1, T2, T3, Ts... >::type
+constexpr typename std::common_type< T1, T2, T3, Ts... >::type
 min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
 {
    return min( min( std::forward<T1>(val1), std::forward<T2>(val2) ),
@@ -65,20 +55,11 @@ min( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< ! HasSubscriptOperator<T1>::value && ! HasSubscriptOperator<T2>::value, bool > = true >
-__cuda_callable__
-ResultType max( const T1& a, const T2& b )
+          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
+constexpr ResultType max( const T1& a, const T2& b )
 {
-#if __cplusplus >= 201402L
    // std::max is constexpr since C++14 so it can be reused directly
    return std::max( (ResultType) a, (ResultType) b );
-#else
- #if defined(__CUDA_ARCH__)
-   return ::max( (ResultType) a, (ResultType) b );
- #else
-   return std::max( (ResultType) a, (ResultType) b );
- #endif
-#endif
 }
 
 /**
@@ -99,7 +80,7 @@ max( T1&& val1, T2&& val2, T3&& val3, Ts&&... vs )
  * \brief This function returns absolute value of given number \e n.
  */
 template< class T,
-          std::enable_if_t< ! std::is_unsigned<T>::value && ! std::is_class<T>::value, bool > = true >
+          std::enable_if_t< std::is_arithmetic<T>::value && ! std::is_unsigned<T>::value, bool > = true >
 __cuda_callable__
 T abs( const T& n )
 {
@@ -169,7 +150,7 @@ ResultType argAbsMax( const T1& a, const T2& b )
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
-          std::enable_if_t< ! std::is_class<T1>::value && ! std::is_class<T2>::value, bool > = true >
+          std::enable_if_t< std::is_arithmetic<T1>::value && std::is_arithmetic<T2>::value, bool > = true >
 __cuda_callable__
 ResultType pow( const T1& base, const T2& exp )
 {
