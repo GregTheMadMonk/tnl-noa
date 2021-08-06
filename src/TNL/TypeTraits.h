@@ -131,6 +131,20 @@ public:
 };
 
 /**
+ * \brief Type trait for checking if T is a [scalar type](https://en.wikipedia.org/wiki/Scalar_(mathematics))
+ * (in the mathemtatical sense). Not to be confused with \ref std::is_scalar.
+ *
+ * For example, \ref std::is_arithmetic "arithmetic types" as defined by the STL
+ * are scalar types. TNL also provides additional scalar types, e.g. for
+ * extended precision arithmetics. Users may also define specializations of this
+ * trait class for their custom scalar types.
+ */
+template< typename T >
+struct IsScalarType
+: public std::is_arithmetic< T >
+{};
+
+/**
  * \brief Type trait for checking if T is an array type, e.g.
  *        \ref Containers::Array or \ref Containers::Vector.
  *

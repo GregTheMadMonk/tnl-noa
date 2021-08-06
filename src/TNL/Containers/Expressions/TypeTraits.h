@@ -107,20 +107,12 @@ using RemoveET = typename RemoveExpressionTemplate< R >::type;
 
 template< typename T1, typename T2 >
 constexpr std::enable_if_t<
-      ! ( std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value ) &&
       ! ( IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value ) &&
       ! ( IsArrayType< T1 >::value && IsArrayType< T2 >::value )
 , bool >
 compatibleForVectorAssignment()
 {
-   return false;
-}
-
-template< typename T1, typename T2 >
-constexpr std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool >
-compatibleForVectorAssignment()
-{
-   return true;
+   return IsScalarType< T1 >::value && IsScalarType< T2 >::value;
 }
 
 template< typename T1, typename T2 >
