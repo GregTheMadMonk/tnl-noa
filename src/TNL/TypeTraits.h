@@ -227,33 +227,6 @@ struct IsViewType
 {};
 
 /**
- * \brief Type trait for checking if T has a static getSerializationType method.
- */
-template< typename T >
-class HasStaticGetSerializationType
-{
-private:
-   template< typename U >
-   static constexpr auto check(U*)
-   -> typename
-      std::enable_if_t<
-         ! std::is_same<
-               decltype( U::getSerializationType() ),
-               void
-            >::value,
-         std::true_type
-      >;
-
-   template< typename >
-   static constexpr std::false_type check(...);
-
-   using type = decltype(check<std::decay_t<T>>(0));
-
-public:
-    static constexpr bool value = type::value;
-};
-
-/**
  * \brief Type trait for checking if T has getCommunicationGroup method.
  */
 template< typename T >
