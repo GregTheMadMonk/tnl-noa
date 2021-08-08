@@ -56,8 +56,8 @@ struct VectorComparison< T1, T2, false >
 {
    static bool EQ( const T1& a, const T2& b )
    {
-      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
-         throw std::runtime_error( "Cannot compare two expressions with different DeviceType." );
+      static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                     "Cannot compare two expressions with different DeviceType." );
 
       if( a.getSize() != b.getSize() )
          return false;
@@ -90,8 +90,8 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 
    static bool GT( const T1& a, const T2& b )
    {
-      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
-         throw std::runtime_error( "Cannot compare two expressions with different DeviceType." );
+      static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                     "Cannot compare two expressions with different DeviceType." );
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
       using DeviceType = typename T1::DeviceType;
@@ -105,8 +105,8 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 
    static bool GE( const T1& a, const T2& b )
    {
-      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
-         throw std::runtime_error( "Cannot compare two expressions with different DeviceType." );
+      static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                     "Cannot compare two expressions with different DeviceType." );
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
       using DeviceType = typename T1::DeviceType;
@@ -120,8 +120,8 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 
    static bool LT( const T1& a, const T2& b )
    {
-      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
-         throw std::runtime_error( "Cannot compare two expressions with different DeviceType." );
+      static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                     "Cannot compare two expressions with different DeviceType." );
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
       using DeviceType = typename T1::DeviceType;
@@ -135,8 +135,8 @@ struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 
    static bool LE( const T1& a, const T2& b )
    {
-      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
-         throw std::runtime_error( "Cannot compare two expressions with different DeviceType." );
+      static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                     "Cannot compare two expressions with different DeviceType." );
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
       using DeviceType = typename T1::DeviceType;
