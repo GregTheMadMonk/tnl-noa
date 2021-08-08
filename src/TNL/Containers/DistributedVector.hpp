@@ -188,6 +188,19 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
+   template< typename Vector, typename..., typename >
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
+operator%=( const Vector& vector )
+{
+   getView() %= vector;
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
    template< typename Scalar, typename..., typename >
 DistributedVector< Real, Device, Index, Allocator >&
 DistributedVector< Real, Device, Index, Allocator >::
@@ -246,6 +259,19 @@ DistributedVector< Real, Device, Index, Allocator >::
 operator/=( Scalar c )
 {
    getView() /= c;
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename Scalar, typename..., typename >
+DistributedVector< Real, Device, Index, Allocator >&
+DistributedVector< Real, Device, Index, Allocator >::
+operator%=( Scalar c )
+{
+   getView() %= c;
    return *this;
 }
 

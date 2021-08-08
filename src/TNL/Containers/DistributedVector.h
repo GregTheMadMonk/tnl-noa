@@ -150,6 +150,11 @@ public:
              typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVector& operator/=( Scalar c );
 
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVector& operator%=( Scalar c );
+
    template< typename Vector,
              typename...,
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
@@ -174,6 +179,11 @@ public:
              typename...,
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVector& operator/=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVector& operator%=( const Vector& vector );
 };
 
 // Enable expression templates for DistributedVector

@@ -256,6 +256,18 @@ public:
     */
    template< typename VectorExpression >
    Vector& operator/=( const VectorExpression& expression );
+
+   /**
+    * \brief Modulo assignment operator for vector and a vector expression.
+    *
+    * The division is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector.
+    *
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
+    */
+   template< typename VectorExpression >
+   Vector& operator%=( const VectorExpression& expression );
 };
 
 // Enable expression templates for Vector

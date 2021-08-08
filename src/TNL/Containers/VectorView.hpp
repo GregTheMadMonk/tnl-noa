@@ -12,7 +12,6 @@
 
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/detail/VectorAssignment.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -99,6 +98,18 @@ VectorView< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
    detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename VectorExpression >
+VectorView< Real, Device, Index >&
+VectorView< Real, Device, Index >::
+operator%=( const VectorExpression& expression )
+{
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::modulo( *this, expression );
    return *this;
 }
 

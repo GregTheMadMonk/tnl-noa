@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -150,6 +149,19 @@ Vector< Real, Device, Index, Allocator >::
 operator/=( const VectorExpression& expression )
 {
    detail::VectorAssignmentWithOperation< Vector, VectorExpression >::division( *this, expression );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
+   template< typename VectorExpression >
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
+operator%=( const VectorExpression& expression )
+{
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::modulo( *this, expression );
    return *this;
 }
 

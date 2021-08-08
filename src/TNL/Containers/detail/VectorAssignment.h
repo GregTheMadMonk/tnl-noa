@@ -27,7 +27,7 @@ template< typename Vector,
 struct VectorAssignment;
 
 /**
- * \brief Vector assignment with an operation: +=, -=, *=, /=
+ * \brief Vector assignment with an operation: +=, -=, *=, /=, %=
  */
 template< typename Vector,
           typename T,
@@ -87,7 +87,6 @@ struct VectorAssignment< Vector, T, false >
    __cuda_callable__
    static void assignStatic( Vector& v, const T& t )
    {
-      TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] = t;
    }
@@ -246,6 +245,31 @@ struct VectorAssignmentWithOperation< Vector, T, true, false >
       };
       Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
    }
+
+   __cuda_callable__
+   static void moduloStatic( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
+         v[ i ] %= t[ i ];
+   }
+
+   static void modulo( Vector& v, const T& t )
+   {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto divide = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] %= t[ i ];
+      };
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
+   }
 };
 
 /**
@@ -259,7 +283,6 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
    __cuda_callable__
    static void additionStatic( Vector& v, const T& t )
    {
-      TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] += t;
    }
@@ -281,7 +304,6 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
    __cuda_callable__
    static void subtractionStatic( Vector& v, const T& t )
    {
-      TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] -= t;
    }
@@ -303,7 +325,6 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
    __cuda_callable__
    static void multiplicationStatic( Vector& v, const T& t )
    {
-      TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] *= t;
    }
@@ -325,7 +346,6 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
    __cuda_callable__
    static void divisionStatic( Vector& v, const T& t )
    {
-      TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] /= t;
    }
@@ -340,6 +360,27 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
       auto divide = [=] __cuda_callable__ ( IndexType i )
       {
          data[ i ] /= t;
+      };
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
+   }
+
+   __cuda_callable__
+   static void moduloStatic( Vector& v, const T& t )
+   {
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
+         v[ i ] %= t;
+   }
+
+   static void modulo( Vector& v, const T& t )
+   {
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto divide = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] %= t;
       };
       Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
    }
