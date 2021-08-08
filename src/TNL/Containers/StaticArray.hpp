@@ -295,11 +295,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   Algorithms::unrolledFor< int, 0, Size >(
-      [&] ( int i ) mutable {
-         aux[ i ] = (*this)[ i ];
-      }
-   );
+   aux.operator=( *this );
    return aux;
 }
 

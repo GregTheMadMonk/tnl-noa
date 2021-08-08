@@ -99,11 +99,7 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   Algorithms::unrolledFor< int, 0, Size >(
-      [&] ( int i ) mutable {
-         aux[ i ] = (*this)[ i ];
-      }
-   );
+   aux.operator=( *this );
    return aux;
 }
 
