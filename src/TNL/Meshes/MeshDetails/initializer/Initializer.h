@@ -251,47 +251,20 @@ protected:
    using EntityInitializerType = EntityInitializer< MeshConfig, EntityTopology >;
    using SeedType              = EntitySeed< MeshConfig, EntityTopology >;
    using SeedIndexedSet        = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedIndexedSetType;
-   using SeedSet               = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::SeedSetType;
    using CellSeedArrayType     = typename MeshTraitsType::CellSeedArrayType;
    using EntitySeedArrayType   = Containers::Array< SeedType, typename MeshTraitsType::DeviceType, GlobalIndexType >;
    using NeighborCountsArray   = typename MeshTraitsType::NeighborCountsArray;
-
+   
    public:
 
-      GlobalIndexType getEntitiesCount( InitializerType& initializer, MeshType& mesh )
+      void createSeeds( InitializerType& initializer, MeshType& mesh )
       {
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, typename MeshTraitsType::CellTopology, DimensionTag >;
-         SeedSet seedSet;
-
-         for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
-         {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer, mesh, i );
-            for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
-               seedSet.insert( subentitySeeds[ j ] );
+         for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ ) {
+            SubentitySeedsCreator::iterate( initializer, mesh, i, [&] ( SeedType& seed ) {
+               this->seedsIndexedSet.insert( seed );
+            });
          }
-
-         return seedSet.size();
-      }
-
-      NeighborCountsArray getCapacities( InitializerType& initializer, MeshType& mesh, const GlobalIndexType numberOfEntities )
-      {
-         using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, typename MeshTraitsType::CellTopology, DimensionTag >;
-         SeedSet seedSet;
-         NeighborCountsArray capacities( numberOfEntities );
-         GlobalIndexType capSize = 0;
-
-         for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
-         {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer, mesh, i );
-            for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
-            {
-               const auto& subentitySeed = subentitySeeds[ j ];
-               bool inserted = seedSet.insert( subentitySeed ).second;
-               if( inserted )
-                  capacities.setElement( capSize++, subentitySeed.getCornersCount() );
-            }
-         }
-         return capacities;
       }
 
       using BaseType::findEntitySeedIndex;
@@ -303,51 +276,56 @@ protected:
       void initEntities( InitializerType& initializer, MeshType& mesh )
       {
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
-         const GlobalIndexType numberOfEntities = getEntitiesCount( initializer, mesh );
+
+         // create seeds and set entities count
+         createSeeds( initializer, mesh );
+         const GlobalIndexType numberOfEntities = this->seedsIndexedSet.size();
          initializer.template setEntitiesCount< DimensionTag::value >( numberOfEntities );
-         NeighborCountsArray capacities = getCapacities( initializer, mesh, numberOfEntities );
+
+         // allocate the subvertex matrix
+         NeighborCountsArray capacities( numberOfEntities );
+         for( auto& pair : this->seedsIndexedSet ) {
+            const auto& seed = pair.first;
+            const auto& entityIndex = pair.second;
+            capacities.setElement( entityIndex, seed.getCornersCount() );
+         }
          EntityInitializerType::initSubvertexMatrix( capacities, initializer );
-         
-         using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, typename MeshTraitsType::CellTopology, DimensionTag >;
-         for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
-         {
-            auto subentitySeeds = SubentitySeedsCreator::create( initializer, mesh, i );
-            for( LocalIndexType j = 0; j < subentitySeeds.getSize(); j++ )
-            {
-               auto& seed = subentitySeeds[ j ];
-               const auto pair = this->seedsIndexedSet.try_insert( seed );
-               const GlobalIndexType& entityIndex = pair.first;
-               if( pair.second ) {
-                  // insertion took place, initialize the entity
-                  EntityInitializerType::initEntity( entityIndex, seed, initializer );
-               }
-            }
+
+         // initialize the entities
+         for( auto& pair : this->seedsIndexedSet ) {
+            const auto& seed = pair.first;
+            const auto& entityIndex = pair.second;
+            EntityInitializerType::initEntity( entityIndex, seed, initializer );
          }
 
+         // initialize links between the entities and all superentities
          EntityInitializerType::initSuperentities( initializer, mesh );
-         this->seedsIndexedSet.clear();
 
+         // deallocate the indexed set and continue with the next dimension
+         this->seedsIndexedSet.clear();
          BaseType::initEntities( initializer, mesh );
       }
 
       void initEntities( InitializerType& initializer, EntitySeedArrayType& faceSeeds, MeshType& mesh )
       {
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
+
          initializer.template setEntitiesCount< DimensionTag::value >( faceSeeds.getSize() );
 
+         // allocate the subvertex matrix
          NeighborCountsArray capacities( faceSeeds.getSize() );
-
-         for( LocalIndexType i = 0; i < capacities.getSize(); i++ )
-            capacities[ i ] = faceSeeds[ i ].getCornersCount();
-
+         for( LocalIndexType i = 0; i < capacities.getSize(); i++ ) {
+            capacities.setElement( i, faceSeeds[ i ].getCornersCount() );
+         }
          EntityInitializerType::initSubvertexMatrix( capacities, initializer );
 
-         for( GlobalIndexType i = 0; i < faceSeeds.getSize(); i++ )
-         {
+         // initialize the entities
+         for( GlobalIndexType i = 0; i < faceSeeds.getSize(); i++ ) {
             const auto& seed = faceSeeds[ i ];
             GlobalIndexType entityIndex = this->seedsIndexedSet.insert( seed );
             EntityInitializerType::initEntity( entityIndex, seed, initializer );
          }
+
          faceSeeds.reset();
          EntityInitializerType::initSuperentities( initializer, mesh );
          this->seedsIndexedSet.clear();
