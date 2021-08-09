@@ -309,30 +309,34 @@ if( ${WITH_GMP} )
    endif()
 endif()
 
-#if( BUILD_MPI )
-#   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
-#     /usr/include/petsc
-#     ${PETSC_DIR}/${PETSC_ARCH}/include
-#     ${PETSC_DIR}/include
-#     DOC "PETSC headers."
-#   )
-#   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
-#      message( "PETSC not found." )
-#   else()
-#      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
-#      FIND_LIBRARY(PETSC_LIBRARY petsc
-#                  ${PETSC_INCLUDE_DIR}/../lib
-#                  /usr/local/lib
-#                  /usr/lib)
-#      if( PETSC_LIBRARY )
-#         #string( REPLACE ";" " " MPI_LIBRARIES "${MPI_CXX_LIBRARIES}" )
-#         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
-#         message( "PETSC library found -- ${PETSC_LIBRARY}")
-#         list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
-#         set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")
-#      endif()
-#   endif()
-#endif()
+####
+# Test for PETSc
+if( BUILD_MPI )
+   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
+      /usr/include/petsc
+      ${PETSC_DIR}/${PETSC_ARCH}/include
+      ${PETSC_DIR}/include
+      DOC "PETSC headers."
+   )
+   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
+      message( "PETSC not found." )
+   else()
+      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
+      FIND_LIBRARY(PETSC_LIBRARY petsc
+                  ${PETSC_INCLUDE_DIR}/../lib
+                  /usr/local/lib
+                  /usr/lib)
+      if( PETSC_LIBRARY )
+         #string( REPLACE ";" " " MPI_LIBRARIES "${MPI_CXX_LIBRARIES}" )
+         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
+         message( "PETSC library found -- ${PETSC_LIBRARY}")
+         #list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
+         #set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")
+         set(PETSC_CXX_FLAGS -DHAVE_PETSC -I${PETSC_INCLUDE_DIR})
+         set(PETSC_LINKER_FLAGS ${PETSC_LIBRARY})
+      endif()
+   endif()
+endif()
 
 # configure build paths
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
@@ -413,6 +417,9 @@ message( "   CMAKE_SHARED_LINKER_FLAGS_RELEASE = ${CMAKE_SHARED_LINKER_FLAGS_REL
 message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
 message( "   CUDA_SAMPLES_FLAGS = ${CUDA_SAMPLES_FLAGS}" )
 message( "   GMP_LIBRARIES = ${GMP_LIBRARIES}" )
+message( "   PETSC_CXX_FLAGS = ${PETSC_CXX_FLAGS}" )
+message( "   PETSC_LINKER_FLAGS = ${PETSC_LINKER_FLAGS}" )
+
 if( MPI_CXX_FOUND AND ${WITH_MPI} )
    message( "   MPI_CXX_COMPILE_OPTIONS = ${MPI_CXX_COMPILE_OPTIONS}" )
    message( "   MPI_CXX_COMPILE_DEFINITIONS = ${MPI_CXX_COMPILE_DEFINITIONS}" )
