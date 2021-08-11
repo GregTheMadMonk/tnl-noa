@@ -7,7 +7,7 @@ export CUDA_PROFILE=0
 PWD=`pwd`
 IWD="$PWD"
 BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
-BENCHMARK="tnl-benchmark-spmv --with-legacy-matrices yes --precision double"
+BENCHMARK="tnl-benchmark-spmv --with-legacy-matrices yes --precision double --openmp-enabled no"
 BENCHMARK_DBG="tnl-benchmark-spmv-dbg --with-legacy-matrices no"
 
 export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
