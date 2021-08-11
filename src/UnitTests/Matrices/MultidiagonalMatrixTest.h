@@ -8,16 +8,16 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <iostream>
 #include <sstream>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Algorithms/contains.h>
 #include <TNL/Containers/Array.h>
-
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
-#include <iostream>
 
 using Multidiagonal_host_float = TNL::Matrices::MultidiagonalMatrix< float, TNL::Devices::Host, int >;
 using Multidiagonal_host_int = TNL::Matrices::MultidiagonalMatrix< int, TNL::Devices::Host, int >;
@@ -174,7 +174,7 @@ void test_SetElements()
          {
             for( int k = 0; k < matrixSize; k++ )
             {
-               if( k == elementIdx - gridSize || 
+               if( k == elementIdx - gridSize ||
                    k == elementIdx - 1 ||
                    k == elementIdx + 1 ||
                    k == elementIdx + gridSize )
@@ -403,7 +403,7 @@ void test_SetElement()
    RealType value = 1;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             m.setElement( i, j, value++ );
          else
          {
@@ -466,7 +466,7 @@ void test_AddElement()
    RealType value = 1;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
          {
             if( j >= i )
                m.setElement( i, j, value );
@@ -524,7 +524,7 @@ void test_AddElement()
    RealType multiplicator = 2;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             m.addElement( i, j, value++, multiplicator );
          else
          {
@@ -669,7 +669,7 @@ void test_AddRow()
       for( IndexType j = 0; j < cols; j++ )
       {
          IndexType offset = j - i;
-         if( diagonals.containsValue( offset ) && offset >= 0)
+         if( TNL::Algorithms::contains( diagonals, offset ) && offset >= 0)
             m.setElement( i, j, value );
          value++;
       }
@@ -883,7 +883,7 @@ void test_VectorProduct()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++)
       {
-         if( diagonals.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonals, j - i ) )
             m.setElement( i, j, value );
          value++;
       }
@@ -1285,7 +1285,7 @@ void test_AssignmentOperator()
    MultidiagonalHost hostMatrix( rows, columns, diagonalsOffsets );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j <  columns; j++ )
-         if( diagonalsOffsets.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonalsOffsets, j - i ) )
             hostMatrix.setElement( i, j,  i + j );
 
    Matrix matrix( rows, columns, diagonalsOffsets );
@@ -1293,7 +1293,7 @@ void test_AssignmentOperator()
    matrix = hostMatrix;
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j < rows; j++ )
-            if( diagonalsOffsets.containsValue( j - i ) )
+            if( TNL::Algorithms::contains( diagonalsOffsets, j - i ) )
                EXPECT_EQ( matrix.getElement( i, j ), i + j );
             else
                EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
@@ -1302,7 +1302,7 @@ void test_AssignmentOperator()
    MultidiagonalCuda cudaMatrix( rows, columns, diagonalsOffsets );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
-         if( diagonalsOffsets.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonalsOffsets, j - i ) )
             cudaMatrix.setElement( i, j, i + j );
 
    matrix.getValues() = 0.0;
@@ -1310,7 +1310,7 @@ void test_AssignmentOperator()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
       {
-         if( diagonalsOffsets.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonalsOffsets, j - i ) )
             EXPECT_EQ( matrix.getElement( i, j ), i + j );
          else
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
@@ -1345,7 +1345,7 @@ void test_SaveAndLoad()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
       {
-         if( diagonalsOffsets.containsValue( j - i ) )
+         if( TNL::Algorithms::contains( diagonalsOffsets, j - i ) )
             savedMatrix.setElement( i, j, value );
          value++;
       }

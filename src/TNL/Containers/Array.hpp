@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Array_impl.h  -  description
+                          Array.hpp  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -559,6 +559,30 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
+__cuda_callable__
+Value&
+Array< Value, Device, Index, Allocator >::
+operator()( IndexType i )
+{
+   return operator[]( i );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+__cuda_callable__
+const Value&
+Array< Value, Device, Index, Allocator >::
+operator()( IndexType i ) const
+{
+   return operator[]( i );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
 Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::
 operator=( const Array< Value, Device, Index, Allocator >& array )
@@ -730,96 +754,6 @@ forAllElements( Function&& f ) const
 {
    const auto view = this->getConstView();
    view.forAllElements( f );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   return this->getView().reduceElements( begin, end, fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   return this->getConstView().reduceElements( begin, end, fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero )
-{
-   return this->getView().reduceEachElement( fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Fetch,
-         typename Reduce,
-         typename Result >
-Result
-Array< Value, Device, Index, Allocator >::
-reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const
-{
-   return this->getConstView().reduceEachElement( fetch, reduce, zero );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-Array< Value, Device, Index, Allocator >::
-containsValue( ValueType value,
-               IndexType begin,
-               IndexType end ) const
-{
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == 0 )
-      end = this->getSize();
-
-   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-Array< Value, Device, Index, Allocator >::
-containsOnlyValue( ValueType value,
-                   IndexType begin,
-                   IndexType end ) const
-{
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == 0 )
-      end = this->getSize();
-
-   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,

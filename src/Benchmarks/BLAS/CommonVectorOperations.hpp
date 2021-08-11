@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include "CommonVectorOperations.h"
 
 namespace TNL {

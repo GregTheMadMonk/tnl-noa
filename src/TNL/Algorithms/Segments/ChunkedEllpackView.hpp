@@ -13,8 +13,9 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
-//#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
+//#include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
+#include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -183,7 +184,7 @@ __cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -191,13 +192,13 @@ getSegmentSize( const IndexType segmentIdx ) const -> IndexType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSizeDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
          segmentIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -231,7 +232,7 @@ __cuda_callable__ auto ChunkedEllpackView< Device, Index, Organization >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -241,7 +242,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndexDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -249,7 +250,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexTyp
          segmentIdx,
          localIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -269,7 +270,7 @@ ChunkedEllpackView< Device, Index, Organization >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -278,14 +279,14 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef __CUDA_ARCH__
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentViewDirect(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
          chunksInSlice,
          segmentIdx );
 #else
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentView(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentView(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,
@@ -397,7 +398,7 @@ void
 ChunkedEllpackView< Device, Index, Organization >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       //segmentsReductionKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
@@ -425,7 +426,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
             IndexType end = begin + segmentSize;
             IndexType localIdx( 0 );
             for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++ )
-               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+               aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          }
          else
          {
@@ -435,7 +436,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
                IndexType end = begin + chunksInSlice * chunkSize;
                IndexType localIdx( 0 );
                for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += chunksInSlice )
-                  aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+                  aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
             }
          }
          keeper( segmentIdx, aux );
@@ -455,7 +456,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         details::ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
+         detail::ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
       }
@@ -566,7 +567,7 @@ segmentsReductionKernelWithAllParameters( IndexType gridIdx,
       return;
 
    RealType* chunksResults = Cuda::getSharedMemory< RealType >();
-   __shared__ details::ChunkedEllpackSliceInfo< IndexType > sliceInfo;
+   __shared__ detail::ChunkedEllpackSliceInfo< IndexType > sliceInfo;
    if( threadIdx.x == 0 )
       sliceInfo = this->slices[ sliceIdx ];
    chunksResults[ threadIdx.x ] = zero;
@@ -644,7 +645,7 @@ segmentsReductionKernel( IndexType gridIdx,
       return;
 
    RealType* chunksResults = Cuda::getSharedMemory< RealType >();
-   __shared__ details::ChunkedEllpackSliceInfo< IndexType > sliceInfo;
+   __shared__ detail::ChunkedEllpackSliceInfo< IndexType > sliceInfo;
 
    if( threadIdx.x == 0 )
       sliceInfo = this->slices[ sliceIdx ];

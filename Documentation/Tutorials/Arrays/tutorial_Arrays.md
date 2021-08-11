@@ -105,13 +105,17 @@ Output:
 
 ### Checking the array contents
 
-Methods `containsValue` and `containsOnlyValue` serve for testing the contents of the arrays. `containsValue` returns `true` of there is at least one element in the array with given value. `containsOnlyValue` returns `true` only if all elements of the array equal given value. The test can be restricted to subinterval of array elements. Both methods are implemented in `Array` as well as in `ArrayView`. See the following code snippet for example of use.
+The functions \ref TNL::Algorithms::contains and \ref TNL::Algorithms::containsOnlyValue serve for testing the contents of arrays, vectors or their views.
+`contains` returns `true` if there is at least one element in the array with given value.
+`containsOnlyValue` returns `true` only if all elements of the array are equal to the given value.
+The test can be restricted to a subinterval of array elements.
+See the following code snippet for usage example.
 
-\include ContainsValue.cpp
+\include contains.cpp
 
 Output:
 
-\include ContainsValue.out
+\include contains.out
 
 ### IO operations with arrays
 

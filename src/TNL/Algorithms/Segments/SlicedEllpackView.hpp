@@ -13,7 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/SlicedEllpackView.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 #include "SlicedEllpackView.h"
 
@@ -331,7 +331,7 @@ void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
@@ -347,7 +347,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
-            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+            aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -364,7 +364,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
-            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+            aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

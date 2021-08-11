@@ -13,8 +13,8 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Algorithms/Sorting/detail/reduction.h>
 #include <TNL/Algorithms/Sorting/detail/task.h>
+#include <TNL/Algorithms/detail/CudaScanKernel.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -185,8 +185,11 @@ __device__ void cudaPartition( Containers::ArrayView<Value, Devices::Cuda> src,
     int smaller = 0, bigger = 0;
     countElem(srcView, Cmp, smaller, bigger, pivot);
 
-    int smallerPrefSumInc = blockInclusivePrefixSum(smaller);
-    int biggerPrefSumInc = blockInclusivePrefixSum(bigger);
+    //synchronization is in this function already
+    using BlockScan = Algorithms::detail::CudaBlockScan< Algorithms::detail::ScanType::Inclusive, 0, TNL::Plus, int >;
+    __shared__ typename BlockScan::Storage storage;
+    int smallerPrefSumInc = BlockScan::scan( TNL::Plus{}, 0, smaller, threadIdx.x, storage );
+    int biggerPrefSumInc = BlockScan::scan( TNL::Plus{}, 0, bigger, threadIdx.x, storage );
 
     if (threadIdx.x == blockDim.x - 1) //last thread in block has sum of all values
     {

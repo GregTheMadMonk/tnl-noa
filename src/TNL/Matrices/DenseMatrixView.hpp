@@ -290,14 +290,14 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero )
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity )
 {
    auto values_view = this->values.getView();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
-      return zero;
+      return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -307,14 +307,14 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchValue& identity ) const
 {
    const auto values_view = this->values.getConstView();
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
-      return zero;
+      return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, zero );
+   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -324,9 +324,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero )
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -336,9 +336,9 @@ template< typename Real,
    template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
 void
 DenseMatrixView< Real, Device, Index, Organization >::
-reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, zero );
+   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,

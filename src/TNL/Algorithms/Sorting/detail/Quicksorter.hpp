@@ -17,7 +17,8 @@
 #include <TNL/Algorithms/Sorting/detail/quicksort_kernel.h>
 #include <TNL/Algorithms/Sorting/detail/quicksort_1Block.h>
 #include <TNL/Algorithms/Sorting/detail/Quicksorter.h>
-#include <TNL/Algorithms/Scan.h>
+#include <TNL/Algorithms/reduce.h>
+#include <TNL/Algorithms/scan.h>
 
 namespace TNL {
     namespace Algorithms {
@@ -314,8 +315,7 @@ int getSetsNeededFunction(int elemPerBlock, const Quicksorter< Value, Devices::C
         int size = task.partitionEnd - task.partitionBegin;
         return size / elemPerBlock + (size % elemPerBlock != 0);
     };
-    auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
-    return Algorithms::reduce<Devices::Cuda>( 0, quicksort.host_1stPhaseTasksAmount, fetch, reduction, 0 );
+    return reduce< Devices::Cuda >( 0, quicksort.host_1stPhaseTasksAmount, fetch, TNL::Plus{} );
 }
 
 template< typename Value >
@@ -323,14 +323,6 @@ int
 Quicksorter< Value, Devices::Cuda >::
 getSetsNeeded(int elemPerBlock) const
 {
-    /*auto view = iteration % 2 == 0 ? cuda_tasks.getConstView() : cuda_newTasks.getConstView();
-    auto fetch = [=] __cuda_callable__(int i) {
-        const auto &task = view[i];
-        int size = task.partitionEnd - task.partitionBegin;
-        return size / elemPerBlock + (size % elemPerBlock != 0);
-    };
-    auto reduction = [] __cuda_callable__(int a, int b) { return a + b; };
-    return Algorithms::reduce<Devices::Cuda>(0, host_1stPhaseTasksAmount, fetch, reduction, 0);*/
     return getSetsNeededFunction< Value >( elemPerBlock, *this );
 }
 
@@ -372,10 +364,7 @@ initTasks(int elemPerBlock, const CMP &Cmp)
                                                       cuda_reductionTaskInitMem.getView(0, host_1stPhaseTasksAmount));
     //cuda_reductionTaskInitMem[i] == how many blocks task i needs
 
-    //auto reduce = [] __cuda_callable__(const int &a, const int &b) { return a + b; };
-
-    Algorithms::Scan<Devices::Cuda, Algorithms::ScanType::Inclusive >::
-        perform(cuda_reductionTaskInitMem, 0, cuda_reductionTaskInitMem.getSize(), TNL::Plus{}, 0);
+    inplaceInclusiveScan(cuda_reductionTaskInitMem);
     //cuda_reductionTaskInitMem[i] == how many blocks task [0..i] need
 
     int blocksNeeded = cuda_reductionTaskInitMem.getElement(host_1stPhaseTasksAmount - 1);

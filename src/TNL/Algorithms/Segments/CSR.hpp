@@ -13,7 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/CSR.h>
-#include <TNL/Algorithms/Segments/details/CSR.h>
+#include <TNL/Algorithms/Segments/detail/CSR.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -91,7 +91,7 @@ void
 CSR< Device, Index, Kernel, IndexAllocator >::
 setSegmentsSizes( const SizesHolder& sizes )
 {
-   details::CSR< Device, Index >::setSegmentsSizes( sizes, this->offsets );
+   detail::CSR< Device, Index >::setSegmentsSizes( sizes, this->offsets );
    this->kernel.init( this->offsets );
 }
 
@@ -148,7 +148,7 @@ template< typename Device,
 __cuda_callable__ auto CSR< Device, Index, Kernel, IndexAllocator >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
+   return detail::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
 
 template< typename Device,
@@ -168,7 +168,7 @@ template< typename Device,
 __cuda_callable__ auto CSR< Device, Index, Kernel, IndexAllocator >::
 getStorageSize() const -> IndexType
 {
-   return details::CSR< Device, Index >::getStorageSize( this->offsets );
+   return detail::CSR< Device, Index >::getStorageSize( this->offsets );
 }
 
 template< typename Device,

@@ -506,7 +506,9 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceRows.cpp
@@ -514,7 +516,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
 
       /**
        * \brief Method for performing general reduction on matrix rows of constant matrix instances.
@@ -533,7 +535,9 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceRows.cpp
@@ -541,7 +545,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Method for performing general reduction on all matrix rows.
@@ -560,7 +564,9 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceAllRows.cpp
@@ -568,7 +574,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
 
       /**
        * \brief Method for performing general reduction on all matrix rows of constant matrix instances.
@@ -587,7 +593,9 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
-       * \param zero is zero of given reduction operation also known as idempotent element.
+       * \param identity is the [identity element](https://en.wikipedia.org/wiki/Identity_element)
+       *                 for the reduction operation, i.e. element which does not
+       *                 change the result of the reduction.
        *
        * \par Example
        * \include Matrices/TridiagonalMatrix/TridiagonalMatrixExample_reduceAllRows.cpp
@@ -595,7 +603,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \include TridiagonalMatrixExample_reduceAllRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      void reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
 
       /**
        * \brief Method for iteration over matrix rows for constant instances.

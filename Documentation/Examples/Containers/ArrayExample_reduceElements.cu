@@ -1,1 +1,0 @@
-ArrayExample_reduceElements.cpp

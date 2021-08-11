@@ -13,7 +13,6 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Sorting/detail/task.h>
 
 namespace TNL {
@@ -94,7 +93,7 @@ class Quicksorter< Value, Devices::Cuda >
       Containers::Array<int, Devices::Cuda> cuda_newTasksAmount, cuda_2ndPhaseTasksAmount;  //is in reality 1 integer each
 
       Containers::Array<int, Devices::Cuda> cuda_blockToTaskMapping;
-      Containers::Vector<int, Devices::Cuda> cuda_reductionTaskInitMem;
+      Containers::Array<int, Devices::Cuda> cuda_reductionTaskInitMem;
 
       int host_1stPhaseTasksAmount = 0, host_2ndPhaseTasksAmount = 0;
       int iteration = 0;

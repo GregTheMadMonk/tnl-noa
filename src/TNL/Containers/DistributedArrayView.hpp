@@ -375,10 +375,13 @@ operator=( const DistributedArrayView& view )
    TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getGhosts(), view.getGhosts(), "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
-   localData = view.getConstLocalViewWithGhosts();
-   // set, but do not unset, the synchronizer
-   if( view.getSynchronizer() )
-      setSynchronizer( view.getSynchronizer(), view.getValuesPerElement() );
+
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      view.waitForSynchronization();
+      getLocalViewWithGhosts() = view.getConstLocalViewWithGhosts();
+   }
    return *this;
 }
 
@@ -394,10 +397,13 @@ operator=( const Array& array )
    TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getGhosts(), array.getGhosts(), "Ghosts must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
-   localData = array.getConstLocalViewWithGhosts();
-   // set, but do not unset, the synchronizer
-   if( array.getSynchronizer() )
-      setSynchronizer( array.getSynchronizer(), array.getValuesPerElement() );
+
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      array.waitForSynchronization();
+      getLocalViewWithGhosts() = array.getConstLocalViewWithGhosts();
+   }
    return *this;
 }
 
@@ -465,36 +471,6 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
 
 }
 
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-DistributedArrayView< Value, Device, Index >::
-containsValue( ValueType value ) const
-{
-   bool result = false;
-   if( group != MPI::NullGroup() ) {
-      const bool localResult = localData.containsValue( value );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LOR, group );
-   }
-   return result;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool
-DistributedArrayView< Value, Device, Index >::
-containsOnlyValue( ValueType value ) const
-{
-   bool result = true;
-   if( group != MPI::NullGroup() ) {
-      const bool localResult = localData.containsOnlyValue( value );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
-   }
-   return result;
-}
 
 template< typename Value,
           typename Device,

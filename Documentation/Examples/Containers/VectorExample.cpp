@@ -13,8 +13,6 @@ void VectorExample()
 {
     Containers::Vector< int, Device > vector1( 5 );
     vector1 = 0;
-    cout << "Does vector contain 1?" << vector1.containsValue( 1 ) << endl;
-    cout << "Does vector contain only zeros?" << vector1.containsOnlyValue( 0 ) << endl;
 
     Containers::Vector< int, Device > vector2( 3 );
     vector2 = 1;

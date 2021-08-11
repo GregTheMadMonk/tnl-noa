@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/scan.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpack.h>
 #include <TNL/Algorithms/Segments/Ellpack.h>
 
@@ -37,7 +38,7 @@ ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
    : size( chunkedEllpack.size ),
      storageSize( chunkedEllpack.storageSize ),
-     chunksInSlice( chunkedEllpack.chunksInSlice ), 
+     chunksInSlice( chunkedEllpack.chunksInSlice ),
      desiredChunkSize( chunkedEllpack.desiredChunkSize ),
      rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
      rowToSliceMapping( chunkedEllpack.rowToSliceMapping ),
@@ -273,7 +274,7 @@ setSegmentsSizes( const SizesHolder& segmentsSizes )
       this->storageSize = 0;
       for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
          this->setSlice( segmentsSizes, sliceIndex, storageSize );
-      this->rowPointers.scan();
+      inplaceInclusiveScan( this->rowPointers );
       IndexType chunksCount = this->numberOfSlices * this->chunksInSlice;
       this->chunksToSegmentsMapping.setSize( chunksCount );
       IndexType chunkIdx( 0 );
@@ -335,7 +336,7 @@ template< typename Device,
 auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
+   return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowToSliceMapping.getView(),
       slices.getView(),
       rowToChunkMapping.getView(),
@@ -369,7 +370,7 @@ template< typename Device,
 __cuda_callable__ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const -> IndexType
 {
-      return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
+      return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getGlobalIndex(
          rowToSliceMapping,
          slices,
          rowToChunkMapping,

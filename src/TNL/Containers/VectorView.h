@@ -14,7 +14,6 @@
 
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Algorithms/Scan.h>
 
 namespace TNL {
 namespace Containers {
@@ -216,84 +215,17 @@ public:
    VectorView& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Computes the scan (prefix sum) of the vector elements.
+    * \brief Modulo assignment operator for vector view and a vector expression.
     *
-    * By default, scan is computed for the whole vector. If \e begin
-    * or \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are scanned.
+    * The division is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector
+    * view.
     *
-    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
-    *
-    * \param begin The beginning of the vector sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the vector sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
     */
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void scan( IndexType begin = 0, IndexType end = 0 );
-
-   /**
-    * \brief Computes the segmented scan (prefix sum) of the vector elements.
-    *
-    * By default, segmented scan is computed for the whole vector. If \e begin
-    * or \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are scanned.
-    *
-    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
-    *
-    * \param flags A binary array where ones indicate the beginning of each
-    *              segment.
-    * \param begin The beginning of the vector sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the vector sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
-             typename FlagsArray >
-   void segmentedScan( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
-
-   /**
-    * \brief Computes the scan (prefix sum) of the vector expression.
-    *
-    * By default, scan is computed for the whole vector. If \e begin
-    * or \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are scanned.
-    *
-    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
-    *
-    * \param expression A vector expression for which scan is computed and
-    *                   stored in this vector.
-    * \param begin The beginning of the vector sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the vector sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
-             typename VectorExpression >
-   void scan( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
-
-   /**
-    * \brief Computes the segmented scan (prefix sum) of a vector expression.
-    *
-    * By default, segmented scan is computed for the whole vector. If \e begin
-    * or \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are scanned.
-    *
-    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
-    *
-    * \param expression A vector expression for which scan is computed and
-    *                   stored in this vector.
-    * \param flags A binary array where ones indicate the beginning of each
-    *              segment.
-    * \param begin The beginning of the vector sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the vector sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
-             typename VectorExpression,
-             typename FlagsArray >
-   void segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
+   template< typename VectorExpression >
+   VectorView& operator%=( const VectorExpression& expression );
 };
 
 // Enable expression templates for VectorView

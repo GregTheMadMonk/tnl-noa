@@ -37,6 +37,25 @@ protected:
 // TODO: Quad must be fixed
 using VectorTypes = ::testing::Types<
 #ifndef HAVE_CUDA
+   Vector< int,            Devices::Sequential, short >,
+   Vector< long,           Devices::Sequential, short >,
+   Vector< float,          Devices::Sequential, short >,
+   Vector< double,         Devices::Sequential, short >,
+   //Vector< Quad< float >,  Devices::Sequential, short >,
+   //Vector< Quad< double >, Devices::Sequential, short >,
+   Vector< int,            Devices::Sequential, int >,
+   Vector< long,           Devices::Sequential, int >,
+   Vector< float,          Devices::Sequential, int >,
+   Vector< double,         Devices::Sequential, int >,
+   //Vector< Quad< float >,  Devices::Sequential, int >,
+   //Vector< Quad< double >, Devices::Sequential, int >,
+   Vector< int,            Devices::Sequential, long >,
+   Vector< long,           Devices::Sequential, long >,
+   Vector< float,          Devices::Sequential, long >,
+   Vector< double,         Devices::Sequential, long >,
+   //Vector< Quad< float >,  Devices::Sequential, long >,
+   //Vector< Quad< double >, Devices::Sequential, long >,
+
    Vector< int,            Devices::Host, short >,
    Vector< long,           Devices::Host, short >,
    Vector< float,          Devices::Host, short >,

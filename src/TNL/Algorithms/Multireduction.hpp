@@ -35,7 +35,7 @@ template< typename Result,
           typename Index >
 void constexpr
 Multireduction< Devices::Sequential >::
-reduce( const Result zero,
+reduce( const Result identity,
         DataFetcher dataFetcher,
         const Reduction reduction,
         const Index size,
@@ -53,7 +53,7 @@ reduce( const Result zero,
       // (it is accessed as a row-major matrix with n rows and 4 columns)
       Result r[ n * 4 ];
       for( int k = 0; k < n * 4; k++ )
-         r[ k ] = zero;
+         r[ k ] = identity;
 
       // main reduction (explicitly unrolled loop)
       for( int b = 0; b < blocks; b++ ) {
@@ -89,7 +89,7 @@ reduce( const Result zero,
    }
    else {
       for( int k = 0; k < n; k++ )
-         result[ k ] = zero;
+         result[ k ] = identity;
 
       for( int b = 0; b < blocks; b++ ) {
          const Index offset = b * block_size;
@@ -112,7 +112,7 @@ template< typename Result,
           typename Index >
 void
 Multireduction< Devices::Host >::
-reduce( const Result zero,
+reduce( const Result identity,
         DataFetcher dataFetcher,
         const Reduction reduction,
         const Index size,
@@ -134,14 +134,14 @@ reduce( const Result zero,
          #pragma omp single nowait
          {
             for( int k = 0; k < n; k++ )
-               result[ k ] = zero;
+               result[ k ] = identity;
          }
 
          // initialize array for thread-local results
          // (it is accessed as a row-major matrix with n rows and 4 columns)
          Result r[ n * 4 ];
          for( int k = 0; k < n * 4; k++ )
-            r[ k ] = zero;
+            r[ k ] = identity;
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
@@ -185,7 +185,7 @@ reduce( const Result zero,
    }
    else
 #endif
-      Multireduction< Devices::Sequential >::reduce( zero, dataFetcher, reduction, size, n, result );
+      Multireduction< Devices::Sequential >::reduce( identity, dataFetcher, reduction, size, n, result );
 }
 
 template< typename Result,
@@ -194,7 +194,7 @@ template< typename Result,
           typename Index >
 void
 Multireduction< Devices::Cuda >::
-reduce( const Result zero,
+reduce( const Result identity,
         DataFetcher dataFetcher,
         const Reduction reduction,
         const Index size,
@@ -212,7 +212,7 @@ reduce( const Result zero,
 
    // start the reduction on the GPU
    Result* deviceAux1 = nullptr;
-   const int reducedSize = detail::CudaMultireductionKernelLauncher( zero, dataFetcher, reduction, size, n, deviceAux1 );
+   const int reducedSize = detail::CudaMultireductionKernelLauncher( identity, dataFetcher, reduction, size, n, deviceAux1 );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
@@ -234,7 +234,7 @@ reduce( const Result zero,
 
    // finish the reduction on the host
    auto dataFetcherFinish = [&] ( int i, int k ) { return resultArray[ i + k * reducedSize ]; };
-   Multireduction< Devices::Sequential >::reduce( zero, dataFetcherFinish, reduction, reducedSize, n, hostResult );
+   Multireduction< Devices::Sequential >::reduce( identity, dataFetcherFinish, reduction, reducedSize, n, hostResult );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();

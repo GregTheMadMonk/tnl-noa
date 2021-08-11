@@ -93,17 +93,22 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator/=( const Vector
 }
 
 template< int Size, typename Real >
+   template< typename VectorExpression >
+__cuda_callable__
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator%=( const VectorExpression& expression )
+{
+   detail::VectorAssignmentWithOperation< StaticVector, VectorExpression >::moduloStatic( *this, expression );
+   return *this;
+}
+
+template< int Size, typename Real >
    template< typename OtherReal >
 __cuda_callable__
 StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   Algorithms::unrolledFor< int, 0, Size >(
-      [&] ( int i ) mutable {
-         aux[ i ] = (*this)[ i ];
-      }
-   );
+   aux.operator=( *this );
    return aux;
 }
 

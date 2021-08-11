@@ -403,8 +403,8 @@ void validateMesh( const Mesh& mesh, const Distributor& distributor, int ghostLe
       }
       vert_offsets.setElement( distributor.nproc, 0 );
       cell_offsets.setElement( distributor.nproc, 0 );
-      vert_offsets.template scan< Algorithms::ScanType::Exclusive >();
-      cell_offsets.template scan< Algorithms::ScanType::Exclusive >();
+      Algorithms::inplaceExclusiveScan( vert_offsets );
+      Algorithms::inplaceExclusiveScan( cell_offsets );
       EXPECT_EQ( vert_offsets[ distributor.rank ], mesh.template getGlobalIndices< 0 >()[ 0 ] );
       EXPECT_EQ( cell_offsets[ distributor.rank ], mesh.template getGlobalIndices< 2 >()[ 0 ] );
 

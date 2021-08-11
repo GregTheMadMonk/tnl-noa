@@ -36,7 +36,7 @@ class ChunkedEllpack
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
       using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
       using SegmentViewType = typename ViewType::SegmentViewType;
-      using ChunkedEllpackSliceInfoType = typename ViewType::ChunkedEllpackSliceInfoType; // details::ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = typename ViewType::ChunkedEllpackSliceInfoType; // detail::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoAllocator = typename ViewType::ChunkedEllpackSliceInfoAllocator; // typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = typename ViewType::ChunkedEllpackSliceInfoContainer; // Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;

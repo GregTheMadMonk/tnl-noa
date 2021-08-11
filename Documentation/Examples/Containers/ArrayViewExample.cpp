@@ -30,16 +30,6 @@ void arrayViewExample()
    a2_view = 0;
 
    /***
-    * Simple array view values checks can be done as follows ...
-    */
-   if( a1_view.containsValue( 1 ) )
-      std::cout << "a1 contains value 1." << std::endl;
-   if( a1_view.containsValue( size ) )
-      std::cout << "a1 contains value " << size << "." << std::endl;
-   if( a1_view.containsOnlyValue( 0 ) )
-      std::cout << "a2 contains only value 0." << std::endl;
-
-   /***
     * More efficient way of array view elements manipulation is with the lambda functions
     */
    ArrayType a3( size );

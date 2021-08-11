@@ -150,6 +150,11 @@ public:
              typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVector& operator/=( Scalar c );
 
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVector& operator%=( Scalar c );
+
    template< typename Vector,
              typename...,
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
@@ -175,8 +180,10 @@ public:
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVector& operator/=( const Vector& vector );
 
-   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void scan( IndexType begin = 0, IndexType end = 0 );
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVector& operator%=( const Vector& vector );
 };
 
 // Enable expression templates for DistributedVector

@@ -473,27 +473,5 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
    this->view.forElements( begin, end, f );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-DistributedArray< Value, Device, Index, Allocator >::
-containsValue( ValueType value ) const
-{
-   return view.containsValue( value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-DistributedArray< Value, Device, Index, Allocator >::
-containsOnlyValue( ValueType value ) const
-{
-   return view.containsOnlyValue( value );
-}
-
 } // namespace Containers
 } // namespace TNL

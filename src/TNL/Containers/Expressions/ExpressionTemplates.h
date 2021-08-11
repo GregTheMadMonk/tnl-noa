@@ -13,12 +13,12 @@
 #include <ostream>
 #include <utility>
 
+#include <TNL/Functional.h>
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/HorizontalOperations.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
+#include <TNL/Algorithms/reduce.h>
 
 namespace TNL {
 namespace Containers {
@@ -58,7 +58,8 @@ template< typename T1,
           typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -79,13 +80,19 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation::evaluate( op1.getElement( i ), op2.getElement( i ) );
+      return Operation{}( op1.getElement( i ), op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation::evaluate( op1[ i ], op2[ i ] );
+      return Operation{}( op1[ i ], op2[ i ] );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__
@@ -109,7 +116,8 @@ template< typename T1,
           typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0], std::declval<T2>() ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -122,13 +130,19 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation::evaluate( op1.getElement( i ), op2 );
+      return Operation{}( op1.getElement( i ), op2 );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation::evaluate( op1[ i ], op2 );
+      return Operation{}( op1[ i ], op2 );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__
@@ -152,7 +166,8 @@ template< typename T1,
           typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -165,13 +180,19 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation::evaluate( op1, op2.getElement( i ) );
+      return Operation{}( op1, op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation::evaluate( op1, op2[ i ] );
+      return Operation{}( op1, op2[ i ] );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__
@@ -196,7 +217,8 @@ template< typename T1,
           typename Operation >
 struct UnaryExpressionTemplate
 {
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0] ) );
+   using ValueType = RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = UnaryExpressionTemplate;
@@ -209,13 +231,19 @@ struct UnaryExpressionTemplate
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation::evaluate( operand.getElement( i ) );
+      return Operation{}( operand.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation::evaluate( operand[ i ] );
+      return Operation{}( operand[ i ] );
+   }
+
+   __cuda_callable__
+   RealType operator()( const IndexType i ) const
+   {
+      return operator[]( i );
    }
 
    __cuda_callable__
@@ -235,50 +263,86 @@ protected:
 
 #ifndef DOXYGEN_ONLY
 
+#define TNL_MAKE_UNARY_EXPRESSION(fname, functor)                                \
+   template< typename ET1,                                                       \
+             typename..., EnableIfUnaryExpression_t< ET1, bool > = true >        \
+   auto                                                                          \
+   fname( const ET1& a )                                                         \
+   {                                                                             \
+      return UnaryExpressionTemplate< ET1, functor >( a );                       \
+   }                                                                             \
+
+#define TNL_MAKE_BINARY_EXPRESSION(fname, functor)                               \
+   template< typename ET1, typename ET2,                                         \
+             typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >  \
+   auto                                                                          \
+   fname( const ET1& a, const ET2& b )                                           \
+   {                                                                             \
+      return BinaryExpressionTemplate< ET1, ET2, functor >( a, b );              \
+   }                                                                             \
+
+TNL_MAKE_BINARY_EXPRESSION( operator+, TNL::Plus )
+TNL_MAKE_BINARY_EXPRESSION( operator-, TNL::Minus )
+TNL_MAKE_BINARY_EXPRESSION( operator*, TNL::Multiplies )
+TNL_MAKE_BINARY_EXPRESSION( operator/, TNL::Divides )
+TNL_MAKE_BINARY_EXPRESSION( operator%, TNL::Modulus )
+TNL_MAKE_BINARY_EXPRESSION( min, TNL::Min )
+TNL_MAKE_BINARY_EXPRESSION( max, TNL::Max )
+
+TNL_MAKE_UNARY_EXPRESSION( operator+, TNL::UnaryPlus )
+TNL_MAKE_UNARY_EXPRESSION( operator-, TNL::UnaryMinus )
+TNL_MAKE_UNARY_EXPRESSION( abs, TNL::Abs )
+TNL_MAKE_UNARY_EXPRESSION( exp, TNL::Exp )
+TNL_MAKE_UNARY_EXPRESSION( sqrt, TNL::Sqrt )
+TNL_MAKE_UNARY_EXPRESSION( cbrt, TNL::Cbrt )
+TNL_MAKE_UNARY_EXPRESSION( log, TNL::Log )
+TNL_MAKE_UNARY_EXPRESSION( log10, TNL::Log10 )
+TNL_MAKE_UNARY_EXPRESSION( log2, TNL::Log2 )
+TNL_MAKE_UNARY_EXPRESSION( sin, TNL::Sin )
+TNL_MAKE_UNARY_EXPRESSION( cos, TNL::Cos )
+TNL_MAKE_UNARY_EXPRESSION( tan, TNL::Tan )
+TNL_MAKE_UNARY_EXPRESSION( asin, TNL::Asin )
+TNL_MAKE_UNARY_EXPRESSION( acos, TNL::Acos )
+TNL_MAKE_UNARY_EXPRESSION( atan, TNL::Atan )
+TNL_MAKE_UNARY_EXPRESSION( sinh, TNL::Sinh )
+TNL_MAKE_UNARY_EXPRESSION( cosh, TNL::Cosh )
+TNL_MAKE_UNARY_EXPRESSION( tanh, TNL::Tanh )
+TNL_MAKE_UNARY_EXPRESSION( asinh, TNL::Asinh )
+TNL_MAKE_UNARY_EXPRESSION( acosh, TNL::Acosh )
+TNL_MAKE_UNARY_EXPRESSION( atanh, TNL::Atanh )
+TNL_MAKE_UNARY_EXPRESSION( floor, TNL::Floor )
+TNL_MAKE_UNARY_EXPRESSION( ceil, TNL::Ceil )
+TNL_MAKE_UNARY_EXPRESSION( sign, TNL::Sign )
+
+#undef TNL_MAKE_UNARY_EXPRESSION
+#undef TNL_MAKE_BINARY_EXPRESSION
+
 ////
-// Binary expressions addition
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+// Pow
+template< typename ET1, typename Real,
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
-operator+( const ET1& a, const ET2& b )
+pow( const ET1& a, const Real& exp )
 {
-   return BinaryExpressionTemplate< ET1, ET2, Addition >( a, b );
+   return BinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
 }
 
 ////
-// Binary expression subtraction
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+// Cast
+template< typename ResultType,
+          typename ET1,
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
-operator-( const ET1& a, const ET2& b )
+cast( const ET1& a )
 {
-   return BinaryExpressionTemplate< ET1, ET2, Subtraction >( a, b );
-}
-
-////
-// Binary expression multiplication
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
-auto
-operator*( const ET1& a, const ET2& b )
-{
-   return BinaryExpressionTemplate< ET1, ET2, Multiplication >( a, b );
-}
-
-////
-// Binary expression division
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
-auto
-operator/( const ET1& a, const ET2& b )
-{
-   return BinaryExpressionTemplate< ET1, ET2, Division >( a, b );
+   using CastOperation = typename Cast< ResultType >::Operation;
+   return UnaryExpressionTemplate< ET1, CastOperation >( a );
 }
 
 ////
 // Comparison operator ==
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator==( const ET1& a, const ET2& b )
 {
@@ -288,7 +352,7 @@ operator==( const ET1& a, const ET2& b )
 ////
 // Comparison operator !=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator!=( const ET1& a, const ET2& b )
 {
@@ -298,7 +362,7 @@ operator!=( const ET1& a, const ET2& b )
 ////
 // Comparison operator <
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator<( const ET1& a, const ET2& b )
 {
@@ -308,7 +372,7 @@ operator<( const ET1& a, const ET2& b )
 ////
 // Comparison operator <=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator<=( const ET1& a, const ET2& b )
 {
@@ -318,7 +382,7 @@ operator<=( const ET1& a, const ET2& b )
 ////
 // Comparison operator >
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator>( const ET1& a, const ET2& b )
 {
@@ -328,7 +392,7 @@ operator>( const ET1& a, const ET2& b )
 ////
 // Comparison operator >=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 bool
 operator>=( const ET1& a, const ET2& b )
 {
@@ -338,15 +402,15 @@ operator>=( const ET1& a, const ET2& b )
 ////
 // Scalar product
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 auto
 operator,( const ET1& a, const ET2& b )
 {
-   return ExpressionSum( a * b );
+   return Algorithms::reduce( a * b, TNL::Plus{} );
 }
 
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+          typename..., EnableIfBinaryExpression_t< ET1, ET2, bool > = true >
 auto
 dot( const ET1& a, const ET2& b )
 {
@@ -354,323 +418,49 @@ dot( const ET1& a, const ET2& b )
 }
 
 ////
-// Unary expression minus
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-operator-( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Minus >( a );
-}
-
-////
-// Binary expression min
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
-auto
-min( const ET1& a, const ET2& b )
-{
-   return BinaryExpressionTemplate< ET1, ET2, Min >( a, b );
-}
-
-////
-// Binary expression max
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
-auto
-max( const ET1& a, const ET2& b )
-{
-   return BinaryExpressionTemplate< ET1, ET2, Max >( a, b );
-}
-
-////
-// Abs
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-abs( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Abs >( a );
-}
-
-////
-// Pow
-template< typename ET1, typename Real,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-pow( const ET1& a, const Real& exp )
-{
-   return BinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
-}
-
-////
-// Exp
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-exp( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Exp >( a );
-}
-
-////
-// Sqrt
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-sqrt( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-cbrt( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Cbrt >( a );
-}
-
-////
-// Log
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-log( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Log >( a );
-}
-
-////
-// Log10
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-log10( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Log10 >( a );
-}
-
-////
-// Log2
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-log2( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Log2 >( a );
-}
-
-////
-// Sin
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-sin( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Sin >( a );
-}
-
-////
-// Cos
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-cos( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Cos >( a );
-}
-
-////
-// Tan
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-tan( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Tan >( a );
-}
-
-////
-// Asin
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-asin( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Asin >( a );
-}
-
-////
-// Acos
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-acos( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Acos >( a );
-}
-
-////
-// Atan
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-atan( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Atan >( a );
-}
-
-////
-// Sinh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-sinh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Sinh >( a );
-}
-
-////
-// Cosh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-cosh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Cosh >( a );
-}
-
-////
-// Tanh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-tanh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Tanh >( a );
-}
-
-////
-// Asinh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-asinh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Asinh >( a );
-}
-
-////
-// Acosh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-acosh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Acosh >( a );
-}
-
-////
-// Atanh
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-atanh( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Atanh >( a );
-}
-
-////
-// Floor
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-floor( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Floor >( a );
-}
-
-////
-// Ceil
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-ceil( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Ceil >( a );
-}
-
-////
-// Sign
-template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
-auto
-sign( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, Sign >( a );
-}
-
-////
-// Cast
-template< typename ResultType,
-          typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >,
-          // workaround: templated type alias cannot be declared at block level
-          typename CastOperation = typename Cast< ResultType >::Operation,
-          typename = void >
-auto
-cast( const ET1& a )
-{
-   return UnaryExpressionTemplate< ET1, CastOperation >( a );
-}
-
-////
 // Vertical operations
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 min( const ET1& a )
 {
-   return ExpressionMin( a );
+   return Algorithms::reduce( a, TNL::Min{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 argMin( const ET1& a )
 {
-   return ExpressionArgMin( a );
+   return Algorithms::reduceWithArgument( a, TNL::MinWithArg{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 max( const ET1& a )
 {
-   return ExpressionMax( a );
+   return Algorithms::reduce( a, TNL::Max{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 argMax( const ET1& a )
 {
-   return ExpressionArgMax( a );
+   return Algorithms::reduceWithArgument( a, TNL::MaxWithArg{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 sum( const ET1& a )
 {
-   return ExpressionSum( a );
+   return Algorithms::reduce( a, TNL::Plus{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 maxNorm( const ET1& a )
 {
@@ -678,7 +468,7 @@ maxNorm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 l1Norm( const ET1& a )
 {
@@ -686,7 +476,7 @@ l1Norm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 l2Norm( const ET1& a )
 {
@@ -696,7 +486,7 @@ l2Norm( const ET1& a )
 
 template< typename ET1,
           typename Real,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 lpNorm( const ET1& a, const Real& p )
 // since (1.0 / p) has type double, TNL::pow returns double
@@ -711,43 +501,51 @@ lpNorm( const ET1& a, const Real& p )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 product( const ET1& a )
 {
-   return ExpressionProduct( a );
+   return Algorithms::reduce( a, TNL::Multiplies{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 logicalAnd( const ET1& a )
 {
-   return ExpressionLogicalAnd( a );
+   return Algorithms::reduce( a, TNL::LogicalAnd{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 logicalOr( const ET1& a )
 {
-   return ExpressionLogicalOr( a );
+   return Algorithms::reduce( a, TNL::LogicalOr{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 binaryAnd( const ET1& a )
 {
-   return ExpressionBinaryAnd( a );
+   return Algorithms::reduce( a, TNL::BitAnd{} );
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
 auto
 binaryOr( const ET1& a )
 {
-   return ExpressionBinaryOr( a );
+   return Algorithms::reduce( a, TNL::BitOr{} );
+}
+
+template< typename ET1,
+          typename..., EnableIfUnaryExpression_t< ET1, bool > = true >
+auto
+binaryXor( const ET1& a )
+{
+   return Algorithms::reduce( a, TNL::BitXor{} );
 }
 
 #endif // DOXYGEN_ONLY
@@ -785,6 +583,7 @@ using Expressions::operator+;
 using Expressions::operator-;
 using Expressions::operator*;
 using Expressions::operator/;
+using Expressions::operator%;
 using Expressions::operator,;
 using Expressions::operator==;
 using Expressions::operator!=;

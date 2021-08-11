@@ -16,9 +16,6 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Pointers/SmartPointersRegister.h>
-#include <TNL/Algorithms/ParallelFor.h>
 
 #include "gtest/gtest.h"
 
@@ -67,6 +64,23 @@ protected:
 // types for which ArrayTest is instantiated
 using ArrayTypes = ::testing::Types<
 #ifndef HAVE_CUDA
+   // we can't test all types because the argument list would be too long...
+//   Array< int,    Devices::Sequential, short >,
+//   Array< long,   Devices::Sequential, short >,
+//   Array< float,  Devices::Sequential, short >,
+//   Array< double, Devices::Sequential, short >,
+//   Array< MyData, Devices::Sequential, short >,
+//   Array< int,    Devices::Sequential, int >,
+//   Array< long,   Devices::Sequential, int >,
+//   Array< float,  Devices::Sequential, int >,
+//   Array< double, Devices::Sequential, int >,
+//   Array< MyData, Devices::Sequential, int >,
+   Array< int,    Devices::Sequential, long >,
+   Array< long,   Devices::Sequential, long >,
+   Array< float,  Devices::Sequential, long >,
+   Array< double, Devices::Sequential, long >,
+   Array< MyData, Devices::Sequential, long >,
+
    Array< int,    Devices::Host, short >,
    Array< long,   Devices::Host, short >,
    Array< float,  Devices::Host, short >,
@@ -105,6 +119,8 @@ using ArrayTypes = ::testing::Types<
    // (but we can't test all types because the argument list would be too long...)
 #ifndef HAVE_CUDA
    ,
+   Vector< float,  Devices::Sequential, long >,
+   Vector< double, Devices::Sequential, long >,
    Vector< float,  Devices::Host, long >,
    Vector< double, Devices::Host, long >
 #endif
@@ -362,6 +378,19 @@ TYPED_TEST( ArrayTest, reset )
 }
 
 template< typename Value, typename Index >
+void testArrayElementwiseAccess( Array< Value, Devices::Sequential, Index >&& u )
+{
+   u.setSize( 10 );
+   for( int i = 0; i < 10; i++ ) {
+      u.setElement( i, i );
+      EXPECT_EQ( u.getData()[ i ], i );
+      EXPECT_EQ( u.getElement( i ), i );
+      EXPECT_EQ( u[ i ], i );
+      EXPECT_EQ( u( i ), i );
+   }
+}
+
+template< typename Value, typename Index >
 void testArrayElementwiseAccess( Array< Value, Devices::Host, Index >&& u )
 {
    u.setSize( 10 );
@@ -370,15 +399,17 @@ void testArrayElementwiseAccess( Array< Value, Devices::Host, Index >&& u )
       EXPECT_EQ( u.getData()[ i ], i );
       EXPECT_EQ( u.getElement( i ), i );
       EXPECT_EQ( u[ i ], i );
+      EXPECT_EQ( u( i ), i );
    }
 }
 
 #ifdef HAVE_CUDA
 template< typename ValueType, typename IndexType >
-__global__ void testSetGetElementKernel( Array< ValueType, Devices::Cuda, IndexType >* u )
+__global__ void testSetGetElementKernel( Array< ValueType, Devices::Cuda, IndexType >* u,
+                                         Array< ValueType, Devices::Cuda, IndexType >* v )
 {
-   if( threadIdx.x < ( *u ).getSize() )
-      ( *u )[ threadIdx.x ] = threadIdx.x;
+   if( threadIdx.x < u->getSize() )
+      ( *u )[ threadIdx.x ] = ( *v )( threadIdx.x ) = threadIdx.x;
 }
 #endif /* HAVE_CUDA */
 
@@ -386,14 +417,16 @@ template< typename Value, typename Index >
 void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 {
 #ifdef HAVE_CUDA
-   u.setSize( 10 );
    using ArrayType = Array< Value, Devices::Cuda, Index >;
-   Pointers::DevicePointer< ArrayType > kernel_u( u );
-   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >() );
+   u.setSize( 10 );
+   ArrayType v( 10 );
+   Pointers::DevicePointer< ArrayType > kernel_u( u ), kernel_v( v );
+   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >(), &kernel_v.template modifyData< Devices::Cuda >() );
    cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
+      EXPECT_EQ( v.getElement( i ), i );
    }
 #endif
 }
@@ -405,21 +438,45 @@ TYPED_TEST( ArrayTest, elementwiseAccess )
    testArrayElementwiseAccess( ArrayType() );
 }
 
-template< typename ArrayType >
-void test_setElement()
+template< typename Value, typename Index >
+void test_setElement_on_device( const Array< Value, Devices::Sequential, Index >& )
 {
-   Pointers::SharedPointer< ArrayType > a( 10, 0 ), b( 10, 0 );
-   auto set = [=] __cuda_callable__ ( int i ) mutable {
-      a->setElement( i, i );
-      b->setElement( i, a->getElement( i ) );
-   };
-   Pointers::synchronizeSmartPointersOnDevice< typename ArrayType::DeviceType >();
-   Algorithms::ParallelFor< typename ArrayType::DeviceType >::exec( 0, 10, set );
-   for( int i = 0; i < 10; i++ )
-   {
-      EXPECT_EQ( a->getElement( i ), i );
-      EXPECT_EQ( b->getElement( i ), i );
+}
+
+template< typename Value, typename Index >
+void test_setElement_on_device( const Array< Value, Devices::Host, Index >& )
+{
+}
+
+#ifdef HAVE_CUDA
+template< typename ValueType, typename IndexType >
+__global__ void test_setElement_on_device_kernel( Array< ValueType, Devices::Cuda, IndexType >* a,
+                                                  Array< ValueType, Devices::Cuda, IndexType >* b )
+{
+   if( threadIdx.x < a->getSize() ) {
+      a->setElement( threadIdx.x, threadIdx.x );
+      b->setElement( threadIdx.x, a->getElement( threadIdx.x ) );
    }
+}
+#endif /* HAVE_CUDA */
+
+template< typename Value, typename Index >
+void test_setElement_on_device( const Array< Value, Devices::Cuda, Index >& )
+{
+#ifdef HAVE_CUDA
+   using ArrayType = Array< Value, Devices::Cuda, Index >;
+   ArrayType a( 10, 0 ), b( 10, 0 );
+   Pointers::DevicePointer< ArrayType > kernel_a( a );
+   Pointers::DevicePointer< ArrayType > kernel_b( b );
+   test_setElement_on_device_kernel<<< 1, 16 >>>( &kernel_a.template modifyData< Devices::Cuda >(),
+                                                  &kernel_b.template modifyData< Devices::Cuda >() );
+   cudaDeviceSynchronize();
+   TNL_CHECK_CUDA_DEVICE;
+   for( int i = 0; i < 10; i++ ) {
+      EXPECT_EQ( a.getElement( i ), i );
+      EXPECT_EQ( b.getElement( i ), i );
+   }
+#endif
 }
 
 TYPED_TEST( ArrayTest, setElement )
@@ -433,7 +490,7 @@ TYPED_TEST( ArrayTest, setElement )
    for( int i = 0; i < 10; i++ )
       EXPECT_EQ( a.getElement( i ), i );
 
-   test_setElement< ArrayType >();
+   test_setElement_on_device( a );
 }
 
 // test must be in a plain function because nvcc sucks (extended lambdas are
@@ -453,40 +510,6 @@ void testArrayForEachElement()
 TYPED_TEST( ArrayTest, forElements )
 {
    testArrayForEachElement< typename TestFixture::ArrayType >();
-}
-
-TYPED_TEST( ArrayTest, containsValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   ArrayType array;
-   array.setSize( 1024 );
-
-   for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, i % 10 );
-
-   for( int i = 0; i < 10; i++ )
-      EXPECT_TRUE( array.containsValue( i ) );
-
-   for( int i = 10; i < 20; i++ )
-      EXPECT_FALSE( array.containsValue( i ) );
-}
-
-TYPED_TEST( ArrayTest, containsOnlyValue )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   ArrayType array;
-   array.setSize( 1024 );
-
-   for( int i = 0; i < array.getSize(); i++ )
-      array.setElement( i, i % 10 );
-
-   for( int i = 0; i < 20; i++ )
-      EXPECT_FALSE( array.containsOnlyValue( i ) );
-
-   array.setValue( 100 );
-   EXPECT_TRUE( array.containsOnlyValue( 100 ) );
 }
 
 TYPED_TEST( ArrayTest, comparisonOperator )

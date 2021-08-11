@@ -13,7 +13,6 @@
 #pragma once
 
 #include "DistributedVectorView.h"
-#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -216,6 +215,32 @@ operator/=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vector, typename..., typename >
+DistributedVectorView< Real, Device, Index >&
+DistributedVectorView< Real, Device, Index >::
+operator%=( const Vector& vector )
+{
+   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
+                  "Vector sizes must be equal." );
+   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
+                  "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
+                  "Ghosts must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
+                  "Multiary operations are supported only on vectors within the same communication group." );
+
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      // TODO: it might be better to split the local and ghost parts and synchronize in the middle
+      this->waitForSynchronization();
+      vector.waitForSynchronization();
+      getLocalViewWithGhosts() %= vector.getConstLocalViewWithGhosts();
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Scalar, typename..., typename >
 DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
@@ -291,15 +316,16 @@ operator/=( Scalar c )
 template< typename Real,
           typename Device,
           typename Index >
-   template< Algorithms::ScanType Type >
-void
+   template< typename Scalar, typename..., typename >
+DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
-scan( IndexType begin, IndexType end )
+operator%=( Scalar c )
 {
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
-   this->startSynchronization();
+   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+      getLocalView() %= c;
+      this->startSynchronization();
+   }
+   return *this;
 }
 
 } // namespace Containers

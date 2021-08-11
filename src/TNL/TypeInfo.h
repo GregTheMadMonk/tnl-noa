@@ -11,6 +11,7 @@
 #pragma once
 
 #include <typeinfo>
+#include <type_traits>
 #include <string>
 
 #if defined( __has_include )
@@ -27,11 +28,10 @@
    #include <cstdlib>  // std::free
 #endif
 
-#include <TNL/TypeTraits.h>
 #include <TNL/String.h>
 
 namespace TNL {
-namespace __getType_impl {
+namespace detail {
 
 inline std::string
 demangle( const char* name )
@@ -49,7 +49,34 @@ demangle( const char* name )
    return name;
 }
 
-} // namespace __getType_impl
+/**
+ * \brief Type trait for checking if T has a static getSerializationType method.
+ */
+template< typename T >
+class HasStaticGetSerializationType
+{
+private:
+   template< typename U >
+   static constexpr auto check(U*)
+   -> typename
+      std::enable_if_t<
+         ! std::is_same<
+               decltype( U::getSerializationType() ),
+               void
+            >::value,
+         std::true_type
+      >;
+
+   template< typename >
+   static constexpr std::false_type check(...);
+
+   using type = decltype(check<std::decay_t<T>>(0));
+
+public:
+    static constexpr bool value = type::value;
+};
+
+} // namespace detail
 
 /**
  * \brief Returns a human-readable string representation of given type.
@@ -61,7 +88,7 @@ demangle( const char* name )
 template< typename T >
 String getType()
 {
-   return __getType_impl::demangle( typeid(T).name() );
+   return detail::demangle( typeid(T).name() );
 }
 
 /**
@@ -74,7 +101,7 @@ String getType()
 template< typename T >
 String getType( T&& obj )
 {
-   return __getType_impl::demangle( typeid(obj).name() );
+   return detail::demangle( typeid(obj).name() );
 }
 
 /**
@@ -87,7 +114,7 @@ String getType( T&& obj )
  * serialization type for multiple devices.
  */
 template< typename T,
-          std::enable_if_t< ! HasStaticGetSerializationType< T >::value, bool > = true >
+          std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
 String getSerializationType()
 {
    return getType< T >();
@@ -98,7 +125,7 @@ String getSerializationType()
  *        static \e getSerializationType method to override the default behaviour.
  */
 template< typename T,
-          std::enable_if_t< HasStaticGetSerializationType< T >::value, bool > = true >
+          std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
 String getSerializationType()
 {
    return T::getSerializationType();

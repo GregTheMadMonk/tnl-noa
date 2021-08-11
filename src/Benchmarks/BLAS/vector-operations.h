@@ -13,10 +13,12 @@
 #pragma once
 
 #include <stdlib.h> // srand48
+#include <numeric>  // std::partial_sum
 
 #include "../Benchmarks.h"
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Algorithms/scan.h>
 #include "CommonVectorOperations.h"
 #include "VectorOperations.h"
 
@@ -39,6 +41,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
 {
    using HostVector = Containers::Vector< Real, Devices::Host, Index >;
    using CudaVector =  Containers::Vector< Real, Devices::Cuda, Index >;
+   using SequentialView = Containers::VectorView< Real, Devices::Sequential, Index >;
    using HostView = Containers::VectorView< Real, Devices::Host, Index >;
    using CudaView =  Containers::VectorView< Real, Devices::Cuda, Index >;
 
@@ -564,31 +567,133 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
 
    ////
-   // Inclusive scan
-   auto inclusiveScanHost = [&]() {
-      hostVector.scan();
+   // Inplace inclusive scan
+   auto inplaceInclusiveScanHost = [&]() {
+      Algorithms::inplaceInclusiveScan( hostVector );
    };
-   benchmark.setOperation( "inclusive scan", 2 * datasetSize );
-   benchmark.time< Devices::Host >( reset1, "CPU ET", inclusiveScanHost );
+   auto inplaceInclusiveScanSequential = [&]() {
+      SequentialView view;
+      view.bind( hostVector.getData(), hostVector.getSize() );
+      Algorithms::inplaceInclusiveScan( view );
+   };
+   auto inplaceInclusiveScanSTL = [&]() {
+      std::partial_sum( hostVector.getData(), hostVector.getData() + hostVector.getSize(), hostVector.getData() );
+   };
+   benchmark.setOperation( "inclusive scan (inplace)", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", inplaceInclusiveScanHost );
+   benchmark.time< Devices::Sequential >( reset1, "CPU sequential", inplaceInclusiveScanSequential );
+   benchmark.time< Devices::Sequential >( reset1, "CPU std::partial_sum", inplaceInclusiveScanSTL );
+   // TODO: there are also `std::inclusive_scan` and `std::exclusive_scan` since C++17 which are parallel,
+   // add them to the benchmark when we use C++17
 #ifdef HAVE_CUDA
-   auto inclusiveScanCuda = [&]() {
-      deviceVector.scan();
+   auto inplaceInclusiveScanCuda = [&]() {
+      Algorithms::inplaceInclusiveScan( deviceVector );
    };
-   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inclusiveScanCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inplaceInclusiveScanCuda );
 #endif
 
    ////
-   // Exclusive scan
-   auto exclusiveScanHost = [&]() {
-      hostVector.template scan< Algorithms::ScanType::Exclusive >();
+   // Inclusive scan of one vector
+   auto inclusiveScanOneVectorHost = [&]() {
+      Algorithms::inclusiveScan( hostVector, hostVector2 );
    };
-   benchmark.setOperation( "exclusive scan", 2 * datasetSize );
-   benchmark.time< Devices::Host >( reset1, "CPU ET", exclusiveScanHost );
+   benchmark.setOperation( "inclusive scan (1 vector)", 2 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", inclusiveScanOneVectorHost );
 #ifdef HAVE_CUDA
-   auto exclusiveScanCuda = [&]() {
-      deviceVector.template scan< Algorithms::ScanType::Exclusive >();
+   auto inclusiveScanOneVectorCuda = [&]() {
+      Algorithms::inclusiveScan( deviceVector, deviceVector2 );
    };
-   benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusiveScanCuda );
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", inclusiveScanOneVectorCuda );
+#endif
+
+   ////
+   // Inclusive scan of two vectors
+   auto inclusiveScanTwoVectorsHost = [&]() {
+      Algorithms::inclusiveScan( hostVector + hostVector2, hostVector3 );
+   };
+   benchmark.setOperation( "inclusive scan (2 vectors)", 3 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", inclusiveScanTwoVectorsHost );
+#ifdef HAVE_CUDA
+   auto inclusiveScanTwoVectorsCuda = [&]() {
+      Algorithms::inclusiveScan( deviceVector + deviceVector2, deviceVector3 );
+   };
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", inclusiveScanTwoVectorsCuda );
+#endif
+
+   ////
+   // Inclusive scan of three vectors
+   auto inclusiveScanThreeVectorsHost = [&]() {
+      Algorithms::inclusiveScan( hostVector + hostVector2 + hostVector3, hostVector4 );
+   };
+   benchmark.setOperation( "inclusive scan (3 vectors)", 4 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", inclusiveScanThreeVectorsHost );
+#ifdef HAVE_CUDA
+   auto inclusiveScanThreeVectorsCuda = [&]() {
+      Algorithms::inclusiveScan( deviceVector + deviceVector2 + deviceVector3, deviceVector4 );
+   };
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", inclusiveScanThreeVectorsCuda );
+#endif
+
+   ////
+   // Inplace exclusive scan
+   auto inplaceExclusiveScanHost = [&]() {
+      Algorithms::inplaceExclusiveScan( hostVector );
+   };
+   auto inplaceExclusiveScanSequential = [&]() {
+      SequentialView view;
+      view.bind( hostVector.getData(), hostVector.getSize() );
+      Algorithms::inplaceExclusiveScan( view );
+   };
+   benchmark.setOperation( "exclusive scan (inplace)", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", inplaceExclusiveScanHost );
+   benchmark.time< Devices::Sequential >( reset1, "CPU sequential", inplaceExclusiveScanSequential );
+#ifdef HAVE_CUDA
+   auto inplaceExclusiveScanCuda = [&]() {
+      Algorithms::inplaceExclusiveScan( deviceVector );
+   };
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inplaceExclusiveScanCuda );
+#endif
+
+   ////
+   // Exclusive scan of one vector
+   auto exclusiveScanOneVectorHost = [&]() {
+      Algorithms::exclusiveScan( hostVector, hostVector2 );
+   };
+   benchmark.setOperation( "exclusive scan (1 vector)", 2 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", exclusiveScanOneVectorHost );
+#ifdef HAVE_CUDA
+   auto exclusiveScanOneVectorCuda = [&]() {
+      Algorithms::exclusiveScan( deviceVector, deviceVector2 );
+   };
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", exclusiveScanOneVectorCuda );
+#endif
+
+   ////
+   // Exclusive scan of two vectors
+   auto exclusiveScanTwoVectorsHost = [&]() {
+      Algorithms::exclusiveScan( hostVector + hostVector2, hostVector3 );
+   };
+   benchmark.setOperation( "exclusive scan (2 vectors)", 3 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", exclusiveScanTwoVectorsHost );
+#ifdef HAVE_CUDA
+   auto exclusiveScanTwoVectorsCuda = [&]() {
+      Algorithms::exclusiveScan( deviceVector + deviceVector2, deviceVector3 );
+   };
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", exclusiveScanTwoVectorsCuda );
+#endif
+
+   ////
+   // Exclusive scan of three vectors
+   auto exclusiveScanThreeVectorsHost = [&]() {
+      Algorithms::exclusiveScan( hostVector + hostVector2 + hostVector3, hostVector4 );
+   };
+   benchmark.setOperation( "exclusive scan (3 vectors)", 4 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", exclusiveScanThreeVectorsHost );
+#ifdef HAVE_CUDA
+   auto exclusiveScanThreeVectorsCuda = [&]() {
+      Algorithms::exclusiveScan( deviceVector + deviceVector2 + deviceVector3, deviceVector4 );
+   };
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", exclusiveScanThreeVectorsCuda );
 #endif
 
 #ifdef HAVE_CUDA

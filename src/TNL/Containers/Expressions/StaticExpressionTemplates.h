@@ -13,10 +13,10 @@
 #include <ostream>
 #include <utility>
 
+#include <TNL/Functional.h>
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Containers/Expressions/HorizontalOperations.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 #include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
@@ -59,7 +59,8 @@ template< typename T1,
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
    using VectorOperandType = T1;
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -81,7 +82,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation::evaluate( op1[ i ], op2[ i ] );
+      return Operation{}( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
@@ -113,7 +114,8 @@ template< typename T1,
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
    using VectorOperandType = T1;
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0], std::declval<T2>() ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -129,7 +131,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation::evaluate( op1[ i ], op2 );
+      return Operation{}( op1[ i ], op2 );
    }
 
    __cuda_callable__
@@ -161,7 +163,8 @@ template< typename T1,
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
    using VectorOperandType = T2;
-   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -177,7 +180,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation::evaluate( op1, op2[ i ] );
+      return Operation{}( op1, op2[ i ] );
    }
 
    __cuda_callable__
@@ -210,7 +213,8 @@ template< typename T1,
 struct StaticUnaryExpressionTemplate
 {
    using VectorOperandType = T1;
-   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+   using RealType = decltype( Operation{}( std::declval<T1>()[0] ) );
+   using ValueType = RealType;
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "The operand of static expression is not static, i.e. based on static vector." );
@@ -226,7 +230,7 @@ struct StaticUnaryExpressionTemplate
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation::evaluate( operand[ i ] );
+      return Operation{}( operand[ i ] );
    }
 
    __cuda_callable__
@@ -253,54 +257,90 @@ protected:
 
 #ifndef DOXYGEN_ONLY
 
+#define TNL_MAKE_STATIC_UNARY_EXPRESSION(fname, functor)                               \
+   template< typename ET1,                                                             \
+             typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >        \
+   __cuda_callable__                                                                   \
+   auto                                                                                \
+   fname( const ET1& a )                                                               \
+   {                                                                                   \
+      return StaticUnaryExpressionTemplate< ET1, functor >( a );                       \
+   }                                                                                   \
+
+#define TNL_MAKE_STATIC_BINARY_EXPRESSION(fname, functor)                              \
+   template< typename ET1, typename ET2,                                               \
+             typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >  \
+   __cuda_callable__                                                                   \
+   auto                                                                                \
+   fname( const ET1& a, const ET2& b )                                                 \
+   {                                                                                   \
+      return StaticBinaryExpressionTemplate< ET1, ET2, functor >( a, b );              \
+   }                                                                                   \
+
+TNL_MAKE_STATIC_BINARY_EXPRESSION( operator+, TNL::Plus )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( operator-, TNL::Minus )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( operator*, TNL::Multiplies )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( operator/, TNL::Divides )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( operator%, TNL::Modulus )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( min, TNL::Min )
+TNL_MAKE_STATIC_BINARY_EXPRESSION( max, TNL::Max )
+
+TNL_MAKE_STATIC_UNARY_EXPRESSION( operator+, TNL::UnaryPlus )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( operator-, TNL::UnaryMinus )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( abs, TNL::Abs )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( exp, TNL::Exp )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( sqrt, TNL::Sqrt )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( cbrt, TNL::Cbrt )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( log, TNL::Log )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( log10, TNL::Log10 )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( log2, TNL::Log2 )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( sin, TNL::Sin )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( cos, TNL::Cos )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( tan, TNL::Tan )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( asin, TNL::Asin )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( acos, TNL::Acos )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( atan, TNL::Atan )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( sinh, TNL::Sinh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( cosh, TNL::Cosh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( tanh, TNL::Tanh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( asinh, TNL::Asinh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( acosh, TNL::Acosh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( atanh, TNL::Atanh )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( floor, TNL::Floor )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( ceil, TNL::Ceil )
+TNL_MAKE_STATIC_UNARY_EXPRESSION( sign, TNL::Sign )
+
+#undef TNL_MAKE_STATIC_UNARY_EXPRESSION
+#undef TNL_MAKE_STATIC_BINARY_EXPRESSION
+
 ////
-// Binary expressions addition
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+// Pow
+template< typename ET1, typename Real,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
-operator+( const ET1& a, const ET2& b )
+pow( const ET1& a, const Real& exp )
 {
-   return StaticBinaryExpressionTemplate< ET1, ET2, Addition >( a, b );
+   return StaticBinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
 }
 
 ////
-// Binary expression subtraction
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+// Cast
+template< typename ResultType,
+          typename ET1,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
-operator-( const ET1& a, const ET2& b )
+cast( const ET1& a )
 {
-   return StaticBinaryExpressionTemplate< ET1, ET2, Subtraction >( a, b );
-}
-
-////
-// Binary expression multiplication
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
-__cuda_callable__
-auto
-operator*( const ET1& a, const ET2& b )
-{
-   return StaticBinaryExpressionTemplate< ET1, ET2, Multiplication >( a, b );
-}
-
-////
-// Binary expression division
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
-__cuda_callable__
-auto
-operator/( const ET1& a, const ET2& b )
-{
-   return StaticBinaryExpressionTemplate< ET1, ET2, Division >( a, b );
+   using CastOperation = typename Cast< ResultType >::Operation;
+   return StaticUnaryExpressionTemplate< ET1, CastOperation >( a );
 }
 
 ////
 // Comparison operator ==
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator==( const ET1& a, const ET2& b )
@@ -311,7 +351,7 @@ operator==( const ET1& a, const ET2& b )
 ////
 // Comparison operator !=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator!=( const ET1& a, const ET2& b )
@@ -322,7 +362,7 @@ operator!=( const ET1& a, const ET2& b )
 ////
 // Comparison operator <
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator<( const ET1& a, const ET2& b )
@@ -333,7 +373,7 @@ operator<( const ET1& a, const ET2& b )
 ////
 // Comparison operator <=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator<=( const ET1& a, const ET2& b )
@@ -344,7 +384,7 @@ operator<=( const ET1& a, const ET2& b )
 ////
 // Comparison operator >
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator>( const ET1& a, const ET2& b )
@@ -355,18 +395,18 @@ operator>( const ET1& a, const ET2& b )
 ////
 // Comparison operator >=
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 bool
 operator>=( const ET1& a, const ET2& b )
 {
-   return Expressions::StaticComparison< ET1, ET2 >::GE( a, b );
+   return StaticComparison< ET1, ET2 >::GE( a, b );
 }
 
 ////
 // Scalar product
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 auto
 operator,( const ET1& a, const ET2& b )
@@ -375,7 +415,7 @@ operator,( const ET1& a, const ET2& b )
 }
 
 template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+          typename..., EnableIfStaticBinaryExpression_t< ET1, ET2, bool > = true >
 __cuda_callable__
 auto
 dot( const ET1& a, const ET2& b )
@@ -384,309 +424,9 @@ dot( const ET1& a, const ET2& b )
 }
 
 ////
-// Unary expression minus
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-operator-( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Minus >( a );
-}
-
-////
-// Binary expression min
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
-__cuda_callable__
-auto
-min( const ET1& a, const ET2& b )
-{
-   return StaticBinaryExpressionTemplate< ET1, ET2, Min >( a, b );
-}
-
-////
-// Binary expression max
-template< typename ET1, typename ET2,
-          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
-__cuda_callable__
-auto
-max( const ET1& a, const ET2& b )
-{
-   return StaticBinaryExpressionTemplate< ET1, ET2, Max >( a, b );
-}
-
-////
-// Abs
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-abs( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Abs >( a );
-}
-
-////
-// Pow
-template< typename ET1, typename Real,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-pow( const ET1& a, const Real& exp )
-{
-   return StaticBinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
-}
-
-////
-// Exp
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-exp( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Exp >( a );
-}
-
-////
-// Sqrt
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-sqrt( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-cbrt( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Cbrt >( a );
-}
-
-////
-// Log
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-log( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Log >( a );
-}
-
-////
-// Log10
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-log10( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Log10 >( a );
-}
-
-////
-// Log2
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-log2( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Log2 >( a );
-}
-
-////
-// Sin
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-sin( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Sin >( a );
-}
-
-////
-// Cos
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-cos( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Cos >( a );
-}
-
-////
-// Tan
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-tan( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Tan >( a );
-}
-
-////
-// Asin
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-asin( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Asin >( a );
-}
-
-////
-// Acos
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-acos( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Acos >( a );
-}
-
-////
-// Atan
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-atan( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Atan >( a );
-}
-
-////
-// Sinh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-sinh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Sinh >( a );
-}
-
-////
-// Cosh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-cosh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Cosh >( a );
-}
-
-////
-// Tanh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-tanh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Tanh >( a );
-}
-
-////
-// Asinh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-asinh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Asinh >( a );
-}
-
-////
-// Acosh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-acosh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Acosh >( a );
-}
-
-////
-// Atanh
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-atanh( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Atanh >( a );
-}
-
-////
-// Floor
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-floor( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Floor >( a );
-}
-
-////
-// Ceil
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-ceil( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Ceil >( a );
-}
-
-////
-// Sign
-template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
-__cuda_callable__
-auto
-sign( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, Sign >( a );
-}
-
-////
-// Cast
-template< typename ResultType,
-          typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
-          // workaround: templated type alias cannot be declared at block level
-          typename CastOperation = typename Cast< ResultType >::Operation >
-__cuda_callable__
-auto
-cast( const ET1& a )
-{
-   return StaticUnaryExpressionTemplate< ET1, CastOperation >( a );
-}
-
-////
 // Vertical operations
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 min( const ET1& a )
@@ -695,7 +435,7 @@ min( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 argMin( const ET1& a )
@@ -704,7 +444,7 @@ argMin( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 max( const ET1& a )
@@ -713,7 +453,7 @@ max( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 argMax( const ET1& a )
@@ -722,7 +462,7 @@ argMax( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 sum( const ET1& a )
@@ -731,7 +471,7 @@ sum( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 maxNorm( const ET1& a )
@@ -740,7 +480,7 @@ maxNorm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 l1Norm( const ET1& a )
@@ -749,7 +489,7 @@ l1Norm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true,
           std::enable_if_t< (ET1::getSize() > 1), bool > = true >
 __cuda_callable__
 auto
@@ -760,7 +500,7 @@ l2Norm( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true,
           std::enable_if_t< ET1::getSize() == 1, bool > = true >
 __cuda_callable__
 auto
@@ -772,7 +512,7 @@ l2Norm( const ET1& a )
 
 template< typename ET1,
           typename Real,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true,
           std::enable_if_t< (ET1::getSize() > 1), bool > = true >
 __cuda_callable__
 auto
@@ -791,7 +531,7 @@ lpNorm( const ET1& a, const Real& p )
 
 template< typename ET1,
           typename Real,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true,
           std::enable_if_t< ET1::getSize() == 1, bool > = true >
 __cuda_callable__
 auto
@@ -802,7 +542,7 @@ lpNorm( const ET1& a, const Real& p )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 product( const ET1& a )
@@ -811,7 +551,7 @@ product( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 logicalAnd( const ET1& a )
@@ -820,7 +560,7 @@ logicalAnd( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 logicalOr( const ET1& a )
@@ -829,7 +569,7 @@ logicalOr( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 binaryAnd( const ET1& a )
@@ -838,12 +578,21 @@ binaryAnd( const ET1& a )
 }
 
 template< typename ET1,
-          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
 __cuda_callable__
 auto
 binaryOr( const ET1& a )
 {
    return StaticExpressionBinaryOr( a );
+}
+
+template< typename ET1,
+          typename..., EnableIfStaticUnaryExpression_t< ET1, bool > = true >
+__cuda_callable__
+auto
+binaryXor( const ET1& a )
+{
+   return StaticExpressionBinaryXor( a );
 }
 
 #endif // DOXYGEN_ONLY
@@ -881,6 +630,7 @@ using Expressions::operator+;
 using Expressions::operator-;
 using Expressions::operator*;
 using Expressions::operator/;
+using Expressions::operator%;
 using Expressions::operator,;
 using Expressions::operator==;
 using Expressions::operator!=;

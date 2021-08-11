@@ -230,12 +230,6 @@ public:
       template< typename Function >
       void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-   // Checks if there is an element with given value in this array
-   bool containsValue( ValueType value ) const;
-
-   // Checks if all elements in this array have the same given value
-   bool containsOnlyValue( ValueType value ) const;
-
    std::ostream& print( std::ostream& str ) const;
 protected:
    LocalRangeType localRange;

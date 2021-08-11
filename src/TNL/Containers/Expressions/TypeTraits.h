@@ -31,11 +31,12 @@ struct HasEnabledDistributedExpressionTemplates : std::false_type
 
 
 // type aliases for enabling specific operators and functions using SFINAE
-template< typename ET1 >
+template< typename ET1, typename T = void >
 using EnableIfStaticUnaryExpression_t = std::enable_if_t<
-      HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value >;
+         HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value,
+      T >;
 
-template< typename ET1, typename ET2 >
+template< typename ET1, typename ET2, typename T = void >
 using EnableIfStaticBinaryExpression_t = std::enable_if_t<
       (
          HasEnabledStaticExpressionTemplates< std::decay_t< ET1 > >::value ||
@@ -46,13 +47,15 @@ using EnableIfStaticBinaryExpression_t = std::enable_if_t<
          HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value ||
          HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
          HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
-      ) >;
+      ),
+      T >;
 
-template< typename ET1 >
+template< typename ET1, typename T = void >
 using EnableIfUnaryExpression_t = std::enable_if_t<
-      HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value >;
+         HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value,
+      T >;
 
-template< typename ET1, typename ET2 >
+template< typename ET1, typename ET2, typename T = void >
 using EnableIfBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
@@ -64,13 +67,15 @@ using EnableIfBinaryExpression_t = std::enable_if_t<
       (
          HasEnabledExpressionTemplates< std::decay_t< ET2 > >::value ||
          HasEnabledExpressionTemplates< std::decay_t< ET1 > >::value
-      ) >;
+      ),
+      T >;
 
-template< typename ET1 >
+template< typename ET1, typename T = void >
 using EnableIfDistributedUnaryExpression_t = std::enable_if_t<
-      HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value >;
+         HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value,
+      T >;
 
-template< typename ET1, typename ET2 >
+template< typename ET1, typename ET2, typename T = void >
 using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
       // we need to avoid ambiguity with operators defined in Array (e.g. Array::operator==)
       // so the first operand must not be Array
@@ -82,7 +87,8 @@ using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
       (
          HasEnabledDistributedExpressionTemplates< std::decay_t< ET2 > >::value ||
          HasEnabledDistributedExpressionTemplates< std::decay_t< ET1 > >::value
-      ) >;
+      ),
+      T >;
 
 
 // helper trait class for recursively turning expression template classes into compatible vectors
@@ -107,20 +113,12 @@ using RemoveET = typename RemoveExpressionTemplate< R >::type;
 
 template< typename T1, typename T2 >
 constexpr std::enable_if_t<
-      ! ( std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value ) &&
       ! ( IsStaticArrayType< T1 >::value && IsStaticArrayType< T2 >::value ) &&
       ! ( IsArrayType< T1 >::value && IsArrayType< T2 >::value )
 , bool >
 compatibleForVectorAssignment()
 {
-   return false;
-}
-
-template< typename T1, typename T2 >
-constexpr std::enable_if_t< std::is_arithmetic< T1 >::value && std::is_arithmetic< T2 >::value, bool >
-compatibleForVectorAssignment()
-{
-   return true;
+   return IsScalarType< T1 >::value && IsScalarType< T2 >::value;
 }
 
 template< typename T1, typename T2 >

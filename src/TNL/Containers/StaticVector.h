@@ -70,7 +70,7 @@ public:
 
    /**
     * \brief Constructor from binary vector expression.
-    * 
+    *
     * \param expr is binary expression.
     */
    template< typename T1,
@@ -81,7 +81,7 @@ public:
 
    /**
     * \brief Constructor from unary expression.
-    * 
+    *
     * \param expr is unary expression
     */
    template< typename T,
@@ -100,9 +100,9 @@ public:
 
    /**
     * \brief Assignment operator with a vector expression.
-    * 
+    *
     * The vector expression can be even just static vector.
-    * 
+    *
     * \param expression is the vector expression
     * \return reference to this vector
     */
@@ -112,9 +112,9 @@ public:
 
    /**
     * \brief Addition operator with a vector expression
-    * 
+    *
     * The vector expression can be even just static vector.
-    * 
+    *
     * \param expression is the vector expression
     * \return reference to this vector
     */
@@ -124,9 +124,9 @@ public:
 
    /**
     * \brief Subtraction operator with a vector expression.
-    * 
+    *
     * The vector expression can be even just static vector.
-    * 
+    *
     * \param expression is the vector expression
     * \return reference to this vector
     */
@@ -138,7 +138,7 @@ public:
     * \brief Elementwise multiplication by a vector expression.
     *
     * The vector expression can be even just static vector.
-    * 
+    *
     * \param expression is the vector expression.
     * \return reference to this vector
     */
@@ -148,9 +148,9 @@ public:
 
    /**
     * \brief Elementwise division by a vector expression.
-    * 
+    *
     * The vector expression can be even just static vector.
-    * 
+    *
     * \param expression is the vector expression
     * \return reference to this vector
     */
@@ -159,14 +159,26 @@ public:
    StaticVector& operator/=( const VectorExpression& expression );
 
    /**
+    * \brief Elementwise modulo by a vector expression.
+    *
+    * The vector expression can be even just static vector.
+    *
+    * \param expression is the vector expression
+    * \return reference to this vector
+    */
+   template< typename VectorExpression >
+   __cuda_callable__
+   StaticVector& operator%=( const VectorExpression& expression );
+
+   /**
     * \brief Cast operator for changing of the \e Value type.
-    * 
+    *
     * Returns static array having \e ValueType set to \e OtherValue, i.e.
     * StaticArray< Size, OtherValue >.
-    * 
-    * \tparam OtherValue is the \e Value type of the static array the casting 
+    *
+    * \tparam OtherValue is the \e Value type of the static array the casting
     * will be performed to.
-    * 
+    *
     * \return instance of StaticVector< Size, OtherValue >
     */
    template< typename OtherReal >

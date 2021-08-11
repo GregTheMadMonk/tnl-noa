@@ -145,6 +145,16 @@ auto StaticExpressionBinaryOr( const Expression& expression )
    return aux;
 }
 
+template< typename Expression >
+__cuda_callable__
+auto StaticExpressionBinaryXor( const Expression& expression )
+{
+   auto aux = expression[ 0 ];
+   for( int i = 1; i < expression.getSize(); i++ )
+      aux = aux ^ expression[ i ];
+   return aux;
+}
+
 } // namespace Expressions
 } // namespace Containers
 } // namespace TNL

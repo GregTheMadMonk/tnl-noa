@@ -131,6 +131,20 @@ public:
 };
 
 /**
+ * \brief Type trait for checking if T is a [scalar type](https://en.wikipedia.org/wiki/Scalar_(mathematics))
+ * (in the mathemtatical sense). Not to be confused with \ref std::is_scalar.
+ *
+ * For example, \ref std::is_arithmetic "arithmetic types" as defined by the STL
+ * are scalar types. TNL also provides additional scalar types, e.g. for
+ * extended precision arithmetics. Users may also define specializations of this
+ * trait class for their custom scalar types.
+ */
+template< typename T >
+struct IsScalarType
+: public std::is_arithmetic< T >
+{};
+
+/**
  * \brief Type trait for checking if T is an array type, e.g.
  *        \ref Containers::Array or \ref Containers::Vector.
  *
@@ -225,33 +239,6 @@ struct IsViewType
 : public std::integral_constant< bool,
             std::is_same< typename std::decay_t<T>::ViewType, T >::value >
 {};
-
-/**
- * \brief Type trait for checking if T has a static getSerializationType method.
- */
-template< typename T >
-class HasStaticGetSerializationType
-{
-private:
-   template< typename U >
-   static constexpr auto check(U*)
-   -> typename
-      std::enable_if_t<
-         ! std::is_same<
-               decltype( U::getSerializationType() ),
-               void
-            >::value,
-         std::true_type
-      >;
-
-   template< typename >
-   static constexpr std::false_type check(...);
-
-   using type = decltype(check<std::decay_t<T>>(0));
-
-public:
-    static constexpr bool value = type::value;
-};
 
 /**
  * \brief Type trait for checking if T has getCommunicationGroup method.

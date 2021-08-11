@@ -16,7 +16,7 @@
 
 #include <TNL/Algorithms/MemoryOperations.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 
 namespace TNL {
 namespace Algorithms {
@@ -166,50 +166,6 @@ compare( const DestinationElement* destination,
    else {
       // sequential algorithm can return as soon as it finds a mismatch
       return std::equal( source, source + size, destination );
-   }
-}
-
-template< typename Element,
-          typename Index >
-bool
-MemoryOperations< Devices::Host >::
-containsValue( const Element* data,
-               const Index size,
-               const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
-
-   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
-      auto fetch = [=] ( Index i ) -> bool { return data[ i ] == value; };
-      return reduce< Devices::Host >( ( Index ) 0, size, fetch, std::logical_or<>{}, false );
-   }
-   else {
-      // sequential algorithm can return as soon as it finds a match
-      return MemoryOperations< Devices::Sequential >::containsValue( data, size, value );
-   }
-}
-
-template< typename Element,
-          typename Index >
-bool
-MemoryOperations< Devices::Host >::
-containsOnlyValue( const Element* data,
-                   const Index size,
-                   const Element& value )
-{
-   if( size == 0 ) return false;
-   TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
-
-   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
-      auto fetch = [data, value] ( Index i ) -> bool { return data[ i ] == value; };
-      return reduce< Devices::Host >( ( Index ) 0, size, fetch, std::logical_and<>{}, true );
-   }
-   else {
-      // sequential algorithm can return as soon as it finds a mismatch
-      return MemoryOperations< Devices::Sequential >::containsOnlyValue( data, size, value );
    }
 }
 

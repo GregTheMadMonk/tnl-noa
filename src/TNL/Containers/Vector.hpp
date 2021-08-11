@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -157,56 +156,13 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< Algorithms::ScanType Type >
-void
+   template< typename VectorExpression >
+Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
-scan( IndexType begin, IndexType end )
+operator%=( const VectorExpression& expression )
 {
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::Scan< DeviceType, Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< Algorithms::ScanType Type,
-             typename FlagsArray >
-void
-Vector< Real, Device, Index, Allocator >::
-segmentedScan( FlagsArray& flags, IndexType begin, IndexType end )
-{
-   if( end == 0 )
-      end = this->getSize();
-   Algorithms::SegmentedScan< DeviceType, Type >::perform( *this, flags, begin, end, std::plus<>{}, (RealType) 0.0 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< Algorithms::ScanType Type,
-             typename VectorExpression >
-void
-Vector< Real, Device, Index, Allocator >::
-scan( const VectorExpression& expression, IndexType begin, IndexType end )
-{
-   throw Exceptions::NotImplementedError( "Scan (prefix sum) with vector expressions is not implemented." );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< Algorithms::ScanType Type,
-             typename VectorExpression,
-             typename FlagsArray >
-void
-Vector< Real, Device, Index, Allocator >::
-segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
-{
-   throw Exceptions::NotImplementedError( "Segmented scan (prefix sum) with vector expressions is not implemented." );
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::modulo( *this, expression );
+   return *this;
 }
 
 } // namespace Containers

@@ -14,11 +14,11 @@
 #include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 #include <TNL/Algorithms/Segments/CSRScalarKernel.h>
 #include <TNL/Algorithms/Segments/CSRAdaptiveKernelView.h>
-#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelBlockDescriptor.h>
-#include <TNL/Algorithms/Segments/details/CSRAdaptiveKernelParameters.h>
+#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelBlockDescriptor.h>
+#include <TNL/Algorithms/Segments/detail/CSRAdaptiveKernelParameters.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -46,11 +46,11 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
                                     Real zero,
                                     Args... args )
 {
-   using BlockType = details::CSRAdaptiveKernelBlockDescriptor< Index >;
-   constexpr int CudaBlockSize = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+   using BlockType = detail::CSRAdaptiveKernelBlockDescriptor< Index >;
+   constexpr int CudaBlockSize = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
    constexpr int WarpSize = Cuda::getWarpSize();
-   constexpr int WarpsCount = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
-   constexpr size_t StreamedSharedElementsPerWarp  = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
+   constexpr int WarpsCount = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::WarpsCount();
+   constexpr size_t StreamedSharedElementsPerWarp  = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::StreamedSharedElementsPerWarp();
 
    __shared__ Real streamShared[ WarpsCount ][ StreamedSharedElementsPerWarp ];
    __shared__ Real multivectorShared[ CudaBlockSize / WarpSize ];
@@ -74,7 +74,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
    const Index firstSegmentIdx = block.getFirstSegment();
    const Index begin = offsets[ firstSegmentIdx ];
 
-   if( block.getType() == details::Type::STREAM ) // Stream kernel - many short segments per warp
+   if( block.getType() == detail::Type::STREAM ) // Stream kernel - many short segments per warp
    {
       const Index warpIdx = threadIdx.x / 32;
       const Index end = begin + block.getSize();
@@ -94,7 +94,7 @@ segmentsReductionCSRAdaptiveKernel( BlocksView blocks,
          keep( i, result );
       }
    }
-   else if( block.getType() == details::Type::VECTOR ) // Vector kernel - one segment per warp
+   else if( block.getType() == detail::Type::VECTOR ) // Vector kernel - one segment per warp
    {
       const Index end = begin + block.getSize();
       const Index segmentIdx = block.getFirstSegment();
@@ -181,7 +181,7 @@ template< typename Index,
           typename Reduction,
           typename ResultKeeper,
           bool DispatchScalarCSR =
-            details::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
+            detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
             std::is_same< Device, Devices::Host >::value >
 struct CSRAdaptiveKernelSegmentsReductionDispatcher;
 
@@ -237,7 +237,7 @@ struct CSRAdaptiveKernelSegmentsReductionDispatcher< Index, Device, Fetch, Reduc
 
       Index blocksCount;
 
-      const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+      const Index threads = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
       constexpr size_t maxGridSize = TNL::Cuda::getMaxGridSize();
 
       // Fill blocks
@@ -333,7 +333,7 @@ segmentsReduction( const OffsetsView& offsets,
 {
    int valueSizeLog = getSizeValueLog( sizeof( Real ) );
 
-   if( details::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog >= MaxValueSizeLog )
+   if( detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() || valueSizeLog >= MaxValueSizeLog )
    {
       TNL::Algorithms::Segments::CSRScalarKernel< Index, Device >::
          segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );

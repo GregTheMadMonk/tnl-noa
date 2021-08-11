@@ -15,7 +15,7 @@
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Algorithms/Segments/CSRScalarKernel.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -91,7 +91,7 @@ segmentsReduction( const OffsetsView& offsets,
         IndexType localIdx( 0 );
         bool compute( true );
         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-            aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+            aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
         keeper( segmentIdx, aux );
     };
 
@@ -109,7 +109,7 @@ segmentsReduction( const OffsetsView& offsets,
             IndexType localIdx( 0 );
             bool compute( true );
             for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-                aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
+                aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
             keeper( segmentIdx, aux );
         }*/
     }

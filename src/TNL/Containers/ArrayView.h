@@ -371,6 +371,20 @@ public:
    const Value& operator[]( IndexType i ) const;
 
    /**
+    * \brief Accesses the \e i-th element of the array.
+    *
+    * Equivalent to \ref operator[], with the same notes and caveats.
+    */
+   __cuda_callable__ Value& operator()( IndexType i );
+
+   /**
+    * \brief Accesses the \e i-th element of the array.
+    *
+    * Equivalent to \ref operator[], with the same notes and caveats.
+    */
+   __cuda_callable__ const Value& operator()( IndexType i ) const;
+
+   /**
     * \brief Compares the array view with another array-like container.
     *
     * \tparam ArrayT The type of the parameter can be any array-like
@@ -526,192 +540,6 @@ public:
     */
    template< typename Function >
    void forAllElements( Function&& f ) const;
-
-   /**
-    * \brief Computes reduction with array view elements on interval [ \e begin, \e end).
-    *
-    * \tparam Fetche is a lambda function for fetching the input data.
-    * \tparam Reduce is a lambda function performing the reduction.
-    * \tparam Result is a type of the reduction result.
-    *
-    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
-    * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param fetch is a lambda function fetching the input data.
-    * \param reduce is a lambda function defining the reduction operation.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction
-    *
-    * The \e Fetch lambda function takes two arguments which are index and value of the element
-    * being currently processed:
-    *
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
-    * ```
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    * \include Containers/ArrayViewExample_reduceElements.cpp
-    * \par Output
-    * \include ArrayViewExample_reduceElements.out
-    */
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-   Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero );
-
-   /**
-    * \brief Computes reduction with array view elements on interval [ \e begin, \e end) for constant instances.
-    *
-    * \tparam Fetche is a lambda function for fetching the input data.
-    * \tparam Reduce is a lambda function performing the reduction.
-    * \tparam Result is a type of the reduction result.
-    *
-    * \param begin defines range [begin, end) of indexes which will be used for the reduction.
-    * \param end defines range [begin, end) of indexes which will be used for the reduction.
-    * \param fetch is a lambda function fetching the input data.
-    * \param reduce is a lambda function defining the reduction operation.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction
-    *
-    * The \e Fetch lambda function takes two arguments which are index and value of the element
-    * being currently processed:
-    *
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
-    * ```
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    * \include Containers/ArrayViewExample_reduceElements.cpp
-    * \par Output
-    * \include ArrayViewExample_reduceElements.out
-    */
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-   Result reduceElements( IndexType begin, IndexType end, Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
-
-   /**
-    * \brief Computes reduction with all array view elements.
-    *
-    * \tparam Fetche is a lambda function for fetching the input data.
-    * \tparam Reduce is a lambda function performing the reduction.
-    * \tparam Result is a type of the reduction result.
-    *
-    * \param fetch is a lambda function fetching the input data.
-    * \param reduce is a lambda function defining the reduction operation.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction
-    *
-    * The \e Fetch lambda function takes two arguments which are index and value of the element
-    * being currently processed:
-    *
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
-    * ```
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    * \include Containers/ArrayViewExample_reduceElements.cpp
-    * \par Output
-    * \include ArrayViewExample_reduceElements.out
-    */
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-   Result reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero );
-
-   /**
-    * \brief Computes reduction with all array view elements for constant instances.
-    *
-    * \tparam Fetche is a lambda function for fetching the input data.
-    * \tparam Reduce is a lambda function performing the reduction.
-    * \tparam Result is a type of the reduction result.
-    *
-    * \param fetch is a lambda function fetching the input data.
-    * \param reduce is a lambda function defining the reduction operation.
-    * \param zero is the idempotent element for the reduction operation, i.e. element which
-    *             does not change the result of the reduction.
-    * \return result of the reduction
-    *
-    * The \e Fetch lambda function takes two arguments which are index and value of the element
-    * being currently processed:
-    *
-    * ```
-    * auto dataFetcher1 = [=] __cuda_callable__ ( IndexType idx, Value& value ) -> Result { return ... };
-    * ```
-    *
-    * The reduction lambda function takes two variables which are supposed to be reduced:
-    *
-    * ```
-    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
-    * ```
-    *
-    * \par Example
-    * \include Containers/ArrayViewExample_reduceElements.cpp
-    * \par Output
-    * \include ArrayViewExample_reduceElements.out
-    */
-   template< typename Fetch,
-             typename Reduce,
-             typename Result >
-   Result reduceEachElement( Fetch&& fetch, Reduce&& reduce, const Result& zero ) const;
-
-   /**
-    * \brief Checks if there is an element with value \e v.
-    *
-    * By default, all elements of the array view are checked. If \e begin or
-    * \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are checked.
-    *
-    * \param value The value to be checked.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
-    * \return `true` if there is _at least one_ element in the sub-interval
-    *         `[begin, end)` which has the value \e value.
-    */
-   bool containsValue( ValueType value,
-                       IndexType begin = 0,
-                       IndexType end = 0 ) const;
-
-   /**
-    * \brief Checks if all elements have the same value \e v.
-    *
-    * By default, all elements of the array view are checked. If \e begin or
-    * \e end is set to a non-zero value, only elements in the sub-interval
-    * `[begin, end)` are checked.
-    *
-    * \param value The value to be checked.
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array view size.
-    * \return `true` if _all_ elements in the sub-interval `[begin, end)`
-    *         have the same value \e value.
-    */
-   bool containsOnlyValue( ValueType value,
-                           IndexType begin = 0,
-                           IndexType end = 0 ) const;
 
    /**
     * \brief Method for saving the data to a binary file \e fileName.

@@ -16,7 +16,7 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/detail/Reduction.h>
 #include <TNL/Algorithms/detail/CudaReductionKernel.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
@@ -46,7 +46,7 @@ reduce( const Index begin,
         const Index end,
         Fetch&& fetch,
         Reduce&& reduce,
-        const Result& zero )
+        const Result& identity )
 {
    constexpr int block_size = 128;
    const Index size = end - begin;
@@ -54,7 +54,7 @@ reduce( const Index begin,
 
    if( blocks > 1 ) {
       // initialize array for unrolled results
-      Result r[ 4 ] = { zero, zero, zero, zero };
+      Result r[ 4 ] = { identity, identity, identity, identity };
 
       // main reduce (explicitly unrolled loop)
       for( Index b = 0; b < blocks; b++ ) {
@@ -78,7 +78,7 @@ reduce( const Index begin,
       return r[ 0 ];
    }
    else {
-      Result result = zero;
+      Result result = identity;
       for( Index i = begin; i < end; i++ )
          result = reduce( result, fetch( i ) );
       return result;
@@ -95,7 +95,7 @@ reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
                     Reduce&& reduce,
-                    const Result& zero )
+                    const Result& identity )
 {
    constexpr int block_size = 128;
    const Index size = end - begin;
@@ -104,7 +104,7 @@ reduceWithArgument( const Index begin,
    if( blocks > 1 ) {
       // initialize array for unrolled results
       Index arg[ 4 ] = { 0, 0, 0, 0 };
-      Result r[ 4 ] = { zero, zero, zero, zero };
+      Result r[ 4 ] = { identity, identity, identity, identity };
       bool initialized( false );
 
       // main reduce (explicitly unrolled loop)
@@ -143,7 +143,7 @@ reduceWithArgument( const Index begin,
    }
    else if( begin >= end ) {
       // trivial case, fetch should not be called in this case
-      return std::make_pair( zero, end );
+      return std::make_pair( identity, end );
    }
    else {
       std::pair< Result, Index > result( fetch( begin ), begin );
@@ -163,7 +163,7 @@ reduce( const Index begin,
         const Index end,
         Fetch&& fetch,
         Reduce&& reduce,
-        const Result& zero )
+        const Result& identity )
 {
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
@@ -172,12 +172,12 @@ reduce( const Index begin,
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
-      Result result = zero;
+      Result result = identity;
       const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
 #pragma omp parallel num_threads(threads)
       {
          // initialize array for thread-local results
-         Result r[ 4 ] = { zero, zero, zero, zero  };
+         Result r[ 4 ] = { identity, identity, identity, identity  };
 
          #pragma omp for nowait
          for( Index b = 0; b < blocks; b++ ) {
@@ -212,7 +212,7 @@ reduce( const Index begin,
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduce( begin, end, fetch, reduce, zero );
+      return Reduction< Devices::Sequential >::reduce( begin, end, fetch, reduce, identity );
 }
 
 template< typename Index,
@@ -225,7 +225,7 @@ reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
                     Reduce&& reduce,
-                    const Result& zero )
+                    const Result& identity )
 {
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
@@ -234,13 +234,13 @@ reduceWithArgument( const Index begin,
 
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
-      std::pair< Result, Index > result( zero, -1 );
+      std::pair< Result, Index > result( identity, -1 );
       const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
 #pragma omp parallel num_threads(threads)
       {
          // initialize array for thread-local results
          Index arg[ 4 ] = { 0, 0, 0, 0 };
-         Result r[ 4 ] = { zero, zero, zero, zero  };
+         Result r[ 4 ] = { identity, identity, identity, identity  };
          bool initialized( false );
 
          #pragma omp for nowait
@@ -290,7 +290,7 @@ reduceWithArgument( const Index begin,
    }
    else
 #endif
-      return Reduction< Devices::Sequential >::reduceWithArgument( begin, end, fetch, reduce, zero );
+      return Reduction< Devices::Sequential >::reduceWithArgument( begin, end, fetch, reduce, identity );
 }
 
 template< typename Index,
@@ -303,11 +303,11 @@ reduce( const Index begin,
         const Index end,
         Fetch&& fetch,
         Reduce&& reduce,
-        const Result& zero )
+        const Result& identity )
 {
    // trivial case, nothing to reduce
    if( begin >= end )
-      return zero;
+      return identity;
 
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
@@ -327,7 +327,7 @@ reduce( const Index begin,
    const int reducedSize = reductionLauncher.start(
       reduce,
       fetch,
-      zero,
+      identity,
       deviceAux1 );
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -364,7 +364,7 @@ reduce( const Index begin,
 
       // finish the reduce on the host
       auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-      const Result result = Reduction< Devices::Sequential >::reduce( 0, reducedSize, fetch, reduce, zero );
+      const Result result = Reduction< Devices::Sequential >::reduce( 0, reducedSize, fetch, reduce, identity );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -374,7 +374,7 @@ reduce( const Index begin,
    }
    else {
       // data can't be safely reduced on host, so continue with the reduce on the GPU
-      auto result = reductionLauncher.finish( reduce, zero );
+      auto result = reductionLauncher.finish( reduce, identity );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -397,11 +397,11 @@ reduceWithArgument( const Index begin,
                     const Index end,
                     Fetch&& fetch,
                     Reduce&& reduce,
-                    const Result& zero )
+                    const Result& identity )
 {
    // trivial case, nothing to reduce
    if( begin >= end )
-      return std::make_pair( zero, end );
+      return std::make_pair( identity, end );
 
    // Only fundamental and pointer types can be safely reduced on host. Complex
    // objects stored on the device might contain pointers into the device memory,
@@ -422,7 +422,7 @@ reduceWithArgument( const Index begin,
    const int reducedSize = reductionLauncher.startWithArgument(
       reduce,
       fetch,
-      zero,
+      identity,
       deviceAux1,
       deviceIndexes );
 
@@ -475,7 +475,7 @@ reduceWithArgument( const Index begin,
 
       // finish the reduce on the host
 //      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-//      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduce, fetch, zero );
+//      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduce, fetch, identity );
       for( Index i = 1; i < reducedSize; i++ )
          reduce( resultArray[ 0 ], resultArray[ i ], indexArray[ 0 ], indexArray[ i ]  );
 
@@ -487,7 +487,7 @@ reduceWithArgument( const Index begin,
    }
    else {
       // data can't be safely reduced on host, so continue with the reduce on the GPU
-      auto result = reductionLauncher.finishWithArgument( reduce, zero );
+      auto result = reductionLauncher.finishWithArgument( reduce, identity );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();

@@ -80,31 +80,6 @@ TYPED_TEST( VectorTest, constructors )
 
 }
 
-// test must be in a plain function because nvcc sucks (extended lambdas are
-// not allowed to be defined in protected class member functions)
-template< typename VectorType >
-void testVectorReduceElements()
-{
-   using IndexType = typename VectorType::IndexType;
-   using ValueType = typename VectorType::ValueType;
-
-   VectorType a( 10 );
-   a.forAllElements( [=] __cuda_callable__ ( IndexType i, ValueType& v ) mutable { v = 1; } );
-   auto fetch = [] __cuda_callable__ ( IndexType i, ValueType& v ) -> ValueType { return v; };
-   auto reduce = [] __cuda_callable__ ( const ValueType v1, const ValueType v2 ) { return v1 + v2; };
-   EXPECT_EQ( a.reduceEachElement( fetch, reduce, ( ValueType ) 0.0 ),
-              a.getSize() );
-
-   const VectorType b( a );
-   auto const_fetch = [] __cuda_callable__ ( IndexType i, const ValueType& v ) -> ValueType { return v; };
-   EXPECT_EQ( b.reduceEachElement( const_fetch, reduce, ( ValueType ) 0.0 ),
-              b.getSize() );
-}
-TYPED_TEST( VectorTest, reduceElements )
-{
-   testVectorReduceElements< typename TestFixture::VectorType >();
-}
-
 TEST( VectorSpecialCasesTest, defaultConstructors )
 {
    #ifdef HAVE_CUDA
@@ -261,7 +236,7 @@ TEST( VectorSpecialCasesTest, reductionOfEmptyVector )
    EXPECT_EQ( product(v), 1 );
    EXPECT_EQ( logicalAnd(v), true );
    EXPECT_EQ( logicalOr(v), false );
-   EXPECT_EQ( binaryAnd(v), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryAnd(v), ~0 );
    EXPECT_EQ( binaryOr(v), 0 );
 
    EXPECT_EQ( min(v_view), std::numeric_limits< int >::max() );
@@ -272,7 +247,7 @@ TEST( VectorSpecialCasesTest, reductionOfEmptyVector )
    EXPECT_EQ( product(v_view), 1 );
    EXPECT_EQ( logicalAnd(v_view), true );
    EXPECT_EQ( logicalOr(v_view), false );
-   EXPECT_EQ( binaryAnd(v_view), std::numeric_limits< int >::max() );
+   EXPECT_EQ( binaryAnd(v_view), ~0 );
    EXPECT_EQ( binaryOr(v_view), 0 );
 }
 
