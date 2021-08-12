@@ -20,6 +20,8 @@ namespace TNL {
    namespace Algorithms {
       namespace Segments {
 
+enum LightCSRSThreadsMapping { LightCSRConstantThreads, CSRLightAutomaticThreads, CSRLightAutomaticThreadsLightSpMV };
+
 template< typename Index,
           typename Device >
 struct CSRLightKernel
@@ -40,6 +42,8 @@ struct CSRLightKernel
 
    static TNL::String getKernelType();
 
+   TNL::String getSetup() const;
+
    template< typename OffsetsView,
              typename Fetch,
              typename Reduction,
@@ -53,8 +57,20 @@ struct CSRLightKernel
                         ResultKeeper& keeper,
                         const Real& zero ) const;
 
+
+   void setThreadsMapping( LightCSRSThreadsMapping mapping );
+
+   LightCSRSThreadsMapping getThreadsMapping() const;
+
+   void setThreadsPerSegment( int threadsPerSegment );
+
+   int getThreadsPerSegment() const;
+
    protected:
-      int threadsPerSegment = 0;
+
+      LightCSRSThreadsMapping mapping = LightCSRConstantThreads;
+
+      int threadsPerSegment = 32;
 };
 
       } // namespace Segments

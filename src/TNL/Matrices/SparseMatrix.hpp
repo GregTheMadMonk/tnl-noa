@@ -524,7 +524,7 @@ vectorProduct( const InVector& inVector,
                const IndexType firstRow,
                const IndexType lastRow ) const
 {
-   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
+   this->getView().vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
 }
 
 template< typename Real,

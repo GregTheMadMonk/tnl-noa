@@ -426,6 +426,7 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
 #ifdef HAVE_CUDA
       const size_t threads = 128;
       Index blocks, groupSize;
+
       size_t  neededThreads = threadsPerSegment * ( last - first );
 
       for (Index grid = 0; neededThreads != 0; ++grid)
@@ -513,21 +514,40 @@ CSRLightKernel< Index, Device >::
 init( const Offsets& offsets )
 {
    const Index segmentsCount = offsets.getSize() - 1;
-   //size_t neededThreads = segmentsCount * 32;//warpSize;
 
-   const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
-   if( elementsInSegment <= 2 )
-      this->threadsPerSegment = 2;
-   else if( elementsInSegment <= 4 )
-      this->threadsPerSegment = 4;
-   else if( elementsInSegment <= 8 )
-      this->threadsPerSegment = 8;
-   else if( elementsInSegment <= 16 )
-      this->threadsPerSegment = 16;
-   else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
-      this->threadsPerSegment = 32; // CSR Vector
-   //else
-   //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
+   if( this->getThreadsMapping() == CSRLightAutomaticThreads )
+   {
+      const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
+      if( elementsInSegment <= 2 )
+         this->threadsPerSegment = 2;
+      else if( elementsInSegment <= 4 )
+         this->threadsPerSegment = 4;
+      else if( elementsInSegment <= 8 )
+         this->threadsPerSegment = 8;
+      else if( elementsInSegment <= 16 )
+         this->threadsPerSegment = 16;
+      else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
+         this->threadsPerSegment = 32; // CSR Vector
+      //else
+      //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
+   }
+
+   if( this->getThreadsMapping() == CSRLightAutomaticThreadsLightSpMV )
+   {
+      const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
+      if( elementsInSegment <= 2 )
+         this->threadsPerSegment = 2;
+      else if( elementsInSegment <= 4 )
+         this->threadsPerSegment = 4;
+      else if( elementsInSegment <= 8 )
+         this->threadsPerSegment = 8;
+      else if( elementsInSegment <= 16 )
+         this->threadsPerSegment = 16;
+      else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
+         this->threadsPerSegment = 32; // CSR Vector
+      //else
+      //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
+   }
 
    TNL_ASSERT_GE( this->threadsPerSegment, 0, "" );
    TNL_ASSERT_LE( this->threadsPerSegment, 33, "" );
@@ -593,6 +613,50 @@ reduceSegments( const OffsetsView& offsets,
    CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Keep >::reduce(
       offsets, first, last, fetch, reduce, keep, zero, this->threadsPerSegment );
 }
+
+template< typename Index,
+          typename Device >
+void
+CSRLightKernel< Index, Device >::
+setThreadsMapping( LightCSRSThreadsMapping mapping )
+{
+   this-> mapping = mapping;
+}
+
+template< typename Index,
+          typename Device >
+LightCSRSThreadsMapping
+CSRLightKernel< Index, Device >::
+getThreadsMapping() const
+{
+   return this->mapping;
+}
+
+template< typename Index,
+          typename Device >
+void
+CSRLightKernel< Index, Device >::
+setThreadsPerSegment( int threadsPerSegment )
+{
+   if( threadsPerSegment !=  1 &&
+       threadsPerSegment !=  2 &&
+       threadsPerSegment !=  4 &&
+       threadsPerSegment !=  8 &&
+       threadsPerSegment != 16 &&
+       threadsPerSegment != 32 )
+       throw std::runtime_error( "Number of threads per segment must be power of 2 - 1, 2, ... 32." );
+   this->threadsPerSegment = threadsPerSegment;
+}
+
+template< typename Index,
+          typename Device >
+int
+CSRLightKernel< Index, Device >::
+getThreadsPerSegment() const
+{
+   return this->threadsPerSegment;
+}
+
 
       } // namespace Segments
    }  // namespace Algorithms

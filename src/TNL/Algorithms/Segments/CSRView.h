@@ -143,6 +143,10 @@ class CSRView
       template< typename Fetch >
       SegmentsPrinter< CSRView, Fetch > print( Fetch&& fetch ) const;
 
+      KernelType& getKernel() { return kernel; }
+
+      const KernelType& getKernel() const { return kernel; }
+
    protected:
 
       OffsetsView offsets;

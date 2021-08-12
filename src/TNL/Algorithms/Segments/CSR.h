@@ -507,6 +507,10 @@ class CSR
       template< typename Fetch >
       SegmentsPrinter< CSR, Fetch > print( Fetch&& fetch ) const;
 
+      KernelType& getKernel() { return kernel; }
+
+      const KernelType& getKernel() const { return kernel; }
+
    protected:
 
       OffsetsContainer offsets;
