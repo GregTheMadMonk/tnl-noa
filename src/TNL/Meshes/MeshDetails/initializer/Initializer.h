@@ -84,7 +84,7 @@ class Initializer
       using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
       template< int Dimension, int Subdimension >
-      using SubentityMatrixRowsCapacitiesType = typename MeshTraitsType::template SubentityMatrixType< Dimension, Subdimension >::RowsCapacitiesType;
+      using SubentityMatrixRowsCapacitiesType = typename MeshTraitsType::template SubentityMatrixType< Dimension >::RowsCapacitiesType;
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
       void createMesh( PointArrayType& points,

@@ -67,7 +67,7 @@ protected:
 
    template< int Subdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, Subdimension >&
+   typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >&
    getSubentitiesMatrix()
    {
       static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
@@ -76,7 +76,7 @@ protected:
 
    template< int Subdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, Subdimension >&
+   const typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >&
    getSubentitiesMatrix() const
    {
       static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
@@ -108,7 +108,7 @@ class SubentityStorageLayer< MeshConfig,
 protected:
    using GlobalIndexType    = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType     = typename MeshTraitsType::LocalIndexType;
-   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
 
    SubentityStorageLayer() = default;
 
@@ -210,7 +210,7 @@ protected:
    using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
    using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
-   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
 
    SubentityStorageLayer() = default;
 
@@ -330,7 +330,7 @@ protected:
    using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
    using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
-   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
 
    SubentityStorageLayer() = default;
 
@@ -444,7 +444,7 @@ protected:
    using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
    using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
    using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
-   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension, SubdimensionTag::value >;
+   using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
 
    SubentityStorageLayer() = default;
 

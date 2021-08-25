@@ -113,7 +113,7 @@ public:
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   typename MeshTraitsType::template SubentityMatrixType< Dimension, Subdimension >&
+   typename MeshTraitsType::template SubentityMatrixType< Dimension >&
    getSubentitiesMatrix()
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
@@ -127,7 +127,7 @@ public:
 
    template< int Dimension, int Subdimension >
    __cuda_callable__
-   const typename MeshTraitsType::template SubentityMatrixType< Dimension, Subdimension >&
+   const typename MeshTraitsType::template SubentityMatrixType< Dimension >&
    getSubentitiesMatrix() const
    {
       static_assert( Dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );

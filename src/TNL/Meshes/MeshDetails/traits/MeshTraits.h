@@ -33,11 +33,28 @@ template< typename MeshConfig, typename Device, typename EntityTopology > class 
 
 template< typename MeshConfig,
           typename EntityTopology,
-          bool variableSize = std::is_same< EntityTopology, Topologies::Polygon >::value ||
-                              std::is_same< EntityTopology, Topologies::Polyhedron >::value >
+          bool IsDynamicTopology = Topologies::IsDynamicTopology< EntityTopology >::value >
 class EntitySeed;
 
-template< typename MeshConfig, typename Device, int Dimension > class MeshEntityTraits;
+template< typename MeshConfig,
+          typename DimensionTag >
+struct EntityTopologyGetter
+{
+   static_assert( DimensionTag::value <= MeshConfig::meshDimension, "There are no entities with dimension higher than the mesh dimension." );
+   using Topology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, DimensionTag::value >::Topology;
+};
+
+template< typename MeshConfig >
+struct EntityTopologyGetter< MeshConfig, DimensionTag< MeshConfig::CellTopology::dimension > >
+{
+   using Topology = typename MeshConfig::CellTopology;
+};
+
+template< typename MeshConfig,
+          typename Device,
+          int Dimension,
+          bool IsDynamicTopology = Topologies::IsDynamicTopology< typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology >::value >
+class MeshEntityTraits;
 
 template< typename MeshConfig,
           typename Device,
@@ -93,8 +110,8 @@ public:
    using DimensionTag = Meshes::DimensionTag< meshDimension >;
 
    // container for storing the subentity indices
-   template< int Dimension, int Subdimension >
-   using SubentityMatrixType = typename SubentityTraits< typename EntityTraits< Dimension >::EntityTopology, Subdimension >::SubentityMatrixType;
+   template< int Dimension >
+   using SubentityMatrixType = typename EntityTraits< Dimension >::SubentityMatrixType;
 
    // container for storing the superentity indices
    using SuperentityMatrixType = Matrices::SparseMatrix< bool, Device, GlobalIndexType, Matrices::GeneralMatrix, SlicedEllpackSegments >;
