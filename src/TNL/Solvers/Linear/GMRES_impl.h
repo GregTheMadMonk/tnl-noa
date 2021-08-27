@@ -242,7 +242,7 @@ orthogonalize_CGS( const int m, const RealType normb, const RealType beta )
 //         }
          // w := w - V_i * H_l
          Matrices::MatrixOperations< DeviceType >::
-            gemv( size, i + 1,
+            gemv( size, (IndexType) i + 1,
                   (RealType) -1.0, V.getData(), ldSize, H_l,
                   (RealType) 1.0, Traits::getLocalView( w ).getData() );
       }
@@ -606,7 +606,7 @@ hauseholder_cwy( VectorViewType v,
 
    // v = e_i - Y_i * aux
    Matrices::MatrixOperations< DeviceType >::
-      gemv( size, i + 1,
+      gemv( size, (IndexType) i + 1,
             (RealType) -1.0, Y.getData(), ldSize, aux,
             (RealType) 0.0, Traits::getLocalView( v ).getData() );
    if( localOffset == 0 )
@@ -648,7 +648,7 @@ hauseholder_cwy_transposed( VectorViewType z,
    // z = w - Y_i * aux
    z = w;
    Matrices::MatrixOperations< DeviceType >::
-      gemv( size, i + 1,
+      gemv( size, (IndexType) i + 1,
             (RealType) -1.0, Y.getData(), ldSize, aux,
             (RealType) 1.0, Traits::getLocalView( z ).getData() );
 }
@@ -690,7 +690,7 @@ update( const int k,
    if( variant != Variant::CWY ) {
       // x = V * y + x
       Matrices::MatrixOperations< DeviceType >::
-         gemv( size, k + 1,
+         gemv( size, (IndexType) k + 1,
                (RealType) 1.0, V.getData(), ldSize, y,
                (RealType) 1.0, Traits::getLocalView( x ).getData() );
    }
@@ -722,7 +722,7 @@ update( const int k,
 
       // x -= Y_{k+1} * aux
       Matrices::MatrixOperations< DeviceType >::
-         gemv( size, k + 1,
+         gemv( size, (IndexType) k + 1,
                (RealType) -1.0, Y.getData(), ldSize, aux,
                (RealType) 1.0, Traits::getLocalView( x ).getData() );
 
