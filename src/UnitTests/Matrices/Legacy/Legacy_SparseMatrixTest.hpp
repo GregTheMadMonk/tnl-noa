@@ -1441,7 +1441,7 @@ void test_VectorProductCSRAdaptive()
    if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
    {
         typedef typename Matrix::template Self< RealType, TNL::Devices::Host, IndexType > HostMatrixType;
-        typename HostMatrixType::RowsCapacitiesType rowLengths( {m_cols} );
+        typename HostMatrixType::RowsCapacitiesType rowLengths = {m_cols};
         HostMatrixType hostMatrix;
         hostMatrix.setDimensions( m_rows, m_cols );
         hostMatrix.setCompressedRowLengths( rowLengths );
