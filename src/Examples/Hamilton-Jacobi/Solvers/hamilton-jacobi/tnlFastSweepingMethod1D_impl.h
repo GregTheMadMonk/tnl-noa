@@ -114,7 +114,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
 
 
 
-          bool* BlockIter = (bool*)malloc( ( numBlocksX ) * sizeof( bool ) );
+          bool* BlockIter = new bool[ numBlocksX ];
 
           bool *BlockIterDevice;
           cudaMalloc(&BlockIterDevice, ( numBlocksX ) * sizeof( bool ) );
