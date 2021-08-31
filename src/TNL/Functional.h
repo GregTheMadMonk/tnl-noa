@@ -1,8 +1,8 @@
 /***************************************************************************
                           Functional.h  -  description
                              -------------------
-    begin                : Juyl 1, 2021
-    copyright            : (C) 2021 by Tomas Oberhuber
+    begin                : July 1, 2021
+    copyright            : (C) 2021 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
