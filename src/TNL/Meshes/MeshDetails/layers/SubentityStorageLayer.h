@@ -57,6 +57,14 @@ protected:
    }
 
    template< int Subdimension >
+   void
+   setSubentitiesCounts( typename MeshTraitsType::NeighborCountsArray&& counts )
+   {
+      static_assert( EntityTopology::dimension > Subdimension, "Invalid combination of Dimension and Subdimension." );
+      BaseType::setSubentitiesCounts( DimensionTag< Subdimension >( ), std::move( counts ) );
+   }
+
+   template< int Subdimension >
    __cuda_callable__
    typename MeshTraitsType::LocalIndexType
    getSubentitiesCount( const GlobalIndexType entityIndex ) const
@@ -154,6 +162,9 @@ protected:
 protected:
    using BaseType::setSubentitiesCounts;
    void setSubentitiesCounts( SubdimensionTag, const typename MeshTraitsType::NeighborCountsArray& counts )
+   {}
+
+   void setSubentitiesCounts( SubdimensionTag, typename MeshTraitsType::NeighborCountsArray&& counts )
    {}
 
    using BaseType::getSubentitiesCount;
@@ -276,6 +287,11 @@ protected:
       subentitiesCounts = counts;
    }
 
+   void setSubentitiesCounts( SubdimensionTag, NeighborCountsArray&& counts )
+   {
+      subentitiesCounts = std::move( counts );
+   }
+
    using BaseType::getSubentitiesCount;
    __cuda_callable__
    LocalIndexType getSubentitiesCount( SubdimensionTag, const GlobalIndexType entityIndex ) const
@@ -381,6 +397,11 @@ protected:
    void setSubentitiesCounts( SubdimensionTag, const NeighborCountsArray& counts )
    {
       subentitiesCounts = counts;
+   }
+
+   void setSubentitiesCounts( SubdimensionTag, NeighborCountsArray&& counts )
+   {
+      subentitiesCounts = std::move( counts );
    }
 
    using BaseType::getSubentitiesCount;
@@ -492,6 +513,9 @@ protected:
    void setSubentitiesCounts( SubdimensionTag, const NeighborCountsArray& counts )
    {}
 
+   void setSubentitiesCounts( SubdimensionTag, NeighborCountsArray&& counts )
+   {}
+
    // getSubentitiesCount for subdimension 1 is defined in the specialization for subdimension 0
 
    using BaseType::getSubentitiesMatrix;
@@ -574,6 +598,7 @@ protected:
    }
 
    void setSubentitiesCounts( SubdimensionTag, const typename MeshTraitsType::NeighborCountsArray& );
+   void setSubentitiesCounts( SubdimensionTag, typename MeshTraitsType::NeighborCountsArray&& );
    void getSubentitiesCount( SubdimensionTag ) {}
    void getSubentitiesMatrix( SubdimensionTag ) {}
 };

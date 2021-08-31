@@ -51,7 +51,7 @@ public:
          reset();
          throw MeshReaderError( "FPMAReader", "unable to read number of points, the file may be invalid or corrupted." );
       }
-
+      pointsArray.reserve( NumberOfPoints );
       // read points
       for( std::size_t pointIndex = 0; pointIndex < NumberOfPoints; pointIndex++ ) {
          if( ! inputFile ) {
@@ -78,6 +78,8 @@ public:
       }
 
       // read faces
+      faceConnectivityArray.reserve( NumberOfFaces );
+      faceOffsetsArray.reserve( NumberOfFaces );
       for( std::size_t faceIndex = 0; faceIndex < NumberOfFaces; faceIndex++ ) {
 
          // read number of points of a face
@@ -107,7 +109,9 @@ public:
          throw MeshReaderError( "FPMAReader", "unable to read number of cells, the file may be invalid or corrupted." );
       }
 
-      // read faces
+      // read cells
+      cellConnectivityArray.reserve( NumberOfCells );
+      cellOffsetsArray.reserve( NumberOfCells );
       for( std::size_t cellIndex = 0; cellIndex < NumberOfCells; cellIndex++ ) {
 
          // read number of faces of a cell

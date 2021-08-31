@@ -43,9 +43,13 @@ public:
 
    Index insert( const Key& key );
 
+   Index insert( Key&& key );
+
    std::pair< Index, bool > try_insert( const Key& key );
 
    bool find( const Key& key, Index& index ) const;
+
+   void reserve( size_type count );
 
    size_type count( const Key& key ) const;
 

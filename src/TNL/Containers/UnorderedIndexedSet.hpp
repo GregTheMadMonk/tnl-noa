@@ -54,6 +54,18 @@ template< class Key,
           class Hash,
           class KeyEqual,
           class Allocator >
+Index
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::insert( Key&& key )
+{
+   auto iter = map.insert( value_type( std::move( key ), size() ) ).first;
+   return iter->second;
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
 std::pair< Index, bool >
 UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::try_insert( const Key& key )
 {
@@ -74,6 +86,17 @@ UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::find( const Key& k
       return false;
    index = iter->second.index;
    return true;
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+void
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::reserve( size_type count )
+{
+   map.reserve( count );
 }
 
 template< class Key,

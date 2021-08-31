@@ -41,8 +41,7 @@ class SubentitySeedsCreator
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, SubentitySeed >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
-
+   
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
       const auto& subvertices = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 0 >().getRow( entityIndex );
@@ -66,6 +65,7 @@ public:
       return subentitySeeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& subvertices = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 0 >().getRow( entityIndex );
@@ -109,7 +109,6 @@ class SubentitySeedsCreator< MeshConfig, EntityTopology, DimensionTag< 0 > >
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::StaticArray< SubentityTraits::count, SubentitySeed >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
 
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -121,6 +120,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& subvertices = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 0 >().getRow( entityIndex );
@@ -155,7 +155,6 @@ class SubentitySeedsCreator< MeshConfig, Topologies::Polygon, DimensionTag< 1 > 
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::Array< SubentitySeed, DeviceType, LocalIndexType >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
    
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -175,6 +174,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& subvertices = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 0 >().getRow( entityIndex );
@@ -212,7 +212,6 @@ class SubentitySeedsCreator< MeshConfig, Topologies::Polygon, DimensionTag< 0 > 
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::Array< SubentitySeed, Devices::Host, LocalIndexType >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
 
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -228,6 +227,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& subvertices = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 0 >().getRow( entityIndex );
@@ -263,7 +263,6 @@ class SubentitySeedsCreator< MeshConfig, Topologies::Polyhedron, DimensionTag< 2
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::Array< SubentitySeed, DeviceType, LocalIndexType >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
    
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -289,6 +288,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& cellSeeds = initializer.getCellSeeds();
@@ -334,7 +334,6 @@ class SubentitySeedsCreator< MeshConfig, Topologies::Polyhedron, DimensionTag< 1
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::Array< SubentitySeed, DeviceType, LocalIndexType >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
    
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -363,6 +362,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       SeedSet seedSet;
@@ -384,12 +384,11 @@ public:
       SeedSet seedSet;
       const auto& faces = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 2 >().getRow( entityIndex );
       const LocalIndexType facesCount = mesh.template getSubentitiesCount< EntityTopology::dimension, 2 >( entityIndex );
-      for( LocalIndexType i = 0; i < facesCount; i++ )
-      {
+      for( LocalIndexType i = 0; i < facesCount; i++ ) {
          GlobalIndexType faceIdx = faces.getColumnIndex( i );
-         auto faceSubentitySeeds = FaceSubentitySeedsCreator::create( initializer, mesh, faceIdx );
-         for( LocalIndexType j = 0; j < faceSubentitySeeds.getSize(); j++ )
-               seedSet.insert( faceSubentitySeeds[ j ] );
+         FaceSubentitySeedsCreator::iterate( initializer, mesh, faceIdx, [&] ( SubentitySeed& seed ) {
+            seedSet.insert( seed );
+         });
       }
 
       return seedSet.size();
@@ -415,7 +414,6 @@ class SubentitySeedsCreator< MeshConfig, Topologies::Polyhedron, DimensionTag< 0
 public:
    using SubentitySeed = EntitySeed< MeshConfig, SubentityTopology >;
    using SubentitySeedArray = Containers::Array< SubentitySeed, DeviceType, LocalIndexType >;
-   using FunctorType = std::function< void( SubentitySeed& ) >;
    
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
@@ -444,6 +442,7 @@ public:
       return seeds;
    }
 
+   template< typename FunctorType >
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       SeedSet seedSet;
@@ -466,12 +465,11 @@ public:
       const auto& faces = mesh.template getSubentitiesMatrix< EntityTopology::dimension, 2 >().getRow( entityIndex );
       const LocalIndexType facesCount = mesh.template getSubentitiesCount< EntityTopology::dimension, 2 >( entityIndex );
 
-      for( LocalIndexType i = 0; i < facesCount; i++ )
-      {
+      for( LocalIndexType i = 0; i < facesCount; i++ ) {
          GlobalIndexType faceIdx = faces.getColumnIndex( i );
-         auto faceSubentitySeeds = FaceSubentitySeedsCreator::create( initializer, mesh, faceIdx );
-         for( LocalIndexType j = 0; j < faceSubentitySeeds.getSize(); j++ )
-               seedSet.insert( faceSubentitySeeds[ j ] );
+         FaceSubentitySeedsCreator::iterate( initializer, mesh, faceIdx, [&] ( SubentitySeed& seed ) {
+            seedSet.insert( seed );
+         });
       }
 
       return seedSet.size();

@@ -32,8 +32,8 @@ template< typename CellTopology,
 bool
 setMeshParameters( Params&&... params )
 {
-   bool status = MeshBenchmarksRunner< MinimalConfig, CellTopology, SpaceDimension, float, int, int >::run( std::forward<Params>(params)... ) &&
-                 MeshBenchmarksRunner< FullConfig, CellTopology, SpaceDimension, float, int, int >::run( std::forward<Params>(params)... );
+   bool status = MeshBenchmarksRunner< MinimalConfig, CellTopology, SpaceDimension, float, int, short int >::run( std::forward<Params>(params)... ) &&
+                 MeshBenchmarksRunner< FullConfig, CellTopology, SpaceDimension, float, int, short int >::run( std::forward<Params>(params)... );
    return status;
 }
 
