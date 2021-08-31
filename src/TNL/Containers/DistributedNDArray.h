@@ -83,14 +83,12 @@ public:
       return localArray.getAllocator();
    }
 
-   __cuda_callable__
    MPI_Comm getCommunicationGroup() const
    {
       return group;
    }
 
    // Returns the *global* sizes
-   __cuda_callable__
    const SizesHolderType& getSizes() const
    {
       return globalSizes;
@@ -98,33 +96,28 @@ public:
 
    // Returns the *global* size
    template< std::size_t level >
-   __cuda_callable__
    IndexType getSize() const
    {
       return globalSizes.template getSize< level >();
    }
 
-   __cuda_callable__
    LocalBeginsType getLocalBegins() const
    {
       return localBegins;
    }
 
-   __cuda_callable__
    SizesHolderType getLocalEnds() const
    {
       return localEnds;
    }
 
    template< std::size_t level >
-   __cuda_callable__
    LocalRangeType getLocalRange() const
    {
       return LocalRangeType( localBegins.template getSize< level >(), localEnds.template getSize< level >() );
    }
 
    // returns the local storage size
-   __cuda_callable__
    IndexType getLocalStorageSize() const
    {
       return localArray.getStorageSize();
@@ -142,7 +135,6 @@ public:
 
    // returns the *local* storage index for given *global* indices
    template< typename... IndexTypes >
-   __cuda_callable__
    IndexType
    getStorageIndex( IndexTypes&&... indices ) const
    {
@@ -155,13 +147,11 @@ public:
       return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
    }
 
-   __cuda_callable__
    ValueType* getData()
    {
       return localArray.getData();
    }
 
-   __cuda_callable__
    std::add_const_t< ValueType >* getData() const
    {
       return localArray.getData();
@@ -207,13 +197,11 @@ public:
       return localArray[ index - localBegins.template getSize< 0 >() ];
    }
 
-   __cuda_callable__
    ViewType getView()
    {
       return ViewType( localArray.getView(), globalSizes, localBegins, localEnds, group );
    }
 
-   __cuda_callable__
    ConstViewType getConstView() const
    {
       return ConstViewType( localArray.getConstView(), globalSizes, localBegins, localEnds, group );
