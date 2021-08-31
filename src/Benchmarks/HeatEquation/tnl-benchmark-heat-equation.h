@@ -49,8 +49,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter,
-          typename CommunicatorType >
+          typename SolverStarter >
 class HeatEquationBenchmarkSetter
 {
    public:
@@ -78,12 +77,12 @@ class HeatEquationBenchmarkSetter
              if( boundaryConditionsType == "dirichlet" )
              {
                 typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-                typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
+                typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
              /*typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
+             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );*/
           }
@@ -91,12 +90,12 @@ class HeatEquationBenchmarkSetter
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
+             typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
           typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
+          typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );*/
           return false;

@@ -8,13 +8,11 @@
 
 
 template< typename Mesh,
-          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 class {problemBaseName}Problem:
    public TNL::Problems::PDEProblem< Mesh,
-                                     Communicator,
                                      typename DifferentialOperator::RealType,
                                      typename Mesh::DeviceType,
                                      typename Mesh::IndexType >
@@ -25,7 +23,7 @@ class {problemBaseName}Problem:
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename Mesh::IndexType IndexType;
       typedef TNL::Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), RealType > MeshFunctionType;
-      typedef TNL::Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef TNL::Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef TNL::Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef TNL::Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef TNL::Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -35,8 +33,6 @@ class {problemBaseName}Problem:
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-
-      using CommunicatorType = Communicator;
 
       TNL::String getPrologHeader() const;
 
@@ -74,16 +70,16 @@ class {problemBaseName}Problem:
                                  DofVectorPointer& rightHandSide );
 
    protected:
-    
+
       DifferentialOperatorPointer differentialOperator;
 
       BoundaryConditionPointer boundaryCondition;
 
       RightHandSidePointer rightHandSide;
-   
+
       TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
 
-      TNL::Solvers::PDE::LinearSystemAssembler< Mesh, 
+      TNL::Solvers::PDE::LinearSystemAssembler< Mesh,
                                                 MeshFunctionType,
                                                 DifferentialOperator,
                                                 BoundaryCondition,

@@ -12,11 +12,9 @@ using namespace TNL::Problems;
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator,
-          typename Communicator >
+          typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
    public PDEProblem< Mesh,
-                      Communicator,
                       typename DifferentialOperator::RealType,
                       typename Mesh::DeviceType,
                       typename DifferentialOperator::IndexType >
@@ -28,12 +26,10 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionViewType;
       typedef Pointers::SharedPointer< MeshFunctionViewType, DeviceType > MeshFunctionViewPointer;
-      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      
-      typedef Communicator CommunicatorType;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -67,9 +63,9 @@ class HeatEquationBenchmarkProblem:
                               const RealType& tau,
                               DofVectorPointer& _uPointer,
                               DofVectorPointer& _fuPointer );
-      
+
       void applyBoundaryConditions( const RealType& time,
-                                       DofVectorPointer& dofs );        
+                                       DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -77,7 +73,7 @@ class HeatEquationBenchmarkProblem:
                                  DofVectorPointer& dofs,
                                  MatrixPointer& matrix,
                                  DofVectorPointer& rightHandSide );
-      
+
       ~HeatEquationBenchmarkProblem();
 
    protected:
@@ -85,19 +81,19 @@ class HeatEquationBenchmarkProblem:
       DifferentialOperatorPointer differentialOperatorPointer;
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
-      
+
       MeshFunctionViewPointer fu, u;
-      
+
       String cudaKernelType;
-      
+
       MeshType* cudaMesh;
       BoundaryCondition* cudaBoundaryConditions;
       RightHandSide* cudaRightHandSide;
       DifferentialOperator* cudaDifferentialOperator;
-      
+
       TNL::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide > tuningExplicitUpdater;
       TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionViewType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-      
+
 };
 
 #include "HeatEquationBenchmarkProblem_impl.h"

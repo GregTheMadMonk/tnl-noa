@@ -20,7 +20,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Real,
           typename MeshFunction,
@@ -30,7 +30,7 @@ template< typename Real,
 class ExplicitUpdaterTraverserUserData
 {
    public:
-      
+
       Real time;
 
       const DifferentialOperator* differentialOperator;
@@ -40,7 +40,7 @@ class ExplicitUpdaterTraverserUserData
       const RightHandSide* rightHandSide;
 
       MeshFunction *u, *fu;
-      
+
       ExplicitUpdaterTraverserUserData()
       : time( 0.0 ),
         differentialOperator( NULL ),
@@ -49,8 +49,8 @@ class ExplicitUpdaterTraverserUserData
         u( NULL ),
         fu( NULL )
       {}
-      
-      
+
+
       /*void setUserData( const Real& time,
                         const DifferentialOperator* differentialOperator,
                         const BoundaryConditions* boundaryConditions,
@@ -91,24 +91,23 @@ class ExplicitUpdater
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer<  TraverserUserData, DeviceType > TraverserUserDataPointer;
-      
+
       void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
       {
          this->userData.differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
       }
-      
+
       void setBoundaryConditions( const BoundaryConditionsPointer& boundaryConditionsPointer )
       {
          this->userData.boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
       }
-      
+
       void setRightHandSide( const RightHandSidePointer& rightHandSidePointer )
       {
          this->userData.rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
       }
-            
-      template< typename EntityType,
-                typename CommunicatorType >
+
+      template< typename EntityType >
       void update( const RealType& time,
                    const RealType& tau,
                    const MeshPointer& meshPointer,
@@ -127,7 +126,7 @@ class ExplicitUpdater
                         "The first MeshFunction in the parameters was not bound properly." );
          TNL_ASSERT_EQ( fuPointer->getData().getSize(), meshPointer->template getEntitiesCount< EntityType >(),
                         "The second MeshFunction in the parameters was not bound properly." );
-            
+
          TNL_ASSERT_TRUE( this->userData.differentialOperator,
                           "The differential operator is not correctly set-up. Use method setDifferentialOperator() to do it." );
          TNL_ASSERT_TRUE( this->userData.rightHandSide,
@@ -141,30 +140,30 @@ class ExplicitUpdater
                                                        ( meshPointer,
                                                          userData );
       }
-      
+
       template< typename EntityType >
       void applyBoundaryConditions( const MeshPointer& meshPointer,
                                     const RealType& time,
                                     MeshFunctionPointer& uPointer )
       {
          TNL_ASSERT_TRUE( this->userData.boundaryConditions,
-                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );         
+                          "The boundary conditions are not correctly set-up. Use method setBoundaryCondtions() to do it." );
          TNL_ASSERT_TRUE( &uPointer.template modifyData< DeviceType >(),
                           "The function u is not correctly set-up. It was not bound probably with DOFs." );
 
          this->userData.time = time;
-         this->userData.u = &uPointer.template modifyData< DeviceType >();         
+         this->userData.u = &uPointer.template modifyData< DeviceType >();
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
          meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
                                              userData );
 
          // TODO: I think that this is not necessary
-         /*if(CommunicatorType::isDistributed())
-            fuPointer->template synchronize<CommunicatorType>();*/
+         /*if( MPI::GetSize() > 1 )
+            fuPointer->template synchronize();*/
 
       }
-         
+
       class TraverserBoundaryEntitiesProcessor
       {
          public:
@@ -194,12 +193,12 @@ class ExplicitUpdater
                                               const EntityType& entity )
             {
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( *userData.fu )( entity ) = 
+               ( *userData.fu )( entity ) =
                   ( *userData.differentialOperator )( *userData.u, entity, userData.time )
                   + FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
-               
+
             }
-      }; 
+      };
 
    protected:
 

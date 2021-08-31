@@ -21,7 +21,7 @@
 namespace TNL {
 namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
           typename MeshConfig >
 bool

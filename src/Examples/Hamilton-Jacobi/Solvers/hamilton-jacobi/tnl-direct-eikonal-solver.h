@@ -44,8 +44,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter,
-          typename CommunicatorType >
+          typename SolverStarter >
 class DirectEikonalSolverSetter
 {
    public:
@@ -60,7 +59,7 @@ class DirectEikonalSolverSetter
    {
       static const int Dimension = MeshType::getMeshDimension();
       typedef Functions::Analytic::Constant< Dimension, Real > Anisotropy;
-      typedef tnlDirectEikonalProblem< MeshType, CommunicatorType, Anisotropy > Problem;
+      typedef tnlDirectEikonalProblem< MeshType, Anisotropy > Problem;
       SolverStarter solverStarter;
       return solverStarter.template run< Problem >( parameters );
    };

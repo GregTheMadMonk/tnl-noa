@@ -22,10 +22,9 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename Communicator,
           typename DifferentialOperator >
 class transportEquationProblemEoc:
-public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >
+public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
    public:
 
@@ -33,21 +32,20 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communi
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
-      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator > BaseType;
+      typedef transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > BaseType;
       typedef Pointers::SharedPointer<  MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
       typedef typename DifferentialOperator::VelocityFieldType VelocityFieldType;
       typedef Pointers::SharedPointer<  VelocityFieldType, DeviceType > VelocityFieldPointer;
-      
-      
-      typedef Communicator CommunicatorType;
+
+
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      
+
       //using BaseType::getExplicitUpdate;
 
       String getPrologHeader() const;

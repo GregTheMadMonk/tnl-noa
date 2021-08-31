@@ -26,7 +26,6 @@ namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
-          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator =
@@ -35,7 +34,6 @@ template< typename Mesh,
                                       typename Mesh::GlobalIndexType,
                                       false > >
 class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
-                                                    Communicator,
                                                     typename DifferentialOperator::RealType,
                                                     typename Mesh::DeviceType,
                                                     typename DifferentialOperator::IndexType >
@@ -46,7 +44,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef CSR< RealType, DeviceType, IndexType> MatrixType;
 
       using typename BaseType::MeshType;
@@ -69,7 +67,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
                               Matrix& matrix );
- 
+
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshType& mesh,
@@ -104,7 +102,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       DifferentialOperator differentialOperator;
 
       BoundaryCondition boundaryCondition;
- 
+
       RightHandSide rightHandSide;
 };
 

@@ -15,13 +15,13 @@
 
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Algorithms/contains.h>
+#include <TNL/MPI/Wrappers.h>
 
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
 : maxIterations( 1 )
 {
@@ -31,10 +31,9 @@ FastSweepingMethod()
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 const Index&
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 getMaxIterations() const
 {
 
@@ -43,10 +42,9 @@ getMaxIterations() const
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 setMaxIterations( const IndexType& maxIterations )
 {
 
@@ -55,10 +53,9 @@ setMaxIterations( const IndexType& maxIterations )
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
        const MeshPointer& mesh,
         MeshFunctionPointer& Aux,
@@ -73,7 +70,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
   // Setting overlaps ( WITHOUT MPI SHOULD BE 0 )
   StaticVector vecLowerOverlaps = 0;
   StaticVector vecUpperOverlaps = 0;
-  if( CommunicatorType::isDistributed() )
+  if( TNL::MPI::GetSize() > 1 )
   {
     //Distributed mesh for MPI overlaps (without MPI null pointer)
     vecLowerOverlaps = distributedMesh.getLowerOverlap();
@@ -375,13 +372,14 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
 
 /**----------------------MPI-TO-DO---------------------------------------------**/
 #ifdef HAVE_MPI
-      if( CommunicatorType::isDistributed() ){
+      if( TNL::MPI::GetSize() > 1 ) {
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, distributedMesh );
 
         synchronizer.synchronize( aux );
       }
 #endif
-      if( !CommunicatorType::isDistributed() ) // If we start the solver without MPI, we need calculated 0!
+      // If we start the solver without MPI, we need calculated 0!
+      if( TNL::MPI::GetSize() == 1 )
         calculatedBefore = 0;
     }
     iteration++;
@@ -392,10 +390,9 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
 
 // PROTECTED FUNCTIONS:
 
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
+template< typename Real, typename Device, typename Index, typename Anisotropy >
 bool
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
         MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
         const AnisotropyPointer& anisotropy )
@@ -430,54 +427,53 @@ goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
 
 
 #ifdef HAVE_MPI
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
+template< typename Real, typename Device, typename Index, typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain,
                        const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh )
 {
   int calculateFromNeighbours[4] = {0,0,0,0};
   const int *neighbours = distributedMesh.getNeighbors(); // Getting neighbors of distributed mesh
-  MPI::Request *requestsInformation;
-  requestsInformation = new MPI::Request[ distributedMesh.getNeighborsCount() ];
+  MPI_Request *requestsInformation;
+  requestsInformation = new MPI_Request[ distributedMesh.getNeighborsCount() ];
 
   int neighCount = 0; // should this thread calculate again?
 
   if( neighbours[0] != -1 ) // LEFT
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[0], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[0], 0, TNL::MPI::AllGroup() );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, TNL::MPI::AllGroup() );
   }
 
   if( neighbours[1] != -1 ) // RIGHT
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[1], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[1], 0, TNL::MPI::AllGroup() );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, TNL::MPI::AllGroup() );
   }
 
   if( neighbours[2] != -1 ) //UP
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[2], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[2], 0, TNL::MPI::AllGroup() );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, MPI::AllGroup  );
+            TNL::MPI::Irecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, TNL::MPI::AllGroup()  );
   }
 
   if( neighbours[5] != -1 ) //DOWN
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[5], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[5], 0, TNL::MPI::AllGroup() );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, TNL::MPI::AllGroup() );
   }
-  MPI::WaitAll( requestsInformation, neighCount );
+  TNL::MPI::Waitall( requestsInformation, neighCount );
 
-  MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  MPI::AllGroup );
+  TNL::MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  TNL::MPI::AllGroup() );
   calculateMPIAgain = calculateFromNeighbours[0] || calculateFromNeighbours[1] ||
               calculateFromNeighbours[2] || calculateFromNeighbours[3];
 }

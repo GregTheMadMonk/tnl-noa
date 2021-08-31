@@ -55,8 +55,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter,
-          typename Communicator >
+          typename SolverStarter >
 class navierStokesSetter
 {
    public:
@@ -83,17 +82,17 @@ class navierStokesSetter
           if( boundaryConditionsType == "cavity" )
              {
                 typedef BoundaryConditionsCavity< MeshType, Constant, Real, Index > BoundaryConditions;
-                typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, Communicator > Problem;
+                typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
            if( boundaryConditionsType == "boiler" )
              {
                 typedef BoundaryConditionsBoiler< MeshType, Constant, Real, Index > BoundaryConditions;
-                typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, Communicator > Problem;
+                typedef navierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
-             }       
+             }
 
       return true;}
 

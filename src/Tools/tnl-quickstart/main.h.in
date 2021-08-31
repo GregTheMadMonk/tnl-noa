@@ -12,16 +12,16 @@
 using namespace TNL;
 
 typedef {problemBaseName}BuildConfigTag BuildConfig;
-    
-/****    
- * Uncomment the following (and comment the previous line) for the complete build.    
- * This will include support for all floating point precisions, all indexing types    
- * and more solvers. You may then choose between them from the command line.    
- * The compile time may, however, take tens of minutes or even several hours,    
- * especially if CUDA is enabled. Use this, if you want, only for the final build,        
- * not in the development phase.    
- */    
-//typedef TNL::Solvers::DefaultConfigTag BuildConfig;    
+
+/****
+ * Uncomment the following (and comment the previous line) for the complete build.
+ * This will include support for all floating point precisions, all indexing types
+ * and more solvers. You may then choose between them from the command line.
+ * The compile time may, however, take tens of minutes or even several hours,
+ * especially if CUDA is enabled. Use this, if you want, only for the final build,
+ * not in the development phase.
+ */
+//typedef TNL::Solvers::DefaultConfigTag BuildConfig;
 
 template< typename ConfigTag >
 class {problemBaseName}Config
@@ -47,8 +47,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter,
-          typename Communicator >
+          typename SolverStarter >
 class {problemBaseName}Setter
 {{
    public:
@@ -61,14 +60,14 @@ class {problemBaseName}Setter
       {{
           enum {{ Dimension = MeshType::getMeshDimension() }};
           typedef {operatorName}< MeshType, Real, Index > ApproximateOperator;
-          typedef {problemBaseName}Rhs< MeshType, Real > RightHandSide;    
+          typedef {problemBaseName}Rhs< MeshType, Real > RightHandSide;
           typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.
           * The following code is for the Dirichlet and the Neumann boundary conditions.
-          * Both can be constant or defined as discrete functions as Functions::MeshFunction.    
-          */    
+          * Both can be constant or defined as discrete functions as Functions::MeshFunction.
+          */
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {{
@@ -76,25 +75,25 @@ class {problemBaseName}Setter
              if( boundaryConditionsType == "dirichlet" )
              {{
                 typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-                typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+                typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }}
              typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-             typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }}
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
-          {{    
+          {{
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }}
           typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+          typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );
       }}
