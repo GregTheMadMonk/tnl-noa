@@ -50,16 +50,16 @@ inline void restoreRedirection()
  * `MPI_COMM_TYPE_SHARED` type (from MPI-3) and the rank ID of the process
  * within the group is returned.
  */
-inline int getRankOnNode( MPI_Comm group = AllGroup() )
+inline int getRankOnNode( MPI_Comm communicator = MPI_COMM_WORLD )
 {
 #ifdef HAVE_MPI
-   const int rank = GetRank(group);
+   const int rank = GetRank( communicator );
 
    MPI_Info info;
    MPI_Info_create( &info );
 
    MPI_Comm local_comm;
-   MPI_Comm_split_type( group, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
+   MPI_Comm_split_type( communicator, MPI_COMM_TYPE_SHARED, rank, info, &local_comm );
 
    const int local_rank = GetRank( local_comm );
 
@@ -83,16 +83,16 @@ inline int getRankOnNode( MPI_Comm group = AllGroup() )
  *
  * \param value Value of the current rank to be reduced.
  * \param op The reduction operation to be applied.
- * \param group The communicator comprising ranks that participate in the
- *              collective operation.
+ * \param communicator The communicator comprising ranks that participate in the
+ *                     collective operation.
  * \return The reduced value (it is ensured that all ranks receive the same
  *         value).
  */
 template< typename T >
-T reduce( T value, const MPI_Op& op, MPI_Comm group = AllGroup() )
+T reduce( T value, const MPI_Op& op, MPI_Comm communicator = MPI_COMM_WORLD )
 {
    // call the in-place variant of Allreduce
-   Allreduce( &value, 1, op, group );
+   Allreduce( &value, 1, op, communicator );
    // return the reduced value
    return value;
 }

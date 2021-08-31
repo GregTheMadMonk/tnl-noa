@@ -144,7 +144,7 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
 
          //async send and receive
          MPI_Request requests[2*this->getNeighborsCount()];
-         MPI_Comm group = distributedGrid->getCommunicationGroup();
+         MPI_Comm communicator = distributedGrid->getCommunicator();
          int requestsCount( 0 );
 
          //send everything, recieve everything
@@ -156,16 +156,16 @@ class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridRea
             if( neighbors[ i ] != -1 )
             {
                //TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, communicator );
                //TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
-               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], neighbors[ i ], 0, communicator );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
-      	   {
+            {
                //TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = MPI::Isend( reinterpret_cast<RealType*>( sendBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, communicator );
                //TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
-               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = MPI::Irecv( reinterpret_cast<RealType*>( recieveBuffers[ i ].getData() ),  sendSizes[ i ], periodicNeighbors[ i ], 1, communicator );
             }
          }
 

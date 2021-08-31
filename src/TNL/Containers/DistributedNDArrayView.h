@@ -40,8 +40,8 @@ public:
    DistributedNDArrayView() = default;
 
    // explicit initialization by local array view, global sizes and local begins and ends
-   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm group )
-   : localView(localView), group(group), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
+   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm communicator )
+   : localView(localView), communicator(communicator), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
 
    // copy-constructor does shallow copy
    DistributedNDArrayView( const DistributedNDArrayView& ) = default;
@@ -63,7 +63,7 @@ public:
       globalSizes = other.getSizes();
       localBegins = other.getLocalBegins();
       localEnds = other.getLocalEnds();
-      group = other.getCommunicationGroup();
+      communicator = other.getCommunicator();
       localView = other.getConstLocalView();
       return *this;
    }
@@ -72,7 +72,7 @@ public:
    void bind( DistributedNDArrayView view )
    {
       localView.bind( view.localView );
-      group = view.group;
+      communicator = view.communicator;
       globalSizes = view.globalSizes;
       localBegins = view.localBegins;
       localEnds = view.localEnds;
@@ -93,7 +93,7 @@ public:
    void reset()
    {
       localView.reset();
-      group = MPI::NullGroup();
+      communicator = MPI_COMM_NULL;
       globalSizes = SizesHolderType{};
       localBegins = LocalBeginsType{};
       localEnds = SizesHolderType{};
@@ -104,9 +104,9 @@ public:
       return NDArrayView::getDimension();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return group;
+      return communicator;
    }
 
    // Returns the *global* sizes
@@ -225,14 +225,14 @@ public:
 
    ConstViewType getConstView() const
    {
-      return ConstViewType( localView, globalSizes, localBegins, localEnds, group );
+      return ConstViewType( localView, globalSizes, localBegins, localEnds, communicator );
    }
 
    // TODO: overlaps should be skipped, otherwise it works only after synchronization
    bool operator==( const DistributedNDArrayView& other ) const
    {
-      // we can't run allreduce if the communication groups are different
-      if( group != other.getCommunicationGroup() )
+      // we can't run allreduce if the communicators are different
+      if( communicator != other.getCommunicator() )
          return false;
       const bool localResult =
             globalSizes == other.globalSizes &&
@@ -240,8 +240,8 @@ public:
             localEnds == other.localEnds &&
             localView == other.localView;
       bool result = true;
-      if( group != MPI::NullGroup() )
-         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+      if( communicator != MPI_COMM_NULL )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, communicator );
       return result;
    }
 
@@ -370,7 +370,7 @@ public:
 
 protected:
    NDArrayView localView;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

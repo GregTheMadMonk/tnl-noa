@@ -77,15 +77,15 @@ public:
     */
    explicit DistributedArray( const DistributedArray& array, const AllocatorType& allocator );
 
-   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group, const AllocatorType& allocator = AllocatorType() );
+   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm communicator, const AllocatorType& allocator = AllocatorType() );
 
-   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group );
+   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm communicator );
 
    const LocalRangeType& getLocalRange() const;
 
    IndexType getGhosts() const;
 
-   MPI_Comm getCommunicationGroup() const;
+   MPI_Comm getCommunicator() const;
 
    AllocatorType getAllocator() const;
 

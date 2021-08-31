@@ -230,9 +230,9 @@ writeDistributedMeshFunction( const Meshes::DistributedMeshes::DistributedMesh< 
    }
 
    if( format == "pvti" ) {
-      const MPI_Comm group = distributedMesh.getCommunicationGroup();
+      const MPI_Comm communicator = distributedMesh.getCommunicator();
       std::ofstream file;
-      if( TNL::MPI::GetRank( group ) == 0 )
+      if( TNL::MPI::GetRank( communicator ) == 0 )
          file.open( fileName );
 
       using PVTI = Meshes::Writers::PVTIWriter< typename MeshFunction::MeshType >;

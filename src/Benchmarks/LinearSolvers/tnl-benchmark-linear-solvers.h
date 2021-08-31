@@ -430,14 +430,14 @@ struct LinearSolversBenchmark
                    const VectorType& b )
    {
       // set up the distributed matrix
-      const auto group = TNL::MPI::AllGroup();
-      const auto localRange = Partitioner::splitRange( matrixPointer->getRows(), group );
-      SharedPointer< DistributedMatrix > distMatrixPointer( localRange, matrixPointer->getRows(), matrixPointer->getColumns(), group );
-      DistributedVector dist_x0( localRange, 0, matrixPointer->getRows(), group );
-      DistributedVector dist_b( localRange, 0, matrixPointer->getRows(), group );
+      const auto communicator = MPI_COMM_WORLD;
+      const auto localRange = Partitioner::splitRange( matrixPointer->getRows(), communicator );
+      SharedPointer< DistributedMatrix > distMatrixPointer( localRange, matrixPointer->getRows(), matrixPointer->getColumns(), communicator );
+      DistributedVector dist_x0( localRange, 0, matrixPointer->getRows(), communicator );
+      DistributedVector dist_b( localRange, 0, matrixPointer->getRows(), communicator );
 
       // copy the row capacities from the global matrix to the distributed matrix
-      DistributedRowLengths distributedRowLengths( localRange, 0, matrixPointer->getRows(), group );
+      DistributedRowLengths distributedRowLengths( localRange, 0, matrixPointer->getRows(), communicator );
       for( IndexType i = 0; i < distMatrixPointer->getLocalMatrix().getRows(); i++ ) {
          const auto gi = distMatrixPointer->getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrixPointer->getRowCapacity( gi );

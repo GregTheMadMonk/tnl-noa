@@ -68,7 +68,7 @@ public:
       globalSizes = other.getSizes();
       localBegins = other.getLocalBegins();
       localEnds = other.getLocalEnds();
-      group = other.getCommunicationGroup();
+      communicator = other.getCommunicator();
       localArray = other.getConstLocalView();
       return *this;
    }
@@ -83,9 +83,9 @@ public:
       return localArray.getAllocator();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return group;
+      return communicator;
    }
 
    // Returns the *global* sizes
@@ -199,19 +199,19 @@ public:
 
    ViewType getView()
    {
-      return ViewType( localArray.getView(), globalSizes, localBegins, localEnds, group );
+      return ViewType( localArray.getView(), globalSizes, localBegins, localEnds, communicator );
    }
 
    ConstViewType getConstView() const
    {
-      return ConstViewType( localArray.getConstView(), globalSizes, localBegins, localEnds, group );
+      return ConstViewType( localArray.getConstView(), globalSizes, localBegins, localEnds, communicator );
    }
 
    // TODO: overlaps should be skipped, otherwise it works only after synchronization
    bool operator==( const DistributedNDArray& other ) const
    {
-      // we can't run allreduce if the communication groups are different
-      if( group != other.getCommunicationGroup() )
+      // we can't run allreduce if the communicators are different
+      if( communicator != other.getCommunicator() )
          return false;
       const bool localResult =
             globalSizes == other.globalSizes &&
@@ -219,8 +219,8 @@ public:
             localEnds == other.localEnds &&
             localArray == other.localArray;
       bool result = true;
-      if( group != MPI::NullGroup() )
-         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+      if( communicator != MPI_COMM_NULL )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, communicator );
       return result;
    }
 
@@ -362,7 +362,7 @@ public:
    }
 
    template< std::size_t level >
-   void setDistribution( IndexType begin, IndexType end, MPI_Comm group = MPI::AllGroup() )
+   void setDistribution( IndexType begin, IndexType end, MPI_Comm communicator = MPI_COMM_WORLD )
    {
       static_assert( SizesHolderType::template getStaticSize< level >() == 0, "NDArray cannot be distributed in static dimensions." );
       TNL_ASSERT_GE( begin, 0, "begin must be non-negative" );
@@ -370,9 +370,9 @@ public:
       TNL_ASSERT_LT( begin, end, "begin must be lesser than end" );
       localBegins.template setSize< level >( begin );
       localEnds.template setSize< level >( end );
-      TNL_ASSERT( this->group == MPI::NullGroup() || this->group == group,
-                  std::cerr << "different groups cannot be combined for different dimensions" );
-      this->group = group;
+      TNL_ASSERT( this->communicator == MPI_COMM_NULL || this->communicator == communicator,
+                  std::cerr << "different communicators cannot be combined for different dimensions" );
+      this->communicator = communicator;
    }
 
    // Computes the distributed storage size and allocates the local array
@@ -401,7 +401,7 @@ public:
    void setLike( const DistributedNDArray& other )
    {
       localArray.setLike( other.localArray );
-      group = other.getCommunicationGroup();
+      communicator = other.getCommunicator();
       globalSizes = other.getSizes();
       localBegins = other.localBegins;
       localEnds = other.localEnds;
@@ -410,7 +410,7 @@ public:
    void reset()
    {
       localArray.reset();
-      group = MPI::NullGroup();
+      communicator = MPI_COMM_NULL;
       globalSizes = SizesHolderType{};
       localBegins = LocalBeginsType{};
       localEnds = SizesHolderType{};
@@ -437,7 +437,7 @@ public:
 
 protected:
    NDArray localArray;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

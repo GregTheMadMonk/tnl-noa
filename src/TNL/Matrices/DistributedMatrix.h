@@ -48,13 +48,13 @@ public:
 
    DistributedMatrix( DistributedMatrix& ) = default;
 
-   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group );
+   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator );
 
-   void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group );
+   void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator );
 
    const LocalRangeType& getLocalRowRange() const;
 
-   MPI_Comm getCommunicationGroup() const;
+   MPI_Comm getCommunicator() const;
 
    const Matrix& getLocalMatrix() const;
 
@@ -104,7 +104,7 @@ public:
    // multiplication with a global vector
    template< typename InVector,
              typename OutVector >
-   typename std::enable_if< ! HasGetCommunicationGroupMethod< InVector >::value >::type
+   typename std::enable_if< ! HasGetCommunicatorMethod< InVector >::value >::type
    vectorProduct( const InVector& inVector,
                   OutVector& outVector ) const;
 
@@ -115,7 +115,7 @@ public:
    // (not const because it modifies internal bufers)
    template< typename InVector,
              typename OutVector >
-   typename std::enable_if< HasGetCommunicationGroupMethod< InVector >::value >::type
+   typename std::enable_if< HasGetCommunicatorMethod< InVector >::value >::type
    vectorProduct( const InVector& inVector,
                   OutVector& outVector ) const;
 
@@ -129,7 +129,7 @@ public:
 protected:
    LocalRangeType localRowRange;
    IndexType rows = 0;  // global rows count
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    Matrix localMatrix;
 
    DistributedSpMV< Matrix > spmv;

@@ -48,7 +48,7 @@ setGlobalGrid( const GridType& globalGrid )
       this->neighbors[ i ] = -1;
 
    // use MPI only if have more than one process
-   this->distributed = MPI::GetSize(group) > 1;
+   this->distributed = MPI::GetSize( communicator ) > 1;
 
    if( !this->distributed )
    {
@@ -66,12 +66,12 @@ setGlobalGrid( const GridType& globalGrid )
       int dims[ Dimension ];
       for( int i = 0; i < Dimension; i++ )
          dims[ i ] = this->domainDecomposition[ i ];
-      MPI::Compute_dims( MPI::GetSize(group), Dimension, dims );
+      MPI::Compute_dims( MPI::GetSize( communicator ), Dimension, dims );
       for( int i = 0; i < Dimension; i++ )
          this->domainDecomposition[ i ] = dims[ i ];
 
-      int size = MPI::GetSize(group);
-      int tmp = MPI::GetRank(group);
+      int size = MPI::GetSize( communicator );
+      int tmp = MPI::GetRank( communicator );
       for( int i = Dimension - 1; i >= 0; i-- )
       {
          size = size / this->domainDecomposition[ i ];
@@ -262,17 +262,17 @@ getEntitiesCount() const
 template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-setCommunicationGroup( MPI_Comm group )
+setCommunicator( MPI_Comm communicator )
 {
-   this->group = group;
+   this->communicator = communicator;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >
 MPI_Comm
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-getCommunicationGroup() const
+getCommunicator() const
 {
-   return this->group;
+   return this->communicator;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >
@@ -372,8 +372,8 @@ SetupByCut( DistributedGridType &inputDistributedGrid,
       isInCut &= fixedIndexs[i] > begin[reducedDimensions[i]] && fixedIndexs[i] < begin[reducedDimensions[i]] + size[reducedDimensions[i]];
    }
 
-   // create new group with used nodes
-   const MPI_Comm oldGroup = inputDistributedGrid.getCommunicationGroup();
+   // create new communicator with used nodes
+   const MPI_Comm oldCommunicator = inputDistributedGrid.getCommunicator();
    if(isInCut)
    {
       this->isSet=true;
@@ -420,7 +420,7 @@ SetupByCut( DistributedGridType &inputDistributedGrid,
       // TODO: set interiorBegin, interiorEnd
 
       const int newRank = getRankOfProcCoord(this->subdomainCoordinates);
-      this->group = MPI::Comm_split( oldGroup, 1, newRank );
+      this->communicator = MPI::Comm_split( oldCommunicator, 1, newRank );
 
       setupNeighbors();
 
@@ -435,7 +435,7 @@ SetupByCut( DistributedGridType &inputDistributedGrid,
    }
    else
    {
-      this->group = MPI::Comm_split( oldGroup, MPI_UNDEFINED, 0 );
+      this->communicator = MPI::Comm_split( oldCommunicator, MPI_UNDEFINED, 0 );
       return false;
    }
 }
@@ -485,7 +485,7 @@ operator==( const DistributedMesh& other ) const
        && subdomainCoordinates == other.subdomainCoordinates
        && distributed == other.distributed
        && isSet == other.isSet
-       && group == other.group;
+       && communicator == other.communicator;
 }
 
 template< int Dimension, typename Real, typename Device, typename Index >

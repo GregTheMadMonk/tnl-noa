@@ -38,8 +38,8 @@ struct DistributedScan
       using ValueType = typename OutputDistributedArray::ValueType;
       using DeviceType = typename OutputDistributedArray::DeviceType;
 
-      const auto group = input.getCommunicationGroup();
-      if( group != MPI::NullGroup() ) {
+      const auto communicator = input.getCommunicator();
+      if( communicator != MPI_COMM_NULL ) {
          // adjust begin and end for the local range
          const auto localRange = input.getLocalRange();
          begin = min( max( begin, localRange.getBegin() ), localRange.getEnd() ) - localRange.getBegin();
@@ -52,18 +52,18 @@ struct DistributedScan
          const ValueType local_result = block_results.getElement( block_results.getSize() - 1 );
 
          // exchange local results between ranks
-         const int nproc = MPI::GetSize( group );
+         const int nproc = MPI::GetSize( communicator );
          ValueType dataForScatter[ nproc ];
          for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = local_result;
          Containers::Array< ValueType, Devices::Host > rank_results( nproc );
          // NOTE: exchanging general data types does not work with MPI
-         MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, group );
+         MPI::Alltoall( dataForScatter, 1, rank_results.getData(), 1, communicator );
 
          // compute the scan of the per-rank results
          Scan< Devices::Host, ScanType::Exclusive, ScanPhaseType::WriteInSecondPhase >::perform( rank_results, rank_results, 0, nproc, 0, reduction, identity );
 
          // perform the second phase, using the per-block and per-rank results
-         const int rank = MPI::GetRank( group );
+         const int rank = MPI::GetRank( communicator );
          Scan< DeviceType, Type, PhaseType >::performSecondPhase( inputLocalView, outputLocalView, block_results, begin, end, begin, reduction, identity, rank_results[ rank ] );
       }
    }

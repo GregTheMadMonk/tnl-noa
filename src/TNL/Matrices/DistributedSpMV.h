@@ -53,10 +53,10 @@ public:
    // - assembly of the i-th row involves traversal of the local matrix stored
    //   in the i-th process
    // - assembly of the full matrix needs all-to-all communication
-   void updateCommunicationPattern( const MatrixType& localMatrix, const LocalRangeType& localRowRange, MPI_Comm group )
+   void updateCommunicationPattern( const MatrixType& localMatrix, const LocalRangeType& localRowRange, MPI_Comm communicator )
    {
-      const int rank = MPI::GetRank( group );
-      const int nproc = MPI::GetSize( group );
+      const int rank = MPI::GetRank( communicator );
+      const int nproc = MPI::GetSize( communicator );
       commPatternStarts.setDimensions( nproc, nproc );
       commPatternEnds.setDimensions( nproc, nproc );
 
@@ -67,7 +67,7 @@ public:
          sendbuf.setValue( localRowRange.getBegin() );
          MPI::Alltoall( sendbuf.getData(), 1,
                         globalOffsets.getData(), 1,
-                        group );
+                        communicator );
       }
       const auto globalOffsetsView = globalOffsets.getConstView();
       auto getOwner = [=] __cuda_callable__ ( IndexType global_idx ) -> int
@@ -150,10 +150,10 @@ public:
       // assemble the commPattern* matrices
       MPI::Alltoall( &preCommPatternStarts(0, 0), nproc,
                      &commPatternStarts(0, 0), nproc,
-                     group );
+                     communicator );
       MPI::Alltoall( &preCommPatternEnds(0, 0), nproc,
                      &commPatternEnds(0, 0), nproc,
-                     group );
+                     communicator );
    }
 
    template< typename InVector,
@@ -162,10 +162,10 @@ public:
                        const MatrixType& localMatrix,
                        const LocalRangeType& localRowRange,
                        const InVector& inVector,
-                       MPI_Comm group )
+                       MPI_Comm communicator )
    {
-      const int rank = MPI::GetRank( group );
-      const int nproc = MPI::GetSize( group );
+      const int rank = MPI::GetRank( communicator );
+      const int nproc = MPI::GetSize( communicator );
 
       // handle trivial case
       if( nproc == 1 ) {
@@ -177,7 +177,7 @@ public:
 
       // update communication pattern
       if( commPatternStarts.getRows() != nproc || commPatternEnds.getRows() != nproc )
-         updateCommunicationPattern( localMatrix, localRowRange, group );
+         updateCommunicationPattern( localMatrix, localRowRange, communicator );
 
       // prepare buffers
       globalBuffer.init( localRowRange.getBegin(),
@@ -198,7 +198,7 @@ public:
             commRequests.push_back( MPI::Isend(
                      inVector.getConstLocalView().getData() + commPatternStarts( i, rank ) - localRowRange.getBegin(),
                      commPatternEnds( i, rank ) - commPatternStarts( i, rank ),
-                     i, 0, group ) );
+                     i, 0, communicator ) );
       }
 
       // receive data that we need
@@ -209,7 +209,7 @@ public:
             commRequests.push_back( MPI::Irecv(
                      globalBuffer.getPointer( commPatternStarts( rank, j ) ),
                      commPatternEnds( rank, j ) - commPatternStarts( rank, j ),
-                     j, 0, group ) );
+                     j, 0, communicator ) );
       }
 
       // general variant

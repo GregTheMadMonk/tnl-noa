@@ -19,20 +19,20 @@ namespace Matrices {
 
 template< typename Matrix >
 DistributedMatrix< Matrix >::
-DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group )
+DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator )
 {
-   setDistribution( localRowRange, rows, columns, group );
+   setDistribution( localRowRange, rows, columns, communicator );
 }
 
 template< typename Matrix >
 void
 DistributedMatrix< Matrix >::
-setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm group )
+setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, MPI_Comm communicator )
 {
    this->localRowRange = localRowRange;
    this->rows = rows;
-   this->group = group;
-   if( group != MPI::NullGroup() )
+   this->communicator = communicator;
+   if( communicator != MPI_COMM_NULL )
       localMatrix.setDimensions( localRowRange.getSize(), columns );
 
    spmv.reset();
@@ -49,9 +49,9 @@ getLocalRowRange() const
 template< typename Matrix >
 MPI_Comm
 DistributedMatrix< Matrix >::
-getCommunicationGroup() const
+getCommunicator() const
 {
-   return group;
+   return communicator;
 }
 
 template< typename Matrix >
@@ -104,7 +104,7 @@ setLike( const MatrixT& matrix )
 {
    localRowRange = matrix.getLocalRowRange();
    rows = matrix.getRows();
-   group = matrix.getCommunicationGroup();
+   communicator = matrix.getCommunicator();
    localMatrix.setLike( matrix.getLocalMatrix() );
 
    spmv.reset();
@@ -117,7 +117,7 @@ reset()
 {
    localRowRange.reset();
    rows = 0;
-   group = MPI::NullGroup();
+   communicator = MPI_COMM_NULL;
    localMatrix.reset();
 
    spmv.reset();
@@ -147,9 +147,9 @@ setRowCapacities( const RowCapacitiesVector& rowCapacities )
 {
    TNL_ASSERT_EQ( rowCapacities.getSize(), getRows(), "row lengths vector has wrong size" );
    TNL_ASSERT_EQ( rowCapacities.getLocalRange(), getLocalRowRange(), "row lengths vector has wrong distribution" );
-   TNL_ASSERT_EQ( rowCapacities.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
+   TNL_ASSERT_EQ( rowCapacities.getCommunicator(), getCommunicator(), "row lengths vector has wrong communicator" );
 
-   if( getCommunicationGroup() != MPI::NullGroup() ) {
+   if( getCommunicator() != MPI_COMM_NULL ) {
       localMatrix.setRowCapacities( rowCapacities.getConstLocalView() );
 
       spmv.reset();
@@ -162,8 +162,8 @@ void
 DistributedMatrix< Matrix >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   if( getCommunicationGroup() != MPI::NullGroup() ) {
-      rowLengths.setDistribution( getLocalRowRange(), 0, getRows(), getCommunicationGroup() );
+   if( getCommunicator() != MPI_COMM_NULL ) {
+      rowLengths.setDistribution( getLocalRowRange(), 0, getRows(), getCommunicator() );
       auto localRowLengths = rowLengths.getLocalView();
       localMatrix.getCompressedRowLengths( localRowLengths );
    }
@@ -230,7 +230,7 @@ getRow( IndexType row ) const
 template< typename Matrix >
    template< typename InVector,
              typename OutVector >
-typename std::enable_if< ! HasGetCommunicationGroupMethod< InVector >::value >::type
+typename std::enable_if< ! HasGetCommunicatorMethod< InVector >::value >::type
 DistributedMatrix< Matrix >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector ) const
@@ -238,7 +238,7 @@ vectorProduct( const InVector& inVector,
    TNL_ASSERT_EQ( inVector.getSize(), getColumns(), "input vector has wrong size" );
    TNL_ASSERT_EQ( outVector.getSize(), getRows(), "output vector has wrong size" );
    TNL_ASSERT_EQ( outVector.getLocalRange(), getLocalRowRange(), "output vector has wrong distribution" );
-   TNL_ASSERT_EQ( outVector.getCommunicationGroup(), getCommunicationGroup(), "output vector has wrong communication group" );
+   TNL_ASSERT_EQ( outVector.getCommunicator(), getCommunicator(), "output vector has wrong communicator" );
 
    auto outView = outVector.getLocalView();
    localMatrix.vectorProduct( inVector, outView );
@@ -249,32 +249,32 @@ void
 DistributedMatrix< Matrix >::
 updateVectorProductCommunicationPattern()
 {
-   if( getCommunicationGroup() == MPI::NullGroup() )
+   if( getCommunicator() == MPI_COMM_NULL )
       return;
-   spmv.updateCommunicationPattern( getLocalMatrix(), getCommunicationGroup() );
+   spmv.updateCommunicationPattern( getLocalMatrix(), getCommunicator() );
 }
 
 template< typename Matrix >
    template< typename InVector,
              typename OutVector >
-typename std::enable_if< HasGetCommunicationGroupMethod< InVector >::value >::type
+typename std::enable_if< HasGetCommunicatorMethod< InVector >::value >::type
 DistributedMatrix< Matrix >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector ) const
 {
    TNL_ASSERT_EQ( inVector.getLocalRange(), getLocalRowRange(), "input vector has wrong distribution" );
-   TNL_ASSERT_EQ( inVector.getCommunicationGroup(), getCommunicationGroup(), "input vector has wrong communication group" );
+   TNL_ASSERT_EQ( inVector.getCommunicator(), getCommunicator(), "input vector has wrong communicator" );
    TNL_ASSERT_EQ( outVector.getSize(), getRows(), "output vector has wrong size" );
    TNL_ASSERT_EQ( outVector.getLocalRange(), getLocalRowRange(), "output vector has wrong distribution" );
-   TNL_ASSERT_EQ( outVector.getCommunicationGroup(), getCommunicationGroup(), "output vector has wrong communication group" );
+   TNL_ASSERT_EQ( outVector.getCommunicator(), getCommunicator(), "output vector has wrong communicator" );
 
-   if( getCommunicationGroup() == MPI::NullGroup() )
+   if( getCommunicator() == MPI_COMM_NULL )
       return;
 
    if( inVector.getGhosts() == 0 ) {
       // NOTE: this branch is deprecated and kept only due to existing benchmarks
       TNL_ASSERT_EQ( inVector.getSize(), getColumns(), "input vector has wrong size" );
-      const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicationGroup() );
+      const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicator() );
    }
    else {
       TNL_ASSERT_EQ( inVector.getConstLocalViewWithGhosts().getSize(), localMatrix.getColumns(), "the matrix uses non-local and non-ghost column indices" );

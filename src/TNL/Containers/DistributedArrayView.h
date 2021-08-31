@@ -50,8 +50,8 @@ public:
    ~DistributedArrayView();
 
    // Initialization by raw data
-   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData )
-   : localRange(localRange), ghosts(ghosts), globalSize(globalSize), group(group), localData(localData)
+   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, LocalViewType localData )
+   : localRange(localRange), ghosts(ghosts), globalSize(globalSize), communicator(communicator), localData(localData)
    {
       TNL_ASSERT_EQ( localData.getSize(), localRange.getSize() + ghosts,
                      "The local array size does not match the local range of the distributed array." );
@@ -71,14 +71,14 @@ public:
    DistributedArrayView( DistributedArrayView&& ) = default;
 
    // method for rebinding (reinitialization) to raw data
-   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData );
+   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
    // convertible to DistributedArrayView.
    void bind( DistributedArrayView view );
 
    // binding to local array via raw pointer
-   // (local range, ghosts, global size and communication group are preserved)
+   // (local range, ghosts, global size and communicators are preserved)
    template< typename Value_ >
    void bind( Value_* data, IndexType localSize );
 
@@ -86,7 +86,7 @@ public:
 
    IndexType getGhosts() const;
 
-   MPI_Comm getCommunicationGroup() const;
+   MPI_Comm getCommunicator() const;
 
    LocalViewType getLocalView();
 
@@ -235,7 +235,7 @@ protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
    IndexType globalSize = 0;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    LocalViewType localData;
 
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;

@@ -57,10 +57,10 @@ protected:
       template< typename Real >
       using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
 
-      const MPI_Comm group = AllGroup();
+      const MPI_Comm communicator = MPI_COMM_WORLD;
 
-      const int rank = GetRank(group);
-      const int nproc = GetSize(group);
+      const int rank = GetRank(communicator);
+      const int nproc = GetSize(communicator);
 
       // some arbitrary value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -85,9 +85,9 @@ protected:
    #ifdef DISTRIBUTED_VECTOR
       using LocalRangeType = typename VectorOrView::LocalRangeType;
       using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >;
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, group );
-      _V1.setDistribution( localRange, ghosts, size, group );
-      _V1.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, communicator );
+      _V1.setDistribution( localRange, ghosts, size, communicator );
+      _V1.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, communicator ) );
    #else
       _V1.setSize( size );
    #endif

@@ -794,10 +794,10 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array );
 
 template< typename Value, typename Device, typename Index, typename Allocator >
-void send( const Array< Value, Device, Index, Allocator >& array, int dest, int tag = 0, MPI_Comm comm = MPI::AllGroup() );
+void send( const Array< Value, Device, Index, Allocator >& array, int dest, int tag = 0, MPI_Comm comm = MPI_COMM_WORLD );
 
 template< typename Value, typename Device, typename Index, typename Allocator >
-void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag = 0, MPI_Comm comm = MPI::AllGroup() );
+void receive( Array< Value, Device, Index, Allocator >& array, int src, int tag = 0, MPI_Comm comm = MPI_COMM_WORLD );
 
 
 } // namespace Containers

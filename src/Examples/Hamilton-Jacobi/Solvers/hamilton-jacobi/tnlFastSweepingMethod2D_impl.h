@@ -443,37 +443,37 @@ getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain,
   if( neighbours[0] != -1 ) // LEFT
   {
     requestsInformation[neighCount++] =
-            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[0], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[0], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            TNL::MPI::Irecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Irecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[1] != -1 ) // RIGHT
   {
     requestsInformation[neighCount++] =
-            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[1], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[1], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            TNL::MPI::Irecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Irecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[2] != -1 ) //UP
   {
     requestsInformation[neighCount++] =
-            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[2], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[2], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            TNL::MPI::Irecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, TNL::MPI::AllGroup()  );
+            TNL::MPI::Irecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, MPI_COMM_WORLD  );
   }
 
   if( neighbours[5] != -1 ) //DOWN
   {
     requestsInformation[neighCount++] =
-            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[5], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[5], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            TNL::MPI::Irecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, TNL::MPI::AllGroup() );
+            TNL::MPI::Irecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, MPI_COMM_WORLD );
   }
   TNL::MPI::Waitall( requestsInformation, neighCount );
 
-  TNL::MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  TNL::MPI::AllGroup() );
+  TNL::MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  MPI_COMM_WORLD );
   calculateMPIAgain = calculateFromNeighbours[0] || calculateFromNeighbours[1] ||
               calculateFromNeighbours[2] || calculateFromNeighbours[3];
 }

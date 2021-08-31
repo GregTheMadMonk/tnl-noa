@@ -28,11 +28,11 @@ class Partitioner
 public:
    using SubrangeType = Subrange< Index >;
 
-   static SubrangeType splitRange( Index globalSize, MPI_Comm group )
+   static SubrangeType splitRange( Index globalSize, MPI_Comm communicator )
    {
-      if( group != MPI::NullGroup() ) {
-         const int rank = MPI::GetRank( group );
-         const int partitions = MPI::GetSize( group );
+      if( communicator != MPI_COMM_NULL ) {
+         const int rank = MPI::GetRank( communicator );
+         const int partitions = MPI::GetSize( communicator );
          const Index begin = TNL::min( globalSize, rank * globalSize / partitions );
          const Index end = TNL::min( globalSize, (rank + 1) * globalSize / partitions );
          return SubrangeType( begin, end );
@@ -77,7 +77,7 @@ public:
 
       SubrangeType localRange;
       int overlaps;
-      MPI_Comm group;
+      MPI_Comm communicator;
 
    public:
       using ByteArrayView = typename Base::ByteArrayView;
@@ -92,8 +92,8 @@ public:
 
       ArraySynchronizer() = delete;
 
-      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI_Comm group )
-      : localRange(localRange), overlaps(overlaps), group(group)
+      ArraySynchronizer( SubrangeType localRange, int overlaps, MPI_Comm communicator )
+      : localRange(localRange), overlaps(overlaps), communicator(communicator)
       {}
 
       virtual void synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
@@ -107,8 +107,8 @@ public:
          TNL_ASSERT_EQ( array.getSize(), bytesPerValue * (localRange.getSize() + 2 * overlaps),
                         "unexpected array size" );
 
-         const int rank = MPI::GetRank( group );
-         const int nproc = MPI::GetSize( group );
+         const int rank = MPI::GetRank( communicator );
+         const int nproc = MPI::GetSize( communicator );
          const int left = (rank > 0) ? rank - 1 : nproc - 1;
          const int right = (rank < nproc - 1) ? rank + 1 : 0;
 
@@ -119,21 +119,21 @@ public:
          requests.push_back( MPI::Irecv(
                   array.getData() + bytesPerValue * localRange.getSize(),
                   bytesPerValue * overlaps,
-                  left, 0, group ) );
+                  left, 0, communicator ) );
          requests.push_back( MPI::Irecv(
                   array.getData() + bytesPerValue * (localRange.getSize() + overlaps),
                   bytesPerValue * overlaps,
-                  right, 0, group ) );
+                  right, 0, communicator ) );
 
          // issue all async send operations
          requests.push_back( MPI::Isend(
                   array.getData(),
                   bytesPerValue * overlaps,
-                  left, 0, group ) );
+                  left, 0, communicator ) );
          requests.push_back( MPI::Isend(
                   array.getData() + bytesPerValue * (localRange.getSize() - overlaps),
                   bytesPerValue * overlaps,
-                  right, 0, group ) );
+                  right, 0, communicator ) );
 
          return requests;
       }

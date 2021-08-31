@@ -108,7 +108,7 @@ benchmarkDistributedSpmv( Benchmark& benchmark,
    // benchmark function
    auto compute = [&]() {
       matrix.vectorProduct( x, y );
-      TNL::MPI::Barrier( matrix.getCommunicationGroup() );
+      TNL::MPI::Barrier( matrix.getCommunicator() );
    };
 
    benchmark.time< typename Matrix::DeviceType >( reset, performer, compute );
@@ -223,13 +223,13 @@ struct SpmvBenchmark
                    VectorType& vector )
    {
       // set up the distributed matrix
-      const auto group = TNL::MPI::AllGroup();
-      const auto localRange = Partitioner::splitRange( matrix.getRows(), group );
-      DistributedMatrix distributedMatrix( localRange, matrix.getRows(), matrix.getColumns(), group );
-      DistributedVector distributedVector( localRange, 0, matrix.getRows(), group );
+      const auto communicator = MPI_COMM_WORLD;
+      const auto localRange = Partitioner::splitRange( matrix.getRows(), communicator );
+      DistributedMatrix distributedMatrix( localRange, matrix.getRows(), matrix.getColumns(), communicator );
+      DistributedVector distributedVector( localRange, 0, matrix.getRows(), communicator );
 
       // copy the row lengths from the global matrix to the distributed matrix
-      DistributedRowLengths distributedRowLengths( localRange, 0, matrix.getRows(), group );
+      DistributedRowLengths distributedRowLengths( localRange, 0, matrix.getRows(), communicator );
       for( IndexType i = 0; i < distributedMatrix.getLocalMatrix().getRows(); i++ ) {
          const auto gi = distributedMatrix.getLocalRowRange().getGlobalIndex( i );
          distributedRowLengths[ gi ] = matrix.getRowCapacity( gi );
@@ -265,8 +265,8 @@ struct SpmvBenchmark
       DistributedVector distributedY;
       distributedY.setLike( distributedVector );
       distributedMatrix.vectorProduct( distributedVector, distributedY );
-      const int rank = TNL::MPI::GetRank( distributedMatrix.getCommunicationGroup() );
-      const int nproc = TNL::MPI::GetSize( distributedMatrix.getCommunicationGroup() );
+      const int rank = TNL::MPI::GetRank( distributedMatrix.getCommunicator() );
+      const int nproc = TNL::MPI::GetSize( distributedMatrix.getCommunicator() );
       typename VectorType::ViewType subY( &y[ Partitioner::getOffset( matrix.getRows(), rank, nproc ) ],
                                           Partitioner::getSizeForRank( matrix.getRows(), rank, nproc ) );
       TNL_ASSERT_EQ( distributedY.getLocalView(), subY, "WRONG RESULT !!!" );

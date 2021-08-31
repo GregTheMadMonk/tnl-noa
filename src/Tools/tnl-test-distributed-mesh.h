@@ -266,7 +266,7 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       pvtu.template writePCellData< Real >( "function values" );
       pvtu.template writePCellData< Real >( "test values" );
-      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
+      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicator() );
 
       // create a .vtu file for local data
       using Writer = Meshes::Writers::VTUWriter< LocalMesh >;
@@ -391,7 +391,7 @@ bool testPropagationOverFaces( const Mesh& mesh, int max_iterations )
 
       // check if finished
       const bool done = sum( f_K.getData() ) == prev_sum || iteration > max_iterations;
-      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicator() );
    }
    while( all_done == false );
 

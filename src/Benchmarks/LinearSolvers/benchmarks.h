@@ -36,7 +36,7 @@ void barrier( const Matrix& matrix )
 template< typename Matrix >
 void barrier( const Matrices::DistributedMatrix< Matrix >& matrix )
 {
-   TNL::MPI::Barrier( matrix.getCommunicationGroup() );
+   TNL::MPI::Barrier( matrix.getCommunicator() );
 }
 
 template< typename Device >

@@ -134,8 +134,6 @@ struct ODESolversBenchmark
                    const Config::ParameterContainer& parameters,
                    size_t dofs )
    {
-      //const auto group = TNL::MPI::AllGroup();
-
       std::cout << "Iterative solvers:" << std::endl;
       benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
    }

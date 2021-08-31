@@ -403,7 +403,7 @@ typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( con
       }
 #endif
    }
-   TNL::MPI::Allreduce( &eps, &maxEps, 1, MPI_MAX, TNL::MPI::AllGroup() );
+   TNL::MPI::Allreduce( &eps, &maxEps, 1, MPI_MAX, MPI_COMM_WORLD );
    return maxEps;
 }
 
@@ -465,7 +465,7 @@ void Merson< Problem, SolverMonitor >::computeNewTimeLevel( const RealType time,
    }
 
    localResidue /= tau * ( RealType ) size;
-   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, TNL::MPI::AllGroup() );
+   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, MPI_COMM_WORLD );
 /*#ifdef USE_MPI
    TNLMPI::Allreduce( localResidue, currentResidue, 1, MPI_SUM);
 #else

@@ -24,7 +24,7 @@ static constexpr int Q = 9;
  *
  * - Number of processes is not limited.
  * - Global size is hardcoded as 97 to force non-uniform distribution.
- * - Communication group is hardcoded as AllGroup -- it may be changed as needed.
+ * - Communicator is hardcoded as MPI_COMM_WORLD -- it may be changed as needed.
  */
 template< typename DistributedNDArray >
 class DistributedNDArray_semi1D_test
@@ -42,23 +42,23 @@ protected:
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const MPI_Comm group = TNL::MPI::AllGroup();
+   const MPI_Comm communicator = MPI_COMM_WORLD;
 
    DistributedNDArrayType distributedNDArray;
 
-   const int rank = TNL::MPI::GetRank(group);
-   const int nproc = TNL::MPI::GetSize(group);
+   const int rank = TNL::MPI::GetRank(communicator);
+   const int nproc = TNL::MPI::GetSize(communicator);
 
    DistributedNDArray_semi1D_test()
    {
       using LocalRangeType = typename DistributedNDArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, communicator );
       distributedNDArray.setSizes( 0, globalSize, globalSize / 2 );
-      distributedNDArray.template setDistribution< 1 >( localRange.getBegin(), localRange.getEnd(), group );
+      distributedNDArray.template setDistribution< 1 >( localRange.getBegin(), localRange.getEnd(), communicator );
       distributedNDArray.allocate();
 
       EXPECT_EQ( distributedNDArray.template getLocalRange< 1 >(), localRange );
-      EXPECT_EQ( distributedNDArray.getCommunicationGroup(), group );
+      EXPECT_EQ( distributedNDArray.getCommunicator(), communicator );
    }
 };
 
@@ -84,7 +84,7 @@ TYPED_TEST( DistributedNDArray_semi1D_test, checkSumOfLocalSizes )
    const auto localRange = this->distributedNDArray.template getLocalRange< 1 >();
    const int localSize = localRange.getEnd() - localRange.getBegin();
    int sumOfLocalSizes = 0;
-   TNL::MPI::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   TNL::MPI::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->communicator );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedNDArray.template getSize< 1 >(), this->globalSize );
 }

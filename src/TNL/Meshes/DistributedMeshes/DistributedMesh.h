@@ -55,7 +55,7 @@ public:
    {
       GlobalIndexStorageFamily< Mesh >::operator=( other );
       localMesh = other.getLocalMesh();
-      group = other.getCommunicationGroup();
+      communicator = other.getCommunicator();
       ghostLevels = other.getGhostLevels();
       vtkPointGhostTypesArray = other.vtkPointGhostTypes();
       vtkCellGhostTypesArray = other.vtkCellGhostTypes();
@@ -66,7 +66,7 @@ public:
    {
       return ( GlobalIndexStorageFamily< Mesh, DeviceType >::operator==( other ) &&
                localMesh == other.getLocalMesh() &&
-               group == other.getCommunicationGroup() &&
+               communicator == other.getCommunicator() &&
                ghostLevels == other.getGhostLevels() &&
                vtkPointGhostTypesArray == other.vtkPointGhostTypes() &&
                vtkCellGhostTypesArray == other.vtkCellGhostTypes() );
@@ -99,14 +99,14 @@ public:
    /**
     * Methods specific to the distributed mesh
     */
-   void setCommunicationGroup( MPI_Comm group )
+   void setCommunicator( MPI_Comm communicator )
    {
-      this->group = group;
+      this->communicator = communicator;
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return group;
+      return communicator;
    }
 
    const MeshType& getLocalMesh() const
@@ -234,7 +234,7 @@ public:
 
 protected:
    MeshType localMesh;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    int ghostLevels = 0;
 
    // vtkGhostType arrays for points and cells (cached for output into VTK formats)

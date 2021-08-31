@@ -69,10 +69,10 @@ template< typename Value,
           typename Index,
           typename Allocator >
 DistributedArray< Value, Device, Index, Allocator >::
-DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, const Allocator& allocator )
+DistributedArray( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, const Allocator& allocator )
 : localData( allocator )
 {
-   setDistribution( localRange, ghosts, globalSize, group );
+   setDistribution( localRange, ghosts, globalSize, communicator );
 }
 
 template< typename Value,
@@ -81,12 +81,12 @@ template< typename Value,
           typename Allocator >
 void
 DistributedArray< Value, Device, Index, Allocator >::
-setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group )
+setDistribution( LocalRangeType localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator )
 {
    TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
-   if( group != MPI::NullGroup() )
+   if( communicator != MPI_COMM_NULL )
       localData.setSize( localRange.getSize() + ghosts );
-   view.bind( localRange, ghosts, globalSize, group, localData.getView() );
+   view.bind( localRange, ghosts, globalSize, communicator, localData.getView() );
 }
 
 template< typename Value,
@@ -117,9 +117,9 @@ template< typename Value,
           typename Allocator >
 MPI_Comm
 DistributedArray< Value, Device, Index, Allocator >::
-getCommunicationGroup() const
+getCommunicator() const
 {
-   return view.getCommunicationGroup();
+   return view.getCommunicator();
 }
 
 template< typename Value,
@@ -301,7 +301,7 @@ DistributedArray< Value, Device, Index, Allocator >::
 setLike( const Array& array )
 {
    localData.setLike( array.getConstLocalViewWithGhosts() );
-   view.bind( array.getLocalRange(), array.getGhosts(), array.getSize(), array.getCommunicationGroup(), localData.getView() );
+   view.bind( array.getLocalRange(), array.getGhosts(), array.getSize(), array.getCommunicator(), localData.getView() );
    // set, but do not unset, the synchronizer
    if( array.getSynchronizer() )
       setSynchronizerHelper( view, array );

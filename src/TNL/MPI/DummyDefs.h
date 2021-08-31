@@ -48,4 +48,21 @@ enum {
 #define MPI_GRAPH              2                       /* graph topology */
 #define MPI_KEYVAL_INVALID     -1                      /* invalid key value */
 
+// MPI handles
+// (According to the MPI standard, they are only link-time constants (not
+// compile-time constants). OpenMPI implements them as global variables.)
+#define MPI_COMM_WORLD 1
+#define MPI_COMM_SELF  MPI_COMM_WORLD
+// NULL handles
+#define MPI_GROUP_NULL        0
+#define MPI_COMM_NULL         0
+#define MPI_REQUEST_NULL      0
+#define MPI_MESSAGE_NULL      0
+#define MPI_OP_NULL           0
+#define MPI_ERRHANDLER_NULL   0
+#define MPI_INFO_NULL         0
+#define MPI_WIN_NULL          0
+#define MPI_FILE_NULL         0
+#define MPI_T_ENUM_NULL       0
+
 #endif

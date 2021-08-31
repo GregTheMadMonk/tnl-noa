@@ -23,12 +23,12 @@ namespace DistributedMeshes {
 
 template< typename GlobalIndexType >
 auto
-exchangeGhostEntitySeeds( MPI_Comm group,
+exchangeGhostEntitySeeds( MPI_Comm communicator,
                           const std::vector< std::vector< GlobalIndexType > >& seeds_vertex_indices,
                           const std::vector< std::vector< GlobalIndexType > >& seeds_entity_offsets )
 {
-   const int rank = MPI::GetRank( group );
-   const int nproc = MPI::GetSize( group );
+   const int rank = MPI::GetRank( communicator );
+   const int nproc = MPI::GetSize( communicator );
 
    // exchange sizes of the arrays
    Containers::Array< GlobalIndexType, Devices::Host, int > sizes_vertex_indices( nproc ), sizes_entity_offsets( nproc );
@@ -40,10 +40,10 @@ exchangeGhostEntitySeeds( MPI_Comm group,
       }
       MPI::Alltoall( sendbuf_indices.getData(), 1,
                      sizes_vertex_indices.getData(), 1,
-                     group );
+                     communicator );
       MPI::Alltoall( sendbuf_offsets.getData(), 1,
                      sizes_entity_offsets.getData(), 1,
-                     group );
+                     communicator );
    }
 
    // allocate arrays for the results
@@ -65,11 +65,11 @@ exchangeGhostEntitySeeds( MPI_Comm group,
       requests.push_back( MPI::Irecv(
                foreign_seeds_vertex_indices[ j ].data(),
                foreign_seeds_vertex_indices[ j ].size(),
-               j, 0, group ) );
+               j, 0, communicator ) );
       requests.push_back( MPI::Irecv(
                foreign_seeds_entity_offsets[ j ].data(),
                foreign_seeds_entity_offsets[ j ].size(),
-               j, 1, group ) );
+               j, 1, communicator ) );
    }
 
    // issue all async send operations
@@ -79,11 +79,11 @@ exchangeGhostEntitySeeds( MPI_Comm group,
       requests.push_back( MPI::Isend(
                seeds_vertex_indices[ i ].data(),
                seeds_vertex_indices[ i ].size(),
-               i, 0, group ) );
+               i, 0, communicator ) );
       requests.push_back( MPI::Isend(
                seeds_entity_offsets[ i ].data(),
                seeds_entity_offsets[ i ].size(),
-               i, 1, group ) );
+               i, 1, communicator ) );
    }
 
    // wait for all communications to finish
@@ -94,12 +94,12 @@ exchangeGhostEntitySeeds( MPI_Comm group,
 
 template< typename GlobalIndexType >
 auto
-exchangeGhostIndices( MPI_Comm group,
+exchangeGhostIndices( MPI_Comm communicator,
                       const std::vector< std::vector< GlobalIndexType > >& foreign_ghost_indices,
                       const std::vector< std::vector< GlobalIndexType > >& seeds_local_indices )
 {
-   const int rank = MPI::GetRank( group );
-   const int nproc = MPI::GetSize( group );
+   const int rank = MPI::GetRank( communicator );
+   const int nproc = MPI::GetSize( communicator );
 
    // allocate arrays for the results
    std::vector< std::vector< GlobalIndexType > > ghost_indices;
@@ -117,7 +117,7 @@ exchangeGhostIndices( MPI_Comm group,
       requests.push_back( MPI::Irecv(
                ghost_indices[ j ].data(),
                ghost_indices[ j ].size(),
-               j, 0, group ) );
+               j, 0, communicator ) );
    }
 
    // issue all async send operations
@@ -127,7 +127,7 @@ exchangeGhostIndices( MPI_Comm group,
       requests.push_back( MPI::Isend(
                foreign_ghost_indices[ i ].data(),
                foreign_ghost_indices[ i ].size(),
-               i, 0, group ) );
+               i, 0, communicator ) );
    }
 
    // wait for all communications to finish
@@ -155,8 +155,8 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
    if( mesh.getGhostLevels() <= 0 )
       throw std::logic_error( "There are no ghost levels on the distributed mesh." );
 
-   const int rank = MPI::GetRank( mesh.getCommunicationGroup() );
-   const int nproc = MPI::GetSize( mesh.getCommunicationGroup() );
+   const int rank = MPI::GetRank( mesh.getCommunicator() );
+   const int nproc = MPI::GetSize( mesh.getCommunicator() );
 
    // 0. exchange cell data to prepare getCellOwner for use in getEntityOwner
    DistributedMeshSynchronizer< DistributedMesh, DistributedMesh::getMeshDimension() > cell_synchronizer;
@@ -238,7 +238,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
       sendbuf.setValue( localEntitiesCount );
       MPI::Alltoall( sendbuf.getData(), 1,
                      globalOffsets.getData(), 1,
-                     mesh.getCommunicationGroup() );
+                     mesh.getCommunicator() );
    }
    Algorithms::inplaceExclusiveScan( globalOffsets );
 
@@ -289,7 +289,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
    }
 
    // 5. exchange seeds for ghost entities
-   const auto foreign_seeds = exchangeGhostEntitySeeds( mesh.getCommunicationGroup(), seeds_vertex_indices, seeds_entity_offsets );
+   const auto foreign_seeds = exchangeGhostEntitySeeds( mesh.getCommunicator(), seeds_vertex_indices, seeds_entity_offsets );
    const auto& foreign_seeds_vertex_indices = std::get< 0 >( foreign_seeds );
    const auto& foreign_seeds_entity_offsets = std::get< 1 >( foreign_seeds );
 
@@ -374,7 +374,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
       });
 
       // 6b. exchange global ghost indices
-      const auto ghost_indices = exchangeGhostIndices( mesh.getCommunicationGroup(), foreign_ghost_indices, seeds_local_indices );
+      const auto ghost_indices = exchangeGhostIndices( mesh.getCommunicator(), foreign_ghost_indices, seeds_local_indices );
 
       // 6c. set the global indices of our ghost entities
       bool done = true;
@@ -388,7 +388,7 @@ distributeSubentities( DistributedMesh& mesh, bool preferHighRanks = true )
 
       // 6d. check if finished
       bool all_done = false;
-      MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicator() );
       if( all_done )
          break;
    }

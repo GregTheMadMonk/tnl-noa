@@ -241,16 +241,16 @@ struct IsViewType
 {};
 
 /**
- * \brief Type trait for checking if T has getCommunicationGroup method.
+ * \brief Type trait for checking if T has getCommunicator method.
  */
 template< typename T >
-class HasGetCommunicationGroupMethod
+class HasGetCommunicatorMethod
 {
 private:
     typedef char YesType[1];
     typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicationGroup()) );
+    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicator()) );
     template< typename C > static NoType& test(...);
 
 public:
