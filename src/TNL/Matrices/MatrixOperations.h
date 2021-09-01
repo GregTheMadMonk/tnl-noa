@@ -83,8 +83,8 @@ public:
       else {
          // the matrix A should be accessed column-wise so we split the work into small
          // blocks and each block process by columns, either parallelly or serially
-         constexpr int block_size = 128;
-         const int blocks = m / block_size;
+         constexpr IndexType block_size = 128;
+         const IndexType blocks = m / block_size;
 
          #ifdef HAVE_OPENMP
          #pragma omp parallel if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
@@ -95,23 +95,23 @@ public:
             #ifdef HAVE_OPENMP
             #pragma omp for nowait
             #endif
-            for( int b = 0; b < blocks; b++ ) {
-               const int block_offset = b * block_size;
+            for( IndexType b = 0; b < blocks; b++ ) {
+               const IndexType block_offset = b * block_size;
 
                // initialize array for thread-local results
-               for( int j = 0; j < block_size; j++ )
+               for( IndexType j = 0; j < block_size; j++ )
                   aux[ j ] = 0.0;
 
                // compute aux = A * alphax
-               for( int k = 0; k < n; k++ ) {
-                  const int offset = block_offset + k * lda;
-                  for( int j = 0; j < block_size; j++ )
+               for( IndexType k = 0; k < n; k++ ) {
+                  const IndexType offset = block_offset + k * lda;
+                  for( IndexType j = 0; j < block_size; j++ )
                      aux[ j ] += A[ offset + j ] * alphax[ k ];
                }
 
                // write result: y = aux + beta * y
                if( beta != 0.0 ) {
-                  for( int j = 0; j < block_size; j++ )
+                  for( IndexType j = 0; j < block_size; j++ )
                      y[ block_offset + j ] = aux[ j ] + beta * y[ block_offset + j ];
                }
                else {
@@ -130,7 +130,7 @@ public:
                if( beta != 0.0 ) {
                   for( IndexType j = blocks * block_size; j < m; j++ ) {
                      RealType tmp = 0.0;
-                     for( int k = 0; k < n; k++ )
+                     for( IndexType k = 0; k < n; k++ )
                         tmp += A[ j + k * lda ] * alphax[ k ];
                      y[ j ] = tmp + beta * y[ j ];
                   }
@@ -139,7 +139,7 @@ public:
                   // the vector y might be uninitialized, and 0.0 * NaN = NaN
                   for( IndexType j = blocks * block_size; j < m; j++ ) {
                      RealType tmp = 0.0;
-                     for( int k = 0; k < n; k++ )
+                     for( IndexType k = 0; k < n; k++ )
                         tmp += A[ j + k * lda ] * alphax[ k ];
                      y[ j ] = tmp;
                   }
@@ -191,8 +191,8 @@ public:
       else {
          // all matrices should be accessed column-wise so we split the work into small
          // blocks and each block process by columns, either parallelly or serially
-         constexpr int block_size = 128;
-         const int blocks = m / block_size;
+         constexpr IndexType block_size = 128;
+         const IndexType blocks = m / block_size;
 
          #ifdef HAVE_OPENMP
          #pragma omp parallel if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
@@ -201,13 +201,13 @@ public:
             #ifdef HAVE_OPENMP
             #pragma omp for nowait
             #endif
-            for( int b = 0; b < blocks; b++ ) {
-               const int block_offset = b * block_size;
+            for( IndexType b = 0; b < blocks; b++ ) {
+               const IndexType block_offset = b * block_size;
                for( IndexType j = 0; j < n; j++ ) {
                   const IndexType offset_A = j * lda + block_offset;
                   const IndexType offset_B = j * ldb + block_offset;
                   const IndexType offset_C = j * ldc + block_offset;
-                  for( int i = 0; i < block_size; i++ )
+                  for( IndexType i = 0; i < block_size; i++ )
                      C[ offset_C + i ] = alpha * A[ offset_A + i ] + beta * B[ offset_B + i ];
                }
             }
