@@ -145,6 +145,10 @@ if [[ ! "Release Debug RelWithDebInfo" =~ "$BUILD" ]]; then
     echo "Unknown build type: $BUILD. The available build types are: Release, Debug, RelWithDebInfo." >&2
     exit 1
 fi
+if [[ ! -d "$BUILD" ]]; then
+    mkdir "$BUILD"
+fi
+pushd "$BUILD" >/dev/null
 
 # handle targets
 for target in "$@"; do

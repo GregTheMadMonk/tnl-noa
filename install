@@ -2,57 +2,39 @@
 
 set -e
 
-BUILD_DEBUG="yes"
-BUILD_RELEASE="yes"
-
+BUILDS=(Debug Release)
 OPTIONS=""
 
 for option in "$@"; do
-   case $option in
-      --no-debug)
-         BUILD_DEBUG="no"
-         ;;
-      --no-release)
-         BUILD_RELEASE="no"
-         ;;
-      --build=*                     )
-         BUILD="${option#*=}"
-         if [[ "$BUILD" != "Release" ]]; then
-            BUILD_RELEASE="no"
-         fi
-         if [[ "$BUILD" != "Debug" ]]; then
-            BUILD_DEBUG="no"
-         fi
-         ;;
-      *)
-         OPTIONS="${OPTIONS} ${option}"
-         ;;
-   esac
+    case $option in
+        --no-debug)
+            # remove Debug from builds
+            BUILDS=("${BUILDS[@]/Debug}")
+            ;;
+        --no-release)
+            # remove Release from builds
+            BUILDS=("${BUILDS[@]/Release}")
+            ;;
+        --build=*)
+            # replace builds with the supplied argument
+            BUILDS=("${option#*=}")
+            ;;
+        *)
+            OPTIONS="${OPTIONS} ${option}"
+            ;;
+    esac
 done
 
-if [[ ${BUILD_DEBUG} == "yes" ]]; then
-   if [[ ! -d Debug ]]; then
-      mkdir Debug
-   fi
-   pushd Debug
-   if ! ../build --build=Debug --install=yes ${OPTIONS}; then
-      echo "Debug build failed."
-      exit 1
-   fi
-   popd
-fi
-
-if [[ ${BUILD_RELEASE} == "yes" ]]; then
-   if [[ ! -d Release ]]; then
-      mkdir Release
-   fi
-   pushd Release
-   if ! ../build --build=Release --install=yes ${OPTIONS}; then
-      echo "Release build failed."
-      exit 1
-   fi
-   popd
-fi
+for build in "${BUILDS[@]}"; do
+    # skip empty strings that were left in the array after deleting prefixes
+    if [[ -z "$build" ]]; then
+        continue
+    fi
+    if ! ./build --build="$build" --install=yes ${OPTIONS}; then
+        echo "$build build failed."
+        exit 1
+    fi
+done
 
 
 PREFIX=${HOME}/.local
