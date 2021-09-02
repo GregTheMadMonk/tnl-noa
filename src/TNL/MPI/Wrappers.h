@@ -296,7 +296,7 @@ void Allreduce( const T* data,
                 T* reduced_data,
                 int count,
                 const MPI_Op& op,
-                MPI_Comm communicator)
+                MPI_Comm communicator = MPI_COMM_WORLD )
 {
    TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Allreduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
@@ -313,7 +313,7 @@ template< typename T >
 void Allreduce( T* data,
                 int count,
                 const MPI_Op& op,
-                MPI_Comm communicator)
+                MPI_Comm communicator = MPI_COMM_WORLD )
 {
    TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Allreduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
@@ -329,7 +329,7 @@ void Reduce( const T* data,
              int count,
              const MPI_Op& op,
              int root,
-             MPI_Comm communicator)
+             MPI_Comm communicator = MPI_COMM_WORLD )
 {
    TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Reduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
@@ -340,7 +340,10 @@ void Reduce( const T* data,
 }
 
 template< typename T >
-void Bcast( T* data, int count, int root, MPI_Comm communicator)
+void Bcast( T* data,
+            int count,
+            int root,
+            MPI_Comm communicator = MPI_COMM_WORLD )
 {
    TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Bcast cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
@@ -354,7 +357,7 @@ void Alltoall( const T* sendData,
                int sendCount,
                T* receiveData,
                int receiveCount,
-               MPI_Comm communicator )
+               MPI_Comm communicator = MPI_COMM_WORLD )
 {
    TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Alltoall cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
