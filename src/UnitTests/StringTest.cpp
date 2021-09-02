@@ -85,6 +85,7 @@ TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
+   EXPECT_EQ( str.getSize(), 42 );
    EXPECT_EQ( str.getAllocatedSize(), 42 );
 }
 

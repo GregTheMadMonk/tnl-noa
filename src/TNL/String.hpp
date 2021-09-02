@@ -37,7 +37,7 @@ inline int String::getAllocatedSize() const
 inline void String::setSize( int size )
 {
    TNL_ASSERT_GE( size, 0, "string size must be non-negative" );
-   this->reserve( size );
+   this->resize( size );
 }
 
 inline const char* String::getString() const
