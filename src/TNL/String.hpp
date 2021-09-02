@@ -47,15 +47,15 @@ inline const char* String::getString() const
 
 inline const char& String::operator[]( int i ) const
 {
-   TNL_ASSERT( i >= 0 && i < getLength(),
-               std::cerr << "Accessing char outside the string." );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, getSize(), "Element index is out of bounds." );
    return std::string::operator[]( i );
 }
 
 inline char& String::operator[]( int i )
 {
-   TNL_ASSERT( i >= 0 && i < getLength(),
-               std::cerr << "Accessing char outside the string." );
+   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_LT( i, getSize(), "Element index is out of bounds." );
    return std::string::operator[]( i );
 }
 
