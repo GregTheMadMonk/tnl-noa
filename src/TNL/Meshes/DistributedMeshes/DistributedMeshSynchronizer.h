@@ -28,7 +28,7 @@ struct HasMeshType
 {};
 
 template< typename T >
-struct HasMeshType< T, typename Containers::Expressions::enable_if_type< typename T::MeshType >::type >
+struct HasMeshType< T, typename enable_if_type< typename T::MeshType >::type >
 : public std::true_type
 {};
 

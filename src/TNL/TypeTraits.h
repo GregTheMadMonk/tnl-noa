@@ -15,6 +15,12 @@
 
 namespace TNL {
 
+template< typename T, typename R = void >
+struct enable_if_type
+{
+   using type = R;
+};
+
 /**
  * \brief Type trait for checking if T has getArrayData method.
  */

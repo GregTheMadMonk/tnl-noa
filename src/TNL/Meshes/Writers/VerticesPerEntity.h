@@ -12,8 +12,7 @@
 
 #pragma once
 
-#include <type_traits>
-
+#include <TNL/TypeTraits.h>
 #include <TNL/Meshes/MeshEntity.h>
 
 namespace TNL {
@@ -21,12 +20,6 @@ namespace Meshes {
 namespace Writers {
 
 namespace details {
-
-template< typename T, typename R = void >
-struct enable_if_type
-{
-   using type = R;
-};
 
 template< typename T, typename Enable = void >
 struct has_entity_topology : std::false_type {};

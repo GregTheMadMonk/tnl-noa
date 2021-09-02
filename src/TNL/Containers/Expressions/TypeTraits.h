@@ -92,9 +92,6 @@ using EnableIfDistributedBinaryExpression_t = std::enable_if_t<
 
 
 // helper trait class for recursively turning expression template classes into compatible vectors
-template<class T, class R = void>
-struct enable_if_type { typedef R type; };
-
 template< typename R, typename Enable = void >
 struct RemoveExpressionTemplate
 {
