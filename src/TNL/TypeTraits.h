@@ -242,9 +242,17 @@ struct IsStaticArrayType
  */
 template< typename T >
 struct IsViewType
-: public std::integral_constant< bool,
-            std::is_same< typename std::decay_t<T>::ViewType, T >::value >
-{};
+{
+private:
+   template< typename C > static constexpr auto test(C)
+      -> std::integral_constant< bool,
+               std::is_same< typename C::ViewType, C >::value
+         >;
+   static constexpr std::false_type test(...);
+
+public:
+   static constexpr bool value = decltype( test(std::decay_t<T>{}) )::value;
+};
 
 /**
  * \brief Type trait for checking if T has getCommunicator method.
