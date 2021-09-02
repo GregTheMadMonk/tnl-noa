@@ -15,10 +15,6 @@
 #include <vector>
 #include <string>
 
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
 namespace TNL {
 
 /**
@@ -36,10 +32,6 @@ namespace TNL {
  * \ref convertToString
  *
  * \ref operator+
- *
- * \ref mpiSend
- *
- * \ref mpiReceive
  */
 class String
 : public std::string
@@ -137,6 +129,16 @@ class String
        * It returns the content of the given string as a constant pointer to char.
        */
       const char* getString() const;
+
+      /**
+       * \brief Returns pointer to data. Alias of \ref std::string::data.
+       */
+      const char* getData() const;
+
+      /**
+       * \brief Returns pointer to data. Alias of \ref std::string::data.
+       */
+      char* getData();
 
       /**
        * \brief Operator for accessing particular chars of the string.
@@ -392,33 +394,6 @@ template<> inline String convertToString( const bool& b )
    if( b ) return "true";
    return "false";
 }
-
-#ifdef HAVE_MPI
-
-/**
- * \brief Sends the string to the target MPI process.
- *
- * @param str string to be sent
- * @param target target MPI process ID
- * @param tag MPI tag
- * @param mpi_comm MPI communicator
- */
-void mpiSend( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-/**
- * \brief Receives a string from the target MPI process.
- *
- * @param str says where the received string is to be saved to
- * @param source source MPI process ID
- * @param tag MPI tag
- * @param mpi_comm MPI communicator
- */
-void mpiReceive( String& str, int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-//! Broadcast to other nodes in MPI cluster
-// void MPIBcast( String& str, int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-#endif
 
 } // namespace TNL
 
