@@ -19,6 +19,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Meshes/MeshDetails/initializer/EntitySeedMatrix.h>
 #include <TNL/Algorithms/Segments/Ellpack.h>
 #include <TNL/Algorithms/Segments/SlicedEllpack.h>
 #include <TNL/Meshes/DimensionTag.h>
@@ -96,6 +97,9 @@ public:
    using PointArrayType      = Containers::Array< PointType, DeviceType, GlobalIndexType >;
    using FaceSeedArrayType   = Containers::Array< FaceSeedType, DeviceType, GlobalIndexType >;
    using CellSeedArrayType   = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
+   using FaceSeedMatrixType  = EntitySeedMatrix< MeshConfig, FaceTopology >;
+   using CellSeedMatrixType  = EntitySeedMatrix< MeshConfig, CellTopology >;
+
    using EntityTagsArrayType = Containers::Array< EntityTagType, DeviceType, GlobalIndexType >;
 
    template< int Dimension >

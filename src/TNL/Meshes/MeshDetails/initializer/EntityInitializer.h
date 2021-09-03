@@ -49,13 +49,14 @@ class EntityInitializer
                                             DimensionTag< EntityTopology::dimension >,
                                             DimensionTag< MeshTraits< MeshConfig >::meshDimension > >;
 
-   using MeshTraitsType   = MeshTraits< MeshConfig >;
-   using GlobalIndexType  = typename MeshTraitsType::GlobalIndexType;
-   using LocalIndexType   = typename MeshTraitsType::LocalIndexType;
+   using MeshTraitsType      = MeshTraits< MeshConfig >;
+   using GlobalIndexType     = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType      = typename MeshTraitsType::LocalIndexType;
 
-   using SeedType         = EntitySeed< MeshConfig, EntityTopology >;
-   using InitializerType  = Initializer< MeshConfig >;
+   using SeedType            = EntitySeed< MeshConfig, EntityTopology >;
+   using InitializerType     = Initializer< MeshConfig >;
    using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+   using SeedMatrixType      = EntitySeedMatrix< MeshConfig, EntityTopology >;
 
 public:
    static void initSubvertexMatrix( NeighborCountsArray& capacities, InitializerType& initializer )
@@ -68,6 +69,13 @@ public:
       // this is necessary if we want to use existing entities instead of intermediate seeds to create subentity seeds
       for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
          initializer.template setSubentityIndex< EntityTopology::dimension, 0 >( entityIndex, i, entitySeed.getCornerIds()[ i ] );
+   }
+
+   static void initSubvertexMatrix( SeedMatrixType& seeds, InitializerType& initializer )
+   {
+      auto& subvertexMatrix = initializer.template getSubentitiesMatrix< EntityTopology::dimension, 0 >();
+      subvertexMatrix = std::move( seeds.getMatrix() );
+      initializer.template initSubentitiesCounts< EntityTopology::dimension, 0 >( seeds.getEntityCornerCounts() );
    }
 };
 

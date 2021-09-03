@@ -48,7 +48,7 @@ public:
    using EntityTopology                = typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = EntitySeed< MeshConfig, EntityTopology >;
-
+   
    using SeedIndexedSetType            = Containers::UnorderedIndexedSet< SeedType, GlobalIndexType, typename SeedType::HashType, typename SeedType::KeyEqual >;
    using SeedSetType                   = std::unordered_set< typename SeedIndexedSetType::key_type, typename SeedIndexedSetType::hasher, typename SeedIndexedSetType::key_equal >;
 
@@ -75,7 +75,7 @@ public:
    using EntityTopology                = typename EntityTopologyGetter< MeshConfig, DimensionTag< Dimension > >::Topology;
    using EntityType                    = MeshEntity< MeshConfig, Device, EntityTopology >;
    using SeedType                      = EntitySeed< MeshConfig, EntityTopology >;
-
+   
    using SeedIndexedSetType            = Containers::UnorderedIndexedSet< SeedType, GlobalIndexType, typename SeedType::HashType, typename SeedType::KeyEqual >;
    using SeedSetType                   = std::unordered_set< typename SeedIndexedSetType::key_type, typename SeedIndexedSetType::hasher, typename SeedIndexedSetType::key_equal >;
 

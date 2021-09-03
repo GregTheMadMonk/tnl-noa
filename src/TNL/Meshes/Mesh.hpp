@@ -27,7 +27,7 @@ template< typename MeshConfig, typename Device, typename MeshType >
 void
 MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
-      typename MeshTraitsType::FaceSeedArrayType& faceSeeds,
+      typename MeshTraitsType::FaceSeedMatrixType& faceSeeds,
       typename MeshTraitsType::CellSeedArrayType& cellSeeds )
 {
    MeshType* mesh = static_cast< MeshType* >( this );

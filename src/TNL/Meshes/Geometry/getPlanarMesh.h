@@ -180,6 +180,24 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
       }
    }
 
+   // set corners count for face seeds
+   GlobalIndexType setFacesCount = 0;
+   for( GlobalIndexType i = 0; i < inFacesCount; i++ ) {
+      const auto & faceMapping = faceMap[ i ];
+      const bool isPlanarRes = ( faceMapping.second - faceMapping.first ) == 1;
+      if( isPlanarRes ) {
+         const auto face = inMesh.template getEntity< 2 >( i );
+         const auto verticesCount = face.template getSubentitiesCount< 0 >();
+         meshBuilder.setFaceCornersCount( setFacesCount++, verticesCount );
+      }
+      else {
+         for( GlobalIndexType j = faceMapping.first; j < faceMapping.second; j++ ) {
+            meshBuilder.setFaceCornersCount( setFacesCount++, 3 );
+         }
+      }
+   }
+   meshBuilder.initializeFaceSeeds();
+
    // Lambda for creating new points
    auto createPointFunc = [&] ( const PointType & point ) {
       const auto pointIdx = setPointsCount++;
@@ -188,13 +206,13 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    };
 
    // Lambda for setting seed of decomposed triangle
-   GlobalIndexType setFacesCount = 0;
+   setFacesCount = 0;
    auto setDecomposedFaceFunc = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
-      auto & entitySeed = meshBuilder.getFaceSeed( setFacesCount++ );
-      entitySeed.setCornersCount( 3 );
-      entitySeed.setCornerId( 0, v0 );
-      entitySeed.setCornerId( 1, v1 );
-      entitySeed.setCornerId( 2, v2 );
+      const GlobalIndexType faceId = setFacesCount++;
+      auto seed = meshBuilder.getFaceSeed( faceId );
+      seed.setCornerId( 0, v0 );
+      seed.setCornerId( 1, v1 );
+      seed.setCornerId( 2, v2 );
    };
 
    // Decompose non-planar faces and copy the rest
@@ -204,10 +222,9 @@ getPlanarMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
       const auto & faceMapping = faceMap[ i ];
       const bool isPlanarRes = ( faceMapping.second - faceMapping.first ) == 1; // Face was planar if face maps only onto 1 face
       if( isPlanarRes ) { // Copy planar faces
-         auto & faceSeed = meshBuilder.getFaceSeed( setFacesCount++ );
-         faceSeed.setCornersCount( verticesCount );
+         const GlobalIndexType faceId = setFacesCount++;
          for( LocalIndexType j = 0; j < verticesCount; j++ ) {
-            faceSeed.setCornerId( j, face.template getSubentityIndex< 0 >( j ) );
+            meshBuilder.getFaceSeed( faceId ).setCornerId( j, face.template getSubentityIndex< 0 >( j ) );
          }
       }
       else { // Decompose non-planar cells

@@ -1069,26 +1069,15 @@ TEST( MeshTest, TwoPolygonsTest )
    meshBuilder.setCellsCount( 2 );
 
    meshBuilder.getCellSeed( 0 ).setCornersCount( 4 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornersCount(), 4 );
-
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 0 ], 0 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 1 ], 1 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 2 ], 2 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 0 ).getCornerIds() [ 3 ], 3 );
 
    meshBuilder.getCellSeed( 1 ).setCornersCount( 3 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornersCount(), 3 );
-
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 3 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 4 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 0 ], 3 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 1 ], 2 );
-   EXPECT_EQ( meshBuilder.getCellSeed( 1 ).getCornerIds() [ 2 ], 4 );
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
@@ -2652,9 +2641,25 @@ TEST( MeshTest, TwoPolyhedronsTest )
     */
 
    meshBuilder.setFacesCount( 16 );
+   meshBuilder.setFaceCornersCount(  0, 5 );
+   meshBuilder.setFaceCornersCount(  1, 4 );
+   meshBuilder.setFaceCornersCount(  2, 5 );
+   meshBuilder.setFaceCornersCount(  3, 4 );
+   meshBuilder.setFaceCornersCount(  4, 5 );
+   meshBuilder.setFaceCornersCount(  5, 4 );
+   meshBuilder.setFaceCornersCount(  6, 5 );
+   meshBuilder.setFaceCornersCount(  7, 5 );
+   meshBuilder.setFaceCornersCount(  8, 5 );
+   meshBuilder.setFaceCornersCount(  9, 5 );
+   meshBuilder.setFaceCornersCount( 10, 5 );
+   meshBuilder.setFaceCornersCount( 11, 6 );
+   meshBuilder.setFaceCornersCount( 12, 3 );
+   meshBuilder.setFaceCornersCount( 13, 4 );
+   meshBuilder.setFaceCornersCount( 14, 4 );
+   meshBuilder.setFaceCornersCount( 15, 5 );
+   meshBuilder.initializeFaceSeeds();
 
    //   0     1     2     3     4
-   meshBuilder.getFaceSeed( 0 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getFaceSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getFaceSeed( 0 ).setCornerId( 2, 2 );
@@ -2662,14 +2667,12 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 0 ).setCornerId( 4, 4 );
 
    //   4     3     5     6
-   meshBuilder.getFaceSeed( 1 ).setCornersCount( 4 );
    meshBuilder.getFaceSeed( 1 ).setCornerId( 0, 4 );
    meshBuilder.getFaceSeed( 1 ).setCornerId( 1, 3 );
    meshBuilder.getFaceSeed( 1 ).setCornerId( 2, 5 );
    meshBuilder.getFaceSeed( 1 ).setCornerId( 3, 6 );
 
    //   5     3     2     7     8
-   meshBuilder.getFaceSeed( 2 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 2 ).setCornerId( 0, 5 );
    meshBuilder.getFaceSeed( 2 ).setCornerId( 1, 3 );
    meshBuilder.getFaceSeed( 2 ).setCornerId( 2, 2 );
@@ -2677,14 +2680,12 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 2 ).setCornerId( 4, 8 );
 
    //   9     1     0    10
-   meshBuilder.getFaceSeed( 3 ).setCornersCount( 4 );
    meshBuilder.getFaceSeed( 3 ).setCornerId( 0, 9 );
    meshBuilder.getFaceSeed( 3 ).setCornerId( 1, 1 );
    meshBuilder.getFaceSeed( 3 ).setCornerId( 2, 0 );
    meshBuilder.getFaceSeed( 3 ).setCornerId( 3, 10 );
 
    //  11     7     2     1     9
-   meshBuilder.getFaceSeed( 4 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 4 ).setCornerId( 0, 11 );
    meshBuilder.getFaceSeed( 4 ).setCornerId( 1, 7 );
    meshBuilder.getFaceSeed( 4 ).setCornerId( 2, 2 );
@@ -2692,14 +2693,12 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 4 ).setCornerId( 4, 9 );
 
    //   8     7    11    12
-   meshBuilder.getFaceSeed( 5 ).setCornersCount( 4 );
    meshBuilder.getFaceSeed( 5 ).setCornerId( 0, 8 );
    meshBuilder.getFaceSeed( 5 ).setCornerId( 1, 7 );
    meshBuilder.getFaceSeed( 5 ).setCornerId( 2, 11 );
    meshBuilder.getFaceSeed( 5 ).setCornerId( 3, 12 );
 
    //  13    12    11     9    10
-   meshBuilder.getFaceSeed( 6 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 6 ).setCornerId( 0, 13 );
    meshBuilder.getFaceSeed( 6 ).setCornerId( 1, 12 );
    meshBuilder.getFaceSeed( 6 ).setCornerId( 2, 11 );
@@ -2707,7 +2706,6 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 6 ).setCornerId( 4, 10 );
 
    //  13    10     0     4     6
-   meshBuilder.getFaceSeed( 7 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 7 ).setCornerId( 0, 13 );
    meshBuilder.getFaceSeed( 7 ).setCornerId( 1, 10 );
    meshBuilder.getFaceSeed( 7 ).setCornerId( 2, 0 );
@@ -2715,7 +2713,6 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 7 ).setCornerId( 4, 6 );
 
    //  13     6     5     8    12
-   meshBuilder.getFaceSeed( 8 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 8 ).setCornerId( 0, 13 );
    meshBuilder.getFaceSeed( 8 ).setCornerId( 1, 6 );
    meshBuilder.getFaceSeed( 8 ).setCornerId( 2, 5 );
@@ -2723,7 +2720,6 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 8 ).setCornerId( 4, 12 );
 
    //   8     7    14    15    16
-   meshBuilder.getFaceSeed( 9 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 9 ).setCornerId( 0, 8 );
    meshBuilder.getFaceSeed( 9 ).setCornerId( 1, 7 );
    meshBuilder.getFaceSeed( 9 ).setCornerId( 2, 14 );
@@ -2731,7 +2727,6 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 9 ).setCornerId( 4, 16 );
 
    //  16    15    17    18    19
-   meshBuilder.getFaceSeed( 10 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 10 ).setCornerId( 0, 16 );
    meshBuilder.getFaceSeed( 10 ).setCornerId( 1, 15 );
    meshBuilder.getFaceSeed( 10 ).setCornerId( 2, 17 );
@@ -2739,7 +2734,6 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 10 ).setCornerId( 4, 19 );
 
    //  20    18    17    14     7    11
-   meshBuilder.getFaceSeed( 11 ).setCornersCount( 6 );
    meshBuilder.getFaceSeed( 11 ).setCornerId( 0, 20 );
    meshBuilder.getFaceSeed( 11 ).setCornerId( 1, 18 );
    meshBuilder.getFaceSeed( 11 ).setCornerId( 2, 17 );
@@ -2748,27 +2742,23 @@ TEST( MeshTest, TwoPolyhedronsTest )
    meshBuilder.getFaceSeed( 11 ).setCornerId( 5, 11 );
 
    //  17    15    14
-   meshBuilder.getFaceSeed( 12 ).setCornersCount( 3 );
    meshBuilder.getFaceSeed( 12 ).setCornerId( 0, 17 );
    meshBuilder.getFaceSeed( 12 ).setCornerId( 1, 15 );
    meshBuilder.getFaceSeed( 12 ).setCornerId( 2, 14 );
 
    //  21    19    18    20
-   meshBuilder.getFaceSeed( 13 ).setCornersCount( 4 );
    meshBuilder.getFaceSeed( 13 ).setCornerId( 0, 21 );
    meshBuilder.getFaceSeed( 13 ).setCornerId( 1, 19 );
    meshBuilder.getFaceSeed( 13 ).setCornerId( 2, 18 );
    meshBuilder.getFaceSeed( 13 ).setCornerId( 3, 20 );
 
    //  21    20    11    12
-   meshBuilder.getFaceSeed( 14 ).setCornersCount( 4 );
    meshBuilder.getFaceSeed( 14 ).setCornerId( 0, 21 );
    meshBuilder.getFaceSeed( 14 ).setCornerId( 1, 20 );
    meshBuilder.getFaceSeed( 14 ).setCornerId( 2, 11 );
    meshBuilder.getFaceSeed( 14 ).setCornerId( 3, 12 );
 
    //  12     8    16    19    21
-   meshBuilder.getFaceSeed( 15 ).setCornersCount( 5 );
    meshBuilder.getFaceSeed( 15 ).setCornerId( 0, 12 );
    meshBuilder.getFaceSeed( 15 ).setCornerId( 1, 8 );
    meshBuilder.getFaceSeed( 15 ).setCornerId( 2, 16 );

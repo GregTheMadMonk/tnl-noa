@@ -27,8 +27,8 @@ struct EntityDecomposer;
 template< typename MeshConfig, EntityDecomposerVersion SubentityDecomposerVersion > // SubentityDecomposerVersion is not used for polygons
 struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersion::ConnectEdgesToCentroid, SubentityDecomposerVersion >
 {
-   using Device = typename Devices::Host;
-   using Topology = typename Topologies::Polygon;
+   using Device = Devices::Host;
+   using Topology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, Topology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
    using PointType = typename VertexMeshEntityType::PointType;
@@ -76,8 +76,8 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
 template< typename MeshConfig, EntityDecomposerVersion SubentityDecomposerVersion > // SubentityDecomposerVersion is not used for polygons
 struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersion::ConnectEdgesToPoint, SubentityDecomposerVersion >
 {
-   using Device = typename Devices::Host;
-   using Topology = typename Topologies::Polygon;
+   using Device = Devices::Host;
+   using Topology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, Topology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
    using PointType = typename VertexMeshEntityType::PointType;
@@ -111,9 +111,9 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
 template< typename MeshConfig, EntityDecomposerVersion SubentityDecomposerVersion >
 struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVersion::ConnectEdgesToCentroid, SubentityDecomposerVersion >
 {
-   using Device = typename Devices::Host;
-   using CellTopology = typename Topologies::Polyhedron;
-   using FaceTopology = typename Topologies::Polygon;
+   using Device = Devices::Host;
+   using CellTopology = Topologies::Polyhedron;
+   using FaceTopology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, CellTopology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
    using PointType = typename VertexMeshEntityType::PointType;
@@ -164,9 +164,9 @@ template< typename MeshConfig, EntityDecomposerVersion SubentityDecomposerVersio
 struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVersion::ConnectEdgesToPoint, SubentityDecomposerVersion >
 {
    // https://mathoverflow.net/a/7672
-   using Device = typename Devices::Host;
-   using CellTopology = typename Topologies::Polyhedron;
-   using FaceTopology = typename Topologies::Polygon;
+   using Device = Devices::Host;
+   using CellTopology = Topologies::Polyhedron;
+   using FaceTopology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, CellTopology >;
    using MeshSubentityType = MeshEntity< MeshConfig, Device, FaceTopology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;

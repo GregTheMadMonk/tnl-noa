@@ -197,11 +197,19 @@ public:
                // let's just assume that the connectivity and offsets arrays have the same type...
                using mpark::get;
                const auto& offsets = get< std::decay_t<decltype(connectivity)> >( faceOffsetsArray );
+               
                std::size_t offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
-                  FaceSeedType& seed = meshBuilder.getFaceSeed( i );
                   const std::size_t offsetEnd = offsets[ i ];
-                  seed.setCornersCount( offsetEnd - offsetStart );
+                  meshBuilder.setFaceCornersCount( i, offsetEnd - offsetStart );
+                  offsetStart = offsetEnd;
+               }
+               meshBuilder.initializeFaceSeeds();
+
+               offsetStart = 0;
+               for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
+                  auto seed = meshBuilder.getFaceSeed( i );
+                  const std::size_t offsetEnd = offsets[ i ];
                   for( std::size_t o = offsetStart; o < offsetEnd; o++ )
                      seed.setCornerId( o - offsetStart, connectivity[ o ] );
                   offsetStart = offsetEnd;
