@@ -14,8 +14,6 @@
 
 #include "DistributedArray.h"
 
-#include <TNL/Algorithms/ParallelFor.h>
-
 namespace TNL {
 namespace Containers {
 
@@ -458,7 +456,7 @@ void
 DistributedArray< Value, Device, Index, Allocator >::
 forElements( IndexType begin, IndexType end, Function&& f )
 {
-   this->view.forElements( begin, end, f );
+   view.forElements( begin, end, f );
 }
 
 template< typename Value,
@@ -470,7 +468,7 @@ void
 DistributedArray< Value, Device, Index, Allocator >::
 forElements( IndexType begin, IndexType end, Function&& f ) const
 {
-   this->view.forElements( begin, end, f );
+   view.forElements( begin, end, f );
 }
 
 } // namespace Containers

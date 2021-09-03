@@ -14,6 +14,8 @@
 
 #include "DistributedArrayView.h"
 
+#include <TNL/Algorithms/ParallelFor.h>
+
 namespace TNL {
 namespace Containers {
 
@@ -449,15 +451,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f )
 {
-   IndexType localBegin = max( begin, localRange.getBegin() );
-   IndexType localEnd = min( end, localRange.getEnd() );
-   auto local_f = [=] __cuda_callable__ ( const IndexType& idx, ValueType& value ) mutable {
-      f( idx + localRange.getBegin(), value );
+   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
+   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   auto local_f = [=] __cuda_callable__ ( IndexType idx, ValueType& value ) mutable {
+      f( localRange.getGlobalIndex( idx, value ) );
    };
-   this->localData.forElements( localBegin - localRange.getBegin(),
-                                localEnd - localRange.getBegin(),
-                                local_f );
-
+   localData.forElements( localBegin, localEnd, local_f );
 }
 
 template< typename Value,
@@ -468,7 +467,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f ) const
 {
-
+   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
+   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   auto local_f = [=] __cuda_callable__ ( IndexType idx, const ValueType& value ) {
+      f( localRange.getGlobalIndex( idx, value ) );
+   };
+   localData.forElements( localBegin, localEnd, local_f );
 }
 
 } // namespace Containers
