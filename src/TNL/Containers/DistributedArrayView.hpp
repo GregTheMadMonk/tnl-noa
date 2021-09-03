@@ -471,32 +471,5 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
 
 }
 
-
-template< typename Value,
-          typename Device,
-          typename Index >
-std::ostream&
-DistributedArrayView< Value, Device, Index >::
-print( std::ostream& str ) const
-{
-   // The following does not work properly
-   /*if( MPI::GetRank( communicator ) == 0 )
-   {
-      str << "[ ";
-      for( IndexType i = 0; i < localData.getSize(); i++ )
-         str << ", " << localData.getElement( i );
-      for( int proc = 1; proc < MPI::GetSize( communicator ); proc++ )
-      {
-         Array< std::remove_const_t< Value >, Device, Index > localArray;
-         receive( localArray, proc, 0, communicator );
-         for( IndexType i = 0; i < localArray.getSize(); i++ )
-            str << ", " << localArray.getElement( i );
-      }
-      str << " ]";
-   }
-   else send( this->localData, 0, 0, this->communicator );*/
-   return str;
-}
-
 } // namespace Containers
 } // namespace TNL

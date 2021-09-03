@@ -230,7 +230,6 @@ public:
       template< typename Function >
       void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-   std::ostream& print( std::ostream& str ) const;
 protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
@@ -241,16 +240,6 @@ protected:
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;
    int valuesPerElement = 1;
 };
-
-
-template< typename Value,
-          typename Device = Devices::Host,
-          typename Index = int >
-std::ostream& operator<<( std::ostream& str, const DistributedArrayView< Value, Device, Index >& view )
-{
-   return view.print( str );
-}
-
 
 } // namespace Containers
 } // namespace TNL

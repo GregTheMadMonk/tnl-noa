@@ -270,16 +270,6 @@ private:
    static void setSynchronizerHelper( ViewType& view, const Array& array ) {}
 };
 
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-std::ostream& operator<<( std::ostream& str, const DistributedArray< Value, Device, Index, Allocator >& array )
-{
-   return array.getConstView().print( str );
-}
-
-
 } // namespace Containers
 } // namespace TNL
 
