@@ -641,7 +641,7 @@ class Array
        * The lambda function is supposed to be declared as
        *
        * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
+       * f( IndexType elementIdx, const ValueType& elementValue )
        * ```
        *
        * where
@@ -699,7 +699,7 @@ class Array
        * The lambda function is supposed to be declared as
        *
        * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
+       * f( IndexType elementIdx, const ValueType& elementValue )
        * ```
        *
        * where
