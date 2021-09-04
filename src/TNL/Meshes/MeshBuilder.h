@@ -31,8 +31,8 @@ public:
    using LocalIndexType     = typename MeshTraitsType::LocalIndexType;
    using PointType          = typename MeshTraitsType::PointType;
    using CellTopology       = typename MeshTraitsType::CellTopology;
-   using CellSeedType       = typename MeshTraitsType::CellSeedType;
    using CellSeedMatrixType = typename MeshTraitsType::CellSeedMatrixType;
+   using CellSeedType       = typename CellSeedMatrixType::EntitySeedMatrixSeed;
    using FaceSeedMatrixType = typename MeshTraitsType::FaceSeedMatrixType;
    using FaceSeedType       = typename FaceSeedMatrixType::EntitySeedMatrixSeed;
    
@@ -60,7 +60,20 @@ public:
 
    void setCellsCount( const GlobalIndexType& cellsCount )
    {
-      this->cellSeeds.setSize( cellsCount );
+      if( getFacesCount() == 0 ) // faceSeeds aren't used ( cellSeeds store indeces of points )
+         this->cellSeeds.setDimensions( cellsCount, getPointsCount() );
+      else // faceSeeds are used ( cellSeeds store indeces of faces )
+         this->cellSeeds.setDimensions( cellsCount, getFacesCount() );
+   }
+
+   void setCellCornersCount( const GlobalIndexType& cellIndex, const LocalIndexType& cornersCount )
+   {
+      this->cellSeeds.setEntityCornersCount( cellIndex, cornersCount );
+   }
+
+   void initializeCellSeeds()
+   {
+      this->cellSeeds.initializeRows();
    }
 
    GlobalIndexType getPointsCount() const
@@ -75,7 +88,7 @@ public:
 
    GlobalIndexType getCellsCount() const
    {
-      return this->cellSeeds.getSize();
+      return this->cellSeeds.getEntitiesCount();
    }
 
    void setPoint( GlobalIndexType index,
@@ -90,9 +103,9 @@ public:
       return this->faceSeeds.getSeed( index );
    }
 
-   CellSeedType& getCellSeed( GlobalIndexType index )
+   CellSeedType getCellSeed( GlobalIndexType index )
    {
-      return this->cellSeeds[ index ];
+      return this->cellSeeds.getSeed( index );
    }
 
    bool build( MeshType& mesh )
@@ -105,8 +118,6 @@ public:
 
 private:
    using PointArrayType     = typename MeshTraitsType::PointArrayType;
-   using CellSeedArrayType  = typename MeshTraitsType::CellSeedArrayType;
-   using FaceSeedArrayType  = typename MeshTraitsType::FaceSeedArrayType;
    using BoolVector         = Containers::Vector< bool, Devices::Host, GlobalIndexType >;
 
    bool validate() const
@@ -123,11 +134,12 @@ private:
       if( faceSeeds.empty() )
       {
          for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
-            const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
-            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
-               assignedPoints[ cornerIds[ j ] ] = true;
-               if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] ) {
-                  std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
+            const auto cellSeed = this->cellSeeds.getSeed( i );
+            for( LocalIndexType j = 0; j < cellSeed.getCornersCount(); j++ ) {
+               const GlobalIndexType cornerId = cellSeed.getCornerId( j );
+               assignedPoints[ cornerId ] = true;
+               if( cornerId < 0 || getPointsCount() <= cornerId ) {
+                  std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerId << std::endl;
                   return false;
                }
             }
@@ -143,11 +155,12 @@ private:
          for( GlobalIndexType i = 0; i < getFacesCount(); i++ ) {
             const auto faceSeed = this->faceSeeds.getSeed( i );
             for( LocalIndexType j = 0; j < faceSeed.getCornersCount(); j++ ) {
-               if( faceSeed.getCornerId( j ) < 0 || getPointsCount() <= faceSeed.getCornerId( j ) ) {
-                  std::cerr << "face seed " << i << " is referencing unavailable point " << faceSeed.getCornerId( j ) << std::endl;
+               const GlobalIndexType cornerId = faceSeed.getCornerId( j );
+               if( cornerId < 0 || getPointsCount() <= cornerId ) {
+                  std::cerr << "face seed " << i << " is referencing unavailable point " << cornerId << std::endl;
                   return false;
                }
-               assignedPoints[ faceSeed.getCornerId( j ) ] = true;
+               assignedPoints[ cornerId ] = true;
             }
          }
 
@@ -161,13 +174,14 @@ private:
          assignedFaces.setValue( false );
 
          for( GlobalIndexType i = 0; i < getCellsCount(); i++ ) {
-            const auto& cornerIds = this->cellSeeds[ i ].getCornerIds();
-            for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ ) {
-               if( cornerIds[ j ] < 0 || getFacesCount() <= cornerIds[ j ] ) {
-                  std::cerr << "cell seed " << i << " is referencing unavailable face " << cornerIds[ j ] << std::endl;
+            const auto cellSeed = this->cellSeeds.getSeed( i );
+            for( LocalIndexType j = 0; j < cellSeed.getCornersCount(); j++ ) {
+               const GlobalIndexType cornerId = cellSeed.getCornerId( j );
+               if( cornerId < 0 || getFacesCount() <= cornerId ) {
+                  std::cerr << "cell seed " << i << " is referencing unavailable face " << cornerId << std::endl;
                   return false;
                }
-               assignedFaces[ cornerIds[ j ] ] = true;
+               assignedFaces[ cornerId ] = true;
             }
          }
 
@@ -182,7 +196,7 @@ private:
 
    PointArrayType points;
    FaceSeedMatrixType faceSeeds;
-   CellSeedArrayType cellSeeds;
+   CellSeedMatrixType cellSeeds;
    BoolVector pointsSet;
 };
 

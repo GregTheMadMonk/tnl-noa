@@ -28,7 +28,7 @@ void
 MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
       typename MeshTraitsType::FaceSeedMatrixType& faceSeeds,
-      typename MeshTraitsType::CellSeedArrayType& cellSeeds )
+      typename MeshTraitsType::CellSeedMatrixType& cellSeeds )
 {
    MeshType* mesh = static_cast< MeshType* >( this );
    Initializer< typename MeshType::Config > initializer;

@@ -70,7 +70,7 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    // Lambda for setting decomposed triangle in meshBuilder
    GlobalIndexType setCellsCount = 0;
    auto setDecomposedCellFunc = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
-      auto & entitySeed = meshBuilder.getCellSeed( setCellsCount++ );
+      auto entitySeed = meshBuilder.getCellSeed( setCellsCount++ );
       entitySeed.setCornerId( 0, v0 );
       entitySeed.setCornerId( 1, v1 );
       entitySeed.setCornerId( 2, v2 );
@@ -142,7 +142,7 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    // Lambda for setting decomposed cells in meshBuilder
    GlobalIndexType setCellsCount = 0;
    auto setDecomposedCellFunc = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2, GlobalIndexType v3 ) {
-      auto & entitySeed = meshBuilder.getCellSeed( setCellsCount++ );
+      auto entitySeed = meshBuilder.getCellSeed( setCellsCount++ );
       entitySeed.setCornerId( 0, v0 );
       entitySeed.setCornerId( 1, v1 );
       entitySeed.setCornerId( 2, v2 );

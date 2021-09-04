@@ -90,8 +90,9 @@ TEST( MeshGeometryTest, Polygon2DAreaTest )
    meshBuilder.setPoint( 4, point4 );
 
    meshBuilder.setCellsCount( 1 );
+   meshBuilder.setCellCornersCount( 0, 5 );
+   meshBuilder.initializeCellSeeds();
 
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -139,7 +140,9 @@ TEST( MeshGeometryTest, Polygon3DAreaTest )
    meshBuilder.setPoint(  4, point4  );
 
    meshBuilder.setCellsCount( 1 );
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 5 );
+   meshBuilder.setCellCornersCount( 0, 5 );
+   meshBuilder.initializeCellSeeds();
+
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -319,7 +322,9 @@ TEST( MeshGeometryTest, PolyhedronAreaTest )
    meshBuilder.getFaceSeed( 8 ).setCornerId( 2, 8 );
 
    meshBuilder.setCellsCount( 1 );
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 9 );
+   meshBuilder.setCellCornersCount( 0, 9 );
+   meshBuilder.initializeCellSeeds();
+
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -386,9 +391,15 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.setPoint(  9, point4_ );
 
    meshBuilder.setCellsCount( 6 );
+   meshBuilder.setCellCornersCount( 0, 5 );
+   meshBuilder.setCellCornersCount( 1, 5 );
+   meshBuilder.setCellCornersCount( 2, 5 );
+   meshBuilder.setCellCornersCount( 3, 5 );
+   meshBuilder.setCellCornersCount( 4, 5 );
+   meshBuilder.setCellCornersCount( 5, 5 );
+   meshBuilder.initializeCellSeeds();
 
    // Planar cell with non-deviated points
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -396,7 +407,6 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.getCellSeed( 0 ).setCornerId( 4, 4 );
 
    // Non-Planar cell with 0th point deviated
-   meshBuilder.getCellSeed( 1 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 5 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 2 );
@@ -404,7 +414,6 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.getCellSeed( 1 ).setCornerId( 4, 4 );
 
    // Non-Planar cell with 1th point deviated
-   meshBuilder.getCellSeed( 2 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 1, 6 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 2, 2 );
@@ -412,7 +421,6 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.getCellSeed( 2 ).setCornerId( 4, 4 );
 
    // Non-Planar cell with 2th point deviated
-   meshBuilder.getCellSeed( 3 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 2, 7 );
@@ -420,7 +428,6 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.getCellSeed( 3 ).setCornerId( 4, 4 );
 
    // Non-Planar cell with 3th point deviated
-   meshBuilder.getCellSeed( 4 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 2, 2 );
@@ -428,7 +435,6 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.getCellSeed( 4 ).setCornerId( 4, 4 );
 
    // Non-Planar cell with 4th point deviated
-   meshBuilder.getCellSeed( 5 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 2, 2 );
@@ -486,9 +492,16 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
     */
 
    meshBuilder.setCellsCount( 7 );
+   meshBuilder.setCellCornersCount( 0, 6 );
+   meshBuilder.setCellCornersCount( 1, 5 );
+   meshBuilder.setCellCornersCount( 2, 4 );
+   meshBuilder.setCellCornersCount( 3, 4 );
+   meshBuilder.setCellCornersCount( 4, 5 );
+   meshBuilder.setCellCornersCount( 5, 5 );
+   meshBuilder.setCellCornersCount( 6, 5 );
+   meshBuilder.initializeCellSeeds();
 
    //   1     0     3     2     4     5
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 6 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0,  1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1,  0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2,  3 );
@@ -497,7 +510,6 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
    meshBuilder.getCellSeed( 0 ).setCornerId( 5,  5 );
 
    //   8     7     0     1     6
-   meshBuilder.getCellSeed( 1 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 0,  8 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1,  7 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2,  0 );
@@ -505,21 +517,18 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
    meshBuilder.getCellSeed( 1 ).setCornerId( 4,  6 );
 
    //   9     3     0     7
-   meshBuilder.getCellSeed( 2 ).setCornersCount( 4 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 0,  9 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 1,  3 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 2,  0 );
    meshBuilder.getCellSeed( 2 ).setCornerId( 3,  7 );
 
    //   6     1     5    10
-   meshBuilder.getCellSeed( 3 ).setCornersCount( 4 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 0,  6 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 1,  1 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 2,  5 );
    meshBuilder.getCellSeed( 3 ).setCornerId( 3, 10 );
 
    //  12    11     2     3     9
-   meshBuilder.getCellSeed( 4 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 0, 12 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 1, 11 );
    meshBuilder.getCellSeed( 4 ).setCornerId( 2,  2 );
@@ -527,7 +536,6 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
    meshBuilder.getCellSeed( 4 ).setCornerId( 4,  9 );
 
    //  13     4     2    11    14
-   meshBuilder.getCellSeed( 5 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 0, 13 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 1,  4 );
    meshBuilder.getCellSeed( 5 ).setCornerId( 2,  2 );
@@ -535,7 +543,6 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
    meshBuilder.getCellSeed( 5 ).setCornerId( 4, 14 );
 
    //  10     5     4    13    15
-   meshBuilder.getCellSeed( 6 ).setCornersCount( 5 );
    meshBuilder.getCellSeed( 6 ).setCornerId( 0, 10 );
    meshBuilder.getCellSeed( 6 ).setCornerId( 1,  5 );
    meshBuilder.getCellSeed( 6 ).setCornerId( 2,  4 );
@@ -786,9 +793,11 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
     */
 
    meshBuilder.setCellsCount( 2 );
+   meshBuilder.setCellCornersCount( 0, 9 );
+   meshBuilder.setCellCornersCount( 1, 8 );
+   meshBuilder.initializeCellSeeds();
 
    //   0     1     2     3     4     5      6     7     8
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 9 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -800,7 +809,6 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
    meshBuilder.getCellSeed( 0 ).setCornerId( 8, 8 );
 
    //   9    10    11    12    13     5     14    15
-   meshBuilder.getCellSeed( 1 ).setCornersCount( 8 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 9 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 10 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 11 );
@@ -887,15 +895,16 @@ TEST( MeshGeometryTest, Polygon3DGetPlanarMeshTest )
    meshBuilder.setPoint(  5, point5  );
 
    meshBuilder.setCellsCount( 2 );
+   meshBuilder.setCellCornersCount( 0, 4 );
+   meshBuilder.setCellCornersCount( 1, 4 );
+   meshBuilder.initializeCellSeeds();
 
    // Planar cell
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 4 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 3, 3 );
 
-   meshBuilder.getCellSeed( 1 ).setCornersCount( 4 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 1 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 4 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 5 );
@@ -1145,9 +1154,11 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
     */
 
    meshBuilder.setCellsCount( 2 );
+   meshBuilder.setCellCornersCount( 0, 9 );
+   meshBuilder.setCellCornersCount( 1, 8 );
+   meshBuilder.initializeCellSeeds();
 
    //   0     1     2     3     4     5      6     7     8
-   meshBuilder.getCellSeed( 0 ).setCornersCount( 9 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -1159,7 +1170,6 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
    meshBuilder.getCellSeed( 0 ).setCornerId( 8, 8 );
 
    //   9    10    11    12    13     5     14    15
-   meshBuilder.getCellSeed( 1 ).setCornersCount( 8 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 0, 9 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 1, 10 );
    meshBuilder.getCellSeed( 1 ).setCornerId( 2, 11 );

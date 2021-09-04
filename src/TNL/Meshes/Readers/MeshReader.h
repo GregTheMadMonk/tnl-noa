@@ -208,7 +208,7 @@ public:
 
                offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
-                  auto seed = meshBuilder.getFaceSeed( i );
+                  FaceSeedType seed = meshBuilder.getFaceSeed( i );
                   const std::size_t offsetEnd = offsets[ i ];
                   for( std::size_t o = offsetStart; o < offsetEnd; o++ )
                      seed.setCornerId( o - offsetStart, connectivity[ o ] );
@@ -223,11 +223,19 @@ public:
                // let's just assume that the connectivity and offsets arrays have the same type...
                using mpark::get;
                const auto& offsets = get< std::decay_t<decltype(connectivity)> >( cellOffsetsArray );
+
                std::size_t offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfCells; i++ ) {
-                  CellSeedType& seed = meshBuilder.getCellSeed( i );
                   const std::size_t offsetEnd = offsets[ i ];
-                  seed.setCornersCount( offsetEnd - offsetStart );
+                  meshBuilder.setCellCornersCount( i, offsetEnd - offsetStart );
+                  offsetStart = offsetEnd;
+               }
+               meshBuilder.initializeCellSeeds();
+
+               offsetStart = 0;
+               for( std::size_t i = 0; i < NumberOfCells; i++ ) {
+                  CellSeedType seed = meshBuilder.getCellSeed( i );
+                  const std::size_t offsetEnd = offsets[ i ];
                   for( std::size_t o = offsetStart; o < offsetEnd; o++ )
                      seed.setCornerId( o - offsetStart, connectivity[ o ] );
                   offsetStart = offsetEnd;

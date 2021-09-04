@@ -28,8 +28,6 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
       using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
       using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
-      static constexpr int cornersCount = SubentityTraitsType::count;
-
       class EntitySeedMatrixSeed
       {
          using RowView = typename SubentityMatrixType::RowView;
@@ -41,7 +39,7 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
 
             static constexpr LocalIndexType getCornersCount()
             {
-               return cornersCount;
+               return SubentityTraitsType::count;
             }
 
             void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
@@ -72,7 +70,7 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
 
             static constexpr LocalIndexType getCornersCount()
             {
-               return cornersCount;
+               return SubentityTraitsType::count;
             }
 
             GlobalIndexType getCornerId( const LocalIndexType& cornerIndex ) const
@@ -89,7 +87,7 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
          matrix.setDimensions( entitiesCount, pointsCount );
 
          NeighborCountsArray capacities( entitiesCount );
-         capacities.setValue( cornersCount );
+         capacities.setValue( SubentityTraitsType::count );
          matrix.setRowCapacities( capacities );
       }
 
@@ -106,24 +104,9 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
          matrix.reset();
       }
 
-      void setSeedIndex( const GlobalIndexType& entityIndex, const LocalIndexType& localIndex, const GlobalIndexType& globalIndex )
-      {
-         matrix.getRow( entityIndex ).setElement( localIndex, globalIndex, true );
-      }
-
       GlobalIndexType getEntitiesCount() const
       {
          return matrix.getRows();
-      }
-
-      constexpr LocalIndexType getEntityCornersCount( const GlobalIndexType& entityIndex ) const
-      {
-         return cornersCount;
-      }
-
-      GlobalIndexType getSeedIndex( const GlobalIndexType& entityIndex, const LocalIndexType& localIndex ) const
-      {
-         return matrix.getRow( entityIndex ).getColumnIndex( localIndex );
       }
 
       SubentityMatrixType& getMatrix()
@@ -139,7 +122,135 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
       NeighborCountsArray getEntityCornerCounts() const
       {
          NeighborCountsArray counts( getEntitiesCount() );
-         counts.setValue( cornersCount );
+         counts.setValue( SubentityTraitsType::count );
+         return counts;
+      }
+
+      bool empty() const
+      {
+         return getEntitiesCount() == 0;
+      }
+
+      EntitySeedMatrixSeed getSeed( const GlobalIndexType& entityIndex )
+      {
+         return EntitySeedMatrixSeed( matrix.getRow( entityIndex ) );
+      }
+
+      ConstEntitySeedMatrixSeed getSeed( const GlobalIndexType& entityIndex ) const
+      {
+         return ConstEntitySeedMatrixSeed( matrix.getRow( entityIndex ) );
+      }
+
+   private:
+      SubentityMatrixType matrix;
+};
+
+template< typename MeshConfig >
+class EntitySeedMatrix< MeshConfig, Topologies::Vertex, false >
+{
+   using MeshTraitsType = MeshTraits< MeshConfig, Devices::Host >;
+
+   public:
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+      using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< 0 >;
+      using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+
+      class EntitySeedMatrixSeed
+      {
+         using RowView = typename SubentityMatrixType::RowView;
+
+         public:
+            EntitySeedMatrixSeed( const RowView& matrixRow )
+            : row( matrixRow )
+            {}
+
+            static constexpr LocalIndexType getCornersCount()
+            {
+               return 1;
+            }
+
+            void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
+            {
+               TNL_ASSERT_GE( cornerIndex, 0, "corner index must be non-negative" );
+               TNL_ASSERT_LT( cornerIndex, getCornersCount(), "corner index is out of bounds" );
+               TNL_ASSERT_GE( pointIndex, 0, "point index must be non-negative" );
+               this->row.setColumnIndex( cornerIndex, pointIndex );
+            }
+
+            GlobalIndexType getCornerId( const LocalIndexType& cornerIndex ) const
+            {
+               return this->row.getColumnIndex( cornerIndex );
+            }
+
+         private:
+            RowView row;
+      };
+
+      class ConstEntitySeedMatrixSeed
+      {
+         using ConstRowView = typename SubentityMatrixType::ConstRowView;
+
+         public:
+            ConstEntitySeedMatrixSeed( const ConstRowView& matrixRow )
+            : row( matrixRow )
+            {}
+
+            static constexpr LocalIndexType getCornersCount()
+            {
+               return 1;
+            }
+
+            GlobalIndexType getCornerId( const LocalIndexType& cornerIndex ) const
+            {
+               return this->row.getColumnIndex( cornerIndex );
+            }
+
+         private:
+            ConstRowView row;
+      };
+
+      void setDimensions( const GlobalIndexType& entitiesCount, const GlobalIndexType& pointsCount )
+      {
+         matrix.setDimensions( entitiesCount, pointsCount );
+
+         NeighborCountsArray capacities( entitiesCount );
+         capacities.setValue( 1 );
+         matrix.setRowCapacities( capacities );
+      }
+
+      // This method is only here for compatibility with specialization for dynamic entity topologies
+      void setEntityCornersCount( const GlobalIndexType& entityIndex, const LocalIndexType& count )
+      {}
+
+      // This method is only here for compatibility with specialization for dynamic entity topologies
+      void initializeRows()
+      {}
+
+      void reset()
+      {
+         matrix.reset();
+      }
+
+      GlobalIndexType getEntitiesCount() const
+      {
+         return matrix.getRows();
+      }
+
+      SubentityMatrixType& getMatrix()
+      {
+         return matrix;
+      }
+
+      const SubentityMatrixType& getMatrix() const
+      {
+         return matrix;
+      }
+
+      NeighborCountsArray getEntityCornerCounts() const
+      {
+         NeighborCountsArray counts( getEntitiesCount() );
+         counts.setValue( 1 );
          return counts;
       }
 
@@ -254,24 +365,9 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, true >
          counts.reset();
       }
 
-      void setSeedIndex( const GlobalIndexType& entityIndex, const LocalIndexType& localIndex, const GlobalIndexType& globalIndex )
-      {
-         matrix.getRow( entityIndex ).setElement( localIndex, globalIndex, true );
-      }
-
       GlobalIndexType getEntitiesCount() const
       {
          return matrix.getRows();
-      }
-
-      LocalIndexType getEntityCornersCount( const GlobalIndexType& entityIndex ) const
-      {
-         return counts.getElement( entityIndex );
-      }
-
-      GlobalIndexType getSeedIndex( const GlobalIndexType& entityIndex, const LocalIndexType& localIndex ) const
-      {
-         return matrix.getRow( entityIndex ).getColumnIndex( localIndex );
       }
 
       SubentityMatrixType& getMatrix()

@@ -267,15 +267,15 @@ public:
    static SubentitySeedArray create( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
       const auto& cellSeeds = initializer.getCellSeeds();
-      const auto& faces = cellSeeds[ entityIndex ].getCornerIds();
+      const auto faces = cellSeeds.getSeed( entityIndex );
 
       SubentitySeedArray seeds;
-      seeds.setSize( faces.getSize() );
+      seeds.setSize( faces.getCornersCount() );
 
       for( LocalIndexType i = 0; i < seeds.getSize(); i++ )
       {
          SubentitySeed& seed = seeds[ i ];
-         GlobalIndexType faceIdx = faces[ i ];
+         GlobalIndexType faceIdx = faces.getCornerId( i );
          const auto& subvertices = mesh.template getSubentitiesMatrix< 2, 0 >().getRow( faceIdx );
          const LocalIndexType subverticesCount = mesh.template getSubentitiesCount< 2, 0 >( faceIdx );
          seed.setCornersCount( subverticesCount );
@@ -292,11 +292,11 @@ public:
    static void iterate( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex, FunctorType&& functor )
    {
       const auto& cellSeeds = initializer.getCellSeeds();
-      const auto& faces = cellSeeds[ entityIndex ].getCornerIds();
+      const auto faces = cellSeeds.getSeed( entityIndex );
 
-      for( LocalIndexType i = 0; i < faces.getSize(); i++ )
+      for( LocalIndexType i = 0; i < faces.getCornersCount(); i++ )
       {
-         GlobalIndexType faceIdx = faces[ i ];
+         GlobalIndexType faceIdx = faces.getCornerId( i );
          const auto& subvertices = mesh.template getSubentitiesMatrix< 2, 0 >().getRow( faceIdx );
          const LocalIndexType subverticesCount = mesh.template getSubentitiesCount< 2, 0 >( faceIdx );
          SubentitySeed seed;
@@ -310,8 +310,8 @@ public:
 
    static LocalIndexType getSubentitiesCount( InitializerType& initializer, MeshType& mesh, const GlobalIndexType entityIndex )
    {
-      auto& cellSeeds = initializer.getCellSeeds();
-      return cellSeeds[ entityIndex ].getCornersCount();
+      const auto& cellSeeds = initializer.getCellSeeds();
+      return cellSeeds.getSeed( entityIndex ).getCornersCount();
    }
 };
 
