@@ -28,6 +28,18 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
       using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
       using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
 
+      EntitySeedMatrix() = default;
+
+      EntitySeedMatrix( const EntitySeedMatrix& other )
+      {
+         this->matrix = other.matrix;
+      }
+
+      EntitySeedMatrix( EntitySeedMatrix&& other )
+      {
+         this->matrix = std::move( other.matrix );
+      }
+
       class EntitySeedMatrixSeed
       {
          using RowView = typename SubentityMatrixType::RowView;
@@ -155,6 +167,18 @@ class EntitySeedMatrix< MeshConfig, Topologies::Vertex, false >
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< 0 >;
       using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+
+      EntitySeedMatrix() = default;
+
+      EntitySeedMatrix( const EntitySeedMatrix& other )
+      {
+         this->matrix = other.matrix;
+      }
+
+      EntitySeedMatrix( EntitySeedMatrix&& other )
+      {
+         this->matrix = std::move( other.matrix );
+      }
 
       class EntitySeedMatrixSeed
       {
@@ -284,6 +308,20 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, true >
       using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using SubentityMatrixType = typename MeshTraitsType::template SubentityMatrixType< EntityTopology::dimension >;
       using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
+
+      EntitySeedMatrix() = default;
+
+      EntitySeedMatrix( const EntitySeedMatrix& other )
+      {
+         this->matrix = other.matrix;
+         this->counts = other.counts;
+      }
+
+      EntitySeedMatrix( EntitySeedMatrix&& other )
+      {
+         this->matrix = std::move( other.matrix );
+         this->counts = std::move( other.counts );
+      }
 
       class EntitySeedMatrixSeed
       {

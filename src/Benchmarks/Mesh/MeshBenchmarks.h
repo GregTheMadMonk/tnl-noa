@@ -369,7 +369,7 @@ struct MeshBenchmarks
    static void benchmark_planar( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       auto benchmark_func = [&] () {
-         const auto planarMesh = getPlanarMesh< DecomposerVersion >( mesh_src );
+         auto meshBuilder = planarCorrection< DecomposerVersion >( mesh_src );
       };
 
       benchmark.time< Devices::Host >( "CPU",

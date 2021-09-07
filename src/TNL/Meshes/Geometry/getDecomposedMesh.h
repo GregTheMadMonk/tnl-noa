@@ -38,29 +38,30 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using LocalIndexType = typename TriangleMesh::LocalIndexType;
    using PointType = typename TriangleMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, DecomposerVersion >;
+   constexpr int CellDimension = TriangleMesh::getMeshDimension();
    
    MeshBuilder meshBuilder;
 
    const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
-   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< TriangleMesh::getMeshDimension() >();
+   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and cells as well as
    // starting indeces at which every cell will start writing new decomposed points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inCellsCount );
+   Array< IndexPair, Devices::Host > indeces( inCellsCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
-      const auto cell = inMesh.template getEntity< TriangleMesh::getMeshDimension() >( i );
+      const auto cell = inMesh.template getEntity< CellDimension >( i );
       indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCounts );
-   const auto lastCounts = indeces[ indeces.getSize() - 1 ];
+   indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
    inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto lastIndexPair = indeces[ indeces.getSize() - 1 ];
-   const GlobalIndexType outPointsCount = inPointsCount + lastIndexPair.first + lastCounts.first;
-   const GlobalIndexType outCellsCount = lastIndexPair.second + lastCounts.second;
+   const auto& reduceResult = indeces[ inCellsCount ];
+   const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
+   const GlobalIndexType outCellsCount = reduceResult.second;
    meshBuilder.setPointsCount( outPointsCount );
    meshBuilder.setCellsCount( outCellsCount );
 
@@ -72,8 +73,8 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
-      const auto cell = inMesh.template getEntity< TriangleMesh::getMeshDimension() >( i );
-      const auto indexPair = indeces[ i ];
+      const auto cell = inMesh.template getEntity< CellDimension >( i );
+      const auto& indexPair = indeces[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
@@ -126,7 +127,7 @@ template< EntityDecomposerVersion DecomposerVersion,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polyhedron >::value, bool > = true >
 auto // returns MeshBuilder
-decomposeMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
+decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using namespace TNL;
    using namespace TNL::Containers;
@@ -139,30 +140,30 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
    using LocalIndexType = typename TetrahedronMesh::LocalIndexType;
    using PointType = typename TetrahedronMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polyhedron, DecomposerVersion, SubdecomposerVersion >;
+   constexpr int CellDimension = TetrahedronMesh::getMeshDimension();
    
    MeshBuilder meshBuilder;
 
    const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
-   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< TetrahedronMesh::getMeshDimension() >();
-
-   using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inCellsCount );
+   const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and cells as well as
    // starting indeces at which every cell will start writing new decomposed points and cells
+   using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
+   Array< IndexPair, Devices::Host > indeces( inCellsCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
-      const auto cell = inMesh.template getEntity< TetrahedronMesh::getMeshDimension() >( i );
+      const auto cell = inMesh.template getEntity< CellDimension >( i );
       indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCounts );
-   const auto lastCounts = indeces[ indeces.getSize() - 1 ];
+   indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
    inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto lastIndexPair = indeces[ indeces.getSize() - 1 ];
-   const GlobalIndexType outPointsCount = inPointsCount + lastIndexPair.first + lastCounts.first;
-   const GlobalIndexType outCellsCount = lastIndexPair.second + lastCounts.second;
+   const auto& reduceResult = indeces[ inCellsCount ];
+   const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
+   const GlobalIndexType outCellsCount = reduceResult.second;
    meshBuilder.setPointsCount( outPointsCount );
    meshBuilder.setCellsCount( outCellsCount );
 
@@ -174,8 +175,8 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
 
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
-      const auto cell = inMesh.template getEntity< TetrahedronMesh::getMeshDimension() >( i );
-      const auto indexPair = indeces[ i ];
+      const auto cell = inMesh.template getEntity< CellDimension >( i );
+      const auto& indexPair = indeces[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
