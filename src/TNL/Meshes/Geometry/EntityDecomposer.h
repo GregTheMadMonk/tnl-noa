@@ -34,10 +34,8 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
    using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
-   using PointCreationFunctorType = std::function< GlobalIndexType ( const PointType& ) >;
-   using DecomposedEntityFunctorType = std::function< void ( GlobalIndexType, GlobalIndexType, GlobalIndexType ) >;
    
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType & entity )
+   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto pointsCount = entity.template getSubentitiesCount< 0 >();
       if( pointsCount == 3 ) // polygon is triangle
@@ -45,29 +43,31 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
       return { 1, pointsCount }; // 1 extra centroid point and decomposition creates pointsCount triangles
    }
 
-   static void decompose( const MeshEntityType & entity,
-                          PointCreationFunctorType pointCreationFunctor,
-                          DecomposedEntityFunctorType decomposedEntityFunctor )
+   template< typename AddPointFunctor,
+             typename AddCellFunctor >
+   static void decompose( const MeshEntityType& entity,
+                          AddPointFunctor&& addPoint,
+                          AddCellFunctor&& addCell )
    {
       const auto verticesCount = entity.template getSubentitiesCount< 0 >();
       if( verticesCount == 3 ) { // polygon is only copied as it's already a triangle
          const auto v0 = entity.template getSubentityIndex< 0 >( 0 );
          const auto v1 = entity.template getSubentityIndex< 0 >( 1 );
          const auto v2 = entity.template getSubentityIndex< 0 >( 2 );
-         decomposedEntityFunctor( v0, v1, v2 );
+         addCell( v0, v1, v2 );
       }
       else { // polygon is decomposed as it has got more than 3 vertices
-         const auto v0 = pointCreationFunctor( getEntityCenter( entity.getMesh(), entity ) );
+         const auto v0 = addPoint( getEntityCenter( entity.getMesh(), entity ) );
          // decompose polygon into triangles by connecting each edge to the centroid
          for( LocalIndexType j = 0, k = 1; k < verticesCount; j++, k++ ) {
             const auto v1 = entity.template getSubentityIndex< 0 >( j );
             const auto v2 = entity.template getSubentityIndex< 0 >( k );
-            decomposedEntityFunctor( v0, v1, v2 );
+            addCell( v0, v1, v2 );
          }
          { // wrap around term
             const auto v1 = entity.template getSubentityIndex< 0 >( verticesCount - 1 );
             const auto v2 = entity.template getSubentityIndex< 0 >( 0 );
-            decomposedEntityFunctor( v0, v1, v2 );
+            addCell( v0, v1, v2 );
          }
       }
    }
@@ -83,18 +83,18 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
    using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
-   using PointCreationFunctorType = std::function< GlobalIndexType ( const PointType& ) >;
-   using DecomposedEntityFunctorType = std::function< void ( GlobalIndexType, GlobalIndexType, GlobalIndexType ) >;
 
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType & entity )
+   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto pointsCount = entity.template getSubentitiesCount< 0 >();
       return { 0, pointsCount - 2 }; // no extra points and there is a triangle for every non-adjacent edge to the 0th point (pointsCount - 2)
    }
 
-   static void decompose( const MeshEntityType & entity,
-                          PointCreationFunctorType pointCreationFunctor,
-                          DecomposedEntityFunctorType decomposedEntityFunctor )
+   template< typename AddPointFunctor,
+             typename AddCellFunctor >
+   static void decompose( const MeshEntityType& entity,
+                          AddPointFunctor&& addPoint,
+                          AddCellFunctor&& addCell )
    {
       // decompose polygon into triangles by connecting 0th point to each non-adjacent edge
       const auto verticesCount = entity.template getSubentitiesCount< 0 >();
@@ -102,7 +102,7 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
       for( LocalIndexType j = 1, k = 2; k < verticesCount; j++, k++ ) {
          const auto v1 = entity.template getSubentityIndex< 0 >( j );
          const auto v2 = entity.template getSubentityIndex< 0 >( k );
-         decomposedEntityFunctor( v0, v1, v2 );
+         addCell( v0, v1, v2 );
       }
    }
 };
@@ -119,11 +119,9 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
    using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
-   using PointCreationFunctorType = std::function< GlobalIndexType ( const PointType& ) >;
-   using DecomposedEntityFunctorType = std::function< void ( GlobalIndexType, GlobalIndexType, GlobalIndexType, GlobalIndexType ) >;
    using SubentityDecomposer = EntityDecomposer< MeshConfig, FaceTopology, SubentityDecomposerVersion >;
    
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType & entity )
+   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto& mesh = entity.getMesh();
       GlobalIndexType extraPointsCount = 1, // there is one new centroid point
@@ -140,22 +138,24 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
       return { extraPointsCount, entitiesCount };
    }
 
+   template< typename AddPointFunctor,
+             typename AddCellFunctor >
    static void decompose( const MeshEntityType & entity,
-                          PointCreationFunctorType pointCreationFunctor,
-                          DecomposedEntityFunctorType decomposedEntityFunctor )
+                          AddPointFunctor&& addPoint,
+                          AddCellFunctor&& addCell )
    {
-      const auto & mesh = entity.getMesh();
-      const auto v3 = pointCreationFunctor( getEntityCenter( mesh, entity ) );
+      const auto& mesh = entity.getMesh();
+      const auto v3 = addPoint( getEntityCenter( mesh, entity ) );
 
       // Lambda for creating tetrahedron from decomposed triangles of faces
-      auto decomposedSubentityFunctor = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
-         decomposedEntityFunctor( v0, v1, v2, v3 );
+      auto addFace = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
+         addCell( v0, v1, v2, v3 );
       };
 
       const auto facesCount = entity.template getSubentitiesCount< 2 >();
       for( LocalIndexType i = 0; i < facesCount; i++ ) {
          const auto face = mesh.template getEntity< 2 >( entity.template getSubentityIndex< 2 >( i ) );
-         SubentityDecomposer::decompose( face, pointCreationFunctor, decomposedSubentityFunctor );
+         SubentityDecomposer::decompose( face, std::forward< AddPointFunctor >( addPoint ), addFace );
       }
    }
 };
@@ -174,11 +174,9 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
    using RealType = typename MeshConfig::RealType;
-   using PointCreationFunctorType = std::function< GlobalIndexType ( const PointType& ) >;
-   using DecomposedEntityFunctorType = std::function< void ( GlobalIndexType, GlobalIndexType, GlobalIndexType, GlobalIndexType ) >;
    using SubentityDecomposer = EntityDecomposer< MeshConfig, FaceTopology, SubentityDecomposerVersion >;
    
-   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType & entity )
+   static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto& mesh = entity.getMesh();
       const auto v3 = entity.template getSubentityIndex< 0 >( 0 );
@@ -197,29 +195,31 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
       return { extraPointsCount, entitiesCount };
    }
 
-   static void decompose( const MeshEntityType & entity,
-                          PointCreationFunctorType pointCreationFunctor,
-                          DecomposedEntityFunctorType decomposedEntityFunctor )
+   template< typename AddPointFunctor,
+             typename AddCellFunctor >
+   static void decompose( const MeshEntityType& entity,
+                          AddPointFunctor&& addPoint,
+                          AddCellFunctor&& addCell )
    {
-      const auto & mesh = entity.getMesh();
+      const auto& mesh = entity.getMesh();
       const auto v3 = entity.template getSubentityIndex< 0 >( 0 );
 
       // Lambda for creating tetrahedron by connecting decomposed triangles of faces to 0th point of polyhedron
-      auto decomposedSubentityFunctor = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
-         decomposedEntityFunctor( v0, v1, v2, v3 );
+      auto addFace = [&] ( GlobalIndexType v0, GlobalIndexType v1, GlobalIndexType v2 ) {
+         addCell( v0, v1, v2, v3 );
       };
 
       const auto facesCount = entity.template getSubentitiesCount< 2 >();
       for( LocalIndexType i = 0; i < facesCount; i++ ) {
          const auto face = mesh.template getEntity< 2 >( entity.template getSubentityIndex< 2 >( i ) );
          if( !faceContainsPoint( face, v3 ) ) { // include only faces, that don't contain point v3
-            SubentityDecomposer::decompose( face, pointCreationFunctor, decomposedSubentityFunctor );
+            SubentityDecomposer::decompose( face, std::forward< AddPointFunctor >( addPoint ), addFace );
          }
       }
    }
 
 private:
-   static bool faceContainsPoint( const MeshSubentityType & face, const GlobalIndexType point )
+   static bool faceContainsPoint( const MeshSubentityType& face, const GlobalIndexType point )
    {
       const LocalIndexType pointsCount = face.template getSubentitiesCount< 0 >();
       for( LocalIndexType i = 0; i < pointsCount; i++ ) {

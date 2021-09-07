@@ -218,6 +218,13 @@ fatalFailure()
 }
 
 template< typename T >
+::std::stringstream& operator<<( ::std::stringstream& ss, const std::pair< T, T >& pair )
+{
+   ss << '(' << pair.first << ',' <<  pair.second << ')';
+   return ss;
+}
+
+template< typename T >
 struct Formatter
 {
    static std::string

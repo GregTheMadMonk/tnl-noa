@@ -341,7 +341,7 @@ struct MeshBenchmarks
    static void benchmark_decomposition( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       auto benchmark_func = [&] () {
-         const auto decomposedMesh = getDecomposedMesh< DecomposerVersion >( mesh_src );
+         auto meshBuilder = decomposeMesh< DecomposerVersion >( mesh_src );
       };
 
       benchmark.time< Devices::Host >( "CPU",
@@ -356,7 +356,7 @@ struct MeshBenchmarks
    static void benchmark_decomposition( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       auto benchmark_func = [&] () {
-         const auto decomposedMesh = getDecomposedMesh< DecomposerVersion, SubDecomposerVersion >( mesh_src );
+         auto meshBuilder = decomposeMesh< DecomposerVersion, SubDecomposerVersion >( mesh_src );
       };
 
       benchmark.time< Devices::Host >( "CPU",
