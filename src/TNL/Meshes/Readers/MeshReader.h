@@ -167,15 +167,14 @@ public:
                                             + "of cells used in the file (" + VTK::getShapeName(cellShape) + ")" );
 
       using MeshBuilder = MeshBuilder< MeshType >;
+      using NeighborCountsArray = typename MeshBuilder::NeighborCountsArray;
       using PointType = typename MeshType::PointType;
       using FaceSeedType = typename MeshBuilder::FaceSeedType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
       MeshBuilder meshBuilder;
-      meshBuilder.setPointsCount( NumberOfPoints );
-      meshBuilder.setFacesCount( NumberOfFaces );
-      meshBuilder.setCellsCount( NumberOfCells );
-
+      meshBuilder.setEntitiesCount( NumberOfPoints, NumberOfCells, NumberOfFaces );
+ 
       // assign points
       visit( [&meshBuilder](auto&& array) {
                PointType p;
@@ -198,14 +197,17 @@ public:
                using mpark::get;
                const auto& offsets = get< std::decay_t<decltype(connectivity)> >( faceOffsetsArray );
                
+               // Set corners counts
+               NeighborCountsArray cornersCounts( NumberOfFaces );
                std::size_t offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
                   const std::size_t offsetEnd = offsets[ i ];
-                  meshBuilder.setFaceCornersCount( i, offsetEnd - offsetStart );
+                  cornersCounts[ i ] = offsetEnd - offsetStart;
                   offsetStart = offsetEnd;
                }
-               meshBuilder.initializeFaceSeeds();
+               meshBuilder.setFaceCornersCounts( std::move( cornersCounts ) );
 
+               // Set corner ids
                offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfFaces; i++ ) {
                   FaceSeedType seed = meshBuilder.getFaceSeed( i );
@@ -224,14 +226,17 @@ public:
                using mpark::get;
                const auto& offsets = get< std::decay_t<decltype(connectivity)> >( cellOffsetsArray );
 
+               // Set corners counts
+               NeighborCountsArray cornersCounts( NumberOfCells );
                std::size_t offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfCells; i++ ) {
                   const std::size_t offsetEnd = offsets[ i ];
-                  meshBuilder.setCellCornersCount( i, offsetEnd - offsetStart );
+                  cornersCounts[ i ] = offsetEnd - offsetStart;
                   offsetStart = offsetEnd;
                }
-               meshBuilder.initializeCellSeeds();
+               meshBuilder.setCellCornersCounts( std::move( cornersCounts ) );
 
+               // Set corner ids
                offsetStart = 0;
                for( std::size_t i = 0; i < NumberOfCells; i++ ) {
                   CellSeedType seed = meshBuilder.getCellSeed( i );

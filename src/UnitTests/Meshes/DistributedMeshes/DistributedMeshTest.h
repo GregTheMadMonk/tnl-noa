@@ -93,8 +93,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
       for( Index x = cell_begin.x() - (rank_coordinates.x() > 0) * overlap; x < cell_end.x() + (rank_coordinates.x() < rank_sizes.x() - 1) * overlap; x++ )
          cellsCount++;
       TNL::Meshes::MeshBuilder< LocalMeshType > meshBuilder;
-      meshBuilder.setPointsCount( verticesCount );
-      meshBuilder.setCellsCount( cellsCount );
+      meshBuilder.setEntitiesCount( verticesCount, cellsCount );
 
       // mappings for vertex indices
       std::unordered_map< Index, Index > vert_global_to_local, cell_global_to_local;

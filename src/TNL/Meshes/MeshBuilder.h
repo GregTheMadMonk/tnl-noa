@@ -17,6 +17,7 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -35,45 +36,45 @@ public:
    using CellSeedType       = typename CellSeedMatrixType::EntitySeedMatrixSeed;
    using FaceSeedMatrixType = typename MeshTraitsType::FaceSeedMatrixType;
    using FaceSeedType       = typename FaceSeedMatrixType::EntitySeedMatrixSeed;
+   using NeighborCountsArray = typename MeshTraitsType::NeighborCountsArray;
    
-   void setPointsCount( const GlobalIndexType& points )
+   void setEntitiesCount( const GlobalIndexType& points, 
+                          const GlobalIndexType& cells = 0,
+                          const GlobalIndexType& faces = 0 )
    {
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );
+
+      if( std::is_same< CellTopology, Topologies::Polyhedron >::value )
+      {
+         this->faceSeeds.setDimensions( faces, points );
+         this->cellSeeds.setDimensions( cells, faces );
+      }
+      else // Topologies other than polyhedrons don't use face seeds
+      {
+         this->cellSeeds.setDimensions( cells, points );
+      }
    }
 
-   void setFacesCount( const GlobalIndexType& facesCount )
+   void setFaceCornersCounts( const NeighborCountsArray& counts )
    {
-      this->faceSeeds.setDimensions( facesCount, this->points.getSize() );
+      this->faceSeeds.setEntityCornersCounts( counts );
    }
 
-   void setFaceCornersCount( const GlobalIndexType& faceIndex, const LocalIndexType& cornersCount )
+   void setFaceCornersCounts( NeighborCountsArray&& counts )
    {
-      this->faceSeeds.setEntityCornersCount( faceIndex, cornersCount );
+      this->faceSeeds.setEntityCornersCounts( std::move( counts ) );
    }
 
-   void initializeFaceSeeds()
+   void setCellCornersCounts( const NeighborCountsArray& counts )
    {
-      this->faceSeeds.initializeRows();
+      this->cellSeeds.setEntityCornersCounts( counts );
    }
 
-   void setCellsCount( const GlobalIndexType& cellsCount )
+   void setCellCornersCounts( NeighborCountsArray&& counts )
    {
-      if( getFacesCount() == 0 ) // faceSeeds aren't used ( cellSeeds store indeces of points )
-         this->cellSeeds.setDimensions( cellsCount, getPointsCount() );
-      else // faceSeeds are used ( cellSeeds store indeces of faces )
-         this->cellSeeds.setDimensions( cellsCount, getFacesCount() );
-   }
-
-   void setCellCornersCount( const GlobalIndexType& cellIndex, const LocalIndexType& cornersCount )
-   {
-      this->cellSeeds.setEntityCornersCount( cellIndex, cornersCount );
-   }
-
-   void initializeCellSeeds()
-   {
-      this->cellSeeds.initializeRows();
+      this->cellSeeds.setEntityCornersCounts( std::move( counts ) );
    }
 
    GlobalIndexType getPointsCount() const

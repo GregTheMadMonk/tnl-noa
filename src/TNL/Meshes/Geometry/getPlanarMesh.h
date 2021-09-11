@@ -29,6 +29,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
    using PolygonMesh = Mesh< MeshConfig, Devices::Host >;
    using MeshBuilder = MeshBuilder< PolygonMesh >;
+   using NeighborCountsArray = typename MeshBuilder::NeighborCountsArray;
    using GlobalIndexType = typename PolygonMesh::GlobalIndexType;
    using LocalIndexType = typename PolygonMesh::LocalIndexType;
    using PointType = typename PolygonMesh::PointType;
@@ -66,8 +67,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const auto& reduceResult = indeces[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
-   meshBuilder.setPointsCount( outPointsCount );
-   meshBuilder.setCellsCount( outCellsCount );
+   meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {
@@ -76,6 +76,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    ParallelFor< Devices::Host >::exec( 0, inPointsCount, copyPoint );
 
    // set corner counts for cells
+   NeighborCountsArray cellCornersCounts( outCellsCount );
    auto setCornersCount = [&] ( GlobalIndexType i ) mutable {
       GlobalIndexType cellIndex = indeces[ i ].second;
       const GlobalIndexType nextCellIndex = indeces[ i + 1 ].second;
@@ -84,16 +85,16 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
       if( cellsCount == 1 ) { // cell is already planar (cell is copied)
          const auto cell = inMesh.template getEntity< CellDimension >( i );
          const auto verticesCount = cell.template getSubentitiesCount< 0 >();
-         meshBuilder.setCellCornersCount( cellIndex, verticesCount );
+         cellCornersCounts[ cellIndex ] = verticesCount;
       }
       else { // cell is not planar (cell is decomposed)
          for( ; cellIndex < nextCellIndex; cellIndex++ ) {
-            meshBuilder.setCellCornersCount( cellIndex, 3 );
+            cellCornersCounts[ cellIndex ] = 3;
          }
       }
    };
    ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCornersCount );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( std::move( cellCornersCounts ) );
 
    // Decompose non-planar cells and copy the rest
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
@@ -147,18 +148,19 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using namespace TNL::Algorithms;
 
    using PolyhedronMesh = Mesh< MeshConfig, Devices::Host >;
+   using MeshBuilder = MeshBuilder< PolyhedronMesh >;
+   using NeighborCountsArray = typename MeshBuilder::NeighborCountsArray;
    using GlobalIndexType = typename PolyhedronMesh::GlobalIndexType;
    using LocalIndexType = typename PolyhedronMesh::LocalIndexType;
    using PointType = typename PolyhedronMesh::PointType;
    using RealType = typename PolyhedronMesh::RealType;
-   using FaceMapArray = Containers::Array< std::pair< GlobalIndexType, GlobalIndexType >, Devices::Host, GlobalIndexType >;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, DecomposerVersion >;
    constexpr int CellDimension = PolyhedronMesh::getMeshDimension();
    constexpr int FaceDimension = CellDimension - 1;
 
    constexpr RealType precision{ 1e-6 };
 
-   MeshBuilder< PolyhedronMesh > meshBuilder;
+   MeshBuilder meshBuilder;
 
    const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
    const GlobalIndexType inFacesCount = inMesh.template getEntitiesCount< FaceDimension >();
@@ -186,9 +188,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const auto& reduceResult = indeces[ inFacesCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outFacesCount = reduceResult.second;
-   meshBuilder.setPointsCount( outPointsCount );
-   meshBuilder.setFacesCount( outFacesCount );
-   meshBuilder.setCellsCount( inCellsCount ); // The number of cells stays the same
+   const GlobalIndexType outCellsCount = inCellsCount; // The number of cells stays the same
+   meshBuilder.setEntitiesCount( outPointsCount, outCellsCount, outFacesCount );
 
    // Copy the points from inMesh to outMesh
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {
@@ -197,6 +198,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    ParallelFor< Devices::Host >::exec( 0, inPointsCount, copyPoint );
 
    // set corner counts for cells
+   NeighborCountsArray cellCornersCounts( outCellsCount );
    auto setCellCornersCount = [&] ( GlobalIndexType i ) mutable {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       const LocalIndexType cellFacesCount = cell.template getSubentitiesCount< FaceDimension >();
@@ -208,10 +210,10 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
          cornersCount += indeces[ faceIdx + 1 ].second - indeces[ faceIdx ].second;
       }
 
-      meshBuilder.setCellCornersCount( i, cornersCount );
+      cellCornersCounts[ i ] = cornersCount;
    };
    ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCellCornersCount );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( std::move( cellCornersCounts ) );
 
    // Set corner ids for cells
    auto setCellCornersIds = [&] ( GlobalIndexType i ) mutable {
@@ -229,6 +231,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCellCornersIds );
 
    // set corner counts for faces
+   NeighborCountsArray faceCornersCounts( outFacesCount );
    auto setFaceCornersCount = [&] ( GlobalIndexType i ) mutable {
       GlobalIndexType faceIndex = indeces[ i ].second;
       const GlobalIndexType nextFaceIndex = indeces[ i + 1 ].second;
@@ -236,16 +239,16 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
       if( facesCount == 1 ) { // face is already planar (it is copied)
          const auto face = inMesh.template getEntity< FaceDimension >( i );
          const auto verticesCount = face.template getSubentitiesCount< 0 >();
-         meshBuilder.setFaceCornersCount( faceIndex, verticesCount );
+         faceCornersCounts[ faceIndex ] = verticesCount;
       }
       else { // face is not planar (it is decomposed)
          for( ; faceIndex < nextFaceIndex; faceIndex++ ) {
-            meshBuilder.setFaceCornersCount( faceIndex, 3 );
+            faceCornersCounts[ faceIndex ] = 3;
          }
       }
    };
    ParallelFor< Devices::Host >::exec( 0, inFacesCount, setFaceCornersCount );
-   meshBuilder.initializeFaceSeeds();
+   meshBuilder.setFaceCornersCounts( std::move( faceCornersCounts ) );
 
    // Decompose non-planar faces and copy the rest
    auto decomposeFace = [&] ( GlobalIndexType i ) mutable {

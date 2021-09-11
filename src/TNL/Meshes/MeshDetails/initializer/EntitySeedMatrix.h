@@ -104,12 +104,14 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
       }
 
       // This method is only here for compatibility with specialization for dynamic entity topologies
-      void setEntityCornersCount( const GlobalIndexType& entityIndex, const LocalIndexType& count )
-      {}
+      void setEntityCornersCounts( const NeighborCountsArray& counts )
+      {
+      }
 
       // This method is only here for compatibility with specialization for dynamic entity topologies
-      void initializeRows()
-      {}
+      void setEntityCornersCounts( NeighborCountsArray&& counts )
+      {
+      }
 
       void reset()
       {
@@ -244,12 +246,14 @@ class EntitySeedMatrix< MeshConfig, Topologies::Vertex, false >
       }
 
       // This method is only here for compatibility with specialization for dynamic entity topologies
-      void setEntityCornersCount( const GlobalIndexType& entityIndex, const LocalIndexType& count )
-      {}
+      void setEntityCornersCounts( const NeighborCountsArray& counts )
+      {
+      }
 
       // This method is only here for compatibility with specialization for dynamic entity topologies
-      void initializeRows()
-      {}
+      void setEntityCornersCounts( NeighborCountsArray&& counts )
+      {
+      }
 
       void reset()
       {
@@ -387,14 +391,16 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, true >
          matrix.setDimensions( entitiesCount, pointsCount );
       }
 
-      void setEntityCornersCount( const GlobalIndexType& entityIndex, const LocalIndexType& count )
+      void setEntityCornersCounts( const NeighborCountsArray& counts_ )
       {
-         counts.setElement( entityIndex, count );
+         this->counts = counts_;
+         matrix.setRowCapacities( this->counts );
       }
 
-      void initializeRows()
+      void setEntityCornersCounts( NeighborCountsArray&& counts_ )
       {
-         matrix.setRowCapacities( counts );
+         this->counts = std::move( counts_ );
+         matrix.setRowCapacities( this->counts );
       }
 
       void reset()

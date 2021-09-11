@@ -62,8 +62,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const auto& reduceResult = indeces[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
-   meshBuilder.setPointsCount( outPointsCount );
-   meshBuilder.setCellsCount( outCellsCount );
+   meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {
@@ -164,8 +163,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const auto& reduceResult = indeces[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
-   meshBuilder.setPointsCount( outPointsCount );
-   meshBuilder.setCellsCount( outCellsCount );
+   meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
 
    // Copy the points from inMesh to outMesh
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {

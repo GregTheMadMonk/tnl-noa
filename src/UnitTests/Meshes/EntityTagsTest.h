@@ -48,8 +48,7 @@ TEST( MeshTest, RegularMeshOfQuadranglesTest )
    typedef Mesh< TestQuadrangleMeshConfig > TestQuadrangleMesh;
    TestQuadrangleMesh mesh, mesh2;
    MeshBuilder< TestQuadrangleMesh > meshBuilder;
-   meshBuilder.setPointsCount( numberOfVertices );
-   meshBuilder.setCellsCount( numberOfCells );
+   meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
    /****
     * Setup vertices

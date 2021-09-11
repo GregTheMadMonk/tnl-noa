@@ -82,16 +82,15 @@ TEST( MeshGeometryTest, Polygon2DAreaTest )
    PolygonTestMesh mesh;
    MeshBuilder< PolygonTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setEntitiesCount( 5, 1 );
+
    meshBuilder.setPoint( 0, point0 );
    meshBuilder.setPoint( 1, point1 );
    meshBuilder.setPoint( 2, point2 );
    meshBuilder.setPoint( 3, point3 );
    meshBuilder.setPoint( 4, point4 );
 
-   meshBuilder.setCellsCount( 1 );
-   meshBuilder.setCellCornersCount( 0, 5 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 5 } );
 
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
@@ -131,17 +130,15 @@ TEST( MeshGeometryTest, Polygon3DAreaTest )
 
    PolygonTestMesh mesh;
    MeshBuilder< PolygonTestMesh > meshBuilder;
+   meshBuilder.setEntitiesCount( 5, 1 );
 
-   meshBuilder.setPointsCount( 5 );
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
    meshBuilder.setPoint(  3, point3  );
    meshBuilder.setPoint(  4, point4  );
 
-   meshBuilder.setCellsCount( 1 );
-   meshBuilder.setCellCornersCount( 0, 5 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 5 } );
 
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
@@ -173,7 +170,8 @@ TEST( MeshGeometryTest, WedgeAreaTest )
    WedgeTestMesh mesh;
    MeshBuilder< WedgeTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 6 );
+   meshBuilder.setEntitiesCount( 6, 1 );
+
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
@@ -181,7 +179,6 @@ TEST( MeshGeometryTest, WedgeAreaTest )
    meshBuilder.setPoint(  4, point4  );
    meshBuilder.setPoint(  5, point5  );
 
-   meshBuilder.setCellsCount( 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -214,14 +211,14 @@ TEST( MeshGeometryTest, PyramidAreaTest )
    PyramidTestMesh mesh;
    MeshBuilder< PyramidTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 5 );
+   meshBuilder.setEntitiesCount( 5, 1 );
+
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
    meshBuilder.setPoint(  3, point3  );
    meshBuilder.setPoint(  4, point4  );
 
-   meshBuilder.setCellsCount( 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );
@@ -257,7 +254,8 @@ TEST( MeshGeometryTest, PolyhedronAreaTest )
    PolyhedronTestMesh mesh;
    MeshBuilder< PolyhedronTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 9 );
+   meshBuilder.setEntitiesCount( 9, 1, 9 );
+
    meshBuilder.setPoint(  0, point0 );
    meshBuilder.setPoint(  1, point1 );
    meshBuilder.setPoint(  2, point2 );
@@ -268,17 +266,7 @@ TEST( MeshGeometryTest, PolyhedronAreaTest )
    meshBuilder.setPoint(  7, point7 );
    meshBuilder.setPoint(  8, point8 );
 
-   meshBuilder.setFacesCount( 9 );
-   meshBuilder.setFaceCornersCount( 0, 4 );
-   meshBuilder.setFaceCornersCount( 1, 4 );
-   meshBuilder.setFaceCornersCount( 2, 4 );
-   meshBuilder.setFaceCornersCount( 3, 4 );
-   meshBuilder.setFaceCornersCount( 4, 4 );
-   meshBuilder.setFaceCornersCount( 5, 3 );
-   meshBuilder.setFaceCornersCount( 6, 3 );
-   meshBuilder.setFaceCornersCount( 7, 3 );
-   meshBuilder.setFaceCornersCount( 8, 3 );
-   meshBuilder.initializeFaceSeeds();
+   meshBuilder.setFaceCornersCounts( { 4, 4, 4, 4, 4, 3, 3, 3, 3 } );
 
    meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 2 );
    meshBuilder.getFaceSeed( 0 ).setCornerId( 1, 3 );
@@ -321,9 +309,7 @@ TEST( MeshGeometryTest, PolyhedronAreaTest )
    meshBuilder.getFaceSeed( 8 ).setCornerId( 1, 4 );
    meshBuilder.getFaceSeed( 8 ).setCornerId( 2, 8 );
 
-   meshBuilder.setCellsCount( 1 );
-   meshBuilder.setCellCornersCount( 0, 9 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 9 } );
 
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
@@ -378,7 +364,8 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    PolygonTestMesh mesh;
    MeshBuilder< PolygonTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 10 );
+   meshBuilder.setEntitiesCount( 10, 6 );
+
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
@@ -390,14 +377,7 @@ TEST( MeshGeometryTest, Polygon3DIsPlanarTest )
    meshBuilder.setPoint(  8, point3_ );
    meshBuilder.setPoint(  9, point4_ );
 
-   meshBuilder.setCellsCount( 6 );
-   meshBuilder.setCellCornersCount( 0, 5 );
-   meshBuilder.setCellCornersCount( 1, 5 );
-   meshBuilder.setCellCornersCount( 2, 5 );
-   meshBuilder.setCellCornersCount( 3, 5 );
-   meshBuilder.setCellCornersCount( 4, 5 );
-   meshBuilder.setCellCornersCount( 5, 5 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 5, 5, 5, 5, 5, 5 } );
 
    // Planar cell with non-deviated points
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
@@ -461,7 +441,8 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
    PolygonTestMesh mesh;
    MeshBuilder< PolygonTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 16 );
+   meshBuilder.setEntitiesCount( 16, 7 );
+
    meshBuilder.setPoint(  0, PointType( 0.250, 0.150 ) );
    meshBuilder.setPoint(  1, PointType( 0.150, 0.250 ) );
    meshBuilder.setPoint(  2, PointType( 0.900, 0.500 ) );
@@ -491,15 +472,7 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
     *  10     5     4    13    15
     */
 
-   meshBuilder.setCellsCount( 7 );
-   meshBuilder.setCellCornersCount( 0, 6 );
-   meshBuilder.setCellCornersCount( 1, 5 );
-   meshBuilder.setCellCornersCount( 2, 4 );
-   meshBuilder.setCellCornersCount( 3, 4 );
-   meshBuilder.setCellCornersCount( 4, 5 );
-   meshBuilder.setCellCornersCount( 5, 5 );
-   meshBuilder.setCellCornersCount( 6, 5 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 6, 5, 4, 4, 5, 5, 5 } );
 
    //   1     0     3     2     4     5
    meshBuilder.getCellSeed( 0 ).setCornerId( 0,  1 );
@@ -611,7 +584,8 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
    PolyhedronTestMesh mesh;
    MeshBuilder< PolyhedronTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 22 );
+   meshBuilder.setEntitiesCount( 22, 2, 16 );
+
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
@@ -658,24 +632,7 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
     * NOTE: indeces refer to the points
     */
 
-   meshBuilder.setFacesCount( 16 );
-   meshBuilder.setFaceCornersCount(  0, 5 );
-   meshBuilder.setFaceCornersCount(  1, 4 );
-   meshBuilder.setFaceCornersCount(  2, 5 );
-   meshBuilder.setFaceCornersCount(  3, 4 );
-   meshBuilder.setFaceCornersCount(  4, 5 );
-   meshBuilder.setFaceCornersCount(  5, 4 );
-   meshBuilder.setFaceCornersCount(  6, 5 );
-   meshBuilder.setFaceCornersCount(  7, 5 );
-   meshBuilder.setFaceCornersCount(  8, 5 );
-   meshBuilder.setFaceCornersCount(  9, 5 );
-   meshBuilder.setFaceCornersCount( 10, 5 );
-   meshBuilder.setFaceCornersCount( 11, 6 );
-   meshBuilder.setFaceCornersCount( 12, 3 );
-   meshBuilder.setFaceCornersCount( 13, 4 );
-   meshBuilder.setFaceCornersCount( 14, 4 );
-   meshBuilder.setFaceCornersCount( 15, 5 );
-   meshBuilder.initializeFaceSeeds();
+   meshBuilder.setFaceCornersCounts( { 5, 4, 5, 4, 5, 4, 5, 5, 5, 5, 5, 6, 3, 4, 4, 5 } );
 
    //   0     1     2     3     4
    meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 0 );
@@ -792,10 +749,7 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
     * NOTE: indeces refer to the faces
     */
 
-   meshBuilder.setCellsCount( 2 );
-   meshBuilder.setCellCornersCount( 0, 9 );
-   meshBuilder.setCellCornersCount( 1, 8 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 9, 8 } );
 
    //   0     1     2     3     4     5      6     7     8
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
@@ -886,7 +840,8 @@ TEST( MeshGeometryTest, Polygon3DGetPlanarMeshTest )
    PolygonTestMesh mesh;
    MeshBuilder< PolygonTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 6 );
+   meshBuilder.setEntitiesCount( 6, 2 );
+
    meshBuilder.setPoint(  0, point0 );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
@@ -894,10 +849,7 @@ TEST( MeshGeometryTest, Polygon3DGetPlanarMeshTest )
    meshBuilder.setPoint(  4, point4  );
    meshBuilder.setPoint(  5, point5  );
 
-   meshBuilder.setCellsCount( 2 );
-   meshBuilder.setCellCornersCount( 0, 4 );
-   meshBuilder.setCellCornersCount( 1, 4 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 4, 4 } );
 
    // Planar cell
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
@@ -972,7 +924,8 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
    PolyhedronTestMesh mesh;
    MeshBuilder< PolyhedronTestMesh > meshBuilder;
 
-   meshBuilder.setPointsCount( 22 );
+   meshBuilder.setEntitiesCount( 22, 2, 16 );
+
    meshBuilder.setPoint(  0, point0  );
    meshBuilder.setPoint(  1, point1  );
    meshBuilder.setPoint(  2, point2  );
@@ -1019,24 +972,7 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
     * NOTE: indeces refer to the points
     */
 
-   meshBuilder.setFacesCount( 16 );
-   meshBuilder.setFaceCornersCount(  0, 5 );
-   meshBuilder.setFaceCornersCount(  1, 4 );
-   meshBuilder.setFaceCornersCount(  2, 5 );
-   meshBuilder.setFaceCornersCount(  3, 4 );
-   meshBuilder.setFaceCornersCount(  4, 5 );
-   meshBuilder.setFaceCornersCount(  5, 4 );
-   meshBuilder.setFaceCornersCount(  6, 5 );
-   meshBuilder.setFaceCornersCount(  7, 5 );
-   meshBuilder.setFaceCornersCount(  8, 5 );
-   meshBuilder.setFaceCornersCount(  9, 5 );
-   meshBuilder.setFaceCornersCount( 10, 5 );
-   meshBuilder.setFaceCornersCount( 11, 6 );
-   meshBuilder.setFaceCornersCount( 12, 3 );
-   meshBuilder.setFaceCornersCount( 13, 4 );
-   meshBuilder.setFaceCornersCount( 14, 4 );
-   meshBuilder.setFaceCornersCount( 15, 5 );
-   meshBuilder.initializeFaceSeeds();
+   meshBuilder.setFaceCornersCounts( { 5, 4, 5, 4, 5, 4, 5, 5, 5, 5, 5, 6, 3, 4, 4, 5 } );
 
    //   0     1     2     3     4
    meshBuilder.getFaceSeed( 0 ).setCornerId( 0, 0 );
@@ -1153,10 +1089,7 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
     * NOTE: indeces refer to the faces
     */
 
-   meshBuilder.setCellsCount( 2 );
-   meshBuilder.setCellCornersCount( 0, 9 );
-   meshBuilder.setCellCornersCount( 1, 8 );
-   meshBuilder.initializeCellSeeds();
+   meshBuilder.setCellCornersCounts( { 9, 8 } );
 
    //   0     1     2     3     4     5      6     7     8
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
