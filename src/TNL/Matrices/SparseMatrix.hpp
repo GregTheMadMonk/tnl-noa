@@ -904,7 +904,7 @@ operator=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocato
    else
    {
       const IndexType maxRowLength = matrix.getColumns();
-      const IndexType bufferRowsCount( 128 );
+      const IndexType bufferRowsCount( 4096 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
       Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
@@ -1017,7 +1017,7 @@ operator=( const RHSMatrix& matrix )
    else
    {
       const IndexType maxRowLength = max( rowCapacities );
-      const IndexType bufferRowsCount( 128 );
+      const IndexType bufferRowsCount( 4096 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
       Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > matrixColumnsBuffer( bufferSize );
