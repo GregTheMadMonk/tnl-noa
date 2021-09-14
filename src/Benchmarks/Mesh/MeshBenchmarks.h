@@ -61,11 +61,11 @@ struct MeshBenchmarks
       Benchmark::MetadataColumns metadataColumns = {
          // {"mesh-file", meshFile},
          {"config", Mesh::Config::getConfigType()},
-         {"topology", removeNamespaces( getType< typename Mesh::Config::CellTopology >() ) },
+         //{"topology", removeNamespaces( getType< typename Mesh::Config::CellTopology >() ) },
          {"space dim", std::to_string( Mesh::Config::spaceDimension )},
          {"real", getType< typename Mesh::RealType >()},
          {"gid_t", getType< typename Mesh::GlobalIndexType >()},
-         {"lid_t", getType< typename Mesh::LocalIndexType >()}
+         //{"lid_t", getType< typename Mesh::LocalIndexType >()}
       };
 
       const String & meshFile = parameters.getParameter< String >( "mesh-file" );
@@ -94,6 +94,7 @@ struct MeshBenchmarks
       PlanarDispatch::exec( benchmark, parameters, mesh );
       MeasuresDispatch::exec( benchmark, parameters, mesh );
       MemoryDispatch::exec( benchmark, parameters, mesh );
+      CopyDispatch::exec( benchmark, parameters, mesh );
    }
 
    struct ReaderDispatch
@@ -303,6 +304,76 @@ struct MeshBenchmarks
       }
    };
 
+   struct CopyDispatch
+   {
+      // Polygonal Mesh
+      template< typename M,
+                std::enable_if_t< std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value, bool > = true >
+      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh )
+      {
+         benchmark.setOperation( String("Copy CPU->GPU") );
+         exec_helper( benchmark, parameters, mesh );
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (c))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (p))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+      }
+
+      // Polyhedral Mesh
+      template< typename M,
+                std::enable_if_t< std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value, bool > = true >
+      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh )
+      {
+         benchmark.setOperation( String("Copy CPU->GPU") );
+         exec_helper( benchmark, parameters, mesh );
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (cc))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
+                                                           EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (cp))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
+                                                           EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (pc))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
+                                                           EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+
+         {
+            benchmark.setOperation( String("Copy CPU->GPU (decomp (pp))") );
+            const auto decomposedMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
+                                                           EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+            exec_helper( benchmark, parameters, decomposedMesh );
+         }
+      }
+   private:
+      template< typename M >
+      static void exec_helper( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh )
+      {
+         //benchmark_copy< Devices::Host >( benchmark, parameters, mesh );
+#ifdef HAVE_CUDA
+         benchmark_copy< Devices::Cuda >( benchmark, parameters, mesh );
+#endif
+      }
+   };
+
    static void benchmark_reader( Benchmark & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
    {
       auto reset = [&]() {
@@ -427,6 +498,25 @@ struct MeshBenchmarks
       MemoryBenchmarkResult memResult = testMemoryUsage( parameters, mesh_src );
       auto noop = [](){};
       benchmark.time< TNL::Devices::Host >( "CPU", noop, memResult );
+   }
+
+   template< typename Device,
+             typename M >
+   static void benchmark_copy( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   {
+      using DeviceMesh = Meshes::Mesh< typename M::Config, Device >;
+
+      // skip benchmarks on devices which the user did not select
+      if( ! checkDevice< Device >( parameters ) )
+         return;
+
+      auto benchmark_func = [&] () {
+         DeviceMesh deviceMesh = mesh_src;
+      };
+
+      benchmark.time< Device >( [] () {},
+                                (std::is_same< Device, Devices::Host >::value) ? "CPU" : "GPU",
+                                benchmark_func );
    }
 };
 
