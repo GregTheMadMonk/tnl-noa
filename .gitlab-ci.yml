@@ -177,7 +177,7 @@ cuda_matrix_tests_Release:
         BUILD_MATRIX_TESTS: "yes"
 
 
-cuda_examples_Debug:
+cuda_nontests_Debug:
     extends: .build_template
     stage: build:cuda
     tags:
@@ -188,35 +188,11 @@ cuda_examples_Debug:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         BUILD_EXAMPLES: "yes"
-
-cuda_examples_Release:
-    extends: .build_template
-    stage: build:cuda
-    tags:
-        - docker
-        - nvidia
-    variables:
-        <<: *default_cmake_flags
-        WITH_CUDA: "yes"
-        BUILD_TYPE: Release
-        BUILD_EXAMPLES: "yes"
-
-
-cuda_benchmarks_tools_python_Debug:
-    extends: .build_template
-    stage: build:cuda
-    tags:
-        - docker
-        - nvidia
-    variables:
-        <<: *default_cmake_flags
-        WITH_CUDA: "yes"
-        BUILD_TYPE: Debug
         BUILD_BENCHMARKS: "yes"
         BUILD_TOOLS: "yes"
         BUILD_PYTHON: "yes"
 
-cuda_benchmarks_tools_python_Release:
+cuda_nontests_Release:
     extends: .build_template
     stage: build:cuda
     tags:
@@ -226,6 +202,7 @@ cuda_benchmarks_tools_python_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
+        BUILD_EXAMPLES: "yes"
         BUILD_BENCHMARKS: "yes"
         BUILD_TOOLS: "yes"
         BUILD_PYTHON: "yes"
@@ -251,24 +228,14 @@ cuda_mpi_matrix_tests_Release:
         - cuda_matrix_tests_Release
         - .cuda_openmp_mpi
 
-cuda_mpi_examples_Debug:
+cuda_mpi_nontests_Debug:
     extends:
-        - cuda_examples_Debug
+        - cuda_nontests_Debug
         - .cuda_openmp_mpi
 
-cuda_mpi_examples_Release:
+cuda_mpi_nontests_Release:
     extends:
-        - cuda_examples_Release
-        - .cuda_openmp_mpi
-
-cuda_mpi_benchmarks_tools_python_Debug:
-    extends:
-        - cuda_benchmarks_tools_python_Debug
-        - .cuda_openmp_mpi
-
-cuda_mpi_benchmarks_tools_python_Release:
-    extends:
-        - cuda_benchmarks_tools_python_Release
+        - cuda_nontests_Release
         - .cuda_openmp_mpi
 
 
@@ -303,34 +270,22 @@ default_matrix_tests_Release:
         BUILD_TYPE: Release
         BUILD_MATRIX_TESTS: "yes"
 
-default_examples_Debug:
+default_nontests_Debug:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
         BUILD_EXAMPLES: "yes"
-
-default_examples_Release:
-    extends: .build_template
-    variables:
-        <<: *default_cmake_flags
-        BUILD_TYPE: Release
-        BUILD_EXAMPLES: "yes"
-
-default_benchmarks_tools_python_Debug:
-    extends: .build_template
-    variables:
-        <<: *default_cmake_flags
-        BUILD_TYPE: Debug
         BUILD_BENCHMARKS: "yes"
         BUILD_TOOLS: "yes"
         BUILD_PYTHON: "yes"
 
-default_benchmarks_tools_python_Release:
+default_nontests_Release:
     extends: .build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
+        BUILD_EXAMPLES: "yes"
         BUILD_BENCHMARKS: "yes"
         BUILD_TOOLS: "yes"
         BUILD_PYTHON: "yes"
@@ -356,24 +311,14 @@ mpi_matrix_tests_Release:
         - default_matrix_tests_Release
         - .openmp_mpi
 
-mpi_examples_Debug:
+mpi_nontests_Debug:
     extends:
-        - default_examples_Debug
+        - default_nontests_Debug
         - .openmp_mpi
 
-mpi_examples_Release:
+mpi_nontests_Release:
     extends:
-        - default_examples_Release
-        - .openmp_mpi
-
-mpi_benchmarks_tools_python_Debug:
-    extends:
-        - default_benchmarks_tools_python_Debug
-        - .openmp_mpi
-
-mpi_benchmarks_tools_python_Release:
-    extends:
-        - default_benchmarks_tools_python_Release
+        - default_nontests_Release
         - .openmp_mpi
 
 
@@ -397,24 +342,14 @@ clang_matrix_tests_Release:
         - default_matrix_tests_Release
         - .clang
 
-clang_examples_Debug:
+clang_nontests_Debug:
     extends:
-        - default_examples_Debug
+        - default_nontests_Debug
         - .clang
 
-clang_examples_Release:
+clang_nontests_Release:
     extends:
-        - default_examples_Release
-        - .clang
-
-clang_benchmarks_tools_python_Debug:
-    extends:
-        - default_benchmarks_tools_python_Debug
-        - .clang
-
-clang_benchmarks_tools_python_Release:
-    extends:
-        - default_benchmarks_tools_python_Release
+        - default_nontests_Release
         - .clang
 
 
@@ -438,24 +373,14 @@ clang_mpi_matrix_tests_Release:
         - mpi_matrix_tests_Release
         - .clang
 
-clang_mpi_examples_Debug:
+clang_mpi_nontests_Debug:
     extends:
-        - mpi_examples_Debug
+        - mpi_nontests_Debug
         - .clang
 
-clang_mpi_examples_Release:
+clang_mpi_nontests_Release:
     extends:
-        - mpi_examples_Release
-        - .clang
-
-clang_mpi_benchmarks_tools_python_Debug:
-    extends:
-        - mpi_benchmarks_tools_python_Debug
-        - .clang
-
-clang_mpi_benchmarks_tools_python_Release:
-    extends:
-        - mpi_benchmarks_tools_python_Release
+        - mpi_nontests_Release
         - .clang
 
 
