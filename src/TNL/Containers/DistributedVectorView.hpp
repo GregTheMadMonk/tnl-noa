@@ -96,10 +96,10 @@ operator=( const Vector& vector )
                   "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "The communication groups of the array views must be equal." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "The communicators of the array views must be equal." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -122,10 +122,10 @@ operator+=( const Vector& vector )
                   "Multiary operations are supported only on vectors which are distributed the same way." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "Multiary operations are supported only on vectors within the same communicator." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -148,10 +148,10 @@ operator-=( const Vector& vector )
                   "Multiary operations are supported only on vectors which are distributed the same way." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "Multiary operations are supported only on vectors within the same communicator." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -174,10 +174,10 @@ operator*=( const Vector& vector )
                   "Multiary operations are supported only on vectors which are distributed the same way." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "Multiary operations are supported only on vectors within the same communicator." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -200,10 +200,10 @@ operator/=( const Vector& vector )
                   "Multiary operations are supported only on vectors which are distributed the same way." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "Multiary operations are supported only on vectors within the same communicator." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -226,10 +226,10 @@ operator%=( const Vector& vector )
                   "Multiary operations are supported only on vectors which are distributed the same way." );
    TNL_ASSERT_EQ( this->getGhosts(), vector.getGhosts(),
                   "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+   TNL_ASSERT_EQ( this->getCommunicator(), vector.getCommunicator(),
+                  "Multiary operations are supported only on vectors within the same communicator." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       vector.waitForSynchronization();
@@ -246,7 +246,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() = c;
       this->startSynchronization();
    }
@@ -261,7 +261,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator+=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() += c;
       this->startSynchronization();
    }
@@ -276,7 +276,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator-=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() -= c;
       this->startSynchronization();
    }
@@ -291,7 +291,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator*=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() *= c;
       this->startSynchronization();
    }
@@ -306,7 +306,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator/=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() /= c;
       this->startSynchronization();
    }
@@ -321,7 +321,7 @@ DistributedVectorView< Real, Device, Index >&
 DistributedVectorView< Real, Device, Index >::
 operator%=( Scalar c )
 {
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       getLocalView() %= c;
       this->startSynchronization();
    }

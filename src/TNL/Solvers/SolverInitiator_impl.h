@@ -18,25 +18,23 @@
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
-#include <TNL/Communicators/MpiCommunicator.h>
-
 namespace TNL {
 namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag,
           bool enabled = ConfigTagReal< ConfigTag, Real >::enabled >
 class SolverInitiatorRealResolver {};
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename ConfigTag,
           bool enabled = ConfigTagDevice< ConfigTag, Device >::enabled >
 class SolverInitiatorDeviceResolver {};
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -44,7 +42,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           bool enabled = ConfigTagIndex< ConfigTag, Index >::enabled >
 class SolverInitiatorIndexResolver {};
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -53,7 +51,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class SolverInitiatorMeshResolver {};
 
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename ConfigTag  >
 bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
 {
@@ -68,7 +66,7 @@ bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::Parameter
    return false;
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag >
 class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
@@ -86,7 +84,7 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag >
 class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
@@ -99,7 +97,7 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename ConfigTag >
@@ -120,7 +118,7 @@ class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, tru
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename ConfigTag >
@@ -134,7 +132,7 @@ class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, fal
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -149,7 +147,7 @@ class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTa
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -163,7 +161,7 @@ class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTa
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
@@ -173,28 +171,25 @@ class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         using CommunicatorType = Communicators::MpiCommunicator;
          return ProblemSetter< Real,
                                Device,
                                Index,
                                Meshes::DummyMesh< Real, Device, Index >,
                                ConfigTag,
-                               SolverStarter< ConfigTag >, CommunicatorType >::template run< Real, Device, Index, ConfigTag >( parameters );
+                               SolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
       }
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
           typename ConfigTag >
 class SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
-   using CommunicatorType = Communicators::MpiCommunicator;
-
    // wrapper for MeshTypeResolver
    template< typename MeshType >
-   using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag >, CommunicatorType >;
+   using ProblemSetterWrapper = ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >;
 
    public:
       static bool run( const Config::ParameterContainer& parameters )

@@ -207,12 +207,12 @@ std::string
 PVTIWriter< Grid >::addPiece( const String& mainFileName,
                               const DistributedMeshes::DistributedMesh< Grid >& distributedMesh )
 {
-   const MPI_Comm group = distributedMesh.getCommunicationGroup();
+   const MPI_Comm communicator = distributedMesh.getCommunicator();
    const typename Grid::CoordinatesType& globalBegin = distributedMesh.getGlobalBegin() - distributedMesh.getLowerOverlap();
    const typename Grid::CoordinatesType& globalEnd = globalBegin + distributedMesh.getLocalSize() + distributedMesh.getUpperOverlap();
 
    // exchange globalBegin and globalEnd among the ranks
-   const int nproc = MPI::GetSize( group );
+   const int nproc = MPI::GetSize( communicator );
    typename Grid::CoordinatesType beginsForScatter[ nproc ];
    typename Grid::CoordinatesType endsForScatter[ nproc ];
    for( int i = 0; i < nproc; i++ ) {
@@ -222,16 +222,16 @@ PVTIWriter< Grid >::addPiece( const String& mainFileName,
    typename Grid::CoordinatesType globalBegins[ nproc ];
    typename Grid::CoordinatesType globalEnds[ nproc ];
    // NOTE: exchanging general data types does not work with MPI
-   //MPI::Alltoall( beginsForScatter, 1, globalBegins, 1, group );
-   //MPI::Alltoall( endsForScatter, 1, globalEnds, 1, group );
-   MPI::Alltoall( (char*) beginsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalBegins, sizeof(typename Grid::CoordinatesType), group );
-   MPI::Alltoall( (char*) endsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalEnds, sizeof(typename Grid::CoordinatesType), group );
+   //MPI::Alltoall( beginsForScatter, 1, globalBegins, 1, communicator );
+   //MPI::Alltoall( endsForScatter, 1, globalEnds, 1, communicator );
+   MPI::Alltoall( (char*) beginsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalBegins, sizeof(typename Grid::CoordinatesType), communicator );
+   MPI::Alltoall( (char*) endsForScatter, sizeof(typename Grid::CoordinatesType), (char*) globalEnds, sizeof(typename Grid::CoordinatesType), communicator );
 
    // add pieces for all ranks, return the source for the current rank
    std::string source;
-   for( int i = 0; i < MPI::GetSize( group ); i++ ) {
+   for( int i = 0; i < MPI::GetSize( communicator ); i++ ) {
       const std::string s = addPiece( mainFileName, i, globalBegins[ i ], globalEnds[ i ] );
-      if( i == MPI::GetRank( group ) )
+      if( i == MPI::GetRank( communicator ) )
          source = s;
    }
    return source;

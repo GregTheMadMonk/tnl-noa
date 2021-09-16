@@ -156,7 +156,7 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
       {
          const RealType localError =
             max( currentTau / 3.0 * abs( 0.2 * k1 -0.9 * k3 + 0.8 * k4 -0.1 * k5 ) );
-            MPI::Allreduce( &localError, &error, 1, MPI_MAX, MPI::AllGroup() );
+            MPI::Allreduce( &localError, &error, 1, MPI_MAX, MPI_COMM_WORLD );
       }
 
       if( adaptivity == 0.0 || error < adaptivity )

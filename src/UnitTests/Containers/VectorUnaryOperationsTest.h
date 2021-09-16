@@ -56,10 +56,10 @@ protected:
       template< typename Real >
       using Vector = DistributedVector< Real, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
 
-      const MPI_Comm group = AllGroup();
+      const MPI_Comm communicator = MPI_COMM_WORLD;
 
-      const int rank = GetRank(group);
-      const int nproc = GetSize(group);
+      const int rank = GetRank(communicator);
+      const int nproc = GetSize(communicator);
 
       // some arbitrary even value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -183,14 +183,14 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorType = typename TestFixture::VectorType;     \
       using VectorOrView = typename TestFixture::VectorOrView; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->group ); \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->communicator ); \
       using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       VectorType _V1, _V2;                                     \
-      _V1.setDistribution( localRange, this->ghosts, size, this->group ); \
-      _V2.setDistribution( localRange, this->ghosts, size, this->group ); \
+      _V1.setDistribution( localRange, this->ghosts, size, this->communicator ); \
+      _V2.setDistribution( localRange, this->ghosts, size, this->communicator ); \
                                                                \
-      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->group ); \
+      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->communicator ); \
       _V1.setSynchronizer( _synchronizer );                    \
       _V2.setSynchronizer( _synchronizer );                    \
                                                                \
@@ -207,13 +207,13 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
       using HostExpectedVector = typename ExpectedVector::template Self< typename ExpectedVector::RealType, Devices::Host >; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->group ); \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType >::splitRange( size, this->communicator ); \
       using Synchronizer = typename Partitioner< typename VectorOrView::IndexType >::template ArraySynchronizer< typename VectorOrView::DeviceType >; \
                                                                \
       HostVector _V1h;                                         \
       HostExpectedVector expected_h;                           \
-      _V1h.setDistribution( localRange, this->ghosts, size, this->group ); \
-      expected_h.setDistribution( localRange, this->ghosts, size, this->group ); \
+      _V1h.setDistribution( localRange, this->ghosts, size, this->communicator ); \
+      expected_h.setDistribution( localRange, this->ghosts, size, this->communicator ); \
                                                                \
       const double h = (double) (end - begin) / size;          \
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ ) \
@@ -229,7 +229,7 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       VectorOrView V1( _V1 );                                  \
       ExpectedVector expected; expected = expected_h;          \
                                                                \
-      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->group ); \
+      auto _synchronizer = std::make_shared<Synchronizer>( localRange, this->ghosts / 2, this->communicator ); \
       _V1.setSynchronizer( _synchronizer );                    \
       expected.setSynchronizer( _synchronizer );               \
       expected.startSynchronization();                         \

@@ -49,7 +49,7 @@ struct Traits
    static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v; }
    static LocalViewType getLocalView( VectorViewType v ) { return v; }
 
-   static MPI_Comm getCommunicationGroup( const Matrix& m ) { return MPI::AllGroup(); }
+   static MPI_Comm getCommunicator( const Matrix& m ) { return MPI_COMM_WORLD; }
    static void startSynchronization( VectorViewType v ) {}
    static void waitForSynchronization( VectorViewType v ) {}
 };
@@ -88,7 +88,7 @@ struct Traits< Matrices::DistributedMatrix< Matrix > >
    static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v.getConstLocalView(); }
    static LocalViewType getLocalView( VectorViewType v ) { return v.getLocalView(); }
 
-   static MPI_Comm getCommunicationGroup( const Matrices::DistributedMatrix< Matrix >& m ) { return m.getCommunicationGroup(); }
+   static MPI_Comm getCommunicator( const Matrices::DistributedMatrix< Matrix >& m ) { return m.getCommunicator(); }
    static void startSynchronization( VectorViewType v ) { v.startSynchronization(); }
    static void waitForSynchronization( VectorViewType v ) { v.waitForSynchronization(); }
 };

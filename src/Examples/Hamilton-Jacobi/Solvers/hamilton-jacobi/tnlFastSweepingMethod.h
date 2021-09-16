@@ -18,8 +18,7 @@
 
 
 template< typename Mesh,
-        typename Communicator,
-        typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
+          typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class FastSweepingMethod
 {
 };
@@ -27,9 +26,8 @@ class FastSweepingMethod
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -73,9 +71,8 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, 
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -88,12 +85,10 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     typedef Index IndexType;
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
-    typedef Communicator CommunicatorType;
     typedef Containers::StaticVector< 2, Index > StaticVector;
 
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-    using MPI = Communicators::MpiCommunicator;
 
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;
@@ -131,9 +126,8 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -146,12 +140,10 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     typedef Index IndexType;
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
-    typedef Communicator CommunicatorType;
     typedef Containers::StaticVector< 3, Index > StaticVector;
 
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-    using MPI = Communicators::MpiCommunicator;
 
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;

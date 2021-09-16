@@ -68,13 +68,13 @@ class PVTUReader
          throw MeshReaderError( "PVTUReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = MPI::GetSize( group );
+      const int nproc = MPI::GetSize( communicator );
       if( (int) pieceSources.size() != nproc )
          throw MeshReaderError( "PVTUReader", "the number of subdomains does not match the number of MPI ranks ("
                                               + std::to_string(pieceSources.size()) + " vs " + std::to_string(nproc) + ")." );
 
       // read the local piece source
-      const int rank = MPI::GetRank( group );
+      const int rank = MPI::GetRank( communicator );
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -103,8 +103,8 @@ class PVTUReader
 public:
    PVTUReader() = default;
 
-   PVTUReader( const std::string& fileName, MPI_Comm group = MPI::AllGroup() )
-   : XMLVTK( fileName ), group( group )
+   PVTUReader( const std::string& fileName, MPI_Comm communicator = MPI_COMM_WORLD )
+   : XMLVTK( fileName ), communicator( communicator )
    {}
 
    virtual void detectMesh() override
@@ -222,14 +222,14 @@ public:
       if( minCount == 0 ) {
          // split the communicator, remove the ranks which did not get a subdomain
          const int color = (pointsCount > 0 && cellsCount > 0) ? 0 : MPI_UNDEFINED;
-         const MPI_Comm subgroup = MPI::Comm_split( group, color, 0 );
+         const MPI_Comm subCommunicator = MPI::Comm_split( communicator, color, 0 );
 
-         // set the communication group
-         mesh.setCommunicationGroup( subgroup );
+         // set the communicator
+         mesh.setCommunicator( subCommunicator );
       }
       else {
-         // set the communication group
-         mesh.setCommunicationGroup( group );
+         // set the communicator
+         mesh.setCommunicator( communicator );
       }
    }
 
@@ -255,7 +255,7 @@ public:
    }
 
 protected:
-   MPI_Comm group;
+   MPI_Comm communicator;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;

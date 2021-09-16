@@ -21,7 +21,6 @@ namespace TNL {
 namespace Problems {
 
 template< typename Mesh,
-          typename Communicator,
           typename Real = typename Mesh::RealType,
           typename Device = typename Mesh::DeviceType,
           typename Index = typename Mesh::GlobalIndexType >
@@ -49,7 +48,6 @@ class PDEProblem : public Problem< Real, Device, Index >
                                                       TNL::Matrices::GeneralMatrix,
                                                       SegmentsType
                                                     >;
-      using CommunicatorType = Communicator;
       using CommonDataType = CommonData;
       using CommonDataPointer = Pointers::SharedPointer< CommonDataType, DeviceType >;
 

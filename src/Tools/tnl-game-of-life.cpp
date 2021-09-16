@@ -139,7 +139,7 @@ bool runGameOfLife( const Mesh& mesh )
       }
    }
    Index max_count;
-   TNL::MPI::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicationGroup() );
+   TNL::MPI::Allreduce( &count, &max_count, 1, MPI_MAX, mesh.getCommunicator() );
    std::cout << "Rank " << TNL::MPI::GetRank() << ": count=" << count << ", max_count=" << max_count << std::endl;
    // FIXME: this is not reliable
    Index reference_cell = 0;
@@ -206,7 +206,7 @@ bool runGameOfLife( const Mesh& mesh )
       if( mesh.getGhostLevels() > 0 )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
       pvtu.template writePCellData< typename VectorType::RealType >( "function values" );
-      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
+      const std::string subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicator() );
 
       // create a .vtu file for local data
       std::ofstream subfile( subfilePath );
@@ -283,7 +283,7 @@ bool runGameOfLife( const Mesh& mesh )
 
       // check if finished
       const bool done = max( f_in ) == 0 || iteration > max_iter || f_in == f_out;
-      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicationGroup() );
+      TNL::MPI::Allreduce( &done, &all_done, 1, MPI_LAND, mesh.getCommunicator() );
    }
    while( all_done == false );
 

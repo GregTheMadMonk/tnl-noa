@@ -22,7 +22,7 @@ using namespace TNL::MPI;
  *
  * - Number of processes is not limited.
  * - Global size is hardcoded as 97 to force non-uniform distribution.
- * - Communication group is hardcoded as AllGroup -- it may be changed as needed.
+ * - Communicator is hardcoded as MPI_COMM_WORLD -- it may be changed as needed.
  */
 template< typename DistributedArray >
 class DistributedScanTest
@@ -40,15 +40,15 @@ protected:
    using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
    using HostSynchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< Devices::Sequential >;
 
-   const MPI_Comm group = AllGroup();
+   const MPI_Comm communicator = MPI_COMM_WORLD;
 
    DistributedArrayType a, b, c;
    DistributedArrayView a_view, b_view, c_view;
    DistributedVectorView av_view, bv_view, cv_view;
    HostDistributedArrayType array_host, input_host, expected_host;
 
-   const int rank = GetRank(group);
-   const int nproc = GetSize(group);
+   const int rank = GetRank(communicator);
+   const int nproc = GetSize(communicator);
 
    // should be small enough to have fast tests, but large enough to test
    // scan with multiple CUDA grids
@@ -64,15 +64,15 @@ protected:
    {
       resetWorkingArrays();
       input_host = a;
-      input_host.setSynchronizer( std::make_shared<HostSynchronizer>( a.getLocalRange(), ghosts / 2, group ) );
+      input_host.setSynchronizer( std::make_shared<HostSynchronizer>( a.getLocalRange(), ghosts / 2, communicator ) );
       expected_host = input_host;
    }
 
    void resetWorkingArrays()
    {
-      localRange = Partitioner< IndexType >::splitRange( globalSize, group );
-      a.setDistribution( localRange, ghosts, globalSize, group );
-      a.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
+      localRange = Partitioner< IndexType >::splitRange( globalSize, communicator );
+      a.setDistribution( localRange, ghosts, globalSize, communicator );
+      a.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, communicator ) );
 
       a.setValue( -1 );
       c = b = a;
@@ -633,8 +633,8 @@ TYPED_TEST( DistributedScanTest, distributedInplaceExclusiveScan_linear_sequence
 
 TYPED_TEST( DistributedScanTest, multiplication )
 {
-   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 10, this->group );
-   this->input_host.setDistribution( this->localRange, 0, 10, this->group );
+   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 10, this->communicator );
+   this->input_host.setDistribution( this->localRange, 0, 10, this->communicator );
    this->input_host.setValue( 2 );
    this->expected_host = this->input_host;
 
@@ -713,8 +713,8 @@ TYPED_TEST( DistributedScanTest, empty_range )
 {
    using IndexType = typename TestFixture::IndexType;
 
-   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 42, this->group );
-   this->input_host.setDistribution( this->localRange, 0, 42, this->group );
+   this->localRange = Partitioner< typename TestFixture::IndexType >::splitRange( 42, this->communicator );
+   this->input_host.setDistribution( this->localRange, 0, 42, this->communicator );
    this->input_host.setValue( 1 );
    this->expected_host = this->input_host;
 

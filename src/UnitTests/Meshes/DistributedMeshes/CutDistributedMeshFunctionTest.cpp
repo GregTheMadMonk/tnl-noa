@@ -609,8 +609,8 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
 //        DistributedGridIO<MeshFunctionView<CutMeshType>,MpiIO> ::save(TEST_FILE_NAME, cutMeshFunction );
 
         //save globalgrid for debug render
-        MPI_Comm group=cutDistributedGrid.getCommunicationGroup();
-        if(TNL::MPI::GetRank(group)==0)
+        MPI_Comm communicator=cutDistributedGrid.getCommunicator();
+        if(TNL::MPI::GetRank(communicator)==0)
         {
            // FIXME: save was removed from Grid (but this is just for debugging...)
 //            File meshFile;

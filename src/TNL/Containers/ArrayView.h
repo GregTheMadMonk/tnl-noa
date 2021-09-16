@@ -18,7 +18,6 @@
 #include <TNL/File.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/MPI.h>
 
 namespace TNL {
 namespace Containers {
@@ -595,10 +594,6 @@ File& operator>>( File& file, ArrayView< Value, Device, Index > view );
 
 template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
-
-template< typename Value, typename Device, typename Index >
-void send( const ArrayView< Value, Device, Index >& view, int dest, int tag = 0, MPI_Comm comm = MPI::AllGroup() );
-
 
 } // namespace Containers
 } // namespace TNL

@@ -15,6 +15,12 @@
 
 namespace TNL {
 
+template< typename T, typename R = void >
+struct enable_if_type
+{
+   using type = R;
+};
+
 /**
  * \brief Type trait for checking if T has getArrayData method.
  */
@@ -236,21 +242,29 @@ struct IsStaticArrayType
  */
 template< typename T >
 struct IsViewType
-: public std::integral_constant< bool,
-            std::is_same< typename std::decay_t<T>::ViewType, T >::value >
-{};
+{
+private:
+   template< typename C > static constexpr auto test(C)
+      -> std::integral_constant< bool,
+               std::is_same< typename C::ViewType, C >::value
+         >;
+   static constexpr std::false_type test(...);
+
+public:
+   static constexpr bool value = decltype( test(std::decay_t<T>{}) )::value;
+};
 
 /**
- * \brief Type trait for checking if T has getCommunicationGroup method.
+ * \brief Type trait for checking if T has getCommunicator method.
  */
 template< typename T >
-class HasGetCommunicationGroupMethod
+class HasGetCommunicatorMethod
 {
 private:
     typedef char YesType[1];
     typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicationGroup()) );
+    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicator()) );
     template< typename C > static NoType& test(...);
 
 public:

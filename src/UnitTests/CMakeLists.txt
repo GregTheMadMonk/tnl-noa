@@ -4,6 +4,7 @@ ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Functions )
 # Matrices are included from src/CMakeLists.txt
 ADD_SUBDIRECTORY( Meshes )
+ADD_SUBDIRECTORY( MPI )
 ADD_SUBDIRECTORY( Pointers )
 
 set( CPP_TESTS  AssertTest

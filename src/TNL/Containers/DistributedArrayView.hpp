@@ -14,6 +14,8 @@
 
 #include "DistributedArrayView.h"
 
+#include <TNL/Algorithms/ParallelFor.h>
+
 namespace TNL {
 namespace Containers {
 
@@ -39,7 +41,7 @@ DistributedArrayView( const DistributedArrayView< Value_, Device, Index >& view 
 : localRange( view.getLocalRange() ),
   ghosts( view.getGhosts() ),
   globalSize( view.getSize() ),
-  group( view.getCommunicationGroup() ),
+  communicator( view.getCommunicator() ),
   localData( view.getConstLocalViewWithGhosts() ),
   synchronizer( view.getSynchronizer() ),
   valuesPerElement( view.getValuesPerElement() )
@@ -50,7 +52,7 @@ template< typename Value,
           typename Index >
 void
 DistributedArrayView< Value, Device, Index >::
-bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData )
+bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, LocalViewType localData )
 {
    TNL_ASSERT_EQ( localData.getSize(), localRange.getSize() + ghosts,
                   "The local array size does not match the local range of the distributed array." );
@@ -59,7 +61,7 @@ bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, 
    this->localRange = localRange;
    this->ghosts = ghosts;
    this->globalSize = globalSize;
-   this->group = group;
+   this->communicator = communicator;
    this->localData.bind( localData );
 }
 
@@ -73,7 +75,7 @@ bind( DistributedArrayView view )
    localRange = view.getLocalRange();
    ghosts = view.getGhosts();
    globalSize = view.getSize();
-   group = view.getCommunicationGroup();
+   communicator = view.getCommunicator();
    localData.bind( view.getLocalViewWithGhosts() );
    // set, but do not unset, the synchronizer
    if( view.getSynchronizer() )
@@ -118,9 +120,9 @@ template< typename Value,
           typename Index >
 MPI_Comm
 DistributedArrayView< Value, Device, Index >::
-getCommunicationGroup() const
+getCommunicator() const
 {
-   return group;
+   return communicator;
 }
 
 template< typename Value,
@@ -281,7 +283,7 @@ reset()
    localRange.reset();
    ghosts = 0;
    globalSize = 0;
-   group = MPI::NullGroup();
+   communicator = MPI_COMM_NULL;
    localData.reset();
 }
 
@@ -374,9 +376,9 @@ operator=( const DistributedArrayView& view )
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getGhosts(), view.getGhosts(), "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
+   TNL_ASSERT_EQ( getCommunicator(), view.getCommunicator(), "The communicators of the array views must be equal." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       view.waitForSynchronization();
@@ -396,9 +398,9 @@ operator=( const Array& array )
    TNL_ASSERT_EQ( getSize(), array.getSize(), "The global sizes must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getGhosts(), array.getGhosts(), "Ghosts must be equal, views are not resizable." );
-   TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
+   TNL_ASSERT_EQ( getCommunicator(), array.getCommunicator(), "The communicators must be equal." );
 
-   if( this->getCommunicationGroup() != MPI::NullGroup() ) {
+   if( this->getCommunicator() != MPI_COMM_NULL ) {
       // TODO: it might be better to split the local and ghost parts and synchronize in the middle
       this->waitForSynchronization();
       array.waitForSynchronization();
@@ -415,8 +417,8 @@ bool
 DistributedArrayView< Value, Device, Index >::
 operator==( const Array& array ) const
 {
-   // we can't run allreduce if the communication groups are different
-   if( group != array.getCommunicationGroup() )
+   // we can't run allreduce if the communicators are different
+   if( communicator != array.getCommunicator() )
       return false;
    const bool localResult =
          localRange == array.getLocalRange() &&
@@ -425,8 +427,8 @@ operator==( const Array& array ) const
          // compare without ghosts
          getConstLocalView() == array.getConstLocalView();
    bool result = true;
-   if( group != MPI::NullGroup() )
-      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+   if( communicator != MPI_COMM_NULL )
+      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, communicator );
    return result;
 }
 
@@ -449,15 +451,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f )
 {
-   IndexType localBegin = max( begin, localRange.getBegin() );
-   IndexType localEnd = min( end, localRange.getEnd() );
-   auto local_f = [=] __cuda_callable__ ( const IndexType& idx, ValueType& value ) mutable {
-      f( idx + localRange.getBegin(), value );
+   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
+   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   auto local_f = [=] __cuda_callable__ ( IndexType idx, ValueType& value ) mutable {
+      f( localRange.getGlobalIndex( idx, value ) );
    };
-   this->localData.forElements( localBegin - localRange.getBegin(),
-                                localEnd - localRange.getBegin(),
-                                local_f );
-
+   localData.forElements( localBegin, localEnd, local_f );
 }
 
 template< typename Value,
@@ -468,34 +467,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f ) const
 {
-
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index >
-std::ostream&
-DistributedArrayView< Value, Device, Index >::
-print( std::ostream& str ) const
-{
-   // The following does not work properly
-   /*if( MPI::GetRank( group ) == 0 )
-   {
-      str << "[ ";
-      for( IndexType i = 0; i < localData.getSize(); i++ )
-         str << ", " << localData.getElement( i );
-      for( int proc = 1; proc < MPI::GetSize( group ); proc++ )
-      {
-         Array< std::remove_const_t< Value >, Device, Index > localArray;
-         receive( localArray, proc, 0, group );
-         for( IndexType i = 0; i < localArray.getSize(); i++ )
-            str << ", " << localArray.getElement( i );
-      }
-      str << " ]";
-   }
-   else send( this->localData, 0, 0, this->group );*/
-   return str;
+   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
+   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   auto local_f = [=] __cuda_callable__ ( IndexType idx, const ValueType& value ) {
+      f( localRange.getGlobalIndex( idx, value ) );
+   };
+   localData.forElements( localBegin, localEnd, local_f );
 }
 
 } // namespace Containers

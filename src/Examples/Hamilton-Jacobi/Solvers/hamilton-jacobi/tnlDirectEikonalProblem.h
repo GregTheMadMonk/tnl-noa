@@ -21,13 +21,11 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirectEikonalProblem
    : public Problems::PDEProblem< Mesh,
-                                  Communicator,
                                   Real,
                                   typename Mesh::DeviceType,
                                   Index  >
@@ -38,7 +36,7 @@ class tnlDirectEikonalProblem
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
-      typedef Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
       using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
@@ -47,8 +45,6 @@ class tnlDirectEikonalProblem
       using typename BaseType::DofVectorType;
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType >;
-
-      typedef Communicator CommunicatorType;
 
       static constexpr bool isTimeDependent() { return false; };
 

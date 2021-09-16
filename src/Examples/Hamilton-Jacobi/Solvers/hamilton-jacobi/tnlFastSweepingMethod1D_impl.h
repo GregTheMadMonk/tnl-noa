@@ -18,9 +18,8 @@
 template< typename Real,
           typename Device,
           typename Index,
-        typename Communicator,
           typename Anisotropy >
-FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
 : maxIterations( 1 )
 {
@@ -30,10 +29,9 @@ FastSweepingMethod()
 template< typename Real,
           typename Device,
           typename Index,
-        typename Communicator,
           typename Anisotropy >
 const Index&
-FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >::
 getMaxIterations() const
 {
 
@@ -42,10 +40,9 @@ getMaxIterations() const
 template< typename Real,
           typename Device,
           typename Index,
-        typename Communicator,
           typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >::
 setMaxIterations( const IndexType& maxIterations )
 {
 
@@ -54,10 +51,9 @@ setMaxIterations( const IndexType& maxIterations )
 template< typename Real,
           typename Device,
           typename Index,
-        typename Communicator,
           typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >::
 solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
        const MeshPointer& mesh,
        MeshFunctionPointer& Aux,

@@ -82,7 +82,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
     * Time discretisation
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
-   using PDEProblem = Problems::PDEProblem< Meshes::Grid<1, double, Devices::Host, int>, Communicators::MpiCommunicator >;
+   using PDEProblem = Problems::PDEProblem< Meshes::Grid<1, double, Devices::Host, int> >;
    using ExplicitTimeStepper = PDE::ExplicitTimeStepper< PDEProblem, ODE::Euler >;
    PDE::TimeDependentPDESolver< PDEProblem, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );

@@ -43,8 +43,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename MeshConfig,
-          typename SolverStarter,
-          typename CommunicatorType >
+          typename SolverStarter >
 class heatEquationSetter
 {
    public:
@@ -64,7 +63,7 @@ class heatEquationSetter
       typedef HeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef Containers::StaticVector < MeshType::getMeshDimension(), Real > Point;
       typedef Operators::DirichletBoundaryConditions< MeshType, TestFunction, Dimension, Real, Index > BoundaryConditions;
-      typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Solver;
+      typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
    };

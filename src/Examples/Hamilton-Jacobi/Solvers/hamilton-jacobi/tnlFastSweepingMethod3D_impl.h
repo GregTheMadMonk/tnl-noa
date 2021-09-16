@@ -15,13 +15,13 @@
 
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Algorithms/contains.h>
+#include <TNL/MPI/Wrappers.h>
 
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
 : maxIterations( 1 )
 {
@@ -31,10 +31,9 @@ FastSweepingMethod()
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 const Index&
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 getMaxIterations() const
 {
 
@@ -43,10 +42,9 @@ getMaxIterations() const
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 setMaxIterations( const IndexType& maxIterations )
 {
 
@@ -55,10 +53,9 @@ setMaxIterations( const IndexType& maxIterations )
 template< typename Real,
         typename Device,
         typename Index,
-        typename Communicator,
         typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh,
        const MeshPointer& mesh,
        MeshFunctionPointer& Aux,
@@ -73,7 +70,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
   // getting overlaps ( WITHOUT MPI SHOULD BE 0 )
   StaticVector vecLowerOverlaps = 0;
   StaticVector vecUpperOverlaps = 0;
-  if( CommunicatorType::isDistributed() )
+  if( TNL::MPI::GetSize() > 1 )
   {
     //Distributed mesh for MPI overlaps (without MPI null pointer)
     vecLowerOverlaps = distributedMesh.getLowerOverlap();
@@ -363,7 +360,7 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
       }
 
 #ifdef HAVE_MPI
-      if( CommunicatorType::isDistributed() )
+      if( TNL::MPI::GetSize() > 1 )
       {
         getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, distributedMesh );
 
@@ -373,8 +370,10 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
       }
 #endif
 
-      if( !CommunicatorType::isDistributed() ) // If we start the solver without MPI, we need calculatedBefore 0!
-        calculatedBefore = 0; //otherwise we would go throw the FSM code and CUDA FSM code again uselessly
+      // If we start the solver without MPI, we need calculatedBefore 0!
+      // otherwise we would go throw the FSM code and CUDA FSM code again uselessly
+      if( TNL::MPI::GetSize() == 1 )
+        calculatedBefore = 0;
     }
     //aux.write( "aux", "aux-8.vti" );
     iteration++;
@@ -387,10 +386,9 @@ solve( const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributed
 
 // PROTECTED FUNCTIONS:
 
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
+template< typename Real, typename Device, typename Index, typename Anisotropy >
 bool
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
         MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
         const AnisotropyPointer& anisotropy )
@@ -431,72 +429,71 @@ goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
 
 
 #ifdef HAVE_MPI
-template< typename Real, typename Device, typename Index,
-          typename Communicator, typename Anisotropy >
+template< typename Real, typename Device, typename Index, typename Anisotropy >
 void
-FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >::
 getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain,
                        const Meshes::DistributedMeshes::DistributedMesh< MeshType >& distributedMesh )
 {
   int calculateFromNeighbours[6] = {0,0,0,0,0,0};
 
   const int *neighbours = distributedMesh.getNeighbors(); // Getting neighbors of distributed mesh
-  MPI::Request *requestsInformation;
-  requestsInformation = new MPI::Request[ distributedMesh.getNeighborsCount() ];
+  MPI_Request *requestsInformation;
+  requestsInformation = new MPI_Request[ distributedMesh.getNeighborsCount() ];
 
   int neighCount = 0; // should this thread calculate again?
 
   if( neighbours[0] != -1 ) // WEST
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[0], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[0], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[1] != -1 ) // EAST
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[1], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[1], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[1], 1, neighbours[1], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[2] != -1 ) //NORTH
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[2], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[2], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[2], 1, neighbours[2], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[5] != -1 ) //SOUTH
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[5], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[5], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[3], 1, neighbours[5], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[8] != -1 ) // TOP
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[8], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[8], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[4], 1, neighbours[8], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[4], 1, neighbours[8], 0, MPI_COMM_WORLD );
   }
 
   if( neighbours[17] != -1 ) //BOTTOM
   {
     requestsInformation[neighCount++] =
-            MPI::ISend( &calculatedBefore, 1, neighbours[17], 0, MPI::AllGroup );
+            TNL::MPI::Isend( &calculatedBefore, 1, neighbours[17], 0, MPI_COMM_WORLD );
     requestsInformation[neighCount++] =
-            MPI::IRecv( &calculateFromNeighbours[5], 1, neighbours[17], 0, MPI::AllGroup );
+            TNL::MPI::Irecv( &calculateFromNeighbours[5], 1, neighbours[17], 0, MPI_COMM_WORLD );
   }
 
-  MPI::WaitAll( requestsInformation, neighCount );
+  TNL::MPI::Waitall( requestsInformation, neighCount );
 
-  MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  MPI::AllGroup );
+  TNL::MPI::Allreduce( &calculatedBefore, &calculatedBefore, 1, MPI_LOR,  MPI_COMM_WORLD );
   calculateMPIAgain = calculateFromNeighbours[0] || calculateFromNeighbours[1] ||
                       calculateFromNeighbours[2] || calculateFromNeighbours[3] ||
                       calculateFromNeighbours[4] || calculateFromNeighbours[5];

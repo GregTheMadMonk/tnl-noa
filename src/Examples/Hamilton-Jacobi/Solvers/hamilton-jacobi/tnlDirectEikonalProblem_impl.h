@@ -12,17 +12,18 @@
  */
 
 #pragma once
+
 #include <TNL/FileName.h>
+#include <TNL/MPI/Wrappers.h>
 
 #include "tnlDirectEikonalProblem.h"
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getType()
 {
    return String( "DirectEikonalProblem< " +
@@ -33,24 +34,22 @@ getType()
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 String
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getPrologHeader() const
 {
    return String( "Direct eikonal solver" );
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters ) const
 {
@@ -58,24 +57,22 @@ writeProlog( Logger& logger,
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 writeEpilog( Logger& logger )
 {
    return true;
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -83,43 +80,40 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 Index
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getDofs() const
 {
    return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 void
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 bindDofs( DofVectorPointer& dofs )
 {
    this->u->bind( this->getMesh(), *dofs );
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {
    this->bindDofs( dofs );
    String inputFile = parameters.getParameter< String >( "input-file" );
    this->initialData->setMesh( this->getMesh() );
-   if( CommunicatorType::isDistributed() )
+   if( TNL::MPI::GetSize() > 1 )
    {
       std::cout<<"Nodes Distribution: " << this->distributedMeshPointer->printProcessDistr() << std::endl;
       if( ! Functions::readDistributedMeshFunction( *this->distributedMeshPointer, *this->initialData, "u", inputFile ) )
@@ -142,12 +136,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 }
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 makeSnapshot(  )
 {
    std::cout << std::endl << "Writing output." << std::endl;
@@ -157,7 +150,7 @@ makeSnapshot(  )
    FileName fileName;
    fileName.setFileNameBase( "u-" );
 
-   if(CommunicatorType::isDistributed())
+   if( TNL::MPI::GetSize() > 1 )
    {
       fileName.setExtension( "pvti" );
       Functions::writeDistributedMeshFunction( *this->distributedMeshPointer, *this->initialData, "u", fileName.getFileName() );
@@ -171,15 +164,14 @@ makeSnapshot(  )
 
 
 template< typename Mesh,
-          typename Communicator,
           typename Anisotropy,
           typename Real,
           typename Index >
 bool
-tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 solve( DofVectorPointer& dofs )
 {
-   FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
+   FastSweepingMethod< MeshType, AnisotropyType > fsm;
    fsm.solve( *this->getDistributedMesh(), this->getMesh(), u, anisotropy, initialData );
 
    makeSnapshot();

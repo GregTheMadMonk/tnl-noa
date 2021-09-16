@@ -1,5 +1,5 @@
 /***************************************************************************
-                          String_impl.h  -  description
+                          String.hpp  -  description
                              -------------------
     begin                : 2004/04/10 16:36
     copyright            : (C) 2004 by Tomas Oberhuber
@@ -13,9 +13,6 @@
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#ifdef HAVE_MPI
-   #include <mpi.h>
-#endif
 
 namespace TNL {
 
@@ -43,6 +40,17 @@ inline void String::setSize( int size )
 inline const char* String::getString() const
 {
    return this->c_str();
+}
+
+inline const char* String::getData() const
+{
+   return data();
+}
+
+inline char* String::getData()
+{
+   // NOTE: std::string::data is non-const only since C++17
+   return const_cast< char* >( data() );
 }
 
 inline const char& String::operator[]( int i ) const
@@ -253,46 +261,5 @@ inline String operator+( const std::string& string1, const String& string2 )
 {
    return String( string1 ) + string2;
 }
-
-#ifdef HAVE_MPI
-inline void mpiSend( const String& str, int target, int tag, MPI_Comm mpi_comm )
-{
-   int size = str.getSize();
-   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
-   MPI_Send( const_cast< void* >( ( const void* ) str.getString() ), str.length(), MPI_CHAR, target, tag, mpi_comm );
-}
-
-inline void mpiReceive( String& str, int source, int tag, MPI_Comm mpi_comm )
-{
-   int size;
-   MPI_Status status;
-   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
-   str.setSize( size );
-   MPI_Recv( const_cast< void* >( ( const void* ) str.data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
-}
-
-/*
-inline void String :: MPIBcast( int root, MPI_Comm comm )
-{
-   int iproc;
-   MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
-   TNL_ASSERT( string, );
-   int len = strlen( string );
-   MPI_Bcast( &len, 1, MPI_INT, root, comm );
-   if( iproc != root )
-   {
-      if( length < len )
-      {
-         delete[] string;
-         length = STRING_PAGE * ( len / STRING_PAGE + 1 );
-         string = new char[ length ];
-      }
-   }
- 
-   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
-}
-*/
-#endif
-
 
 } // namespace TNL

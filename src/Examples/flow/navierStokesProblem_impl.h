@@ -45,10 +45,9 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 String
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getPrologHeader() const
 {
    return String( "Inviscid flow solver" );
@@ -57,10 +56,9 @@ getPrologHeader() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
@@ -72,10 +70,9 @@ writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) cons
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -92,10 +89,9 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
-typename navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::IndexType
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+          typename InviscidOperators >
+typename navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::IndexType
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getDofs() const
 {
    /****
@@ -108,10 +104,9 @@ getDofs() const
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 bindDofs( DofVectorPointer& dofVector )
 {
    this->conservativeVariables->bind( this->getMesh(), *dofVector );
@@ -120,10 +115,9 @@ bindDofs( DofVectorPointer& dofVector )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {
@@ -148,11 +142,10 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
    template< typename Matrix >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 setupLinearSystem( Matrix& matrix )
 {
 /*   const IndexType dofs = this->getDofs( mesh );
@@ -174,10 +167,9 @@ setupLinearSystem( Matrix& matrix )
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               DofVectorPointer& dofs )
@@ -213,10 +205,9 @@ makeSnapshot( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 getExplicitUpdate( const RealType& time,
                    const RealType& tau,
                    DofVectorPointer& _u,
@@ -286,7 +277,7 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterContinuity.setDifferentialOperator( this->inviscidOperatorsPointer->getContinuityOperator() );
    explicitUpdaterContinuity.setBoundaryConditions( this->boundaryConditionPointer->getDensityBoundaryCondition() );
    explicitUpdaterContinuity.setRightHandSide( this->rightHandSidePointer );
-   explicitUpdaterContinuity.template update< typename Mesh::Cell, CommunicatorType >(
+   explicitUpdaterContinuity.template update< typename Mesh::Cell >(
       time, tau, mesh,
       this->conservativeVariables->getDensity(),
       this->conservativeVariablesRHS->getDensity() );
@@ -297,7 +288,7 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterMomentumX.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumXOperator() );
    explicitUpdaterMomentumX.setBoundaryConditions( this->boundaryConditionPointer->getMomentumXBoundaryCondition() );
    explicitUpdaterMomentumX.setRightHandSide( this->rightHandSidePointer );
-   explicitUpdaterMomentumX.template update< typename Mesh::Cell, CommunicatorType >(
+   explicitUpdaterMomentumX.template update< typename Mesh::Cell >(
       time, tau, mesh,
       ( *this->conservativeVariables->getMomentum() )[ 0 ], // uRhoVelocityX,
       ( *this->conservativeVariablesRHS->getMomentum() )[ 0 ] ); //, fuRhoVelocityX );
@@ -308,7 +299,7 @@ getExplicitUpdate( const RealType& time,
       explicitUpdaterMomentumY.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumYOperator() );
       explicitUpdaterMomentumY.setBoundaryConditions( this->boundaryConditionPointer->getMomentumYBoundaryCondition() );
       explicitUpdaterMomentumY.setRightHandSide( this->rightHandSidePointer );
-      explicitUpdaterMomentumY.template update< typename Mesh::Cell, CommunicatorType >(
+      explicitUpdaterMomentumY.template update< typename Mesh::Cell >(
          time, tau, mesh,
          ( *this->conservativeVariables->getMomentum() )[ 1 ], // uRhoVelocityX,
          ( *this->conservativeVariablesRHS->getMomentum() )[ 1 ] ); //, fuRhoVelocityX );
@@ -320,7 +311,7 @@ getExplicitUpdate( const RealType& time,
       explicitUpdaterMomentumZ.setDifferentialOperator( this->inviscidOperatorsPointer->getMomentumZOperator() );
       explicitUpdaterMomentumZ.setBoundaryConditions( this->boundaryConditionPointer->getMomentumZBoundaryCondition() );
       explicitUpdaterMomentumZ.setRightHandSide( this->rightHandSidePointer );
-      explicitUpdaterMomentumZ.template update< typename Mesh::Cell, CommunicatorType >( time, tau, mesh,
+      explicitUpdaterMomentumZ.template update< typename Mesh::Cell >( time, tau, mesh,
                                                               ( *this->conservativeVariables->getMomentum() )[ 2 ], // uRhoVelocityX,
                                                               ( *this->conservativeVariablesRHS->getMomentum() )[ 2 ] ); //, fuRhoVelocityX );
    }
@@ -332,7 +323,7 @@ getExplicitUpdate( const RealType& time,
    explicitUpdaterEnergy.setDifferentialOperator( this->inviscidOperatorsPointer->getEnergyOperator() );
    explicitUpdaterEnergy.setBoundaryConditions( this->boundaryConditionPointer->getEnergyBoundaryCondition() );
    explicitUpdaterEnergy.setRightHandSide( this->rightHandSidePointer );
-   explicitUpdaterEnergy.template update< typename Mesh::Cell, CommunicatorType >(
+   explicitUpdaterEnergy.template update< typename Mesh::Cell >(
       time, tau, mesh,
       this->conservativeVariables->getEnergy(), // uRhoVelocityX,
       this->conservativeVariablesRHS->getEnergy() ); //, fuRhoVelocityX );
@@ -349,11 +340,10 @@ getExplicitUpdate( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
    template< typename Matrix >
 void
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       DofVectorPointer& _u,
@@ -384,10 +374,9 @@ assemblyLinearSystem( const RealType& time,
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 bool
-navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators, Communicator >::
+navierStokesProblem< Mesh, BoundaryCondition, RightHandSide, InviscidOperators >::
 postIterate( const RealType& time,
              const RealType& tau,
              DofVectorPointer& dofs )

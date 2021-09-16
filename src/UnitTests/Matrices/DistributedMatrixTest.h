@@ -55,7 +55,7 @@ void setMatrix( Matrix& matrix, const RowCapacities& rowCapacities )
  *
  * - Number of processes is not limited.
  * - Global size is hardcoded as 97 to force non-uniform distribution.
- * - Communication group is hardcoded as AllGroup -- it may be changed as needed.
+ * - Communicator is hardcoded as MPI_COMM_WORLD -- it may be changed as needed.
  * - Matrix format is hardcoded as CSR.
  */
 template< typename DistributedMatrix >
@@ -74,10 +74,10 @@ protected:
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const MPI_Comm group = AllGroup();
+   const MPI_Comm communicator = MPI_COMM_WORLD;
 
-   const int rank = GetRank(group);
-   const int nproc = GetSize(group);
+   const int rank = GetRank(communicator);
+   const int nproc = GetSize(communicator);
 
    DistributedMatrixType matrix;
 
@@ -86,12 +86,12 @@ protected:
    DistributedMatrixTest()
    {
       using LocalRangeType = typename DistributedMatrix::LocalRangeType;
-      const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( globalSize, group );
-      matrix.setDistribution( localRange, globalSize, globalSize, group );
-      rowCapacities.setDistribution( localRange, 0, globalSize, group );
+      const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( globalSize, communicator );
+      matrix.setDistribution( localRange, globalSize, globalSize, communicator );
+      rowCapacities.setDistribution( localRange, 0, globalSize, communicator );
 
       EXPECT_EQ( matrix.getLocalRowRange(), localRange );
-      EXPECT_EQ( matrix.getCommunicationGroup(), group );
+      EXPECT_EQ( matrix.getCommunicator(), communicator );
 
       setLinearSequence( rowCapacities, 1 );
    }
@@ -112,7 +112,7 @@ TYPED_TEST( DistributedMatrixTest, checkSumOfLocalSizes )
 {
    const int localSize = this->matrix.getLocalMatrix().getRows();
    int sumOfLocalSizes = 0;
-   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->communicator );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->matrix.getRows(), this->globalSize );
 }
@@ -212,7 +212,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 
    GlobalVector inVector( this->globalSize );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowCapacities )
@@ -227,9 +227,9 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
    this->matrix.setRowCapacities( this->rowCapacities );
    setMatrix( this->matrix, this->rowCapacities );
 
-   DistributedVector inVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector inVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicationGroup() );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowCapacities )

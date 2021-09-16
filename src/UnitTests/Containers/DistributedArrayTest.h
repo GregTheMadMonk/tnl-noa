@@ -23,7 +23,7 @@ using namespace TNL::MPI;
  *
  * - Number of processes is not limited.
  * - Global size is hardcoded as 97 to force non-uniform distribution.
- * - Communication group is hardcoded as AllGroup -- it may be changed as needed.
+ * - Communicator is hardcoded as MPI_COMM_WORLD -- it may be changed as needed.
  */
 template< typename DistributedArray >
 class DistributedArrayTest
@@ -39,12 +39,12 @@ protected:
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
-   const MPI_Comm group = AllGroup();
+   const MPI_Comm communicator = MPI_COMM_WORLD;
 
    DistributedArrayType distributedArray;
 
-   const int rank = GetRank(group);
-   const int nproc = GetSize(group);
+   const int rank = GetRank(communicator);
+   const int nproc = GetSize(communicator);
 
    // some arbitrary even value (but must be 0 if not distributed)
    const int ghosts = (nproc > 1) ? 4 : 0;
@@ -52,15 +52,15 @@ protected:
    DistributedArrayTest()
    {
       using LocalRangeType = typename DistributedArray::LocalRangeType;
-      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, group );
-      distributedArray.setDistribution( localRange, ghosts, globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType >::splitRange( globalSize, communicator );
+      distributedArray.setDistribution( localRange, ghosts, globalSize, communicator );
 
       using Synchronizer = typename Partitioner< IndexType >::template ArraySynchronizer< DeviceType >;
-      distributedArray.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, group ) );
+      distributedArray.setSynchronizer( std::make_shared<Synchronizer>( localRange, ghosts / 2, communicator ) );
 
       EXPECT_EQ( distributedArray.getLocalRange(), localRange );
       EXPECT_EQ( distributedArray.getGhosts(), ghosts );
-      EXPECT_EQ( distributedArray.getCommunicationGroup(), group );
+      EXPECT_EQ( distributedArray.getCommunicator(), communicator );
    }
 };
 
@@ -87,7 +87,7 @@ TYPED_TEST( DistributedArrayTest, checkSumOfLocalSizes )
 {
    const int localSize = this->distributedArray.getLocalView().getSize();
    int sumOfLocalSizes = 0;
-   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
+   Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->communicator );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
    EXPECT_EQ( this->distributedArray.getSize(), this->globalSize );
 }

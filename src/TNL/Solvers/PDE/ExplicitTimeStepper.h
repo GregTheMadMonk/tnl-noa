@@ -35,7 +35,6 @@ class ExplicitTimeStepper
       using DofVectorType = typename ProblemType::DofVectorType;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
-      using CommunicatorType = typename Problem::CommunicatorType;
       using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver >, SolverMonitorType >;
       using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 

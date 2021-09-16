@@ -43,10 +43,10 @@ template< typename ConfigTag >class advectionConfig
          config.addEntry< String >( "velocity-field", "Type of velocity field.", "constant" );
             config.addEntryEnum< String >( "constant" );
          Functions::VectorField< 3, Functions::Analytic::Constant< 3 > >::configSetup( config, "velocity-field-" );
-         
+
          typedef Meshes::Grid< 3 > MeshType;
          Operators::Advection::LaxFridrichs< MeshType >::configSetup( config );
-         
+
          config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
@@ -62,8 +62,7 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter,
-          typename CommunicatorType  >
+          typename SolverStarter >
 class advectionSetter
 {
    public:
@@ -71,16 +70,16 @@ class advectionSetter
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      
+
       static const int Dimensions = MeshType::getMeshDimension();
-      
+
       template< typename Problem >
       static bool callSolverStarter( const Config::ParameterContainer& parameters )
       {
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
-      
+
       template< typename DifferentialOperatorType >
       static bool setBoundaryConditionsType( const Config::ParameterContainer& parameters )
       {
@@ -89,19 +88,19 @@ class advectionSetter
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, CommunicatorType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          if( boundaryConditionsType == "neumann" )
          {
             typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunctionType, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, CommunicatorType, DifferentialOperatorType > Problem;
+            typedef transportEquationProblem< MeshType, BoundaryConditions, ConstantFunctionType, DifferentialOperatorType > Problem;
             return callSolverStarter< Problem >( parameters );
          }
          std::cerr << "Unknown boundary conditions type: " << boundaryConditionsType << "." << std::endl;
          return false;
       }
-      
+
       template< typename VelocityFieldType >
       static bool setDifferentialOperatorType( const Config::ParameterContainer& parameters )
       {
@@ -113,7 +112,7 @@ class advectionSetter
          typedef Operators::Advection::LaxFridrichs< MeshType, Real, Index, VelocityFieldType > DifferentialOperatorType;
          return setBoundaryConditionsType< DifferentialOperatorType >( parameters );
       }
-      
+
       static bool setVelocityFieldType( const Config::ParameterContainer& parameters )
       {
          String velocityFieldType = parameters.getParameter< String >( "velocity-field" );
@@ -128,7 +127,7 @@ class advectionSetter
       static bool run( const Config::ParameterContainer& parameters )
       {
          return setVelocityFieldType( parameters );
-      }      
+      }
 };
 
 int main( int argc, char* argv[] )

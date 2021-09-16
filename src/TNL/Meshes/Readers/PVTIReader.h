@@ -142,13 +142,13 @@ class PVTIReader
          throw MeshReaderError( "PVTIReader", "the file does not contain any <Piece> element." );
 
       // check that the number of pieces matches the number of MPI ranks
-      const int nproc = MPI::GetSize( group );
+      const int nproc = MPI::GetSize( communicator );
       if( (int) pieceSources.size() != nproc )
          throw MeshReaderError( "PVTIReader", "the number of subdomains does not match the number of MPI ranks ("
                                               + std::to_string(pieceSources.size()) + " vs " + std::to_string(nproc) + ")." );
 
       // read the local piece source
-      const int rank = MPI::GetRank( group );
+      const int rank = MPI::GetRank( communicator );
       localReader.setFileName( pieceSources[ rank ] );
       localReader.detectMesh();
 
@@ -178,8 +178,8 @@ class PVTIReader
 public:
    PVTIReader() = default;
 
-   PVTIReader( const std::string& fileName, MPI_Comm group = MPI::AllGroup() )
-   : XMLVTK( fileName ), group( group )
+   PVTIReader( const std::string& fileName, MPI_Comm communicator = MPI_COMM_WORLD )
+   : XMLVTK( fileName ), communicator( communicator )
    {}
 
    virtual void detectMesh() override
@@ -219,8 +219,8 @@ public:
       if( meshType != "Meshes::DistributedGrid" )
          throw MeshReaderError( "MeshReader", "the file does not contain a distributed structured grid, it is " + meshType );
 
-      // set the communication group
-      mesh.setCommunicationGroup( group );
+      // set the communicator
+      mesh.setCommunicator( communicator );
 
       // TODO: set the domain decomposition
 //      mesh.setDomainDecomposition( decomposition );
@@ -250,7 +250,7 @@ public:
       localReader.loadMesh( localMesh );
       if( localMesh != mesh.getLocalMesh() ) {
          std::stringstream msg;
-         msg << "The grid from the " << MPI::GetRank( group ) << "-th subdomain .vti file does not match the local grid of the DistributedGrid."
+         msg << "The grid from the " << MPI::GetRank( communicator ) << "-th subdomain .vti file does not match the local grid of the DistributedGrid."
              << "\n- Grid from the .vti file:\n" << localMesh
              << "\n- Local grid from the DistributedGrid:\n" << mesh.getLocalMesh();
          throw MeshReaderError( "PVTIReader", msg.str() );
@@ -318,7 +318,7 @@ public:
    }
 
 protected:
-   MPI_Comm group;
+   MPI_Comm communicator;
 
    int ghostLevels = 0;
    int minCommonVertices = 0;

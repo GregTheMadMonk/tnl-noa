@@ -23,28 +23,26 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename InviscidOperators,
-          typename Communicator >
+          typename InviscidOperators >
 class navierStokesProblem:
    public PDEProblem< Mesh,
-                      Communicator,
                       typename InviscidOperators::RealType,
                       typename Mesh::DeviceType,
                       typename InviscidOperators::IndexType >
 {
    public:
-      
+
       typedef typename InviscidOperators::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename InviscidOperators::IndexType IndexType;
-      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
-      
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
 
-      static const int Dimensions = Mesh::getMeshDimension();      
+      static const int Dimensions = Mesh::getMeshDimension();
 
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
@@ -55,7 +53,6 @@ class navierStokesProblem:
       typedef Pointers::SharedPointer< InviscidOperators > InviscidOperatorsPointer;
       typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      using CommunicatorType = Communicator;
 
       String getPrologHeader() const;
 
@@ -83,7 +80,7 @@ class navierStokesProblem:
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
-      
+
       void applyBoundaryConditions( const RealType& time,
                                     DofVectorPointer& dofs )
       {
@@ -104,16 +101,16 @@ class navierStokesProblem:
    protected:
 
       InviscidOperatorsPointer inviscidOperatorsPointer;
-         
+
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
-      
+
       ConservativeVariablesPointer conservativeVariables,
                                    conservativeVariablesRHS;
-      
+
       VelocityFieldPointer velocity;
       MeshFunctionPointer pressure;
-      
+
       RealType gamma;
       RealType speedIncrement;
       RealType cavitySpeed;

@@ -61,7 +61,7 @@ distributedInclusiveScan( const InputDistributedArray& input,
 {
    static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( input.getCommunicationGroup(), output.getCommunicationGroup(),
+   TNL_ASSERT_EQ( input.getCommunicator(), output.getCommunicator(),
                   "The input and output arrays must have the same MPI communicator." );
    TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );
@@ -136,7 +136,7 @@ distributedExclusiveScan( const InputDistributedArray& input,
 {
    static_assert( std::is_same< typename InputDistributedArray::DeviceType, typename OutputDistributedArray::DeviceType >::value,
                   "The input and output arrays must have the same device type." );
-   TNL_ASSERT_EQ( input.getCommunicationGroup(), output.getCommunicationGroup(),
+   TNL_ASSERT_EQ( input.getCommunicator(), output.getCommunicator(),
                   "The input and output arrays must have the same MPI communicator." );
    TNL_ASSERT_EQ( input.getLocalRange(), output.getLocalRange(),
                   "The input and output arrays must have the same local range on all ranks." );

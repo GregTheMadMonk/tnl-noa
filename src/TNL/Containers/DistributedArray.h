@@ -77,15 +77,15 @@ public:
     */
    explicit DistributedArray( const DistributedArray& array, const AllocatorType& allocator );
 
-   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup(), const AllocatorType& allocator = AllocatorType() );
+   DistributedArray( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm communicator, const AllocatorType& allocator = AllocatorType() );
 
-   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm group = MPI::AllGroup() );
+   void setDistribution( LocalRangeType localRange, Index ghosts, Index globalSize, MPI_Comm communicator );
 
    const LocalRangeType& getLocalRange() const;
 
    IndexType getGhosts() const;
 
-   MPI_Comm getCommunicationGroup() const;
+   MPI_Comm getCommunicator() const;
 
    AllocatorType getAllocator() const;
 
@@ -193,68 +193,53 @@ public:
    template< typename Array >
    bool operator!=( const Array& array ) const;
 
-      /**
-       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
-       *
-       * The lambda function is supposed to be declared as
-       *
-       * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
-       * ```
-       *
-       * where
-       *
-       * - \e elementIdx is an index of the array element being currently processed
-       * - \e elementValue is a value of the array element being currently processed
-       *
-       * This is performed at the same place where the array is allocated,
-       * i.e. it is efficient even on GPU.
-       *
-       * \param begin The beginning of the array elements interval.
-       * \param end The end of the array elements interval.
-       * \param f The lambda function to be processed.
-       *
-       * \par Example
-       * \include Containers/ArrayExample_forElements.cpp
-       * \par Output
-       * \include ArrayExample_forElements.out
-       *
-       */
-      template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function&& f );
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, Function&& f );
 
-      /**
-       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
-       *
-       * The lambda function is supposed to be declared as
-       *
-       * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
-       * ```
-       *
-       * where
-       *
-       * - \e elementIdx is an index of the array element being currently processed
-       * - \e elementValue is a value of the array element being currently processed
-       *
-       * This is performed at the same place where the array is allocated,
-       * i.e. it is efficient even on GPU.
-       *
-       * \param begin The beginning of the array elements interval.
-       * \param end The end of the array elements interval.
-       * \param f The lambda function to be processed.
-       *
-       * \par Example
-       * \include Containers/ArrayExample_forElements.cpp
-       * \par Output
-       * \include ArrayExample_forElements.out
-       *
-       */
-      template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function&& f ) const;
-
-
-   // TODO: serialization (save, load)
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
 protected:
    ViewType view;
@@ -269,16 +254,6 @@ private:
    template< typename Array, std::enable_if_t< ! std::is_same< typename Array::DeviceType, DeviceType >::value, bool > = true >
    static void setSynchronizerHelper( ViewType& view, const Array& array ) {}
 };
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-std::ostream& operator<<( std::ostream& str, const DistributedArray< Value, Device, Index, Allocator >& array )
-{
-   return array.getConstView().print( str );
-}
-
 
 } // namespace Containers
 } // namespace TNL

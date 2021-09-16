@@ -32,11 +32,9 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename Communicator,
           typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
-                                               Communicator,
                                                typename Mesh::RealType,
                                                typename Mesh::DeviceType,
                                                typename Mesh::IndexType  >
@@ -48,7 +46,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       typedef typename Mesh::IndexType IndexType;
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef Pointers::SharedPointer<  DifferentialOperator > DifferentialOperatorPointer;
       typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
@@ -58,8 +56,6 @@ class HeatEquationProblem : public PDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
       using typename BaseType::MatrixType;
-
-      typedef Communicator CommunicatorType;
 
       String getPrologHeader() const;
 

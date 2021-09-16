@@ -65,10 +65,10 @@ protected:
       using LeftVector = DistributedVector< LeftReal, typename Left::DeviceType, typename Left::IndexType >;
       using RightVector = DistributedVector< RightReal, typename Right::DeviceType, typename Right::IndexType >;
 
-      const MPI_Comm group = AllGroup();
+      const MPI_Comm communicator = MPI_COMM_WORLD;
 
-      const int rank = GetRank(group);
-      const int nproc = GetSize(group);
+      const int rank = GetRank(communicator);
+      const int nproc = GetSize(communicator);
 
       // some arbitrary value (but must be 0 if not distributed)
       const int ghosts = (nproc > 1) ? 4 : 0;
@@ -97,14 +97,14 @@ protected:
    #ifdef DISTRIBUTED_VECTOR
       using LocalRangeType = typename LeftVector::LocalRangeType;
       using Synchronizer = typename Partitioner< typename Left::IndexType >::template ArraySynchronizer< typename Left::DeviceType >;
-      const LocalRangeType localRange = Partitioner< typename Left::IndexType >::splitRange( size, group );
+      const LocalRangeType localRange = Partitioner< typename Left::IndexType >::splitRange( size, communicator );
 
-      _L1.setDistribution( localRange, ghosts, size, group );
-      _L2.setDistribution( localRange, ghosts, size, group );
-      _R1.setDistribution( localRange, ghosts, size, group );
-      _R2.setDistribution( localRange, ghosts, size, group );
+      _L1.setDistribution( localRange, ghosts, size, communicator );
+      _L2.setDistribution( localRange, ghosts, size, communicator );
+      _R1.setDistribution( localRange, ghosts, size, communicator );
+      _R2.setDistribution( localRange, ghosts, size, communicator );
 
-      auto synchronizer = std::make_shared<Synchronizer>( localRange, ghosts / 2, group );
+      auto synchronizer = std::make_shared<Synchronizer>( localRange, ghosts / 2, communicator );
       _L1.setSynchronizer( synchronizer );
       _L2.setSynchronizer( synchronizer );
       _R1.setSynchronizer( synchronizer );

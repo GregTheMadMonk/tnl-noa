@@ -147,7 +147,7 @@ public:
       #endif
 
       // skip allocation on repeated calls - compare only sizes, not the actual data
-      if( array_view.getCommunicationGroup() != array.getCommunicationGroup() ||
+      if( array_view.getCommunicator() != array.getCommunicator() ||
           array_view.getSizes() != array.getSizes() ||
           array_view.getLocalBegins() != array.getLocalBegins() ||
           array_view.getLocalEnds() != array.getLocalEnds() )
@@ -251,10 +251,10 @@ protected:
 
       // issue all send and receive async operations
       RequestsVector requests;
-      const MPI_Comm group = array_view.getCommunicationGroup();
+      const MPI_Comm communicator = array_view.getCommunicator();
       Algorithms::staticFor< std::size_t, 0, DistributedNDArray::getDimension() >(
          [&] ( auto dim ) {
-            sendHelper< dim >( buffers, requests, group, tag_offset, mask );
+            sendHelper< dim >( buffers, requests, communicator, tag_offset, mask );
          }
       );
 
@@ -320,9 +320,9 @@ protected:
       dim_buffers.right_recv_offsets.template setSize< dim >( localEnds.template getSize< dim >() );
 
       // FIXME: set proper neighbor IDs !!!
-      const MPI_Comm group = array_view.getCommunicationGroup();
-      const int rank = MPI::GetRank(group);
-      const int nproc = MPI::GetSize(group);
+      const MPI_Comm communicator = array_view.getCommunicator();
+      const int rank = MPI::GetRank(communicator);
+      const int nproc = MPI::GetSize(communicator);
       dim_buffers.left_neighbor = (rank + nproc - 1) % nproc;
       dim_buffers.right_neighbor = (rank + 1) % nproc;
    }
@@ -381,7 +381,7 @@ protected:
    }
 
    template< std::size_t dim >
-   static void sendHelper( Buffers& buffers, RequestsVector& requests, MPI_Comm group, int tag_offset, SyncDirection mask )
+   static void sendHelper( Buffers& buffers, RequestsVector& requests, MPI_Comm communicator, int tag_offset, SyncDirection mask )
    {
       constexpr std::size_t overlap = DistributedNDArrayView::LocalViewType::IndexerType::template getOverlap< dim >();
       if( overlap == 0 )
@@ -393,33 +393,33 @@ protected:
          if( mask & SyncDirection::Left ) {
             requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData(),
                                             dim_buffers.left_send_view.getStorageSize(),
-                                            dim_buffers.left_neighbor, tag_offset + 0, group ) );
+                                            dim_buffers.left_neighbor, tag_offset + 0, communicator ) );
             requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData(),
                                             dim_buffers.right_recv_view.getStorageSize(),
-                                            dim_buffers.right_neighbor, tag_offset + 0, group ) );
+                                            dim_buffers.right_neighbor, tag_offset + 0, communicator ) );
          }
          if( mask & SyncDirection::Right ) {
             requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData(),
                                             dim_buffers.right_send_view.getStorageSize(),
-                                            dim_buffers.right_neighbor, tag_offset + 1, group ) );
+                                            dim_buffers.right_neighbor, tag_offset + 1, communicator ) );
             requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData(),
                                             dim_buffers.left_recv_view.getStorageSize(),
-                                            dim_buffers.left_neighbor, tag_offset + 1, group ) );
+                                            dim_buffers.left_neighbor, tag_offset + 1, communicator ) );
          }
       }
       else {
          requests.push_back( MPI::Isend( dim_buffers.left_send_view.getData() + 0,
                                          dim_buffers.left_send_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.left_neighbor, tag_offset + 0, group ) );
+                                         dim_buffers.left_neighbor, tag_offset + 0, communicator ) );
          requests.push_back( MPI::Irecv( dim_buffers.left_recv_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
                                          dim_buffers.left_recv_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.left_neighbor, tag_offset + 1, group ) );
+                                         dim_buffers.left_neighbor, tag_offset + 1, communicator ) );
          requests.push_back( MPI::Isend( dim_buffers.right_send_view.getData() + dim_buffers.left_recv_view.getStorageSize() / 27 * 18,
                                          dim_buffers.right_send_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.right_neighbor, tag_offset + 1, group ) );
+                                         dim_buffers.right_neighbor, tag_offset + 1, communicator ) );
          requests.push_back( MPI::Irecv( dim_buffers.right_recv_view.getData() + 0,
                                          dim_buffers.right_recv_view.getStorageSize() / 27 * 9,
-                                         dim_buffers.right_neighbor, tag_offset + 0, group ) );
+                                         dim_buffers.right_neighbor, tag_offset + 0, communicator ) );
       }
    }
 

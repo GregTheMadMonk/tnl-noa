@@ -25,9 +25,9 @@ auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< d
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Min{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_MIN, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_MIN, expression.getCommunicator() );
    }
    return result;
 }
@@ -43,21 +43,21 @@ auto DistributedExpressionArgMin( const Expression& expression )
    static_assert( std::numeric_limits< RealType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::max() );
-   const auto group = expression.getCommunicationGroup();
-   if( group != MPI::NullGroup() ) {
+   const MPI_Comm communicator = expression.getCommunicator();
+   if( communicator != MPI_COMM_NULL ) {
       // compute local argMin
       ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MinWithArg{} );
       // transform local index to global index
       localResult.second += expression.getLocalRange().getBegin();
 
       // scatter local result to all processes and gather their results
-      const int nproc = MPI::GetSize( group );
+      const int nproc = MPI::GetSize( communicator );
       ResultType dataForScatter[ nproc ];
       for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localResult;
       ResultType gatheredResults[ nproc ];
       // NOTE: exchanging general data types does not work with MPI
-      //MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, group );
-      MPI::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), group );
+      //MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, communicator );
+      MPI::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), communicator );
 
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
@@ -76,9 +76,9 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::decay_t< d
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::lowest();
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Max{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_MAX, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_MAX, expression.getCommunicator() );
    }
    return result;
 }
@@ -94,21 +94,21 @@ auto DistributedExpressionArgMax( const Expression& expression )
    static_assert( std::numeric_limits< RealType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's real type" );
    ResultType result( -1, std::numeric_limits< RealType >::lowest() );
-   const auto group = expression.getCommunicationGroup();
-   if( group != MPI::NullGroup() ) {
+   const MPI_Comm communicator = expression.getCommunicator();
+   if( communicator != MPI_COMM_NULL ) {
       // compute local argMax
       ResultType localResult = Algorithms::reduceWithArgument( expression.getConstLocalView(), TNL::MaxWithArg{} );
       // transform local index to global index
       localResult.second += expression.getLocalRange().getBegin();
 
       // scatter local result to all processes and gather their results
-      const int nproc = MPI::GetSize( group );
+      const int nproc = MPI::GetSize( communicator );
       ResultType dataForScatter[ nproc ];
       for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localResult;
       ResultType gatheredResults[ nproc ];
       // NOTE: exchanging general data types does not work with MPI
-      //MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, group );
-      MPI::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), group );
+      //MPI::Alltoall( dataForScatter, 1, gatheredResults, 1, communicator );
+      MPI::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), communicator );
 
       // reduce the gathered data
       const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
@@ -125,9 +125,9 @@ auto DistributedExpressionSum( const Expression& expression ) -> std::decay_t< d
    using ResultType = std::decay_t< decltype( expression[0] ) >;
 
    ResultType result = 0;
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Plus{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_SUM, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_SUM, expression.getCommunicator() );
    }
    return result;
 }
@@ -138,9 +138,9 @@ auto DistributedExpressionProduct( const Expression& expression ) -> std::decay_
    using ResultType = std::decay_t< decltype( expression[0] ) >;
 
    ResultType result = 1;
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::Multiplies{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_PROD, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_PROD, expression.getCommunicator() );
    }
    return result;
 }
@@ -153,9 +153,9 @@ auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::dec
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::LogicalAnd{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_LAND, expression.getCommunicator() );
    }
    return result;
 }
@@ -166,9 +166,9 @@ auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::deca
    using ResultType = std::decay_t< decltype( expression[0] || expression[0] ) >;
 
    ResultType result = 0;
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::LogicalOr{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_LOR, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_LOR, expression.getCommunicator() );
    }
    return result;
 }
@@ -181,9 +181,9 @@ auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::deca
    static_assert( std::numeric_limits< ResultType >::is_specialized,
                   "std::numeric_limits is not specialized for the reduction's result type" );
    ResultType result = std::numeric_limits< ResultType >::max();
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitAnd{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_BAND, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_BAND, expression.getCommunicator() );
    }
    return result;
 }
@@ -194,9 +194,9 @@ auto DistributedExpressionBinaryOr( const Expression& expression ) -> std::decay
    using ResultType = std::decay_t< decltype( expression[0] | expression[0] ) >;
 
    ResultType result = 0;
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitOr{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_BOR, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_BOR, expression.getCommunicator() );
    }
    return result;
 }
@@ -207,9 +207,9 @@ auto DistributedExpressionBinaryXor( const Expression& expression ) -> std::deca
    using ResultType = std::decay_t< decltype( expression[0] ^ expression[0] ) >;
 
    ResultType result = 0;
-   if( expression.getCommunicationGroup() != MPI::NullGroup() ) {
+   if( expression.getCommunicator() != MPI_COMM_NULL ) {
       const ResultType localResult = Algorithms::reduce( expression.getConstLocalView(), TNL::BitXor{} );
-      MPI::Allreduce( &localResult, &result, 1, MPI_BXOR, expression.getCommunicationGroup() );
+      MPI::Allreduce( &localResult, &result, 1, MPI_BXOR, expression.getCommunicator() );
    }
    return result;
 }

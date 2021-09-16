@@ -82,8 +82,8 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
                      "Distributed expressions are supported only on vectors which are distributed the same way." );
       TNL_ASSERT_EQ( op1.getGhosts(), op2.getGhosts(),
                      "Distributed expressions are supported only on vectors which are distributed the same way." );
-      TNL_ASSERT_EQ( op1.getCommunicationGroup(), op2.getCommunicationGroup(),
-                     "Distributed expressions are supported only on vectors within the same communication group." );
+      TNL_ASSERT_EQ( op1.getCommunicator(), op2.getCommunicator(),
+                     "Distributed expressions are supported only on vectors within the same communicator." );
    }
 
    RealType getElement( const IndexType i ) const
@@ -114,9 +114,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return op1.getCommunicationGroup();
+      return op1.getCommunicator();
    }
 
    ConstLocalViewType getConstLocalView() const
@@ -197,9 +197,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
       return op1.getGhosts();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return op1.getCommunicationGroup();
+      return op1.getCommunicator();
    }
 
    ConstLocalViewType getConstLocalView() const
@@ -279,9 +279,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
       return op2.getGhosts();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return op2.getCommunicationGroup();
+      return op2.getCommunicator();
    }
 
    ConstLocalViewType getConstLocalView() const
@@ -362,9 +362,9 @@ struct DistributedUnaryExpressionTemplate
       return operand.getGhosts();
    }
 
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return operand.getCommunicationGroup();
+      return operand.getCommunicator();
    }
 
    ConstLocalViewType getConstLocalView() const

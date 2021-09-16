@@ -31,35 +31,6 @@ namespace MPI {
 // forward declaration to break cyclic inclusion
 inline void selectGPU();
 
-// function wrappers for MPI constants
-
-inline MPI_Comm AllGroup()
-{
-#ifdef HAVE_MPI
-   return MPI_COMM_WORLD;
-#else
-   return 1;
-#endif
-}
-
-inline MPI_Comm NullGroup()
-{
-#ifdef HAVE_MPI
-   return MPI_COMM_NULL;
-#else
-   return 0;
-#endif
-}
-
-inline MPI_Request NullRequest()
-{
-#ifdef HAVE_MPI
-   return MPI_REQUEST_NULL;
-#else
-   return 0;
-#endif
-}
-
 // wrappers for basic MPI functions
 
 inline void Init( int& argc, char**& argv, int required_thread_level = MPI_THREAD_SINGLE )
@@ -112,45 +83,45 @@ inline void Finalize()
 inline bool Initialized()
 {
 #ifdef HAVE_MPI
-    int flag;
-    MPI_Initialized(&flag);
-    return flag;
+   int flag;
+   MPI_Initialized( &flag );
+   return flag;
 #else
-    return true;
+   return true;
 #endif
 }
 
 inline bool Finalized()
 {
 #ifdef HAVE_MPI
-    int flag;
-    MPI_Finalized(&flag);
-    return flag;
+   int flag;
+   MPI_Finalized( &flag );
+   return flag;
 #else
-    return false;
+   return false;
 #endif
 }
 
-inline int GetRank( MPI_Comm group = AllGroup() )
+inline int GetRank( MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetRank cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "GetRank cannot be called with NullGroup" );
    int rank;
-   MPI_Comm_rank( group, &rank );
+   MPI_Comm_rank( communicator, &rank );
    return rank;
 #else
    return 0;
 #endif
 }
 
-inline int GetSize( MPI_Comm group = AllGroup() )
+inline int GetSize( MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "GetSize cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "GetSize cannot be called with NullGroup" );
    int size;
-   MPI_Comm_size( group, &size );
+   MPI_Comm_size( communicator, &size );
    return size;
 #else
    return 1;
@@ -173,17 +144,17 @@ inline MPI_Comm Comm_split( MPI_Comm comm, int color, int key )
 /**
  * \brief Wrapper for \ref MPI_Dims_create.
  *
- * \param nproc - number of processes in the group to be distributed
+ * \param nnodes - number of nodes in the grid
  * \param ndims - number of dimensions of the Cartesian grid
  * \param dims - distribution of processes into the \e dim-dimensional
  *               Cartesian grid (array of length \e ndims)
  *
  * Negative input values of \e dims[i] are erroneous. An error will occur if
- * \e nproc is not a multiple of the product of all non-zero values \e dims[i].
+ * \e nnodes is not a multiple of the product of all non-zero values \e dims[i].
  *
  * See the MPI documentation for more information.
  */
-inline void Compute_dims( int nproc, int ndims, int* dims )
+inline void Compute_dims( int nnodes, int ndims, int* dims )
 {
 #ifdef HAVE_MPI
    int prod = 1;
@@ -194,12 +165,12 @@ inline void Compute_dims( int nproc, int ndims, int* dims )
          prod *= dims[ i ];
    }
 
-   if( nproc % prod != 0 )
+   if( nnodes % prod != 0 )
       throw std::logic_error( "The program tries to call MPI_Dims_create with wrong dimensions."
             "The product of the non-zero values dims[i] is " + std::to_string(prod) + " and the "
-            "number of processes (" + std::to_string(nproc) + ") is not a multiple of the product." );
+            "number of processes (" + std::to_string(nnodes) + ") is not a multiple of the product." );
 
-   MPI_Dims_create( nproc, ndims, dims );
+   MPI_Dims_create( nnodes, ndims, dims );
 #else
    for( int i = 0; i < ndims; i++)
       dims[ i ] = 1;
@@ -208,12 +179,12 @@ inline void Compute_dims( int nproc, int ndims, int* dims )
 
 // wrappers for MPI communication functions
 
-inline void Barrier( MPI_Comm group = AllGroup() )
+inline void Barrier( MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Barrier cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Barrier cannot be called with NullGroup" );
-   MPI_Barrier(group);
+   MPI_Barrier( communicator );
 #endif
 }
 
@@ -230,12 +201,12 @@ void Send( const T* data,
            int count,
            int dest,
            int tag,
-           MPI_Comm group = AllGroup() )
+           MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Send cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Send cannot be called with NullGroup" );
-   MPI_Send( (const void*) data, count, getDataType<T>(), dest, tag, group );
+   MPI_Send( (const void*) data, count, getDataType<T>(), dest, tag, communicator );
 #endif
 }
 
@@ -244,12 +215,12 @@ void Recv( T* data,
            int count,
            int src,
            int tag,
-           MPI_Comm group = AllGroup() )
+           MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Recv cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Recv cannot be called with NullGroup" );
-   MPI_Recv( (void*) data, count, getDataType<T>(), src, tag, group, MPI_STATUS_IGNORE );
+   MPI_Recv( (void*) data, count, getDataType<T>(), src, tag, communicator, MPI_STATUS_IGNORE );
 #endif
 }
 
@@ -262,11 +233,11 @@ void Sendrecv( const T* sendData,
                int receiveCount,
                int source,
                int receiveTag,
-               MPI_Comm group = AllGroup() )
+               MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Sendrecv cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Sendrecv cannot be called with NullGroup" );
    MPI_Sendrecv( (void*) sendData,
                  sendCount,
                  getDataType<T>(),
@@ -277,7 +248,7 @@ void Sendrecv( const T* sendData,
                  getDataType<T>(),
                  source,
                  receiveTag,
-                 group,
+                 communicator,
                  MPI_STATUS_IGNORE );
 #else
    throw Exceptions::MPISupportMissing();
@@ -289,16 +260,16 @@ MPI_Request Isend( const T* data,
                    int count,
                    int dest,
                    int tag,
-                   MPI_Comm group = AllGroup() )
+                   MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Isend cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Isend cannot be called with NullGroup" );
    MPI_Request req;
-   MPI_Isend( (const void*) data, count, getDataType<T>(), dest, tag, group, &req );
+   MPI_Isend( (const void*) data, count, getDataType<T>(), dest, tag, communicator, &req );
    return req;
 #else
-   return NullRequest();
+   return MPI_REQUEST_NULL;
 #endif
 }
 
@@ -307,16 +278,16 @@ MPI_Request Irecv( T* data,
                    int count,
                    int src,
                    int tag,
-                   MPI_Comm group = AllGroup() )
+                   MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Irecv cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Irecv cannot be called with NullGroup" );
    MPI_Request req;
-   MPI_Irecv( (void*) data, count, getDataType<T>(), src, tag, group, &req );
+   MPI_Irecv( (void*) data, count, getDataType<T>(), src, tag, communicator, &req );
    return req;
 #else
-   return NullRequest();
+   return MPI_REQUEST_NULL;
 #endif
 }
 
@@ -325,12 +296,12 @@ void Allreduce( const T* data,
                 T* reduced_data,
                 int count,
                 const MPI_Op& op,
-                MPI_Comm group)
+                MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Allreduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
-   TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
    getTimerAllreduce().start();
-   MPI_Allreduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, group );
+   MPI_Allreduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, communicator );
    getTimerAllreduce().stop();
 #else
    std::memcpy( (void*) reduced_data, (const void*) data, count * sizeof(T) );
@@ -342,12 +313,12 @@ template< typename T >
 void Allreduce( T* data,
                 int count,
                 const MPI_Op& op,
-                MPI_Comm group)
+                MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Allreduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
-   TNL_ASSERT_NE( group, NullGroup(), "Allreduce cannot be called with NullGroup" );
    getTimerAllreduce().start();
-   MPI_Allreduce( MPI_IN_PLACE, (void*) data, count, getDataType<T>(), op, group );
+   MPI_Allreduce( MPI_IN_PLACE, (void*) data, count, getDataType<T>(), op, communicator );
    getTimerAllreduce().stop();
 #endif
 }
@@ -358,23 +329,26 @@ void Reduce( const T* data,
              int count,
              const MPI_Op& op,
              int root,
-             MPI_Comm group)
+             MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Reduce cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
-   TNL_ASSERT_NE( group, NullGroup(), "Reduce cannot be called with NullGroup" );
-   MPI_Reduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, root, group );
+   MPI_Reduce( (const void*) data, (void*) reduced_data, count, getDataType<T>(), op, root, communicator );
 #else
    std::memcpy( (void*) reduced_data, (void*) data, count * sizeof(T) );
 #endif
 }
 
 template< typename T >
-void Bcast( T* data, int count, int root, MPI_Comm group)
+void Bcast( T* data,
+            int count,
+            int root,
+            MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Bcast cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
    TNL_ASSERT_TRUE( Initialized() && ! Finalized(), "Fatal Error - MPI is not initialized" );
-   TNL_ASSERT_NE( group, NullGroup(), "Bcast cannot be called with NullGroup" );
-   MPI_Bcast( (void*) data, count, getDataType<T>(), root, group );
+   MPI_Bcast( (void*) data, count, getDataType<T>(), root, communicator );
 #endif
 }
 
@@ -383,17 +357,17 @@ void Alltoall( const T* sendData,
                int sendCount,
                T* receiveData,
                int receiveCount,
-               MPI_Comm group )
+               MPI_Comm communicator = MPI_COMM_WORLD )
 {
+   TNL_ASSERT_NE( communicator, MPI_COMM_NULL, "Alltoall cannot be called with MPI_COMM_NULL" );
 #ifdef HAVE_MPI
-   TNL_ASSERT_NE( group, NullGroup(), "Alltoall cannot be called with NullGroup" );
    MPI_Alltoall( (const void*) sendData,
                  sendCount,
                  getDataType<T>(),
                  (void*) receiveData,
                  receiveCount,
                  getDataType<T>(),
-                 group );
+                 communicator );
 #else
    TNL_ASSERT_EQ( sendCount, receiveCount, "sendCount must be equal to receiveCount when running without MPI." );
    std::memcpy( (void*) receiveData, (const void*) sendData, sendCount * sizeof(T) );

@@ -200,7 +200,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
    }
 
    localResidue /= tau * ( RealType ) size;
-   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, TNL::MPI::AllGroup() );
+   TNL::MPI::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, MPI_COMM_WORLD );
    //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
 }
 

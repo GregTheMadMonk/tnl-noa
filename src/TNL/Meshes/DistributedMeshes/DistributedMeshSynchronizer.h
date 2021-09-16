@@ -28,7 +28,7 @@ struct HasMeshType
 {};
 
 template< typename T >
-struct HasMeshType< T, typename Containers::Expressions::enable_if_type< typename T::MeshType >::type >
+struct HasMeshType< T, typename enable_if_type< typename T::MeshType >::type >
 : public std::true_type
 {};
 
@@ -61,9 +61,9 @@ public:
       TNL_ASSERT_EQ( mesh.template getGlobalIndices< EntityDimension >().getSize(), mesh.getLocalMesh().template getEntitiesCount< EntityDimension >(),
                      "Global indices are not allocated properly." );
 
-      group = mesh.getCommunicationGroup();
-      const int rank = MPI::GetRank( group );
-      const int nproc = MPI::GetSize( group );
+      communicator = mesh.getCommunicator();
+      const int rank = MPI::GetRank( communicator );
+      const int nproc = MPI::GetSize( communicator );
 
       // exchange the global index offsets so that each rank can determine the
       // owner of every entity by its global index
@@ -74,7 +74,7 @@ public:
          sendbuf.setValue( ownStart );
          MPI::Alltoall( sendbuf.getData(), 1,
                         globalOffsets.getData(), 1,
-                        group );
+                        communicator );
       }
 
       // count local ghost entities for each rank
@@ -113,7 +113,7 @@ public:
             sendbuf.setElement( j, i, localGhostCounts[ i ] );
          MPI::Alltoall( &sendbuf(0, 0), nproc,
                         &ghostEntitiesCounts(0, 0), nproc,
-                        group );
+                        communicator );
       }
 
       // allocate ghost offsets
@@ -140,7 +140,7 @@ public:
                requests.push_back( MPI::Isend(
                         mesh.template getGlobalIndices< EntityDimension >().getData() + ghostOffset,
                         ghostEntitiesCounts( rank, i ),
-                        i, 0, group ) );
+                        i, 0, communicator ) );
                ghostOffset += ghostEntitiesCounts( rank, i );
             }
             // update ghost offsets
@@ -155,7 +155,7 @@ public:
                requests.push_back( MPI::Irecv(
                         ghostNeighbors.getData() + ghostNeighborOffsets[ j ],
                         ghostEntitiesCounts( j, rank ),
-                        j, 0, group ) );
+                        j, 0, communicator ) );
             }
          }
 
@@ -210,8 +210,8 @@ public:
       TNL_ASSERT_EQ( array.getSize(), bytesPerValue * ghostOffsets[ ghostOffsets.getSize() - 1 ],
                      "The array does not have the expected size." );
 
-      const int rank = MPI::GetRank( group );
-      const int nproc = MPI::GetSize( group );
+      const int rank = MPI::GetRank( communicator );
+      const int nproc = MPI::GetSize( communicator );
 
       // allocate send buffers (setSize does nothing if the array size is already correct)
       sendBuffers.setSize( bytesPerValue * ghostNeighborOffsets[ nproc ] );
@@ -225,7 +225,7 @@ public:
             requests.push_back( MPI::Irecv(
                      array.getData() + bytesPerValue * ghostOffsets[ j ],
                      bytesPerValue * ghostEntitiesCounts( rank, j ),
-                     j, 0, group ) );
+                     j, 0, communicator ) );
          }
       }
 
@@ -249,7 +249,7 @@ public:
             requests.push_back( MPI::Isend(
                      sendBuffersView.getData() + bytesPerValue * ghostNeighborOffsets[ i ],
                      bytesPerValue * ghostEntitiesCounts( i, rank ),
-                     i, 0, group ) );
+                     i, 0, communicator ) );
          }
       }
 
@@ -269,8 +269,8 @@ public:
    {
       TNL_ASSERT_EQ( pattern.getRows(), ghostOffsets[ ghostOffsets.getSize() - 1 ], "invalid sparse pattern matrix" );
 
-      const int rank = MPI::GetRank( group );
-      const int nproc = MPI::GetSize( group );
+      const int rank = MPI::GetRank( communicator );
+      const int nproc = MPI::GetSize( communicator );
 
       // buffer for asynchronous communication requests
       RequestsVector requests;
@@ -310,7 +310,7 @@ public:
                requests.push_back( MPI::Isend(
                         send_rowCapacities.getData() + send_rankOffsets[ i ],
                         ghostNeighborOffsets[ i + 1 ] - ghostNeighborOffsets[ i ],
-                        i, 1, group ) );
+                        i, 1, communicator ) );
          }
 
          // allocate column indices
@@ -338,7 +338,7 @@ public:
             requests.push_back( MPI::Isend(
                      send_columnIndices.getData() + send_rowPointers[ send_rankOffsets[ i ] ],
                      send_rowPointers[ send_rankOffsets[ i + 1 ] ] - send_rowPointers[ send_rankOffsets[ i ] ],
-                     i, 0, group ) );
+                     i, 0, communicator ) );
          }
       }
 
@@ -373,7 +373,7 @@ public:
                row_lengths_requests.push_back( MPI::Irecv(
                         recv_rowPointers.getData() + recv_rankOffsets[ i ],
                         ghostOffsets[ i + 1 ] - ghostOffsets[ i ],
-                        i, 1, group ) );
+                        i, 1, communicator ) );
             }
          }
 
@@ -397,7 +397,7 @@ public:
             requests.push_back( MPI::Irecv(
                      recv_columnIndices.getData() + recv_rowPointers[ recv_rankOffsets[ i ] ],
                      recv_rowPointers[ recv_rankOffsets[ i + 1 ] ] - recv_rowPointers[ recv_rankOffsets[ i ] ],
-                     i, 0, group ) );
+                     i, 0, communicator ) );
          }
       }
 
@@ -445,8 +445,8 @@ public:
    }
 
 protected:
-   // communication group taken from the distributed mesh
-   MPI_Comm group;
+   // communicator taken from the distributed mesh
+   MPI_Comm communicator;
 
    /**
     * Global offsets: array of size nproc where the i-th value is the lowest

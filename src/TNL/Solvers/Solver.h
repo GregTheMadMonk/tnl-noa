@@ -13,9 +13,9 @@
 #include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter, typename CommunicatorType > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           template< typename ConfTag > class ProblemConfig,
           typename ConfigTag = DefaultBuildConfigTag >
 class Solver
@@ -30,4 +30,3 @@ class Solver
 } // namespace TNL
 
 #include <TNL/Solvers/Solver_impl.h>
-

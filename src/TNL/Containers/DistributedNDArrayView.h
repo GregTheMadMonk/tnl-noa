@@ -37,27 +37,20 @@ public:
    using LocalViewType = NDArrayView;
    using ConstLocalViewType = typename NDArrayView::ConstViewType;
 
-   __cuda_callable__
    DistributedNDArrayView() = default;
 
    // explicit initialization by local array view, global sizes and local begins and ends
-   __cuda_callable__
-   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm group )
-   : localView(localView), group(group), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
+   DistributedNDArrayView( NDArrayView localView, SizesHolderType globalSizes, LocalBeginsType localBegins, SizesHolderType localEnds, MPI_Comm communicator )
+   : localView(localView), communicator(communicator), globalSizes(globalSizes), localBegins(localBegins), localEnds(localEnds) {}
 
-   // Copy-constructor does shallow copy, so views can be passed-by-value into
-   // CUDA kernels and they can be captured-by-value in __cuda_callable__
-   // lambda functions.
-   __cuda_callable__
+   // copy-constructor does shallow copy
    DistributedNDArrayView( const DistributedNDArrayView& ) = default;
 
    // default move-constructor
-   __cuda_callable__
    DistributedNDArrayView( DistributedNDArrayView&& ) = default;
 
    // Copy-assignment does deep copy, just like regular array, but the sizes
    // must match (i.e. copy-assignment cannot resize).
-   __cuda_callable__
    DistributedNDArrayView& operator=( const DistributedNDArrayView& other ) = default;
 
    // There is no move-assignment operator, so expressions like `a = b.getView()`
@@ -70,41 +63,37 @@ public:
       globalSizes = other.getSizes();
       localBegins = other.getLocalBegins();
       localEnds = other.getLocalEnds();
-      group = other.getCommunicationGroup();
+      communicator = other.getCommunicator();
       localView = other.getConstLocalView();
       return *this;
    }
 
    // methods for rebinding (reinitialization)
-   __cuda_callable__
    void bind( DistributedNDArrayView view )
    {
       localView.bind( view.localView );
-      group = view.group;
+      communicator = view.communicator;
       globalSizes = view.globalSizes;
       localBegins = view.localBegins;
       localEnds = view.localEnds;
    }
 
    // binds to the given raw pointer and changes the indexer
-   __cuda_callable__
    void bind( ValueType* data, typename LocalViewType::IndexerType indexer )
    {
       localView.bind( data, indexer );
    }
 
    // binds to the given raw pointer and preserves the current indexer
-   __cuda_callable__
    void bind( ValueType* data )
    {
       localView.bind( data );
    }
 
-   __cuda_callable__
    void reset()
    {
       localView.reset();
-      group = MPI::NullGroup();
+      communicator = MPI_COMM_NULL;
       globalSizes = SizesHolderType{};
       localBegins = LocalBeginsType{};
       localEnds = SizesHolderType{};
@@ -115,14 +104,12 @@ public:
       return NDArrayView::getDimension();
    }
 
-   __cuda_callable__
-   MPI_Comm getCommunicationGroup() const
+   MPI_Comm getCommunicator() const
    {
-      return group;
+      return communicator;
    }
 
    // Returns the *global* sizes
-   __cuda_callable__
    const SizesHolderType& getSizes() const
    {
       return globalSizes;
@@ -130,33 +117,28 @@ public:
 
    // Returns the *global* size
    template< std::size_t level >
-   __cuda_callable__
    IndexType getSize() const
    {
       return globalSizes.template getSize< level >();
    }
 
-   __cuda_callable__
    LocalBeginsType getLocalBegins() const
    {
       return localBegins;
    }
 
-   __cuda_callable__
    SizesHolderType getLocalEnds() const
    {
       return localEnds;
    }
 
    template< std::size_t level >
-   __cuda_callable__
    LocalRangeType getLocalRange() const
    {
       return LocalRangeType( localBegins.template getSize< level >(), localEnds.template getSize< level >() );
    }
 
    // returns the local storage size
-   __cuda_callable__
    IndexType getLocalStorageSize() const
    {
       return localView.getStorageSize();
@@ -174,7 +156,6 @@ public:
 
    // returns the *local* storage index for given *global* indices
    template< typename... IndexTypes >
-   __cuda_callable__
    IndexType
    getStorageIndex( IndexTypes&&... indices ) const
    {
@@ -187,13 +168,11 @@ public:
       return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
    }
 
-   __cuda_callable__
    ValueType* getData()
    {
       return localView.getData();
    }
 
-   __cuda_callable__
    std::add_const_t< ValueType >* getData() const
    {
       return localView.getData();
@@ -239,23 +218,21 @@ public:
       return localView[ index - localBegins.template getSize< 0 >() ];
    }
 
-   __cuda_callable__
    ViewType getView()
    {
       return ViewType( *this );
    }
 
-   __cuda_callable__
    ConstViewType getConstView() const
    {
-      return ConstViewType( localView, globalSizes, localBegins, localEnds, group );
+      return ConstViewType( localView, globalSizes, localBegins, localEnds, communicator );
    }
 
    // TODO: overlaps should be skipped, otherwise it works only after synchronization
    bool operator==( const DistributedNDArrayView& other ) const
    {
-      // we can't run allreduce if the communication groups are different
-      if( group != other.getCommunicationGroup() )
+      // we can't run allreduce if the communicators are different
+      if( communicator != other.getCommunicator() )
          return false;
       const bool localResult =
             globalSizes == other.globalSizes &&
@@ -263,8 +240,8 @@ public:
             localEnds == other.localEnds &&
             localView == other.localView;
       bool result = true;
-      if( group != MPI::NullGroup() )
-         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, group );
+      if( communicator != MPI_COMM_NULL )
+         MPI::Allreduce( &localResult, &result, 1, MPI_LAND, communicator );
       return result;
    }
 
@@ -393,7 +370,7 @@ public:
 
 protected:
    NDArrayView localView;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    SizesHolderType globalSizes;
    // static sizes should have different type: localBegin is always 0, localEnd is always the full size
    LocalBeginsType localBegins;

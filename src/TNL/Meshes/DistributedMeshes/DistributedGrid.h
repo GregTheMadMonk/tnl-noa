@@ -84,9 +84,9 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       const CoordinatesType& getSubdomainCoordinates() const;
 
-      //aka MPI-communcicator
-      void setCommunicationGroup( MPI_Comm group );
-      MPI_Comm getCommunicationGroup() const;
+      void setCommunicator( MPI_Comm communicator );
+
+      MPI_Comm getCommunicator() const;
 
       template< int EntityDimension >
       IndexType getEntitiesCount() const;
@@ -140,8 +140,7 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       bool isSet = false;
 
-      //aka MPI-communicator
-      MPI_Comm group = MPI::AllGroup();
+      MPI_Comm communicator = MPI_COMM_WORLD;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >

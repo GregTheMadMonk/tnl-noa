@@ -50,11 +50,11 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
 
    GridDistributor() = delete;
 
-   GridDistributor( CoordinatesType rank_sizes, MPI_Comm group )
-      : rank(TNL::MPI::GetRank(group)),
-        nproc(TNL::MPI::GetSize(group)),
+   GridDistributor( CoordinatesType rank_sizes, MPI_Comm communicator )
+      : rank(TNL::MPI::GetRank(communicator)),
+        nproc(TNL::MPI::GetSize(communicator)),
         rank_sizes(rank_sizes),
-        group(group)
+        communicator(communicator)
    {}
 
    void decompose( const GridType& grid,
@@ -258,8 +258,8 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
             cells_indices[ pair.second ] = cell_new_global_indices.at( pair.first );
       }
 
-      // set the communication group
-      mesh.setCommunicationGroup( group );
+      // set the communicator
+      mesh.setCommunicator( communicator );
 
       if( overlap > 0 ) {
          // distribute faces
@@ -324,7 +324,7 @@ struct GridDistributor< TNL::Meshes::Grid< 2, Real, Device, Index > >
    // input parameters
    int rank, nproc;
    CoordinatesType rank_sizes;
-   MPI_Comm group;
+   MPI_Comm communicator;
    // output attributes (byproduct of the decomposition, useful for testing)
    CoordinatesType rank_coordinates, local_size, vert_begin, vert_end, cell_begin, cell_end;
    Index verticesCount, cellsCount, localVerticesCount, localCellsCount;
@@ -337,7 +337,7 @@ void validateMesh( const Mesh& mesh, const Distributor& distributor, int ghostLe
    using Device = typename Mesh::DeviceType;
 
    // check basic interface
-   EXPECT_EQ( mesh.getCommunicationGroup(), TNL::MPI::AllGroup() );
+   EXPECT_EQ( mesh.getCommunicator(), MPI_COMM_WORLD );
    EXPECT_EQ( mesh.getGhostLevels(), ghostLevels );
    if( ghostLevels > 0 ) {
       EXPECT_EQ( mesh.template getGlobalIndices< 0 >().getSize(), mesh.getLocalMesh().template getEntitiesCount< 0 >() );
@@ -396,10 +396,10 @@ void validateMesh( const Mesh& mesh, const Distributor& distributor, int ghostLe
          cell_sendbuf.setValue( distributor.localCellsCount );
          TNL::MPI::Alltoall( vert_sendbuf.getData(), 1,
                              vert_offsets.getData(), 1,
-                             distributor.group );
+                             distributor.communicator );
          TNL::MPI::Alltoall( cell_sendbuf.getData(), 1,
                              cell_offsets.getData(), 1,
-                             distributor.group );
+                             distributor.communicator );
       }
       vert_offsets.setElement( distributor.nproc, 0 );
       cell_offsets.setElement( distributor.nproc, 0 );
@@ -702,7 +702,7 @@ TEST( DistributedMeshTest, 2D_ghostLevel0 )
    const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), MPI_COMM_WORLD );
    const int ghostLevels = 0;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -719,7 +719,7 @@ TEST( DistributedMeshTest, 2D_ghostLevel1 )
    const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), MPI_COMM_WORLD );
    const int ghostLevels = 1;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -737,7 +737,7 @@ TEST( DistributedMeshTest, 2D_ghostLevel2 )
    const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), MPI_COMM_WORLD );
    const int ghostLevels = 2;
    distributor.decompose( grid, mesh, ghostLevels );
    validateMesh( mesh, distributor, ghostLevels );
@@ -755,7 +755,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
    const int nproc = TNL::MPI::GetSize();
    grid.setDimensions( nproc, nproc );
    Mesh mesh;
-   GridDistributor< GridType > distributor( std::sqrt(nproc), TNL::MPI::AllGroup() );
+   GridDistributor< GridType > distributor( std::sqrt(nproc), MPI_COMM_WORLD );
    const int ghostLevels = 2;
    distributor.decompose( grid, mesh, ghostLevels );
 
@@ -776,7 +776,7 @@ TEST( DistributedMeshTest, PVTUWriterReader )
          pvtu.template writePCellData< std::uint8_t >( Meshes::VTK::ghostArrayName() );
          pvtu.template writePCellData< typename Mesh::GlobalIndexType >( "GlobalIndex" );
       }
-      subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicationGroup() );
+      subfilePath = pvtu.addPiece( mainFilePath, mesh.getCommunicator() );
 
       // create a .vtu file for local data
       using Writer = Meshes::Writers::VTUWriter< LocalMesh >;

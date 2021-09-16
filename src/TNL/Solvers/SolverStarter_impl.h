@@ -133,7 +133,7 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
             return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "semi-implicit" )
          {
-            if( Problem::CommunicatorType::isDistributed() )
+            if( MPI::GetSize() > 1 )
             {
                std::cerr << "TNL currently does not support semi-implicit solvers with MPI." << std::endl;
                return false;
@@ -142,7 +142,7 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
          }
          if( timeDiscretisation == "implicit" )
          {
-            if( Problem::CommunicatorType::isDistributed() )
+            if( MPI::GetSize() > 1 )
             {
                std::cerr << "TNL currently does not support implicit solvers with MPI." << std::endl;
                return false;

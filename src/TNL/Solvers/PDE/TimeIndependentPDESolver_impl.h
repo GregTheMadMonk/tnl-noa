@@ -20,6 +20,7 @@
 #include <TNL/Solvers/PDE/TimeIndependentPDESolver.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/TypeResolver/resolveDistributedMeshType.h>
+#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Solvers {
@@ -52,7 +53,7 @@ setup( const Config::ParameterContainer& parameters,
    //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
    const String& meshFileFormat = parameters.getParameter< String >( "mesh-format" );
-   if( Problem::CommunicatorType::isDistributed() ) {
+   if( MPI::GetSize() > 1 ) {
       if( ! Meshes::loadDistributedMesh( *distributedMeshPointer, meshFile, meshFileFormat ) )
          return false;
       problem->setMesh( distributedMeshPointer );
@@ -95,7 +96,6 @@ setup( const Config::ParameterContainer& parameters,
     * Set-up the initial condition
     */
    std::cout << "Setting up the initial condition ... ";
-   typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, this->dofs ) )
       return false;
    std::cout << " [ OK ]" << std::endl;
@@ -112,7 +112,7 @@ writeProlog( Logger& logger,
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   if( Problem::CommunicatorType::isDistributed() )
+   if( MPI::GetSize() > 1 )
       distributedMeshPointer->writeProlog( logger );
    else
       meshPointer->writeProlog( logger );

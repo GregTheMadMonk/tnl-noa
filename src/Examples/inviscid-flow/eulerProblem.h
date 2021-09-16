@@ -22,29 +22,25 @@ namespace TNL {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename Communicator,
           typename InviscidOperators >
 class eulerProblem:
    public PDEProblem< Mesh,
-                      Communicator,
                       typename InviscidOperators::RealType,
                       typename Mesh::DeviceType,
                       typename InviscidOperators::IndexType >
 {
    public:
-      
+
       typedef typename InviscidOperators::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename InviscidOperators::IndexType IndexType;
-      typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
 
-      typedef Communicator CommunicatorType;
-      
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      static const int Dimensions = Mesh::getMeshDimension();      
+      static const int Dimensions = Mesh::getMeshDimension();
 
       typedef Functions::MeshFunctionView< Mesh > MeshFunctionType;
       typedef CompressibleConservativeVariables< MeshType > ConservativeVariablesType;
@@ -82,9 +78,9 @@ class eulerProblem:
                               const RealType& tau,
                               DofVectorPointer& _u,
                               DofVectorPointer& _fu );
-      
+
       void applyBoundaryConditions( const RealType& time,
-                                       DofVectorPointer& dofs );      
+                                       DofVectorPointer& dofs );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
@@ -100,17 +96,17 @@ class eulerProblem:
    protected:
 
       InviscidOperatorsPointer inviscidOperatorsPointer;
-         
+
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
-      
+
       ConservativeVariablesPointer conservativeVariables,
                                    conservativeVariablesRHS;
-      
+
       VelocityFieldPointer velocity;
       MeshFunctionPointer pressure;
-      
-      RealType gamma;          
+
+      RealType gamma;
 };
 
 } // namespace TNL

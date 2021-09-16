@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "HeatEquationProblem.h"
+#include "HeatEquationEocProblem.h"
 
 namespace TNL {
 namespace Problems {
@@ -25,10 +25,9 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename Communicator,
           typename DifferentialOperator >
 bool
-HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator  >::
+HeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -40,7 +39,7 @@ setup( const Config::ParameterContainer& parameters,
    this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
    this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
    this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
-   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );   
+   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    return true;
 }
 

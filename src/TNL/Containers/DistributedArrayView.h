@@ -50,8 +50,8 @@ public:
    ~DistributedArrayView();
 
    // Initialization by raw data
-   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData )
-   : localRange(localRange), ghosts(ghosts), globalSize(globalSize), group(group), localData(localData)
+   DistributedArrayView( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, LocalViewType localData )
+   : localRange(localRange), ghosts(ghosts), globalSize(globalSize), communicator(communicator), localData(localData)
    {
       TNL_ASSERT_EQ( localData.getSize(), localRange.getSize() + ghosts,
                      "The local array size does not match the local range of the distributed array." );
@@ -71,14 +71,14 @@ public:
    DistributedArrayView( DistributedArrayView&& ) = default;
 
    // method for rebinding (reinitialization) to raw data
-   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm group, LocalViewType localData );
+   void bind( const LocalRangeType& localRange, IndexType ghosts, IndexType globalSize, MPI_Comm communicator, LocalViewType localData );
 
    // Note that you can also bind directly to DistributedArray and other types implicitly
    // convertible to DistributedArrayView.
    void bind( DistributedArrayView view );
 
    // binding to local array via raw pointer
-   // (local range, ghosts, global size and communication group are preserved)
+   // (local range, ghosts, global size and communicators are preserved)
    template< typename Value_ >
    void bind( Value_* data, IndexType localSize );
 
@@ -86,7 +86,7 @@ public:
 
    IndexType getGhosts() const;
 
-   MPI_Comm getCommunicationGroup() const;
+   MPI_Comm getCommunicator() const;
 
    LocalViewType getLocalView();
 
@@ -170,87 +170,64 @@ public:
    template< typename Array >
    bool operator!=( const Array& array ) const;
 
-      /**
-       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
-       *
-       * The lambda function is supposed to be declared as
-       *
-       * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
-       * ```
-       *
-       * where
-       *
-       * - \e elementIdx is an index of the array element being currently processed
-       * - \e elementValue is a value of the array element being currently processed
-       *
-       * This is performed at the same place where the array is allocated,
-       * i.e. it is efficient even on GPU.
-       *
-       * \param begin The beginning of the array elements interval.
-       * \param end The end of the array elements interval.
-       * \param f The lambda function to be processed.
-       *
-       * \par Example
-       * \include Containers/ArrayExample_forElements.cpp
-       * \par Output
-       * \include ArrayExample_forElements.out
-       *
-       */
-      template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function&& f );
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end).
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, Function&& f );
 
-      /**
-       * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
-       *
-       * The lambda function is supposed to be declared as
-       *
-       * ```
-       * f( IndexType elementIdx, ValueType& elementValue )
-       * ```
-       *
-       * where
-       *
-       * - \e elementIdx is an index of the array element being currently processed
-       * - \e elementValue is a value of the array element being currently processed
-       *
-       * This is performed at the same place where the array is allocated,
-       * i.e. it is efficient even on GPU.
-       *
-       * \param begin The beginning of the array elements interval.
-       * \param end The end of the array elements interval.
-       * \param f The lambda function to be processed.
-       *
-       * \par Example
-       * \include Containers/ArrayExample_forElements.cpp
-       * \par Output
-       * \include ArrayExample_forElements.out
-       *
-       */
-      template< typename Function >
-      void forElements( IndexType begin, IndexType end, Function&& f ) const;
+   /**
+    * \brief Process the lambda function \e f for each array element in interval [ \e begin, \e end) for constant instances of the array.
+    *
+    * The lambda function is supposed to be declared as
+    *
+    * ```
+    * f( IndexType elementIdx, const ValueType& elementValue )
+    * ```
+    *
+    * where
+    *
+    * - \e elementIdx is an index of the array element being currently processed
+    * - \e elementValue is a value of the array element being currently processed
+    *
+    * This is performed at the same place where the array is allocated,
+    * i.e. it is efficient even on GPU.
+    *
+    * \param begin The beginning of the array elements interval.
+    * \param end The end of the array elements interval.
+    * \param f The lambda function to be processed.
+    */
+   template< typename Function >
+   void forElements( IndexType begin, IndexType end, Function&& f ) const;
 
-   std::ostream& print( std::ostream& str ) const;
 protected:
    LocalRangeType localRange;
    IndexType ghosts = 0;
    IndexType globalSize = 0;
-   MPI_Comm group = MPI::NullGroup();
+   MPI_Comm communicator = MPI_COMM_NULL;
    LocalViewType localData;
 
    std::shared_ptr< SynchronizerType > synchronizer = nullptr;
    int valuesPerElement = 1;
 };
-
-
-template< typename Value,
-          typename Device = Devices::Host,
-          typename Index = int >
-std::ostream& operator<<( std::ostream& str, const DistributedArrayView< Value, Device, Index >& view )
-{
-   return view.print( str );
-}
-
 
 } // namespace Containers
 } // namespace TNL

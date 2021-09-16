@@ -50,7 +50,7 @@ solve( ConstVectorViewType b, VectorViewType x )
 
    RealType alpha, beta, gamma, rho_0, rho_1, omega, b_norm;
    // initial binding to M_tmp sets the correct local range, global size and
-   // communication group for distributed views
+   // communicator for distributed views
    VectorViewType r_0( M_tmp ), r_j( M_tmp ), r_i( M_tmp ), u_0( M_tmp ), Au( M_tmp ), u( M_tmp );
    r_0.bind( R.getData(), size );
    u_0.bind( U.getData(), size );
