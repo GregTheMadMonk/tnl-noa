@@ -165,7 +165,7 @@ public:
       {
          return this->localView.getStorageIndex( std::forward< decltype(indices) >( indices )... );
       };
-      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
+      return __ndarray_impl::host_call_with_unshifted_indices< LocalBeginsType >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
    }
 
    ValueType* getData()
