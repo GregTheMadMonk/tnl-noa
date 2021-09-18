@@ -22,6 +22,7 @@ struct TriangleConfig: public ParentConfig
 };
 
 template< EntityDecomposerVersion DecomposerVersion,
+          EntityDecomposerVersion SubdecomposerVersion = EntityDecomposerVersion::ConnectEdgesToPoint,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
 auto // returns MeshBuilder
@@ -53,7 +54,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
-   ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCounts );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
    indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
@@ -68,7 +69,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {
       meshBuilder.setPoint( i, inMesh.getPoint( i ) );
    };
-   ParallelFor< Devices::Host >::exec( 0, inPointsCount, copyPoint );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inPointsCount, copyPoint );
 
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
@@ -94,12 +95,13 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
       EntityDecomposer::decompose( cell, addPoint, addCell );
    };
-   ParallelFor< Devices::Host >::exec( 0, inCellsCount, decomposeCell );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, decomposeCell );
 
    return meshBuilder;
 }
 
 template< EntityDecomposerVersion DecomposerVersion,
+          EntityDecomposerVersion SubdecomposerVersion = EntityDecomposerVersion::ConnectEdgesToPoint,
           typename MeshConfig,
           std::enable_if_t< std::is_same< typename MeshConfig::CellTopology, Topologies::Polygon >::value, bool > = true >
 auto // returns Mesh
@@ -154,7 +156,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
-   ParallelFor< Devices::Host >::exec( 0, inCellsCount, setCounts );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
    indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
@@ -169,7 +171,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    auto copyPoint = [&] ( GlobalIndexType i ) mutable {
       meshBuilder.setPoint( i, inMesh.getPoint( i ) );
    };
-   ParallelFor< Devices::Host >::exec( 0, inPointsCount, copyPoint );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inPointsCount, copyPoint );
 
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
@@ -196,7 +198,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 
       EntityDecomposer::decompose( cell, addPoint, addCell );
    };
-   ParallelFor< Devices::Host >::exec( 0, inCellsCount, decomposeCell );
+   ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, decomposeCell );
 
    return meshBuilder;
 }

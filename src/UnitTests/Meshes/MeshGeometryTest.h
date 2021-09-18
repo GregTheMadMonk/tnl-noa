@@ -524,30 +524,18 @@ TEST( MeshGeometryTest, PolygonDecompositionTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   // Write original mesh
+   // Test for the 1st version
    {
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( mesh ) >;
-      std::ofstream file( "polygon_decompositionTest_orig.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( mesh );
+      const auto triangleMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+      EXPECT_EQ( triangleMesh.getEntitiesCount< 0 >(), 23 );
+      EXPECT_EQ( triangleMesh.getEntitiesCount< 2 >(), 34  );
    }
 
-   // Write decomposed mesh using 1st version
+   // Test for the 2nd version
    {
-      auto triangleMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( triangleMesh ) >;
-      std::ofstream file( "polygon_decompositionTest_c.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( triangleMesh );
-   }
-
-   // Write decomposed mesh using 2nd version
-   {
-      auto triangleMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( triangleMesh ) >;
-      std::ofstream file( "polygon_decompositionTest_p.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( triangleMesh );
+      const auto triangleMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+      EXPECT_EQ( triangleMesh.getEntitiesCount< 0 >(), 16 );
+      EXPECT_EQ( triangleMesh.getEntitiesCount< 2 >(), 20  );
    }
 }
 
@@ -774,44 +762,36 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   // Write decomposed mesh using 1st version
+   // Test for the 1st version
    {
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
-                                                EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_decompositionTest_cc.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
+                                                      EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 0 >(), 40 );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 76  );
    }
 
-   // Write decomposed mesh using 2nd version
+   // Test for the 2nd version
    {
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
-                                                EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_decompositionTest_cp.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
+                                                      EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 0 >(), 24 );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 44 );
    }
 
-   // Write decomposed mesh using 3rd version
+   // Test for the 3rd version
    {
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
-                                                EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_decompositionTest_pc.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
+                                                      EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 0 >(), 32 );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 48 );
    }
 
-   // Write decomposed mesh using 4th version
+   // Test for the 4th version
    {
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
-                                                EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_decompositionTest_pp.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
+                                                      EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 0 >(), 22 );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 28 );
    }
 }
 
@@ -872,22 +852,18 @@ TEST( MeshGeometryTest, Polygon3DGetPlanarMeshTest )
       writer.template writeEntities( mesh );
    }
 
-   // Write decomposed mesh using 1st version
+   // Test for the 1st version
    {
-      auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( planarMesh ) >;
-      std::ofstream file( "polygon_planarTest_c.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( planarMesh );
+      const auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 0 >(), 7 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 2 >(), 5 );
    }
 
-   // Write decomposed mesh using 2nd version
+   // Test for the 2nd version
    {
-      auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( planarMesh ) >;
-      std::ofstream file( "polygon_planarTest_p.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( planarMesh );
+      const auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 0 >(), 6 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 2 >(), 3 );
    }
 }
 
@@ -1114,36 +1090,20 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
 
    ASSERT_TRUE( meshBuilder.build( mesh ) );
 
-   // Write original decomposed mesh
+   // Test for the 1st version
    {
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
-                                                EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_planarTest_orig.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 0 >(), 31 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 2 >(), 50 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 3 >(), 2 );
    }
 
-   // Write planar decomposed mesh using 1st version
+   // Test for the 2nd version
    {
-      auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToPoint,
-                                                EntityDecomposerVersion::ConnectEdgesToPoint >( planarMesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_planarTest_c.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
-   }
-
-   // Write planar decomposed mesh using 2nd version
-   {
-      auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
-      auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
-                                                EntityDecomposerVersion::ConnectEdgesToCentroid >( planarMesh );
-      using VTKWriter = Meshes::Writers::VTKWriter< decltype( tetrahedronMesh ) >;
-      std::ofstream file( "polyhedron_planarTest_p.vtk" );
-      VTKWriter writer( file, VTK::FileFormat::ascii );
-      writer.template writeEntities( tetrahedronMesh );
+      const auto planarMesh = getPlanarMesh< EntityDecomposerVersion::ConnectEdgesToPoint >( mesh );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 0 >(), 22 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 2 >(), 32 );
+      EXPECT_EQ( planarMesh.getEntitiesCount< 3 >(), 2 );
    }
 }
 
