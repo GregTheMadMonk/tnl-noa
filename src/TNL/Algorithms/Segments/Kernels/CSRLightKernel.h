@@ -68,7 +68,7 @@ struct CSRLightKernel
 
    protected:
 
-      LightCSRSThreadsMapping mapping = LightCSRConstantThreads;
+      LightCSRSThreadsMapping mapping = CSRLightAutomaticThreads;
 
       int threadsPerSegment = 32;
 };
