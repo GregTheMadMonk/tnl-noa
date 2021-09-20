@@ -34,16 +34,6 @@ def latexFormatName( name ):
    return name
 
 ####
-# Extract all formats
-def get_formats( input_df ):
-   matrixName = input_df.iloc[0]['matrix name']
-   df_matrix = input_df.loc[input_df['matrix name'] == matrixName]
-   formats = df_matrix.loc[:,'format'].values.tolist() # Get format names - TODO: the first benchmark might not have all of them
-   formats = list(dict.fromkeys(formats))              # remove duplicates
-   formats.append('TNL Best')
-   return formats
-
-####
 # Create multiindex for columns
 def get_multiindex( input_df, formats ):
    level1 = [ 'Matrix name', 'rows', 'columns' ]
@@ -231,7 +221,7 @@ def compute_symmetric_speedup( df, formats ):
 
 def compute_speedup( df, formats ):
    compute_cusparse_speedup( df, formats )
-   compute_csr_light_speedup( df )
+   #compute_csr_light_speedup( df )
    compute_binary_speedup( df, formats )
    compute_symmetric_speedup( df, formats )
 
@@ -722,7 +712,8 @@ with open('sparse-matrix-benchmark.log') as f:
 input_df = json_normalize( d, record_path=['results'] )
 #input_df.to_html( "orig-pandas.html" )
 
-formats = get_formats( input_df )
+formats = list(set( input_df['format'].values.tolist() )) # list of all formats in the benchmark results
+formats.append('TNL Best')
 multicolumns, df_data = get_multiindex( input_df, formats )
 
 print( "Converting data..." )
