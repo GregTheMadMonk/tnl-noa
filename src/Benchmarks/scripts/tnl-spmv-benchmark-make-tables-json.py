@@ -68,7 +68,7 @@ def get_multiindex( input_df, formats ):
          level3.append( 'speed-up')
          level4.append( 'non-symmetric' )
          df_data[ 0 ].append( ' ' )
-      if format == 'CSR< Light >':
+      if format == 'CSR< Light > Automatic':
          level1.append( format )
          level2.append( 'GPU' )
          level3.append( 'speed-up')
@@ -174,16 +174,17 @@ def compute_cusparse_speedup( df, formats ):
 ####
 # Compute speedup of Light CSR
 def compute_csr_light_speedup( df ):
-   csr_light_bdw_list = df[('CSR< Light >','GPU','bandwidth')]
-   light_spmv_bdw_list = df[('LightSpMV Vector','GPU','bandwidth')]
+   for light in [ 'CSR< Light > Automatic', 'CSR< Light > Automatic Light']:
+      csr_light_bdw_list = df[(light,'GPU','bandwidth')]
+      light_spmv_bdw_list = df[('LightSpMV Vector','GPU','bandwidth')]
 
-   csr_light_speedup_list = []
-   for ( csr_light_bdw, light_spmv_bdw ) in zip(csr_light_bdw_list,light_spmv_bdw_list):
-      try:
-         csr_light_speedup_list.append( csr_light_bdw / light_spmv_bdw  )
-      except:
-         csr_light_speedup_list.append(float('nan'))
-   df[('CSR< Light >','GPU','speed-up','LightSpMV Vector')] = csr_light_speedup_list
+      csr_light_speedup_list = []
+      for ( csr_light_bdw, light_spmv_bdw ) in zip(csr_light_bdw_list,light_spmv_bdw_list):
+         try:
+            csr_light_speedup_list.append( csr_light_bdw / light_spmv_bdw  )
+         except:
+            csr_light_speedup_list.append(float('nan'))
+      df[(light,'GPU','speed-up','LightSpMV Vector')] = csr_light_speedup_list
 
 ####
 # Compute speed-up of binary formats
@@ -211,6 +212,7 @@ def compute_symmetric_speedup( df, formats ):
          print( f'Adding speed-up of {format} vs {non_symmetric_format}' )
          format_bdw_list = df[(format,'GPU','bandwidth')]
          non_symmetric_bdw_list = df[(non_symmetric_format,'GPU','bandwidth')]
+
          symmetric_speedup_list = []
          for ( format_bdw, non_symmetric_bdw ) in zip( format_bdw_list, non_symmetric_bdw_list ):
             try:
@@ -526,16 +528,53 @@ def cusparse_speedup_comparison( df, formats, head_size=10 ):
    ylabel = "Speedup"
    current_formats = []
    for format in formats:
-      if( 'Ellpack' in format and not 'Binary' in format and not 'Legacy' in format ):
+      if( 'Ellpack' in format and not 'Symmetric' in format and not 'Binary' in format and not 'Legacy' in format ):
          current_formats.append( format )
    draw_profiles( current_formats, profiles, xlabel, ylabel, "ellpack-profiles-cusparse-speedup.pdf", "draw-bar" )
+
+   current_formats.clear()
+   for format in formats:
+      if( 'Ellpack' in format and 'Symmetric' in format and not 'Binary' in format and not 'Legacy' in format ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "symmetric-ellpack-profiles-cusparse-speedup.pdf", "draw-bar" )
+
+   current_formats.clear()
+   for format in formats:
+      if( 'Ellpack' in format and not 'Symmetric' in format and 'Binary' in format and not 'Legacy' in format ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "binary-ellpack-profiles-cusparse-speedup.pdf", "draw-bar" )
+
+   current_formats.clear()
+   for format in formats:
+      if( 'Ellpack' in format and 'Symmetric' in format and 'Binary' in format and not 'Legacy' in format ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "symmetric-binary-ellpack-profiles-cusparse-speedup.pdf", "draw-bar" )
+
 
    # Draw CSR formats profiles
    current_formats.clear()
    for format in formats:
-      if( 'CSR' in format and not 'Binary' in format and not 'Legacy' in format and not 'Hybrid' in format and format != 'CSR' ):
+      if( 'CSR' in format and not 'Symmetric' in format and not 'Binary' in format and not 'Legacy' in format and not 'Hybrid' in format and format != 'CSR' ):
          current_formats.append( format )
    draw_profiles( current_formats, profiles, xlabel, ylabel, "csr-profiles-cusparse-speedup.pdf", "draw-bar" )
+   current_formats.clear()
+   for format in formats:
+      if( 'CSR' in format and 'Symmetric' in format and not 'Binary' in format and not 'Legacy' in format and not 'Hybrid' in format and format != 'CSR' ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "symmetric-csr-profiles-cusparse-speedup.pdf", "draw-bar" )
+   current_formats.clear()
+
+   for format in formats:
+      if( 'CSR' in format and not 'Symmetric' in format and 'Binary' in format and not 'Legacy' in format and not 'Hybrid' in format and format != 'CSR' ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "binary-csr-profiles-cusparse-speedup.pdf", "draw-bar" )
+   current_formats.clear()
+
+   for format in formats:
+      if( 'CSR' in format and 'Symmetric' in format and 'Binary' in format and not 'Legacy' in format and not 'Hybrid' in format and format != 'CSR' ):
+         current_formats.append( format )
+   draw_profiles( current_formats, profiles, xlabel, ylabel, "-symmetric-binary-csr-profiles-cusparse-speedup.pdf", "draw-bar" )
+   current_formats.clear()
 
 ####
 # Comparison of binary matrices
@@ -654,7 +693,7 @@ def symmetric_matrices_comparison( df, formats, head_size = 10 ):
 ####
 # Comparison of speed-up w.r.t. LightSpMV
 def csr_light_speedup_comparison( df, head_size=10 ):
-   format = 'CSR< Light >'
+   format = 'CSR< Light > Automatic Light'
    print( f"Writing comparison of speed-up of CSR Light compared to LightSPMV" )
    df['tmp'] = df[(format, 'GPU','bandwidth')]
    filtered_df=df.dropna(subset=[('tmp','','','')])
@@ -717,7 +756,7 @@ formats.append('TNL Best')
 multicolumns, df_data = get_multiindex( input_df, formats )
 
 print( "Converting data..." )
-result = convert_data_frame( input_df, multicolumns, df_data, 0, 10000 )
+result = convert_data_frame( input_df, multicolumns, df_data, 0, 200 )
 compute_speedup( result, formats )
 
 result.replace( to_replace=' ',value=np.nan,inplace=True)
