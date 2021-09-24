@@ -1,12 +1,14 @@
 /***************************************************************************
-                          Dummy.h  -  description
+                          Preconditioner.h  -  description
                              -------------------
     begin                : Oct 19, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    copyright            : (C) 2012 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Jakub Klinkovsky
 
 #pragma once
 

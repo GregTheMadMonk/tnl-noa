@@ -88,10 +88,12 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
 
    const IndexType N = x.getSize();
 
-   for( IndexType i = N - 1; i >= 0; i-- ) {
-      RealType x_i = b[ i ];
+   // GOTCHA: the loop with IndexType i = N - 1; i >= 0; i-- does not work for unsigned integer types
+   for( IndexType k = 0; k < N; k++ ) {
+      const IndexType i = N - 1 - k;
+      const IndexType U_idx = (reversedRows) ? k : i;
 
-      const IndexType U_idx = (reversedRows) ? N - 1 - i : i;
+      RealType x_i = b[ i ];
 
       const auto U_entries = U.getRowCapacity( U_idx );
       const auto U_i = U.getRow( U_idx );
