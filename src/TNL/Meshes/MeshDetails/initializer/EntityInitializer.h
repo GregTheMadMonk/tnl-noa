@@ -18,6 +18,8 @@
 
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 #include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
+#include <TNL/Atomic.h>
+#include <TNL/Algorithms/AtomicOperations.h>
 
 namespace TNL {
 namespace Meshes {
@@ -152,8 +154,10 @@ public:
       {
          NeighborCountsArray capacities( superentitiesCount );
 
-         for( GlobalIndexType superentityIndex = 0; superentityIndex < capacities.getSize(); superentityIndex++ )
+         Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
+         {
             capacities[ superentityIndex ] = SubentitySeedsCreatorType::getSubentitiesCount( meshInitializer, mesh, superentityIndex );
+         });
 
          meshInitializer.template initSubentityMatrix< SuperdimensionTag::value, SubdimensionTag::value >( capacities, subentitiesCount );
       }
@@ -163,15 +167,19 @@ public:
       superentitiesCounts.setSize( subentitiesCount );
       superentitiesCounts.setValue( 0 );
 
-      for( GlobalIndexType superentityIndex = 0; superentityIndex < superentitiesCount; superentityIndex++ )
+      Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
       {
          LocalIndexType i = 0;
          SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed ) {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
-            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i++, subentityIndex );
-            superentitiesCounts[ subentityIndex ]++;
+
+            // SubentityIndeces for SubdimensionTag::value == 0 of non-polyhedral meshes were already set up from seeds
+            if( SubdimensionTag::value > 0 || std::is_same< SuperentityTopology, Topologies::Polyhedron >::value )
+               meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i++, subentityIndex );
+
+            Algorithms::AtomicOperations< Devices::Host >::add( superentitiesCounts[ subentityIndex ], LocalIndexType{ 1 } );
          });
-      }
+      });
 
       // allocate superentities storage
       SuperentityMatrixType& matrix = meshInitializer.template getSuperentitiesMatrix< SubdimensionTag::value, SuperdimensionTag::value >();
@@ -179,7 +187,6 @@ public:
       matrix.setRowCapacities( superentitiesCounts );
       superentitiesCounts.setValue( 0 );
 
-      // initialize superentities storage
       for( GlobalIndexType superentityIndex = 0; superentityIndex < superentitiesCount; superentityIndex++ )
       {
          for( LocalIndexType i = 0;
@@ -333,18 +340,21 @@ public:
       {
          NeighborCountsArray capacities( superentitiesCount );
 
-         for( GlobalIndexType superentityIndex = 0; superentityIndex < capacities.getSize(); superentityIndex++ )
+         Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
+         {
             capacities[ superentityIndex ] = SubentitySeedsCreatorType::getSubentitiesCount( meshInitializer, mesh, superentityIndex );
+         });
 
          meshInitializer.template initSubentityMatrix< SuperdimensionTag::value, SubdimensionTag::value >( capacities, subentitiesCount );
-      }
 
-      for( GlobalIndexType superentityIndex = 0; superentityIndex < superentitiesCount; superentityIndex++ )
-      {
-         LocalIndexType i = 0;
-         SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed ) {
-            const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
-            meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i++, subentityIndex );
+         Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
+         {
+            LocalIndexType i = 0;
+            SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed )
+            {
+               const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
+               meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i++, subentityIndex );
+            });
          });
       }
 
@@ -451,13 +461,13 @@ public:
       superentitiesCounts.setSize( subentitiesCount );
       superentitiesCounts.setValue( 0 );
 
-      for( GlobalIndexType superentityIndex = 0; superentityIndex < superentitiesCount; superentityIndex++ )
+      Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
       {
          SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed ) {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
-            superentitiesCounts[ subentityIndex ]++;
+            Algorithms::AtomicOperations< Devices::Host >::add( superentitiesCounts[ subentityIndex ], LocalIndexType{ 1 } );
          });
-      }
+      });
 
       // allocate superentities storage
       SuperentityMatrixType& matrix = meshInitializer.template getSuperentitiesMatrix< SubdimensionTag::value, SuperdimensionTag::value >();
@@ -474,6 +484,24 @@ public:
             row.setElement( superentitiesCounts[ subentityIndex ]++, superentityIndex, true );
          });
       }
+
+      // Here is an attempt of parallelization of previous for cycle, that seemingly causes some kind of race condition
+      /*Algorithms::ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, superentitiesCount, [&] ( GlobalIndexType superentityIndex )
+      {
+         SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed ) {
+            const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
+            auto row = matrix.getRow( subentityIndex );
+
+            LocalIndexType superentityCount;
+            #pragma omp atomic capture
+            {
+               superentityCount = superentitiesCounts[ subentityIndex ];
+               superentitiesCounts[ subentityIndex ]++;
+            }
+
+            row.setElement( superentityCount, superentityIndex, true );
+         });
+      });*/
 
       BaseType::initSuperentities( meshInitializer, mesh );
    }

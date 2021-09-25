@@ -32,15 +32,15 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polyhedron > { e
 TEST( FPMAReaderTest, polyhedrons )
 {
    using MeshType = Mesh< DefaultConfig< Topologies::Polyhedron > >;
-   const MeshType mesh = loadMeshFromFile< MeshType, Readers::FPMAReader >( "polyhedrons/Poly_simple_corrected.fpma" );
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::FPMAReader >( "polyhedrons/cube1m_1.fpma" );
 
    // test that the mesh was actually loaded
    const auto vertices = mesh.template getEntitiesCount< 0 >();
    const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
-   EXPECT_EQ( vertices, 22 );
-   EXPECT_EQ( faces, 16 );
-   EXPECT_EQ( cells, 2 );
+   EXPECT_EQ( vertices, 2358 );
+   EXPECT_EQ( faces, 2690 );
+   EXPECT_EQ( cells, 395 );
 
    test_reader< Readers::FPMAReader, Writers::FPMAWriter >( mesh, TEST_FILE_NAME );
    test_resolveAndLoadMesh< Writers::FPMAWriter, MyConfigTag >( mesh, TEST_FILE_NAME );

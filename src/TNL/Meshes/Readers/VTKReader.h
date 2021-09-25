@@ -159,7 +159,7 @@ public:
 
       // validate cell types
       using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
-      //TODO: uncomment line below later for polyhedrals
+      //TODO: add EntityShapeGroup for polyhedrons and uncomment line below
       //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
       cellShape = (VTK::EntityShape) cellTypes[0];
 
@@ -202,6 +202,9 @@ public:
 
          VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
 
+         // TODO: Polyhedrons will require to create polygon subentity seeds from given entityShapes
+         //       and add their entries to faceConnectivityArray and faceOffsetsArray.
+         //       CellConnectivityArray and cellOffsetsArray will contain indeces addressing created polygon subentities.
          if( entityShape == cellShape ||
              PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
             iss.clear();

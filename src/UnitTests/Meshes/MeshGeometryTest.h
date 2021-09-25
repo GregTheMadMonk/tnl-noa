@@ -767,7 +767,7 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
       const auto tetrahedronMesh = getDecomposedMesh< EntityDecomposerVersion::ConnectEdgesToCentroid,
                                                       EntityDecomposerVersion::ConnectEdgesToCentroid >( mesh );
       EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 0 >(), 40 );
-      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 76  );
+      EXPECT_EQ( tetrahedronMesh.getEntitiesCount< 3 >(), 76 );
    }
 
    // Test for the 2nd version

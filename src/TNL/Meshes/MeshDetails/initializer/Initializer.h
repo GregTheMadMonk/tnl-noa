@@ -271,9 +271,11 @@ protected:
       }
 
       using BaseType::findEntitySeedIndex;
-      GlobalIndexType findEntitySeedIndex( const SeedType& seed )
+      GlobalIndexType findEntitySeedIndex( const SeedType& seed ) const
       {
-         return this->seedsIndexedSet.insert( seed );
+         GlobalIndexType index = -1;
+         this->seedsIndexedSet.find( seed, index );
+         return index;
       }
 
       void initEntities( InitializerType& initializer, MeshType& mesh )
@@ -309,6 +311,8 @@ protected:
          BaseType::initEntities( initializer, mesh );
       }
 
+      // This overload of initEntities is only called when face seeds are required for initialization.
+      // Currently only polyhedral meshes use this function.
       void initEntities( InitializerType& initializer, SeedMatrixType& seeds, MeshType& mesh )
       {
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;

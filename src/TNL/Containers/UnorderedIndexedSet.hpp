@@ -84,7 +84,7 @@ UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::find( const Key& k
    auto iter = map.find( Key( key ) );
    if( iter == map.end() )
       return false;
-   index = iter->second.index;
+   index = iter->second;
    return true;
 }
 

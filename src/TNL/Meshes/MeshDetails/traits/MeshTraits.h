@@ -95,8 +95,6 @@ public:
 
    using NeighborCountsArray = Containers::Vector< LocalIndexType, DeviceType, GlobalIndexType >;
    using PointArrayType      = Containers::Array< PointType, DeviceType, GlobalIndexType >;
-   using FaceSeedArrayType   = Containers::Array< FaceSeedType, DeviceType, GlobalIndexType >;
-   using CellSeedArrayType   = Containers::Array< CellSeedType, DeviceType, GlobalIndexType >;
    using FaceSeedMatrixType  = EntitySeedMatrix< MeshConfig, FaceTopology >;
    using CellSeedMatrixType  = EntitySeedMatrix< MeshConfig, CellTopology >;
 

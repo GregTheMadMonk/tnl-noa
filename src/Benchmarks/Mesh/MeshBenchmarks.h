@@ -62,7 +62,7 @@ struct MeshBenchmarks
          // {"mesh-file", meshFile},
          {"config", Mesh::Config::getConfigType()},
          //{"topology", removeNamespaces( getType< typename Mesh::Config::CellTopology >() ) },
-         {"space dim", std::to_string( Mesh::Config::spaceDimension )},
+         //{"space dim", std::to_string( Mesh::Config::spaceDimension )},
          //{"real", getType< typename Mesh::RealType >()},
          //{"gid_t", getType< typename Mesh::GlobalIndexType >()},
          //{"lid_t", getType< typename Mesh::LocalIndexType >()}
