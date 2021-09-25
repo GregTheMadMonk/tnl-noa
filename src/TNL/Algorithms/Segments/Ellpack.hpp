@@ -99,6 +99,7 @@ String
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and Alignment parameters, so it should be reflected in the serialization type
    return "Ellpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 

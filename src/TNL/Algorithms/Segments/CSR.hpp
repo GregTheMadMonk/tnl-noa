@@ -80,6 +80,7 @@ getSerializationType()
 {
    return "CSR< [any_device], " +
       TNL::getSerializationType< IndexType >() + ", " +
+      // FIXME: the serialized data do not depend on the the kernel type so it should not be in the serialization type
       TNL::getSerializationType< KernelType >() + " >";
 }
 

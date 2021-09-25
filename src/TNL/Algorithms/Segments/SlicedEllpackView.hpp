@@ -83,6 +83,7 @@ String
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and Alignment parameters, so it should be reflected in the serialization type
    return "SlicedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
