@@ -32,7 +32,7 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 0.0 );
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", std::numeric_limits< float >::max() );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
-   config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
+   config.addEntry< int >   ( prefix + "refresh-rate", "Number of milliseconds between solver monitor refreshes.", 500 );
 
    config.addEntry< String >( prefix + "residual-history-file", "Path to the file where the residual history will be saved.", "" );
 }
