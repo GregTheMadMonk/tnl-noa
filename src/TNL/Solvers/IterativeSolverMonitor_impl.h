@@ -23,7 +23,7 @@
 #include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< typename Real, typename Index>
 IterativeSolverMonitor< Real, Index > :: IterativeSolverMonitor()
@@ -132,16 +132,12 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
       // \33[2K erases the current line, see https://stackoverflow.com/a/35190285
       std::cout << "\33[2K\r";
 
-      // FIXME: nvcc 8.0 ignores default parameter values for lambda functions in template functions, so we have to pass the defaults
-//      print_item( " ELA:" );
-      print_item( " ELA:", 0 );
+      print_item( " ELA:" );
       print_item( real_to_string( getElapsedTime(), 5 ), 8 );
-//      print_item( " T:" );
-      print_item( " T:", 0 );
+      print_item( " T:" );
       print_item( real_to_string( (saved) ? saved_time : time, 5 ), 8 );
       if( (saved) ? saved_timeStep : timeStep > 0 ) {
-//         print_item( " TAU:" );
-         print_item( " TAU:", 0 );
+         print_item( " TAU:" );
          print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 10 );
       }
 
@@ -158,13 +154,11 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
       }
 
       if( (saved) ? saved_iterations : iterations > 0 && free >= 14 ) {
-//         print_item( " ITER:" );
-         print_item( " ITER:", 0 );
+         print_item( " ITER:" );
          print_item( std::to_string( (saved) ? saved_iterations : iterations ), 8 );
       }
       if( (saved) ? saved_residue : residue && free >= 17 ) {
-//         print_item( " RES:" );
-         print_item( " RES:", 0 );
+         print_item( " RES:" );
          print_item( real_to_string( (saved) ? saved_residue : residue, 5 ), 12 );
       }
 
