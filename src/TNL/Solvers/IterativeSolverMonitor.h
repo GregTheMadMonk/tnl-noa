@@ -13,7 +13,7 @@
 #include <TNL/Solvers/SolverMonitor.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< typename Real, typename Index>
 class IterativeSolverMonitor : public SolverMonitor
@@ -34,10 +34,10 @@ public:
 
    void setResidue( const RealType& residue );
 
-   void setVerbose( const Index& verbose );
+   void setVerbose( const IndexType& verbose );
 
    void setNodesPerIteration( const IndexType& nodes );
- 
+
    virtual void refresh();
 
 protected:
@@ -45,7 +45,7 @@ protected:
 
    std::string stage, saved_stage;
 
-   std::atomic_bool saved;
+   std::atomic_bool saved, attributes_changed;
 
    RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue, elapsed_time_before_refresh, last_mlups;
    //TODO: Move MLUPS to LBM solver only i.e create solver monitor for LBM

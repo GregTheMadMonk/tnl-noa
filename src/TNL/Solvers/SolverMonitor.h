@@ -16,7 +16,7 @@
 #include <TNL/Timer.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 class SolverMonitor
 {
