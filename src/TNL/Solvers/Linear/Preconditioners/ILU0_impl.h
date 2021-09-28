@@ -203,17 +203,17 @@ update( const MatrixPointer& matrixPointer )
    int pBufferSize_A, pBufferSize_L, pBufferSize_U;
    cusparseDcsrilu02_bufferSize( handle, N, nnz_A, descr_A,
                                  A->getValues().getData(),
-                                 A->getRowPointers().getData(),
+                                 A->getSegments().getOffsets().getData(),
                                  A->getColumnIndexes().getData(),
                                  info_A, &pBufferSize_A );
    cusparseDcsrsv2_bufferSize( handle, trans_L, N, nnz_L, descr_L,
                                L->getValues().getData(),
-                               L->getRowPointers().getData(),
+                               L->getSegments().getOffsets().getData(),
                                L->getColumnIndexes().getData(),
                                info_L, &pBufferSize_L );
    cusparseDcsrsv2_bufferSize( handle, trans_U, N, nnz_U, descr_U,
                                U->getValues().getData(),
-                               U->getRowPointers().getData(),
+                               U->getSegments().getOffsets().getData(),
                                U->getColumnIndexes().getData(),
                                info_U, &pBufferSize_U );
    TNL_CHECK_CUDA_DEVICE;
@@ -223,7 +223,7 @@ update( const MatrixPointer& matrixPointer )
    // Symbolic analysis of the incomplete LU decomposition
    cusparseDcsrilu02_analysis( handle, N, nnz_A, descr_A,
                                A->getValues().getData(),
-                               A->getRowPointers().getData(),
+                               A->getSegments().getOffsets().getData(),
                                A->getColumnIndexes().getData(),
                                info_A, policy_A, pBuffer.getData() );
    int structural_zero;
@@ -240,19 +240,19 @@ update( const MatrixPointer& matrixPointer )
    // pattern as L (U), so we can do the analysis for csrsv2 on the matrix A.
 //   cusparseDcsrsv2_analysis( handle, trans_L, N, nnz_A, descr_L,
 //                             A->getValues().getData(),
-//                             A->getRowPointers().getData(),
+//                             A->getSegments().getOffsets().getData(),
 //                             A->getColumnIndexes().getData(),
 //                             info_L, policy_L, pBuffer.getData() );
 //   cusparseDcsrsv2_analysis( handle, trans_U, N, nnz_A, descr_U,
 //                             A->getValues().getData(),
-//                             A->getRowPointers().getData(),
+//                             A->getSegments().getOffsets().getData(),
 //                             A->getColumnIndexes().getData(),
 //                             info_U, policy_U, pBuffer.getData() );
 
    // Numerical incomplete LU decomposition
    cusparseDcsrilu02( handle, N, nnz_A, descr_A,
                       A->getValues().getData(),
-                      A->getRowPointers().getData(),
+                      A->getSegments().getOffsets().getData(),
                       A->getColumnIndexes().getData(),
                       info_A, policy_A, pBuffer.getData() );
    int numerical_zero;
@@ -269,12 +269,12 @@ update( const MatrixPointer& matrixPointer )
    // Analysis for the triangular solves for L and U
    cusparseDcsrsv2_analysis( handle, trans_L, N, nnz_L, descr_L,
                              L->getValues().getData(),
-                             L->getRowPointers().getData(),
+                             L->getSegments().getOffsets().getData(),
                              L->getColumnIndexes().getData(),
                              info_L, policy_L, pBuffer.getData() );
    cusparseDcsrsv2_analysis( handle, trans_U, N, nnz_U, descr_U,
                              U->getValues().getData(),
-                             U->getRowPointers().getData(),
+                             U->getSegments().getOffsets().getData(),
                              U->getColumnIndexes().getData(),
                              info_U, policy_U, pBuffer.getData() );
    TNL_CHECK_CUDA_DEVICE;
@@ -386,7 +386,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
    // Step 1: solve y from Ly = b
    cusparseDcsrsv2_solve( handle, trans_L, N, nnz_L, &alpha, descr_L,
                           L->getValues().getData(),
-                          L->getRowPointers().getData(),
+                          L->getSegments().getOffsets().getData(),
                           L->getColumnIndexes().getData(),
                           info_L,
                           b.getData(),
@@ -396,7 +396,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
    // Step 2: solve x from Ux = y
    cusparseDcsrsv2_solve( handle, trans_U, N, nnz_U, &alpha, descr_U,
                           U->getValues().getData(),
-                          U->getRowPointers().getData(),
+                          U->getSegments().getOffsets().getData(),
                           U->getColumnIndexes().getData(),
                           info_U,
                           y.getData(),

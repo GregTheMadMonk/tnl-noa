@@ -20,7 +20,6 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-#include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>
 #include <cusparse.h>
 #endif
 
@@ -77,7 +76,8 @@ public:
 
 protected:
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRDefault > L, U;
+   using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
+   CSR L, U;
 
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.
@@ -136,7 +136,7 @@ public:
 protected:
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   using CSR = Benchmarks::SpMV::ReferenceFormats::Legacy::CSR< RealType, DeviceType, IndexType >;
+   using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
    Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 
