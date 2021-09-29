@@ -65,6 +65,10 @@ resolveCellTopology( Benchmark& benchmark,
    using VTK::EntityShape;
    switch( reader->getCellShape() )
    {
+      case EntityShape::Triangle:
+         return setMeshParameters< Topologies::Triangle >( benchmark, metadata, parameters );
+      case EntityShape::Tetra:
+         return setMeshParameters< Topologies::Tetrahedron >( benchmark, metadata, parameters );
       case EntityShape::Polygon:
          switch( reader->getSpaceDimension() )
          {

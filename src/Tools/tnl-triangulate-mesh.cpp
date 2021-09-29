@@ -30,6 +30,11 @@ template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, CellTopology, SpaceDimension >
 { enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
 
+// Polygonal Meshes are enable for the space dimension equal to 2 or 3
+template< int SpaceDimension >
+struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, Topologies::Polygon, SpaceDimension >
+{ enum { enabled = ( SpaceDimension >= 2 && SpaceDimension <= 3 ) }; };
+
 // Meshes are enabled only for types explicitly listed below.
 template<> struct MeshRealTag< MeshTriangulatorConfigTag, float > { enum { enabled = true }; };
 template<> struct MeshRealTag< MeshTriangulatorConfigTag, double > { enum { enabled = true }; };
