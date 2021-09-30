@@ -433,7 +433,7 @@ CudaScanKernelUpsweep( const InputView input,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
 
@@ -510,7 +510,7 @@ CudaScanKernelDownsweep( const InputView input,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
 
@@ -550,7 +550,7 @@ CudaScanKernelParallel( const InputView input,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
 
@@ -588,7 +588,7 @@ CudaScanKernelUniformShift( OutputView output,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
    if( threadIdx.x == 0 )

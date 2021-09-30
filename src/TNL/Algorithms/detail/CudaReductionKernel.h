@@ -393,7 +393,7 @@ CudaReductionKernel( DataFetcher dataFetcher,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
 
@@ -455,7 +455,7 @@ CudaReductionWithArgumentKernel( DataFetcher dataFetcher,
 
       // initialization is not allowed for __shared__ variables, so we need to
       // disable initialization in the implicit default constructor
-      Shared() {}
+      __device__ Shared() {}
    };
    __shared__ Shared storage;
 
