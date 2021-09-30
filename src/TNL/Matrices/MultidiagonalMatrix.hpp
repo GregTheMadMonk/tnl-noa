@@ -507,7 +507,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->view.reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -521,7 +521,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->view.reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -563,7 +563,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forAllElements( Function& function ) const
 {
-   this->view.forElements( 0, this->getRows(), function );
+   this->view.forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -577,7 +577,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 forAllElements( Function& function )
 {
-   this->view.forElements( 0, this->getRows(), function );
+   this->view.forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -675,7 +675,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function ) const
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -689,7 +689,7 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function )
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,

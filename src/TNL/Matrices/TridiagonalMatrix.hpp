@@ -376,7 +376,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->view.reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -389,7 +389,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 reduceAllRows( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->view.reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->view.reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -428,7 +428,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllElements( Function& function ) const
 {
-   this->view.forElements( 0, this->getRows(), function );
+   this->view.forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -441,7 +441,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllElements( Function& function )
 {
-   this->view.forElements( 0, this->getRows(), function );
+   this->view.forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -532,7 +532,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 sequentialForAllRows( Function& function ) const
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -545,7 +545,7 @@ void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::
 sequentialForAllRows( Function& function )
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,

@@ -298,7 +298,7 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename MatrixElementsLambda,
@@ -340,7 +340,7 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forAllElements( Function& function ) const
 {
-   forElements( 0, this->getRows(), function );
+   forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename MatrixElementsLambda,
@@ -371,7 +371,7 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 forAllRows( Function&& function ) const
 {
-   this->forRows( 0, this->getRows(), function );
+   this->forRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename MatrixElementsLambda,
@@ -398,7 +398,7 @@ void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 sequentialForAllRows( Function&& function ) const
 {
-   sequentialForRows( 0, this->getRows(), function );
+   sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename MatrixElementsLambda,

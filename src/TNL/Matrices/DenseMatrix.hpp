@@ -383,7 +383,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -396,7 +396,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -435,7 +435,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllElements( Function&& function ) const
 {
-   this->forElements( 0, this->getRows(), function );
+   this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -448,7 +448,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 forAllElements( Function&& function )
 {
-   this->forElements( 0, this->getRows(), function );
+   this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -539,7 +539,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 sequentialForAllRows( Function&& function ) const
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -552,7 +552,7 @@ void
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 sequentialForAllRows( Function&& function )
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -1179,7 +1179,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
             IndexType bufferIdx = bufferRowIdx * maxRowLength + columnIdx;
             this_view( baseRow + bufferRowIdx, columnIdx ) = thisValuesBuffer_view[ bufferIdx ];
          };
-         Algorithms::ParallelFor2D< DeviceType >::exec( ( IndexType ) 0, ( IndexType ) 0, ( IndexType ) maxRowLength, ( IndexType ) min( bufferRowsCount, this->getRows() - baseRow ), f2 );
+         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, min( bufferRowsCount, this->getRows() - baseRow ), f2 );
          baseRow += bufferRowsCount;
       }
    }
@@ -1268,7 +1268,7 @@ operator=( const RHSMatrix& matrix )
             if( columnIdx != padding_index )
                this_view( baseRow + bufferRowIdx, columnIdx ) = thisValuesBuffer_view[ bufferIdx ];
          };
-         Algorithms::ParallelFor2D< DeviceType >::exec( ( IndexType ) 0, ( IndexType ) 0, ( IndexType ) maxRowLength, ( IndexType ) min( bufferRowsCount, this->getRows() - baseRow ), f2 );
+         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, min( bufferRowsCount, this->getRows() - baseRow ), f2 );
          baseRow += bufferRowsCount;
       }
    }

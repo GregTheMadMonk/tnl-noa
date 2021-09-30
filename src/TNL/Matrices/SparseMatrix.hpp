@@ -571,7 +571,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -587,7 +587,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
 {
-   this->reduceRows( 0, this->getRows(), fetch, reduce, keep, identity );
+   this->reduceRows( (IndexType) 0, this->getRows(), fetch, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -635,7 +635,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 forAllElements( Function&& function ) const
 {
-   this->forElements( 0, this->getRows(), function );
+   this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -651,7 +651,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 forAllElements( Function&& function )
 {
-   this->forElements( 0, this->getRows(), function );
+   this->forElements( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -763,7 +763,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function ) const
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 template< typename Real,
@@ -779,7 +779,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 sequentialForAllRows( Function& function )
 {
-   this->sequentialForRows( 0, this->getRows(), function );
+   this->sequentialForRows( (IndexType) 0, this->getRows(), function );
 }
 
 
