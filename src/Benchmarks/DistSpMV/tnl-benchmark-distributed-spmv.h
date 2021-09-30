@@ -23,7 +23,8 @@
 #include <TNL/MPI/Config.h>
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
-#include <TNL/Matrices/DistributedMatrix.h>
+//#include <TNL/Matrices/DistributedMatrix.h>
+#include "Legacy/DistributedMatrix.h"
 #include <TNL/Matrices/SparseOperations.h>
 
 #include "../Benchmarks.h"
@@ -149,7 +150,8 @@ struct SpmvBenchmark
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
    using Partitioner = Containers::Partitioner< IndexType >;
-   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
+//   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType >;
+   using DistributedMatrix = Matrices::Legacy::DistributedMatrix< MatrixType >;
    using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType >;
    using DistributedRowLengths = typename DistributedMatrix::RowsCapacitiesType;
 

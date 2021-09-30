@@ -32,6 +32,7 @@
 
 namespace TNL {
 namespace Matrices {
+namespace Legacy {
 
 template< typename Matrix >
 class DistributedSpMV
@@ -256,5 +257,6 @@ protected:
    __DistributedSpMV_impl::ThreePartVector< RealType, DeviceType, IndexType > globalBuffer;
 };
 
+} // namespace Legacy
 } // namespace Matrices
 } // namespace TNL

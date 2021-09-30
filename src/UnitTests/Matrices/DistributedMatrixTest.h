@@ -220,22 +220,23 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
       << ",\nthis->rowCapacities.getLocalView() = " << this->rowCapacities.getLocalView();
 }
 
-TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
-{
-   using DistributedVector = typename TestFixture::DistributedVector;
-
-   this->matrix.setRowCapacities( this->rowCapacities );
-   setMatrix( this->matrix, this->rowCapacities );
-
-   DistributedVector inVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
-   inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
-   this->matrix.vectorProduct( inVector, outVector );
-
-   EXPECT_EQ( outVector, this->rowCapacities )
-      << "outVector.getLocalView() = " << outVector.getLocalView()
-      << ",\nthis->rowCapacities.getLocalView() = " << this->rowCapacities.getLocalView();
-}
+// TODO: this test used the legacy implementation of DistributedSpMV (deprecated, used only in the DistSpMV benchmark)
+//TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
+//{
+//   using DistributedVector = typename TestFixture::DistributedVector;
+//
+//   this->matrix.setRowCapacities( this->rowCapacities );
+//   setMatrix( this->matrix, this->rowCapacities );
+//
+//   DistributedVector inVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
+//   inVector.setValue( 1 );
+//   DistributedVector outVector( this->matrix.getLocalRowRange(), 0, this->globalSize, this->matrix.getCommunicator() );
+//   this->matrix.vectorProduct( inVector, outVector );
+//
+//   EXPECT_EQ( outVector, this->rowCapacities )
+//      << "outVector.getLocalView() = " << outVector.getLocalView()
+//      << ",\nthis->rowCapacities.getLocalView() = " << this->rowCapacities.getLocalView();
+//}
 
 #endif  // HAVE_GTEST
 

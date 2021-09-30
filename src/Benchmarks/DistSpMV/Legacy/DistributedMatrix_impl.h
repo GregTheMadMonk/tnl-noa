@@ -16,6 +16,7 @@
 
 namespace TNL {
 namespace Matrices {
+namespace Legacy {
 
 template< typename Matrix >
 DistributedMatrix< Matrix >::
@@ -34,6 +35,8 @@ setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns
    this->communicator = communicator;
    if( communicator != MPI_COMM_NULL )
       localMatrix.setDimensions( localRowRange.getSize(), columns );
+
+   spmv.reset();
 }
 
 template< typename Matrix >
@@ -104,6 +107,8 @@ setLike( const MatrixT& matrix )
    rows = matrix.getRows();
    communicator = matrix.getCommunicator();
    localMatrix.setLike( matrix.getLocalMatrix() );
+
+   spmv.reset();
 }
 
 template< typename Matrix >
@@ -115,6 +120,8 @@ reset()
    rows = 0;
    communicator = MPI_COMM_NULL;
    localMatrix.reset();
+
+   spmv.reset();
 }
 
 template< typename Matrix >
@@ -145,6 +152,8 @@ setRowCapacities( const RowCapacitiesVector& rowCapacities )
 
    if( getCommunicator() != MPI_COMM_NULL ) {
       localMatrix.setRowCapacities( rowCapacities.getConstLocalView() );
+
+      spmv.reset();
    }
 }
 
@@ -237,6 +246,16 @@ vectorProduct( const InVector& inVector,
 }
 
 template< typename Matrix >
+void
+DistributedMatrix< Matrix >::
+updateVectorProductCommunicationPattern()
+{
+   if( getCommunicator() == MPI_COMM_NULL )
+      return;
+   spmv.updateCommunicationPattern( getLocalMatrix(), getCommunicator() );
+}
+
+template< typename Matrix >
    template< typename InVector,
              typename OutVector >
 typename std::enable_if< HasGetCommunicatorMethod< InVector >::value >::type
@@ -253,17 +272,24 @@ vectorProduct( const InVector& inVector,
    if( getCommunicator() == MPI_COMM_NULL )
       return;
 
-   TNL_ASSERT_EQ( inVector.getConstLocalViewWithGhosts().getSize(), localMatrix.getColumns(), "the matrix uses non-local and non-ghost column indices" );
-   TNL_ASSERT_EQ( inVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "input vector has wrong ghosts size" );
-   TNL_ASSERT_EQ( outVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "output vector has wrong ghosts size" );
-   TNL_ASSERT_EQ( outVector.getConstLocalView().getSize(), localMatrix.getRows(), "number of local matrix rows does not match the output vector local size" );
+   if( inVector.getGhosts() == 0 ) {
+      // NOTE: this branch is deprecated and kept only due to existing benchmarks
+      TNL_ASSERT_EQ( inVector.getSize(), getColumns(), "input vector has wrong size" );
+      const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, localRowRange, inVector, getCommunicator() );
+   }
+   else {
+      TNL_ASSERT_EQ( inVector.getConstLocalViewWithGhosts().getSize(), localMatrix.getColumns(), "the matrix uses non-local and non-ghost column indices" );
+      TNL_ASSERT_EQ( inVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "input vector has wrong ghosts size" );
+      TNL_ASSERT_EQ( outVector.getGhosts(), localMatrix.getColumns() - localMatrix.getRows(), "output vector has wrong ghosts size" );
+      TNL_ASSERT_EQ( outVector.getConstLocalView().getSize(), localMatrix.getRows(), "number of local matrix rows does not match the output vector local size" );
 
-   inVector.waitForSynchronization();
-   const auto inView = inVector.getConstLocalViewWithGhosts();
-   auto outView = outVector.getLocalView();
-   localMatrix.vectorProduct( inView, outView );
-   // TODO: synchronization is not always necessary, e.g. when a preconditioning step follows
-//   outVector.startSynchronization();
+      inVector.waitForSynchronization();
+      const auto inView = inVector.getConstLocalViewWithGhosts();
+      auto outView = outVector.getLocalView();
+      localMatrix.vectorProduct( inView, outView );
+      // TODO: synchronization is not always necessary, e.g. when a preconditioning step follows
+//      outVector.startSynchronization();
+   }
 }
 
 template< typename Matrix >
@@ -278,5 +304,6 @@ performSORIteration( const Vector1& b,
    return getLocalMatrix().performSORIteration( b, row, x, omega );
 }
 
+} // namespace Legacy
 } // namespace Matrices
 } // namespace TNL

@@ -17,9 +17,11 @@
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Containers/DistributedVectorView.h>
+#include "DistributedSpMV.h"
 
 namespace TNL {
 namespace Matrices {
+namespace Legacy {
 
 // TODO: 2D distribution for dense matrices (maybe it should be in different template,
 //       because e.g. setRowFast doesn't make sense for dense matrices)
@@ -130,8 +132,11 @@ protected:
    IndexType rows = 0;  // global rows count
    MPI_Comm communicator = MPI_COMM_NULL;
    Matrix localMatrix;
+
+   DistributedSpMV< Matrix > spmv;
 };
 
+} // namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 
