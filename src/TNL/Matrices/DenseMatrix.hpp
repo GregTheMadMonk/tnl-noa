@@ -1179,7 +1179,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
             IndexType bufferIdx = bufferRowIdx * maxRowLength + columnIdx;
             this_view( baseRow + bufferRowIdx, columnIdx ) = thisValuesBuffer_view[ bufferIdx ];
          };
-         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, min( bufferRowsCount, this->getRows() - baseRow ), f2 );
+         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, (IndexType) min( bufferRowsCount, this->getRows() - baseRow ), f2 );
          baseRow += bufferRowsCount;
       }
    }
@@ -1268,7 +1268,7 @@ operator=( const RHSMatrix& matrix )
             if( columnIdx != padding_index )
                this_view( baseRow + bufferRowIdx, columnIdx ) = thisValuesBuffer_view[ bufferIdx ];
          };
-         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, min( bufferRowsCount, this->getRows() - baseRow ), f2 );
+         Algorithms::ParallelFor2D< DeviceType >::exec( (IndexType) 0, (IndexType) 0, maxRowLength, (IndexType) min( bufferRowsCount, this->getRows() - baseRow ), f2 );
          baseRow += bufferRowsCount;
       }
    }
