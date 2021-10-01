@@ -379,5 +379,32 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     return volume;
 }
 
+template< typename MeshConfig >
+__cuda_callable__
+typename MeshConfig::RealType
+getEntityMeasure( const Mesh< MeshConfig, Devices::Cuda > & mesh,
+                  const MeshEntity< MeshConfig, Devices::Cuda, Topologies::Polyhedron > & entity )
+{
+    using Real = typename MeshConfig::RealType;
+    using Index = typename MeshConfig::LocalIndexType;
+    using Point = typename Mesh< MeshConfig, Devices::Cuda >::PointType;
+    Real volume{ 0.0 };
+    const Index facesCount = entity.template getSubentitiesCount< 2 >();
+    const Point v3 = mesh.getPoint( entity.template getSubentityIndex< 0 >( 0 ) );
+    for( Index faceIdx = 0; faceIdx < facesCount; faceIdx++ ) {
+        const auto face = mesh.template getEntity< 2 >( entity.template getSubentityIndex< 2 >( faceIdx ) );
+        const Index verticesCount = face.template getSubentitiesCount< 0 >();
+        const Point v0 = mesh.getPoint( face.template getSubentityIndex< 0 >( 0 ) );
+        Point v1 = mesh.getPoint( face.template getSubentityIndex< 0 >( 1 ) );
+        for( Index j = 2; j < verticesCount; j++ ) {
+            const Point v2 = mesh.getPoint( face.template getSubentityIndex< 0 >( j ) );
+            // Partition polyhedron into tetrahedrons by triangulating faces and connecting each triangle to one point of the polyhedron.
+            volume += getTetrahedronVolume( v3 - v0, v2 - v0, v1 - v0 );
+            v1 = v2;
+        }
+    }
+    return volume;
+}
+
 } // namespace Meshes
 } // namespace TNL
