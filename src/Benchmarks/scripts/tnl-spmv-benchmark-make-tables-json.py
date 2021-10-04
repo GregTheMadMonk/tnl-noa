@@ -31,6 +31,7 @@ def slugify(s):
 def latexFormatName( name ):
    name = name.replace('<','')
    name = name.replace('>','')
+   name = name.replace( 'Light  Automatic ', '')
    return name
 
 ####
@@ -68,7 +69,7 @@ def get_multiindex( input_df, formats ):
          level3.append( 'speed-up')
          level4.append( 'non-symmetric' )
          df_data[ 0 ].append( ' ' )
-      if format == 'CSR< Light > Automatic':
+      if format == 'CSR< Light > Automatic' or format == 'CSR< Light > Automatic Light':
          level1.append( format )
          level2.append( 'GPU' )
          level3.append( 'speed-up')
@@ -93,6 +94,7 @@ def convert_data_frame( input_df, multicolumns, df_data, begin_idx = 0, end_idx 
    #max_out_idx = max_rows
    if end_idx == -1:
       end_idx = len(input_df.index)
+   best_count = 0
    while in_idx < len(input_df.index) and out_idx < end_idx:
       matrixName = input_df.iloc[in_idx]['matrix name']
       df_matrix = input_df.loc[input_df['matrix name'] == matrixName]
@@ -118,6 +120,7 @@ def convert_data_frame( input_df, multicolumns, df_data, begin_idx = 0, end_idx 
              not 'cusparse' in current_format and
              not 'LightSpMV' in current_format and
              not 'Hybrid' in current_format and
+             current_format != 'CSR< Light > Automatic' and
              bw > best_bw ):
             best_bw = bw
             best_format = current_format
@@ -135,6 +138,7 @@ def convert_data_frame( input_df, multicolumns, df_data, begin_idx = 0, end_idx 
          aux_df.iloc[0][('TNL Best','GPU','format','')] = best_format
       else:
          aux_df.iloc[0][('TNL Best','GPU','format','')] = 'cusparse'
+      best_count += 1
       if out_idx >= begin_idx:
          frames.append( aux_df )
       out_idx = out_idx + 1
@@ -173,18 +177,19 @@ def compute_cusparse_speedup( df, formats ):
 
 ####
 # Compute speedup of Light CSR
-def compute_csr_light_speedup( df ):
+def compute_csr_light_speedup( df, formats ):
    for light in [ 'CSR< Light > Automatic', 'CSR< Light > Automatic Light']:
-      csr_light_bdw_list = df[(light,'GPU','bandwidth')]
-      light_spmv_bdw_list = df[('LightSpMV Vector','GPU','bandwidth')]
+      if light in formats:
+         csr_light_bdw_list = df[(light,'GPU','bandwidth')]
+         light_spmv_bdw_list = df[('LightSpMV Vector','GPU','bandwidth')]
 
-      csr_light_speedup_list = []
-      for ( csr_light_bdw, light_spmv_bdw ) in zip(csr_light_bdw_list,light_spmv_bdw_list):
-         try:
-            csr_light_speedup_list.append( csr_light_bdw / light_spmv_bdw  )
-         except:
-            csr_light_speedup_list.append(float('nan'))
-      df[(light,'GPU','speed-up','LightSpMV Vector')] = csr_light_speedup_list
+         csr_light_speedup_list = []
+         for ( csr_light_bdw, light_spmv_bdw ) in zip(csr_light_bdw_list,light_spmv_bdw_list):
+            try:
+               csr_light_speedup_list.append( csr_light_bdw / light_spmv_bdw  )
+            except:
+               csr_light_speedup_list.append(float('nan'))
+         df[(light,'GPU','speed-up','LightSpMV Vector')] = csr_light_speedup_list
 
 ####
 # Compute speed-up of binary formats
@@ -223,7 +228,7 @@ def compute_symmetric_speedup( df, formats ):
 
 def compute_speedup( df, formats ):
    compute_cusparse_speedup( df, formats )
-   #compute_csr_light_speedup( df )
+   compute_csr_light_speedup( df, formats )
    compute_binary_speedup( df, formats )
    compute_symmetric_speedup( df, formats )
 
@@ -487,7 +492,7 @@ def cusparse_speedup_comparison( df, formats, head_size=10 ):
    profiles = {}
    for format in formats:
       if not format in ['cusparse','CSR']:
-         print( f"Writing comparison of speed-up of {format} compared to Cusparse" )
+         print( f"Writing comparison of speed-up of {format} ({latexFormatName(format)}) compared to Cusparse" )
          df['tmp'] = df[(format, 'GPU','bandwidth')]
          filtered_df=df.dropna(subset=[('tmp','','','')])
          filtered_df.sort_values(by=[(format,'GPU','speed-up','cusparse')],inplace=True,ascending=False)
@@ -752,11 +757,15 @@ input_df = json_normalize( d, record_path=['results'] )
 #input_df.to_html( "orig-pandas.html" )
 
 formats = list(set( input_df['format'].values.tolist() )) # list of all formats in the benchmark results
+formats.remove('CSR< Light > Automatic')
+formats.remove('Binary CSR< Light > Automatic')
+formats.remove('Symmetric CSR< Light > Automatic')
+formats.remove('Symmetric Binary CSR< Light > Automatic')
 formats.append('TNL Best')
 multicolumns, df_data = get_multiindex( input_df, formats )
 
 print( "Converting data..." )
-result = convert_data_frame( input_df, multicolumns, df_data, 0, 200 )
+result = convert_data_frame( input_df, multicolumns, df_data, 0, 2000 )
 compute_speedup( result, formats )
 
 result.replace( to_replace=' ',value=np.nan,inplace=True)
@@ -779,6 +788,8 @@ def processDf( df, formats, head_size = 10 ):
    csr_light_speedup_comparison( df, head_size )
 
    best = df[('TNL Best','GPU','format')].tolist()
+   best_formats = list(set(best))
+   sum = 0
    for format in formats:
       if( not 'Binary' in format and
           not 'Symmetric' in format and
@@ -787,7 +798,9 @@ def processDf( df, formats, head_size = 10 ):
           not 'TNL Best' in format ):
          cases = best.count(format)
          print( f'{format} is best in {cases} cases.')
-
+         sum += cases
+   print( f'Total is {sum}.' )
+   print( f'Best formats {best_formats}.')
 head_size = 25
 if not os.path.exists( 'general' ):
    os.mkdir( 'general' )
