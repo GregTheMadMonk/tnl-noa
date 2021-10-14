@@ -11,23 +11,27 @@ if( PYTHONINTERP_FOUND )
 endif()
 
 if( PYTHONLIBS_FOUND )
-   # download and build pybind11 at configure time
-   configure_file(pybind11.cmake.in ${CMAKE_BINARY_DIR}/pybind11-download/CMakeLists.txt)
-   execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
-   if(result)
-      message(FATAL_ERROR "CMake step for pybind11 failed: ${result}")
-   endif()
-   execute_process(COMMAND ${CMAKE_COMMAND} --build .
-      RESULT_VARIABLE result
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
-   if(result)
-      message(FATAL_ERROR "Build step for pybind11 failed: ${result}")
-   endif()
+   # check if pybind11 exists on the system
+   find_package(pybind11 QUIET)
+   if( NOT pybind11_FOUND )
+      # download and build pybind11 at configure time
+      configure_file(pybind11.cmake.in ${CMAKE_BINARY_DIR}/pybind11-download/CMakeLists.txt)
+      execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+         RESULT_VARIABLE result
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
+      if(result)
+         message(FATAL_ERROR "CMake step for pybind11 failed: ${result}")
+      endif()
+      execute_process(COMMAND ${CMAKE_COMMAND} --build .
+         RESULT_VARIABLE result
+         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/pybind11-download )
+      if(result)
+         message(FATAL_ERROR "Build step for pybind11 failed: ${result}")
+      endif()
 
-   # add the pybind11 subdirectory to provide the pybind11_add_module macro
-   add_subdirectory(${CMAKE_BINARY_DIR}/pybind11-src ${CMAKE_BINARY_DIR}/pybind11-build)
+      # add the pybind11 subdirectory to provide the pybind11_add_module macro
+      add_subdirectory(${CMAKE_BINARY_DIR}/pybind11-src ${CMAKE_BINARY_DIR}/pybind11-build)
+   endif()
 
    # add the subdirectory with our bindings
    add_subdirectory(pytnl)
