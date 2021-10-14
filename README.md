@@ -97,6 +97,33 @@ and other documented topics.
 [tutorials]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/Tutorials.html
 [API]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/annotated.html
 
+## Getting involved
+
+The TNL project welcomes and encourages participation by everyone. While most of the work for TNL
+involves programming in principle, we value and encourage contributions even from people proficient
+in other, non-technical areas.
+
+This section provides several ideas how both new and experienced TNL users can contribute to the
+project. Note that this is not an exhaustive list.
+
+- Join the __code development__. Our [GitLab issues tracker][GitLab issues] contains many ideas for
+  new features, or you may bring your own. The [contributing guidelines](CONTRIBUTING.md) describe
+  the standards for code contributions.
+- Help with __testing and reporting problems__. Testing is an integral part of agile software
+  development which refines the code development. Constructive critique is always welcome.
+- Improve and extend the __documentation__. Even small changes such as improving grammar or fixing
+  typos are very appreciated.
+- Share __your experience__ with TNL. Have you used TNL in your own project? Please be open and
+  [share your experience][contact] to help others in similar fields to get familiar with TNL. If
+  you could not utilize TNL as smoothly as possible, feel free to submit a [feature request][GitLab
+  issues].
+
+Before contributing, please get accustomed with the [code of conduct][code of conduct].
+
+[GitLab issues]: https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/issues
+[code of conduct]: CODE_OF_CONDUCT.md
+[contact]: https://tnl-project.org/#contact
+
 ## Citing
 
 If you use TNL in your scientific projects, please cite the following paper in
