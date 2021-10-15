@@ -17,9 +17,9 @@ void distributedArrayExample()
    using IndexType = typename ArrayType::IndexType;
    using LocalRangeType = typename ArrayType::LocalRangeType;
 
-   const MPI_Comm group = TNL::MPI::AllGroup();
-   //const int rank = TNL::MPI::GetRank(group);
-   const int nproc = TNL::MPI::GetSize(group);
+   const MPI_Comm communicator = MPI_COMM_WORLD;
+   //const int rank = TNL::MPI::GetRank(communicator);
+   const int nproc = TNL::MPI::GetSize(communicator);
 
    /***
     * We set size to prime number to force non-uniform distribution of the distributed array.
@@ -27,9 +27,9 @@ void distributedArrayExample()
    const int size = 97;
    const int ghosts = (nproc > 1) ? 4 : 0;
 
-   const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( size, group );
-   ArrayType a( localRange, ghosts, size, group );
-   a.forElements( 0, size, [=] __cuda_callable__ ( const int idx, int& value ) { value = idx; } );
+   const LocalRangeType localRange = Containers::Partitioner< IndexType >::splitRange( size, communicator );
+   ArrayType a( localRange, ghosts, size, communicator );
+   a.forElements( 0, size, [] __cuda_callable__ ( int idx, int& value ) { value = idx; } );
    //LocalArrayType localArray = a;
    //std::cout << a << std::endl;
 
