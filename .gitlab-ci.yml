@@ -381,7 +381,9 @@ documentation examples:
         - nvidia
     variables:
         <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
+        WITH_MPI: "yes"
         BUILD_TYPE: Debug
         # build output snippets for documentation
         BUILD_DOC: "yes"
