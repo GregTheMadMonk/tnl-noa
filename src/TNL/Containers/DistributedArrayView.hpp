@@ -451,10 +451,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f )
 {
-   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
-   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   // GOTCHA: we can't use localRange.getLocalIndex to calculate localEnd, because localRange.getEnd() does not return a valid local index
+   const IndexType localBegin = max( begin, localRange.getBegin() ) - localRange.getBegin();
+   const IndexType localEnd   = min( end,   localRange.getEnd()   ) - localRange.getBegin();
+   const LocalRangeType localRange = getLocalRange();
    auto local_f = [=] __cuda_callable__ ( IndexType idx, ValueType& value ) mutable {
-      f( localRange.getGlobalIndex( idx, value ) );
+      f( localRange.getGlobalIndex( idx ), value );
    };
    localData.forElements( localBegin, localEnd, local_f );
 }
@@ -467,10 +469,12 @@ void
 DistributedArrayView< Value, Device, Index >::
 forElements( IndexType begin, IndexType end, Function&& f ) const
 {
-   const IndexType localBegin = localRange.getLocalIndex( max( begin, localRange.getBegin() ) );
-   const IndexType localEnd   = localRange.getLocalIndex( min( end,   localRange.getEnd()   ) );
+   // GOTCHA: we can't use localRange.getLocalIndex to calculate localEnd, because localRange.getEnd() does not return a valid local index
+   const IndexType localBegin = max( begin, localRange.getBegin() ) - localRange.getBegin();
+   const IndexType localEnd   = min( end,   localRange.getEnd()   ) - localRange.getBegin();
+   const LocalRangeType localRange = getLocalRange();
    auto local_f = [=] __cuda_callable__ ( IndexType idx, const ValueType& value ) {
-      f( localRange.getGlobalIndex( idx, value ) );
+      f( localRange.getGlobalIndex( idx ), value );
    };
    localData.forElements( localBegin, localEnd, local_f );
 }
