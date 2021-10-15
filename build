@@ -145,10 +145,6 @@ if [[ ! "Release Debug RelWithDebInfo" =~ "$BUILD" ]]; then
     echo "Unknown build type: $BUILD. The available build types are: Release, Debug, RelWithDebInfo." >&2
     exit 1
 fi
-if [[ ! -d "$BUILD" ]]; then
-    mkdir "$BUILD"
-fi
-pushd "$BUILD" >/dev/null
 
 # handle targets
 for target in "$@"; do
@@ -209,9 +205,9 @@ else
    check_file="Makefile"
 fi
 
+BUILD_DIR="builddir/$BUILD"
 cmake_command=(
-   ${CMAKE} ${ROOT_DIR}
-         -G "${generator}"
+   ${CMAKE} -B "$BUILD_DIR" -S "$ROOT_DIR" -G "$generator"
          -DCMAKE_BUILD_TYPE=${BUILD}
          -DCMAKE_INSTALL_PREFIX=${PREFIX}
          -DDCMTK_DIR=${DCMTK_DIR}
@@ -238,14 +234,14 @@ cmake_command=(
 # The build system (e.g. make) will call it automatically if necessary (e.g.
 # when some CMakeLists.txt changes).
 if [[ -f ".cmake_command" ]]; then
-   last_cmake_command=$(cat ".cmake_command" 2>/dev/null)
+   last_cmake_command=$(cat "$BUILD_DIR/.cmake_command" 2>/dev/null)
 else
    last_cmake_command=""
 fi
 if [[ ! -f "$check_file" ]] || [[ "$last_cmake_command" != "${cmake_command[@]}" ]]; then
    echo "Configuring ${BUILD} TNL ..."
    "${cmake_command[@]}"
-   echo -n "${cmake_command[@]}" > ".cmake_command"
+   echo -n "${cmake_command[@]}" > "$BUILD_DIR/.cmake_command"
 fi
 
 if [[ ${CMAKE_ONLY} == "yes" ]]; then
@@ -294,7 +290,7 @@ if [[ "$make" != "make" ]] && [[ "$VERBOSE" ]]; then
    VERBOSE="-v"
 fi
 
-if ! $make ${VERBOSE} $make_target; then
+if ! $make -C "$BUILD_DIR" ${VERBOSE} $make_target; then
    exit 1
 fi
 
@@ -304,6 +300,6 @@ fi
 
 if [[ ${BUILD_TESTS} == "yes" ]] || [[ ${BUILD_MATRIX_TESTS} == "yes" ]]; then
    if [[ ${RUN_TESTS} == "yes" ]]; then
-      OMP_NUM_THREADS=${TESTS_JOBS} CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
+      OMP_NUM_THREADS=${TESTS_JOBS} CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make -C "$BUILD_DIR" test
    fi
 fi

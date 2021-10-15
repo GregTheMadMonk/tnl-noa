@@ -1,13 +1,10 @@
-/nbproject
-/Debug
-/Release
-/RelWithDebInfo
-/Testing
+# build/output directories
+/builddir
 /Documentation/html/
 /Documentation/output_snippets/
-/CMakeLists.txt.user
-/Build
-/coverage_report
+
+# Netbeans project stuff
+/nbproject
 
 # Eclipse project stuff
 /.settings
@@ -25,3 +22,10 @@
 
 # GDB
 .gdb_history
+
+# old/deprecated directories (can be removed later, they are not used anymore)
+/Debug
+/Release
+/RelWithDebInfo
+/Testing
+/Build
