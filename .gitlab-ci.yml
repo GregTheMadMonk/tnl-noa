@@ -36,13 +36,6 @@ stages:
         WITH_OPENMP: "yes"
         WITH_MPI: "yes"
 
-.cuda_openmp_mpi:
-    extends: .openmp_mpi
-    # tags are overridden, not merged...
-    tags:
-        - docker
-        - nvidia
-
 # base for Clang builds
 .clang:
     stage: build:clang
@@ -71,12 +64,13 @@ stages:
         # running as root does not matter inside Docker containers
         - export OMPI_ALLOW_RUN_AS_ROOT=1
         - export OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1
-        - mkdir -p "./builddir/$CI_JOB_NAME"
-        - pushd "./builddir/$CI_JOB_NAME"
-        - cmake ../..
-                -G Ninja
+        # fall back to arch 7.0 when the builder has no GPU to avoid building for all GPU architectures
+        - if ! nvidia-smi --list-gpus > /dev/null; then
+                WITH_CUDA_ARCH=7.0;
+          fi
+        - cmake -B "./builddir/$CI_JOB_NAME" -S . -G Ninja
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-                -DCMAKE_INSTALL_PREFIX="$(pwd)/${BUILD_TYPE}_install_prefix"
+                -DCMAKE_INSTALL_PREFIX="$(pwd)/install_prefix/$CI_JOB_NAME"
                 -DWITH_OPENMP=${WITH_OPENMP}
                 -DWITH_MPI=${WITH_MPI}
                 -DWITH_CUDA=${WITH_CUDA}
@@ -91,11 +85,10 @@ stages:
                 -DBUILD_PYTHON=${BUILD_PYTHON}
                 -DWITH_CI_FLAGS=yes
         # "install" implies the "all" target
-        - ninja ${NINJAFLAGS} install
+        - ninja -C "./builddir/$CI_JOB_NAME" ${NINJAFLAGS} install
         - if [[ ${BUILD_TESTS} == "yes" ]] || [[ ${BUILD_MATRIX_TESTS} == "yes" ]]; then
-                ninja test;
+                ninja -C "./builddir/$CI_JOB_NAME" test;
           fi
-        - popd
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
@@ -180,9 +173,6 @@ cuda_matrix_tests_Release:
 cuda_nontests_Debug:
     extends: .build_template
     stage: build:cuda
-    tags:
-        - docker
-        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -195,9 +185,6 @@ cuda_nontests_Debug:
 cuda_nontests_Release:
     extends: .build_template
     stage: build:cuda
-    tags:
-        - docker
-        - nvidia
     variables:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
@@ -211,32 +198,32 @@ cuda_nontests_Release:
 cuda_mpi_tests_Debug:
     extends:
         - cuda_tests_Debug
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 cuda_mpi_tests_Release:
     extends:
         - cuda_tests_Release
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 cuda_mpi_matrix_tests_Debug:
     extends:
         - cuda_matrix_tests_Debug
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 cuda_mpi_matrix_tests_Release:
     extends:
         - cuda_matrix_tests_Release
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 cuda_mpi_nontests_Debug:
     extends:
         - cuda_nontests_Debug
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 cuda_mpi_nontests_Release:
     extends:
         - cuda_nontests_Release
-        - .cuda_openmp_mpi
+        - .openmp_mpi
 
 
 

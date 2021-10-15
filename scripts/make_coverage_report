@@ -80,4 +80,4 @@ tests=(
 )
 
 # run the programs and create coverage reports
-./scripts/code_coverage/coverage.py -b Debug -o coverage_report/ --ignore-filename-regex="^\/tmp\/tmpxft_.*" "${tests[@]}"
+./scripts/code_coverage/coverage.py -b builddir/Debug -o builddir/coverage_report/ --ignore-filename-regex="^\/tmp\/tmpxft_.*" "${tests[@]}"
