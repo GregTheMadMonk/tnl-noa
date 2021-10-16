@@ -347,15 +347,11 @@ forElements( IndexType begin, IndexType end, Function&& f )
    if( ! this->data )
       return;
 
-   ValueType* data = this->getData();
-   const IndexType size = this->getSize();
-   auto g = [=] __cuda_callable__ ( IndexType i ) mutable
+   auto g = [] __cuda_callable__ ( IndexType i, Function f, ArrayView view )
    {
-      TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
-      TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
-      f( i, data[ i ] );
+      f( i, view[ i ] );
    };
-   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g, f, *this );
 }
 
 template< typename Value,
@@ -369,15 +365,11 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
    if( ! this->data )
       return;
 
-   const ValueType* data = this->getData();
-   const IndexType size = this->getSize();
-   auto g = [=] __cuda_callable__ ( IndexType i )
+   auto g = [] __cuda_callable__ ( IndexType i, Function f, ArrayView view )
    {
-      TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
-      TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
-      f( i, data[ i ] );
+      f( i, view[ i ] );
    };
-   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g );
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, g, f, *this );
 }
 
 template< typename Value,
