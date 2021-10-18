@@ -78,12 +78,12 @@ public:
       std::vector< std::uint8_t > typesArray;
 
       // read points
-      worldDimension = 0;
+      spaceDimension = 0;
       for( std::size_t pointIndex = 0; pointIndex < NumberOfPoints; pointIndex++ ) {
          if( ! inputFile )
             throw MeshReaderError( "VTKReader", "unable to read enough vertices, the file may be invalid or corrupted" );
 
-         // read the coordinates and compute the world dimension
+         // read the coordinates and compute the space dimension
          for( int i = 0; i < 3; i++ ) {
             double aux = 0;
             if( pointsType == "float" )
@@ -93,7 +93,7 @@ public:
             if( ! inputFile )
                throw MeshReaderError( "VTKReader", "unable to read " + std::to_string(i) + "th component of the vertex number " + std::to_string(pointIndex) );
             if( aux != 0.0 )
-               worldDimension = std::max( worldDimension, i + 1 );
+               spaceDimension = std::max( spaceDimension, i + 1 );
             pointsArray.push_back( aux );
          }
       }

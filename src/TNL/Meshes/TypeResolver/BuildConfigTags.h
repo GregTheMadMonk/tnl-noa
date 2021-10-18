@@ -87,8 +87,8 @@ template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag
 // TODO: Simplex has not been tested yet
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { enum { enabled = true }; };
 
-// All sensible world dimensions are enabled by default.
-template< typename ConfigTag, typename CellTopology, int WorldDimension > struct MeshWorldDimensionTag { enum { enabled = ( WorldDimension >= CellTopology::dimension && WorldDimension <= 3 ) }; };
+// All sensible space dimensions are enabled by default.
+template< typename ConfigTag, typename CellTopology, int SpaceDimension > struct MeshSpaceDimensionTag { enum { enabled = ( SpaceDimension >= CellTopology::dimension && SpaceDimension <= 3 ) }; };
 
 // Meshes are enabled only for the `float` and `double` real types by default.
 template< typename ConfigTag, typename Real > struct MeshRealTag { enum { enabled = false }; };
@@ -108,11 +108,11 @@ template< typename ConfigTag > struct MeshLocalIndexTag< ConfigTag, short int > 
 template< typename ConfigTag >
 struct MeshConfigTemplateTag
 {
-   template< typename Cell, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex >
-   using MeshConfig = DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >;
+   template< typename Cell, int SpaceDimension, typename Real, typename GlobalIndex, typename LocalIndex >
+   using MeshConfig = DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >;
 };
 
-// The Mesh is enabled for allowed Device, CellTopology, WorldDimension, Real,
+// The Mesh is enabled for allowed Device, CellTopology, SpaceDimension, Real,
 // GlobalIndex, LocalIndex and Id types as specified above.
 //
 // By specializing this tag you can enable or disable custom combinations of
@@ -126,15 +126,15 @@ struct MeshConfigTemplateTag
 //
 //          struct MeshTag< ConfigTag,
 //                      Mesh< typename MeshConfigTemplateTag< ConfigTag >::
-//                         template MeshConfig< CellTopology, WorldDimension, Real, GlobalIndex, LocalIndex > > >
+//                         template MeshConfig< CellTopology, SpaceDimension, Real, GlobalIndex, LocalIndex > > >
 //
-template< typename ConfigTag, typename Device, typename CellTopology, int WorldDimension, typename Real, typename GlobalIndex, typename LocalIndex >
+template< typename ConfigTag, typename Device, typename CellTopology, int SpaceDimension, typename Real, typename GlobalIndex, typename LocalIndex >
 struct MeshTag
 {
    enum { enabled =
             MeshDeviceTag< ConfigTag, Device >::enabled &&
             MeshCellTopologyTag< ConfigTag, CellTopology >::enabled &&
-            MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled &&
+            MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled &&
             MeshRealTag< ConfigTag, Real >::enabled &&
             MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled &&
             MeshLocalIndexTag< ConfigTag, LocalIndex >::enabled

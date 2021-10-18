@@ -99,7 +99,7 @@ getOutwardNormalVector( const Mesh< MeshConfig, Device > & mesh,
    using FaceType = MeshEntity< MeshConfig, Device, Topologies::Edge >;
    using PointType = typename MeshTraits< MeshConfig >::PointType;
    static_assert( std::is_same< typename MeshType::Face, FaceType >::value, "getOutwardNormalVector called for an entity which is not a face" );
-   static_assert( MeshConfig::worldDimension == 2, "TODO: normal vectors for 2D meshes in a 3D space are not implemented yet" );
+   static_assert( MeshConfig::spaceDimension == 2, "TODO: normal vectors for 2D meshes in a 3D space are not implemented yet" );
 
    const auto& v0 = mesh.getPoint( face.template getSubentityIndex< 0 >( 0 ) );
    const auto& v1 = mesh.getPoint( face.template getSubentityIndex< 0 >( 1 ) );
@@ -125,7 +125,7 @@ getOutwardNormalVector( const Mesh< MeshConfig, Device > & mesh,
    using FaceType = MeshEntity< MeshConfig, Device, EntityTopology >;
    using PointType = typename MeshTraits< MeshConfig >::PointType;
    static_assert( std::is_same< typename MeshType::Face, FaceType >::value, "getOutwardNormalVector called for an entity which is not a face" );
-   static_assert( MeshConfig::worldDimension == 3, "general overload intended for 3D was called with the wrong world dimension" );
+   static_assert( MeshConfig::spaceDimension == 3, "general overload intended for 3D was called with the wrong space dimension" );
 
    const auto& v0 = mesh.getPoint( face.template getSubentityIndex< 0 >( 0 ) );
    const auto& v1 = mesh.getPoint( face.template getSubentityIndex< 0 >( 1 ) );

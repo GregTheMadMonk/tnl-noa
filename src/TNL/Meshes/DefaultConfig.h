@@ -25,7 +25,7 @@ namespace Meshes {
  * Basic structure for mesh configuration.
  */
 template< typename Cell,
-          int WorldDimension = Cell::dimension,
+          int SpaceDimension = Cell::dimension,
           typename Real = double,
           typename GlobalIndex = int,
           typename LocalIndex = short int >
@@ -36,7 +36,7 @@ struct DefaultConfig
    using GlobalIndexType = GlobalIndex;
    using LocalIndexType = LocalIndex;
 
-   static constexpr int worldDimension = WorldDimension;
+   static constexpr int spaceDimension = SpaceDimension;
    static constexpr int meshDimension = Cell::dimension;
 
    /****

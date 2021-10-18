@@ -50,10 +50,10 @@ template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadr
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
-// Meshes are enabled only for the world dimension equal to the cell dimension.
-template< typename CellTopology, int WorldDimension >
-struct MeshWorldDimensionTag< DecomposeMeshConfigTag, CellTopology, WorldDimension >
-{ enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
+// Meshes are enabled only for the space dimension equal to the cell dimension.
+template< typename CellTopology, int SpaceDimension >
+struct MeshSpaceDimensionTag< DecomposeMeshConfigTag, CellTopology, SpaceDimension >
+{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
 template<> struct MeshRealTag< DecomposeMeshConfigTag, float > { enum { enabled = true }; };
@@ -67,7 +67,7 @@ template<>
 struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
 {
    template< typename Cell,
-             int WorldDimension = Cell::dimension,
+             int SpaceDimension = Cell::dimension,
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = GlobalIndex >
@@ -78,7 +78,7 @@ struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
       using GlobalIndexType = GlobalIndex;
       using LocalIndexType = LocalIndex;
 
-      static constexpr int worldDimension = WorldDimension;
+      static constexpr int spaceDimension = SpaceDimension;
       static constexpr int meshDimension = Cell::dimension;
 
       template< typename EntityTopology >

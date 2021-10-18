@@ -239,9 +239,9 @@ public:
    }
 
    int
-   getWorldDimension() const
+   getSpaceDimension() const
    {
-      return worldDimension;
+      return spaceDimension;
    }
 
    VTK::EntityShape
@@ -279,7 +279,7 @@ protected:
 
    // attributes of the mesh
    std::size_t NumberOfPoints, NumberOfCells;
-   int meshDimension, worldDimension;
+   int meshDimension, spaceDimension;
    VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
 
    // intermediate representation of a grid (this is relevant only for TNL::Meshes::Grid)
@@ -296,7 +296,7 @@ protected:
    {
       meshType = "";
       NumberOfPoints = NumberOfCells = 0;
-      meshDimension = worldDimension = 0;
+      meshDimension = spaceDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
 
       gridExtent = {};

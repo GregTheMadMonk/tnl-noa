@@ -13,12 +13,12 @@ template<>
 struct MeshConfigTemplateTag< MyConfigTag >
 {
    template< typename Cell,
-             int WorldDimension = Cell::dimension,
+             int SpaceDimension = Cell::dimension,
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = short int >
    struct MeshConfig
-      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
+      : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
       template< typename EntityTopology >
       static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )

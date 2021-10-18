@@ -98,7 +98,7 @@ class ConfigValidator
    static constexpr int meshDimension = MeshConfig::CellTopology::dimension;
 
    static_assert( 1 <= meshDimension, "zero dimensional meshes are not supported" );
-   static_assert( meshDimension <= MeshConfig::worldDimension, "world dimension must not be less than mesh dimension" );
+   static_assert( meshDimension <= MeshConfig::spaceDimension, "space dimension must not be less than mesh dimension" );
 };
 
 } // namespace Meshes

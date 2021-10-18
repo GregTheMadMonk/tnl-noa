@@ -24,10 +24,10 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { e
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
-// Meshes are enabled only for the world dimension equal to the cell dimension.
-template< typename CellTopology, int WorldDimension >
-struct MeshWorldDimensionTag< MyConfigTag, CellTopology, WorldDimension >
-{ enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
+// Meshes are enabled only for the space dimension equal to the cell dimension.
+template< typename CellTopology, int SpaceDimension >
+struct MeshSpaceDimensionTag< MyConfigTag, CellTopology, SpaceDimension >
+{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
 template<> struct MeshRealTag< MyConfigTag, float > { enum { enabled = false }; };
@@ -41,12 +41,12 @@ template<>
 struct MeshConfigTemplateTag< MyConfigTag >
 {
    template< typename Cell,
-             int WorldDimension = Cell::dimension,
+             int SpaceDimension = Cell::dimension,
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = short int >
    struct MeshConfig
-      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
+      : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
       template< typename EntityTopology >
       static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )

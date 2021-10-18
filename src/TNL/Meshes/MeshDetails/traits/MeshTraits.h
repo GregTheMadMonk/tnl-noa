@@ -45,7 +45,7 @@ class MeshTraits
 {
 public:
    static constexpr int meshDimension  = MeshConfig::CellTopology::dimension;
-   static constexpr int worldDimension = MeshConfig::worldDimension;
+   static constexpr int spaceDimension = MeshConfig::spaceDimension;
 
    using DeviceType          = Device;
    using GlobalIndexType     = typename MeshConfig::GlobalIndexType;
@@ -54,7 +54,7 @@ public:
    using CellTopology        = typename MeshConfig::CellTopology;
    using CellType            = MeshEntity< MeshConfig, Device, CellTopology >;
    using VertexType          = MeshEntity< MeshConfig, Device, Topologies::Vertex >;
-   using PointType           = Containers::StaticVector< worldDimension, typename MeshConfig::RealType >;
+   using PointType           = Containers::StaticVector< spaceDimension, typename MeshConfig::RealType >;
    using CellSeedType        = EntitySeed< MeshConfig, CellTopology >;
    using EntityTagType       = std::uint8_t;
 

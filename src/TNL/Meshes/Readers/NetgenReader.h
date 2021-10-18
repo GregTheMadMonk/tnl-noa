@@ -70,7 +70,7 @@ public:
       std::vector< std::uint8_t > typesArray;
 
       // read points
-      worldDimension = 0;
+      spaceDimension = 0;
       for( std::size_t pointIndex = 0; pointIndex < NumberOfPoints; pointIndex++ ) {
          if( ! inputFile ) {
             reset();
@@ -78,7 +78,7 @@ public:
          }
          getline( inputFile, line );
 
-         // read the coordinates and compute the world dimension
+         // read the coordinates and compute the space dimension
          iss.clear();
          iss.str( line );
          for( int i = 0; i < 3; i++ ) {
@@ -89,13 +89,13 @@ public:
                aux = 0;
             }
             if( aux != 0.0 )
-               worldDimension = std::max( worldDimension, i + 1 );
+               spaceDimension = std::max( spaceDimension, i + 1 );
             pointsArray.push_back( aux );
          }
       }
 
       // netgen supports only triangular and tetrahedral meshes
-      meshDimension = worldDimension;
+      meshDimension = spaceDimension;
       if( meshDimension == 1 )
          cellShape = VTK::EntityShape::Line;
       else if( meshDimension == 2 )

@@ -102,7 +102,7 @@ class VTIReader
             dim++;
          else
             break;
-      worldDimension = meshDimension = dim;
+      spaceDimension = meshDimension = dim;
 
       // populate cellShape (just for completeness, not necessary for GridTypeResolver)
       if( meshDimension == 1 )
