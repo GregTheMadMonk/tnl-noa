@@ -20,10 +20,9 @@ struct MeshConfigTemplateTag< MyConfigTag >
    struct MeshConfig
       : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
+         return subentityDimension == 0 && entityDimension >= Cell::dimension - 1;
       }
    };
 };

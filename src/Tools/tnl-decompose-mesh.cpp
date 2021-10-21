@@ -81,24 +81,21 @@ struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
       static constexpr int spaceDimension = SpaceDimension;
       static constexpr int meshDimension = Cell::dimension;
 
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
          // subvertices of faces are needed due to cell boundary tags
-         return SubentityDimension == 0 && EntityTopology::dimension >= meshDimension - 1;
+         return subentityDimension == 0 && entityDimension >= meshDimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
       {
          // superentities from faces to cells are needed due to cell boundary tags
-         return SuperentityDimension == meshDimension && EntityTopology::dimension == meshDimension - 1;
+         return superentityDimension == meshDimension && entityDimension == meshDimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool entityTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( int entityDimension )
       {
-         return EntityTopology::dimension >= meshDimension - 1;
+         return entityDimension >= meshDimension - 1;
       }
 
       static constexpr bool dualGraphStorage()

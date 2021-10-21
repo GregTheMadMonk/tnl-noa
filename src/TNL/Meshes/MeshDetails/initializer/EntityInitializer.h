@@ -29,21 +29,16 @@ template< typename MeshConfig,
           typename SubdimensionTag,
           typename SuperdimensionTag,
           // storage in the superentity
-          bool SubentityStorage =
-               MeshConfig::subentityStorage( typename MeshTraits< MeshConfig >::template EntityTraits< SuperdimensionTag::value >::EntityTopology(),
-                                             SubdimensionTag::value ),
+          bool SubentityStorage = MeshConfig::subentityStorage( SuperdimensionTag::value, SubdimensionTag::value ),
           // storage in the subentity
-          bool SuperentityStorage =
-               MeshConfig::superentityStorage( typename MeshTraits< MeshConfig >::template EntityTraits< SubdimensionTag::value >::EntityTopology(),
-                                               SuperdimensionTag::value ),
+          bool SuperentityStorage = MeshConfig::superentityStorage( SubdimensionTag::value, SuperdimensionTag::value ),
           // necessary to disambiguate the stop condition for specializations
           bool valid_dimension = ! std::is_same< SubdimensionTag, SuperdimensionTag >::value >
 class EntityInitializerLayer;
 
 template< typename MeshConfig,
           typename EntityTopology,
-          bool SubvertexStorage =
-               MeshConfig::subentityStorage( typename MeshTraits< MeshConfig >::template EntityTraits< EntityTopology::dimension >::EntityTopology(), 0 ) >
+          bool SubvertexStorage = MeshConfig::subentityStorage( EntityTopology::dimension, 0 ) >
 class EntityInitializer
    : public EntityInitializerLayer< MeshConfig,
                                     DimensionTag< EntityTopology::dimension >,

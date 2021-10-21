@@ -34,7 +34,7 @@ public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
    static_assert( EntityTopology::dimension < Dimension, "Superentity dimension must be higher than the entity dimension." );
 
-   static constexpr bool storageEnabled = MeshConfig::template superentityStorage< EntityTopology >( EntityTopology(), Dimension );
+   static constexpr bool storageEnabled = MeshConfig::superentityStorage( EntityTopology::dimension, Dimension );
 
    using SuperentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;
    using SuperentityType     = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityType;

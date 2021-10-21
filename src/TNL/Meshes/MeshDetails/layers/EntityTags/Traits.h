@@ -22,8 +22,7 @@ template< typename MeshConfig,
           bool sensible = (DimensionTag::value <= MeshConfig::meshDimension) >
 struct WeakStorageTrait
 {
-   using EntityTopology = typename MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::EntityTopology;
-   static constexpr bool entityTagsEnabled = MeshConfig::entityTagsStorage( EntityTopology() );
+   static constexpr bool entityTagsEnabled = MeshConfig::entityTagsStorage( DimensionTag::value );
 };
 
 template< typename MeshConfig,

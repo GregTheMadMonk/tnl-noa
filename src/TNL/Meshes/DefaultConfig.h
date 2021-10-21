@@ -42,8 +42,7 @@ struct DefaultConfig
    /****
     * Storage of subentities of mesh entities.
     */
-   template< typename EntityTopology >
-   static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
    {
       return true;
       // Subvertices must be stored for all entities which appear in other
@@ -54,8 +53,7 @@ struct DefaultConfig
    /****
     * Storage of superentities of mesh entities.
     */
-   template< typename EntityTopology >
-   static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
    {
       return true;
    }
@@ -69,12 +67,10 @@ struct DefaultConfig
     *    - if dim(entity) < dim(face), the entities on which the tags are stored
     *      must be stored as subentities of faces
     */
-   template< typename EntityTopology >
-   static constexpr bool entityTagsStorage( EntityTopology )
+   static constexpr bool entityTagsStorage( int entityDimension )
    {
-      using FaceTopology = typename Topologies::Subtopology< CellTopology, meshDimension - 1 >::Topology;
-      return superentityStorage( FaceTopology(), meshDimension ) &&
-             ( EntityTopology::dimension >= meshDimension - 1 || subentityStorage( FaceTopology(), EntityTopology::dimension ) );
+      return superentityStorage( meshDimension - 1, meshDimension ) &&
+             ( entityDimension >= meshDimension - 1 || subentityStorage( meshDimension - 1, entityDimension ) );
       //return false;
    }
 

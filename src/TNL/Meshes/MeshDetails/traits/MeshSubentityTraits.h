@@ -36,7 +36,7 @@ public:
    static_assert( 0 <= Dimension && Dimension <= MeshConfig::meshDimension, "invalid dimension" );
    static_assert( EntityTopology::dimension > Dimension, "Subentity dimension must be smaller than the entity dimension." );
 
-   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimension );
+   static constexpr bool storageEnabled = MeshConfig::subentityStorage( EntityTopology::dimension, Dimension );
    static constexpr int count = Topologies::Subtopology< EntityTopology, Dimension >::count;
 
    using SubentityTopology = typename MeshEntityTraits< MeshConfig, Device, Dimension >::EntityTopology;

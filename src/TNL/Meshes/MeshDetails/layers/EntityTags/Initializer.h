@@ -35,16 +35,14 @@ protected:
    template< typename CurrentDimension = DimensionTag< MeshConfig::meshDimension >, typename _T = void >
    struct EntityTagsNeedInitialization
    {
-      using EntityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, CurrentDimension::value >::EntityTopology;
-      static constexpr bool value = MeshConfig::entityTagsStorage( EntityTopology() ) ||
+      static constexpr bool value = MeshConfig::entityTagsStorage( CurrentDimension::value ) ||
                                     EntityTagsNeedInitialization< typename CurrentDimension::Decrement >::value;
    };
 
    template< typename _T >
    struct EntityTagsNeedInitialization< DimensionTag< 0 >, _T >
    {
-      using EntityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, 0 >::EntityTopology;
-      static constexpr bool value = MeshConfig::entityTagsStorage( EntityTopology() );
+      static constexpr bool value = MeshConfig::entityTagsStorage( 0 );
    };
 
    template< int Dimension >
@@ -80,8 +78,7 @@ protected:
    template< int Subdimension >
    class InitializeSubentities
    {
-      using SubentityTopology = typename MeshEntityTraits< MeshConfig, DeviceType, Subdimension >::EntityTopology;
-      static constexpr bool enabled = MeshConfig::entityTagsStorage( SubentityTopology() );
+      static constexpr bool enabled = MeshConfig::entityTagsStorage( Subdimension );
 
       // _T is necessary to force *partial* specialization, since explicit specializations
       // at class scope are forbidden

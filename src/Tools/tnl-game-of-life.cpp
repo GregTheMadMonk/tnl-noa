@@ -62,24 +62,21 @@ struct MeshConfigTemplateTag< MyConfigTag >
    struct MeshConfig
       : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
+         return subentityDimension == 0 && entityDimension >= Cell::dimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
       {
 //         return false;
-         return (EntityTopology::dimension == 0 || EntityTopology::dimension == Cell::dimension - 1) && SuperentityDimension == Cell::dimension;
+         return (entityDimension == 0 || entityDimension == Cell::dimension - 1) && superentityDimension == Cell::dimension;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool entityTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( int entityDimension )
       {
 //         return false;
-         return EntityTopology::dimension == 0 || EntityTopology::dimension >= Cell::dimension - 1;
+         return entityDimension == 0 || entityDimension >= Cell::dimension - 1;
       }
 
       static constexpr bool dualGraphStorage()

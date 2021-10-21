@@ -90,9 +90,9 @@ public:
    using Face = typename MeshType::template EntityType< getMeshDimension() - 1 >;
    using Vertex = typename MeshType::template EntityType< 0 >;
 
-   static_assert( Mesh::Config::entityTagsStorage( typename Cell::EntityTopology{} ),
+   static_assert( Mesh::Config::entityTagsStorage( getMeshDimension() ),
                   "DistributedMesh must store entity tags on cells" );
-   static_assert( Mesh::Config::entityTagsStorage( typename Vertex::EntityTopology{} ),
+   static_assert( Mesh::Config::entityTagsStorage( 0 ),
                   "DistributedMesh must store entity tags on vertices" );
 
 

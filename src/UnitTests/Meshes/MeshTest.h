@@ -30,33 +30,29 @@ using IndexType = int;
 class TestTriangleMeshConfig : public DefaultConfig< Topologies::Triangle >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
 class TestQuadrangleMeshConfig : public DefaultConfig< Topologies::Quadrangle >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
 class TestTetrahedronMeshConfig : public DefaultConfig< Topologies::Tetrahedron >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
 class TestHexahedronMeshConfig : public DefaultConfig< Topologies::Hexahedron >
 {
 public:
-   static constexpr bool entityStorage( int dimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool subentityStorage( EntityTopology, int SubentityDimensions ) { return true; }
-   template< typename EntityTopology > static constexpr bool superentityStorage( EntityTopology, int SuperentityDimensions ) { return true; }
+   static constexpr bool subentityStorage( int entityDimension, int subentityDimension ) { return true; }
+   static constexpr bool superentityStorage( int entityDimension, int superentityDimension ) { return true; }
 };
 
 template< typename Object1, typename Object2 >

@@ -75,20 +75,17 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
       static constexpr int spaceDimension = SpaceDimension;
       static constexpr int meshDimension = Cell::dimension;
 
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension == meshDimension;
+         return subentityDimension == 0 && entityDimension == meshDimension;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
       {
          return false;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool entityTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( int entityDimension )
       {
          return false;
       }
