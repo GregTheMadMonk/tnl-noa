@@ -520,7 +520,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
       }
       return identity;
    };
-   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -549,7 +549,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
       }
       return identity;
    };
-   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,

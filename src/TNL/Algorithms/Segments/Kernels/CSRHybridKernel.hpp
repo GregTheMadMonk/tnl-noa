@@ -111,7 +111,7 @@ void reduceSegmentsCSRHybridMultivectorKernel(
     Index localIdx = laneIdx;
     for( Index globalIdx = beginIdx + laneIdx; globalIdx < endIdx && compute; globalIdx += ThreadsPerSegment )
     {
-       result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
+       result = reduce( result, detail::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
        localIdx += ThreadsPerSegment;
     }
     result += __shfl_down_sync(0xFFFFFFFF, result, 16);

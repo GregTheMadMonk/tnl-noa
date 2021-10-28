@@ -485,7 +485,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
-   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -502,11 +502,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
-<<<<<<< HEAD
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
-=======
-   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, zero );
->>>>>>> Renaming segmentsReduction to reduceSegments.
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,

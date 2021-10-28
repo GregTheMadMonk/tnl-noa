@@ -168,7 +168,8 @@ setSegmentsSizes( const SizesHolder& sizes )
       slice_segment_size_view[ i ] = res;
    };
    ellpack.reduceAllSegments( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
-   this->sliceOffsets.template scan< Algorithms::ScanType::Exclusive >();
+   Algorithms::inplaceExclusiveScan( this->sliceOffsets );
+   //this->sliceOffsets.template exclusiveScan< Algorithms::detail::ScanType::Exclusive >();
    this->size = sum( sizes );
    this->alignedSize = this->sliceOffsets.getElement( slicesCount );
 }

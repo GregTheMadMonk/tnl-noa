@@ -65,7 +65,7 @@ class ChunkedEllpack
       using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
       using OffsetsHolderView = typename OffsetsContainer::ConstViewType;
       using SegmentsSizes = OffsetsContainer;
-      using ChunkedEllpackSliceInfoType = details::ChunkedEllpackSliceInfo< IndexType >;
+      using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ConstViewType;
@@ -233,7 +233,7 @@ class ChunkedEllpack
 #ifdef HAVE_CUDA
 template< typename Index,
           typename Fetch,
-          bool HasAllParameters = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+          bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct ChunkedEllpackreduceSegmentsDispatcher{};
 
 template< typename Index, typename Fetch >

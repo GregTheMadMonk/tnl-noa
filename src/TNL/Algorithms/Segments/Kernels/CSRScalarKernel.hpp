@@ -26,7 +26,7 @@ template< typename Index,
           typename Fetch,
           typename Reduce,
           typename Keep,
-          bool DispatchScalarCSR = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+          bool DispatchScalarCSR = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct CSRScalarKernelreduceSegmentsDispatcher;
 
 template< typename Index,

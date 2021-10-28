@@ -12,7 +12,7 @@
 
 #include <functional>
 #include <sstream>
-#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/reduce.h>
 #include <TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
 
 namespace TNL {
@@ -253,7 +253,8 @@ setRowCapacities( const RowsCapacitiesVector& rowsCapacities )
       }
    }
    this->rowPointers.setElement( this->getRows(), 0 );
-   this->rowPointers.template scan< Algorithms::ScanType::Exclusive >();
+   Algorithms::inplaceExclusiveScan( this->rowPointers );
+   //this->rowPointers.template scan< Algorithms::ScanType::Exclusive >();
    // End of sparse matrix format initiation.
 
    // SANDBOX_TODO: Compute number of all elements that need to be allocated by your format.

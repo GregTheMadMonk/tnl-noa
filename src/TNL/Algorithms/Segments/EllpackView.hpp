@@ -98,7 +98,7 @@ template< typename Index,
           typename Reduction,
           typename ResultKeeper,
           typename Real,
-          bool FullFetch = details::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
+          bool FullFetch = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
 struct EllpackCudaReductionDispatcher
 {
    static void
@@ -393,7 +393,7 @@ void EllpackView< Device, Index, Organization, Alignment >::
 reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
    //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >() ) );
-   using RealType = typename details::FetchLambdaAdapter< Index, Fetch >::ReturnType;
+   using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( Organization == RowMajorOrder )
    {
       if( std::is_same< Device, Devices::Cuda >::value )
@@ -404,11 +404,11 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
          auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
             const IndexType begin = segmentIdx * segmentSize;
             const IndexType end = begin + segmentSize;
-            RealType aux( zero );
+            Real aux( zero );
             IndexType localIdx( 0 );
             bool compute( true );
             for( IndexType j = begin; j < end && compute; j++  )
-               aux = reduction( aux, details::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
+               aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, j, compute ) );
             keeper( segmentIdx, aux );
          };
          Algorithms::ParallelFor< Device >::exec( first, last, l );

@@ -16,7 +16,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/details/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
 #include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
@@ -228,7 +228,7 @@ class ChunkedEllpackView
                                                   Real_ zero );
 
       template< typename Index_, typename Fetch_, bool B_ >
-      friend struct details::ChunkedEllpackreduceSegmentsDispatcher;
+      friend struct detail::ChunkedEllpackreduceSegmentsDispatcher;
 #endif
 };
       } // namespace Segments

@@ -349,7 +349,7 @@ template< typename Device,
 auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
-   return details::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
+   return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
       rowToSliceMapping.getConstView(),
       slices.getConstView(),
       rowToChunkMapping.getConstView(),

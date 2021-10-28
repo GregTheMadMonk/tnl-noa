@@ -15,7 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
-#include <TNL/Algorithms/Segments/details/BiEllpack.h>
+#include <TNL/Algorithms/Segments/detail/BiEllpack.h>
 #include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
@@ -205,7 +205,7 @@ class BiEllpackView
                                              Real_ zero );
 
       template< typename Index_, typename Fetch_, int BlockDim_, int WarpSize_, bool B_ >
-      friend struct details::BiEllpackreduceSegmentsDispatcher;
+      friend struct detail::BiEllpackreduceSegmentsDispatcher;
 #endif
 };
 

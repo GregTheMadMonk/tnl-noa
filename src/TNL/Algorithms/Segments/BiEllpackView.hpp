@@ -425,7 +425,7 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
          dim3 cudaGridSize = Cuda::getMaxGridSize();
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         details::BiEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim  >
+         detail::BiEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
          cudaThreadSynchronize();

@@ -14,7 +14,7 @@
 #include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Algorithms/Segments/details/LambdaAdapter.h>
+#include <TNL/Algorithms/Segments/detail/LambdaAdapter.h>
 #include <TNL/Algorithms/Segments/Kernels/CSRLightKernel.h>
 
 namespace TNL {
@@ -317,7 +317,7 @@ void reduceSegmentsCSRLightMultivectorKernel(
     Index localIdx = laneIdx;
     for( Index globalIdx = beginIdx + laneIdx; globalIdx < endIdx && compute; globalIdx += ThreadsPerSegment )
     {
-       result = reduce( result, details::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
+       result = reduce( result, detail::FetchLambdaAdapter< Index, Fetch >::call( fetch, segmentIdx, localIdx, globalIdx, compute ) );
        localIdx += ThreadsPerSegment;
     }
     result += __shfl_down_sync(0xFFFFFFFF, result, 16);
@@ -377,7 +377,7 @@ template< typename Index,
           typename Reduce,
           typename Keep,
           bool DispatchScalarCSR =
-            details::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
+            detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() ||
             std::is_same< Device, Devices::Host >::value >
 struct CSRLightKernelreduceSegmentsDispatcher;
 

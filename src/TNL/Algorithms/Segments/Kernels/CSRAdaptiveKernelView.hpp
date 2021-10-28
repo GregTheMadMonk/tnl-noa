@@ -237,7 +237,7 @@ struct CSRAdaptiveKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reductio
 
       Index blocksCount;
 
-      const Index threads = details::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
+      const Index threads = detail::CSRAdaptiveKernelParameters< sizeof( Real ) >::CudaBlockSize();
       constexpr size_t maxGridSize = TNL::Cuda::getMaxGridXSize();
 
       // Fill blocks
