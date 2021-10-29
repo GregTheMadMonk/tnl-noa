@@ -62,7 +62,7 @@ void forElements( const int matrixSize, Matrix& matrix )
 {
    matrix.setDimensions( matrixSize, matrixSize );
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value ) mutable {
       value = rowIdx + columnIdx;
    };
    matrix.forElements( 0, matrixSize, f );

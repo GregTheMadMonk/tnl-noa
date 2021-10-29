@@ -16,6 +16,7 @@
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/BiEllpackSegmentView.h>
 #include <TNL/Algorithms/Segments/detail/BiEllpack.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -32,7 +33,7 @@ class BiEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = BiEllpackView;
       template< typename Device_, typename Index_ >
@@ -121,22 +122,25 @@ class BiEllpackView
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       BiEllpackView& operator=( const BiEllpackView& view );
 
       void save( File& file ) const;
 
       void load( File& file );
+
+      template< typename Fetch >
+      SegmentsPrinter< BiEllpackView, Fetch > print( Fetch&& fetch ) const;
 
       void printStructure( std::ostream& str ) const;
 
@@ -159,33 +163,29 @@ class BiEllpackView
                 typename Reduction,
                 typename ResultKeeper,
                 typename Real,
-                int BlockDim,
-                typename... Args >
+                int BlockDim >
       __device__
-      void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+      void reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                                      IndexType first,
                                                      IndexType last,
                                                      Fetch fetch,
                                                      Reduction reduction,
                                                      ResultKeeper keeper,
-                                                     Real zero,
-                                                     Args... args ) const;
+                                                     Real zero ) const;
 
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
                 typename Real_,
-                int BlockDim,
-                typename... Args >
+                int BlockDim >
       __device__
-      void segmentsReductionKernel( IndexType gridIdx,
+      void reduceSegmentsKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
                                     Fetch fetch,
                                     Reduction reduction,
                                     ResultKeeper keeper,
-                                    Real_ zero,
-                                    Args... args ) const;
+                                    Real_ zero ) const;
 
       template< typename View_,
                 typename Index_,
@@ -193,23 +193,29 @@ class BiEllpackView
                 typename Reduction_,
                 typename ResultKeeper_,
                 typename Real_,
-                int BlockDim,
-                typename... Args_ >
+                int BlockDim >
       friend __global__
-      void BiEllpackSegmentsReductionKernel( View_ chunkedEllpack,
+      void BiEllpackreduceSegmentsKernel( View_ chunkedEllpack,
                                              Index_ gridIdx,
                                              Index_ first,
                                              Index_ last,
                                              Fetch_ fetch,
                                              Reduction_ reduction,
                                              ResultKeeper_ keeper,
-                                             Real_ zero,
-                                             Args_... args );
+                                             Real_ zero );
 
       template< typename Index_, typename Fetch_, int BlockDim_, int WarpSize_, bool B_ >
-      friend struct detail::BiEllpackSegmentsReductionDispatcher;
+      friend struct detail::BiEllpackreduceSegmentsDispatcher;
 #endif
 };
+
+template <typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
+std::ostream& operator<<( std::ostream& str, const BiEllpackView< Device, Index, Organization, WarpSize >& segments ) { return printSegments( str, segments ); }
+
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

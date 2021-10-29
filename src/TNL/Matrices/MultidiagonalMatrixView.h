@@ -363,16 +363,28 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       *  The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -386,22 +398,34 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity ) const;
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       /**
        * \brief Method for performing general reduction on matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param fetch is an instance of lambda function for data fetch.
        * \param reduce is an instance of lambda function for reduction.
        * \param keep in an instance of lambda function for storing results.
@@ -415,18 +439,30 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_reduceRows.out
        */
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
-      void reduceRows( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& identity );
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero );
 
       /**
        * \brief Method for performing general reduction on all matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
-       * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
+       * \tparam Keep is a type of lambda function for storing results of reduction in each row. It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -448,10 +484,18 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \brief Method for performing general reduction on all matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType& columnIdx, RealType& elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
        *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
        * \tparam FetchValue is type returned by the Fetch lambda function.
@@ -474,10 +518,11 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for iteration over all matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
        *
        * where
        *
@@ -486,15 +531,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
        *  index of the matrix subdiagonal.
        *
-       * \e columnIdx is a column index of the matrx element.
+       * \e columnIdx is a column index of the matrix element.
        *
        * \e value is the matrix element value.
        *
-       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
-       *  be interrupted.
-       *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
@@ -503,15 +545,16 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType first, IndexType last, Function& function ) const;
+      void forElements( IndexType begin, IndexType end, Function& function ) const;
 
       /**
        * \brief Method for iteration over all matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       *  `function( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value, bool& compute )`,
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType columnIdx, const RealType& value ) { ... };
+       * ```
        *
        * where
        *
@@ -520,15 +563,12 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \e localIdx parameter is a rank of the non-zero element in given row. It is also, in fact,
        *  index of the matrix subdiagonal.
        *
-       * \e columnIdx is a column index of the matrx element.
+       * \e columnIdx is a column index of the matrix element.
        *
        * \e value is a reference to the matrix element value. It can be used even for changing the matrix element value.
        *
-       * \e compute is a reference to a boolen variable. If it is set to false the iteration over the row can
-       *  be interrupted.
-       *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        *
        * \par Example
@@ -537,7 +577,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        * \include MultidiagonalMatrixViewExample_forRows.out
        */
       template< typename Function >
-      void forElements( IndexType first, IndexType last, Function& function );
+      void forElements( IndexType begin, IndexType end, Function& function );
 
       /**
        * \brief This method calls \e forElements for all matrix rows (for constant instances).
@@ -674,15 +714,16 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for sequential iteration over all matrix rows for constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * ```
+       * auto function = [] __cuda_callable__ ( const RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \param begin defines beginning of the range [ \e begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
@@ -691,15 +732,16 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       /**
        * \brief Method for sequential iteration over all matrix rows for non-constant instances.
        *
-       * \tparam Function is type of lambda function that will operate on matrix elements.
-       *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
+       * \tparam Function is type of lambda function that will operate on matrix elements. It is should have form like
        *
-       * \param begin defines beginning of the range [begin,end) of rows to be processed.
-       * \param end defines ending of the range [begin,end) of rows to be processed.
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::MultidiagonalMatrixView::RowView.
+       *
+       * \param begin defines beginning of the range [ \e  begin, \e end ) of rows to be processed.
+       * \param end defines ending of the range [ \e begin, \e end ) of rows to be processed.
        * \param function is an instance of the lambda function to be called in each row.
        */
       template< typename Function >
@@ -732,7 +774,9 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * More precisely, it computes:
        *
-       * `outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector`
+       * ```
+       * outVector = matrixMultiplicator * ( * this ) * inVector + outVectorMultiplicator * outVector
+       * ```
        *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
@@ -755,8 +799,8 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
                           OutVector& outVector,
                           const RealType matrixMultiplicator = 1.0,
                           const RealType outVectorMultiplicator = 0.0,
-                          const IndexType firstRow = 0,
-                          IndexType lastRow = 0 ) const;
+                          const IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_ >
       void addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, Organization_ >& matrix,

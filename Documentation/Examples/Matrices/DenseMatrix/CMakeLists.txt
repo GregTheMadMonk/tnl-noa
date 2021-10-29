@@ -26,6 +26,7 @@ set( COMMON_EXAMPLES
     DenseMatrixViewExample_forElements
     DenseMatrixViewExample_forRows
     DenseMatrixViewExample_forAllElements
+    DenseMatrixViewExample_wrap
 )
 
 if( BUILD_CUDA )

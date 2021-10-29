@@ -49,7 +49,7 @@ void
 ArrayView< Value, Device, Index >::
 bind( ValueType* data, IndexType size )
 {
-   TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
+   TNL_ASSERT_GE( size, ( IndexType ) 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
                     "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 

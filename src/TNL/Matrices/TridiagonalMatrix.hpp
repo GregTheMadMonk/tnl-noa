@@ -717,7 +717,7 @@ operator=( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealA
       if( std::is_same< Device, Device_ >::value )
       {
          const auto matrix_view = matrix.getView();
-         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
          this->forAllElements( f );
@@ -727,7 +727,7 @@ operator=( const TridiagonalMatrix< Real_, Device_, Index_, Organization_, RealA
          TridiagonalMatrix< Real, Device, Index, Organization_ > auxMatrix;
          auxMatrix = matrix;
          const auto matrix_view = auxMatrix.getView();
-         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value, bool& compute ) mutable {
+         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
             value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
          };
          this->forAllElements( f );

@@ -97,7 +97,7 @@ void setCudaTestMatrix( Matrix& matrix,
 template< typename Real,
           template< typename, typename, typename > class Matrix >
 void
-benchmarkSpMV( Benchmark & benchmark,
+benchmarkSpMV( Benchmark<> & benchmark,
                const int & size,
                const int elementsPerRow = 5 )
 {
@@ -173,7 +173,7 @@ benchmarkSpMV( Benchmark & benchmark,
 template< typename Real = double,
           typename Index = int >
 void
-benchmarkSpmvSynthetic( Benchmark & benchmark,
+benchmarkSpmvSynthetic( Benchmark<> & benchmark,
                         const int & size,
                         const int & elementsPerRow )
 {

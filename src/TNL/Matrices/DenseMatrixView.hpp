@@ -19,6 +19,194 @@
 namespace TNL {
 namespace Matrices {
 
+#ifdef HAVE_CUDA
+/**
+ * The following kernel is an attempt to map more CUDA threads to one matrix row.
+ */
+template< int BlockSize, int ThreadsPerRow, typename Matrix, typename InVector, typename OutVector >
+__global__ void
+VectorColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int begin, const int end, int gridIdx )
+{
+   using Real = typename Matrix::RealType;
+   using Index = typename Matrix::IndexType;
+   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   __shared__ Real inVectorCache[ inVectorCacheSize ];
+   __shared__ Real result_[ BlockSize ];
+
+   constexpr Index rowsPerBlock = 256 / ThreadsPerRow;
+   const Index rowIdx = ( ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x ) / ThreadsPerRow + begin;
+   const Index localColIdx = threadIdx.x / rowsPerBlock;
+   const Index localRowIdx = threadIdx.x % rowsPerBlock;
+
+   Real result( 0.0 );
+   Index columnIdx( 0 );
+   const auto& values = matrix.getValues();
+   const auto& rowsCount = matrix.getRows();
+   Index valuesPtr = rowIdx + localColIdx * rowsCount;
+
+   while( columnIdx < matrix.getColumns() )
+   {
+      const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
+      Index matrixColIdx = columnIdx + threadIdx.x;
+      Index cacheColIdx = threadIdx.x;
+      while( matrixColIdx < lastIdx )
+      {
+         inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
+         cacheColIdx += 256;
+         matrixColIdx += 256;
+      }
+      __syncthreads();
+
+      matrixColIdx = columnIdx + localColIdx;
+      cacheColIdx = localColIdx;
+      if( rowIdx < end )
+         while( matrixColIdx < lastIdx )
+         {
+            result += values[ valuesPtr ] * inVectorCache[ cacheColIdx ];
+            cacheColIdx += ThreadsPerRow;
+            matrixColIdx += ThreadsPerRow;
+            valuesPtr += ThreadsPerRow * rowsCount;
+         }
+      columnIdx = lastIdx;
+   }
+   const int idx = localRowIdx * ThreadsPerRow + localColIdx;
+   result_[ idx ] = result;
+   if( ThreadsPerRow > 8 && localColIdx < ThreadsPerRow - 8 )
+      result_[ idx ] += result_[ idx + 8 ];
+   __syncwarp();
+   if( ThreadsPerRow > 4 && localColIdx < ThreadsPerRow - 4 )
+      result_[ idx ] += result_[ idx + 4 ];
+   __syncwarp();
+   if( ThreadsPerRow > 2 && localColIdx < ThreadsPerRow - 2 )
+      result_[ idx ] += result_[ idx + 2 ];
+   __syncwarp();
+   if( ThreadsPerRow > 1 && localColIdx < ThreadsPerRow - 1 )
+      result_[ idx ] += result_[ idx + 1 ];
+   __syncwarp();
+
+   if( rowIdx < end && localColIdx == 0 )
+      outVector[ rowIdx ] = result_[ idx ];
+}
+
+template< typename Matrix, typename InVector, typename OutVector >
+__global__ void
+ColumnMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int begin, const int end, int gridIdx )
+{
+   using Real = typename Matrix::RealType;
+   using Index = typename Matrix::IndexType;
+   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   __shared__ Real inVectorCache[ inVectorCacheSize ];
+
+   const int rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x + begin;
+
+   Real result( 0.0 );
+   Index columnIdx( 0 );
+   const auto& values = matrix.getValues();
+   const auto& rowsCount = matrix.getRows();
+   Index valuesPtr = rowIdx;
+
+   while( columnIdx < matrix.getColumns() )
+   {
+      const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
+      Index matrixColIdx = columnIdx + threadIdx.x;
+      Index cacheColIdx = threadIdx.x;
+      while( matrixColIdx < lastIdx )
+      {
+         inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
+         cacheColIdx += 256;
+         matrixColIdx += 256;
+      }
+      __syncthreads();
+
+      matrixColIdx = columnIdx;
+      cacheColIdx = 0;
+      if( rowIdx < end )
+         while( matrixColIdx < lastIdx )
+         {
+            result += values[ valuesPtr ] * inVectorCache[ cacheColIdx ];
+            cacheColIdx++;
+            matrixColIdx++;
+            valuesPtr += rowsCount;
+         }
+      columnIdx = lastIdx;
+   }
+   if( rowIdx < end )
+      outVector[ rowIdx ] = result;
+}
+
+template< typename Matrix, typename InVector, typename OutVector >
+__global__ void
+RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix, const InVector inVector, OutVector outVector, const int first, const int last, int gridIdx )
+{
+   using Real = typename Matrix::RealType;
+   using Index = typename Matrix::IndexType;
+   constexpr int  inVectorCacheSize = 20480 / sizeof( Real );
+   __shared__ Real inVectorCache[ inVectorCacheSize ];
+
+   constexpr int threadsPerRow = 32;
+   //const Index rowIdx = begin + ((gridIdx * TNL::Cuda::getMaxGridXSize() ) + (blockIdx.x * blockDim.x) + threadIdx.x) / threadsPerRow;
+   const Index rowIdx = first + ( ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * 256 + threadIdx.x ) /  threadsPerRow;
+
+   Real result = 0.0;
+   const Index laneID = threadIdx.x & 31; // & is cheaper than %
+   const Real* values = matrix.getValues().getData();
+
+   Index columnIdx( 0 );
+   /*while( columnIdx < matrix.getColumns() )
+   {
+      const Index lastIdx = min( matrix.getColumns(), columnIdx + inVectorCacheSize );
+      Index matrixColIdx = columnIdx + threadIdx.x;
+      Index cacheColIdx = threadIdx.x;
+      while( matrixColIdx < lastIdx )
+      {
+         inVectorCache[ cacheColIdx ] = inVector[ matrixColIdx ];
+         cacheColIdx += 256;
+         matrixColIdx += 256;
+      }
+      __syncthreads();
+
+      // Calculate result
+      if( rowIdx < last )
+      {
+         const Index begin = rowIdx * matrix.getColumns() + columnIdx;
+         const Index end = rowIdx * matrix.getColumns() + lastIdx;
+         Index localColumn( 0 );
+
+         for( Index i = begin + laneID; i < end; i += threadsPerRow, localColumn += threadsPerRow )
+            result += values[ i ] * inVectorCache[ localColumn ];
+      }
+      columnIdx = lastIdx;
+   }*/
+
+   if( rowIdx < last )
+   {
+      const Index begin = rowIdx * matrix.getColumns();
+      const Index end = begin + matrix.getColumns();
+
+      for( Index i = begin + laneID; i < end; i += threadsPerRow, columnIdx += threadsPerRow )
+         result += values[ i ] * inVector[ columnIdx ];
+   }
+
+   if( rowIdx < last )
+   {
+      // Reduction
+      if( threadsPerRow > 16 )
+         result += __shfl_down_sync(0xFFFFFFFF, result, 16 );
+      if( threadsPerRow > 8 )
+         result += __shfl_down_sync(0xFFFFFFFF, result,  8 );
+      if( threadsPerRow > 4 )
+         result += __shfl_down_sync(0xFFFFFFFF, result,  4 );
+      if( threadsPerRow > 2 )
+         result += __shfl_down_sync(0xFFFFFFFF, result,  2 );
+      if( threadsPerRow > 1 )
+         result += __shfl_down_sync(0xFFFFFFFF, result,  1 );
+      // Write result
+      if( laneID == 0 )
+         outVector[ rowIdx ] = result;
+   }
+}
+#endif
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -297,7 +485,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -314,7 +502,7 @@ reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, 
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return identity;
    };
-   this->segments.segmentsReduction( begin, end, fetch_, reduce, keep, identity );
+   this->segments.reduceSegments( begin, end, fetch_, reduce, keep, identity );
 }
 
 template< typename Real,
@@ -351,8 +539,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 forElements( IndexType begin, IndexType end, Function&& function ) const
 {
    const auto values_view = this->values.getConstView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ], compute );
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }
@@ -367,8 +555,8 @@ DenseMatrixView< Real, Device, Index, Organization >::
 forElements( IndexType begin, IndexType end, Function&& function )
 {
    auto values_view = this->values.getView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ], compute );
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable {
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
    };
    this->segments.forElements( begin, end, f );
 }
@@ -531,13 +719,85 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    if( end == 0 )
       end = this->getRows();
+
+   if( std::is_same< DeviceType, Devices::Cuda >::value &&
+      matrixMultiplicator == 1.0 && outVectorMultiplicator == 0.0 )
+   {
+#ifdef HAVE_CUDA
+      if( Organization == Algorithms::Segments::ColumnMajorOrder )
+      {
+         constexpr int BlockSize = 256;
+         constexpr int ThreadsPerRow = 1;
+         const size_t threadsCount = ( end - begin ) * ThreadsPerRow;
+         const size_t blocksCount = roundUpDivision( threadsCount, BlockSize );
+         const size_t gridsCount = roundUpDivision( blocksCount, Cuda::getMaxGridSize() );
+         const size_t sharedMemSize = 20480;
+         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ )
+         {
+            dim3 blocks( Cuda::getMaxGridSize() );
+            if( gridIdx == gridsCount - 1 )
+               blocks = blocksCount % Cuda::getMaxGridSize();
+            ColumnMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize, sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
+         }
+         TNL_CHECK_CUDA_DEVICE;
+         return;
+      }
+      if( Organization == Algorithms::Segments::RowMajorOrder )
+      {
+         constexpr int BlockSize = 256;
+         constexpr int ThreadsPerRow = 32;
+         const size_t threadsCount = ( end - begin ) * ThreadsPerRow;
+         const size_t blocksCount = roundUpDivision( threadsCount, BlockSize );
+         const size_t gridsCount = roundUpDivision( blocksCount, Cuda::getMaxGridSize() );
+         const size_t sharedMemSize = 20480;
+         for( size_t gridIdx = 0; gridIdx < gridsCount; gridIdx++ )
+         {
+            dim3 blocks( Cuda::getMaxGridSize() );
+            if( gridIdx == gridsCount - 1 )
+               blocks = blocksCount % Cuda::getMaxGridSize();
+            RowMajorDenseMatrixViewVectorMultiplicationKernel<<< blocks, BlockSize, sharedMemSize >>>( *this, inVectorView, outVectorView, begin, end, gridIdx );
+         }
+         TNL_CHECK_CUDA_DEVICE;
+         return;
+      }
+
+#endif
+   }
+
+   /***
+    * The rest is general implementation based on segments
+    */
+
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
       return valuesView[ offset ] * inVectorView[ column ];
    };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+   auto keeperGeneral = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = matrixMultiplicator * value + outVectorMultiplicator * outVectorView[ row ];
    };
-   this->segments.segmentsReduction( begin, end, fetch, std::plus<>{}, keeper, ( RealType ) 0.0 );
+   auto keeperDirect = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   auto keeperMatrixMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = matrixMultiplicator * value;
+   };
+   auto keeperVectorMult = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + value;
+   };
+
+   if( outVectorMultiplicator == 0.0 )
+   {
+      if( matrixMultiplicator == 1.0 )
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperDirect, ( RealType ) 0.0 );
+      else
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperMatrixMult, ( RealType ) 0.0 );
+   }
+   else
+   {
+      if( matrixMultiplicator == 1.0 )
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperVectorMult, ( RealType ) 0.0 );
+      else
+         this->segments.reduceSegments( begin, end, fetch, std::plus<>{}, keeperGeneral, ( RealType ) 0.0 );
+   }
 }
 
 template< typename Real,
@@ -780,6 +1040,63 @@ operator=( const DenseMatrixView& matrix )
    this->segments = matrix.segments;
    return *this;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return( this->getRows() == matrix.getRows() &&
+           this->getColumns() == matrix.getColumns() &&
+           this->getValues() == matrix.getValues() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return ! ( *this == matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Matrix >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator==( const Matrix& m ) const
+{
+   const auto& view1 = *this;
+   const auto view2 = m.getConstView();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> bool
+   {
+      return view1.getRow( i ) == view2.getRow( i );
+   };
+   return Algorithms::reduce< DeviceType >( ( IndexType ) 0, this->getRows(), fetch, std::logical_and<>{}, true );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization >
+   template< typename Matrix >
+bool
+DenseMatrixView< Real, Device, Index, Organization >::
+operator!=( const Matrix& m ) const
+{
+   return ! ( *this == m );
+}
+
 
 template< typename Real,
           typename Device,

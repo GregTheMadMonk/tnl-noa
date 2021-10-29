@@ -168,7 +168,7 @@ void forElements( const int gridSize, Matrix& matrix )
    matrix.setDimensions( matrixSize, matrixSize );
    matrix.setRowCapacities( rowCapacities );
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int& columnIdx, float& value ) mutable {
       const int i = rowIdx % gridSize;
       const int j = rowIdx / gridSize;
       if( ( i == 0 || j == 0 || i == gridSize - 1 || j == gridSize - 1 ) && localIdx == 0 )

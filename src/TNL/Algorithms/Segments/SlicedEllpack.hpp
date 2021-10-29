@@ -37,11 +37,25 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
+   template< typename SizesContainer >
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
+SlicedEllpack( const SizesContainer& segmentsSizes )
    : size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
 {
-   this->setSegmentsSizes( sizes );
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+   template< typename ListIndex >
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes )
+   : size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,
@@ -79,6 +93,7 @@ String
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and Alignment parameters, so it should be reflected in the serialization type
    return "SlicedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -152,8 +167,9 @@ setSegmentsSizes( const SizesHolder& sizes )
       slices_view[ i ] = res * SliceSize;
       slice_segment_size_view[ i ] = res;
    };
-   ellpack.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
-   inplaceExclusiveScan( this->sliceOffsets );
+   ellpack.reduceAllSegments( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
+   Algorithms::inplaceExclusiveScan( this->sliceOffsets );
+   //this->sliceOffsets.template exclusiveScan< Algorithms::detail::ScanType::Exclusive >();
    this->size = sum( sizes );
    this->alignedSize = this->sliceOffsets.getElement( slicesCount );
 }
@@ -328,9 +344,9 @@ template< typename Device,
    template< typename Function >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,
@@ -338,12 +354,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -351,12 +367,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -407,6 +423,19 @@ load( File& file )
    file.load( &segmentsCount );
    file >> this->sliceOffsets;
    file >> this->sliceSegmentSizes;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+      template< typename Fetch >
+auto
+SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< SlicedEllpack, Fetch >
+{
+   return SegmentsPrinter< SlicedEllpack, Fetch >( *this, fetch );
 }
 
       } // namespace Segments

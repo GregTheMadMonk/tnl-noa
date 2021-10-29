@@ -35,11 +35,25 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
+   template< typename SizesContainer >
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-Ellpack( const SegmentsSizes& segmentsSizes )
+Ellpack( const SizesContainer& segmentsSizes )
    : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
 {
    this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+   template< typename ListIndex >
+Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
+Ellpack( const std::initializer_list< ListIndex >& segmentsSizes )
+   : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,
@@ -85,6 +99,7 @@ String
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and Alignment parameters, so it should be reflected in the serialization type
    return "Ellpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -294,9 +309,9 @@ template< typename Device,
    template< typename Function >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,
@@ -304,12 +319,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -317,12 +332,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -367,6 +382,19 @@ load( File& file )
    file.load( &segmentSize );
    file.load( &size );
    file.load( &alignedSize );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+      template< typename Fetch >
+auto
+Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< Ellpack, Fetch >
+{
+   return SegmentsPrinter< Ellpack, Fetch >( *this, fetch );
 }
 
       } // namespace Segments

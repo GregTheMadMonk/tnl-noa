@@ -26,10 +26,23 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
+   template< typename SizesContainer >
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-BiEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
+BiEllpack( const SizesContainer& segmentsSizes )
 {
-   this->setSegmentsSizes( sizes );
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+   template< typename ListIndex >
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+BiEllpack( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,
@@ -71,6 +84,7 @@ String
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and WarpSize parameters, so it should be reflected in the serialization type
    return "BiEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -486,9 +500,9 @@ template< typename Device,
    template< typename Function >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 
@@ -497,12 +511,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -510,12 +524,12 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -566,6 +580,19 @@ load( File& file )
    file.load( &this->virtualRows );
    file >> this->rowPermArray
         >> this->groupPointers;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+      template< typename Fetch >
+auto
+BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< BiEllpack, Fetch >
+{
+   return SegmentsPrinter< BiEllpack, Fetch >( *this, fetch );
 }
 
 template< typename Device,

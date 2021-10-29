@@ -31,8 +31,8 @@ class Ellpack
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
       static constexpr ElementsOrganization getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using SegmentsSizes = OffsetsHolder;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsContainer;
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
       using ViewType = EllpackView< Device, Index, Organization, Alignment >;
@@ -43,7 +43,11 @@ class Ellpack
 
       Ellpack();
 
-      Ellpack( const SegmentsSizes& sizes );
+      template< typename SizesContainer >
+      Ellpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      Ellpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
       Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
 
@@ -62,7 +66,7 @@ class Ellpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
@@ -106,16 +110,16 @@ class Ellpack
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       Ellpack& operator=( const Ellpack& source ) = default;
 
@@ -126,10 +130,20 @@ class Ellpack
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< Ellpack, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType segmentSize, size, alignedSize;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int Alignment >
+std::ostream& operator<<( std::ostream& str, const Ellpack< Device, Index, IndexAllocator, Organization, Alignment >& segments ) { return printSegments( segments, str ); }
 
       } // namespace Segments
    }  // namespace Algorithms

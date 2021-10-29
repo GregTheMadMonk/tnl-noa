@@ -15,6 +15,7 @@
 #include <TNL/Matrices/DenseMatrixView.h>
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/SparseMatrixView.h>
+#include <TNL/Matrices/Sandbox/SparseSandboxMatrix.h>
 #include <TNL/Algorithms/Segments/CSRView.h>
 #include <TNL/Algorithms/Segments/EllpackView.h>
 #include <TNL/Algorithms/Segments/SlicedEllpackView.h>
@@ -66,10 +67,17 @@ struct MatrixInfo< SparseMatrixView< Real, Device, Index, MatrixType, SegmentsVi
 
    static String getFormat()
    {
+      String prefix;
       if( MatrixType::isSymmetric() )
-         return TNL::String( "Symmetric " ) + SegmentsView< Device, Index >::getSegmentsType();
-      else
-         return SegmentsView< Device, Index >::getSegmentsType();
+      {
+         if( std::is_same< Real, bool >::value )
+            prefix = "Symmetric Binary ";
+         else
+            prefix = "Symmetric ";
+      }
+      else if( std::is_same< Real, bool >::value )
+         prefix = "Binary ";
+      return prefix + SegmentsView< Device, Index >::getSegmentsType();
    };
 };
 
@@ -82,6 +90,34 @@ template< typename Real,
           typename IndexAllocator >
 struct MatrixInfo< SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator > >
 : public MatrixInfo< typename SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::ViewType >
+{
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType >
+struct MatrixInfo< Sandbox::SparseSandboxMatrixView< Real, Device, Index, MatrixType > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat()
+   {
+      if( MatrixType::isSymmetric() )
+         return TNL::String( "Symmetric Sandbox" );
+      else
+         return TNL::String( "Sandbox" );
+   };
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          typename RealAllocator,
+          typename IndexAllocator >
+struct MatrixInfo< Sandbox::SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator > >
+: public MatrixInfo< typename Sandbox::SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::ViewType >
 {
 };
 

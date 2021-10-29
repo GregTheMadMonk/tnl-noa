@@ -46,8 +46,8 @@ template< typename Device,
           typename Kernel >
 __cuda_callable__
 CSRView< Device, Index, Kernel >::
-CSRView( const OffsetsView&& offsets_view,
-         const KernelView&& kernel_view )
+CSRView( OffsetsView&& offsets_view,
+         KernelView&& kernel_view )
    : offsets( std::move( offsets_view ) ), kernel( std::move( kernel_view ) )
 {
 }
@@ -67,7 +67,7 @@ template< typename Device,
           typename Kernel >
 __cuda_callable__
 CSRView< Device, Index, Kernel >::
-CSRView( const CSRView&& csr_view )
+CSRView( CSRView&& csr_view )
    : offsets( std::move( csr_view.offsets ) ), kernel( std::move( csr_view.kernel ) )
 {
 }
@@ -80,7 +80,8 @@ CSRView< Device, Index, Kernel >::
 getSerializationType()
 {
    return "CSR< [any_device], " +
-      TNL::getSerializationType< IndexType >() +
+      TNL::getSerializationType< IndexType >() + ", " +
+      // FIXME: the serialized data do not depend on the the kernel type so it should not be in the serialization type
       TNL::getSerializationType< KernelType >() + " >";
 }
 
@@ -193,9 +194,8 @@ forElements( IndexType begin, IndexType end, Function&& f ) const
       const IndexType begin = offsetsView[ segmentIdx ];
       const IndexType end = offsetsView[ segmentIdx + 1 ];
       IndexType localIdx( 0 );
-      bool compute( true );
-      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-         f( segmentIdx, localIdx++, globalIdx, compute );
+      for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
+         f( segmentIdx, localIdx++, globalIdx );
    };
    Algorithms::ParallelFor< Device >::exec( begin, end, l );
 }
@@ -233,7 +233,7 @@ template< typename Device,
    template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }
@@ -241,26 +241,49 @@ forEachSegment( Function&& f ) const
 template< typename Device,
           typename Index,
           typename Kernel >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+sequentialForSegments( IndexType begin, IndexType end, Function&& function ) const
 {
-   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
-      TNL::Algorithms::Segments::CSRScalarKernel< IndexType, DeviceType >::segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
-   else
-      kernel.segmentsReduction( offsets, first, last, fetch, reduction, keeper, zero, args... );
+   for( IndexType i = begin; i < end; i++ )
+      forSegments( i, i + 1, function );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Function >
 void
 CSRView< Device, Index, Kernel >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+sequentialForAllSegments( Function&& f ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->sequentialForSegments( 0, this->getSegmentsCount(), f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+void
+CSRView< Device, Index, Kernel >::
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
+{
+   if( std::is_same< DeviceType, TNL::Devices::Host >::value )
+      TNL::Algorithms::Segments::CSRScalarKernel< IndexType, DeviceType >::reduceSegments( offsets, first, last, fetch, reduction, keeper, zero );
+   else
+      kernel.reduceSegments( offsets, first, last, fetch, reduction, keeper, zero );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+void
+CSRView< Device, Index, Kernel >::
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
+{
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -295,6 +318,18 @@ load( File& file )
    file >> this->offsets;
    this->kernel.init( this->offsets );
 }
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+      template< typename Fetch >
+auto
+CSRView< Device, Index, Kernel >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< CSRView, Fetch >
+{
+   return SegmentsPrinter< CSRView, Fetch >( *this, fetch );
+}
+
 
       } // namespace Segments
    }  // namespace Containers

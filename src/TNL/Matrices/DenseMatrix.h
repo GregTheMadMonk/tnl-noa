@@ -457,10 +457,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
+       *
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value ) { ... };
+       * ```
+       *
        *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
@@ -479,10 +481,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
+       *
+       * ```
+       * auto function = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value ) { ... };
+       * ```
+       *
        *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
@@ -541,10 +545,10 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
@@ -567,10 +571,10 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
@@ -591,10 +595,10 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) mutable { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) mutable { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
@@ -615,10 +619,10 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param function is an instance of the lambda function to be called for each row.
        *
        * ```
-       * auto function = [] __cuda_callable__ ( RowViewType& row ) { ... };
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
        * ```
        *
-       * \e RowViewType represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowViewType.
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \par Example
        * \include Matrices/DenseMatrix/DenseMatrixExample_forRows.cpp
@@ -633,10 +637,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, const RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
@@ -650,10 +656,12 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \tparam Function is type of lambda function that will operate on matrix elements.
        *    It is should have form like
-       *  `function( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value, bool& compute )`.
-       *  The column index repeats twice only for compatibility with sparse matrices.
-       *  If the 'compute' variable is set to false the iteration over the row can
-       *  be interrupted.
+       *
+       * ```
+       * auto function = [] __cuda_callable__ ( RowView& row ) { ... };
+       * ```
+       *
+       * \e RowView represents matrix row - see \ref TNL::Matrices::DenseMatrix::RowView.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
        * \param end defines ending of the range [begin,end) of rows to be processed.
@@ -688,12 +696,25 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *  It is declared as
+       *
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -717,12 +738,25 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       * The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *          It is declared as
+       *
+       * ````
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param begin defines beginning of the range [begin,end) of rows to be processed.
@@ -746,12 +780,24 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on ALL matrix rows.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
-       *          The return type of this lambda can be any non void.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue { ... };
+       * ```
+       *
+       *      The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       *
+       * ````
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *          It is declared as
+       * ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -773,12 +819,25 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \brief Method for performing general reduction on ALL matrix rows for constant instances.
        *
        * \tparam Fetch is a type of lambda function for data fetch declared as
-       *          `fetch( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue`.
+       *
+       * ```
+       * auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, RealType elementValue ) -> FetchValue { ... };
+       * ```
+       *
        *          The return type of this lambda can be any non void.
        * \tparam Reduce is a type of lambda function for reduction declared as
-       *          `reduce( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue`.
+       *
+       * ```
+       * auto reduce = [=] __cuda_callable__ ( const FetchValue& v1, const FetchValue& v2 ) -> FetchValue { ... };
+       * ```
+       *
        * \tparam Keep is a type of lambda function for storing results of reduction in each row.
-       *          It is declared as `keep( const IndexType rowIdx, const double& value )`.
+       *          It is declared as
+       *
+       *  ```
+       * auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const double& value ) { ... };
+       * ```
+       *
        * \tparam FetchValue is type returned by the Fetch lambda function.
        *
        * \param fetch is an instance of lambda function for data fetch.
@@ -801,7 +860,9 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * More precisely, it computes:
        *
-       * `outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector`
+       * ```
+       * outVector = matrixMultiplicator * ( *this ) * inVector + outVectorMultiplicator * outVector
+       * ```
        *
        * \tparam InVector is type of input vector.  It can be \ref Vector,
        *     \ref VectorView, \ref Array, \ref ArraView or similar container.
@@ -913,7 +974,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return \e true if the RHS matrix is equal, \e false otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
+      bool operator==( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const;
 
       /**
        * \brief Comparison operator with another dense matrix.
@@ -922,7 +983,43 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \return \e false if the RHS matrix is equal, \e true otherwise.
        */
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
-      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const;
+      bool operator!=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix view.
+       * \return \e true if the RHS matrix view is equal, \e false otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another dense matrix view.
+       *
+       * \param matrix is the right-hand side matrix view.
+       * \return \e false if the RHS matrix view is equal, \e true otherwise.
+       */
+      template< typename Real_, typename Device_, typename Index_ >
+      bool operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator==( const Matrix& m ) const;
+
+      /**
+       * \brief Comparison operator with another arbitrary matrix type.
+       *
+       * \param matrix is the right-hand side matrix.
+       * \return \e true if the RHS matrix is equal, \e false otherwise.
+       */
+      template< typename Matrix >
+      bool operator!=( const Matrix& m ) const;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -983,6 +1080,33 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator >
 std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix );
+
+/**
+ * \brief Comparison operator with another dense matrix view.
+ *
+ * \param leftMatrix is the left-hand side matrix view.
+ * \param rightMatrix is the right-hand side matrix.
+ * \return \e true if the both matrices are is equal, \e false otherwise.
+ */
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator==( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix );
+
+/**
+ * \brief Comparison operator with another dense matrix view.
+ *
+ * \param leftMatrix is the left-hand side matrix view.
+ * \param rightMatrix is the right-hand side matrix.
+ * \return \e false if the both matrices are is equal, \e true otherwise.
+ */
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator!=( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix );
+
 
 } // namespace Matrices
 } // namespace TNL

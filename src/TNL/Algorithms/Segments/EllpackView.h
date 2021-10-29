@@ -15,11 +15,14 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 
 namespace TNL {
    namespace Algorithms {
       namespace Segments {
+
+enum EllpackKernelType { Scalar, Vector, Vector2, Vector4, Vector8, Vector16 };
 
 template< typename Device,
           typename Index,
@@ -32,9 +35,9 @@ class EllpackView
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
       static constexpr int getAlignment() { return Alignment; }
-      static constexpr bool getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using SegmentsSizes = OffsetsHolder;
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsContainer;
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_, Organization, Alignment >;
       using ViewType = EllpackView;
@@ -105,16 +108,16 @@ class EllpackView
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       EllpackView& operator=( const EllpackView& view );
 
@@ -122,10 +125,19 @@ class EllpackView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< EllpackView, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType segmentSize, segmentsCount, alignedSize;
 };
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int Alignment >
+std::ostream& operator<<( std::ostream& str, const EllpackView< Device, Index, Organization, Alignment >& ellpack ) { return printSegments( str, ellpack ); }
 
       } // namespace Segments
    }  // namespace Algorithms

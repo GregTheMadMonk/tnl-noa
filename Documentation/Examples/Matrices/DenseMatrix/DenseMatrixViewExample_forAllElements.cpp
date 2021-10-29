@@ -9,10 +9,8 @@ void forAllElementsExample()
    TNL::Matrices::DenseMatrix< double, Device > matrix( 5, 5 );
    auto matrixView = matrix.getView();
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int columnIdx, int globalIdx, double& value, bool& compute ) {
-      if( rowIdx < columnIdx )
-         compute = false;
-      else
+   auto f = [=] __cuda_callable__ ( int rowIdx, int columnIdx, int globalIdx, double& value ) {
+      if( rowIdx >= columnIdx )
          value = rowIdx + columnIdx;
    };
 

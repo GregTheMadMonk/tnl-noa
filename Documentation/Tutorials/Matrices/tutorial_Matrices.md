@@ -432,6 +432,16 @@ The result looks as follows:
 
 \include DenseMatrixExample_forElements.out
 
+#### Wrapping existing data to dense matrix view
+
+In case when you have already allocated data for dense matrix (for example in some other library), you may wrap it to dense matrix view with a function \ref TNL::Matrices::wrapDenseMatrix . See the following example:
+
+\includelineno DenseMatrixViewExample_wrap.cpp
+
+Here we create dense matrix having three rows and four columns. We use TNL vector (\ref TNL::Containers::Vector) only for allocation of the matrix elements (lines 12-15) and we get a pointer to the allocated array immediately (line 16). Next we use just the array to get dense matrix view with proper matrix dimensions (line 21). Note that we must explicitly state the device type as a template parameter of the function `wrapDenseMatrix` (\ref TNL::Matrices::wrapDenseMatrix). Finally, we print the matrix to see if it is correct (line 22). The result looks as follows:
+
+\include DenseMatrixViewExample_wrap.out
+
 ### Sparse matrices
 
 [Sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix) are extremely important in a lot of numerical algorithms. They are used at situations when we need to operate with matrices having majority of the matrix elements equal to zero. In this case, only the non-zero matrix elements are stored with possibly some *padding zeros* used for memory alignment. This is necessary mainly on GPUs. See the [Overview of matrix types](#overview_of_matrix_types) for the differences in memory requirements.
@@ -647,6 +657,30 @@ would not make sense. If we pass through this test, the matrix element lies in t
 
 \include SparseMatrixExample_forElements.out
 
+#### Wrapping existing data to sparse matrix view
+
+Standard sparse matrix format like [CSR](https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)) and [Ellpack](https://people.math.sc.edu/Burkardt/data/sparse_ellpack/sparse_ellpack.html) store the matrix elements in specifically defined arrays. In case that you have already allocated them (for example in some other library), they can be wrapped into a sparse matrix view with given matrix format. This can be done by means of functions \ref TNL::Matrices::wrapCSRMatrix and \ref TNL::Matrices::wrapEllpackMatrix . See the following example for demonstration of the CSR format:
+
+\includelineno SparseMatrixViewExample_wrapCSR.cpp
+
+We create sparse matrix having four rows and four columns (line 19). We use TNL vector (\ref TNL::Containers::Vector) to allocate arrays necessary for the CSR format:
+
+1. `valuesVector` (line 20) - contains values of the nonzero matrix elements.
+2. `columnIndexesVector` (line 21) - contains column indexes of the nonzero matrix elements.
+3. `rowPointersVector` (line 22) - contains positions of the first nonzero matrix elements in each row within `valuesVector` and `columnIndexesVector`. The size of this array equals number of matrix rows plus one.
+
+Next we turn the vectors into C style pointers (lines 24-26) to wrap them into sparse matrix view (line 31). Note, that we must explicitly state the device on which the arrays are allocated. Finlay we print the matrix to check the correctness (line 33). The result looks as follows:
+
+\include SparseMatrixViewExample_wrapCSR.out
+
+Wrapping data corresponding with the Ellpack format is very similar as we can see in the following example:
+
+\includelineno SparseMatrixViewExample_wrapEllpack.cpp
+
+We encode the same sparse matrix as in the previous example. The essence of the Ellpack format is that we allocate the same number of matrix elements for each row which is two in our example. For some matrix rows we use the padding zeros for which we set the column index to -1 (line 21). Therefore the size of `valuesVector` and `columnIndexesVector` equals number of matrix rows times number of matrix elements allocated in each row. As before, we turn the vectors into C style pointers (lines 23-24) and wrap them into sparse matrix view with Ellpack format (line 29). Note that we must state the device on which the arrays are allocated explicitly and also the matrix elements organization, which is \ref TNL::Algorithms::Segments::RowMajorOrder in this case. For Ellpack matrix stored on GPU, \ref TNL::Algorithms::Segments::ColumnMajorOrder is preferred. The result looks as follows:
+
+\include SparseMatrixViewExample_wrapEllpack.out
+
 #### Symmetric sparse matrices
 
 For sparse [symmetric matrices](https://en.wikipedia.org/wiki/Symmetric_matrix), TNL offers a format storing only a half of the matrix elements. More precisely, ony the matrix diagonal and the elements bellow are stored in the memory. The matrix elements above the diagonal are deduced from those bellow. If such a symmetric format is used on GPU, atomic operations must be used in some matrix operations. For this reason, symmetric matrices can be combined only with matrix elements values expressed in `float` or `double` type. An advantage of the symmetric formats is lower memory consumption. Since less data need to be transferred from the memory, better performance might be observed. In some cases, however, the use of atomic operations on GPU may cause performance drop. Mostly we can see approximately the same performance compared to general formats but we can profit from lower memory requirements which is appreciated especially on GPU. The following example shows how to create symmetric sparse matrix.
@@ -833,7 +867,7 @@ The output of the example looks as:
 
 \include TridiagonalMatrixExample_Constructor_init_list_1.out
 
-#### Methods `setElement` and `addElement`
+#### Methods setElement and addElement
 
 Similar way of the tridiagonal matrix setup is offered by the method `setElements` (\ref TNL::Matrices::TridiagonalMatrix::setElements) as the following example demonstrates:
 
@@ -851,7 +885,7 @@ The result looks as follows:
 
 \include TridiagonalMatrixExample_setElement.out
 
-#### Method `getRow`
+#### Method getRow
 
  A bit different way of setting up the matrix, is the use of tridiagonal matrix view and the method `getRow` (\ref TNL::Matrices::TridiagonalMatrixView::getRow) as the following example demonstrates:
 
@@ -863,7 +897,7 @@ The result looks as follows:
 
 \include TridiagonalMatrixViewExample_getRow.out
 
-### Method `forRows`
+#### Method forRows
 
 As in the case of other matrix types, the method `forRows` (\ref TNL::Matrices::TridiagonalMatrix::forRows) calls the method `getRow` (\ref TNL::Matrices::TridiagonalMatrix::getRow) in parallel. It is demonstrated by the following example which we may directly compare with the previous one:
 
@@ -881,7 +915,7 @@ The result looks as follows:
 
 \include TridiagonalMatrixExample_forRows.out
 
-#### Method `forElements`
+#### Method forElements
 
 Finally, even a bit more simple way of matrix elements manipulation with the method `forElements` (\ref TNL::Matrices::TridiagonalMatrix::forElements) is demonstrated in the following example:
 
@@ -1043,7 +1077,7 @@ On the lines 25-46, we call the constructor which, in addition to matrix dimensi
 
 \include MultidiagonalMatrixExample_Constructor_init_list_2.out
 
-#### Methods `setElement` and `addElement`
+#### Methods setElement and addElement
 
 Another and more efficient way of setting the matrix elements is by means of the method `setElement` (\ref TNL::Matrices::MultidiagonalMatrix::setElement). It is demonstrated in the following example:
 
@@ -1053,7 +1087,7 @@ This examples shows that the method `setElement` can be used both on the host (C
 
 \include MultidiagonalMatrixViewExample_setElement.out
 
-#### Method `getRow`
+#### Method getRow
 
 Slightly more efficient way of the multidiagonal matrix setup is offered by the method `getRow` (\ref TNL::Matrices::MultidiagonalMatrix::getRow). We will use it to create a matrix of the following form:
 
@@ -1137,7 +1171,7 @@ We use `ParallelFor2D` (\ref TNL::Algorithms::ParallelFor2D) to iterate over all
 
 \include MultidiagonalMatrixExample_Constructor.out
 
-### Method `forRows`
+#### Method forRows
 
 As in the case of other matrix types, the method `forRows` (\ref TNL::Matrices::MultidiagonalMatrix::forRows) calls the method `getRow` (\ref TNL::Matrices::MultidiagonalMatrix::getRow) in parallel. It is demonstrated by the following example:
 
@@ -1151,7 +1185,7 @@ The result looks as follows:
 
 \include MultidiagonalMatrixExample_forRows.out
 
-#### Method `forElements`
+#### Method forElements
 
 Similar and even a bit simpler way of setting the matrix elements is offered by the method `forElements` (\ref TNL::Matrices::MultidiagonalMatrix::forElements, \ref TNL::Matrices::MultidiagonalMatrixView::forElements) as demonstrated in the following example:
 
@@ -1220,7 +1254,7 @@ The result looks as follows:
 
 \include LambdaMatrixExample_Constructor.out
 
-#### Method `forRows`
+#### Method forRows
 
 Method `forRows` (\ref TNL::Matrices::LambdaMatrix::forRows, \ref TNL::Matrices::LambdaMatrix::forAllRows) iterates in parallel over all matrix rows. In the case of lambda matrices, it cannot be used for changing the matrix elements since they cannot be changed. In the following example, we show how to use this method to copy the matrix elements values to the dense matrix:
 
@@ -1238,7 +1272,7 @@ The result looks as follows:
 
 \include LambdaMatrixExample_forRows.out
 
-#### Method `forElements`
+#### Method forElements
 
 The lambda matrix has the same interface as other matrix types except of the method `getRow`. The following example demonstrates the use of the method `forElements` (\ref TNL::Matrices::LambdaMatrix::forElements) to copy the lambda matrix into the dense matrix:
 

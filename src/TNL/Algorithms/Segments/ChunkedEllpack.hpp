@@ -24,10 +24,22 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
+   template< typename SizesContainer >
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-ChunkedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes )
+ChunkedEllpack( const SizesContainer& segmentsSizes )
 {
-   this->setSegmentsSizes( sizes );
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+   template< typename ListIndex >
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+ChunkedEllpack( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,
@@ -76,6 +88,7 @@ String
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization parameter, so it should be reflected in the serialization type
    return "ChunkedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -337,9 +350,9 @@ auto ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSegmentSize( const IndexType segmentIdx ) const -> IndexType
 {
    return detail::ChunkedEllpack< IndexType, DeviceType, Organization >::getSegmentSize(
-      rowToSliceMapping.getView(),
-      slices.getView(),
-      rowToChunkMapping.getView(),
+      rowToSliceMapping.getConstView(),
+      slices.getConstView(),
+      rowToChunkMapping.getConstView(),
       segmentIdx );
 }
 
@@ -431,33 +444,33 @@ template< typename Device,
    template< typename Function >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -520,6 +533,18 @@ load( File& file )
         >> this->rowPointers
         >> this->slices;
    file.load( &this->numberOfSlices );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+      template< typename Fetch >
+auto
+ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< ChunkedEllpack, Fetch >
+{
+   return SegmentsPrinter< ChunkedEllpack, Fetch >( *this, fetch );
 }
 
 template< typename Device,

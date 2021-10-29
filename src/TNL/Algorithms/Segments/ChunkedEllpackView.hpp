@@ -122,6 +122,7 @@ String
 ChunkedEllpackView< Device, Index, Organization >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization parameter, so it should be reflected in the serialization type
    return "ChunkedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -323,14 +324,13 @@ forElements( IndexType first, IndexType last, Function&& f ) const
       const IndexType chunkSize = slices[ sliceIdx ].chunkSize;
 
       const IndexType segmentSize = segmentChunksCount * chunkSize;
-      bool compute( true );
       if( Organization == RowMajorOrder )
       {
          IndexType begin = sliceOffset + firstChunkOfSegment * chunkSize;
          IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
-         for( IndexType j = begin; j < end && compute; j++ )
-            f( segmentIdx, localIdx++, j, compute );
+         for( IndexType j = begin; j < end; j++ )
+            f( segmentIdx, localIdx++, j );
       }
       else
       {
@@ -339,9 +339,9 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          {
             IndexType begin = sliceOffset + firstChunkOfSegment + chunkIdx;
             IndexType end = begin + chunksInSlice * chunkSize;
-            for( IndexType j = begin; j < end && compute; j += chunksInSlice )
+            for( IndexType j = begin; j < end; j += chunksInSlice )
             {
-               f( segmentIdx, localIdx++, j, compute );
+               f( segmentIdx, localIdx++, j );
             }
          }
       }
@@ -384,7 +384,7 @@ template< typename Device,
    template< typename Function >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }
@@ -393,15 +393,15 @@ forEachSegment( Function&& f ) const
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
-      //segmentsReductionKernel( 0, first, last, fetch, reduction, keeper, zero, args... );
+      //reduceSegmentsKernel( 0, first, last, fetch, reduction, keeper, zero );
       //return;
 
       for( IndexType segmentIdx = first; segmentIdx < last; segmentIdx++ )
@@ -456,9 +456,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         detail::ChunkedEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, Args...  >
+         detail::ChunkedEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
-            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
       }
 #endif
    }
@@ -467,12 +467,12 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 ChunkedEllpackView< Device, Index, Organization >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -517,6 +517,18 @@ save( File& file ) const
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
+      template< typename Fetch >
+auto
+ChunkedEllpackView< Device, Index, Organization >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< ChunkedEllpackView, Fetch >
+{
+   return SegmentsPrinter< ChunkedEllpackView, Fetch >( *this, fetch );
+}
+
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization >
 void
 ChunkedEllpackView< Device, Index, Organization >::
 printStructure( std::ostream& str ) const
@@ -543,21 +555,19 @@ template< typename Device,
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
+             typename Real >
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                           IndexType first,
                                           IndexType last,
                                           Fetch fetch,
                                           Reduction reduction,
                                           ResultKeeper keeper,
-                                          Real zero,
-                                          Args... args ) const
+                                          Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >() ) );
 
    const IndexType firstSlice = rowToSliceMapping[ first ];
    const IndexType lastSlice = rowToSliceMapping[ last - 1 ];
@@ -621,21 +631,19 @@ template< typename Device,
    template< typename Fetch,
              typename Reduction,
              typename ResultKeeper,
-             typename Real,
-             typename... Args >
+             typename Real >
 __device__
 void
 ChunkedEllpackView< Device, Index, Organization >::
-segmentsReductionKernel( IndexType gridIdx,
+reduceSegmentsKernel( IndexType gridIdx,
                          IndexType first,
                          IndexType last,
                          Fetch fetch,
                          Reduction reduction,
                          ResultKeeper keeper,
-                         Real zero,
-                         Args... args ) const
+                         Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), std::declval< bool& >() ) );
 
    const IndexType firstSlice = rowToSliceMapping[ first ];
    const IndexType lastSlice = rowToSliceMapping[ last - 1 ];

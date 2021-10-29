@@ -36,7 +36,7 @@ namespace Benchmarks {
 template< typename Real = double,
           typename Index = int >
 void
-benchmarkVectorOperations( Benchmark & benchmark,
+benchmarkVectorOperations( Benchmark<> & benchmark,
                            const long & size )
 {
    using HostVector = Containers::Vector< Real, Devices::Host, Index >;

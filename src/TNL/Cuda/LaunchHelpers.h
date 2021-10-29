@@ -22,6 +22,21 @@ inline constexpr std::size_t getMaxGridSize()
    return 65535;
 }
 
+inline constexpr size_t getMaxGridXSize()
+{
+   return 2147483647;//65535;
+}
+
+inline constexpr size_t getMaxGridYSize()
+{
+   return 65535;
+}
+
+inline constexpr size_t getMaxGridZSize()
+{
+   return 65535;
+}
+
 inline constexpr int getMaxBlockSize()
 {
    return 1024;

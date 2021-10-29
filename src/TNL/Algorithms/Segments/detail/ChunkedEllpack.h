@@ -62,13 +62,13 @@ class ChunkedEllpack
       using DeviceType = Device;
       using IndexType = Index;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsHolder::ViewType;
-      using SegmentsSizes = OffsetsHolder;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using OffsetsHolderView = typename OffsetsContainer::ConstViewType;
+      using SegmentsSizes = OffsetsContainer;
       using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
       using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
-      using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
+      using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ConstViewType;
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
 
       __cuda_callable__ static
@@ -234,10 +234,10 @@ class ChunkedEllpack
 template< typename Index,
           typename Fetch,
           bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
-struct ChunkedEllpackSegmentsReductionDispatcher{};
+struct ChunkedEllpackreduceSegmentsDispatcher{};
 
 template< typename Index, typename Fetch >
-struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, true >
+struct ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch, true >
 {
    template< typename View,
              typename Reduction,
@@ -255,12 +255,12 @@ struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, true >
                      Real zero,
                      Args... args )
    {
-      chunkedEllpack.segmentsReductionKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      chunkedEllpack.reduceSegmentsKernelWithAllParameters( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
 template< typename Index, typename Fetch >
-struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, false >
+struct ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch, false >
 {
    template< typename View,
              typename Reduction,
@@ -278,7 +278,7 @@ struct ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch, false >
                      Real zero,
                      Args... args )
    {
-      chunkedEllpack.segmentsReductionKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      chunkedEllpack.reduceSegmentsKernel( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
@@ -290,7 +290,7 @@ template< typename View,
           typename Real,
           typename... Args >
 __global__
-void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
+void ChunkedEllpackreduceSegmentsKernel( View chunkedEllpack,
                                             Index gridIdx,
                                             Index first,
                                             Index last,
@@ -300,7 +300,7 @@ void ChunkedEllpackSegmentsReductionKernel( View chunkedEllpack,
                                             Real zero,
                                             Args... args )
 {
-   ChunkedEllpackSegmentsReductionDispatcher< Index, Fetch >::exec( chunkedEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   ChunkedEllpackreduceSegmentsDispatcher< Index, Fetch >::exec( chunkedEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
 }
 #endif
 

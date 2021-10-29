@@ -22,163 +22,179 @@ namespace TNL
       namespace Segments
       {
 
-         template <typename Device,
-                   typename Index,
-                   typename IndexAllocator = typename Allocators::Default<Device>::template Allocator<Index>,
-                   ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization<Device>::getOrganization(),
-                   int WarpSize = 32>
-         class BiEllpack
-         {
-         public:
-            using DeviceType = Device;
-            using IndexType = std::remove_const_t<Index>;
-            using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocator>;
-            static constexpr ElementsOrganization getOrganization() { return Organization; }
-            using ViewType = BiEllpackView< Device, Index, Organization, WarpSize >;
-            template <typename Device_, typename Index_>
-            using ViewTemplate = BiEllpackView<Device_, Index_, Organization, WarpSize >;
-            using ConstViewType = typename ViewType::ConstViewType;
-            using SegmentViewType = typename ViewType::SegmentViewType;
+template <typename Device,
+            typename Index,
+            typename IndexAllocator = typename Allocators::Default<Device>::template Allocator<Index>,
+            ElementsOrganization Organization = Algorithms::Segments::DefaultElementsOrganization<Device>::getOrganization(),
+            int WarpSize = 32>
+class BiEllpack
+{
+   public:
+      using DeviceType = Device;
+      using IndexType = std::remove_const_t<Index>;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocator>;
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
+      using ViewType = BiEllpackView< Device, Index, Organization, WarpSize >;
+      template <typename Device_, typename Index_>
+      using ViewTemplate = BiEllpackView<Device_, Index_, Organization, WarpSize >;
+      using ConstViewType = typename ViewType::ConstViewType;
+      using SegmentViewType = typename ViewType::SegmentViewType;
 
-            static constexpr bool havePadding() { return true; };
+      static constexpr bool havePadding() { return true; };
 
-            BiEllpack() = default;
+      BiEllpack() = default;
 
-            BiEllpack(const Containers::Vector<IndexType, DeviceType, IndexType> &sizes);
+      template< typename SizesContainer >
+      BiEllpack( const SizesContainer& sizes );
 
-            BiEllpack(const BiEllpack &segments);
+      template< typename ListIndex >
+      BiEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
-            BiEllpack(const BiEllpack &&segments);
 
-            static String getSerializationType();
+      BiEllpack(const BiEllpack &segments);
 
-            static String getSegmentsType();
+      BiEllpack(const BiEllpack &&segments);
 
-            ViewType getView();
+      static String getSerializationType();
 
-            const ConstViewType getConstView() const;
+      static String getSegmentsType();
 
-            /**
+      ViewType getView();
+
+      const ConstViewType getConstView() const;
+
+      /**
        * \brief Number of segments.
        */
-            __cuda_callable__
-                IndexType
-                getSegmentsCount() const;
+      __cuda_callable__
+            IndexType
+            getSegmentsCount() const;
 
-            /**
+      /**
        * \brief Set sizes of particular segments.
        */
-            template <typename SizesHolder = OffsetsHolder>
-            void setSegmentsSizes(const SizesHolder &sizes);
+      template <typename SizesHolder = OffsetsContainer>
+      void setSegmentsSizes(const SizesHolder &sizes);
 
-            void reset();
+      void reset();
 
-            IndexType getSegmentSize(const IndexType segmentIdx) const;
+      IndexType getSegmentSize(const IndexType segmentIdx) const;
 
-            /**
+      /**
        * \brief Number segments.
        */
-            __cuda_callable__
-                IndexType
-                getSize() const;
+      __cuda_callable__
+            IndexType
+            getSize() const;
 
-            __cuda_callable__
-                IndexType
-                getStorageSize() const;
+      __cuda_callable__
+            IndexType
+            getStorageSize() const;
 
-            __cuda_callable__
-                IndexType
-                getGlobalIndex(const IndexType segmentIdx, const IndexType localIdx) const;
+      __cuda_callable__
+            IndexType
+            getGlobalIndex(const IndexType segmentIdx, const IndexType localIdx) const;
 
-            __cuda_callable__
-                SegmentViewType
-                getSegmentView(const IndexType segmentIdx) const;
+      __cuda_callable__
+            SegmentViewType
+            getSegmentView(const IndexType segmentIdx) const;
 
-            /***
+      /***
        * \brief Go over all segments and for each segment element call
        * function 'f' with arguments 'args'. The return type of 'f' is bool.
        * When its true, the for-loop continues. Once 'f' returns false, the for-loop
        * is terminated.
        */
-            template <typename Function>
-            void forElements(IndexType first, IndexType last, Function &&f) const;
+      template< typename Function >
+      void forElements( IndexType first, IndexType last, Function&& f ) const;
 
-            template <typename Function>
-            void forAllElements(Function &&f) const;
+      template <typename Function>
+      void forAllElements(Function&& f ) const;
 
-            template <typename Function>
-            void forSegments(IndexType begin, IndexType end, Function &&f) const;
+      template <typename Function>
+      void forSegments(IndexType begin, IndexType end, Function&& f ) const;
 
-            template <typename Function>
-            void forEachSegment(Function &&f) const;
+      template <typename Function>
+      void forAllSegments( Function&& f ) const;
 
-            /***
+      /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-            template <typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args>
-            void segmentsReduction(IndexType first, IndexType last, Fetch &fetch, const Reduction &reduction, ResultKeeper &keeper, const Real &zero, Args... args) const;
+      template <typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments(IndexType first, IndexType last, Fetch &fetch, const Reduction &reduction, ResultKeeper &keeper, const Real &zero ) const;
 
-            template <typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args>
-            void allReduction(Fetch &fetch, const Reduction &reduction, ResultKeeper &keeper, const Real &zero, Args... args) const;
+      template <typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments(Fetch &fetch, const Reduction &reduction, ResultKeeper &keeper, const Real &zero ) const;
 
-            BiEllpack &operator=(const BiEllpack &source) = default;
+      BiEllpack &operator=(const BiEllpack &source) = default;
 
-            template <typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_>
-            BiEllpack &operator=(const BiEllpack<Device_, Index_, IndexAllocator_, Organization_, WarpSize> &source);
+      template <typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_>
+      BiEllpack &operator=(const BiEllpack<Device_, Index_, IndexAllocator_, Organization_, WarpSize> &source);
 
-            void save(File &file) const;
+      void save(File &file) const;
 
-            void load(File &file);
+      void load(File &file);
 
-            void printStructure(std::ostream &str) const;
+      template< typename Fetch >
+      SegmentsPrinter< BiEllpack, Fetch > print( Fetch&& fetch ) const;
 
-            // TODO: nvcc needs this public because of lambda function used inside
-            template <typename SizesHolder = OffsetsHolder>
-            void performRowBubbleSort(const SizesHolder &segmentsSize);
+      void printStructure(std::ostream &str) const;
 
-            // TODO: the same as  above
-            template <typename SizesHolder = OffsetsHolder>
-            void computeColumnSizes(const SizesHolder &segmentsSizes);
+      // TODO: nvcc needs this public because of lambda function used inside
+      template <typename SizesHolder = OffsetsContainer>
+      void performRowBubbleSort(const SizesHolder &segmentsSize);
 
-         protected:
-            static constexpr int getWarpSize() { return WarpSize; };
+      // TODO: the same as  above
+      template <typename SizesHolder = OffsetsContainer>
+      void computeColumnSizes(const SizesHolder &segmentsSizes);
 
-            static constexpr int getLogWarpSize() { return std::log2(WarpSize); };
+   protected:
+      static constexpr int getWarpSize() { return WarpSize; };
 
-            template <typename SizesHolder = OffsetsHolder>
-            void verifyRowPerm(const SizesHolder &segmentsSizes);
+      static constexpr int getLogWarpSize() { return std::log2(WarpSize); };
 
-            template <typename SizesHolder = OffsetsHolder>
-            void verifyRowLengths(const SizesHolder &segmentsSizes);
+      template <typename SizesHolder = OffsetsContainer>
+      void verifyRowPerm(const SizesHolder &segmentsSizes);
 
-            IndexType getStripLength(const IndexType stripIdx) const;
+      template <typename SizesHolder = OffsetsContainer>
+      void verifyRowLengths(const SizesHolder &segmentsSizes);
 
-            IndexType getGroupLength(const IndexType strip, const IndexType group) const;
+      IndexType getStripLength(const IndexType stripIdx) const;
 
-            IndexType size = 0, storageSize = 0;
+      IndexType getGroupLength(const IndexType strip, const IndexType group) const;
 
-            IndexType virtualRows = 0;
+      IndexType size = 0, storageSize = 0;
 
-            OffsetsHolder rowPermArray;
+      IndexType virtualRows = 0;
 
-            OffsetsHolder groupPointers;
+      OffsetsContainer rowPermArray;
 
-            // TODO: Replace later
-            __cuda_callable__ Index power(const IndexType number, const IndexType exponent) const
-            {
-               if (exponent >= 0)
-               {
-                  IndexType result = 1;
-                  for (IndexType i = 0; i < exponent; i++)
-                     result *= number;
-                  return result;
-               }
-               return 0;
-            };
+      OffsetsContainer groupPointers;
 
-            template <typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int WarpSize_>
-            friend class BiEllpack;
-         };
+      // TODO: Replace later
+      __cuda_callable__ Index power(const IndexType number, const IndexType exponent) const
+      {
+         if (exponent >= 0)
+         {
+            IndexType result = 1;
+            for (IndexType i = 0; i < exponent; i++)
+               result *= number;
+            return result;
+         }
+         return 0;
+      };
+
+      template <typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_, int WarpSize_>
+      friend class BiEllpack;
+};
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int WarpSize >
+std::ostream& operator<<( std::ostream& str, const BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >& segments ) { return printSegments( segments, str ); }
+
 
       } // namespace Segments
    }    // namespace Algorithms

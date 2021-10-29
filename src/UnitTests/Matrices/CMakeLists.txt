@@ -8,11 +8,21 @@ set( COMMON_TESTS
             SparseMatrixTest_CSRScalar
             SparseMatrixTest_CSRVector
             SparseMatrixTest_CSRHybrid
+            SparseMatrixTest_CSRLight
             SparseMatrixTest_CSRAdaptive
             SparseMatrixTest_Ellpack
             SparseMatrixTest_SlicedEllpack
             SparseMatrixTest_ChunkedEllpack
             SparseMatrixTest_BiEllpack
+            SparseMatrixVectorProductTest_CSRScalar
+            SparseMatrixVectorProductTest_CSRVector
+            SparseMatrixVectorProductTest_CSRHybrid
+            SparseMatrixVectorProductTest_CSRLight
+            SparseMatrixVectorProductTest_CSRAdaptive
+            SparseMatrixVectorProductTest_Ellpack
+            SparseMatrixVectorProductTest_SlicedEllpack
+            SparseMatrixVectorProductTest_ChunkedEllpack
+            SparseMatrixVectorProductTest_BiEllpack
             SparseMatrixCopyTest
             BinarySparseMatrixTest_CSR
             BinarySparseMatrixTest_Ellpack
@@ -20,6 +30,9 @@ set( COMMON_TESTS
             BinarySparseMatrixCopyTest
             SymmetricSparseMatrixTest_CSR
             LambdaMatrixTest
+            SparseMatrixTest_SandboxMatrix
+            SparseMatrixVectorProductTest_SandboxMatrix
+            MatrixWrappingTest
 )
 
 set( CPP_TESTS

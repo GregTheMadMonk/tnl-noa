@@ -83,6 +83,7 @@ String
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and Alignment parameters, so it should be reflected in the serialization type
    return "SlicedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -242,15 +243,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
          {
             // The following is a workaround of a bug in nvcc 11.2
 #if CUDART_VERSION == 11020
-             f( segmentIdx, localIdx, globalIdx, compute );
+             f( segmentIdx, localIdx, globalIdx );
              localIdx++;
 #else
-             f( segmentIdx, localIdx++, globalIdx, compute );
+             f( segmentIdx, localIdx++, globalIdx );
 #endif
          }
       };
@@ -265,15 +265,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          IndexType localIdx( 0 );
-         bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize )
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize )
          {
             // The following is a workaround of a bug in nvcc 11.2
 #if CUDART_VERSION == 11020
-            f( segmentIdx, localIdx, globalIdx, compute );
+            f( segmentIdx, localIdx, globalIdx );
             localIdx++;
 #else
-            f( segmentIdx, localIdx++, globalIdx, compute );
+            f( segmentIdx, localIdx++, globalIdx );
 #endif
          }
       };
@@ -317,7 +316,7 @@ template< typename Device,
    template< typename Function >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }
@@ -326,18 +325,18 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
-   //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   //using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >() ) );
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( Organization == RowMajorOrder )
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -350,11 +349,11 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
             aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
    else
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          //const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -367,7 +366,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
             aux = reduction( aux, detail::FetchLambdaAdapter< IndexType, Fetch >::call( fetch, segmentIdx, localIdx++, globalIdx, compute ) );
          keeper( segmentIdx, aux );
       };
-      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+      Algorithms::ParallelFor< Device >::exec( first, last, l );
    }
 }
 
@@ -375,12 +374,12 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -427,6 +426,18 @@ load( File& file )
    file.load( &segmentsCount );
    file >> this->sliceOffsets;
    file >> this->sliceSegmentSizes;
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int SliceSize >
+      template< typename Fetch >
+auto
+SlicedEllpackView< Device, Index, Organization, SliceSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< SlicedEllpackView, Fetch >
+{
+   return SegmentsPrinter< SlicedEllpackView, Fetch >( *this, fetch );
 }
 
       } // namespace Segments

@@ -54,7 +54,7 @@ bool checkDevice( const Config::ParameterContainer& parameters )
 
 template< template<typename> class Preconditioner, typename Matrix >
 void
-benchmarkPreconditionerUpdate( Benchmark& benchmark,
+benchmarkPreconditionerUpdate( Benchmark<>& benchmark,
                                const Config::ParameterContainer& parameters,
                                const SharedPointer< Matrix >& matrix )
 {
@@ -78,7 +78,7 @@ benchmarkPreconditionerUpdate( Benchmark& benchmark,
 
 template< template<typename> class Solver, template<typename> class Preconditioner, typename Matrix, typename Vector >
 void
-benchmarkSolver( Benchmark& benchmark,
+benchmarkSolver( Benchmark<>& benchmark,
                  const Config::ParameterContainer& parameters,
                  const SharedPointer< Matrix >& matrix,
                  const Vector& x0,
@@ -126,7 +126,7 @@ benchmarkSolver( Benchmark& benchmark,
 
    // subclass BenchmarkResult to add extra columns to the benchmark
    // (iterations, preconditioned residue, true residue)
-   struct MyBenchmarkResult : public BenchmarkResult
+   struct MyBenchmarkResult : public BenchmarkResult<>
    {
       using HeaderElements = BenchmarkResult::HeaderElements;
       using RowElements = BenchmarkResult::RowElements;
@@ -145,7 +145,15 @@ benchmarkSolver( Benchmark& benchmark,
 
       virtual HeaderElements getTableHeader() const override
       {
-         return HeaderElements({"time", "stddev", "stddev/time", "speedup", "converged", "iterations", "residue_precond", "residue_true"});
+         return HeaderElements( {
+            std::pair< String, int >( "time", 8 ),
+            std::pair< String, int >( "stddev", 8 ),
+            std::pair< String, int >( "stddev/time", 8 ),
+            std::pair< String, int >( "speedup", 8 ),
+            std::pair< String, int >( "converged", 8 ),
+            std::pair< String, int >( "iterations", 8 ),
+            std::pair< String, int >( "residue_precond", 8 ),
+            std::pair< String, int >( "residue_true", 8 ) } );
       }
 
       virtual RowElements getRowElements() const override

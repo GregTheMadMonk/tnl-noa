@@ -22,6 +22,8 @@
 #include "vector-operations.h"
 #include "triad.h"
 #include "spmv.h"
+#include "dense-mv.h"
+
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
@@ -29,8 +31,8 @@ using namespace TNL::Benchmarks;
 
 template< typename Real >
 void
-runBlasBenchmarks( Benchmark & benchmark,
-                   Benchmark::MetadataMap metadata,
+runBlasBenchmarks( Benchmark<> & benchmark,
+                   Benchmark<>::MetadataMap metadata,
                    const std::size_t & minSize,
                    const std::size_t & maxSize,
                    const double & sizeStepFactor,
@@ -43,7 +45,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = Host)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real >( benchmark, size );
@@ -52,7 +54,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaHost)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaHost >( benchmark, size );
@@ -60,7 +62,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaManaged)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaManaged >( benchmark, size );
@@ -71,7 +73,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Vector operations (") + precision + ")",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= sizeStepFactor ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkVectorOperations< Real >( benchmark, size );
@@ -82,7 +84,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Triad benchmark (") + precision + ")",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
       benchmarkTriad< Real >( benchmark, size );
@@ -93,13 +95,25 @@ runBlasBenchmarks( Benchmark & benchmark,
    benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
          { "rows", convertToString( size ) },
          { "columns", convertToString( size ) },
          { "elements per row", convertToString( elementsPerRow ) },
       } ));
       benchmarkSpmvSynthetic< Real >( benchmark, size, elementsPerRow );
    }
+
+   // Dense matrix-vector multiplication
+   benchmark.newBenchmark( String("Dense matrix-vector multiplication (") + precision + ")",
+                           metadata );
+   for( std::size_t size = 10; size <= 20000; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "rows", convertToString( size ) },
+         { "columns", convertToString( size ) }
+      } ));
+      benchmarkDenseMVSynthetic< Real >( benchmark, size );
+   }
+
 }
 
 void
@@ -168,10 +182,10 @@ main( int argc, char* argv[] )
    std::ofstream logFile( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
 
    if( precision == "all" || precision == "float" )
       runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, elementsPerRow );

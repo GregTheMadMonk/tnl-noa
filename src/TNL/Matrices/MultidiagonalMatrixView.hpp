@@ -216,7 +216,7 @@ setValue( const RealType& v )
    // we dont do this->values = v here because it would set even elements 'outside' the matrix
    // method getNumberOfNonzeroElements would not work well then
    const RealType newValue = v;
-   auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value, bool& compute ) mutable {
+   auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value ) mutable {
       value = newValue;
    };
    this->forAllElements( f );
@@ -443,13 +443,12 @@ forElements( IndexType first, IndexType last, Function& function ) const
    const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
-   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
          const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
-            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
+            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] );
       }
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
@@ -469,13 +468,12 @@ forElements( IndexType first, IndexType last, Function& function )
    const IndexType diagonalsCount = this->diagonalsOffsets.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
-   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      for( IndexType localIdx = 0; localIdx < diagonalsCount && compute; localIdx++ )
+      for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
       {
          const IndexType columnIdx = rowIdx + diagonalsOffsets_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
-            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
+            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] );
       }
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );

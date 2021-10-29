@@ -14,10 +14,12 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
-#include <TNL/Algorithms/Segments/CSRScalarKernel.h>
-#include <TNL/Algorithms/Segments/CSRVectorKernel.h>
-#include <TNL/Algorithms/Segments/CSRHybridKernel.h>
-#include <TNL/Algorithms/Segments/CSRAdaptiveKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRScalarKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRVectorKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRHybridKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRLightKernel.h>
+#include <TNL/Algorithms/Segments/Kernels/CSRAdaptiveKernel.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -51,13 +53,13 @@ class CSRView
       CSRView( const OffsetsView& offsets, const KernelView& kernel );
 
       __cuda_callable__
-      CSRView( const OffsetsView&& offsets, const KernelView&& kernel );
+      CSRView( OffsetsView&& offsets, KernelView&& kernel );
 
       __cuda_callable__
       CSRView( const CSRView& csr_view );
 
       __cuda_callable__
-      CSRView( const CSRView&& csr_view );
+      CSRView( CSRView&& csr_view );
 
       static String getSerializationType();
 
@@ -115,16 +117,22 @@ class CSRView
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
+
+      template< typename Function >
+      void sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const;
+
+      template< typename Function >
+      void sequentialForAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       CSRView& operator=( const CSRView& view );
 
@@ -132,12 +140,25 @@ class CSRView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< CSRView, Fetch > print( Fetch&& fetch ) const;
+
+      KernelType& getKernel() { return kernel; }
+
+      const KernelType& getKernel() const { return kernel; }
+
    protected:
 
       OffsetsView offsets;
 
       KernelView kernel;
 };
+
+
+template< typename Device,
+          typename Index,
+          typename Kernel >
+std::ostream& operator<<( std::ostream& str, const CSRView< Device, Index, Kernel >& segments ) { return printSegments( str, segments ); }
 
 template< typename Device,
           typename Index >
@@ -148,8 +169,13 @@ template< typename Device,
 using CSRViewVector = CSRView< Device, Index, CSRVectorKernel< Index, Device > >;
 
 template< typename Device,
+          typename Index,
+          int ThreadsInBlock = 256 >
+using CSRViewHybrid = CSRView< Device, Index, CSRHybridKernel< Index, Device, ThreadsInBlock > >;
+
+template< typename Device,
           typename Index >
-using CSRViewHybrid = CSRView< Device, Index, CSRHybridKernel< Index, Device > >;
+using CSRViewLight = CSRView< Device, Index, CSRLightKernel< Index, Device > >;
 
 template< typename Device,
           typename Index >

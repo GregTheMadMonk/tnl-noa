@@ -33,10 +33,22 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
+   template< typename SizesContainer >
 CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const SegmentsSizes& segmentsSizes )
+CSR( const SizesContainer& segmentsSizes )
 {
    this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename ListIndex >
+CSR< Device, Index, Kernel, IndexAllocator >::
+CSR( const std::initializer_list< ListIndex >& segmentsSizes )
+{
+   this->setSegmentsSizes( Containers::Vector< IndexType, DeviceType, IndexType >( segmentsSizes ) );
 }
 
 template< typename Device,
@@ -67,7 +79,8 @@ CSR< Device, Index, Kernel, IndexAllocator >::
 getSerializationType()
 {
    return "CSR< [any_device], " +
-      TNL::getSerializationType< IndexType >() +
+      TNL::getSerializationType< IndexType >() + ", " +
+      // FIXME: the serialized data do not depend on the the kernel type so it should not be in the serialization type
       TNL::getSerializationType< KernelType >() + " >";
 }
 
@@ -207,7 +220,7 @@ template< typename Device,
           typename IndexAllocator >
 auto
 CSR< Device, Index, Kernel, IndexAllocator >::
-getOffsets() const -> const OffsetsHolder&
+getOffsets() const -> const OffsetsContainer&
 {
    return this->offsets;
 }
@@ -218,7 +231,7 @@ template< typename Device,
           typename IndexAllocator >
 auto
 CSR< Device, Index, Kernel, IndexAllocator >::
-getOffsets() -> OffsetsHolder&
+getOffsets() -> OffsetsContainer&
 {
    return this->offsets;
 }
@@ -266,33 +279,57 @@ template< typename Device,
    template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
-   this->getConstView().forEachSegment( f );
+   this->getConstView().forAllSegments( f );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+sequentialForSegments( IndexType begin, IndexType end, Function&& f ) const
 {
-   this->getConstView().segmentsReduction( first, last, fetch, reduction, keeper, zero, args... );
+   this->getConstView().sequentialForSegments( begin, end, f );
 }
 
 template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Function >
 void
 CSR< Device, Index, Kernel, IndexAllocator >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+sequentialForAllSegments( Function&& f ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->getConstView().sequentialForAllSegments( f );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
+{
+   this->getConstView().reduceSegments( first, last, fetch, reduction, keeper, zero );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+void
+CSR< Device, Index, Kernel, IndexAllocator >::
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
+{
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -330,6 +367,18 @@ load( File& file )
 {
    file >> this->offsets;
    this->kernel.init( this->offsets );
+}
+
+template< typename Device,
+          typename Index,
+          typename Kernel,
+          typename IndexAllocator >
+      template< typename Fetch >
+auto
+CSR< Device, Index, Kernel, IndexAllocator >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< CSR, Fetch >
+{
+   return SegmentsPrinter< CSR, Fetch >( *this, fetch );
 }
 
       } // namespace Segments

@@ -30,7 +30,7 @@ class SlicedEllpack
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = SlicedEllpackView< Device, Index, Organization, SliceSize >;
@@ -43,7 +43,11 @@ class SlicedEllpack
 
       SlicedEllpack();
 
-      SlicedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );
+      template< typename SizesContainer >
+      SlicedEllpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
       SlicedEllpack( const SlicedEllpack& segments );
 
@@ -60,7 +64,7 @@ class SlicedEllpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void reset();
@@ -103,16 +107,16 @@ class SlicedEllpack
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       SlicedEllpack& operator=( const SlicedEllpack& source ) = default;
 
@@ -123,12 +127,22 @@ class SlicedEllpack
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< SlicedEllpack, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType size, alignedSize, segmentsCount;
 
-      OffsetsHolder sliceOffsets, sliceSegmentSizes;
+      OffsetsContainer sliceOffsets, sliceSegmentSizes;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization,
+          int SliceSize >
+std::ostream& operator<<( std::ostream& str, const SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
 
       } // namespace Segements
    }  // namespace Algorithms

@@ -35,7 +35,7 @@ getPerformer()
 
 template< typename Solver, typename VectorPointer >
 void
-benchmarkSolver( Benchmark& benchmark,
+benchmarkSolver( Benchmark<>& benchmark,
                  const Config::ParameterContainer& parameters,
                  VectorPointer& u )
 {

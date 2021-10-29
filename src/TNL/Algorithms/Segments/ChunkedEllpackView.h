@@ -17,6 +17,7 @@
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackSegmentView.h>
 #include <TNL/Algorithms/Segments/detail/ChunkedEllpack.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -32,7 +33,7 @@ class ChunkedEllpackView
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       using ConstOffsetsView = typename OffsetsView::ConstViewType;
       using ViewType = ChunkedEllpackView;
       template< typename Device_, typename Index_ >
@@ -41,7 +42,7 @@ class ChunkedEllpackView
       using SegmentViewType = ChunkedEllpackSegmentView< IndexType, Organization >;
       using ChunkedEllpackSliceInfoType = detail::ChunkedEllpackSliceInfo< IndexType >;
       using ChunkedEllpackSliceInfoAllocator = typename Allocators::Default< Device >::template Allocator< ChunkedEllpackSliceInfoType >;
-      using ChunkedEllpackSliceInfoContainer = Containers::Array< ChunkedEllpackSliceInfoType, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
+      using ChunkedEllpackSliceInfoContainer = Containers::Array< typename TNL::copy_const< ChunkedEllpackSliceInfoType >::template from< Index >::type, DeviceType, IndexType, ChunkedEllpackSliceInfoAllocator >;
       using ChunkedEllpackSliceInfoContainerView = typename ChunkedEllpackSliceInfoContainer::ViewType;
 
       static constexpr bool havePadding() { return true; };
@@ -135,20 +136,23 @@ class ChunkedEllpackView
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       ChunkedEllpackView& operator=( const ChunkedEllpackView& view );
 
       void save( File& file ) const;
+
+      template< typename Fetch >
+      SegmentsPrinter< ChunkedEllpackView, Fetch > print( Fetch&& fetch ) const;
 
       void printStructure( std::ostream& str ) const;
 
@@ -158,32 +162,28 @@ class ChunkedEllpackView
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
-                typename Real,
-                typename... Args >
+                typename Real >
       __device__
-      void segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+      void reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                                      IndexType first,
                                                      IndexType last,
                                                      Fetch fetch,
                                                      Reduction reduction,
                                                      ResultKeeper keeper,
-                                                     Real zero,
-                                                     Args... args ) const;
+                                                     Real zero ) const;
 
       template< typename Fetch,
                 typename Reduction,
                 typename ResultKeeper,
-                typename Real,
-                typename... Args >
+                typename Real >
       __device__
-      void segmentsReductionKernel( IndexType gridIdx,
+      void reduceSegmentsKernel( IndexType gridIdx,
                                     IndexType first,
                                     IndexType last,
                                     Fetch fetch,
                                     Reduction reduction,
                                     ResultKeeper keeper,
-                                    Real zero,
-                                    Args... args ) const;
+                                    Real zero ) const;
 #endif
 
       IndexType size = 0, storageSize = 0, numberOfSlices = 0;
@@ -216,21 +216,19 @@ class ChunkedEllpackView
                 typename Fetch_,
                 typename Reduction_,
                 typename ResultKeeper_,
-                typename Real_,
-                typename... Args_ >
+                typename Real_ >
       friend __global__
-      void ChunkedEllpackSegmentsReductionKernel( View_ chunkedEllpack,
+      void ChunkedEllpackreduceSegmentsKernel( View_ chunkedEllpack,
                                                   Index_ gridIdx,
                                                   Index_ first,
                                                   Index_ last,
                                                   Fetch_ fetch,
                                                   Reduction_ reduction,
                                                   ResultKeeper_ keeper,
-                                                  Real_ zero,
-                                                  Args_... args );
+                                                  Real_ zero );
 
       template< typename Index_, typename Fetch_, bool B_ >
-      friend struct detail::ChunkedEllpackSegmentsReductionDispatcher;
+      friend struct detail::ChunkedEllpackreduceSegmentsDispatcher;
 #endif
 };
       } // namespace Segments

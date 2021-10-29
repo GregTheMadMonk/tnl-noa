@@ -20,7 +20,7 @@ void forAllElementsExample()
       5,      // number of matrix rows
       5 );    // number of matrix columns
 
-   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, double& value, bool& compute ) {
+   auto f = [=] __cuda_callable__ ( int rowIdx, int localIdx, int columnIdx, double& value ) {
       /***
        * 'forElements' method iterates only over matrix elements lying on given subdiagonals
        * and so we do not need to check anything. The element value can be expressed

@@ -31,10 +31,10 @@ class BiEllpack
       using DeviceType = Device;
       using IndexType = Index;
       static constexpr bool getOrganization() { return Organization; }
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using OffsetsHolderView = typename OffsetsHolder::ViewType;
+      using OffsetsContainer = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using OffsetsHolderView = typename OffsetsContainer::ConstViewType;
       using ConstOffsetsHolderView = typename OffsetsHolderView::ConstViewType;
-      using SegmentsSizes = OffsetsHolder;
+      using SegmentsSizes = OffsetsContainer;
       using SegmentViewType = BiEllpackSegmentView< IndexType, Organization >;
 
       static constexpr int getWarpSize() { return WarpSize; };
@@ -293,10 +293,10 @@ template< typename Index,
           int BlockDim = 256,
           int WarpSize = 32,
           bool HasAllParameters = detail::CheckFetchLambda< Index, Fetch >::hasAllParameters() >
-struct BiEllpackSegmentsReductionDispatcher{};
+struct BiEllpackreduceSegmentsDispatcher{};
 
 template< typename Index, typename Fetch, int BlockDim, int WarpSize >
-struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, true >
+struct BiEllpackreduceSegmentsDispatcher< Index, Fetch, BlockDim, WarpSize, true >
 {
    template< typename View,
              typename Reduction,
@@ -314,12 +314,12 @@ struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, t
                      Real zero,
                      Args... args )
    {
-      biEllpack.template segmentsReductionKernelWithAllParameters< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      biEllpack.template reduceSegmentsKernelWithAllParameters< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
 template< typename Index, typename Fetch, int BlockDim, int WarpSize >
-struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, false >
+struct BiEllpackreduceSegmentsDispatcher< Index, Fetch, BlockDim, WarpSize, false >
 {
    template< typename View,
              typename Reduction,
@@ -337,7 +337,7 @@ struct BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim, WarpSize, f
                      Real zero,
                      Args... args )
    {
-      biEllpack.template segmentsReductionKernel< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+      biEllpack.template reduceSegmentsKernel< Fetch, Reduction, ResultKeeper, Real, BlockDim, Args... >( gridIdx, first, last, fetch, reduction, keeper, zero, args... );
    }
 };
 
@@ -350,7 +350,7 @@ template< typename View,
           int BlockDim,
           typename... Args >
 __global__
-void BiEllpackSegmentsReductionKernel( View biEllpack,
+void BiEllpackreduceSegmentsKernel( View biEllpack,
                                        Index gridIdx,
                                        Index first,
                                        Index last,
@@ -360,7 +360,7 @@ void BiEllpackSegmentsReductionKernel( View biEllpack,
                                        Real zero,
                                        Args... args )
 {
-   BiEllpackSegmentsReductionDispatcher< Index, Fetch, BlockDim >::exec( biEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+   BiEllpackreduceSegmentsDispatcher< Index, Fetch, BlockDim >::exec( biEllpack, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
 }
 #endif
 

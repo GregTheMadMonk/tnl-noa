@@ -216,7 +216,7 @@ and exclusive prefix sum of the same sequence is
 [0,1,4,9,16,25,36]
 ```
 
-Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on summation, however product or logical operations could be handy as well. In TNL, scan is implemented in similar way as reduction and uses the same functors as the reduction operation. The following example shows how it works:
+Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) have many different [applications](https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf) but they are usually applied only on summation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in similar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
 
 ```
 inplaceInclusiveScan( array, 0, array.getSize(), TNL::Plus{} );

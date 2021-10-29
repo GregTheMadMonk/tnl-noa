@@ -162,7 +162,7 @@ setDimensions( const IndexType rows,
 {
    Matrix< Real, Device, Index, RealAllocator >::setDimensions( rows, columns );
    this->segments.setSegmentsSizes( rows, columns );
-   this->values.setSize( rows * columns );
+   this->values.setSize( this->segments.getStorageSize() );
    this->values = 0.0;
    this->view = this->getView();
 }
@@ -1139,7 +1139,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
    auto this_view = this->view;
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };
       matrix.forAllElements( f );
@@ -1162,7 +1162,7 @@ operator=( const DenseMatrixView< RHSReal, RHSDevice, RHSIndex, RHSOrganization 
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
             const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + columnIdx;
             matrixValuesBuffer_view[ bufferIdx ] = value;
          };
@@ -1214,7 +1214,7 @@ operator=( const RHSMatrix& matrix )
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIdx, const RHSRealType& value ) mutable {
          if( value != 0.0 && columnIdx != padding_index )
             values_view[ segments_view.getGlobalIndex( rowIdx, columnIdx ) ] = value;
       };
@@ -1244,7 +1244,7 @@ operator=( const RHSMatrix& matrix )
 
          ////
          // Copy matrix elements into buffer
-         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
             if( columnIndex != padding_index )
             {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
@@ -1284,7 +1284,7 @@ template< typename Real,
    template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
 bool
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-operator==( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const
+operator==( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const
 {
    return( this->getRows() == matrix.getRows() &&
            this->getColumns() == matrix.getColumns() &&
@@ -1299,9 +1299,63 @@ template< typename Real,
    template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
 bool
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
-operator!=( const DenseMatrix< Real_, Device_, Index_, Organization >& matrix ) const
+operator!=( const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator_ >& matrix ) const
 {
    return ! ( *this == matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator==( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return( this->getRows() == matrix.getRows() &&
+           this->getColumns() == matrix.getColumns() &&
+           this->getValues() == matrix.getValues() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator!=( const DenseMatrixView< Real_, Device_, Index_, Organization >& matrix ) const
+{
+   return ! ( *this == matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Matrix >
+bool
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator==( const Matrix& m ) const
+{
+   return ( this->view == m );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          typename RealAllocator >
+   template< typename Matrix >
+bool
+DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
+operator!=( const Matrix& m ) const
+{
+   return ( this->view != m );
 }
 
 template< typename Real,
@@ -1378,6 +1432,24 @@ std::ostream& operator<< ( std::ostream& str, const DenseMatrix< Real, Device, I
 {
    matrix.print( str );
    return str;
+}
+
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator==( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix )
+{
+   return rightMatrix == leftMatrix;
+}
+
+template< typename Real, typename Device, typename Index,
+          typename Real_, typename Device_, typename Index_,
+          ElementsOrganization Organization, typename RealAllocator >
+bool operator!=( const DenseMatrixView< Real, Device, Index, Organization >& leftMatrix,
+                 const DenseMatrix< Real_, Device_, Index_, Organization, RealAllocator >& rightMatrix )
+{
+   return rightMatrix != leftMatrix;
 }
 
 } // namespace Matrices

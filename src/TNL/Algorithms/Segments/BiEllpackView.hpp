@@ -97,6 +97,7 @@ String
 BiEllpackView< Device, Index, Organization, WarpSize >::
 getSerializationType()
 {
+   // FIXME: the serialized data DEPEND on the Organization and WarpSize parameters, so it should be reflected in the serialization type
    return "BiEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
 }
 
@@ -275,9 +276,8 @@ forElements( IndexType first, IndexType last, Function&& f ) const
       const IndexType groupsCount = detail::BiEllpack< IndexType, DeviceType, Organization, getWarpSize() >::getActiveGroupsCountDirect( segmentsPermutationView, segmentIdx );
       IndexType groupHeight = getWarpSize();
       //printf( "segmentIdx = %d strip = %d firstGroupInStrip = %d rowStripPerm = %d groupsCount = %d \n", segmentIdx, strip, firstGroupInStrip, rowStripPerm, groupsCount );
-      bool compute( true );
       IndexType localIdx( 0 );
-      for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount && compute; groupIdx++ )
+      for( IndexType groupIdx = firstGroupInStrip; groupIdx < firstGroupInStrip + groupsCount; groupIdx++ )
       {
          IndexType groupOffset = groupPointersView[ groupIdx ];
          const IndexType groupSize = groupPointersView[ groupIdx + 1 ] - groupOffset;
@@ -289,14 +289,14 @@ forElements( IndexType first, IndexType last, Function&& f ) const
             {
                if( Organization == RowMajorOrder )
                {
-                  f( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i, compute );
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm * groupWidth + i );
                }
                else
                {
                   /*printf( "segmentIdx = %d localIdx = %d globalIdx = %d groupIdx = %d groupSize = %d groupWidth = %d\n",
                      segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight,
                      groupIdx, groupSize, groupWidth );*/
-                  f( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight, compute );
+                  f( segmentIdx, localIdx, groupOffset + rowStripPerm + i * groupHeight );
                }
                localIdx++;
             }
@@ -343,7 +343,7 @@ template< typename Device,
    template< typename Function >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-forEachSegment( Function&& f ) const
+forAllSegments( Function&& f ) const
 {
    this->forSegments( 0, this->getSegmentsCount(), f );
 }
@@ -352,10 +352,10 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
    using RealType = typename detail::FetchLambdaAdapter< Index, Fetch >::ReturnType;
    if( this->getStorageSize() == 0 )
@@ -425,9 +425,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reductio
          dim3 cudaGridSize = Cuda::getMaxGridSize();
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-         detail::BiEllpackSegmentsReductionKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim, Args...  >
+         detail::BiEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero, args... );
+            ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
          cudaThreadSynchronize();
          TNL_CHECK_CUDA_DEVICE;
       }
@@ -439,12 +439,12 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
+reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const
 {
-   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+   this->reduceSegments( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero );
 }
 
 template< typename Device,
@@ -482,6 +482,18 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
+      template< typename Fetch >
+auto
+BiEllpackView< Device, Index, Organization, WarpSize >::
+print( Fetch&& fetch ) const -> SegmentsPrinter< BiEllpackView, Fetch >
+{
+   return SegmentsPrinter< BiEllpackView, Fetch >( *this, fetch );
+}
+
+template< typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int WarpSize >
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
 printStructure( std::ostream& str ) const
@@ -513,21 +525,19 @@ template< typename Device,
              typename Reduction,
              typename ResultKeeper,
              typename Real,
-             int BlockDim,
-             typename... Args >
+             int BlockDim >
 __device__
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReductionKernelWithAllParameters( IndexType gridIdx,
+reduceSegmentsKernelWithAllParameters( IndexType gridIdx,
                                           IndexType first,
                                           IndexType last,
                                           Fetch fetch,
                                           Reduction reduction,
                                           ResultKeeper keeper,
-                                          Real zero,
-                                          Args... args ) const
+                                          Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >() ) );
    const IndexType segmentIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + first;
    if( segmentIdx >= last )
       return;
@@ -569,21 +579,19 @@ template< typename Device,
              typename Reduction,
              typename ResultKeeper,
              typename Real,
-             int BlockDim,
-             typename... Args >
+             int BlockDim >
 __device__
 void
 BiEllpackView< Device, Index, Organization, WarpSize >::
-segmentsReductionKernel( IndexType gridIdx,
+reduceSegmentsKernel( IndexType gridIdx,
                          IndexType first,
                          IndexType last,
                          Fetch fetch,
                          Reduction reduction,
                          ResultKeeper keeper,
-                         Real zero,
-                         Args... args ) const
+                         Real zero ) const
 {
-   using RealType = decltype( fetch( IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), std::declval< bool& >() ) );
    Index segmentIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + first;
 
    const IndexType strip = segmentIdx >> getLogWarpSize();

@@ -791,7 +791,7 @@ void test_ForElements()
    const IndexType rows = 8;
 
    Matrix m( rows, cols  );
-   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value, bool compute ) mutable {
+   m.forAllElements( [] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, RealType& value ) mutable {
       value = rowIdx + 1.0;
    } );
 
@@ -995,6 +995,48 @@ void test_VectorProduct()
     EXPECT_EQ( outVector.getElement( 3 ), 116 );
     EXPECT_EQ( outVector.getElement( 4 ), 148 );
 }
+
+template< typename Matrix >
+void test_LargeVectorProduct()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   if( std::is_same< IndexType, short >::value )
+      return;
+
+   const IndexType rows = 5000;
+   const IndexType cols = 5000;
+
+   Matrix m( rows, cols );
+   m.forAllElements(
+      [] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType columnIdx_, RealType& value ) {
+         value = columnIdx + 1.0;
+      }
+   );
+
+
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+
+   VectorType inVector( cols );
+   inVector.forAllElements( [] __cuda_callable__ ( IndexType i, RealType& value ) {
+      value = 1.0;
+   } );
+
+   VectorType outVector( rows, 0.0 );
+
+   m.vectorProduct( inVector, outVector);
+
+   for( IndexType i = 0; i < rows; i++ )
+   {
+      //RealType diag = ( i % 2 == 1 ? cols - 1 : -cols + 1 );
+      //RealType non_diag = ( cols % 2 == 0 ? 0.0 : 1.0 );
+      RealType rcols = cols;
+      EXPECT_EQ( outVector.getElement( i ),  ( 0.5 * rcols ) * ( rcols + 1.0 ) );
+   }
+}
+
 
 template< typename Matrix >
 void test_AddMatrix()
@@ -1620,6 +1662,13 @@ TYPED_TEST( MatrixTest, vectorProductTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_VectorProduct< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, largeVectorProductTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_LargeVectorProduct< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, addMatrixTest )

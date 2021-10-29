@@ -154,8 +154,8 @@ Sort by comparison formats
 formats_comparison = defaultdict( list )
 for format in gpu_comparison_formats:
    df.sort_values(by=[f"{format} Bandwidth"],inplace=True,ascending=False)
-   formats_comparison[ format ] = df[format, "GPU", "bandwidth"].tolist();
-   formats_comparison[ gpu_comparison_formats[ format ] ] = df[gpu_comparison_formats[ format ], "GPU", "bandwidth"].tolist();
+   formats_comparison[ format ] = df[format, "GPU", "bandwidth"].tolist()
+   formats_comparison[ gpu_comparison_formats[ format ] ] = df[gpu_comparison_formats[ format ], "GPU", "bandwidth"].tolist()
 
 """
 Writting gnuplot source files

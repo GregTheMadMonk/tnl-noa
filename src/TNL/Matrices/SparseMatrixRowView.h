@@ -14,6 +14,7 @@
 
 #include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Matrices/MatrixRowViewIterator.h>
+#include <TNL/Matrices/details/SparseMatrixRowViewValueGetter.h>
 
 namespace TNL {
 namespace Matrices {
@@ -24,7 +25,6 @@ namespace Matrices {
  * \tparam SegmentView is a segment view of segments representing the matrix format.
  * \tparam ValuesView is a vector view storing the matrix elements values.
  * \tparam ColumnsIndexesView is a vector view storing the column indexes of the matrix element.
- * \tparam isBinary tells if the the parent matrix is a binary matrix.
  *
  * See \ref SparseMatrix and \ref SparseMatrixView.
  *
@@ -40,11 +40,16 @@ namespace Matrices {
  */
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
+          typename ColumnsIndexesView >
 class SparseMatrixRowView
 {
    public:
+
+      /**
+       * \brief Tells whether the parent matrix is a binary matrix.
+       * @return `true` if the matrix is binary.
+       */
+      static constexpr bool isBinary() { return std::is_same< std::remove_const_t< RealType >, bool >::value; };
 
       /**
        * \brief The type of matrix elements.
@@ -84,12 +89,12 @@ class SparseMatrixRowView
       /**
        * \brief Type of sparse matrix row view.
        */
-      using RowView = SparseMatrixRowView< SegmentView, ValuesViewType, ColumnsIndexesViewType, isBinary_ >;
+      using RowView = SparseMatrixRowView< SegmentView, ValuesViewType, ColumnsIndexesViewType >;
 
       /**
        * \brief Type of constant sparse matrix row view.
        */
-      using ConstView = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType, isBinary_ >;
+      using ConstView = SparseMatrixRowView< SegmentView, ConstValuesViewType, ConstColumnsIndexesViewType >;
 
       /**
        * \brief The type of related matrix element.
@@ -101,11 +106,7 @@ class SparseMatrixRowView
        */
       using IteratorType = MatrixRowViewIterator< RowView >;
 
-      /**
-       * \brief Tells whether the parent matrix is a binary matrix.
-       * @return `true` if the matrix is binary.
-       */
-      static constexpr bool isBinary() { return isBinary_; };
+      using ValueGetterType = details::SparseMatrixRowViewValueGetter< SegmentView, ValuesView, ColumnsIndexesView >;
 
       /**
        * \brief Constructor with \e segmentView, \e values and \e columnIndexes.
@@ -163,7 +164,7 @@ class SparseMatrixRowView
        * \return constant reference to the matrix element value.
        */
       __cuda_callable__
-      const RealType& getValue( const IndexType localIdx ) const;
+      auto getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstResultType;
 
       /**
        * \brief Returns non-constants reference to value of an element with given rank in the row.
@@ -173,7 +174,7 @@ class SparseMatrixRowView
        * \return non-constant reference to the matrix element value.
        */
       __cuda_callable__
-      RealType& getValue( const IndexType localIdx );
+      auto getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType;
 
       /**
        * \brief Sets a value of matrix element with given rank in the matrix row.
@@ -217,10 +218,9 @@ class SparseMatrixRowView
        */
       template< typename _SegmentView,
                 typename _ValuesView,
-                typename _ColumnsIndexesView,
-                bool _isBinary >
+                typename _ColumnsIndexesView >
       __cuda_callable__
-      bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView, _isBinary >& other ) const;
+      bool operator==( const SparseMatrixRowView< _SegmentView, _ValuesView, _ColumnsIndexesView >& other ) const;
 
       /**
        * \brief Returns iterator pointing at the beginning of the matrix row.
@@ -254,6 +254,9 @@ class SparseMatrixRowView
       __cuda_callable__
       const IteratorType cend() const;
 
+      __cuda_callable__
+      IndexType getPaddingIndex() const { return -1; };
+
    protected:
 
       SegmentViewType segmentView;
@@ -272,9 +275,8 @@ class SparseMatrixRowView
  */
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView,
-          bool isBinary_ >
-std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >& row );
+          typename ColumnsIndexesView >
+std::ostream& operator<<( std::ostream& str, const SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >& row );
 
 } // namespace Matrices
 } // namespace TNL

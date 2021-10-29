@@ -15,6 +15,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -32,7 +33,7 @@ class SlicedEllpackView
       using IndexType = std::remove_const_t< Index >;
       using OffsetsView = typename Containers::VectorView< Index, DeviceType, IndexType >;
       static constexpr int getSliceSize() { return SliceSize; }
-      static constexpr bool getOrganization() { return Organization; }
+      static constexpr ElementsOrganization getOrganization() { return Organization; }
       template< typename Device_, typename Index_ >
       using ViewTemplate = SlicedEllpackView< Device_, Index_, Organization, SliceSize >;
       using ViewType = SlicedEllpackView;
@@ -104,16 +105,16 @@ class SlicedEllpackView
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       SlicedEllpackView& operator=( const SlicedEllpackView& view );
 
@@ -121,12 +122,21 @@ class SlicedEllpackView
 
       void load( File& file );
 
+      template< typename Fetch >
+      SegmentsPrinter< SlicedEllpackView, Fetch > print( Fetch&& fetch ) const;
+
    protected:
 
       IndexType size, alignedSize, segmentsCount;
 
       OffsetsView sliceOffsets, sliceSegmentSizes;
 };
+
+template <typename Device,
+          typename Index,
+          ElementsOrganization Organization,
+          int SliceSize >
+std::ostream& operator<<( std::ostream& str, const SlicedEllpackView< Device, Index, Organization, SliceSize >& segments ) { return printSegments( str, segments ); }
 
       } // namespace Segements
    }  // namespace Algorithms

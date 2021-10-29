@@ -28,7 +28,7 @@ namespace Benchmarks {
 class LoggingRowElements
 {
    public:
-   
+
       LoggingRowElements()
       {
          stream << std::setprecision( 6 ) << std::fixed;
@@ -81,11 +81,15 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
-   using HeaderElements = std::vector< String >;
+   using CommonLogs = std::vector< std::pair< const char*, String > >;
+
+   using HeaderElements = std::vector< std::pair< String, int > >;
    using RowElements = LoggingRowElements;
 
-   Logging( int verbose = true )
-   : verbose(verbose)
+   Logging( int verbose = true,
+            String outputMode = "",
+            bool logFileAppend = false )
+   : verbose(verbose), outputMode( outputMode )
    {}
 
    void
@@ -101,6 +105,19 @@ public:
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
       log << ": title = " << title << std::endl;
    }
+
+   void addCommonLogs( const CommonLogs& logs )
+   {
+      for( auto log : logs )
+      {
+         if( verbose )
+            std::cout << log.first << " = " << log.second << std::endl;
+      }
+   };
+
+   void addLogsMetadata( const std::vector< String >& md ){};
+
+   void writeHeader(){};
 
    void
    writeMetadata( const MetadataMap & metadata )
@@ -131,7 +148,7 @@ public:
          std::cout << std::setw( 15 ) << "";
 
          for( auto & it : subElements ) {
-            std::cout << std::setw( 15 ) << it;
+            std::cout << std::setw( 15 ) << it.first;
          }
          std::cout << std::endl;
 
@@ -160,7 +177,7 @@ public:
 
       log << header_indent << " " << spanningElement << std::endl;
       for( auto & it : subElements ) {
-         log << header_indent << "! " << it << std::endl;
+         log << header_indent << "! " << it.first << std::endl;
       }
 
       if( horizontalGroups.size() > 0 ) {
@@ -279,6 +296,8 @@ protected:
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;
+
+   String outputMode;
 };
 
 } // namespace Benchmarks

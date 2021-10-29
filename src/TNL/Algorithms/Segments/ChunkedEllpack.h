@@ -14,6 +14,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/Segments/ChunkedEllpackView.h>
 #include <TNL/Algorithms/Segments/SegmentView.h>
+#include <TNL/Algorithms/Segments/SegmentsPrinting.h>
 
 namespace TNL {
    namespace Algorithms {
@@ -29,12 +30,12 @@ class ChunkedEllpack
 
       using DeviceType = Device;
       using IndexType = std::remove_const_t< Index >;
-      using OffsetsHolder = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
+      using OffsetsContainer = Containers::Vector< Index, DeviceType, IndexType, IndexAllocator >;
       static constexpr ElementsOrganization getOrganization() { return Organization; }
       using ViewType = ChunkedEllpackView< Device, Index, Organization >;
       template< typename Device_, typename Index_ >
       using ViewTemplate = ChunkedEllpackView< Device_, Index_, Organization >;
-      using ConstViewType = ChunkedEllpackView< Device, std::add_const_t< IndexType >, Organization >;
+      using ConstViewType = typename ViewType::ConstViewType;
       using SegmentViewType = typename ViewType::SegmentViewType;
       using ChunkedEllpackSliceInfoType = typename ViewType::ChunkedEllpackSliceInfoType; // detail::ChunkedEllpackSliceInfo< IndexType >;
       //TODO: using ChunkedEllpackSliceInfoAllocator = typename IndexAllocatorType::retype< ChunkedEllpackSliceInfoType >;
@@ -45,7 +46,11 @@ class ChunkedEllpack
 
       ChunkedEllpack() = default;
 
-      ChunkedEllpack( const Containers::Vector< IndexType, DeviceType, IndexType >& sizes );
+      template< typename SizesContainer >
+      ChunkedEllpack( const SizesContainer& sizes );
+
+      template< typename ListIndex >
+      ChunkedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
       ChunkedEllpack( const ChunkedEllpack& segments );
 
@@ -68,7 +73,7 @@ class ChunkedEllpack
       /**
        * \brief Set sizes of particular segments.
        */
-      template< typename SizesHolder = OffsetsHolder >
+      template< typename SizesHolder = OffsetsContainer >
       void setSegmentsSizes( const SizesHolder& sizes );
 
       void reset();
@@ -106,16 +111,16 @@ class ChunkedEllpack
       void forSegments( IndexType begin, IndexType end, Function&& f ) const;
 
       template< typename Function >
-      void forEachSegment( Function&& f ) const;
+      void forAllSegments( Function&& f ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real >
+      void reduceAllSegments( Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero ) const;
 
       ChunkedEllpack& operator=( const ChunkedEllpack& source ) = default;
 
@@ -125,6 +130,9 @@ class ChunkedEllpack
       void save( File& file ) const;
 
       void load( File& file );
+
+      template< typename Fetch >
+      SegmentsPrinter< ChunkedEllpack, Fetch > print( Fetch&& fetch ) const;
 
       void printStructure( std::ostream& str ); // TODO const;
 
@@ -146,19 +154,19 @@ class ChunkedEllpack
        * For each segment, this keeps index of the slice which contains the
        * segment.
        */
-      OffsetsHolder rowToSliceMapping;
+      OffsetsContainer rowToSliceMapping;
 
       /**
        * For each row, this keeps index of the first chunk within a slice.
        */
-      OffsetsHolder rowToChunkMapping;
+      OffsetsContainer rowToChunkMapping;
 
-      OffsetsHolder chunksToSegmentsMapping;
+      OffsetsContainer chunksToSegmentsMapping;
 
       /**
        * Keeps index of the first segment index.
        */
-      OffsetsHolder rowPointers;
+      OffsetsContainer rowPointers;
 
       ChunkedEllpackSliceInfoContainer slices;
 
@@ -167,6 +175,13 @@ class ChunkedEllpack
       template< typename Device_, typename Index_, typename IndexAllocator_, ElementsOrganization Organization_ >
       friend class ChunkedEllpack;
 };
+
+template <typename Device,
+          typename Index,
+          typename IndexAllocator,
+          ElementsOrganization Organization >
+std::ostream& operator<<( std::ostream& str, const ChunkedEllpack< Device, Index, IndexAllocator, Organization >& segments ) { return printSegments( segments, str ); }
+
 
       } // namespace Segments
    }  // namespace Algorithms
