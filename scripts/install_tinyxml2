@@ -20,7 +20,16 @@ mkdir -p "build-$pkgname"
 pushd "build-$pkgname"
 
 if [[ ! -f "$pkgver.tar.gz" ]]; then
-   curl -gqb "" -fLC - --retry 3 --retry-delay 3 -o "$pkgver.tar.gz" "$url"
+    if [[ $(command -v curl) ]]; then
+        curl -gqb "" -fLC - --retry 3 --retry-delay 3 -o "$pkgver.tar.gz" "$url"
+    elif [[ $(command -v wget) ]]; then
+        wget -q --no-glob --no-config --continue --tries=3 --waitretry=3 -O "$pkgver.tar.gz" "$url"
+    else
+        echo "Error: none of curl and wget is available, cannot proceed." >&2
+        echo "You can install either curl or wget in your system and try again." >&2
+        echo "(Or install the tinyxml2 library (libtinyxml2-dev on Ubuntu) so that using this script is not necessary.)" >&2
+        exit 1
+    fi
 fi
 echo -e "$sha256sum\t$pkgver.tar.gz" > "$pkgname.checksum"
 sha256sum --check "$pkgname.checksum"
