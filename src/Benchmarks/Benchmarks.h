@@ -45,12 +45,12 @@ struct BenchmarkResult
 
    virtual HeaderElements getTableHeader() const
    {
-      return HeaderElements( {
-         std::pair< String, int >( "time", 8 ),
-         std::pair< String, int >( "stddev", 8 ),
-         std::pair< String, int >( "stddev/time", 8 ),
-         std::pair< String, int >( "bandwidth", 8 ),
-         std::pair< String, int >( "speedup", 8 ) } );
+      return HeaderElements({ "time", "stddev", "stddev/time", "bandwidth", "speedup" });
+   }
+
+   virtual std::vector< int > getColumnWidthHints() const
+   {
+      return std::vector< int >({ 8, 8, 8, 8, 8 });
    }
 
    virtual RowElements getRowElements() const

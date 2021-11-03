@@ -84,7 +84,7 @@ public:
 
    using CommonLogs = std::vector< std::pair< const char*, String > >;
 
-   using HeaderElements = std::vector< std::pair< String, int > >;
+   using HeaderElements = std::vector< String >;
    using RowElements = LoggingRowElements;
 
    Logging( int verbose = true,
@@ -149,7 +149,7 @@ public:
          std::cout << std::setw( 15 ) << "";
 
          for( auto & it : subElements ) {
-            std::cout << std::setw( 15 ) << it.first;
+            std::cout << std::setw( 15 ) << it;
          }
          std::cout << std::endl;
 
@@ -178,7 +178,7 @@ public:
 
       log << header_indent << " " << spanningElement << std::endl;
       for( auto & it : subElements ) {
-         log << header_indent << "! " << it.first << std::endl;
+         log << header_indent << "! " << it << std::endl;
       }
 
       if( horizontalGroups.size() > 0 ) {

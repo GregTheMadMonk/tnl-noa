@@ -84,9 +84,10 @@ public:
    using MetadataColumns = std::vector<MetadataElement>;
 
    using CommonLogs = std::vector< std::pair< const char*, String > >;
-   using LogsMetadata = std::vector< std::pair< String, int > >;
+   using LogsMetadata = HeaderElements;
+   using WidthHints = std::vector< int >;
 
-   using HeaderElements = std::vector< std::pair< String, int > >;
+   using HeaderElements = std::vector< String >;
    using RowElements = JsonLoggingRowElements;
 
    JsonLogging( int verbose = true,
@@ -113,19 +114,25 @@ public:
       }
    };
 
-   void resetLogsMetada() { this->logsMetadata.clear(); };
+   void resetLogsMetada()
+   {
+      this->logsMetadata.clear();
+      this->widthHints.clear();
+   }
 
-   void addLogsMetadata( const std::vector< std::pair< String, int > >& md )
+   void addLogsMetadata( const LogsMetadata& md, const WidthHints& widths )
    {
       this->logsMetadata.insert( this->logsMetadata.end(), md.begin(), md.end() );
+      this->widthHints.insert( this->widthHints.end(), widths.begin(), widths.end() );
    }
 
    void writeHeader()
    {
+      TNL_ASSERT_EQ( this->logsMetadata.size(), this->widthHints.size(), "" );
       if( verbose )
       {
-         for( auto md : this->logsMetadata )
-            std::cout << std::setw( md.second ) << md.first;
+         for( std::size_t i = 0; i < this->logsMetadata.size(); i++ )
+            std::cout << std::setw( this->widthHints[ i ] ) << this->logsMetadata[ i ];
          std::cout << std::endl;
       }
    }
@@ -147,14 +154,15 @@ public:
          log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
       }
 
-      auto md = this->logsMetadata.begin();
+      std::size_t i = 0;
       for( auto el : rowEls )
       {
          if( verbose )
-            std::cout << std::setw( md->second ) << el;
+            std::cout << std::setw( this->widthHints[ i ] ) << el;
          if( idx++ > 0 )
             log << "," << std::endl;
-         log << "         \"" << md++->first << "\" : \"" << el << "\"";
+         log << "         \"" << this->logsMetadata[ i ] << "\" : \"" << el << "\"";
+         i++;
       }
       log << std::endl << "      }";
       this->lineStarted = true;
@@ -256,6 +264,7 @@ protected:
 
    // new JSON implementation
    LogsMetadata logsMetadata;
+   WidthHints widthHints;
    CommonLogs commonLogs;
    String outputMode;
 
