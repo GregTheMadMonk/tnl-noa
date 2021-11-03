@@ -10,8 +10,10 @@ add_subdirectory( Traversers )
 
 set( headers
          Benchmarks.h
+         Benchmark.hpp
          FunctionTimer.h
          Logging.h
+         JsonLogging.h
 )
 
 install( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Benchmarks )

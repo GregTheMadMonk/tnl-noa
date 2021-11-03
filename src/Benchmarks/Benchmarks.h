@@ -13,14 +13,12 @@
 
 #pragma once
 
-#include "FunctionTimer.h"
 #include "Logging.h"
 
-#include <iostream>
-#include <exception>
 #include <limits>
 
 #include <TNL/String.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 #include <TNL/Devices/Host.h>
 #include <TNL/SystemInfo.h>
@@ -253,4 +251,4 @@ inline typename Benchmark< Logger >::MetadataMap getHardwareMetadata()
 } // namespace Benchmarks
 } // namespace TNL
 
-#include <Benchmarks/Benchmark.hpp>
+#include "Benchmark.hpp"

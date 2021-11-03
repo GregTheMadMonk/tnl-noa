@@ -13,20 +13,11 @@
 
 #pragma once
 
+#include "Benchmarks.h"
 #include "FunctionTimer.h"
-#include "Logging.h"
 
 #include <iostream>
 #include <exception>
-#include <limits>
-
-#include <TNL/String.h>
-
-#include <TNL/Devices/Host.h>
-#include <TNL/SystemInfo.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/MPI/Wrappers.h>
 
 namespace TNL {
 namespace Benchmarks {
