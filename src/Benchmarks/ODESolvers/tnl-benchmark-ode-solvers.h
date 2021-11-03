@@ -248,7 +248,7 @@ main( int argc, char* argv[] )
    Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
+   Logging::MetadataMap metadata = getHardwareMetadata();
 
    const bool status = resolveRealTypes( benchmark, metadata, parameters );
 

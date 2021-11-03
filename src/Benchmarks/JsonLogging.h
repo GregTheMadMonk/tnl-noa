@@ -19,32 +19,16 @@ namespace TNL {
 namespace Benchmarks {
 
 class JsonLogging
+: public Logging
 {
 public:
-   using MetadataElement = std::pair< const char*, String >;
-   using MetadataMap = std::map< const char*, String >;
-   using MetadataColumns = std::vector<MetadataElement>;
-
-   using HeaderElements = std::vector< String >;
-   using RowElements = LoggingRowElements;
-
-   using CommonLogs = std::vector< std::pair< const char*, String > >;
-   using LogsMetadata = HeaderElements;
-   using WidthHints = std::vector< int >;
-
    JsonLogging( int verbose = true,
                 String outputMode = "",
                 bool logFileAppend = false )
-   : verbose(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
+   : Logging(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
    {}
 
-   void
-   setVerbose( int verbose)
-   {
-      this->verbose = verbose;
-   }
-
-   void addCommonLogs( const CommonLogs& logs )
+   virtual void addCommonLogs( const CommonLogs& logs ) override
    {
       this->commonLogs = logs;
       if( verbose )
@@ -56,19 +40,19 @@ public:
       }
    };
 
-   void resetLogsMetada()
+   virtual void resetLogsMetada() override
    {
       this->logsMetadata.clear();
       this->widthHints.clear();
    }
 
-   void addLogsMetadata( const LogsMetadata& md, const WidthHints& widths )
+   virtual void addLogsMetadata( const LogsMetadata& md, const WidthHints& widths ) override
    {
       this->logsMetadata.insert( this->logsMetadata.end(), md.begin(), md.end() );
       this->widthHints.insert( this->widthHints.end(), widths.begin(), widths.end() );
    }
 
-   void writeHeader()
+   virtual void writeHeader() override
    {
       TNL_ASSERT_EQ( this->logsMetadata.size(), this->widthHints.size(), "" );
       if( verbose )
@@ -112,8 +96,8 @@ public:
          std::cout << std::endl;
    }
 
-   void
-   writeTitle( const String & title )
+   virtual void
+   writeTitle( const String & title ) override
    {
       if( outputMode == "append" )
          return;
@@ -122,8 +106,8 @@ public:
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
    }
 
-   void
-   writeMetadata( const MetadataMap & metadata )
+   virtual void
+   writeMetadata( const MetadataMap & metadata ) override
    {
       if( outputMode == "append" )
          return;
@@ -140,32 +124,32 @@ public:
          std::cout << std::endl;
    }
 
-   void
+   virtual void
    writeTableHeader( const String & spanningElement,
-                     const HeaderElements & subElements )
+                     const HeaderElements & subElements ) override
    {
    }
 
-   void
+   virtual void
    writeTableRow( const String & spanningElement,
-                  const RowElements & subElements )
+                  const RowElements & subElements ) override
    {
       writeRow( subElements );
    }
 
-   void
+   virtual void
    writeErrorMessage( const char* msg,
-                      int colspan = 1 )
+                      int colspan = 1 ) override
    {
       log << "\"error\" : \"" << msg << "\"" << std::endl;
    }
 
-   void
-   closeTable()
+   virtual void
+   closeTable() override
    {
    }
 
-   bool save( std::ostream & logFile )
+   virtual bool save( std::ostream & logFile ) override
    {
       if( ! this->logFileAppend )
       {
@@ -199,7 +183,6 @@ protected:
    std::string header_indent;
    std::string body_indent;
 
-   int verbose;
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;

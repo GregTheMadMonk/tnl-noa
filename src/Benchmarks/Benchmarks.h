@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "Logging.h"
+#include "CustomLogging.h"
 
 #include <limits>
 
@@ -32,11 +32,10 @@ namespace Benchmarks {
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
 
-template< typename Logger = Logging >
 struct BenchmarkResult
 {
-   using HeaderElements = typename Logger::HeaderElements;
-   using RowElements = typename Logger::RowElements;
+   using HeaderElements = typename Logging::HeaderElements;
+   using RowElements = typename Logging::RowElements;
 
    double time = std::numeric_limits<double>::quiet_NaN();
    double stddev = std::numeric_limits<double>::quiet_NaN();
@@ -65,7 +64,7 @@ struct BenchmarkResult
    }
 };
 
-template< typename Logger = Logging >
+template< typename Logger = CustomLogging >
 class Benchmark
 : protected Logger
 {
@@ -139,7 +138,7 @@ class Benchmark
       double time( ResetFunction reset,
                   const String & performer,
                   ComputeFunction & compute,
-                  BenchmarkResult< Logger > & result );
+                  BenchmarkResult & result );
 
       template< typename Device,
                typename ResetFunction,
@@ -148,7 +147,7 @@ class Benchmark
                         const String & performer,
                         ComputeFunction & compute );
       /*{
-         BenchmarkResult< Logger > result;
+         BenchmarkResult result;
          return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
       }*/
 
@@ -159,7 +158,7 @@ class Benchmark
                typename ComputeFunction >
       double time( const String & performer,
                   ComputeFunction & compute,
-                  BenchmarkResult< Logger > & result );
+                  BenchmarkResult & result );
 
       template< typename Device,
                typename ComputeFunction >
@@ -195,8 +194,7 @@ class Benchmark
 };
 
 
-template< typename Logger >
-inline typename Benchmark< Logger >::MetadataMap getHardwareMetadata()
+inline typename Logging::MetadataMap getHardwareMetadata()
 {
    const int cpu_id = 0;
    const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
@@ -218,7 +216,7 @@ inline typename Benchmark< Logger >::MetadataMap getHardwareMetadata()
       nproc = TNL::MPI::GetSize();
 #endif
 
-   typename Benchmark< Logger >::MetadataMap metadata {
+   typename Logging::MetadataMap metadata {
        { "host name", SystemInfo::getHostname() },
        { "architecture", SystemInfo::getArchitecture() },
        { "system", SystemInfo::getSystemName() },

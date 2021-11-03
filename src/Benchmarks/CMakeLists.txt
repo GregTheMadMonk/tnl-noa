@@ -13,6 +13,7 @@ set( headers
          Benchmark.hpp
          FunctionTimer.h
          Logging.h
+         CustomLogging.h
          JsonLogging.h
 )
 

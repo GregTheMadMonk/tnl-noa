@@ -163,7 +163,7 @@ Benchmark< Logger >::
 time( ResetFunction reset,
       const String & performer,
       ComputeFunction & compute,
-      BenchmarkResult< Logger > & result )
+      BenchmarkResult & result )
 {
    result.time = std::numeric_limits<double>::quiet_NaN();
    result.stddev = std::numeric_limits<double>::quiet_NaN();
@@ -210,7 +210,7 @@ time( ResetFunction reset,
       const String& performer,
       ComputeFunction& compute )
 {
-   BenchmarkResult< Logger > result;
+   BenchmarkResult result;
    return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
 }
 
@@ -221,7 +221,7 @@ double
 Benchmark< Logger >::
 time( const String & performer,
       ComputeFunction & compute,
-      BenchmarkResult< Logger > & result )
+      BenchmarkResult & result )
 {
    result.time = std::numeric_limits<double>::quiet_NaN();
    result.stddev = std::numeric_limits<double>::quiet_NaN();
@@ -259,7 +259,7 @@ Benchmark< Logger >::
 time( const String & performer,
       ComputeFunction & compute )
 {
-   BenchmarkResult< Logger > result;
+   BenchmarkResult result;
    return time< Device, ComputeFunction >( performer, compute, result );
 }
 

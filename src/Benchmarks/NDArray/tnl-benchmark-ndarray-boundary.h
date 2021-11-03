@@ -446,7 +446,7 @@ int main( int argc, char* argv[] )
    Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
+   Logging::MetadataMap metadata = getHardwareMetadata();
 
    const String devices = parameters.getParameter< String >( "devices" );
    if( devices == "all" || devices == "host" )

@@ -185,7 +185,7 @@ main( int argc, char* argv[] )
    Benchmark<> benchmark( loops, verbose );
 
    // prepare global metadata
-   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
+   Logging::MetadataMap metadata = getHardwareMetadata();
 
    if( precision == "all" || precision == "float" )
       runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, elementsPerRow );
