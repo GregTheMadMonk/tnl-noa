@@ -13,68 +13,10 @@
 
 #pragma once
 
-#include <list>
-#include <map>
-#include <vector>
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <sstream>
-
-#include <TNL/String.h>
+#include "Logging.h"
 
 namespace TNL {
 namespace Benchmarks {
-
-class JsonLoggingRowElements
-{
-   public:
-
-      JsonLoggingRowElements()
-      {
-         stream << std::setprecision( 6 ) << std::fixed;
-      }
-
-      template< typename T >
-      JsonLoggingRowElements& operator << ( const T& b )
-      {
-         stream << b;
-         elements.push_back( stream.str() );
-         stream.str( std::string() );
-         return *this;
-      }
-
-      JsonLoggingRowElements& operator << ( decltype( std::setprecision( 2 ) )& setprec )
-      {
-         stream << setprec;
-         return *this;
-      }
-
-      JsonLoggingRowElements& operator << ( decltype( std::fixed )& setfixed ) // the same works also for std::scientific
-      {
-         stream << setfixed;
-         return *this;
-      }
-
-      // iterators
-      auto begin() noexcept { return elements.begin(); }
-
-      auto begin() const noexcept { return elements.begin(); }
-
-      auto cbegin() const noexcept { return elements.cbegin(); }
-
-      auto end() noexcept { return elements.end(); }
-
-      auto end() const noexcept { return elements.end(); }
-
-      auto cend() const noexcept { return elements.cend(); }
-
-      size_t size() const noexcept { return this->elements.size(); };
-   protected:
-      std::list< String > elements;
-
-      std::stringstream stream;
-};
 
 class JsonLogging
 {
@@ -83,12 +25,12 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
+   using HeaderElements = std::vector< String >;
+   using RowElements = LoggingRowElements;
+
    using CommonLogs = std::vector< std::pair< const char*, String > >;
    using LogsMetadata = HeaderElements;
    using WidthHints = std::vector< int >;
-
-   using HeaderElements = std::vector< String >;
-   using RowElements = JsonLoggingRowElements;
 
    JsonLogging( int verbose = true,
                 String outputMode = "",

@@ -56,6 +56,8 @@ class LoggingRowElements
          return *this;
       }
 
+      std::size_t size() const noexcept { return elements.size(); };
+
       // iterators
       auto begin() noexcept { return elements.begin(); }
 
@@ -82,10 +84,10 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
-   using CommonLogs = std::vector< std::pair< const char*, String > >;
-
    using HeaderElements = std::vector< String >;
    using RowElements = LoggingRowElements;
+
+   using CommonLogs = std::vector< std::pair< const char*, String > >;
 
    Logging( int verbose = true,
             String outputMode = "",
