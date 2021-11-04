@@ -24,10 +24,10 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { e
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
-// Meshes are enabled only for the world dimension equal to the cell dimension.
-template< typename CellTopology, int WorldDimension >
-struct MeshWorldDimensionTag< MyConfigTag, CellTopology, WorldDimension >
-{ enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
+// Meshes are enabled only for the space dimension equal to the cell dimension.
+template< typename CellTopology, int SpaceDimension >
+struct MeshSpaceDimensionTag< MyConfigTag, CellTopology, SpaceDimension >
+{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
 template<> struct MeshRealTag< MyConfigTag, float > { enum { enabled = false }; };
@@ -41,31 +41,28 @@ template<>
 struct MeshConfigTemplateTag< MyConfigTag >
 {
    template< typename Cell,
-             int WorldDimension = Cell::dimension,
+             int SpaceDimension = Cell::dimension,
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = short int >
    struct MeshConfig
-      : public DefaultConfig< Cell, WorldDimension, Real, GlobalIndex, LocalIndex >
+      : public DefaultConfig< Cell, SpaceDimension, Real, GlobalIndex, LocalIndex >
    {
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int SubentityDimension )
       {
-         return SubentityDimension == 0 && EntityTopology::dimension >= Cell::dimension - 1;
+         return SubentityDimension == 0 && entityDimension >= Cell::dimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      static constexpr bool superentityStorage( int entityDimension, int SuperentityDimension )
       {
 //         return false;
-         return (EntityTopology::dimension == 0 || EntityTopology::dimension == Cell::dimension - 1) && SuperentityDimension == Cell::dimension;
+         return (entityDimension == 0 || entityDimension == Cell::dimension - 1) && SuperentityDimension == Cell::dimension;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool entityTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( int entityDimension )
       {
 //         return false;
-         return EntityTopology::dimension == 0 || EntityTopology::dimension >= Cell::dimension - 1;
+         return entityDimension == 0 || entityDimension >= Cell::dimension - 1;
       }
 
       static constexpr bool dualGraphStorage()

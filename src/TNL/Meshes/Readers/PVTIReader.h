@@ -104,7 +104,7 @@ class PVTIReader
             dim++;
          else
             break;
-      worldDimension = meshDimension = dim;
+      spaceDimension = meshDimension = dim;
 
       // populate cellShape (just for completeness, not necessary for GridTypeResolver)
       if( meshDimension == 1 )
@@ -153,8 +153,8 @@ class PVTIReader
       localReader.detectMesh();
 
       // check that local attributes are the same as global attributes
-      if( getWorldDimension() != localReader.getWorldDimension() )
-         throw MeshReaderError( "PVTIReader", "the world dimension of a subdomain does not match the global grid." );
+      if( getSpaceDimension() != localReader.getSpaceDimension() )
+         throw MeshReaderError( "PVTIReader", "the space dimension of a subdomain does not match the global grid." );
       if( getMeshDimension() != localReader.getMeshDimension() )
          throw MeshReaderError( "PVTIReader", "the mesh dimension of a subdomain does not match the global grid." );
       if( getCellShape() != localReader.getCellShape() )

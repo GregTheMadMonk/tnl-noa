@@ -18,21 +18,19 @@ namespace Meshes {
 namespace EntityTags {
 
 template< typename MeshConfig,
-          typename EntityTopology,
-          bool entityTagsStorage = MeshConfig::entityTagsStorage( EntityTopology() ) >
+          int EntityDimension,
+          bool entityTagsStorage = MeshConfig::entityTagsStorage( EntityDimension ) >
 class ConfigValidatorEntityTagsLayer
 {
-   using FaceTopology = typename Topologies::Subtopology< typename MeshConfig::CellTopology, MeshConfig::meshDimension - 1 >::Topology;
-
-   static_assert( MeshConfig::superentityStorage( FaceTopology(), MeshConfig::meshDimension ),
+   static_assert( MeshConfig::superentityStorage( MeshConfig::meshDimension - 1, MeshConfig::meshDimension ),
                   "Faces must store the cell superentity indices when any entity has boundary tags." );
-   static_assert( EntityTopology::dimension >= MeshConfig::meshDimension - 1 || MeshConfig::subentityStorage( FaceTopology(), EntityTopology::dimension ),
+   static_assert( EntityDimension >= MeshConfig::meshDimension - 1 || MeshConfig::subentityStorage( MeshConfig::meshDimension - 1, EntityDimension ),
                   "Faces must store the subentity indices of the entities on which the boundary tags are stored." );
 };
 
 template< typename MeshConfig,
-          typename EntityTopology >
-class ConfigValidatorEntityTagsLayer< MeshConfig, EntityTopology, false >
+          int EntityDimension >
+class ConfigValidatorEntityTagsLayer< MeshConfig, EntityDimension, false >
 {
 };
 
@@ -40,8 +38,7 @@ class ConfigValidatorEntityTagsLayer< MeshConfig, EntityTopology, false >
 template< typename MeshConfig, int dimension = MeshConfig::meshDimension >
 class ConfigValidatorLayer
    : public ConfigValidatorLayer< MeshConfig, dimension - 1 >,
-     public ConfigValidatorEntityTagsLayer< MeshConfig,
-                                              typename MeshTraits< MeshConfig >::template EntityTraits< dimension >::EntityTopology >
+     public ConfigValidatorEntityTagsLayer< MeshConfig, dimension >
 {
 };
 

@@ -28,11 +28,11 @@ template< typename MeshConfig,
 class ConfigValidatorSubtopologyLayer
    : public ConfigValidatorSubtopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
-   static_assert( ! MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ) ||
-                    MeshConfig::subentityStorage( EntityTopology(), 0 ),
+   static_assert( ! MeshConfig::subentityStorage( EntityTopology::dimension, DimensionTag::value ) ||
+                    MeshConfig::subentityStorage( EntityTopology::dimension, 0 ),
                   "entities of which subentities are stored must store their subvertices" );
-   static_assert( ! MeshConfig::subentityStorage( EntityTopology(), DimensionTag::value ) ||
-                    MeshConfig::subentityStorage( EntityTopology(), 0 ),
+   static_assert( ! MeshConfig::subentityStorage( EntityTopology::dimension, DimensionTag::value ) ||
+                    MeshConfig::subentityStorage( EntityTopology::dimension, 0 ),
                   "entities that are stored as subentities must store their subvertices" );
 };
 
@@ -48,11 +48,11 @@ template< typename MeshConfig,
 class ConfigValidatorSupertopologyLayer
    : public ConfigValidatorSupertopologyLayer< MeshConfig, EntityTopology, typename DimensionTag::Decrement >
 {
-   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), DimensionTag::value ) ||
-                    MeshConfig::subentityStorage( EntityTopology(), 0 ),
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology::dimension, DimensionTag::value ) ||
+                    MeshConfig::subentityStorage( EntityTopology::dimension, 0 ),
                   "entities of which superentities are stored must store their subvertices");
-   static_assert( ! MeshConfig::superentityStorage( EntityTopology(), DimensionTag::value ) ||
-                    MeshConfig::subentityStorage( EntityTopology(), 0 ),
+   static_assert( ! MeshConfig::superentityStorage( EntityTopology::dimension, DimensionTag::value ) ||
+                    MeshConfig::subentityStorage( EntityTopology::dimension, 0 ),
                   "entities that are stored as superentities must store their subvertices");
 };
 
@@ -87,7 +87,7 @@ class ConfigValidatorLayerCell
 {
    using CellTopology = typename MeshConfig::CellTopology;
 
-   static_assert( MeshConfig::subentityStorage( CellTopology(), 0 ),
+   static_assert( MeshConfig::subentityStorage( CellTopology::dimension, 0 ),
                   "subvertices of cells must be stored" );
 };
 
@@ -98,7 +98,7 @@ class ConfigValidator
    static constexpr int meshDimension = MeshConfig::CellTopology::dimension;
 
    static_assert( 1 <= meshDimension, "zero dimensional meshes are not supported" );
-   static_assert( meshDimension <= MeshConfig::worldDimension, "world dimension must not be less than mesh dimension" );
+   static_assert( meshDimension <= MeshConfig::spaceDimension, "space dimension must not be less than mesh dimension" );
 };
 
 } // namespace Meshes

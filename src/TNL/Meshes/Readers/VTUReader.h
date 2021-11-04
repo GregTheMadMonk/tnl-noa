@@ -71,13 +71,13 @@ class VTUReader
                if( array.size() != 3 * NumberOfPoints )
                   throw MeshReaderError( "VTUReader", "invalid size of the Points data array (" + std::to_string(array.size())
                                                       + " vs " + std::to_string(NumberOfPoints) + ")" );
-               // set worldDimension
-               worldDimension = 1;
+               // set spaceDimension
+               spaceDimension = 1;
                std::size_t i = 0;
                for( auto c : array ) {
                   if( c != 0 ) {
                      int dim = i % 3 + 1;
-                     worldDimension = std::max( worldDimension, dim );
+                     spaceDimension = std::max( spaceDimension, dim );
                   }
                   ++i;
                }

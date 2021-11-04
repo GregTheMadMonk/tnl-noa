@@ -87,7 +87,7 @@ public:
    {
       static_assert( std::is_same< MeshConfig, typename Mesh::Config >::value,
                      "mismatched MeshConfig type" );
-      static_assert( MeshConfig::superentityStorage( typename Mesh::Vertex::EntityTopology{}, Mesh::getMeshDimension() ),
+      static_assert( MeshConfig::superentityStorage( 0, Mesh::getMeshDimension() ),
                      "The dual graph cannot be initialized when links from vertices to cells are not stored in the mesh." );
       static_assert( MeshConfig::dualGraphMinCommonVertices >= 1,
                      "MeshConfig error: dualGraphMinCommonVertices must be at least 1." );

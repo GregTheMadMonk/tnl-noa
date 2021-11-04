@@ -40,29 +40,29 @@ protected:
       template< typename CellTopology,
                 typename = typename std::enable_if< ! BuildConfigTags::MeshCellTopologyTag< ConfigTag, CellTopology >::enabled >::type,
                 typename = void >
-      static bool resolveWorldDimension( Reader& reader, Functor&& functor );
+      static bool resolveSpaceDimension( Reader& reader, Functor&& functor );
 
       // Overload for enabled cell topologies
       template< typename CellTopology,
                 typename = typename std::enable_if< BuildConfigTags::MeshCellTopologyTag< ConfigTag, CellTopology >::enabled >::type >
-      static bool resolveWorldDimension( Reader& reader, Functor&& functor );
+      static bool resolveSpaceDimension( Reader& reader, Functor&& functor );
 
-      // Overload for disabled world dimensions
+      // Overload for disabled space dimensions
       template< typename CellTopology,
-                int WorldDimension,
-                typename = typename std::enable_if< ! BuildConfigTags::MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled >::type,
+                int SpaceDimension,
+                typename = typename std::enable_if< ! BuildConfigTags::MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled >::type,
                 typename = void >
       static bool resolveReal( Reader& reader, Functor&& functor );
 
-      // Overload for enabled world dimensions
+      // Overload for enabled space dimensions
       template< typename CellTopology,
-                int WorldDimension,
-                typename = typename std::enable_if< BuildConfigTags::MeshWorldDimensionTag< ConfigTag, CellTopology, WorldDimension >::enabled >::type >
+                int SpaceDimension,
+                typename = typename std::enable_if< BuildConfigTags::MeshSpaceDimensionTag< ConfigTag, CellTopology, SpaceDimension >::enabled >::type >
       static bool resolveReal( Reader& reader, Functor&& functor );
 
       // Overload for disabled real types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename = typename std::enable_if< ! BuildConfigTags::MeshRealTag< ConfigTag, Real >::enabled >::type,
                 typename = void >
@@ -70,14 +70,14 @@ protected:
 
       // Overload for enabled real types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename = typename std::enable_if< BuildConfigTags::MeshRealTag< ConfigTag, Real >::enabled >::type >
       static bool resolveGlobalIndex( Reader& reader, Functor&& functor );
 
       // Overload for disabled global index types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename GlobalIndex,
                 typename = typename std::enable_if< ! BuildConfigTags::MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled >::type,
@@ -86,7 +86,7 @@ protected:
 
       // Overload for enabled global index types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename GlobalIndex,
                 typename = typename std::enable_if< BuildConfigTags::MeshGlobalIndexTag< ConfigTag, GlobalIndex >::enabled >::type >
@@ -94,7 +94,7 @@ protected:
 
       // Overload for disabled local index types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename GlobalIndex,
                 typename LocalIndex,
@@ -104,7 +104,7 @@ protected:
 
       // Overload for enabled local index types
       template< typename CellTopology,
-                int WorldDimension,
+                int SpaceDimension,
                 typename Real,
                 typename GlobalIndex,
                 typename LocalIndex,
@@ -117,7 +117,7 @@ protected:
                                                     ! BuildConfigTags::MeshTag< ConfigTag,
                                                                                 Device,
                                                                                 typename MeshConfig::CellTopology,
-                                                                                MeshConfig::worldDimension,
+                                                                                MeshConfig::spaceDimension,
                                                                                 typename MeshConfig::RealType,
                                                                                 typename MeshConfig::GlobalIndexType,
                                                                                 typename MeshConfig::LocalIndexType
@@ -131,7 +131,7 @@ protected:
                                                     BuildConfigTags::MeshTag< ConfigTag,
                                                                               Device,
                                                                               typename MeshConfig::CellTopology,
-                                                                              MeshConfig::worldDimension,
+                                                                              MeshConfig::spaceDimension,
                                                                               typename MeshConfig::RealType,
                                                                               typename MeshConfig::GlobalIndexType,
                                                                               typename MeshConfig::LocalIndexType

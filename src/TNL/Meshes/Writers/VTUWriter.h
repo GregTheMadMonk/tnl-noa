@@ -30,8 +30,8 @@ template< typename Mesh >
 class VTUWriter
 {
    static_assert( Mesh::getMeshDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
-   // TODO: check also world dimension when grids allow it
-//   static_assert( Mesh::getWorldDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
+   // TODO: check also space dimension when grids allow it
+//   static_assert( Mesh::getSpaceDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
 
    template< int EntityDimension >
    using EntitiesCollector = details::MeshEntitiesVTUCollector< Mesh, EntityDimension >;

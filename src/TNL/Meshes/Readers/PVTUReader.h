@@ -79,7 +79,7 @@ class PVTUReader
       localReader.detectMesh();
 
       // copy attributes from the local reader
-      worldDimension = localReader.getWorldDimension();
+      spaceDimension = localReader.getSpaceDimension();
       meshDimension = localReader.getMeshDimension();
       cellShape = localReader.getCellShape();
       pointsType = localReader.getRealType();

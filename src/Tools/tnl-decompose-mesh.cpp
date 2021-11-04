@@ -50,10 +50,10 @@ template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Quadr
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< DecomposeMeshConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
 
-// Meshes are enabled only for the world dimension equal to the cell dimension.
-template< typename CellTopology, int WorldDimension >
-struct MeshWorldDimensionTag< DecomposeMeshConfigTag, CellTopology, WorldDimension >
-{ enum { enabled = ( WorldDimension == CellTopology::dimension ) }; };
+// Meshes are enabled only for the space dimension equal to the cell dimension.
+template< typename CellTopology, int SpaceDimension >
+struct MeshSpaceDimensionTag< DecomposeMeshConfigTag, CellTopology, SpaceDimension >
+{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
 
 // Meshes are enabled only for types explicitly listed below.
 template<> struct MeshRealTag< DecomposeMeshConfigTag, float > { enum { enabled = true }; };
@@ -67,7 +67,7 @@ template<>
 struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
 {
    template< typename Cell,
-             int WorldDimension = Cell::dimension,
+             int SpaceDimension = Cell::dimension,
              typename Real = double,
              typename GlobalIndex = int,
              typename LocalIndex = GlobalIndex >
@@ -78,27 +78,24 @@ struct MeshConfigTemplateTag< DecomposeMeshConfigTag >
       using GlobalIndexType = GlobalIndex;
       using LocalIndexType = LocalIndex;
 
-      static constexpr int worldDimension = WorldDimension;
+      static constexpr int spaceDimension = SpaceDimension;
       static constexpr int meshDimension = Cell::dimension;
 
-      template< typename EntityTopology >
-      static constexpr bool subentityStorage( EntityTopology, int SubentityDimension )
+      static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
          // subvertices of faces are needed due to cell boundary tags
-         return SubentityDimension == 0 && EntityTopology::dimension >= meshDimension - 1;
+         return subentityDimension == 0 && entityDimension >= meshDimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool superentityStorage( EntityTopology, int SuperentityDimension )
+      static constexpr bool superentityStorage( int entityDimension, int superentityDimension )
       {
          // superentities from faces to cells are needed due to cell boundary tags
-         return SuperentityDimension == meshDimension && EntityTopology::dimension == meshDimension - 1;
+         return superentityDimension == meshDimension && entityDimension == meshDimension - 1;
       }
 
-      template< typename EntityTopology >
-      static constexpr bool entityTagsStorage( EntityTopology )
+      static constexpr bool entityTagsStorage( int entityDimension )
       {
-         return EntityTopology::dimension >= meshDimension - 1;
+         return entityDimension >= meshDimension - 1;
       }
 
       static constexpr bool dualGraphStorage()
