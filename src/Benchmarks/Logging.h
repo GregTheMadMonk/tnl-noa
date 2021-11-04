@@ -21,8 +21,6 @@
 #include <string>
 #include <sstream>
 
-#include <TNL/String.h>
-
 namespace TNL {
 namespace Benchmarks {
 
@@ -72,7 +70,7 @@ class LoggingRowElements
       auto cend() const noexcept { return elements.cend(); }
 
    protected:
-      std::list< String > elements;
+      std::list< std::string > elements;
 
       std::stringstream stream;
 };
@@ -80,14 +78,14 @@ class LoggingRowElements
 class Logging
 {
 public:
-   using MetadataElement = std::pair< const char*, String >;
-   using MetadataMap = std::map< const char*, String >;
-   using MetadataColumns = std::vector<MetadataElement>;
+   using MetadataElement = std::pair< std::string, std::string >;
+   using MetadataMap = std::map< std::string, std::string >;
+   using MetadataColumns = std::vector< MetadataElement >;
 
-   using HeaderElements = std::vector< String >;
+   using HeaderElements = std::vector< std::string >;
    using RowElements = LoggingRowElements;
 
-   using CommonLogs = std::vector< std::pair< const char*, String > >;
+   using CommonLogs = MetadataColumns;
    using LogsMetadata = HeaderElements;
    using WidthHints = std::vector< int >;
 
@@ -106,7 +104,7 @@ public:
       return verbose;
    }
 
-   virtual void writeTitle( const String & title ) = 0;
+   virtual void writeTitle( const std::string& title ) = 0;
 
    virtual void addCommonLogs( const CommonLogs& logs ) = 0;
 
@@ -119,19 +117,19 @@ public:
    virtual void writeMetadata( const MetadataMap & metadata ) {}
 
    virtual void
-   writeTableHeader( const String & spanningElement,
-                     const HeaderElements & subElements ) = 0;
+   writeTableHeader( const std::string& spanningElement,
+                     const HeaderElements& subElements ) = 0;
 
    virtual void
-   writeTableRow( const String & spanningElement,
-                  const RowElements & subElements ) = 0;
+   writeTableRow( const std::string& spanningElement,
+                  const RowElements& subElements ) = 0;
 
    virtual void
-   writeErrorMessage( const char* msg ) = 0;
+   writeErrorMessage( const std::string& message ) = 0;
 
    virtual void closeTable() = 0;
 
-   virtual bool save( std::ostream & logFile ) = 0;
+   virtual bool save( std::ostream& logFile ) = 0;
 
 protected:
    int verbose = 0;

@@ -23,13 +23,13 @@ class CustomLogging
 {
 public:
    CustomLogging( int verbose = true,
-                  String outputMode = "",
+                  std::string outputMode = "",
                   bool logFileAppend = false )
    : Logging(verbose), outputMode( outputMode )
    {}
 
    virtual void
-   writeTitle( const String & title ) override
+   writeTitle( const std::string & title ) override
    {
       if( verbose )
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
@@ -61,7 +61,7 @@ public:
    }
 
    virtual void
-   writeTableHeader( const String & spanningElement,
+   writeTableHeader( const std::string & spanningElement,
                      const HeaderElements & subElements ) override
    {
       if( verbose && header_changed ) {
@@ -94,7 +94,7 @@ public:
    }
 
    virtual void
-   writeTableRow( const String & spanningElement,
+   writeTableRow( const std::string & spanningElement,
                   const RowElements & subElements ) override
    {
       if( verbose ) {
@@ -116,14 +116,14 @@ public:
       }
 
       // benchmark data are indented
-      const String indent = "    ";
+      const std::string indent = "    ";
       for( auto & it : subElements ) {
          log << indent << it << std::endl;
       }
    }
 
    virtual void
-   writeErrorMessage( const char* msg ) override
+   writeErrorMessage( const std::string& message ) override
    {
       // initial indent string
       log << std::endl;
@@ -136,7 +136,9 @@ public:
       for( auto & it : metadataColumns ) {
          log << it.second << std::endl;
       }
-      log << msg << std::endl;
+
+      // write the message
+      log << message << std::endl;
    }
 
    virtual void
@@ -158,8 +160,8 @@ public:
    }
 
 protected:
-   // manual double -> String conversion with fixed precision
-   static String
+   // manual double -> string conversion with fixed precision
+   static std::string
    _to_string( double num, int precision = 0, bool fixed = false )
    {
       std::stringstream str;
@@ -168,7 +170,7 @@ protected:
       if( precision )
          str << std::setprecision( precision );
       str << num;
-      return String( str.str().data() );
+      return std::string( str.str().data() );
    }
 
    std::stringstream log;
@@ -176,7 +178,7 @@ protected:
    MetadataColumns metadataColumns;
    bool header_changed = true;
 
-   String outputMode;
+   std::string outputMode;
 };
 
 } // namespace Benchmarks

@@ -23,7 +23,7 @@ class JsonLogging
 {
 public:
    JsonLogging( int verbose = true,
-                String outputMode = "",
+                std::string outputMode = "",
                 bool logFileAppend = false )
    : Logging(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
    {}
@@ -97,7 +97,7 @@ public:
    }
 
    virtual void
-   writeTitle( const String & title ) override
+   writeTitle( const std::string & title ) override
    {
       if( outputMode == "append" )
          return;
@@ -125,22 +125,22 @@ public:
    }
 
    virtual void
-   writeTableHeader( const String & spanningElement,
+   writeTableHeader( const std::string & spanningElement,
                      const HeaderElements & subElements ) override
    {
    }
 
    virtual void
-   writeTableRow( const String & spanningElement,
+   writeTableRow( const std::string & spanningElement,
                   const RowElements & subElements ) override
    {
       writeRow( subElements );
    }
 
    virtual void
-   writeErrorMessage( const char* msg ) override
+   writeErrorMessage( const std::string& message ) override
    {
-      log << "\"error\" : \"" << msg << "\"" << std::endl;
+      log << "\"error\" : \"" << message << "\"" << std::endl;
    }
 
    virtual void
@@ -165,8 +165,8 @@ public:
    }
 
 protected:
-   // manual double -> String conversion with fixed precision
-   static String
+   // manual double -> string conversion with fixed precision
+   static std::string
    _to_string( double num, int precision = 0, bool fixed = false )
    {
       std::stringstream str;
@@ -175,7 +175,7 @@ protected:
       if( precision )
          str << std::setprecision( precision );
       str << num;
-      return String( str.str().data() );
+      return std::string( str.str().data() );
    }
 
    std::stringstream log;
@@ -184,7 +184,7 @@ protected:
    LogsMetadata logsMetadata;
    WidthHints widthHints;
    CommonLogs commonLogs;
-   String outputMode;
+   std::string outputMode;
 
    bool lineStarted = false;
    bool resultsStarted = false;
