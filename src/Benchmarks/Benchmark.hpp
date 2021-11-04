@@ -173,15 +173,15 @@ time( ResetFunction reset,
          // run the monitor main loop
          Solvers::SolverMonitorThread monitor_thread( monitor );
          if( this->reset )
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
          else
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
       }
       else {
          if( this->reset )
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, Logger::verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
          else
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
       }
       this->performedLoops = functionTimer.getPerformedLoops();
    }
@@ -230,10 +230,10 @@ time( const String & performer,
       if( Logger::verbose > 1 ) {
          // run the monitor main loop
          Solvers::SolverMonitorThread monitor_thread( monitor );
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
+         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
       }
       else {
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, Logger::verbose, monitor );
+         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
       }
    }
    catch ( const std::exception& e ) {

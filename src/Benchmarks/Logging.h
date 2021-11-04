@@ -96,9 +96,14 @@ public:
    {}
 
    void
-   setVerbose( int verbose)
+   setVerbose( int verbose )
    {
       this->verbose = verbose;
+   }
+
+   int getVerbose() const
+   {
+      return verbose;
    }
 
    virtual void writeTitle( const String & title ) = 0;

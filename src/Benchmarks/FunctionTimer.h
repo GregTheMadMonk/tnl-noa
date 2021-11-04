@@ -37,15 +37,13 @@ public:
                  ResetFunction reset,
                  int maxLoops,
                  const double& minTime,
-                 int verbose = 1,
                  Monitor && monitor = Monitor() )
    {
       // the timer is constructed zero-initialized and stopped
       Timer timer;
 
       // set timer to the monitor
-      if( verbose > 1 )
-         monitor.setTimer( timer );
+      monitor.setTimer( timer );
 
       // warm up
       reset();
@@ -100,11 +98,10 @@ public:
    timeFunction( ComputeFunction compute,
                  int maxLoops,
                  const double& minTime,
-                 int verbose = 1,
                  Monitor && monitor = Monitor() )
    {
       auto noReset = [] () {};
-      return timeFunction( compute, noReset, maxLoops, minTime, verbose, monitor );
+      return timeFunction( compute, noReset, maxLoops, minTime, monitor );
    }
 
    int getPerformedLoops() const
