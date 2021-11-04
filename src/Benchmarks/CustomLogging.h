@@ -82,15 +82,14 @@ public:
       }
 
       // initial indent string
-      header_indent = "!";
       log << std::endl;
       for( auto & it : metadataColumns ) {
-         log << header_indent << " " << it.first << std::endl;
+         log << "! " << it.first << std::endl;
       }
 
-      log << header_indent << " " << spanningElement << std::endl;
+      log << "! " << spanningElement << std::endl;
       for( auto & it : subElements ) {
-         log << header_indent << "! " << it << std::endl;
+         log << "!! " << it << std::endl;
       }
    }
 
@@ -127,10 +126,9 @@ public:
    writeErrorMessage( const char* msg ) override
    {
       // initial indent string
-      header_indent = "!";
       log << std::endl;
       for( auto & it : metadataColumns ) {
-         log << header_indent << " " << it.first << std::endl;
+         log << "! " << it.first << std::endl;
       }
 
       // only when changed (the header has been already adjusted)
@@ -145,7 +143,6 @@ public:
    closeTable() override
    {
       log << std::endl;
-      header_indent = body_indent = "";
       header_changed = true;
    }
 
@@ -175,8 +172,6 @@ protected:
    }
 
    std::stringstream log;
-   std::string header_indent;
-   std::string body_indent;
 
    MetadataColumns metadataColumns;
    bool header_changed = true;

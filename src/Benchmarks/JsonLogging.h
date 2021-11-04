@@ -179,11 +179,6 @@ protected:
    }
 
    std::stringstream log;
-   std::string header_indent;
-   std::string body_indent;
-
-   MetadataColumns metadataColumns;
-   bool header_changed = true;
 
    // new JSON implementation
    LogsMetadata logsMetadata;
