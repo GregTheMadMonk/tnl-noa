@@ -29,7 +29,7 @@ Benchmark( int loops,
            bool verbose,
            String outputMode,
            bool logFileAppend )
-: Logger(verbose, outputMode, logFileAppend), loops(loops)
+: logger(verbose, outputMode, logFileAppend), loops(loops)
 {}
 
 template< typename Logger >
@@ -52,7 +52,7 @@ setup( const Config::ParameterContainer& parameters )
    this->reset = parameters.getParameter< bool >( "reset" );
    this->minTime = parameters.getParameter< double >( "min-time" );
    const int verbose = parameters.getParameter< int >( "verbose" );
-   Logger::setVerbose( verbose );
+   logger.setVerbose( verbose );
 }
 
 template< typename Logger >
@@ -76,8 +76,8 @@ void
 Benchmark< Logger >::
 newBenchmark( const String & title )
 {
-   Logger::closeTable();
-   Logger::writeTitle( title );
+   logger.closeTable();
+   logger.writeTitle( title );
 }
 
 template< typename Logger >
@@ -86,13 +86,13 @@ Benchmark< Logger >::
 newBenchmark( const String & title,
                MetadataMap metadata )
 {
-   Logger::closeTable();
-   Logger::writeTitle( title );
+   logger.closeTable();
+   logger.writeTitle( title );
    // add loops and reset flag to metadata
    metadata["loops"] = convertToString(loops);
    metadata["reset"] = convertToString( reset );
    metadata["minimal test time"] = convertToString( minTime );
-   Logger::writeMetadata( metadata );
+   logger.writeMetadata( metadata );
 }
 
 template< typename Logger >
@@ -100,7 +100,7 @@ void
 Benchmark< Logger >::
 setMetadataColumns( const MetadataColumns & metadata )
 {
-   Logger::setMetadataColumns( metadata );
+   logger.setMetadataColumns( metadata );
 }
 
 template< typename Logger >
@@ -108,7 +108,7 @@ void
 Benchmark< Logger >::
 setMetadataElement( const typename MetadataColumns::value_type & element )
 {
-   Logger::setMetadataElement( element );
+   logger.setMetadataElement( element );
 }
 
 template< typename Logger >
@@ -129,7 +129,7 @@ setOperation( const String & operation,
               const double baseTime )
 {
    monitor.setStage( operation.getString() );
-   Logger::setMetadataElement( {"operation", operation}, 0 );
+   logger.setMetadataElement( {"operation", operation}, 0 );
    setDatasetSize( datasetSize, baseTime );
 }
 
@@ -150,7 +150,7 @@ time( ResetFunction reset,
 
    // run the monitor main loop
    Solvers::SolverMonitorThread monitor_thread( monitor );
-   if( Logger::verbose <= 1 )
+   if( logger.getVerbose() <= 1 )
       // stop the main loop when not verbose
       monitor.stopMainLoop();
 
@@ -170,7 +170,7 @@ time( ResetFunction reset,
    if( this->baseTime == 0.0 )
       this->baseTime = result.time;
 
-   Logger::logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints() );
+   logger.logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints() );
 
    return this->baseTime;
 }
@@ -219,8 +219,16 @@ void
 Benchmark< Logger >::
 addErrorMessage( const char* msg )
 {
-   Logger::writeErrorMessage( msg );
+   logger.writeErrorMessage( msg );
    std::cerr << msg << std::endl;
+}
+
+template< typename Logger >
+bool
+Benchmark< Logger >::
+save( std::ostream& logFile )
+{
+   return logger.save( logFile );
 }
 
 template< typename Logger >

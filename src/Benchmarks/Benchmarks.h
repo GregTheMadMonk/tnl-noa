@@ -66,12 +66,11 @@ struct BenchmarkResult
 
 template< typename Logger = CustomLogging >
 class Benchmark
-: protected Logger
 {
    public:
-      using typename Logger::MetadataElement;
-      using typename Logger::MetadataMap;
-      using typename Logger::MetadataColumns;
+      using MetadataElement = typename Logger::MetadataElement;
+      using MetadataMap = typename Logger::MetadataMap;
+      using MetadataColumns = typename Logger::MetadataColumns;
       using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
       Benchmark( int loops = 10,
@@ -161,7 +160,7 @@ class Benchmark
       // "time" method could not be called (e.g. due to failed allocation).
       void addErrorMessage( const char* msg );
 
-      using Logger::save;
+      bool save( std::ostream& logFile );
 
       SolverMonitorType& getMonitor();
 
@@ -170,6 +169,7 @@ class Benchmark
       bool isResetingOn() const;
 
    protected:
+      Logger logger;
 
       int loops = 1, performedLoops = 0;
 
