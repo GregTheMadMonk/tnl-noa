@@ -168,21 +168,18 @@ time( ResetFunction reset,
    result.time = std::numeric_limits<double>::quiet_NaN();
    result.stddev = std::numeric_limits<double>::quiet_NaN();
    FunctionTimer< Device > functionTimer;
+
+   // run the monitor main loop
+   Solvers::SolverMonitorThread monitor_thread( monitor );
+   if( Logger::verbose <= 1 )
+      // stop the main loop when not verbose
+      monitor.stopMainLoop();
+
    try {
-      if( Logger::verbose > 1 ) {
-         // run the monitor main loop
-         Solvers::SolverMonitorThread monitor_thread( monitor );
-         if( this->reset )
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
-         else
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
-      }
-      else {
-         if( this->reset )
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
-         else
-            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
-      }
+      if( this->reset )
+         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
+      else
+         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
       this->performedLoops = functionTimer.getPerformedLoops();
    }
    catch ( const std::exception& e ) {
@@ -211,7 +208,7 @@ time( ResetFunction reset,
       ComputeFunction& compute )
 {
    BenchmarkResult result;
-   return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
+   return time< Device >( reset, performer, compute, result );
 }
 
 template< typename Logger >
@@ -223,32 +220,8 @@ time( const String & performer,
       ComputeFunction & compute,
       BenchmarkResult & result )
 {
-   result.time = std::numeric_limits<double>::quiet_NaN();
-   result.stddev = std::numeric_limits<double>::quiet_NaN();
-   FunctionTimer< Device > functionTimer;
-   try {
-      if( Logger::verbose > 1 ) {
-         // run the monitor main loop
-         Solvers::SolverMonitorThread monitor_thread( monitor );
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
-      }
-      else {
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
-      }
-   }
-   catch ( const std::exception& e ) {
-      std::cerr << "Function timer failed due to a C++ exception with description: " << e.what() << std::endl;
-   }
-
-   result.bandwidth = datasetSize / result.time;
-   result.speedup = this->baseTime / result.time;
-   if( this->baseTime == 0.0 )
-      this->baseTime = result.time;
-
-   Logger::writeTableHeader( performer, result.getTableHeader() );
-   Logger::writeTableRow( performer, result.getRowElements() );
-
-   return this->baseTime;
+   auto noReset = [] () {};
+   return time< Device >( noReset, performer, compute, result );
 }
 
 template< typename Logger >
@@ -260,7 +233,7 @@ time( const String & performer,
       ComputeFunction & compute )
 {
    BenchmarkResult result;
-   return time< Device, ComputeFunction >( performer, compute, result );
+   return time< Device >( performer, compute, result );
 }
 
 template< typename Logger >
