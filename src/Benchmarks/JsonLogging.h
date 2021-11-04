@@ -138,8 +138,7 @@ public:
    }
 
    virtual void
-   writeErrorMessage( const char* msg,
-                      int colspan = 1 ) override
+   writeErrorMessage( const char* msg ) override
    {
       log << "\"error\" : \"" << msg << "\"" << std::endl;
    }
@@ -185,7 +184,6 @@ protected:
 
    MetadataColumns metadataColumns;
    bool header_changed = true;
-   std::vector< std::pair< String, int > > horizontalGroups;
 
    // new JSON implementation
    LogsMetadata logsMetadata;

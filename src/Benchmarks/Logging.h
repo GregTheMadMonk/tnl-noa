@@ -122,8 +122,7 @@ public:
                   const RowElements & subElements ) = 0;
 
    virtual void
-   writeErrorMessage( const char* msg,
-                      int colspan = 1 ) = 0;
+   writeErrorMessage( const char* msg ) = 0;
 
    virtual void closeTable() = 0;
 

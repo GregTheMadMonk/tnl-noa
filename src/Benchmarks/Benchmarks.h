@@ -105,7 +105,10 @@ class Benchmark
       // the next call to this function.
       void setMetadataColumns( const MetadataColumns & metadata );
 
-      // TODO: maybe should be renamed to createVerticalGroup and ensured that vertical and horizontal groups are not used within the same "Benchmark"
+      // Sets the value of one metadata column -- useful for iteratively
+      // changing MetadataColumns that were set using the previous method.
+      void setMetadataElement( const typename MetadataColumns::value_type & element );
+
       // Sets current operation -- operations expand the table vertically
       //  - baseTime should be reset to 0.0 for most operations, but sometimes
       //    it is useful to override it
@@ -119,17 +122,9 @@ class Benchmark
       void setOperation( const double datasetSize = 0.0,
                         const double baseTime = 0.0 );
 
-      // Creates new horizontal groups inside a benchmark -- increases the number
-      // of columns in the "Benchmark", implies column spanning.
-      // (Useful e.g. for SpMV formats, different configurations etc.)
-      void
-      createHorizontalGroup( const String & name,
-                           int subcolumns );
-
       // Times a single ComputeFunction. Subsequent calls implicitly split
-      // the current "horizontal group" into sub-columns identified by
-      // "performer", which are further split into "bandwidth", "time" and
-      // "speedup" columns.
+      // the current operation into sub-columns identified by "performer",
+      // which are further split into "bandwidth", "time" and "speedup" columns.
       // TODO: allow custom columns bound to lambda functions (e.g. for Gflops calculation)
       // Also terminates the recursion of the following variadic template.
       template< typename Device,
@@ -167,8 +162,7 @@ class Benchmark
 
       // Adds an error message to the log. Should be called in places where the
       // "time" method could not be called (e.g. due to failed allocation).
-      void addErrorMessage( const char* msg,
-                           int numberOfComputations = 1 );
+      void addErrorMessage( const char* msg );
 
       using Logger::save;
 

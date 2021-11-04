@@ -50,13 +50,9 @@ benchmarkDenseMVSynthetic( Benchmark<> & benchmark,
    HostVector inHostVector, outHostVector;
    CudaVector inCudaVector, outCudaVector1, outCudaVector2;
 
-   // create benchmark group
+   // set metadata
    const std::vector< String > parsedType = parseObjectType( getType< HostMatrix >() );
-#ifdef HAVE_CUDA
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
-#else
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 1 );
-#endif
+   benchmark.setMetadataElement({ "format", parsedType[ 0 ] });
 
    hostMatrix.setDimensions( size, size );
    inHostVector.setSize( size );

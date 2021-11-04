@@ -113,13 +113,9 @@ benchmarkSpMV( Benchmark<> & benchmark,
    HostVector hostVector, hostVector2;
    CudaVector deviceVector, deviceVector2;
 
-   // create benchmark group
+   // set metadata
    const std::vector< String > parsedType = parseObjectType( getType< HostMatrix >() );
-#ifdef HAVE_CUDA
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
-#else
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 1 );
-#endif
+   benchmark.setMetadataElement({ "format", parsedType[ 0 ] });
 
    hostRowLengths.setSize( size );
    hostMatrix.setDimensions( size, size );

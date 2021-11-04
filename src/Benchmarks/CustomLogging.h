@@ -88,27 +88,9 @@ public:
          log << header_indent << " " << it.first << std::endl;
       }
 
-      // dump stacked spanning columns
-      if( horizontalGroups.size() > 0 )
-         while( horizontalGroups.back().second <= 0 ) {
-            horizontalGroups.pop_back();
-            header_indent.pop_back();
-         }
-      for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
-         if( horizontalGroups[ i ].second > 0 ) {
-            log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
-            header_indent += "!";
-         }
-      }
-
       log << header_indent << " " << spanningElement << std::endl;
       for( auto & it : subElements ) {
          log << header_indent << "! " << it << std::endl;
-      }
-
-      if( horizontalGroups.size() > 0 ) {
-         horizontalGroups.back().second--;
-         header_indent.pop_back();
       }
    }
 
@@ -142,34 +124,13 @@ public:
    }
 
    virtual void
-   writeErrorMessage( const char* msg,
-                      int colspan = 1 ) override
+   writeErrorMessage( const char* msg ) override
    {
       // initial indent string
       header_indent = "!";
       log << std::endl;
       for( auto & it : metadataColumns ) {
          log << header_indent << " " << it.first << std::endl;
-      }
-
-      // make sure there is a header column for the message
-      if( horizontalGroups.size() == 0 )
-         horizontalGroups.push_back( {"", 1} );
-
-      // dump stacked spanning columns
-      while( horizontalGroups.back().second <= 0 ) {
-         horizontalGroups.pop_back();
-         header_indent.pop_back();
-      }
-      for( size_t i = 0; i < horizontalGroups.size(); i++ ) {
-         if( horizontalGroups[ i ].second > 0 ) {
-            log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
-            header_indent += "!";
-         }
-      }
-      if( horizontalGroups.size() > 0 ) {
-         horizontalGroups.back().second -= colspan;
-         header_indent.pop_back();
       }
 
       // only when changed (the header has been already adjusted)
@@ -186,7 +147,6 @@ public:
       log << std::endl;
       header_indent = body_indent = "";
       header_changed = true;
-      horizontalGroups.clear();
    }
 
    virtual bool save( std::ostream & logFile ) override
@@ -220,7 +180,6 @@ protected:
 
    MetadataColumns metadataColumns;
    bool header_changed = true;
-   std::vector< std::pair< String, int > > horizontalGroups;
 
    String outputMode;
 };

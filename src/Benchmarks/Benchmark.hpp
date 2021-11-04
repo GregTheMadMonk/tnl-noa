@@ -108,6 +108,27 @@ setMetadataColumns( const MetadataColumns & metadata )
 template< typename Logger >
 void
 Benchmark< Logger >::
+setMetadataElement( const typename MetadataColumns::value_type & element )
+{
+   bool found = false;
+   for( auto & it : Logger::metadataColumns )
+      if( it.first == element.first ) {
+         if( it.second != element.second ) {
+            it.second = element.second;
+            Logger::header_changed = true;
+         }
+         found = true;
+         break;
+      }
+   if( ! found ) {
+      Logger::metadataColumns.push_back( element );
+      Logger::header_changed = true;
+   }
+}
+
+template< typename Logger >
+void
+Benchmark< Logger >::
 setOperation( const String & operation,
               const double datasetSize,
               const double baseTime )
@@ -131,27 +152,6 @@ setOperation( const double datasetSize,
 {
    this->datasetSize = datasetSize;
    this->baseTime = baseTime;
-}
-
-template< typename Logger >
-void
-Benchmark< Logger >::
-createHorizontalGroup( const String & name,
-                       int subcolumns )
-{
-   if( Logger::horizontalGroups.size() == 0 ) {
-      Logger::horizontalGroups.push_back( {name, subcolumns} );
-   }
-   else {
-      auto & last = Logger::horizontalGroups.back();
-      if( last.first != name && last.second > 0 ) {
-         Logger::horizontalGroups.push_back( {name, subcolumns} );
-      }
-      else {
-         last.first = name;
-         last.second = subcolumns;
-      }
-   }
 }
 
 template< typename Logger >
@@ -266,12 +266,9 @@ time( const String & performer,
 template< typename Logger >
 void
 Benchmark< Logger >::
-addErrorMessage( const char* msg,
-                 int numberOfComputations )
+addErrorMessage( const char* msg )
 {
-   // each computation has 3 subcolumns
-   const int colspan = 3 * numberOfComputations;
-   Logger::writeErrorMessage( msg, colspan );
+   Logger::writeErrorMessage( msg );
    std::cerr << msg << std::endl;
 }
 
