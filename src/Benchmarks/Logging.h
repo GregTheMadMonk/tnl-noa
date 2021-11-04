@@ -84,9 +84,6 @@ public:
 
    using HeaderElements = std::vector< std::string >;
    using RowElements = LoggingRowElements;
-
-   using CommonLogs = MetadataColumns;
-   using LogsMetadata = HeaderElements;
    using WidthHints = std::vector< int >;
 
    Logging( int verbose = true )
@@ -106,26 +103,20 @@ public:
 
    virtual void writeTitle( const std::string& title ) = 0;
 
-   virtual void addCommonLogs( const CommonLogs& logs ) = 0;
+   virtual void writeMetadata( const MetadataMap & metadata ) = 0;
 
-   virtual void resetLogsMetada() {}
+   virtual void setMetadataColumns( const MetadataColumns& elements ) = 0;
 
-   virtual void addLogsMetadata( const LogsMetadata& md, const WidthHints& widths ) {}
-
-   virtual void writeHeader() {}
-
-   virtual void writeMetadata( const MetadataMap & metadata ) {}
+   virtual void setMetadataElement( const typename MetadataColumns::value_type & element,
+                                    int insertPosition = -1 /* negative values insert from the end */ ) = 0;
 
    virtual void
-   writeTableHeader( const std::string& spanningElement,
-                     const HeaderElements& subElements ) = 0;
+   logResult( const std::string& spanningElement,
+              const HeaderElements& headerElements,
+              const RowElements& rowElements,
+              const WidthHints& columnWidthHints ) = 0;
 
-   virtual void
-   writeTableRow( const std::string& spanningElement,
-                  const RowElements& subElements ) = 0;
-
-   virtual void
-   writeErrorMessage( const std::string& message ) = 0;
+   virtual void writeErrorMessage( const std::string& message ) = 0;
 
    virtual void closeTable() = 0;
 

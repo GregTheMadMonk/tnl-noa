@@ -100,9 +100,7 @@ void
 Benchmark< Logger >::
 setMetadataColumns( const MetadataColumns & metadata )
 {
-   if( Logger::metadataColumns != metadata )
-      Logger::header_changed = true;
-   Logger::metadataColumns = metadata;
+   Logger::setMetadataColumns( metadata );
 }
 
 template< typename Logger >
@@ -110,20 +108,17 @@ void
 Benchmark< Logger >::
 setMetadataElement( const typename MetadataColumns::value_type & element )
 {
-   bool found = false;
-   for( auto & it : Logger::metadataColumns )
-      if( it.first == element.first ) {
-         if( it.second != element.second ) {
-            it.second = element.second;
-            Logger::header_changed = true;
-         }
-         found = true;
-         break;
-      }
-   if( ! found ) {
-      Logger::metadataColumns.push_back( element );
-      Logger::header_changed = true;
-   }
+   Logger::setMetadataElement( element );
+}
+
+template< typename Logger >
+void
+Benchmark< Logger >::
+setDatasetSize( const double datasetSize,
+                const double baseTime )
+{
+   this->datasetSize = datasetSize;
+   this->baseTime = baseTime;
 }
 
 template< typename Logger >
@@ -134,24 +129,8 @@ setOperation( const String & operation,
               const double baseTime )
 {
    monitor.setStage( operation.getString() );
-   if( Logger::metadataColumns.size() > 0 && String(Logger::metadataColumns[ 0 ].first) == "operation" ) {
-      Logger::metadataColumns[ 0 ].second = operation;
-   }
-   else {
-      Logger::metadataColumns.insert( Logger::metadataColumns.begin(), {"operation", operation} );
-   }
-   setOperation( datasetSize, baseTime );
-   Logger::header_changed = true;
-}
-
-template< typename Logger >
-void
-Benchmark< Logger >::
-setOperation( const double datasetSize,
-              const double baseTime )
-{
-   this->datasetSize = datasetSize;
-   this->baseTime = baseTime;
+   Logger::setMetadataElement( {"operation", operation}, 0 );
+   setDatasetSize( datasetSize, baseTime );
 }
 
 template< typename Logger >
@@ -191,8 +170,7 @@ time( ResetFunction reset,
    if( this->baseTime == 0.0 )
       this->baseTime = result.time;
 
-   Logger::writeTableHeader( performer, result.getTableHeader() );
-   Logger::writeTableRow( performer, result.getRowElements() );
+   Logger::logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints() );
 
    return this->baseTime;
 }

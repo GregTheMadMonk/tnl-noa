@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Logging.h"
+#include <TNL/Assert.h>
 
 namespace TNL {
 namespace Benchmarks {
@@ -27,74 +28,6 @@ public:
                 bool logFileAppend = false )
    : Logging(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
    {}
-
-   virtual void addCommonLogs( const CommonLogs& logs ) override
-   {
-      this->commonLogs = logs;
-      if( verbose )
-      {
-         std::cout << std::endl << "Benchmark setup:" << std::endl;
-         for( auto lg : logs )
-            std::cout << "   " << lg.first << " = " << lg.second << std::endl;
-         std::cout << std::endl;
-      }
-   };
-
-   virtual void resetLogsMetada() override
-   {
-      this->logsMetadata.clear();
-      this->widthHints.clear();
-   }
-
-   virtual void addLogsMetadata( const LogsMetadata& md, const WidthHints& widths ) override
-   {
-      this->logsMetadata.insert( this->logsMetadata.end(), md.begin(), md.end() );
-      this->widthHints.insert( this->widthHints.end(), widths.begin(), widths.end() );
-   }
-
-   virtual void writeHeader() override
-   {
-      TNL_ASSERT_EQ( this->logsMetadata.size(), this->widthHints.size(), "" );
-      if( verbose )
-      {
-         for( std::size_t i = 0; i < this->logsMetadata.size(); i++ )
-            std::cout << std::setw( this->widthHints[ i ] ) << this->logsMetadata[ i ];
-         std::cout << std::endl;
-      }
-   }
-
-   void writeRow( const RowElements& rowEls )
-   {
-      TNL_ASSERT_EQ( rowEls.size(), this->logsMetadata.size(), "" );
-      if( this->lineStarted )
-         log << "," << std::endl;
-
-      log << "      {" << std::endl;
-
-      // write common logs
-      int idx( 0 );
-      for( auto lg : this->commonLogs )
-      {
-         if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
-      }
-
-      std::size_t i = 0;
-      for( auto el : rowEls )
-      {
-         if( verbose )
-            std::cout << std::setw( this->widthHints[ i ] ) << el;
-         if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"" << this->logsMetadata[ i ] << "\" : \"" << el << "\"";
-         i++;
-      }
-      log << std::endl << "      }";
-      this->lineStarted = true;
-      if( verbose )
-         std::cout << std::endl;
-   }
 
    virtual void
    writeTitle( const std::string & title ) override
@@ -124,17 +57,99 @@ public:
          std::cout << std::endl;
    }
 
-   virtual void
-   writeTableHeader( const std::string & spanningElement,
-                     const HeaderElements & subElements ) override
+   virtual void setMetadataColumns( const MetadataColumns& elements ) override
    {
+      // check if a header element changed (i.e. a first item of the pairs)
+      if( metadataColumns.size() != elements.size() )
+         header_changed = true;
+      else
+         for( std::size_t i = 0; i < metadataColumns.size(); i++ )
+            if( metadataColumns[ i ].first != elements[ i ].first ) {
+               header_changed = true;
+               break;
+            }
+      this->metadataColumns = elements;
    }
 
    virtual void
-   writeTableRow( const std::string & spanningElement,
-                  const RowElements & subElements ) override
+   setMetadataElement( const typename MetadataColumns::value_type & element,
+                       int insertPosition = -1 /* negative values insert from the end */ ) override
    {
-      writeRow( subElements );
+      bool found = false;
+      for( auto & it : metadataColumns )
+         if( it.first == element.first ) {
+            if( it.second != element.second )
+               it.second = element.second;
+            found = true;
+            break;
+         }
+      if( ! found ) {
+         if( insertPosition < 0 )
+            metadataColumns.insert( metadataColumns.end() + insertPosition + 1, element );
+         else
+            metadataColumns.insert( metadataColumns.begin() + insertPosition, element );
+         header_changed = true;
+      }
+   }
+
+   void writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
+   {
+      TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
+      if( verbose && header_changed )
+      {
+         for( auto & lg : metadataColumns )
+            std::cout << std::setw( 20 ) << lg.first;
+         for( std::size_t i = 0; i < headerElements.size(); i++ )
+            std::cout << std::setw( widths[ i ] ) << headerElements[ i ];
+         std::cout << std::endl;
+         header_changed = false;
+      }
+   }
+
+   void writeRow( const HeaderElements& headerElements, const RowElements& rowElements, const WidthHints& widths )
+   {
+      TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
+      TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
+      if( this->lineStarted )
+         log << "," << std::endl;
+
+      log << "      {" << std::endl;
+
+      // write common logs
+      int idx( 0 );
+      for( auto lg : this->metadataColumns )
+      {
+         if( verbose )
+            std::cout << std::setw( 20 ) << lg.second;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
+      }
+
+      std::size_t i = 0;
+      for( auto el : rowElements )
+      {
+         if( verbose )
+            std::cout << std::setw( widths[ i ] ) << el;
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "         \"" << headerElements[ i ] << "\" : \"" << el << "\"";
+         i++;
+      }
+      log << std::endl << "      }";
+      this->lineStarted = true;
+      if( verbose )
+         std::cout << std::endl;
+   }
+
+   virtual void
+   logResult( const std::string& spanningElement,
+              const HeaderElements& headerElements,
+              const RowElements& rowElements,
+              const WidthHints& columnWidthHints ) override
+   {
+      writeHeader( headerElements, columnWidthHints );
+      writeRow( headerElements, rowElements, columnWidthHints );
    }
 
    virtual void
@@ -146,6 +161,7 @@ public:
    virtual void
    closeTable() override
    {
+      header_changed = true;
    }
 
    virtual bool save( std::ostream & logFile ) override
@@ -179,14 +195,12 @@ protected:
 
    std::stringstream log;
 
-   // new JSON implementation
-   LogsMetadata logsMetadata;
-   WidthHints widthHints;
-   CommonLogs commonLogs;
+   MetadataColumns metadataColumns;
+   bool header_changed = true;
+
    std::string outputMode;
 
    bool lineStarted = false;
-   bool resultsStarted = false;
    bool logFileAppend = false;
 };
 

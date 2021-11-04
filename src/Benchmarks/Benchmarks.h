@@ -74,11 +74,6 @@ class Benchmark
       using typename Logger::MetadataColumns;
       using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
-      using typename Logger::CommonLogs;
-      using Logger::addCommonLogs;
-      using Logger::addLogsMetadata;
-      using Logger::writeHeader;
-
       Benchmark( int loops = 10,
                bool verbose = true,
                String outputMode = "",
@@ -109,6 +104,11 @@ class Benchmark
       // changing MetadataColumns that were set using the previous method.
       void setMetadataElement( const typename MetadataColumns::value_type & element );
 
+      // Sets the dataset size and base time for the calculations of bandwidth
+      // and speedup in the benchmarks result.
+      void setDatasetSize( const double datasetSize = 0.0, // in GB
+                           const double baseTime = 0.0 );
+
       // Sets current operation -- operations expand the table vertically
       //  - baseTime should be reset to 0.0 for most operations, but sometimes
       //    it is useful to override it
@@ -116,11 +116,8 @@ class Benchmark
       //    easily sorted while converting to HTML.)
       void
       setOperation( const String & operation,
-                  const double datasetSize = 0.0, // in GB
-                  const double baseTime = 0.0 );
-
-      void setOperation( const double datasetSize = 0.0,
-                        const double baseTime = 0.0 );
+                    const double datasetSize = 0.0, // in GB
+                    const double baseTime = 0.0 );
 
       // Times a single ComputeFunction. Subsequent calls implicitly split
       // the current operation into sub-columns identified by "performer",

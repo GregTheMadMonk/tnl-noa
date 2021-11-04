@@ -14,6 +14,7 @@
 #pragma once
 
 #include "Logging.h"
+#include <TNL/Assert.h>
 
 namespace TNL {
 namespace Benchmarks {
@@ -36,15 +37,6 @@ public:
       log << ": title = " << title << std::endl;
    }
 
-   virtual void addCommonLogs( const CommonLogs& logs ) override
-   {
-      for( auto log : logs )
-      {
-         if( verbose )
-            std::cout << log.first << " = " << log.second << std::endl;
-      }
-   };
-
    virtual void
    writeMetadata( const MetadataMap & metadata ) override
    {
@@ -60,9 +52,44 @@ public:
          std::cout << std::endl;
    }
 
+   virtual void setMetadataColumns( const MetadataColumns& elements ) override
+   {
+      // check if a header element changed (i.e. a first item of the pairs)
+      if( metadataColumns.size() != elements.size() )
+         header_changed = true;
+      else
+         for( std::size_t i = 0; i < metadataColumns.size(); i++ )
+            if( metadataColumns[ i ].first != elements[ i ].first ) {
+               header_changed = true;
+               break;
+            }
+      metadataColumns = elements;
+   }
+
    virtual void
+   setMetadataElement( const typename MetadataColumns::value_type & element,
+                       int insertPosition = -1 /* negative values insert from the end */ ) override
+   {
+      bool found = false;
+      for( auto & it : metadataColumns )
+         if( it.first == element.first ) {
+            if( it.second != element.second )
+               it.second = element.second;
+            found = true;
+            break;
+         }
+      if( ! found ) {
+         if( insertPosition < 0 )
+            metadataColumns.insert( metadataColumns.end() + insertPosition + 1, element );
+         else
+            metadataColumns.insert( metadataColumns.begin() + insertPosition, element );
+         header_changed = true;
+      }
+   }
+
+   void
    writeTableHeader( const std::string & spanningElement,
-                     const HeaderElements & subElements ) override
+                     const HeaderElements & subElements )
    {
       if( verbose && header_changed ) {
          for( auto & it : metadataColumns ) {
@@ -93,9 +120,9 @@ public:
       }
    }
 
-   virtual void
+   void
    writeTableRow( const std::string & spanningElement,
-                  const RowElements & subElements ) override
+                  const RowElements & subElements )
    {
       if( verbose ) {
          for( auto & it : metadataColumns ) {
@@ -120,6 +147,18 @@ public:
       for( auto & it : subElements ) {
          log << indent << it << std::endl;
       }
+   }
+
+   virtual void
+   logResult( const std::string& spanningElement,
+              const HeaderElements& headerElements,
+              const RowElements& rowElements,
+              const WidthHints& columnWidthHints ) override
+   {
+      TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
+      TNL_ASSERT_EQ( headerElements.size(), columnWidthHints.size(), "elements must have equal sizes" );
+      writeTableHeader( spanningElement, headerElements );
+      writeTableRow( spanningElement, rowElements );
    }
 
    virtual void

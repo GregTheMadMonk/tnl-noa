@@ -156,7 +156,7 @@ benchmarkSpMV( Benchmark<> & benchmark,
    auto spmvHost = [&]() {
       hostMatrix.vectorProduct( hostVector, hostVector2 );
    };
-   benchmark.setOperation( datasetSize );
+   benchmark.setDatasetSize( datasetSize );
    benchmark.time< Devices::Host >( reset, "CPU", spmvHost );
 #ifdef HAVE_CUDA
    auto spmvCuda = [&]() {

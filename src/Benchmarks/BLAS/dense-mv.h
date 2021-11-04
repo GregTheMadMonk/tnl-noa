@@ -76,7 +76,7 @@ benchmarkDenseMVSynthetic( Benchmark<> & benchmark,
    auto spmvHost = [&]() {
       hostMatrix.vectorProduct( inHostVector, outHostVector );
    };
-   benchmark.setOperation( datasetSize );
+   benchmark.setDatasetSize( datasetSize );
    benchmark.time< Devices::Host >( reset, "CPU", spmvHost );
 
 #ifdef HAVE_CUDA
