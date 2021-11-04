@@ -155,8 +155,7 @@ public:
          logFile << "{" << std::endl;
          logFile << "   \"results\" : [ " << std::endl;
       }
-      else
-         logFile << log.str();
+      logFile << log.str();
       if( logFile.good() ) {
          log.str() = "";
          return true;
