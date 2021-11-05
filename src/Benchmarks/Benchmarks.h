@@ -20,12 +20,6 @@
 #include <TNL/String.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
-#include <TNL/Devices/Host.h>
-#include <TNL/SystemInfo.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/MPI/Wrappers.h>
-
 namespace TNL {
 namespace Benchmarks {
 
@@ -175,59 +169,6 @@ class Benchmark
 
       SolverMonitorType monitor;
 };
-
-
-inline typename Logging::MetadataMap getHardwareMetadata()
-{
-   const int cpu_id = 0;
-   const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
-   String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
-                       + convertToString( cacheSizes.L1instruction ) + ", "
-                       + convertToString( cacheSizes.L2 ) + ", "
-                       + convertToString( cacheSizes.L3 );
-#ifdef HAVE_CUDA
-   const int activeGPU = Cuda::DeviceInfo::getActiveDevice();
-   const String deviceArch = convertToString( Cuda::DeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                             convertToString( Cuda::DeviceInfo::getArchitectureMinor( activeGPU ) );
-#endif
-
-#ifdef HAVE_MPI
-   int nproc = 1;
-   // check if MPI was initialized (some benchmarks do not initialize MPI even when
-   // they are built with HAVE_MPI and thus MPI::GetSize() cannot be used blindly)
-   if( TNL::MPI::Initialized() )
-      nproc = TNL::MPI::GetSize();
-#endif
-
-   typename Logging::MetadataMap metadata {
-       { "host name", SystemInfo::getHostname() },
-       { "architecture", SystemInfo::getArchitecture() },
-       { "system", SystemInfo::getSystemName() },
-       { "system release", SystemInfo::getSystemRelease() },
-       { "start time", SystemInfo::getCurrentTime() },
-#ifdef HAVE_MPI
-       { "number of MPI processes", convertToString( nproc ) },
-#endif
-       { "OpenMP enabled", convertToString( Devices::Host::isOMPEnabled() ) },
-       { "OpenMP threads", convertToString( Devices::Host::getMaxThreadsCount() ) },
-       { "CPU model name", SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", convertToString( SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU threads per core", convertToString( SystemInfo::getNumberOfThreads( cpu_id ) / SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU max frequency (MHz)", convertToString( SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
-       { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
-#ifdef HAVE_CUDA
-       { "GPU name", Cuda::DeviceInfo::getDeviceName( activeGPU ) },
-       { "GPU architecture", deviceArch },
-       { "GPU CUDA cores", convertToString( Cuda::DeviceInfo::getCudaCores( activeGPU ) ) },
-       { "GPU clock rate (MHz)", convertToString( (double) Cuda::DeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
-       { "GPU global memory (GB)", convertToString( (double) Cuda::DeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
-       { "GPU memory clock rate (MHz)", convertToString( (double) Cuda::DeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
-       { "GPU memory ECC enabled", convertToString( Cuda::DeviceInfo::getECCEnabled( activeGPU ) ) },
-#endif
-   };
-
-   return metadata;
-}
 
 } // namespace Benchmarks
 } // namespace TNL

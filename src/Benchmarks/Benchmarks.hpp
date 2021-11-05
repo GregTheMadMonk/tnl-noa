@@ -14,7 +14,7 @@
 #pragma once
 
 #include "Benchmarks.h"
-#include "FunctionTimer.h"
+#include "Utils.h"
 
 #include <iostream>
 #include <exception>
