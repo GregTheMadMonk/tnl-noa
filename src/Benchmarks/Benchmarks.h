@@ -36,6 +36,7 @@ struct BenchmarkResult
    using HeaderElements = typename Logging::HeaderElements;
    using RowElements = typename Logging::RowElements;
 
+   int loops = 0;
    double time = std::numeric_limits<double>::quiet_NaN();
    double stddev = std::numeric_limits<double>::quiet_NaN();
    double bandwidth = std::numeric_limits<double>::quiet_NaN();
@@ -120,40 +121,32 @@ class Benchmark
       // Times a single ComputeFunction. Subsequent calls implicitly split
       // the current operation into sub-columns identified by "performer",
       // which are further split into "bandwidth", "time" and "speedup" columns.
-      // TODO: allow custom columns bound to lambda functions (e.g. for Gflops calculation)
-      // Also terminates the recursion of the following variadic template.
       template< typename Device,
-               typename ResetFunction,
-               typename ComputeFunction >
-      double time( ResetFunction reset,
-                  const String & performer,
-                  ComputeFunction & compute,
-                  BenchmarkResult & result );
+                typename ResetFunction,
+                typename ComputeFunction >
+      void time( ResetFunction reset,
+                 const String & performer,
+                 ComputeFunction & compute,
+                 BenchmarkResult & result );
 
       template< typename Device,
-               typename ResetFunction,
-               typename ComputeFunction >
-      inline double time( ResetFunction reset,
-                        const String & performer,
-                        ComputeFunction & compute );
-      /*{
-         BenchmarkResult result;
-         return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
-      }*/
+                typename ResetFunction,
+                typename ComputeFunction >
+      BenchmarkResult time( ResetFunction reset,
+                            const String & performer,
+                            ComputeFunction & compute );
 
-      /****
-       * The same methods as above but without reset function
-       */
+      // The same methods as above but without the reset function
       template< typename Device,
-               typename ComputeFunction >
-      double time( const String & performer,
-                  ComputeFunction & compute,
-                  BenchmarkResult & result );
+                typename ComputeFunction >
+      void time( const String & performer,
+                 ComputeFunction & compute,
+                 BenchmarkResult & result );
 
       template< typename Device,
-               typename ComputeFunction >
-      inline double time( const String & performer,
-                        ComputeFunction & compute );
+                typename ComputeFunction >
+      BenchmarkResult time( const String & performer,
+                            ComputeFunction & compute );
 
       // Adds an error message to the log. Should be called in places where the
       // "time" method could not be called (e.g. due to failed allocation).
@@ -163,14 +156,14 @@ class Benchmark
 
       SolverMonitorType& getMonitor();
 
-      int getPerformedLoops() const;
+      double getBaseTime() const;
 
       bool isResetingOn() const;
 
    protected:
       Logger logger;
 
-      int loops = 1, performedLoops = 0;
+      int loops = 1;
 
       double minTime = 0.0;
 

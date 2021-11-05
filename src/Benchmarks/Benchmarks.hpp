@@ -137,7 +137,7 @@ template< typename Logger >
    template< typename Device,
              typename ResetFunction,
              typename ComputeFunction >
-double
+void
 Benchmark< Logger >::
 time( ResetFunction reset,
       const String & performer,
@@ -157,12 +157,11 @@ time( ResetFunction reset,
    std::string errorMessage;
    try {
       if( this->reset )
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
+         std::tie( result.loops, result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
       else {
          auto noReset = [] () {};
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, noReset, loops, minTime, monitor );
+         std::tie( result.loops, result.time, result.stddev ) = functionTimer.timeFunction( compute, noReset, loops, minTime, monitor );
       }
-      this->performedLoops = functionTimer.getPerformedLoops();
    }
    catch ( const std::exception& e ) {
       errorMessage = "timeFunction failed due to a C++ exception with description: " + std::string(e.what());
@@ -175,47 +174,47 @@ time( ResetFunction reset,
       this->baseTime = result.time;
 
    logger.logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints(), errorMessage );
-
-   return this->baseTime;
 }
 
 template< typename Logger >
    template< typename Device,
              typename ResetFunction,
              typename ComputeFunction >
-inline double
+BenchmarkResult
 Benchmark< Logger >::
 time( ResetFunction reset,
       const String& performer,
       ComputeFunction& compute )
 {
    BenchmarkResult result;
-   return time< Device >( reset, performer, compute, result );
+   time< Device >( reset, performer, compute, result );
+   return result;
 }
 
 template< typename Logger >
    template< typename Device,
              typename ComputeFunction >
-double
+void
 Benchmark< Logger >::
 time( const String & performer,
       ComputeFunction & compute,
       BenchmarkResult & result )
 {
    auto noReset = [] () {};
-   return time< Device >( noReset, performer, compute, result );
+   time< Device >( noReset, performer, compute, result );
 }
 
 template< typename Logger >
    template< typename Device,
              typename ComputeFunction >
-inline double
+BenchmarkResult
 Benchmark< Logger >::
 time( const String & performer,
       ComputeFunction & compute )
 {
    BenchmarkResult result;
-   return time< Device >( performer, compute, result );
+   time< Device >( performer, compute, result );
+   return result;
 }
 
 template< typename Logger >
@@ -244,11 +243,11 @@ getMonitor() -> SolverMonitorType&
 }
 
 template< typename Logger >
-int
+double
 Benchmark< Logger >::
-getPerformedLoops() const
+getBaseTime() const
 {
-   return this->performedLoops;
+   return baseTime;
 }
 
 template< typename Logger >

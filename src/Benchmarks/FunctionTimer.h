@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <type_traits>
+#include <tuple>
 
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
@@ -27,12 +27,13 @@ template< typename Device >
 class FunctionTimer
 {
 public:
-   // returns a pair of (mean, stddev) where mean is the arithmetic mean of the
+   // returns a tuple of (loops, mean, stddev) where loops is the number of
+   // performed loops (i.e. timing samples), mean is the arithmetic mean of the
    // computation times and stddev is the sample standard deviation
    template< typename ComputeFunction,
              typename ResetFunction,
              typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-   std::pair< double, double >
+   std::tuple< int, double, double >
    timeFunction( ComputeFunction compute,
                  ResetFunction reset,
                  int maxLoops,
@@ -52,6 +53,7 @@ public:
       Containers::Vector< double > results( maxLoops );
       results.setValue( 0.0 );
 
+      int loops;
       for( loops = 0;
            loops < maxLoops || sum( results ) < minTime;
            loops++ )
@@ -80,23 +82,13 @@ public:
       }
 
       const double mean = sum( results ) / (double) loops;
-      if( loops > 1 ) {
-         const double stddev = 1.0 / std::sqrt( loops - 1 ) * l2Norm( results - mean );
-         return std::make_pair( mean, stddev );
-      }
-      else {
-         const double stddev = std::numeric_limits<double>::quiet_NaN();
-         return std::make_pair( mean, stddev );
-      }
+      double stddev;
+      if( loops > 1 )
+         stddev = 1.0 / std::sqrt( loops - 1 ) * l2Norm( results - mean );
+      else
+         stddev = std::numeric_limits<double>::quiet_NaN();
+      return std::make_tuple( loops, mean, stddev );
    }
-
-   int getPerformedLoops() const
-   {
-      return this->loops;
-   }
-
-protected:
-   int loops;
 };
 
 } // namespace Benchmarks
