@@ -31,7 +31,6 @@ namespace Benchmarks {
 
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
-
 struct BenchmarkResult
 {
    using HeaderElements = typename Logging::HeaderElements;
@@ -240,4 +239,4 @@ inline typename Logging::MetadataMap getHardwareMetadata()
 } // namespace Benchmarks
 } // namespace TNL
 
-#include "Benchmark.hpp"
+#include "Benchmarks.hpp"

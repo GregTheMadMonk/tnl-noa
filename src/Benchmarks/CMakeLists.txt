@@ -10,7 +10,7 @@ add_subdirectory( Traversers )
 
 set( headers
          Benchmarks.h
-         Benchmark.hpp
+         Benchmarks.hpp
          FunctionTimer.h
          Logging.h
          CustomLogging.h
