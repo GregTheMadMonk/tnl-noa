@@ -90,20 +90,6 @@ public:
       }
    }
 
-   // returns a pair of (mean, stddev) where mean is the arithmetic mean of the
-   // computation times and stddev is the sample standard deviation
-   template< typename ComputeFunction,
-             typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-   std::pair< double, double >
-   timeFunction( ComputeFunction compute,
-                 int maxLoops,
-                 const double& minTime,
-                 Monitor && monitor = Monitor() )
-   {
-      auto noReset = [] () {};
-      return timeFunction( compute, noReset, maxLoops, minTime, monitor );
-   }
-
    int getPerformedLoops() const
    {
       return this->loops;

@@ -157,8 +157,10 @@ time( ResetFunction reset,
    try {
       if( this->reset )
          std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
-      else
-         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, monitor );
+      else {
+         auto noReset = [] () {};
+         std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, noReset, loops, minTime, monitor );
+      }
       this->performedLoops = functionTimer.getPerformedLoops();
    }
    catch ( const std::exception& e ) {
