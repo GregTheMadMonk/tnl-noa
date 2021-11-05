@@ -20,25 +20,26 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/List.h>
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
 using namespace TNL::Benchmarks::Traversers;
 
 
+template< typename T, typename S >
+bool containsValue( const std::vector< T >& container, const S& value )
+{
+   return std::find( container.begin(), container.end(), value ) != container.end();
+}
+
 template< int Dimension,
           typename Real = float,
           typename Index = int >
 bool runBenchmark( const Config::ParameterContainer& parameters,
-                   Benchmark& benchmark,
-                   Benchmark::MetadataMap& metadata )
+                   Benchmark<>& benchmark,
+                   Logging::MetadataMap& metadata )
 {
-   const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
-   // FIXME: the --tests is just a string because list does not work with enums
-//   const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
-   //Containers::List< String > tests;
-   //tests.Append( parameters.getParameter< String >( "tests" ) );
+   const std::vector< String >& tests = parameters.getParameter< std::vector< String > >( "tests" );
    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
    // which have a default value. The workaround below works for int values, but it is not possible
    // to pass 64-bit integer values
@@ -49,8 +50,8 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    const bool withHost = parameters.getParameter< bool >( "with-host" );
 #ifdef HAVE_CUDA
    const bool withCuda = parameters.getParameter< bool >( "with-cuda" );
-#else
-   const bool withCuda = false;
+//#else
+//   const bool withCuda = false;
 #endif
    const bool check = parameters.getParameter< bool >( "check" );
 
@@ -76,14 +77,14 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.reset();
       };
 #endif
-      benchmark.setMetadataColumns(
-         Benchmark::MetadataColumns( 
-            {  {"size", convertToString( size ) }, } ) );
+      benchmark.setMetadataColumns({
+            {"size", convertToString( size ) },
+      });
 
       /****
        * Add one using pure C code
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-pure-c"  ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "add-one-pure-c"  ) )
       {
          benchmark.setOperation( "Pure C", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
 
@@ -93,9 +94,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withHost )
          {
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
+            const BenchmarkResult result = benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
             if( check && ! hostTraverserBenchmark.checkAddOne(
-                  benchmark.getPerformedLoops(),
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -106,9 +107,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withCuda )
          {
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
+            const BenchmarkResult result = benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
             if( check && ! cudaTraverserBenchmark.checkAddOne(
-                  benchmark.getPerformedLoops(),
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -118,7 +119,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Add one using parallel for
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "add-one-parallel-for" ) )
       {
          benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
 
@@ -128,9 +129,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withHost )
          {
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
-            if( check && ! hostTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
+            if( check && ! hostTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -142,9 +143,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withCuda )
          {
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
-            if( check && ! cudaTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
+            if( check && ! cudaTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -154,7 +155,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Add one using parallel for with grid entity
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-simple-cell" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "add-one-simple-cell" ) )
       {
          auto hostAddOneUsingSimpleCell = [&] ()
          {
@@ -163,9 +164,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          benchmark.setOperation( "simple cell", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
          {
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingSimpleCell );
-            if( check && ! hostTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingSimpleCell );
+            if( check && ! hostTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -176,9 +177,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withCuda )
          {
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingSimpleCell );
-            if( check && ! cudaTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingSimpleCell );
+            if( check && ! cudaTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -188,7 +189,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Add one using parallel for with mesh function
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for-and-mesh-function" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "add-one-parallel-for-and-mesh-function" ) )
       {
          auto hostAddOneUsingParallelForAndMeshFunction = [&] ()
          {
@@ -197,9 +198,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          benchmark.setOperation( "par.for+mesh fc.", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
          {
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingParallelForAndMeshFunction );
-            if( check && ! hostTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingParallelForAndMeshFunction );
+            if( check && ! hostTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -210,9 +211,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withCuda )
          {
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingParallelForAndMeshFunction );
-            if( check && ! cudaTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingParallelForAndMeshFunction );
+            if( check && ! cudaTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -222,7 +223,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Add one using traverser
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-traverser" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "add-one-traverser" ) )
       {
          benchmark.setOperation( "traverser", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          auto hostWriteOneUsingTraverser = [&] ()
@@ -231,9 +232,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withHost )
          {
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
-            if( check && ! hostTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
+            if( check && ! hostTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
@@ -245,17 +246,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          if( withCuda )
          {
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
-            if( check && ! cudaTraverserBenchmark.checkAddOne( 
-                  benchmark.getPerformedLoops(),
+            const BenchmarkResult result = benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
+            if( check && ! cudaTraverserBenchmark.checkAddOne(
+                  result.loops,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
 #endif
-      }
-      std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
-   }
-   return true;
       }
       std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
    }
@@ -281,9 +278,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 #endif
 
-      benchmark.setMetadataColumns(
-         Benchmark::MetadataColumns(
-            {  {"size", convertToString( size ) }, } ) );
+      benchmark.setMetadataColumns({
+            {"size", convertToString( size ) },
+      });
 
       /****
        * Write one and two (as BC) using C for
@@ -300,7 +297,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 #endif
 
-      if( tests.containsValue( "all" ) || tests.containsValue( "bc-pure-c" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "bc-pure-c" ) )
       {
          benchmark.setOperation( "Pure C", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
@@ -335,7 +332,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 #endif
 
-      if( tests.containsValue( "all" ) || tests.containsValue( "bc-parallel-for" ) )
+      if( containsValue( tests, "all" ) || containsValue( tests, "bc-parallel-for" ) )
       {
          benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
@@ -364,7 +361,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 //         cudaTraverserBenchmark.addOneUsingParallelFor();
 //      };
 //
-//      if( tests.containsValue( "all" ) || tests.containsValue( "bc-parallel-for" ) )
+//      if( containsValue( tests, "all" ) || containsValue( tests, "bc-parallel-for" ) )
 //      {
 //         benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
 //         if( withHost )
@@ -393,8 +390,8 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.addOneUsingTraverser();
       };
 #endif
-      
-      if( tests.containsValue( "all" ) || tests.containsValue( "bc-traverser" ) )
+
+      if( containsValue( tests, "all" ) || containsValue( tests, "bc-traverser" ) )
       {
          benchmark.setOperation( "traverser", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
@@ -418,11 +415,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    return true;
 }
 
-void setupConfig( Config::ConfigDescription& config )
+void configSetup( Config::ConfigDescription& config )
 {
-   config.addList< String >( "tests", "Tests to be performed.", "all" );
-   // FIXME: addList does not work with addEntryEnum - ConfigDescription::addEntryEnum throws std::bad_cast
-   // config.addList< String >( "tests", "Tests to be performed.", "all" );
+   config.addList< String >( "tests", "Tests to be performed.", {"all"} );
    config.addEntryEnum( "all" );
    config.addEntryEnum( "add-one-pure-c" );
    config.addEntryEnum( "add-one-parallel-for" );
@@ -443,15 +438,15 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
 
-   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
-   config.addEntryEnum( "float" );
-   config.addEntryEnum( "double" );
-   config.addEntryEnum( "all" );
+//   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
+//   config.addEntryEnum( "float" );
+//   config.addEntryEnum( "double" );
+//   config.addEntryEnum( "all" );
    config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );
    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
-   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
-   Benchmark::configSetup( config );
+//   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
+   Benchmark<>::configSetup( config );
 
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
@@ -463,12 +458,12 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
 {
    const String & logFileName = parameters.getParameter< String >( "log-file" );
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
-   const String & precision = parameters.getParameter< String >( "precision" );
-   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
+//   const String & precision = parameters.getParameter< String >( "precision" );
+//   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
 
-   Benchmark benchmark; //( loops, verbose );
+   Benchmark<> benchmark; //( loops, verbose );
    benchmark.setup( parameters );
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   Logging::MetadataMap metadata = getHardwareMetadata();
    runBenchmark< Dimension >( parameters, benchmark, metadata );
 
    auto mode = std::ios::out;
@@ -488,15 +483,15 @@ int main( int argc, char* argv[] )
 {
    Config::ConfigDescription config;
    Config::ParameterContainer parameters;
-   
-   setupConfig( config );
+
+   configSetup( config );
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
 
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) )
       return EXIT_FAILURE;
-   
+
    const int dimension = parameters.getParameter< int >( "dimension" );
    bool status( false );
    if( ! dimension )

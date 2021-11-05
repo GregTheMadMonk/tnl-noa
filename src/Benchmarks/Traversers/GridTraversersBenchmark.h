@@ -12,27 +12,9 @@
 
 #pragma once
 
-#include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/GridEntityConfig.h>
-#include <TNL/Meshes/Traverser.h>
-#include <TNL/Functions/MeshFunction.h>
-#include <TNL/Pointers/SharedPointer.h>
-
-#include "AddOneEntitiesProcessor.h"
-#include "AddTwoEntitiesProcessor.h"
-#include "GridTraverserBenchmarkHelper.h"
-#include "BenchmarkTraverserUserData.h"
-#include "cuda-kernels.h"
-
 namespace TNL {
    namespace Benchmarks {
       namespace Traversers {
-
-
 
 template< int Dimension,
           typename Device,

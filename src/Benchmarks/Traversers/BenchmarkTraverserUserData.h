@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <TNL/Pointers/SharedPointer.h>
+
 namespace TNL {
    namespace Benchmarks {
       namespace Traversers {
@@ -25,7 +27,7 @@ class BenchmarkTraverserUserData
       using RealType = typename MeshType::RealType;
       using DeviceType = typename MeshType::DeviceType;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      
+
       BenchmarkTraverserUserData( MeshFunctionPointer& f )
          : u( &f.template modifyData< DeviceType >() ), data( f->getData().getData() ){}
 

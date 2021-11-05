@@ -13,18 +13,21 @@
 #pragma once
 
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/contains.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 #include <TNL/Meshes/Traverser.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
 #include "AddOneEntitiesProcessor.h"
+#include "AddTwoEntitiesProcessor.h"
 #include "BenchmarkTraverserUserData.h"
 #include "GridTraversersBenchmark.h"
+#include "GridTraverserBenchmarkHelper.h"
 #include "SimpleCell.h"
 
 namespace TNL {
@@ -42,7 +45,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       using GridType = Meshes::Grid< 3, Real, Device, Index >;
       using GridPointer = Pointers::SharedPointer< GridType >;
       using Coordinates = typename GridType::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< GridType >;
+      using MeshFunction = Functions::MeshFunctionView< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using CellType = typename GridType::template EntityType< 3, Meshes::GridEntityNoStencilStorage >;
       using SimpleCellType = SimpleCell< GridType >;
@@ -55,11 +58,10 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       : size( size ),
         v( size * size * size ),
         grid( size, size, size ),
-        u( grid ),
         userData( u )
       {
          v_data = v.getData();
-         u->getData().bind( v );
+         u->bind( grid, v );
       }
 
       void reset()
@@ -80,7 +82,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          {
 #ifdef HAVE_CUDA
             dim3 blockSize( 32, 4, 2 ), blocksCount, gridsCount;
-            Devices::Cuda::setupThreads(
+            Cuda::setupThreads(
                blockSize,
                blocksCount,
                gridsCount,
@@ -93,7 +95,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
                   for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
                   {
                      dim3 gridSize;
-                     Devices::Cuda::setupGrid(
+                     Cuda::setupGrid(
                         blocksCount,
                         gridsCount,
                         gridIdx,
@@ -111,8 +113,8 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          {
             data[ ( k * _size + j ) * _size + i ] += (Real) 1.0;
          };
-         
-         ParallelFor3D< Device, AsynchronousMode >::exec(
+
+         Algorithms::ParallelFor3D< Device, Algorithms::AsynchronousMode >::exec(
             ( Index ) 0,
             ( Index ) 0,
             ( Index ) 0,
@@ -135,7 +137,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             data[ entity.getIndex() ] += (Real) 1.0;
          };
 
-         ParallelFor3D< Device, AsynchronousMode >::exec(
+         Algorithms::ParallelFor3D< Device, Algorithms::AsynchronousMode >::exec(
             ( Index ) 0,
             ( Index ) 0,
             ( Index ) 0,
@@ -165,7 +167,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             _u->getData().getData()[ entity.getIndex() ] += (Real) 1.0;
          };
 
-         ParallelFor3D< Device, AsynchronousMode >::exec(
+         Algorithms::ParallelFor3D< Device, Algorithms::AsynchronousMode >::exec(
             ( Index ) 0,
             ( Index ) 0,
             ( Index ) 0,
@@ -177,15 +179,15 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
 
       void addOneUsingTraverser()
       {
-         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         traverser.template processAllEntities< AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 
       bool checkAddOne( int loops, bool reseting )
       {
          if( reseting )
-            return v.containsOnlyValue( 1.0 );
-         return v.containsOnlyValue( ( Real ) loops );
+            return Algorithms::containsOnlyValue( v, 1.0 );
+         return Algorithms::containsOnlyValue( v, ( Real ) loops );
       }
 
       void traverseUsingPureC()
@@ -221,7 +223,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          {
 #ifdef HAVE_CUDA
             dim3 blockSize( 32, 4, 2 ), blocksCount, gridsCount;
-            Devices::Cuda::setupThreads(
+            Cuda::setupThreads(
                blockSize,
                blocksCount,
                gridsCount,
@@ -234,7 +236,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
                   for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
                   {
                      dim3 gridSize;
-                     Devices::Cuda::setupGrid(
+                     Cuda::setupGrid(
                         blocksCount,
                         gridsCount,
                         gridIdx,
@@ -246,7 +248,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
                   for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
                   {
                      dim3 gridSize;
-                     Devices::Cuda::setupGrid(
+                     Cuda::setupGrid(
                         blocksCount,
                         gridsCount,
                         gridIdx,
@@ -260,16 +262,16 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       void traverseUsingTraverser()
       {
          // TODO !!!!!!!!!!!!!!!!!!!!!!
-         //traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         //traverser.template processAllEntities< AddOneEntitiesProcessorType >
 
-         traverser.template processBoundaryEntities< UserDataType, AddTwoEntitiesProcessorType >
+         traverser.template processBoundaryEntities< AddTwoEntitiesProcessorType >
             ( grid, userData );
-         traverser.template processInteriorEntities< UserDataType, AddOneEntitiesProcessorType >
+         traverser.template processInteriorEntities< AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 
    protected:
-      
+
       Index size;
       Vector v;
       Real* v_data;

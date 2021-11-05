@@ -13,22 +13,26 @@
 #pragma once
 
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/contains.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 #include <TNL/Meshes/Traverser.h>
-#include <TNL/Functions/MeshFunction.h>
+#include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
+#include "AddOneEntitiesProcessor.h"
+#include "AddTwoEntitiesProcessor.h"
+#include "BenchmarkTraverserUserData.h"
 #include "GridTraversersBenchmark.h"
+#include "GridTraverserBenchmarkHelper.h"
 #include "SimpleCell.h"
 
 namespace TNL {
    namespace Benchmarks {
       namespace Traversers {
-
 
 template< typename Device,
           typename Real,
@@ -41,7 +45,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using GridType = Meshes::Grid< 1, Real, Device, Index >;
       using GridPointer = Pointers::SharedPointer< GridType >;
       using Coordinates = typename GridType::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< GridType >;
+      using MeshFunction = Functions::MeshFunctionView< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using CellType = typename GridType::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
       using SimpleCellType = SimpleCell< GridType >;
@@ -51,11 +55,13 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using AddTwoEntitiesProcessorType = AddTwoEntitiesProcessor< UserDataType >;
 
       GridTraversersBenchmark( Index size )
-      :size( size ), v( size ), grid( size ), u( grid ),
+      :size( size ),
+       v( size ),
+       grid( size ),
        userData( this->u )
       {
          v_data = v.getData();
-         u->getData().bind( v );
+         u->bind( grid, v );
       }
 
       void reset()
@@ -74,7 +80,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          {
 #ifdef HAVE_CUDA
             dim3 blockSize( 256 ), blocksCount, gridsCount;
-            Devices::Cuda::setupThreads(
+            Cuda::setupThreads(
                blockSize,
                blocksCount,
                gridsCount,
@@ -83,7 +89,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
             {
                dim3 gridSize;
-               Devices::Cuda::setupGrid(
+               Cuda::setupGrid(
                   blocksCount,
                   gridsCount,
                   gridIdx,
@@ -100,7 +106,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          {
             data[ i ] += (Real) 1.0;
          };
-         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
+         Algorithms::ParallelFor< Device, Algorithms::AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
       }
 
       void addOneUsingSimpleCell()
@@ -113,7 +119,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             entity.refresh();
             data[ entity.getIndex() ] += (Real) 1.0;
          };
-         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );*/
+         Algorithms::ParallelFor< Device, Algorithms::AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );*/
          GridTraverserBenchmarkHelper< GridType >::simpleCellTest(
             grid,
             userData,
@@ -132,15 +138,15 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             _u->getData().getData()[ entity.getIndex() ] += (Real) 1.0;
             // ( *_u )( entity ) += (Real) 1.0;
          };
-         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f );
+         Algorithms::ParallelFor< Device, Algorithms::AsynchronousMode >::exec( ( Index ) 0, size, f );
       }
 
       void addOneUsingTraverser()
       {
          using CoordinatesType = typename GridType::CoordinatesType;
-         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         traverser.template processAllEntities< AddOneEntitiesProcessorType >
             ( grid, userData );
-         
+
          /*GridTraverserBenchmarkHelper< GridType >::noBCTraverserTest(
             grid,
             userData,
@@ -151,8 +157,8 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          std::cout << loops << " -> " << v << std::endl;
          if( reseting )
-            return v.containsOnlyValue( 1.0 );
-         return v.containsOnlyValue( ( Real ) loops );
+            return Algorithms::containsOnlyValue( v, 1.0 );
+         return Algorithms::containsOnlyValue( v, ( Real ) loops );
       }
 
       void traverseUsingPureC()
@@ -168,7 +174,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          {
 #ifdef HAVE_CUDA
             dim3 blockSize( 256 ), blocksCount, gridsCount;
-            Devices::Cuda::setupThreads(
+            Cuda::setupThreads(
                blockSize,
                blocksCount,
                gridsCount,
@@ -177,7 +183,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
             {
                dim3 gridSize;
-               Devices::Cuda::setupGrid(
+               Cuda::setupGrid(
                   blocksCount,
                   gridsCount,
                   gridIdx,
@@ -187,7 +193,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
             {
                dim3 gridSize;
-               Devices::Cuda::setupGrid(
+               Cuda::setupGrid(
                   blocksCount,
                   gridsCount,
                   gridIdx,
@@ -201,11 +207,11 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       void traverseUsingTraverser()
       {
          // TODO !!!!!!!!!!!!!!!!!!!!!!
-         //traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         //traverser.template processAllEntities< AddOneEntitiesProcessorType >
 
-         traverser.template processBoundaryEntities< UserDataType, AddTwoEntitiesProcessorType >
+         traverser.template processBoundaryEntities< AddTwoEntitiesProcessorType >
             ( grid, userData );
-         traverser.template processInteriorEntities< UserDataType, AddOneEntitiesProcessorType >
+         traverser.template processInteriorEntities< AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 

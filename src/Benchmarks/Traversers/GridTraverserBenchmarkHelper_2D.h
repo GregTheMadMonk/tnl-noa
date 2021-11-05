@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include <TNL/Functions/MeshFunctionView.h>
+#include <TNL/Pointers/SharedPointer.h>
+#include <TNL/Meshes/Traverser.h>
+
 #include "GridTraverserBenchmarkHelper.h"
 #include "AddOneEntitiesProcessor.h"
 #include "BenchmarkTraverserUserData.h"
@@ -40,8 +44,8 @@ _GridTraverser2D(
    typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
 
    GridEntity entity( *grid );
-   entity.getCoordinates().x() = begin.x() + ( gridIdx.x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   entity.getCoordinates().y() = begin.y() + ( gridIdx.y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   entity.getCoordinates().x() = begin.x() + ( gridIdx.x * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   entity.getCoordinates().y() = begin.y() + ( gridIdx.y * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    if( entity.getCoordinates() <= end )
    {
       entity.refresh();
@@ -62,7 +66,7 @@ class GridTraverserBenchmarkHelper< Meshes::Grid< 2, Real, Devices::Host, Index 
       using RealType = typename GridType::RealType;
       using IndexType = typename GridType::IndexType;
       using CoordinatesType = typename GridType::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< GridType >;
+      using MeshFunction = Functions::MeshFunctionView< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using CellType = typename GridType::template EntityType< Dimension, Meshes::GridEntityNoStencilStorage >;
       using SimpleCellType = SimpleCell< GridType >;
@@ -104,7 +108,7 @@ class GridTraverserBenchmarkHelper< Meshes::Grid< 2, Real, Devices::Cuda, Index 
       using RealType = typename GridType::RealType;
       using IndexType = typename GridType::IndexType;
       using CoordinatesType = typename GridType::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< GridType >;
+      using MeshFunction = Functions::MeshFunctionView< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using CellType = typename GridType::template EntityType< Dimension, Meshes::GridEntityNoStencilStorage >;
       using SimpleCellType = SimpleCell< GridType >;
@@ -118,7 +122,7 @@ class GridTraverserBenchmarkHelper< Meshes::Grid< 2, Real, Devices::Cuda, Index 
       {
 #ifdef HAVE_CUDA
             dim3 blockSize( 16, 16 ), blocksCount, gridsCount;
-            Devices::Cuda::setupThreads(
+            Cuda::setupThreads(
                blockSize,
                blocksCount,
                gridsCount,
@@ -129,7 +133,7 @@ class GridTraverserBenchmarkHelper< Meshes::Grid< 2, Real, Devices::Cuda, Index 
                for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
                {
                   dim3 gridSize;
-                  Devices::Cuda::setupGrid(
+                  Cuda::setupGrid(
                      blocksCount,
                      gridsCount,
                      gridIdx,
