@@ -146,7 +146,6 @@ time( ResetFunction reset,
 {
    result.time = std::numeric_limits<double>::quiet_NaN();
    result.stddev = std::numeric_limits<double>::quiet_NaN();
-   FunctionTimer< Device > functionTimer;
 
    // run the monitor main loop
    Solvers::SolverMonitorThread monitor_thread( monitor );
@@ -157,10 +156,10 @@ time( ResetFunction reset,
    std::string errorMessage;
    try {
       if( this->reset )
-         std::tie( result.loops, result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
+         std::tie( result.loops, result.time, result.stddev ) = timeFunction< Device >( compute, reset, loops, minTime, monitor );
       else {
          auto noReset = [] () {};
-         std::tie( result.loops, result.time, result.stddev ) = functionTimer.timeFunction( compute, noReset, loops, minTime, monitor );
+         std::tie( result.loops, result.time, result.stddev ) = timeFunction< Device >( compute, noReset, loops, minTime, monitor );
       }
    }
    catch ( const std::exception& e ) {

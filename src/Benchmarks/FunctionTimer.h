@@ -23,73 +23,69 @@
 namespace TNL {
 namespace Benchmarks {
 
-template< typename Device >
-class FunctionTimer
+// returns a tuple of (loops, mean, stddev) where loops is the number of
+// performed loops (i.e. timing samples), mean is the arithmetic mean of the
+// computation times and stddev is the sample standard deviation
+template< typename Device,
+          typename ComputeFunction,
+          typename ResetFunction,
+          typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
+std::tuple< int, double, double >
+timeFunction( ComputeFunction compute,
+              ResetFunction reset,
+              int maxLoops,
+              const double& minTime,
+              Monitor && monitor = Monitor() )
 {
-public:
-   // returns a tuple of (loops, mean, stddev) where loops is the number of
-   // performed loops (i.e. timing samples), mean is the arithmetic mean of the
-   // computation times and stddev is the sample standard deviation
-   template< typename ComputeFunction,
-             typename ResetFunction,
-             typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-   std::tuple< int, double, double >
-   timeFunction( ComputeFunction compute,
-                 ResetFunction reset,
-                 int maxLoops,
-                 const double& minTime,
-                 Monitor && monitor = Monitor() )
+   // the timer is constructed zero-initialized and stopped
+   Timer timer;
+
+   // set timer to the monitor
+   monitor.setTimer( timer );
+
+   // warm up
+   reset();
+   compute();
+
+   Containers::Vector< double > results( maxLoops );
+   results.setValue( 0.0 );
+
+   int loops;
+   for( loops = 0;
+        loops < maxLoops || sum( results ) < minTime;
+        loops++ )
    {
-      // the timer is constructed zero-initialized and stopped
-      Timer timer;
-
-      // set timer to the monitor
-      monitor.setTimer( timer );
-
-      // warm up
+      // abuse the monitor's "time" for loops
+      monitor.setTime( loops + 1 );
       reset();
+
+      // Explicit synchronization of the CUDA device
+#ifdef HAVE_CUDA
+      if( std::is_same< Device, Devices::Cuda >::value )
+         cudaDeviceSynchronize();
+#endif
+
+      // reset timer before each computation
+      timer.reset();
+      timer.start();
       compute();
-
-      Containers::Vector< double > results( maxLoops );
-      results.setValue( 0.0 );
-
-      int loops;
-      for( loops = 0;
-           loops < maxLoops || sum( results ) < minTime;
-           loops++ )
-      {
-         // abuse the monitor's "time" for loops
-         monitor.setTime( loops + 1 );
-         reset();
-
-         // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA
-         if( std::is_same< Device, Devices::Cuda >::value )
-            cudaDeviceSynchronize();
+      if( std::is_same< Device, Devices::Cuda >::value )
+         cudaDeviceSynchronize();
 #endif
+      timer.stop();
 
-         // reset timer before each computation
-         timer.reset();
-         timer.start();
-         compute();
-#ifdef HAVE_CUDA
-         if( std::is_same< Device, Devices::Cuda >::value )
-            cudaDeviceSynchronize();
-#endif
-         timer.stop();
-
-         results[ loops ] = timer.getRealTime();
-      }
-
-      const double mean = sum( results ) / (double) loops;
-      double stddev;
-      if( loops > 1 )
-         stddev = 1.0 / std::sqrt( loops - 1 ) * l2Norm( results - mean );
-      else
-         stddev = std::numeric_limits<double>::quiet_NaN();
-      return std::make_tuple( loops, mean, stddev );
+      results[ loops ] = timer.getRealTime();
    }
-};
+
+   const double mean = sum( results ) / (double) loops;
+   double stddev;
+   if( loops > 1 )
+      stddev = 1.0 / std::sqrt( loops - 1 ) * l2Norm( results - mean );
+   else
+      stddev = std::numeric_limits<double>::quiet_NaN();
+   return std::make_tuple( loops, mean, stddev );
+}
 
 } // namespace Benchmarks
 } // namespace TNL
