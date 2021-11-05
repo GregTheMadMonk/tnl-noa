@@ -114,7 +114,8 @@ public:
    logResult( const std::string& spanningElement,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
-              const WidthHints& columnWidthHints ) = 0;
+              const WidthHints& columnWidthHints,
+              const std::string& errorMessage = "" ) = 0;
 
    virtual void writeErrorMessage( const std::string& message ) = 0;
 

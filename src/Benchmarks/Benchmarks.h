@@ -157,7 +157,7 @@ class Benchmark
 
       // Adds an error message to the log. Should be called in places where the
       // "time" method could not be called (e.g. due to failed allocation).
-      void addErrorMessage( const char* msg );
+      void addErrorMessage( const std::string& message );
 
       bool save( std::ostream& logFile );
 

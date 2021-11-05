@@ -122,7 +122,8 @@ public:
 
    void
    writeTableRow( const std::string & spanningElement,
-                  const RowElements & subElements )
+                  const RowElements & subElements,
+                  const std::string & errorMessage )
    {
       if( verbose ) {
          for( auto & it : metadataColumns ) {
@@ -142,10 +143,16 @@ public:
          log << it.second << std::endl;
       }
 
-      // benchmark data are indented
-      const std::string indent = "    ";
-      for( auto & it : subElements ) {
-         log << indent << it << std::endl;
+      if( errorMessage.empty() ) {
+         // benchmark data are indented
+         const std::string indent = "    ";
+         for( auto & it : subElements ) {
+            log << indent << it << std::endl;
+         }
+      }
+      else {
+         // write the message
+         log << errorMessage << std::endl;
       }
    }
 
@@ -153,12 +160,13 @@ public:
    logResult( const std::string& spanningElement,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
-              const WidthHints& columnWidthHints ) override
+              const WidthHints& columnWidthHints,
+              const std::string& errorMessage = "" ) override
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), columnWidthHints.size(), "elements must have equal sizes" );
       writeTableHeader( spanningElement, headerElements );
-      writeTableRow( spanningElement, rowElements );
+      writeTableRow( spanningElement, rowElements, errorMessage );
    }
 
    virtual void

@@ -154,6 +154,7 @@ time( ResetFunction reset,
       // stop the main loop when not verbose
       monitor.stopMainLoop();
 
+   std::string errorMessage;
    try {
       if( this->reset )
          std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, monitor );
@@ -164,7 +165,8 @@ time( ResetFunction reset,
       this->performedLoops = functionTimer.getPerformedLoops();
    }
    catch ( const std::exception& e ) {
-      std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
+      errorMessage = "timeFunction failed due to a C++ exception with description: " + std::string(e.what());
+      std::cerr << errorMessage << std::endl;
    }
 
    result.bandwidth = datasetSize / result.time;
@@ -172,7 +174,7 @@ time( ResetFunction reset,
    if( this->baseTime == 0.0 )
       this->baseTime = result.time;
 
-   logger.logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints() );
+   logger.logResult( performer, result.getTableHeader(), result.getRowElements(), result.getColumnWidthHints(), errorMessage );
 
    return this->baseTime;
 }
@@ -219,10 +221,10 @@ time( const String & performer,
 template< typename Logger >
 void
 Benchmark< Logger >::
-addErrorMessage( const char* msg )
+addErrorMessage( const std::string& message )
 {
-   logger.writeErrorMessage( msg );
-   std::cerr << msg << std::endl;
+   logger.writeErrorMessage( message );
+   std::cerr << message << std::endl;
 }
 
 template< typename Logger >

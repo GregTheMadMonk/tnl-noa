@@ -106,7 +106,10 @@ public:
       }
    }
 
-   void writeRow( const HeaderElements& headerElements, const RowElements& rowElements, const WidthHints& widths )
+   void writeRow( const HeaderElements& headerElements,
+                  const RowElements& rowElements,
+                  const WidthHints& widths,
+                  const std::string& errorMessage )
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
@@ -136,6 +139,11 @@ public:
          log << "         \"" << headerElements[ i ] << "\" : \"" << el << "\"";
          i++;
       }
+      if( ! errorMessage.empty() ) {
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "         \"error\" : \"" << errorMessage << "\"";
+      }
       log << std::endl << "      }";
       this->lineStarted = true;
       if( verbose )
@@ -146,16 +154,36 @@ public:
    logResult( const std::string& spanningElement,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
-              const WidthHints& columnWidthHints ) override
+              const WidthHints& columnWidthHints,
+              const std::string& errorMessage = "" ) override
    {
       writeHeader( headerElements, columnWidthHints );
-      writeRow( headerElements, rowElements, columnWidthHints );
+      writeRow( headerElements, rowElements, columnWidthHints, errorMessage );
    }
 
    virtual void
    writeErrorMessage( const std::string& message ) override
    {
-      log << "\"error\" : \"" << message << "\"" << std::endl;
+      if( this->lineStarted )
+         log << "," << std::endl;
+
+      log << "      {" << std::endl;
+
+      // write common logs
+      int idx( 0 );
+      for( auto lg : this->metadataColumns )
+      {
+         if( idx++ > 0 )
+            log << "," << std::endl;
+         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
+      }
+
+      if( idx++ > 0 )
+         log << "," << std::endl;
+      log << "         \"error\" : \"" << message << "\"";
+
+      log << std::endl << "      }";
+      this->lineStarted = true;
    }
 
    virtual void
