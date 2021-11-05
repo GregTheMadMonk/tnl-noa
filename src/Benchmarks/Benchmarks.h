@@ -67,10 +67,7 @@ class Benchmark
       using MetadataColumns = typename Logger::MetadataColumns;
       using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
-      Benchmark( int loops = 10,
-               bool verbose = true,
-               String outputMode = "",
-               bool logFileAppend = false );
+      Benchmark( int loops = 10, bool verbose = true );
 
       static void configSetup( Config::ConfigDescription& config );
 

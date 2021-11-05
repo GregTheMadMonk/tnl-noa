@@ -25,11 +25,8 @@ namespace Benchmarks {
 
 template< typename Logger >
 Benchmark< Logger >::
-Benchmark( int loops,
-           bool verbose,
-           String outputMode,
-           bool logFileAppend )
-: logger(verbose, outputMode, logFileAppend), loops(loops)
+Benchmark( int loops, bool verbose )
+: logger(verbose), loops(loops)
 {}
 
 template< typename Logger >

@@ -23,11 +23,8 @@ class CustomLogging
 : public Logging
 {
 public:
-   CustomLogging( int verbose = true,
-                  std::string outputMode = "",
-                  bool logFileAppend = false )
-   : Logging(verbose), outputMode( outputMode )
-   {}
+   // inherit constructors
+   using Logging::Logging;
 
    virtual void
    writeTitle( const std::string & title ) override
@@ -224,8 +221,6 @@ protected:
 
    MetadataColumns metadataColumns;
    bool header_changed = true;
-
-   std::string outputMode;
 };
 
 } // namespace Benchmarks

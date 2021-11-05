@@ -23,18 +23,12 @@ class JsonLogging
 : public Logging
 {
 public:
-   JsonLogging( int verbose = true,
-                std::string outputMode = "",
-                bool logFileAppend = false )
-   : Logging(verbose), outputMode( outputMode ), logFileAppend( logFileAppend )
-   {}
+   // inherit constructors
+   using Logging::Logging;
 
    virtual void
    writeTitle( const std::string & title ) override
    {
-      if( outputMode == "append" )
-         return;
-
       if( verbose )
          std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
    }
@@ -42,19 +36,12 @@ public:
    virtual void
    writeMetadata( const MetadataMap & metadata ) override
    {
-      if( outputMode == "append" )
-         return;
-
-      if( verbose )
+      if( verbose ) {
          std::cout << "properties:" << std::endl;
-
-      for( auto & it : metadata ) {
-         if( verbose )
+         for( auto & it : metadata )
             std::cout << "   " << it.first << " = " << it.second << std::endl;
-      }
-
-      if( verbose )
          std::cout << std::endl;
+      }
    }
 
    virtual void setMetadataColumns( const MetadataColumns& elements ) override
@@ -113,10 +100,8 @@ public:
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
-      if( this->lineStarted )
-         log << "," << std::endl;
 
-      log << "      {" << std::endl;
+      log << "{";
 
       // write common logs
       int idx( 0 );
@@ -125,8 +110,8 @@ public:
          if( verbose )
             std::cout << std::setw( 20 ) << lg.second;
          if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
+            log << ", ";
+         log << "\"" << lg.first << "\": \"" << lg.second << "\"";
       }
 
       std::size_t i = 0;
@@ -135,17 +120,16 @@ public:
          if( verbose )
             std::cout << std::setw( widths[ i ] ) << el;
          if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"" << headerElements[ i ] << "\" : \"" << el << "\"";
+            log << ", ";
+         log << "\"" << headerElements[ i ] << "\": \"" << el << "\"";
          i++;
       }
       if( ! errorMessage.empty() ) {
          if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"error\" : \"" << errorMessage << "\"";
+            log << ", ";
+         log << "\"error\": \"" << errorMessage << "\"";
       }
-      log << std::endl << "      }";
-      this->lineStarted = true;
+      log << "}" << std::endl;
       if( verbose )
          std::cout << std::endl;
    }
@@ -164,26 +148,22 @@ public:
    virtual void
    writeErrorMessage( const std::string& message ) override
    {
-      if( this->lineStarted )
-         log << "," << std::endl;
-
-      log << "      {" << std::endl;
+      log << "{";
 
       // write common logs
       int idx( 0 );
       for( auto lg : this->metadataColumns )
       {
          if( idx++ > 0 )
-            log << "," << std::endl;
-         log << "         \"" << lg.first << "\" : \"" << lg.second << "\"";
+            log << ", ";
+         log << "\"" << lg.first << "\": \"" << lg.second << "\"";
       }
 
       if( idx++ > 0 )
-         log << "," << std::endl;
-      log << "         \"error\" : \"" << message << "\"";
+         log << ", ";
+      log << "\"error\": \"" << message << "\"";
 
-      log << std::endl << "      }";
-      this->lineStarted = true;
+      log << "}" << std::endl;
    }
 
    virtual void
@@ -194,11 +174,6 @@ public:
 
    virtual bool save( std::ostream & logFile ) override
    {
-      if( ! this->logFileAppend )
-      {
-         logFile << "{" << std::endl;
-         logFile << "   \"results\" : [ " << std::endl;
-      }
       logFile << log.str();
       if( logFile.good() ) {
          log.str() = "";
@@ -225,11 +200,6 @@ protected:
 
    MetadataColumns metadataColumns;
    bool header_changed = true;
-
-   std::string outputMode;
-
-   bool lineStarted = false;
-   bool logFileAppend = false;
 };
 
 } // namespace Benchmarks
