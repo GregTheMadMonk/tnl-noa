@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 //#include "grid-traversing.h"
 #include "GridTraversersBenchmark.h"
 

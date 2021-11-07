@@ -7,14 +7,3 @@ add_subdirectory( LinearSolvers )
 add_subdirectory( ODESolvers )
 add_subdirectory( Sorting )
 add_subdirectory( Traversers )
-
-set( headers
-         Benchmarks.h
-         Benchmarks.hpp
-         Logging.h
-         CustomLogging.h
-         JsonLogging.h
-         Utils.h
-)
-
-install( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Benchmarks )

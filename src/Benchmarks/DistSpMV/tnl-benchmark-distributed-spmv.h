@@ -27,7 +27,7 @@
 #include "Legacy/DistributedMatrix.h"
 #include <TNL/Matrices/SparseOperations.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "ordering.h"
 
 #include <TNL/Matrices/SparseMatrix.h>

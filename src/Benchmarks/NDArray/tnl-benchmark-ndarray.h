@@ -20,7 +20,7 @@
 #include <TNL/Containers/NDArray.h>
 #include <TNL/Containers/ndarray/Operations.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 using namespace TNL;
 using namespace TNL::Benchmarks;

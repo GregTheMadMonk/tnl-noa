@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "cublasWrappers.h"
 
 #include <TNL/Containers/Vector.h>

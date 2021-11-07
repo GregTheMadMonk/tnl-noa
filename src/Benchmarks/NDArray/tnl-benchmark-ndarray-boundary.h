@@ -18,7 +18,7 @@
 
 #include <TNL/Containers/NDArray.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 using namespace TNL;
 using namespace TNL::Benchmarks;

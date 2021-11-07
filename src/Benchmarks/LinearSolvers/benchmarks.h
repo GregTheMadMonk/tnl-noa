@@ -5,7 +5,7 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Matrices/DistributedMatrix.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #ifdef HAVE_ARMADILLO
 #include <armadillo>

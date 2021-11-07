@@ -14,8 +14,7 @@
 
 #include <cstring>
 
-#include "../Benchmarks.h"
-
+#include <TNL/Benchmarks/Benchmarks.h>
 #include <TNL/Containers/Array.h>
 
 namespace TNL {

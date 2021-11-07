@@ -40,7 +40,7 @@
 #include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "../DistSpMV/ordering.h"
 #include "benchmarks.h"
 

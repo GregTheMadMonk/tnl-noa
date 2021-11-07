@@ -28,7 +28,7 @@
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/ODE/Merson.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "benchmarks.h"
 #include "SimpleProblem.h"
 #include "Euler.h"

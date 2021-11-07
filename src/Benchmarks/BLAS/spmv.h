@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #include <TNL/Pointers/DevicePointer.h>
 #include <Benchmarks/SpMV/ReferenceFormats/Legacy/CSR.h>

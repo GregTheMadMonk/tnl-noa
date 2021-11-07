@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Allocators/CudaHost.h>
