@@ -135,12 +135,13 @@ public:
    }
 
    virtual void
-   logResult( const std::string& spanningElement,
+   logResult( const std::string& performer,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
               const WidthHints& columnWidthHints,
               const std::string& errorMessage = "" ) override
    {
+      setMetadataElement({ "performer", performer });
       writeHeader( headerElements, columnWidthHints );
       writeRow( headerElements, rowElements, columnWidthHints, errorMessage );
    }

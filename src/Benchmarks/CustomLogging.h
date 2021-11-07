@@ -154,7 +154,7 @@ public:
    }
 
    virtual void
-   logResult( const std::string& spanningElement,
+   logResult( const std::string& performer,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
               const WidthHints& columnWidthHints,
@@ -162,8 +162,8 @@ public:
    {
       TNL_ASSERT_EQ( headerElements.size(), rowElements.size(), "elements must have equal sizes" );
       TNL_ASSERT_EQ( headerElements.size(), columnWidthHints.size(), "elements must have equal sizes" );
-      writeTableHeader( spanningElement, headerElements );
-      writeTableRow( spanningElement, rowElements, errorMessage );
+      writeTableHeader( performer, headerElements );
+      writeTableRow( performer, rowElements, errorMessage );
    }
 
    virtual void

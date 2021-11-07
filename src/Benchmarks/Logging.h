@@ -111,7 +111,7 @@ public:
                                     int insertPosition = -1 /* negative values insert from the end */ ) = 0;
 
    virtual void
-   logResult( const std::string& spanningElement,
+   logResult( const std::string& performer,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
               const WidthHints& columnWidthHints,
