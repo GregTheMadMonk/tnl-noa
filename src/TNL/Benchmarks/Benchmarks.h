@@ -43,13 +43,14 @@ struct BenchmarkResult
 
    virtual std::vector< int > getColumnWidthHints() const
    {
-      return std::vector< int >({ 8, 8, 8, 8, 8 });
+      return std::vector< int >({ 14, 14, 14, 14, 14 });
    }
 
    virtual RowElements getRowElements() const
    {
       RowElements elements;
-      elements << time << stddev << stddev / time << bandwidth;
+      // write in scientific format to avoid precision loss
+      elements << std::scientific << time << stddev << stddev / time << bandwidth;
       if( speedup != 0 )
          elements << speedup;
       else
