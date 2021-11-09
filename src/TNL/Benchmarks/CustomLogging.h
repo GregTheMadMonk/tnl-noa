@@ -84,13 +84,24 @@ public:
       }
    }
 
+   virtual void
+   setMetadataWidths( const std::map< std::string, int > & widths ) override
+   {
+      for( auto & it : widths )
+         if( metadataWidths.count( it.first ) )
+            metadataWidths[ it.first ] = it.second;
+         else
+            metadataWidths.insert( it );
+   }
+
    void
    writeTableHeader( const std::string & spanningElement,
                      const HeaderElements & subElements )
    {
       if( verbose && header_changed ) {
          for( auto & it : metadataColumns ) {
-            std::cout << std::setw( 20 ) << it.first;
+            const int width = (metadataWidths.count( it.first )) ? metadataWidths[ it.first ] : 15;
+            std::cout << std::setw( width ) << it.first;
          }
 
          // spanning element is printed as usual column to stdout,
@@ -124,7 +135,8 @@ public:
    {
       if( verbose ) {
          for( auto & it : metadataColumns ) {
-            std::cout << std::setw( 20 ) << it.second;
+            const int width = (metadataWidths.count( it.first )) ? metadataWidths[ it.first ] : 15;
+            std::cout << std::setw( width ) << it.second;
          }
          // spanning element is printed as usual column to stdout
          std::cout << std::setw( 15 ) << spanningElement;
@@ -220,6 +232,7 @@ protected:
    std::stringstream log;
 
    MetadataColumns metadataColumns;
+   std::map< std::string, int > metadataWidths;
    bool header_changed = true;
 };
 

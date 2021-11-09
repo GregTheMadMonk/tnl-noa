@@ -111,6 +111,14 @@ setMetadataElement( const typename MetadataColumns::value_type & element )
 template< typename Logger >
 void
 Benchmark< Logger >::
+setMetadataWidths( const std::map< std::string, int > & widths )
+{
+   logger.setMetadataWidths( widths );
+}
+
+template< typename Logger >
+void
+Benchmark< Logger >::
 setDatasetSize( const double datasetSize,
                 const double baseTime )
 {

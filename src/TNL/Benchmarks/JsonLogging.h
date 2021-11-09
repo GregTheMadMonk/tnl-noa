@@ -79,13 +79,25 @@ public:
       }
    }
 
+   virtual void
+   setMetadataWidths( const std::map< std::string, int > & widths ) override
+   {
+      for( auto & it : widths )
+         if( metadataWidths.count( it.first ) )
+            metadataWidths[ it.first ] = it.second;
+         else
+            metadataWidths.insert( it );
+   }
+
    void writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
    {
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
       if( verbose && header_changed )
       {
-         for( auto & lg : metadataColumns )
-            std::cout << std::setw( 20 ) << lg.first;
+         for( auto & lg : metadataColumns ) {
+            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+            std::cout << std::setw( width ) << lg.first;
+         }
          for( std::size_t i = 0; i < headerElements.size(); i++ )
             std::cout << std::setw( widths[ i ] ) << headerElements[ i ];
          std::cout << std::endl;
@@ -107,8 +119,10 @@ public:
       int idx( 0 );
       for( auto lg : this->metadataColumns )
       {
-         if( verbose )
-            std::cout << std::setw( 20 ) << lg.second;
+         if( verbose ) {
+            const int width = (metadataWidths.count( lg.first )) ? metadataWidths[ lg.first ] : 14;
+            std::cout << std::setw( width ) << lg.second;
+         }
          if( idx++ > 0 )
             log << ", ";
          log << "\"" << lg.first << "\": \"" << lg.second << "\"";
@@ -200,6 +214,7 @@ protected:
    std::stringstream log;
 
    MetadataColumns metadataColumns;
+   std::map< std::string, int > metadataWidths;
    bool header_changed = true;
 };
 

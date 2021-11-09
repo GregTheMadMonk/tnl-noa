@@ -110,6 +110,8 @@ public:
    virtual void setMetadataElement( const typename MetadataColumns::value_type & element,
                                     int insertPosition = -1 /* negative values insert from the end */ ) = 0;
 
+   virtual void setMetadataWidths( const std::map< std::string, int > & widths ) = 0;
+
    virtual void
    logResult( const std::string& performer,
               const HeaderElements& headerElements,

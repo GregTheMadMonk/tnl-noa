@@ -95,6 +95,9 @@ class Benchmark
       // changing MetadataColumns that were set using the previous method.
       void setMetadataElement( const typename MetadataColumns::value_type & element );
 
+      // Sets the width of metadata columns when printed to the terminal.
+      void setMetadataWidths( const std::map< std::string, int > & widths );
+
       // Sets the dataset size and base time for the calculations of bandwidth
       // and speedup in the benchmarks result.
       void setDatasetSize( const double datasetSize = 0.0, // in GB
