@@ -111,8 +111,9 @@ struct ODESolversBenchmark
         Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
-      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" );
-                          //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
+      const String precision = getType< Real >();
+      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" ) + " (" + precision + ")";
+      metadata["precision"] = precision;
       benchmark.newBenchmark( name, metadata );
       for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
@@ -120,32 +121,9 @@ struct ODESolversBenchmark
             { "DOFs", convertToString( dofs ) },
          } ));
 
-         if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, dofs );
-         else
-            runNonDistributed( benchmark, metadata, parameters, dofs );
+         benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
       }
       return true;
-   }
-
-   static void
-   runDistributed( Benchmark<>& benchmark,
-                   Benchmark<>::MetadataMap metadata,
-                   const Config::ParameterContainer& parameters,
-                   size_t dofs )
-   {
-      std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
-   }
-
-   static void
-   runNonDistributed( Benchmark<>& benchmark,
-                      Benchmark<>::MetadataMap metadata,
-                      const Config::ParameterContainer& parameters,
-                      size_t dofs )
-   {
-      std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
    }
 };
 
@@ -177,7 +155,7 @@ void
 configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "Benchmark settings:" );
-   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-ode-solvers.log");
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
