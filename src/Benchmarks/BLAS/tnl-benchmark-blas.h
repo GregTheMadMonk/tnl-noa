@@ -22,7 +22,7 @@
 #include "vector-operations.h"
 #include "triad.h"
 #include "spmv.h"
-#include "dense-mv.h"
+#include "gemv.h"
 
 
 using namespace TNL;
@@ -106,14 +106,17 @@ runBlasBenchmarks( Benchmark<> & benchmark,
    // Dense matrix-vector multiplication
    benchmark.newBenchmark( String("Dense matrix-vector multiplication (") + precision + ")",
                            metadata );
-   for( std::size_t size = 10; size <= 20000; size *= 2 ) {
-      benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
-         { "rows", convertToString( size ) },
-         { "columns", convertToString( size ) }
-      } ));
-      benchmarkDenseMVSynthetic< Real >( benchmark, size );
+   for( std::size_t rows = 10; rows <= 20000 * 20000; rows *= 2 ) {
+      for( std::size_t columns = 10; columns <= 20000 * 20000; columns *= 2 ) {
+         if( rows * columns > 20000 * 20000 )
+            break;
+         benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+            { "rows", convertToString( rows ) },
+            { "columns", convertToString( columns ) }
+         } ));
+         benchmarkGemv< Real >( benchmark, rows, columns );
+      }
    }
-
 }
 
 void
