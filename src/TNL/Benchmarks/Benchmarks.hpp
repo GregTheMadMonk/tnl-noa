@@ -25,8 +25,8 @@ namespace Benchmarks {
 
 template< typename Logger >
 Benchmark< Logger >::
-Benchmark( int loops, bool verbose )
-: logger(verbose), loops(loops)
+Benchmark( std::ostream& output, int loops, bool verbose )
+: logger(output, verbose), loops(loops)
 {}
 
 template< typename Logger >
@@ -228,14 +228,6 @@ addErrorMessage( const std::string& message )
 {
    logger.writeErrorMessage( message );
    std::cerr << message << std::endl;
-}
-
-template< typename Logger >
-bool
-Benchmark< Logger >::
-save( std::ostream& logFile )
-{
-   return logger.save( logFile );
 }
 
 template< typename Logger >

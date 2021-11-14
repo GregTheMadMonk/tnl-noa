@@ -461,21 +461,16 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
 //   const String & precision = parameters.getParameter< String >( "precision" );
 //   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
 
-   Benchmark<> benchmark; //( loops, verbose );
+   auto mode = std::ios::out;
+   if( outputMode == "append" )
+       mode |= std::ios::app;
+   std::ofstream logFile( logFileName, mode );
+
+   Benchmark<> benchmark( logFile ); //( loops, verbose );
    benchmark.setup( parameters );
    Logging::MetadataMap metadata = getHardwareMetadata();
    runBenchmark< Dimension >( parameters, benchmark, metadata );
 
-   auto mode = std::ios::out;
-   if( outputMode == "append" )
-       mode |= std::ios::app;
-   std::ofstream logFile( logFileName.getString(), mode );
-
-   if( ! benchmark.save( logFile ) )
-   {
-      std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
-      return false;
-   }
    return true;
 }
 
@@ -515,7 +510,5 @@ int main( int argc, char* argv[] )
             break;
       }
    }
-   if( status == false )
-      return EXIT_FAILURE;
-   return EXIT_SUCCESS;
+   return ! status;
 }

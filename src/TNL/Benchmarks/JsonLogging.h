@@ -187,16 +187,6 @@ public:
       header_changed = true;
    }
 
-   virtual bool save( std::ostream & logFile ) override
-   {
-      logFile << log.str();
-      if( logFile.good() ) {
-         log.str() = "";
-         return true;
-      }
-      return false;
-   }
-
 protected:
    // manual double -> string conversion with fixed precision
    static std::string
@@ -210,8 +200,6 @@ protected:
       str << num;
       return std::string( str.str().data() );
    }
-
-   std::stringstream log;
 
    MetadataColumns metadataColumns;
    std::map< std::string, int > metadataWidths;

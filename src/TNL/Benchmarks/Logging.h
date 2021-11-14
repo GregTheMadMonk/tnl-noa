@@ -19,7 +19,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <sstream>
+#include <fstream>
 
 namespace TNL {
 namespace Benchmarks {
@@ -86,9 +86,23 @@ public:
    using RowElements = LoggingRowElements;
    using WidthHints = std::vector< int >;
 
-   Logging( int verbose = true )
-   : verbose(verbose)
-   {}
+   Logging( std::ostream& log, int verbose = true )
+   : log(log), verbose(verbose)
+   {
+      try {
+         // check if we got an open file
+         std::ofstream& file = dynamic_cast< std::ofstream& >( log );
+         if( file.is_open() )
+            // enable exceptions, but only if we got an open file
+            // (under MPI, only the master rank typically opens the log file and thus
+            // logs from other ranks are ignored here)
+            file.exceptions( std::ostream::failbit | std::ostream::badbit | std::ostream::eofbit );
+      }
+      catch( std::bad_cast& ) {
+         // also enable exceptions if we did not get a file
+         log.exceptions( std::ostream::failbit | std::ostream::badbit | std::ostream::eofbit );
+      }
+   }
 
    void
    setVerbose( int verbose )
@@ -123,9 +137,8 @@ public:
 
    virtual void closeTable() = 0;
 
-   virtual bool save( std::ostream& logFile ) = 0;
-
 protected:
+   std::ostream& log;
    int verbose = 0;
 };
 

@@ -166,10 +166,10 @@ main( int argc, char* argv[] )
    auto mode = std::ios::out;
    if( outputMode == "append" )
        mode |= std::ios::app;
-   std::ofstream logFile( logFileName.getString(), mode );
+   std::ofstream logFile( logFileName, mode );
 
    // init benchmark and common metadata
-   Benchmark<> benchmark( loops, verbose );
+   Benchmark<> benchmark( logFile, loops, verbose );
 
    // prepare global metadata
    Logging::MetadataMap metadata = getHardwareMetadata();
@@ -178,11 +178,6 @@ main( int argc, char* argv[] )
       runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor );
    if( precision == "all" || precision == "double" )
       runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor );
-
-   if( ! benchmark.save( logFile ) ) {
-      std::cerr << "Failed to write the benchmark results to file '" << logFileName << "'." << std::endl;
-      return EXIT_FAILURE;
-   }
 
    return EXIT_SUCCESS;
 }

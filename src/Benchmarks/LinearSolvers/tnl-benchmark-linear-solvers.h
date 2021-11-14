@@ -611,10 +611,10 @@ main( int argc, char* argv[] )
        mode |= std::ios::app;
    std::ofstream logFile;
    if( rank == 0 )
-      logFile.open( logFileName.getString(), mode );
+      logFile.open( logFileName, mode );
 
    // init benchmark and common metadata
-   Benchmark<> benchmark( loops, verbose );
+   Benchmark<> benchmark( logFile, loops, verbose );
 
    // prepare global metadata
    Logging::MetadataMap metadata = getHardwareMetadata();
@@ -629,13 +629,5 @@ main( int argc, char* argv[] )
                                                    TNL::Matrices::GeneralMatrix,
                                                    SegmentsType
                                                  >;
-   const bool status = LinearSolversBenchmark< MatrixType >::run( benchmark, metadata, parameters );
-
-   if( rank == 0 )
-      if( ! benchmark.save( logFile ) ) {
-         std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
-         return EXIT_FAILURE;
-      }
-
-   return ! status;
+   return ! LinearSolversBenchmark< MatrixType >::run( benchmark, metadata, parameters );
 }

@@ -68,7 +68,7 @@ class Benchmark
       using MetadataColumns = typename Logger::MetadataColumns;
       using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
-      Benchmark( int loops = 10, bool verbose = true );
+      Benchmark( std::ostream& output, int loops = 10, bool verbose = true );
 
       static void configSetup( Config::ConfigDescription& config );
 
@@ -146,8 +146,6 @@ class Benchmark
       // Adds an error message to the log. Should be called in places where the
       // "time" method could not be called (e.g. due to failed allocation).
       void addErrorMessage( const std::string& message );
-
-      bool save( std::ostream& logFile );
 
       SolverMonitorType& getMonitor();
 
