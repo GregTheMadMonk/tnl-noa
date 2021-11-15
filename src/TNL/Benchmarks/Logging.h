@@ -119,12 +119,50 @@ public:
 
    virtual void writeMetadata( const MetadataMap & metadata ) = 0;
 
-   virtual void setMetadataColumns( const MetadataColumns& elements ) = 0;
+   virtual void setMetadataColumns( const MetadataColumns& elements )
+   {
+      // check if a header element changed (i.e. a first item of the pairs)
+      if( metadataColumns.size() != elements.size() )
+         header_changed = true;
+      else
+         for( std::size_t i = 0; i < metadataColumns.size(); i++ )
+            if( metadataColumns[ i ].first != elements[ i ].first ) {
+               header_changed = true;
+               break;
+            }
+      metadataColumns = elements;
+   }
 
-   virtual void setMetadataElement( const typename MetadataColumns::value_type & element,
-                                    int insertPosition = -1 /* negative values insert from the end */ ) = 0;
+   virtual void
+   setMetadataElement( const typename MetadataColumns::value_type & element,
+                       int insertPosition = -1 /* negative values insert from the end */ )
+   {
+      bool found = false;
+      for( auto & it : metadataColumns )
+         if( it.first == element.first ) {
+            if( it.second != element.second )
+               it.second = element.second;
+            found = true;
+            break;
+         }
+      if( ! found ) {
+         if( insertPosition < 0 )
+            metadataColumns.insert( metadataColumns.end() + insertPosition + 1, element );
+         else
+            metadataColumns.insert( metadataColumns.begin() + insertPosition, element );
+         header_changed = true;
+      }
+   }
 
-   virtual void setMetadataWidths( const std::map< std::string, int > & widths ) = 0;
+   virtual void
+   setMetadataWidths( const std::map< std::string, int > & widths )
+   {
+      for( auto & it : widths )
+         if( metadataWidths.count( it.first ) )
+            metadataWidths[ it.first ] = it.second;
+         else
+            metadataWidths.insert( it );
+   }
 
    virtual void
    logResult( const std::string& performer,
@@ -140,6 +178,10 @@ public:
 protected:
    std::ostream& log;
    int verbose = 0;
+
+   MetadataColumns metadataColumns;
+   std::map< std::string, int > metadataWidths;
+   bool header_changed = true;
 };
 
 } // namespace Benchmarks
