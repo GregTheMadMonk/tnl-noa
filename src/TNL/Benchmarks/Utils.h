@@ -15,6 +15,8 @@
 
 #include <tuple>
 #include <map>
+#include <fstream>
+#include <experimental/filesystem>
 
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
@@ -144,6 +146,40 @@ inline std::map< std::string, std::string > getHardwareMetadata()
    };
 
    return metadata;
+}
+
+inline void writeMapAsJson( const std::map< std::string, std::string >& data,
+                            std::ostream& out )
+{
+   out << "{\n";
+   for( auto it = data.begin(); it != data.end(); ) {
+      out << "\t\"" << it->first << "\": \"" << it->second << "\"";
+      // increment the iterator now to peek at the next element
+      it++;
+      // write a comma if there are still elements remaining
+      if( it != data.end() )
+         out << ",";
+      out << "\n";
+   }
+   out << "}\n" << std::flush;
+}
+
+inline void writeMapAsJson( const std::map< std::string, std::string >& data,
+                            std::string filename,
+                            std::string newExtension = "" )
+{
+   namespace fs = std::experimental::filesystem;
+
+   if( newExtension != "" ) {
+      const fs::path oldPath = filename;
+      const fs::path newPath = oldPath.parent_path() / ( oldPath.stem().string() + newExtension );
+      filename = newPath;
+   }
+
+   std::ofstream file( filename );
+   // enable exceptions
+   file.exceptions( std::ostream::failbit | std::ostream::badbit | std::ostream::eofbit );
+   writeMapAsJson( data, file );
 }
 
 } // namespace Benchmarks

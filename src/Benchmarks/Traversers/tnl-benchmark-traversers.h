@@ -466,9 +466,17 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
        mode |= std::ios::app;
    std::ofstream logFile( logFileName, mode );
 
+   // init benchmark and set parameters
    Benchmark<> benchmark( logFile ); //( loops, verbose );
    benchmark.setup( parameters );
-   Logging::MetadataMap metadata = getHardwareMetadata();
+
+   // write global metadata into a separate file
+   std::map< std::string, std::string > metadata = getHardwareMetadata();
+   metadata["loops"] = convertToString( parameters.getParameter< int >( "loops" ) );
+   metadata["reset"] = convertToString( parameters.getParameter< bool >( "reset" ) );
+   metadata["minimal test time"] = convertToString( parameters.getParameter< double >( "min-time" ) );
+   writeMapAsJson( metadata, logFileName, ".metadata.json" );
+
    runBenchmark< Dimension >( parameters, benchmark, metadata );
 
    return true;

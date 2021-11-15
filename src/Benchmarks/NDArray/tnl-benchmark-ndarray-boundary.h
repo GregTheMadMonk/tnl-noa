@@ -442,11 +442,12 @@ int main( int argc, char* argv[] )
        mode |= std::ios::app;
    std::ofstream logFile( logFileName, mode );
 
-   // init benchmark and common metadata
+   // init benchmark and set parameters
    Benchmark<> benchmark( logFile, loops, verbose );
 
-   // prepare global metadata
-   Logging::MetadataMap metadata = getHardwareMetadata();
+   // write global metadata into a separate file
+   std::map< std::string, std::string > metadata = getHardwareMetadata();
+   writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
    const String devices = parameters.getParameter< String >( "devices" );
    if( devices == "all" || devices == "host" )
