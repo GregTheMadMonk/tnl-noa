@@ -26,29 +26,6 @@ public:
    // inherit constructors
    using Logging::Logging;
 
-   virtual void
-   writeTitle( const std::string & title ) override
-   {
-      if( verbose )
-         std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
-      log << ": title = " << title << std::endl;
-   }
-
-   virtual void
-   writeMetadata( const MetadataMap & metadata ) override
-   {
-      if( verbose )
-         std::cout << "properties:" << std::endl;
-
-      for( auto & it : metadata ) {
-         if( verbose )
-            std::cout << "   " << it.first << " = " << it.second << std::endl;
-         log << ": " << it.first << " = " << it.second << std::endl;
-      }
-      if( verbose )
-         std::cout << std::endl;
-   }
-
    void
    writeTableHeader( const std::string & spanningElement,
                      const HeaderElements & subElements )
@@ -150,13 +127,6 @@ public:
 
       // write the message
       log << message << std::endl;
-   }
-
-   virtual void
-   closeTable() override
-   {
-      log << std::endl;
-      header_changed = true;
    }
 
 protected:

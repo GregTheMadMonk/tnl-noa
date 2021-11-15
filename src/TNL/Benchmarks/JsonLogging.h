@@ -26,24 +26,6 @@ public:
    // inherit constructors
    using Logging::Logging;
 
-   virtual void
-   writeTitle( const std::string & title ) override
-   {
-      if( verbose )
-         std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
-   }
-
-   virtual void
-   writeMetadata( const MetadataMap & metadata ) override
-   {
-      if( verbose ) {
-         std::cout << "properties:" << std::endl;
-         for( auto & it : metadata )
-            std::cout << "   " << it.first << " = " << it.second << std::endl;
-         std::cout << std::endl;
-      }
-   }
-
    void writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
    {
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
@@ -134,12 +116,6 @@ public:
       log << "\"error\": \"" << message << "\"";
 
       log << "}" << std::endl;
-   }
-
-   virtual void
-   closeTable() override
-   {
-      header_changed = true;
    }
 
 protected:

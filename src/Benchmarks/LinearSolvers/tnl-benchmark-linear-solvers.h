@@ -338,7 +338,6 @@ struct LinearSolversBenchmark
 
    static bool
    run( Benchmark<>& benchmark,
-        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
       const String file_matrix = parameters.getParameter< String >( "input-matrix" );
@@ -381,10 +380,11 @@ struct LinearSolversBenchmark
       matrixPointer->getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 
-      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed linear solvers" : "Linear solvers" )
-                          + " (" + parameters.getParameter< String >( "name" ) + "): ";
-      benchmark.newBenchmark( name, metadata );
+      const String title = (TNL::MPI::GetSize() > 1) ? "Distributed linear solvers" : "Linear solvers";
+      std::cout << "\n== " << title << " ==\n" << std::endl;
+
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "matrix name", parameters.getParameter< String >( "name" ) },
          // TODO: strip the device
 //         { "matrix type", matrixPointer->getType() },
          { "rows", convertToString( matrixPointer->getRows() ) },
@@ -407,15 +407,15 @@ struct LinearSolversBenchmark
          Matrices::reorderArray( x0, x0_perm, perm );
          Matrices::reorderArray( b, b_perm, perm );
          if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, matrix_perm, x0_perm, b_perm );
+            runDistributed( benchmark, parameters, matrix_perm, x0_perm, b_perm );
          else
-            runNonDistributed( benchmark, metadata, parameters, matrix_perm, x0_perm, b_perm );
+            runNonDistributed( benchmark, parameters, matrix_perm, x0_perm, b_perm );
       }
       else {
          if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, matrixPointer, x0, b );
+            runDistributed( benchmark, parameters, matrixPointer, x0, b );
          else
-            runNonDistributed( benchmark, metadata, parameters, matrixPointer, x0, b );
+            runNonDistributed( benchmark, parameters, matrixPointer, x0, b );
       }
 
       return true;
@@ -423,7 +423,6 @@ struct LinearSolversBenchmark
 
    static void
    runDistributed( Benchmark<>& benchmark,
-                   Benchmark<>::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
                    const SharedPointer< MatrixType >& matrixPointer,
                    const VectorType& x0,
@@ -467,7 +466,6 @@ struct LinearSolversBenchmark
 
    static void
    runNonDistributed( Benchmark<>& benchmark,
-                      Benchmark<>::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
                       const SharedPointer< MatrixType >& matrixPointer,
                       const VectorType& x0,
@@ -623,12 +621,12 @@ main( int argc, char* argv[] )
    // TODO: implement resolveMatrixType
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
-//                                         LinearSolversBenchmark >( benchmark, metadata, parameters );
+//                                         LinearSolversBenchmark >( benchmark, parameters );
    using MatrixType = TNL::Matrices::SparseMatrix< double,
                                                    Devices::Host,
                                                    int,
                                                    TNL::Matrices::GeneralMatrix,
                                                    SegmentsType
                                                  >;
-   return ! LinearSolversBenchmark< MatrixType >::run( benchmark, metadata, parameters );
+   return ! LinearSolversBenchmark< MatrixType >::run( benchmark, parameters );
 }

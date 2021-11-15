@@ -36,8 +36,7 @@ template< int Dimension,
           typename Real = float,
           typename Index = int >
 bool runBenchmark( const Config::ParameterContainer& parameters,
-                   Benchmark<>& benchmark,
-                   Logging::MetadataMap& metadata )
+                   Benchmark<>& benchmark )
 {
    const std::vector< String >& tests = parameters.getParameter< std::vector< String > >( "tests" );
    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
@@ -58,7 +57,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    /****
     * Full grid traversing with no boundary conditions
     */
-   benchmark.newBenchmark( String("Traversing without boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
@@ -78,7 +76,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 #endif
       benchmark.setMetadataColumns({
-            {"size", convertToString( size ) },
+            { "dimension", convertToString( Dimension ) },
+            { "traverser", "without BC" },
+            { "size", convertToString( size ) },
       });
 
       /****
@@ -260,7 +260,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    /****
     * Full grid traversing including boundary conditions
     */
-   benchmark.newBenchmark( String("Traversing with boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
@@ -279,7 +278,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 #endif
 
       benchmark.setMetadataColumns({
-            {"size", convertToString( size ) },
+            { "dimension", convertToString( Dimension ) },
+            { "traverser", "with BC" },
+            { "size", convertToString( size ) },
       });
 
       /****
@@ -477,7 +478,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    metadata["minimal test time"] = convertToString( parameters.getParameter< double >( "min-time" ) );
    writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
-   runBenchmark< Dimension >( parameters, benchmark, metadata );
+   runBenchmark< Dimension >( parameters, benchmark );
 
    return true;
 }

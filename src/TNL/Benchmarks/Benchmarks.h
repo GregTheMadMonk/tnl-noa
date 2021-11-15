@@ -64,7 +64,6 @@ class Benchmark
 {
    public:
       using MetadataElement = typename Logger::MetadataElement;
-      using MetadataMap = typename Logger::MetadataMap;
       using MetadataColumns = typename Logger::MetadataColumns;
       using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
@@ -79,13 +78,6 @@ class Benchmark
       void setLoops( int loops );
 
       void setMinTime( const double& minTime );
-
-      // Marks the start of a new benchmark
-      void newBenchmark( const String & title );
-
-      // Marks the start of a new benchmark (with custom metadata)
-      void newBenchmark( const String & title,
-                        MetadataMap metadata );
 
       // Sets metadata columns -- values used for all subsequent rows until
       // the next call to this function.

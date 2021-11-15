@@ -79,7 +79,6 @@ class Logging
 {
 public:
    using MetadataElement = std::pair< std::string, std::string >;
-   using MetadataMap = std::map< std::string, std::string >;
    using MetadataColumns = std::vector< MetadataElement >;
 
    using HeaderElements = std::vector< std::string >;
@@ -114,10 +113,6 @@ public:
    {
       return verbose;
    }
-
-   virtual void writeTitle( const std::string& title ) = 0;
-
-   virtual void writeMetadata( const MetadataMap & metadata ) = 0;
 
    virtual void setMetadataColumns( const MetadataColumns& elements )
    {
@@ -172,8 +167,6 @@ public:
               const std::string& errorMessage = "" ) = 0;
 
    virtual void writeErrorMessage( const std::string& message ) = 0;
-
-   virtual void closeTable() = 0;
 
 protected:
    std::ostream& log;

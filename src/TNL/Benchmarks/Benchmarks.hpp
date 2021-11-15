@@ -71,30 +71,6 @@ setMinTime( const double& minTime )
 template< typename Logger >
 void
 Benchmark< Logger >::
-newBenchmark( const String & title )
-{
-   logger.closeTable();
-   logger.writeTitle( title );
-}
-
-template< typename Logger >
-void
-Benchmark< Logger >::
-newBenchmark( const String & title,
-               MetadataMap metadata )
-{
-   logger.closeTable();
-   logger.writeTitle( title );
-   // add loops and reset flag to metadata
-   metadata["loops"] = convertToString(loops);
-   metadata["reset"] = convertToString( reset );
-   metadata["minimal test time"] = convertToString( minTime );
-   logger.writeMetadata( metadata );
-}
-
-template< typename Logger >
-void
-Benchmark< Logger >::
 setMetadataColumns( const MetadataColumns & metadata )
 {
    logger.setMetadataColumns( metadata );

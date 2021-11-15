@@ -31,36 +31,33 @@ using namespace TNL::Benchmarks;
 template< typename Real >
 void
 runBlasBenchmarks( Benchmark<> & benchmark,
-                   Benchmark<>::MetadataMap metadata,
                    const std::size_t & minSize,
                    const std::size_t & maxSize,
                    const double & sizeStepFactor )
 {
-   const String precision = getType< Real >();
-   metadata["precision"] = precision;
-
    // Array operations
-   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = Host)",
-                           metadata );
+   std::cout << "\n== Array operations ==\n" << std::endl;
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "precision", getType< Real >() },
+         { "host allocator", "Host" },
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real >( benchmark, size );
    }
 #ifdef HAVE_CUDA
-   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaHost)",
-                           metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "precision", getType< Real >() },
+         { "host allocator", "CudaHost" },
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaHost >( benchmark, size );
    }
-   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaManaged)",
-                           metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "precision", getType< Real >() },
+         { "host allocator", "CudaManaged" },
          { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real, int, Allocators::CudaManaged >( benchmark, size );
@@ -68,10 +65,10 @@ runBlasBenchmarks( Benchmark<> & benchmark,
 #endif
 
    // Vector operations
-   benchmark.newBenchmark( String("Vector operations (") + precision + ")",
-                           metadata );
+   std::cout << "\n== Vector operations ==\n" << std::endl;
    for( std::size_t size = minSize; size <= maxSize; size *= sizeStepFactor ) {
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "precision", getType< Real >() },
          { "size", convertToString( size ) },
       } ));
       benchmarkVectorOperations< Real >( benchmark, size );
@@ -79,10 +76,10 @@ runBlasBenchmarks( Benchmark<> & benchmark,
 
    // Triad benchmark: copy from host, compute, copy to host
 #ifdef HAVE_CUDA
-   benchmark.newBenchmark( String("Triad benchmark (") + precision + ")",
-                           metadata );
+   std::cout << "\n== Triad ==\n" << std::endl;
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "precision", getType< Real >() },
          { "size", convertToString( size ) },
       } ));
       benchmarkTriad< Real >( benchmark, size );
@@ -90,13 +87,13 @@ runBlasBenchmarks( Benchmark<> & benchmark,
 #endif
 
    // Dense matrix-vector multiplication
-   benchmark.newBenchmark( String("Dense matrix-vector multiplication (") + precision + ")",
-                           metadata );
+   std::cout << "\n== Dense matrix-vector multiplication ==\n" << std::endl;
    for( std::size_t rows = 10; rows <= 20000 * 20000; rows *= 2 ) {
       for( std::size_t columns = 10; columns <= 20000 * 20000; columns *= 2 ) {
          if( rows * columns > 20000 * 20000 )
             break;
          benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+            { "precision", getType< Real >() },
             { "rows", convertToString( rows ) },
             { "columns", convertToString( columns ) }
          } ));
@@ -176,9 +173,9 @@ main( int argc, char* argv[] )
    writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
    if( precision == "all" || precision == "float" )
-      runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor );
+      runBlasBenchmarks< float >( benchmark, minSize, maxSize, sizeStepFactor );
    if( precision == "all" || precision == "double" )
-      runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor );
+      runBlasBenchmarks< double >( benchmark, minSize, maxSize, sizeStepFactor );
 
    return EXIT_SUCCESS;
 }

@@ -108,16 +108,14 @@ struct ODESolversBenchmark
 
    static bool
    run( Benchmark<>& benchmark,
-        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
-      const String precision = getType< Real >();
-      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" ) + " (" + precision + ")";
-      metadata["precision"] = precision;
-      benchmark.newBenchmark( name, metadata );
+      const String title = (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers";
+      std::cout << "\n== " << title << " ==\n" << std::endl;
+
       for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
-            // TODO: strip the device
+            { "precision", getType< Real >() },
             { "DOFs", convertToString( dofs ) },
          } ));
 
@@ -129,24 +127,22 @@ struct ODESolversBenchmark
 
 template< typename Real >
 bool resolveIndexType( Benchmark<>& benchmark,
-   Benchmark<>::MetadataMap& metadata,
-   Config::ParameterContainer& parameters )
+                       Config::ParameterContainer& parameters )
 {
    const String& index = parameters.getParameter< String >( "index-type" );
-   if( index == "int" ) return ODESolversBenchmark< Real, int >::run( benchmark, metadata, parameters );
-   return ODESolversBenchmark< Real, long int >::run( benchmark, metadata, parameters );
+   if( index == "int" ) return ODESolversBenchmark< Real, int >::run( benchmark, parameters );
+   return ODESolversBenchmark< Real, long int >::run( benchmark, parameters );
 }
 
 bool resolveRealTypes( Benchmark<>& benchmark,
-   Benchmark<>::MetadataMap& metadata,
-   Config::ParameterContainer& parameters )
+                       Config::ParameterContainer& parameters )
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
    if( ( realType == "float" || realType == "all" ) &&
-       ! resolveIndexType< float >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< float >( benchmark, parameters ) )
       return false;
    if( ( realType == "double" || realType == "all" ) &&
-       ! resolveIndexType< double >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< double >( benchmark, parameters ) )
       return false;
    return true;
 }
@@ -229,5 +225,5 @@ main( int argc, char* argv[] )
    std::map< std::string, std::string > metadata = getHardwareMetadata();
    writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
-   return ! resolveRealTypes( benchmark, metadata, parameters );
+   return ! resolveRealTypes( benchmark, parameters );
 }
