@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "CustomLogging.h"
+#include "JsonLogging.h"
 
 #include <limits>
 
@@ -59,7 +59,7 @@ struct BenchmarkResult
    }
 };
 
-template< typename Logger = CustomLogging >
+template< typename Logger = JsonLogging >
 class Benchmark
 {
    public:
