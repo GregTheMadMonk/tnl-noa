@@ -38,19 +38,19 @@ struct BenchmarkResult
 
    virtual HeaderElements getTableHeader() const
    {
-      return HeaderElements({ "time", "stddev", "stddev/time", "bandwidth", "speedup" });
+      return HeaderElements({ "time", "stddev", "stddev/time", "loops", "bandwidth", "speedup" });
    }
 
    virtual std::vector< int > getColumnWidthHints() const
    {
-      return std::vector< int >({ 14, 14, 14, 14, 14 });
+      return std::vector< int >({ 14, 14, 14, 6, 14, 14 });
    }
 
    virtual RowElements getRowElements() const
    {
       RowElements elements;
       // write in scientific format to avoid precision loss
-      elements << std::scientific << time << stddev << stddev / time << bandwidth;
+      elements << std::scientific << time << stddev << stddev / time << loops << bandwidth;
       if( speedup != 0 )
          elements << speedup;
       else
