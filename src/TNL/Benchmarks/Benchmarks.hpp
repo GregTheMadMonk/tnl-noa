@@ -63,9 +63,17 @@ setLoops( int loops )
 template< typename Logger >
 void
 Benchmark< Logger >::
-setMinTime( const double& minTime )
+setMinTime( double minTime )
 {
    this->minTime = minTime;
+}
+
+template< typename Logger >
+bool
+Benchmark< Logger >::
+isResetingOn() const
+{
+   return reset;
 }
 
 template< typename Logger >
@@ -220,14 +228,6 @@ Benchmark< Logger >::
 getBaseTime() const
 {
    return baseTime;
-}
-
-template< typename Logger >
-bool
-Benchmark< Logger >::
-isResetingOn() const
-{
-   return reset;
 }
 
 } // namespace Benchmarks

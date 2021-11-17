@@ -73,11 +73,11 @@ class Benchmark
 
       void setup( const Config::ParameterContainer& parameters );
 
-      // TODO: ensure that this is not called in the middle of the benchmark
-      // (or just remove it completely?)
       void setLoops( int loops );
 
-      void setMinTime( const double& minTime );
+      void setMinTime( double minTime );
+
+      bool isResetingOn() const;
 
       // Sets metadata columns -- values used for all subsequent rows until
       // the next call to this function.
@@ -142,8 +142,6 @@ class Benchmark
       SolverMonitorType& getMonitor();
 
       double getBaseTime() const;
-
-      bool isResetingOn() const;
 
    protected:
       Logger logger;
