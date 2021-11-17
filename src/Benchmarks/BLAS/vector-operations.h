@@ -15,7 +15,7 @@
 #include <stdlib.h> // srand48
 #include <numeric>  // std::partial_sum
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/scan.h>

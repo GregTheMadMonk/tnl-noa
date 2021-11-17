@@ -12,17 +12,12 @@
 
 #pragma once
 
-#include "AddOneEntitiesProcessor.h"
-#include "BenchmarkTraverserUserData.h"
-#include "SimpleCell.h"
-
 namespace TNL {
    namespace Benchmarks {
       namespace Traversers {
 
 template< typename Grid >
 class GridTraverserBenchmarkHelper{};
-
 
       } // namespace Traversers
    } // namespace Benchmarks

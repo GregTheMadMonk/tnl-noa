@@ -27,7 +27,7 @@
 #include "Legacy/DistributedMatrix.h"
 #include <TNL/Matrices/SparseOperations.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "ordering.h"
 
 #include <TNL/Matrices/SparseMatrix.h>
@@ -157,7 +157,6 @@ struct SpmvBenchmark
 
    static bool
    run( Benchmark<>& benchmark,
-        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
       MatrixType matrix;
@@ -169,10 +168,11 @@ struct SpmvBenchmark
       matrix.getCompressedRowLengths( rowLengths );
       const IndexType maxRowLength = max( rowLengths );
 
-      const String name = String( (TNL::MPI::GetSize() > 1) ? "DistSpMV" : "SpMV" )
-                          + " (" + parameters.getParameter< String >( "name" ) + "): ";
-      benchmark.newBenchmark( name, metadata );
+      const String title = (TNL::MPI::GetSize() > 1) ? "DistSpMV" : "SpMV";
+      std::cout << "\n== " << title << " ==\n" << std::endl;
+
       benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
+         { "matrix name", parameters.getParameter< String >( "name" ) },
          // TODO: strip the device
 //         { "matrix type", matrix.getType() },
          { "rows", convertToString( matrix.getRows() ) },
@@ -190,15 +190,15 @@ struct SpmvBenchmark
          MatrixType matrix_perm;
          Matrices::reorderSparseMatrix( matrix, matrix_perm, perm, iperm );
          if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, matrix_perm, vector );
+            runDistributed( benchmark, parameters, matrix_perm, vector );
          else
-            runNonDistributed( benchmark, metadata, parameters, matrix_perm, vector );
+            runNonDistributed( benchmark, parameters, matrix_perm, vector );
       }
       else {
          if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, matrix, vector );
+            runDistributed( benchmark, parameters, matrix, vector );
          else
-            runNonDistributed( benchmark, metadata, parameters, matrix, vector );
+            runNonDistributed( benchmark, parameters, matrix, vector );
       }
 
       return true;
@@ -206,7 +206,6 @@ struct SpmvBenchmark
 
    static void
    runNonDistributed( Benchmark<>& benchmark,
-                      Benchmark<>::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
                       MatrixType& matrix,
                       VectorType& vector )
@@ -219,7 +218,6 @@ struct SpmvBenchmark
 
    static void
    runDistributed( Benchmark<>& benchmark,
-                   Benchmark<>::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
                    MatrixType& matrix,
                    VectorType& vector )
@@ -331,31 +329,24 @@ main( int argc, char* argv[] )
        mode |= std::ios::app;
    std::ofstream logFile;
    if( rank == 0 )
-      logFile.open( logFileName.getString(), mode );
+      logFile.open( logFileName, mode );
 
-   // init benchmark and common metadata
-   Benchmark<> benchmark( loops, verbose );
+   // init benchmark and set parameters
+   Benchmark<> benchmark( logFile, loops, verbose );
 
-   // prepare global metadata
-   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
+   // write global metadata into a separate file
+   std::map< std::string, std::string > metadata = getHardwareMetadata();
+   writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
    // TODO: implement resolveMatrixType
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
-//                                         SpmvBenchmark >( benchmark, metadata, parameters );
+//                                         SpmvBenchmark >( benchmark, parameters );
    using MatrixType = TNL::Matrices::SparseMatrix< double,
                                                    Devices::Host,
                                                    int,
                                                    TNL::Matrices::GeneralMatrix,
                                                    SegmentsType
                                                  >;
-   const bool status = SpmvBenchmark< MatrixType >::run( benchmark, metadata, parameters );
-
-   if( rank == 0 )
-      if( ! benchmark.save( logFile ) ) {
-         std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
-         return EXIT_FAILURE;
-      }
-
-   return ! status;
+   return ! SpmvBenchmark< MatrixType >::run( benchmark, parameters );
 }

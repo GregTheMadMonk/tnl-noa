@@ -79,5 +79,6 @@ INSTALL( TARGETS tnl-init
          DESTINATION bin )
 
 INSTALL( PROGRAMS tnl-err2eoc
+                  tnl-benchmark-to-html.py
                   tnl-log-to-html.py
          DESTINATION bin )

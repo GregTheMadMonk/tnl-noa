@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import warnings
+warnings.warn("The CustomLogging format for TNL benchmarks is deprecated. Please switch your benchmark "
+              "to JsonLogging and use the tnl-benchmark-to-html.py script for post-processing.",
+              DeprecationWarning)
+
 import collections
 
 try:

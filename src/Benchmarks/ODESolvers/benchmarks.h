@@ -15,7 +15,7 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #include <stdexcept>  // std::runtime_error
 

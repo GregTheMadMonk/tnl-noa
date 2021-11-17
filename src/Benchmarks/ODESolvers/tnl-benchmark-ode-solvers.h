@@ -28,7 +28,7 @@
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/ODE/Merson.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 #include "benchmarks.h"
 #include "SimpleProblem.h"
 #include "Euler.h"
@@ -108,67 +108,41 @@ struct ODESolversBenchmark
 
    static bool
    run( Benchmark<>& benchmark,
-        Benchmark<>::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
-      const String name = String( (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers" );
-                          //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
-      benchmark.newBenchmark( name, metadata );
+      const String title = (TNL::MPI::GetSize() > 1) ? "Distributed ODE solvers" : "ODE solvers";
+      std::cout << "\n== " << title << " ==\n" << std::endl;
+
       for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark<>::MetadataColumns({
-            // TODO: strip the device
+            { "precision", getType< Real >() },
             { "DOFs", convertToString( dofs ) },
          } ));
 
-         if( TNL::MPI::GetSize() > 1 )
-            runDistributed( benchmark, metadata, parameters, dofs );
-         else
-            runNonDistributed( benchmark, metadata, parameters, dofs );
+         benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
       }
       return true;
-   }
-
-   static void
-   runDistributed( Benchmark<>& benchmark,
-                   Benchmark<>::MetadataMap metadata,
-                   const Config::ParameterContainer& parameters,
-                   size_t dofs )
-   {
-      std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
-   }
-
-   static void
-   runNonDistributed( Benchmark<>& benchmark,
-                      Benchmark<>::MetadataMap metadata,
-                      const Config::ParameterContainer& parameters,
-                      size_t dofs )
-   {
-      std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
    }
 };
 
 template< typename Real >
 bool resolveIndexType( Benchmark<>& benchmark,
-   Benchmark<>::MetadataMap& metadata,
-   Config::ParameterContainer& parameters )
+                       Config::ParameterContainer& parameters )
 {
    const String& index = parameters.getParameter< String >( "index-type" );
-   if( index == "int" ) return ODESolversBenchmark< Real, int >::run( benchmark, metadata, parameters );
-   return ODESolversBenchmark< Real, long int >::run( benchmark, metadata, parameters );
+   if( index == "int" ) return ODESolversBenchmark< Real, int >::run( benchmark, parameters );
+   return ODESolversBenchmark< Real, long int >::run( benchmark, parameters );
 }
 
 bool resolveRealTypes( Benchmark<>& benchmark,
-   Benchmark<>::MetadataMap& metadata,
-   Config::ParameterContainer& parameters )
+                       Config::ParameterContainer& parameters )
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
    if( ( realType == "float" || realType == "all" ) &&
-       ! resolveIndexType< float >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< float >( benchmark, parameters ) )
       return false;
    if( ( realType == "double" || realType == "all" ) &&
-       ! resolveIndexType< double >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< double >( benchmark, parameters ) )
       return false;
    return true;
 }
@@ -177,7 +151,7 @@ void
 configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "Benchmark settings:" );
-   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-ode-solvers.log");
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
@@ -242,21 +216,14 @@ main( int argc, char* argv[] )
        mode |= std::ios::app;
    std::ofstream logFile;
    if( rank == 0 )
-      logFile.open( logFileName.getString(), mode );
+      logFile.open( logFileName, mode );
 
-   // init benchmark and common metadata
-   Benchmark<> benchmark( loops, verbose );
+   // init benchmark and set parameters
+   Benchmark<> benchmark( logFile, loops, verbose );
 
-   // prepare global metadata
-   Benchmark<>::MetadataMap metadata = getHardwareMetadata< Logging >();
+   // write global metadata into a separate file
+   std::map< std::string, std::string > metadata = getHardwareMetadata();
+   writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
-   const bool status = resolveRealTypes( benchmark, metadata, parameters );
-
-   if( rank == 0 )
-      if( ! benchmark.save( logFile ) ) {
-         std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
-         return EXIT_FAILURE;
-      }
-
-   return ! status;
+   return ! resolveRealTypes( benchmark, parameters );
 }

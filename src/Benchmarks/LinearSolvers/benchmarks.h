@@ -5,7 +5,7 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Matrices/DistributedMatrix.h>
 
-#include "../Benchmarks.h"
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #ifdef HAVE_ARMADILLO
 #include <armadillo>
@@ -126,7 +126,7 @@ benchmarkSolver( Benchmark<>& benchmark,
 
    // subclass BenchmarkResult to add extra columns to the benchmark
    // (iterations, preconditioned residue, true residue)
-   struct MyBenchmarkResult : public BenchmarkResult<>
+   struct MyBenchmarkResult : public BenchmarkResult
    {
       using HeaderElements = BenchmarkResult::HeaderElements;
       using RowElements = BenchmarkResult::RowElements;
@@ -145,15 +145,7 @@ benchmarkSolver( Benchmark<>& benchmark,
 
       virtual HeaderElements getTableHeader() const override
       {
-         return HeaderElements( {
-            std::pair< String, int >( "time", 8 ),
-            std::pair< String, int >( "stddev", 8 ),
-            std::pair< String, int >( "stddev/time", 8 ),
-            std::pair< String, int >( "speedup", 8 ),
-            std::pair< String, int >( "converged", 8 ),
-            std::pair< String, int >( "iterations", 8 ),
-            std::pair< String, int >( "residue_precond", 8 ),
-            std::pair< String, int >( "residue_true", 8 ) } );
+         return HeaderElements({ "time", "stddev", "stddev/time", "speedup", "converged", "iterations", "residue_precond", "residue_true" });
       }
 
       virtual RowElements getRowElements() const override

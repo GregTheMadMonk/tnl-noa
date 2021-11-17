@@ -14,8 +14,7 @@
 
 #include <cstring>
 
-#include "../Benchmarks.h"
-
+#include <TNL/Benchmarks/Benchmarks.h>
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
@@ -116,10 +115,7 @@ benchmarkArrayOperations( Benchmark<> & benchmark,
       hostArray = hostArray2;
    };
    benchmark.setOperation( "copy (operator=)", 2 * datasetSize );
-   // copyBasetime is used later inside HAVE_CUDA guard, so the compiler will
-   // complain when compiling without CUDA
-   const double copyBasetime = benchmark.time< Devices::Host >( reset1, "CPU", copyAssignHostHost );
-   (void)copyBasetime;  // ignore unused variable
+   benchmark.time< Devices::Host >( reset1, "CPU", copyAssignHostHost );
 #ifdef HAVE_CUDA
    auto copyAssignCudaCuda = [&]() {
       deviceArray = deviceArray2;
@@ -135,7 +131,7 @@ benchmarkArrayOperations( Benchmark<> & benchmark,
    auto copyAssignCudaHost = [&]() {
       hostArray = deviceArray;
    };
-   benchmark.setOperation( "copy (operator=)", datasetSize, copyBasetime );
+   benchmark.setOperation( "copy (operator=)", datasetSize, benchmark.getBaseTime() );
    benchmark.time< Devices::Cuda >( reset1, "CPU->GPU", copyAssignHostCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU->CPU", copyAssignCudaHost );
 #endif
