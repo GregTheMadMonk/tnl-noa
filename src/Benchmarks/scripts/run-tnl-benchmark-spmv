@@ -1,74 +1,37 @@
 #!/usr/bin/env bash
 
-DEBUG="no"
-STOP_TIME="1"
-export CUDA_PROFILE=0
+# exit whenever a command fails
+set -e
 
-PWD=`pwd`
-IWD="$PWD"
-BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
+# enable recursive globbing
+shopt -s globstar
+
+DEBUG="no"
+
 BENCHMARK="tnl-benchmark-spmv --with-legacy-matrices yes --precision double --openmp-enabled no"
 BENCHMARK_DBG="tnl-benchmark-spmv-dbg --with-legacy-matrices no"
 
-export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
-PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
-source matrix-market
-#MM_MATRICES=""
-source florida-matrix-market
-#FLORIDA_MM_MATRICES=""
+matrices_base_path="./mtx_matrices"
+log_file="./log-files/sparse-matrix-benchmark.log"
 
-for link in $MM_MATRICES;
-do
-   echo "======================================================================================================"
-   matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
-   unzipped_matrix=`echo $matrix | sed 's/.gz//'`
-   if test ! -e $matrix;
-   then
-      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
+if [[ ! -d "$matrices_base_path" ]]; then
+   echo "The path '$matrices_base_path' does not exist." >&2
+   exit 1
+fi
+
+if [[ ! -d "$(dirname "$log_file")" ]]; then
+   mkdir -p "$(dirname "$log_file")"
+fi
+
+if [[ -f "$log_file" ]]; then
+   echo "WARNING: deleting an existing log file $log_file"
+   rm -f "$log_file"
+fi
+
+for matrix in "$matrices_base_path"/**/*.mtx; do
+   if [[ "$DEBUG" == "yes" ]]; then
+      gdb --args $BENCHMARK_DBG --input-file "$matrix" --log-file "$log_file" --output-mode append --verbose 1
    else
-      gunzip -c ${matrix} > ${unzipped_matrix}
-      echo "Benchmarking with the matrix $unzipped_matrix ..."
-      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-      if test x$DEBUG = xyes;
-      then
-         gdb --args ${BENCHMARK_DBG} --input-file $unzipped_matrix --log-file log-files/sparse-matrix-benchmark.log --verbose 1
-      else
-         $BENCHMARK --input-file $unzipped_matrix --log-file log-files/sparse-matrix-benchmark.log --verbose 1
-      fi
+      $BENCHMARK --input-file "$matrix" --log-file "$log_file" --output-mode append --verbose 1
    fi
 done
-
-for link in $FLORIDA_MM_MATRICES;
-do
-   matrix=matrices`echo $link | sed 's/http:\/\/www.cise.ufl.edu\/research\/sparse//'`
-   if test ! -e $matrix;
-   then
-      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-   else
-     DIRNAME=`dirname $matrix`
-     FILENAME=`basename $matrix`
-     cd $DIRNAME
-     tar zxvf $FILENAME
-     cd $IWD
-     if [ ! -d "log-files" ];
-	 then
-	     mkdir log-files
-	 fi
-     SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
-     rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usualy in array format
-     for file in $DIRNAME/$SUBDIRNAME/*.mtx;
-     do
-         echo "======================================================================================================"
-         mtx_file_name=`basename $file`
-         mtx_file_name=${mtx_file_name%.mtx}
-         if test x$DEBUG = xyes;
-         then
-            gdb --args ${BENCHMARK_DBG} --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
-         else
-            $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark.log --output-mode append --verbose 1
-         fi
-     done
-   fi
-done
-$BENCHMARK --log-file log-files/sparse-matrix-benchmark.log --output-mode close --verbose 1
-
