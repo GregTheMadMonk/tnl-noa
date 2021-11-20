@@ -164,19 +164,21 @@ if( ${BUILD_TESTS} OR ${BUILD_MATRIX_TESTS} )
       # find gtest installed in the local system
       find_package(GTest REQUIRED)
       if( GTEST_FOUND )
-         set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
          include_directories( ${GTEST_INCLUDE_DIRS} )
-         link_libraries( ${GTEST_LIBRARIES} )
       endif( GTEST_FOUND )
    else()
       # build gtest libs
       include( BuildGtest )
    endif()
-
+   set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
+   set( CUDA_TESTS_FLAGS ${CUDA_TESTS_FLAGS} -DHAVE_GTEST )
+   set( TESTS_LIBRARIES ${TESTS_LIBRARIES} ${GTEST_LIBRARIES} )
 
    if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
-      # enable code coverage reports
-      include( UseCodeCoverage )
+      # set compiler flags needed for code coverage
+      set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} --coverage )
+      set( CUDA_TESTS_FLAGS ${CUDA_TESTS_FLAGS} -Xcompiler --coverage )
+      set( TESTS_LINKER_FLAGS ${TESTS_LINKER_FLAGS} --coverage )
    endif()
 endif()
 
