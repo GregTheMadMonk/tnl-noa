@@ -92,7 +92,7 @@ TYPED_TEST( ReduceTest, sum )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       a.setValue( 1 );
@@ -131,7 +131,7 @@ TYPED_TEST( ReduceTest, min )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       iota( a, 1 );
@@ -145,7 +145,7 @@ TYPED_TEST( ReduceTest, max )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       iota( a, 1 );
@@ -159,7 +159,7 @@ TYPED_TEST( ReduceTest, minWithArg )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       iota( a, 1 );
@@ -174,7 +174,7 @@ TYPED_TEST( ReduceTest, maxWithArg )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       iota( a, 1 );
@@ -189,7 +189,7 @@ TYPED_TEST( ReduceTest, logicalAnd )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
 
@@ -207,11 +207,14 @@ TYPED_TEST( ReduceTest, logicalOr )
 {
    using ArrayType = typename TestFixture::ArrayType;
    ArrayType a;
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
 
-      mod( a, 2 );
+      if( size == 1 )
+         a.setValue( 1 );
+      else
+         mod( a, 2 );
       auto res = reduce< typename ArrayType::DeviceType >( 0, size, a.getConstView(), TNL::LogicalOr{} );
       EXPECT_EQ( res, true );
 
@@ -226,7 +229,7 @@ template< typename ArrayType >
 std::enable_if_t< std::is_integral< typename ArrayType::ValueType >::value >
 test_bitAnd( ArrayType& a )
 {
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 1; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       a.forAllElements( [] __cuda_callable__ ( typename ArrayType::IndexType idx, typename ArrayType::ValueType& value ) { value = 1 | ( 1 << ( idx % 8 ) ); } );
@@ -254,7 +257,7 @@ template< typename ArrayType >
 std::enable_if_t< std::is_integral< typename ArrayType::ValueType >::value >
 test_bitOr( ArrayType& a )
 {
-   for( int size = 100; size <= 1000000; size *= 10 )
+   for( int size = 10; size <= 100000; size *= 10 )
    {
       a.setSize( size );
       a.forAllElements( [] __cuda_callable__ ( typename ArrayType::IndexType idx, typename ArrayType::ValueType& value ) { value = 1 << ( idx % 8 );} );
