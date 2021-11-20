@@ -160,6 +160,9 @@ link_libraries( stdc++fs )
 if( ${BUILD_TESTS} OR ${BUILD_MATRIX_TESTS} )
    enable_testing()
 
+   # let CTest write test results in the JUnit XML format
+   set( CMAKE_CTEST_ARGUMENTS ${CMAKE_CTEST_ARGUMENTS} --output-junit "${CMAKE_BINARY_DIR}/tests-report.xml" )
+
    if( ${WITH_SYSTEM_GTEST} OR ${OFFLINE_BUILD} )
       # find gtest installed in the local system
       find_package(GTest REQUIRED)

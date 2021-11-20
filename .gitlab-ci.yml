@@ -116,8 +116,17 @@ stages:
         expire_in: 7 days
         reports:
             cobertura: coverage.xml
+            junit: "builddir/$CI_JOB_NAME/tests-report.xml"
         paths:
             - coverage_html/
+
+# template for registering tests-report.xml as an artifact
+.tests_report_template:
+    artifacts:
+        name: ${CI_JOB_NAME}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+        expire_in: 7 days
+        reports:
+            junit: "builddir/$CI_JOB_NAME/tests-report.xml"
 
 # Dummy build job to ensure that a pipeline is created for a merge request, even
 # when there were no changes.
@@ -156,7 +165,9 @@ cuda_tests_Debug:
         BUILD_TESTS: "yes"
 
 cuda_tests_Release:
-    extends: .build_template
+    extends:
+        - .build_template
+        - .tests_report_template
     stage: build:cuda
     tags:
         - docker
@@ -183,7 +194,9 @@ cuda_matrix_tests_Debug:
         BUILD_MATRIX_TESTS: "yes"
 
 cuda_matrix_tests_Release:
-    extends: .build_template
+    extends:
+        - .build_template
+        - .tests_report_template
     stage: build:cuda
     tags:
         - docker
@@ -264,7 +277,9 @@ default_tests_Debug:
         BUILD_TESTS: "yes"
 
 default_tests_Release:
-    extends: .build_template
+    extends:
+        - .build_template
+        - .tests_report_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
@@ -280,7 +295,9 @@ default_matrix_tests_Debug:
         BUILD_MATRIX_TESTS: "yes"
 
 default_matrix_tests_Release:
-    extends: .build_template
+    extends:
+        - .build_template
+        - .tests_report_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
