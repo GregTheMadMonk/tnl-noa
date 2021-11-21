@@ -96,6 +96,7 @@ stages:
         changes:
             - src/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
+            - cmake/*
             - .gitlab-ci.yml
     interruptible: true
 
@@ -111,6 +112,7 @@ dummy build job:
             # .build_template
             - src/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
+            - cmake/*
             - .gitlab-ci.yml
             # build documentation
             - Documentation/**/*
