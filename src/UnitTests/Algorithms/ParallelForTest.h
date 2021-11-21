@@ -26,7 +26,7 @@ TEST( ParallelForTest, 1D_host )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000; size *= 10)
    {
       Array expected;
       expected.setSize( size );
@@ -53,7 +53,7 @@ TEST( ParallelForTest, 2D_host )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000; size *= 10)
    {
       Array expected;
       expected.setSize( size );
@@ -92,7 +92,7 @@ TEST( ParallelForTest, 3D_host )
 {
    using Array = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000; size *= 10)
    {
       Array expected;
       expected.setSize( size );
@@ -146,7 +146,7 @@ void test_1D_cuda()
    using Array = Containers::Array< int, Devices::Cuda >;
    using ArrayHost = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000000; size *= 100)
    {
       ArrayHost expected;
       expected.setSize( size );
@@ -182,7 +182,7 @@ void test_2D_cuda()
    using Array = Containers::Array< int, Devices::Cuda >;
    using ArrayHost = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000000; size *= 100)
    {
       ArrayHost expected;
       expected.setSize( size );
@@ -231,7 +231,7 @@ void test_3D_cuda()
    using Array = Containers::Array< int, Devices::Cuda >;
    using ArrayHost = Containers::Array< int, Devices::Host >;
    Array a;
-   for (int size = 100; size <= 100000000; size *= 100)
+   for (int size = 1; size <= 100000000; size *= 100)
    {
       ArrayHost expected;
       expected.setSize( size );

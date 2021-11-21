@@ -160,23 +160,28 @@ link_libraries( stdc++fs )
 if( ${BUILD_TESTS} OR ${BUILD_MATRIX_TESTS} )
    enable_testing()
 
+   # let CTest write test results in the JUnit XML format
+   set( CMAKE_CTEST_ARGUMENTS ${CMAKE_CTEST_ARGUMENTS} --output-junit "${CMAKE_BINARY_DIR}/tests-report.xml" )
+
    if( ${WITH_SYSTEM_GTEST} OR ${OFFLINE_BUILD} )
       # find gtest installed in the local system
       find_package(GTest REQUIRED)
       if( GTEST_FOUND )
-         set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
          include_directories( ${GTEST_INCLUDE_DIRS} )
-         link_libraries( ${GTEST_LIBRARIES} )
       endif( GTEST_FOUND )
    else()
       # build gtest libs
       include( BuildGtest )
    endif()
-
+   set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_GTEST )
+   set( CUDA_TESTS_FLAGS ${CUDA_TESTS_FLAGS} -DHAVE_GTEST )
+   set( TESTS_LIBRARIES ${TESTS_LIBRARIES} ${GTEST_LIBRARIES} )
 
    if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
-      # enable code coverage reports
-      include( UseCodeCoverage )
+      # set compiler flags needed for code coverage
+      set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} --coverage )
+      set( CUDA_TESTS_FLAGS ${CUDA_TESTS_FLAGS} -Xcompiler --coverage )
+      set( TESTS_LINKER_FLAGS ${TESTS_LINKER_FLAGS} --coverage )
    endif()
 endif()
 
@@ -309,35 +314,6 @@ if( ${WITH_GMP} )
    endif()
 endif()
 
-####
-# Test for PETSc
-if( BUILD_MPI )
-   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
-      /usr/include/petsc
-      ${PETSC_DIR}/${PETSC_ARCH}/include
-      ${PETSC_DIR}/include
-      DOC "PETSC headers."
-   )
-   if( ${PETSC_INCLUDE_DIR} STREQUAL "PETSC_INCLUDE_DIR-NOTFOUND" )
-      message( "PETSC not found." )
-   else()
-      message( "PETSC headers found -- ${PETSC_INCLUDE_DIR}" )
-      FIND_LIBRARY(PETSC_LIBRARY petsc
-                  ${PETSC_INCLUDE_DIR}/../lib
-                  /usr/local/lib
-                  /usr/lib)
-      if( PETSC_LIBRARY )
-         #string( REPLACE ";" " " MPI_LIBRARIES "${MPI_CXX_LIBRARIES}" )
-         #set( PETSC_LIBRARY "${MPI_LIBRARIES} ${PETSC_LIBRARY}")
-         message( "PETSC library found -- ${PETSC_LIBRARY}")
-         #list( GET MPI_CXX_INCLUDE_PATH 0 MPI_CXX_PATH )
-         #set(PETSC_CXX_FLAGS "-DHAVE_PETSC -I${PETSC_INCLUDE_DIR} -DHAVE_MPI -I${MPI_CXX_PATH}")
-         set(PETSC_CXX_FLAGS -DHAVE_PETSC -I${PETSC_INCLUDE_DIR})
-         set(PETSC_LINKER_FLAGS ${PETSC_LIBRARY})
-      endif()
-   endif()
-endif()
-
 # configure build paths
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib )
@@ -417,8 +393,6 @@ message( "   CMAKE_SHARED_LINKER_FLAGS_RELEASE = ${CMAKE_SHARED_LINKER_FLAGS_REL
 message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
 message( "   CUDA_SAMPLES_FLAGS = ${CUDA_SAMPLES_FLAGS}" )
 message( "   GMP_LIBRARIES = ${GMP_LIBRARIES}" )
-message( "   PETSC_CXX_FLAGS = ${PETSC_CXX_FLAGS}" )
-message( "   PETSC_LINKER_FLAGS = ${PETSC_LINKER_FLAGS}" )
 
 if( MPI_CXX_FOUND AND ${WITH_MPI} )
    message( "   MPI_CXX_COMPILE_OPTIONS = ${MPI_CXX_COMPILE_OPTIONS}" )

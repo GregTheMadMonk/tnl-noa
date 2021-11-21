@@ -1006,8 +1006,8 @@ void test_LargeVectorProduct()
    if( std::is_same< IndexType, short >::value )
       return;
 
-   const IndexType rows = 5000;
-   const IndexType cols = 5000;
+   const IndexType rows = 997;
+   const IndexType cols = 997;
 
    Matrix m( rows, cols );
    m.forAllElements(
