@@ -190,8 +190,13 @@ private:
       // disable nvcc warning: invalid narrowing conversion from "unsigned int" to "int"
       // (the implementation is based on the conversion)
       #ifdef __NVCC__
-         #pragma push
-         #pragma diag_suppress 2361
+         #ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+            #pragma nv_diagnostic push
+            #pragma nv_diag_suppress 2361
+         #else
+            #pragma push
+            #pragma diag_suppress 2361
+         #endif
       #elif defined(__INTEL_COMPILER)
          #pragma warning(push)
          #pragma warning(disable:3291)
@@ -199,7 +204,11 @@ private:
       template< typename M, M method >
       static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
       #ifdef __NVCC__
-         #pragma pop
+         #ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+            #pragma nv_diagnostic pop
+         #else
+            #pragma pop
+         #endif
       #elif defined(__INTEL_COMPILER)
          // FIXME: this does not work - warning would be shown again...
          //#pragma warning(pop)

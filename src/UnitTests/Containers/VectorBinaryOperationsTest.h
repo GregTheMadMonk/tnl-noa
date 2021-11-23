@@ -134,8 +134,14 @@ protected:
 
 #ifdef HAVE_CUDA
    // ignore useless nvcc warning: https://stackoverflow.com/a/49997636
-   #pragma push
-   #pragma diag_suppress = declared_but_not_referenced
+   // https://developer.nvidia.com/blog/reducing-application-build-times-using-cuda-c-compilation-aids/
+   #ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+      #pragma nv_diagnostic push
+      #pragma nv_diag_suppress declared_but_not_referenced
+   #else
+      #pragma push
+      #pragma diag_suppress = declared_but_not_referenced
+   #endif
 #endif
 
 #define MAYBE_UNUSED(expr) (void)(expr)
@@ -706,7 +712,11 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 #endif
 
 #ifdef HAVE_CUDA
-   #pragma pop
+   #ifdef __NVCC_DIAG_PRAGMA_SUPPORT__
+      #pragma nv_diagnostic pop
+   #else
+      #pragma pop
+   #endif
 #endif
 
 } // namespace binary_tests
