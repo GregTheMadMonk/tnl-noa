@@ -35,7 +35,7 @@ ArrayView< Value, Device, Index >::
 ArrayView( ValueType* data, IndexType size )
 : data(data), size(size)
 {
-   TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
+   TNL_ASSERT_GE( size, (Index) 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
                     "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 }
@@ -49,7 +49,7 @@ void
 ArrayView< Value, Device, Index >::
 bind( ValueType* data, IndexType size )
 {
-   TNL_ASSERT_GE( size, ( IndexType ) 0, "ArrayView size was initialized with a negative size." );
+   TNL_ASSERT_GE( size, (Index) 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
                     "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 
@@ -219,7 +219,7 @@ void
 ArrayView< Value, Device, Index >::
 setElement( IndexType i, ValueType value )
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    Algorithms::MemoryOperations< Device >::setElement( &this->data[ i ], value );
 }
@@ -232,7 +232,7 @@ Value
 ArrayView< Value, Device, Index >::
 getElement( IndexType i ) const
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::MemoryOperations< Device >::getElement( &data[ i ] );
 }
@@ -250,7 +250,7 @@ operator[]( IndexType i )
 #else
    TNL_ASSERT_FALSE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on the host from the host." );
 #endif
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return data[ i ];
 }
@@ -268,7 +268,7 @@ operator[]( IndexType i ) const
 #else
    TNL_ASSERT_FALSE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on the host from the host." );
 #endif
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return data[ i ];
 }
