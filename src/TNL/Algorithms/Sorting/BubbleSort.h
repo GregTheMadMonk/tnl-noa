@@ -30,11 +30,12 @@ struct BubbleSort
       if( std::is_same< Device, Devices::Cuda >::value )
          throw Exceptions::NotImplementedError( "inplace bubble sort is not implemented for CUDA" );
 
-      Index left( begin ), right( end -1 );
+      Index left = begin;
+      Index right = end - 1;
       while( left < right )
       {
-         //int lastChange( end -1 );
-         for( int j = left; j < right - 1; j++ )
+         //Index lastChange = end - 1;
+         for( Index j = left; j < right - 1; j++ )
          {
             TNL_ASSERT_LT( j+1, end, "" );
             if( ! compare( j, j+1 ) )
@@ -44,7 +45,7 @@ struct BubbleSort
             }
          }
          right--; //lastChange;
-         for( int j = right; j >= left; j-- )
+         for( Index j = right; j >= left; j-- )
          {
             TNL_ASSERT_LT( j+1, end, "" );
             if( ! compare( j, j+1 ) )
