@@ -14,6 +14,7 @@
 
 #include <limits>
 
+#include <TNL/Containers/StaticVector.h>  // TNL::product
 #include <TNL/Meshes/Writers/VTIWriter.h>
 #include <TNL/Endianness.h>
 #include <TNL/base64.h>

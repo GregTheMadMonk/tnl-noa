@@ -16,6 +16,7 @@
 
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Endianness.h>
 #include <TNL/base64.h>
 #ifdef HAVE_ZLIB

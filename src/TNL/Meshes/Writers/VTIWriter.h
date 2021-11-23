@@ -14,7 +14,6 @@
 
 #include <type_traits>
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {

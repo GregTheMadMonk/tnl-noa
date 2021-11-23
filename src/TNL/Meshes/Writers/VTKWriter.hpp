@@ -14,6 +14,7 @@
 
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Endianness.h>
 
 namespace TNL {

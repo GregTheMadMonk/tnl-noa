@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
