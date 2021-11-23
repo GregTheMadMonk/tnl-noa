@@ -61,11 +61,11 @@ struct MeshEntitiesVTKWriter
       using Index = typename Mesh::GlobalIndexType;
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
-      const Index verticesPerEntity = VerticesPerEntity< EntityType >::count;;
+      const int verticesPerEntity = VerticesPerEntity< EntityType >::count;;
       for( Index i = 0; i < entitiesCount; i++ ) {
          const auto& entity = mesh.template getEntity< EntityType >( i );
          writeInt( format, str, verticesPerEntity );
-         for( Index j = 0; j < verticesPerEntity; j++ )
+         for( int j = 0; j < verticesPerEntity; j++ )
             writeInt( format, str, entity.template getSubentityIndex< 0 >( j ) );
          if( format == VTK::FileFormat::ascii )
             str << "\n";
@@ -83,7 +83,7 @@ struct MeshEntitiesVTKWriter< Mesh, 0 >
       using Index = typename Mesh::GlobalIndexType;
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
-      const Index verticesPerEntity = 1;
+      const int verticesPerEntity = 1;
       for( Index i = 0; i < entitiesCount; i++ )
       {
          writeInt( format, str, verticesPerEntity );
@@ -441,8 +441,8 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
    cellsCount = mesh.template getEntitiesCount< EntityType >();
-   const IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
-   const IndexType cellsListSize = cellsCount * ( verticesPerEntity + 1 );
+   const int verticesPerEntity = VerticesPerEntity< EntityType >::count;
+   const std::uint64_t cellsListSize = cellsCount * ( verticesPerEntity + 1 );
 
    str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    EntitiesWriter< EntityDimension >::exec( mesh, str, format );
@@ -458,7 +458,7 @@ VTKWriter< Mesh >::writePointData( const Array& array,
                                    const String& name,
                                    const int numberOfComponents )
 {
-   if( array.getSize() / numberOfComponents != pointsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(pointsCount) )
       throw std::length_error("Mismatched array size for POINT_DATA section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(pointsCount) + " points in the file)");
 
@@ -482,7 +482,7 @@ VTKWriter< Mesh >::writeCellData( const Array& array,
                                   const String& name,
                                   const int numberOfComponents )
 {
-   if( array.getSize() / numberOfComponents != cellsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(cellsCount) )
       throw std::length_error("Mismatched array size for CELL_DATA section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(cellsCount) + " cells in the file)");
 
@@ -529,7 +529,7 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
    }
 
    using Meshes::Writers::details::writeReal;
-   for( IndexType i = 0; i < array.getSize(); i++ ) {
+   for( typename Array::IndexType i = 0; i < array.getSize(); i++ ) {
       writeReal( format, str, array[i] );
       if( format == VTK::FileFormat::ascii )
          str << "\n";
@@ -543,13 +543,13 @@ VTKWriter< Mesh >::writePoints( const Mesh& mesh )
    using details::writeReal;
    pointsCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
    str << "POINTS " << pointsCount << " " << getType< typename Mesh::RealType >() << std::endl;
-   for( IndexType i = 0; i < pointsCount; i++ ) {
+   for( std::uint64_t i = 0; i < pointsCount; i++ ) {
       const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
       const auto& point = vertex.getPoint();
-      for( IndexType j = 0; j < point.getSize(); j++ )
+      for( int j = 0; j < point.getSize(); j++ )
          writeReal( format, str, point[ j ] );
       // VTK needs zeros for unused dimensions
-      for( IndexType j = 0; j < 3 - point.getSize(); j++ )
+      for( int j = point.getSize(); j < 3; j++ )
          writeReal( format, str, (typename Mesh::PointType::RealType) 0 );
       if( format == VTK::FileFormat::ascii )
          str << "\n";

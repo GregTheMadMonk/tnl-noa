@@ -66,22 +66,22 @@ VTIWriter< Mesh >::writeImageData( const typename Mesh::PointType& gridOrigin,
 
    std::stringstream extent, origin, spacing;
 
-   for( IndexType j = 0; j < Mesh::getMeshDimension(); j++ )
+   for( int j = 0; j < Mesh::getMeshDimension(); j++ )
       extent << begin[ j ] <<  " " << end[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = Mesh::getMeshDimension(); j < 3; j++ )
+   for( int j = Mesh::getMeshDimension(); j < 3; j++ )
       extent << "0 0 ";
 
-   for( IndexType j = 0; j < Mesh::getMeshDimension(); j++ )
+   for( int j = 0; j < Mesh::getMeshDimension(); j++ )
       origin << std::scientific << gridOrigin[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = Mesh::getMeshDimension(); j < 3; j++ )
+   for( int j = Mesh::getMeshDimension(); j < 3; j++ )
       origin << 0 << " ";
 
-   for( IndexType j = 0; j < Mesh::getMeshDimension(); j++ )
+   for( int j = 0; j < Mesh::getMeshDimension(); j++ )
       spacing << std::scientific << spaceSteps[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = Mesh::getMeshDimension(); j < 3; j++ )
+   for( int j = Mesh::getMeshDimension(); j < 3; j++ )
       spacing << 0 << " ";
 
    str << "<ImageData WholeExtent=\"" << extent.str() << "\" Origin=\"" << origin.str() << "\" Spacing=\"" << spacing.str() << "\">\n";
@@ -125,7 +125,7 @@ VTIWriter< Mesh >::writePointData( const Array& array,
 {
    if( ! pieceOpen )
       throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != pointsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(pointsCount) )
       throw std::length_error("Mismatched array size for <PointData> section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(pointsCount) + " points in the file)");
    openPointData();
@@ -141,7 +141,7 @@ VTIWriter< Mesh >::writeCellData( const Array& array,
 {
    if( ! pieceOpen )
       throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != cellsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(cellsCount) )
       throw std::length_error("Mismatched array size for <CellData> section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(cellsCount) + " cells in the file)");
    openCellData();
@@ -179,7 +179,7 @@ VTIWriter< Mesh >::writeDataArray( const Array& array,
    {
       case VTK::FileFormat::ascii:
          str.precision( std::numeric_limits< typename Array::ValueType >::digits10 );
-         for( IndexType i = 0; i < array.getSize(); i++ )
+         for( typename Array::IndexType i = 0; i < array.getSize(); i++ )
             // If Array::ValueType is uint8_t, it might be a typedef for unsigned char, which
             // would be normally printed as char rather than a number. Hence, we use the trick
             // with unary operator+, see https://stackoverflow.com/a/28414758

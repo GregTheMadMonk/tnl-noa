@@ -25,8 +25,6 @@ class PVTUWriter
 {
    using HeaderType = std::uint64_t;
 public:
-   using MeshRealType = typename Mesh::RealType;
-   using IndexType = typename Mesh::GlobalIndexType;
 
    PVTUWriter() = delete;
 

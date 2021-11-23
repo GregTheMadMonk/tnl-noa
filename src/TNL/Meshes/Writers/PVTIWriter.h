@@ -29,8 +29,6 @@ class PVTIWriter
    // LOL, VTK does not support signed header types (but the GridTypeResolver maps unsigned types to signed, so we are good)
    using HeaderType = std::make_unsigned_t< typename Grid::GlobalIndexType >;
 public:
-   using MeshRealType = typename Grid::RealType;
-   using IndexType = typename Grid::GlobalIndexType;
 
    PVTIWriter() = delete;
 
