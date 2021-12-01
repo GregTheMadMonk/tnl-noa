@@ -10,8 +10,10 @@
 
 #pragma once
 
+#include <TNL/Pointers/SharedPointer.h>
+
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename DifferentialOperator,
           typename BoundaryConditions,
@@ -19,7 +21,7 @@ template< typename DifferentialOperator,
 class MatrixSetterTraverserUserData
 {
    public:
-      
+
       typedef typename RowsCapacitiesType::DeviceType DeviceType;
 
       const DifferentialOperator* differentialOperator;
@@ -81,7 +83,7 @@ class MatrixSetter
    class TraverserInteriorEntitiesProcessor
    {
       public:
-         
+
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
@@ -143,7 +145,7 @@ class MatrixSetter< Meshes::Grid< Dimension, Real, Device, Index >,
    class TraverserInteriorEntitiesProcessor
    {
       public:
- 
+
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,

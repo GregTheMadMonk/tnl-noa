@@ -16,7 +16,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Real,
           typename MeshFunction,
@@ -36,13 +36,13 @@ class LinearSystemAssemblerTraverserUserData
       const BoundaryConditions* boundaryConditions = NULL;
 
       const RightHandSide* rightHandSide = NULL;
-      
+
       const MeshFunction* u = NULL;
-      
+
       DofVector* b = NULL;
 
       void* matrix = NULL;
-      
+
       LinearSystemAssemblerTraverserUserData()
       : time( 0.0 ),
         tau( 0.0 ),
@@ -84,7 +84,7 @@ class LinearSystemAssembler
    typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
    typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
    typedef Pointers::SharedPointer<  DofVector, DeviceType > DofVectorPointer;
-   
+
    void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
    {
       this->userData.differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
@@ -99,13 +99,13 @@ class LinearSystemAssembler
    {
       this->userData.rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
    }
-   
+
    template< typename EntityType, typename Matrix >
    void assembly( const RealType& time,
                   const RealType& tau,
                   const MeshPointer& meshPointer,
                   const MeshFunctionPointer& uPointer,
-                  Pointers::SharedPointer<  Matrix >& matrixPointer,
+                  std::shared_ptr< Matrix >& matrixPointer,
                   DofVectorPointer& bPointer )
    {
       static_assert( std::is_same< MeshFunction,
@@ -119,7 +119,7 @@ class LinearSystemAssembler
       this->userData.time = time;
       this->userData.tau = tau;
       this->userData.u = &uPointer.template getData< DeviceType >();
-      this->userData.matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
+      this->userData.matrix = ( void* ) &matrixPointer->getView();
       this->userData.b = &bPointer.template modifyData< DeviceType >();
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor< Matrix> >
@@ -128,14 +128,14 @@ class LinearSystemAssembler
       meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor< Matrix > >
                                                     ( meshPointer,
                                                       userData );
-      
+
    }
 
    template< typename Matrix >
    class TraverserBoundaryEntitiesProcessor
    {
       public:
- 
+
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
@@ -172,7 +172,7 @@ class LinearSystemAssembler
                  userData.tau,
                  ( *( Matrix* )( userData.matrix ) ),
                  ( *userData.b ) );
- 
+
             typedef Functions::FunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
             typedef Functions::FunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue
