@@ -63,7 +63,6 @@ using SegmentsType = TNL::Algorithms::Segments::SlicedEllpack< _Device, _Index, 
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
-using namespace TNL::Pointers;
 
 
 static const std::set< std::string > valid_solvers = {
@@ -147,7 +146,7 @@ template< typename Matrix, typename Vector >
 void
 benchmarkIterativeSolvers( Benchmark<>& benchmark,
                            Config::ParameterContainer parameters,
-                           const SharedPointer< Matrix >& matrixPointer,
+                           const std::shared_ptr< Matrix >& matrixPointer,
                            const Vector& x0,
                            const Vector& b )
 {
@@ -159,11 +158,8 @@ benchmarkIterativeSolvers( Benchmark<>& benchmark,
    cuda_x0 = x0;
    cuda_b = b;
 
-   SharedPointer< CudaMatrix > cudaMatrixPointer;
+   auto cudaMatrixPointer = std::make_shared< CudaMatrix >();
    *cudaMatrixPointer = *matrixPointer;
-
-   // synchronize shared pointers
-   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 #endif
 
    using namespace Solvers::Linear;
@@ -344,7 +340,7 @@ struct LinearSolversBenchmark
       const String file_dof = parameters.getParameter< String >( "input-dof" );
       const String file_rhs = parameters.getParameter< String >( "input-rhs" );
 
-      SharedPointer< MatrixType > matrixPointer;
+      auto matrixPointer = std::make_shared< MatrixType >();
       VectorType x0, b;
 
       // load the matrix
@@ -399,7 +395,7 @@ struct LinearSolversBenchmark
          using PermutationVector = Containers::Vector< IndexType, DeviceType, IndexType >;
          PermutationVector perm, iperm;
          getTrivialOrdering( *matrixPointer, perm, iperm );
-         SharedPointer< MatrixType > matrix_perm;
+         auto matrix_perm = std::make_shared< MatrixType >();
          VectorType x0_perm, b_perm;
          x0_perm.setLike( x0 );
          b_perm.setLike( b );
@@ -424,14 +420,14 @@ struct LinearSolversBenchmark
    static void
    runDistributed( Benchmark<>& benchmark,
                    const Config::ParameterContainer& parameters,
-                   const SharedPointer< MatrixType >& matrixPointer,
+                   const std::shared_ptr< MatrixType >& matrixPointer,
                    const VectorType& x0,
                    const VectorType& b )
    {
       // set up the distributed matrix
       const auto communicator = MPI_COMM_WORLD;
       const auto localRange = Partitioner::splitRange( matrixPointer->getRows(), communicator );
-      SharedPointer< DistributedMatrix > distMatrixPointer( localRange, matrixPointer->getRows(), matrixPointer->getColumns(), communicator );
+      auto distMatrixPointer = std::make_shared< DistributedMatrix >( localRange, matrixPointer->getRows(), matrixPointer->getColumns(), communicator );
       DistributedVector dist_x0( localRange, 0, matrixPointer->getRows(), communicator );
       DistributedVector dist_b( localRange, 0, matrixPointer->getRows(), communicator );
 
@@ -467,7 +463,7 @@ struct LinearSolversBenchmark
    static void
    runNonDistributed( Benchmark<>& benchmark,
                       const Config::ParameterContainer& parameters,
-                      const SharedPointer< MatrixType >& matrixPointer,
+                      const std::shared_ptr< MatrixType >& matrixPointer,
                       const VectorType& x0,
                       const VectorType& b )
    {
@@ -479,7 +475,7 @@ struct LinearSolversBenchmark
                                                   TNL::Matrices::GeneralMatrix,
                                                   Algorithms::Segments::CSRDefault
                                                 >;
-         SharedPointer< CSR > matrixCopy;
+         auto matrixCopy = std::make_shared< CSR >();
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
 #ifdef HAVE_UMFPACK
@@ -507,7 +503,7 @@ struct LinearSolversBenchmark
                                                   TNL::Matrices::GeneralMatrix,
                                                   Algorithms::Segments::CSR
                                                 >;
-         SharedPointer< CSR > matrixCopy;
+         auto matrixCopy = std::make_shared< CSR >();
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
          using CudaCSR = TNL::Matrices::SparseMatrix< RealType,
@@ -517,7 +513,7 @@ struct LinearSolversBenchmark
                                                       Algorithms::Segments::CSR
                                                     >;
          using CudaVector = typename VectorType::template Self< RealType, Devices::Cuda >;
-         SharedPointer< CudaCSR > cuda_matrixCopy;
+         auto cuda_matrixCopy = std::make_shared< CudaCSR >();
          *cuda_matrixCopy = *matrixCopy;
          CudaVector cuda_x0, cuda_b;
          cuda_x0.setLike( x0 );

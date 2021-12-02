@@ -13,9 +13,9 @@
 #pragma once
 
 #include <type_traits>  // std::add_const_t
+#include <memory>  // std::shared_ptr
 
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/Linear/Traits.h>
 
@@ -37,7 +37,7 @@ public:
    using VectorViewType = typename Traits< Matrix >::VectorViewType;
    using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
-   using MatrixPointer = Pointers::SharedPointer< std::add_const_t< MatrixType > >;
+   using MatrixPointer = std::shared_ptr< std::add_const_t< MatrixType > >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )

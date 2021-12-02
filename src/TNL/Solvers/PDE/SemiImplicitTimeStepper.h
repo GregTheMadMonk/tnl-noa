@@ -33,11 +33,11 @@ class SemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef typename ProblemType::MatrixType MatrixType;
-   typedef Pointers::SharedPointer< MatrixType, DeviceType > MatrixPointer;
    typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
+   using MatrixType = typename ProblemType::MatrixType;
+   using MatrixPointer = std::shared_ptr< MatrixType >;
    using LinearSolverType = Linear::LinearSolver< MatrixType >;
    using LinearSolverPointer = std::shared_ptr< LinearSolverType >;
    using PreconditionerType = typename LinearSolverType::PreconditionerType;
@@ -74,10 +74,10 @@ class SemiImplicitTimeStepper
    SolverMonitorType* solverMonitor = nullptr;
 
    // smart pointers initialized to the default-created objects
-   MatrixPointer matrix;
    DofVectorPointer rightHandSidePointer;
 
-   // uninitialized smart pointers (they are initialized in the setup method)
+   // uninitialized smart pointers (they are initialized in the setup or init method)
+   MatrixPointer matrix = nullptr;
    LinearSolverPointer linearSystemSolver = nullptr;
    PreconditionerPointer preconditioner = nullptr;
 

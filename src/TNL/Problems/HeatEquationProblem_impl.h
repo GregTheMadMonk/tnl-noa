@@ -158,7 +158,7 @@ HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperato
 setupLinearSystem( MatrixPointer& matrixPointer )
 {
    const IndexType dofs = this->getDofs();
-   typedef typename MatrixPointer::ObjectType::RowsCapacitiesType RowsCapacitiesTypeType;
+   typedef typename MatrixPointer::element_type::RowsCapacitiesType RowsCapacitiesTypeType;
    Pointers::SharedPointer<  RowsCapacitiesTypeType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, RowsCapacitiesTypeType > matrixSetter;
@@ -255,7 +255,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& bPointer )
 {
    this->bindDofs( dofsPointer );
-   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >(
+   this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::element_type >(
       time,
       tau,
       this->getMesh(),

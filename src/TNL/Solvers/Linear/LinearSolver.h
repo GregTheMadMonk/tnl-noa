@@ -17,7 +17,6 @@
 
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
-#include <TNL/Pointers/SharedPointer.h>
 
 #include "Traits.h"
 
@@ -39,7 +38,7 @@ public:
    using VectorViewType = typename Traits< Matrix >::VectorViewType;
    using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
-   using MatrixPointer = Pointers::SharedPointer< std::add_const_t< MatrixType > >;
+   using MatrixPointer = std::shared_ptr< std::add_const_t< MatrixType > >;
    using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;
    using PreconditionerPointer = std::shared_ptr< std::add_const_t< PreconditionerType > >;
 

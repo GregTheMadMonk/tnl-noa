@@ -57,11 +57,12 @@ bool
 SemiImplicitTimeStepper< Problem >::
 init( const MeshType& mesh )
 {
+   this->matrix = std::make_shared< MatrixType >();
    if( ! this->problem->setupLinearSystem( this->matrix ) ) {
       std::cerr << "Failed to set up the linear system." << std::endl;
       return false;
    }
-   if( this->matrix.getData().getRows() == 0 || this->matrix.getData().getColumns() == 0 )
+   if( this->matrix->getRows() == 0 || this->matrix->getColumns() == 0 )
    {
       std::cerr << "The matrix for the semi-implicit time stepping was not set correctly." << std::endl;
       if( ! this->matrix->getRows() )
@@ -71,7 +72,7 @@ init( const MeshType& mesh )
       std::cerr << "Please check the method 'setupLinearSystem' in your solver." << std::endl;
       return false;
    }
-   this->rightHandSidePointer->setSize( this->matrix.getData().getRows() );
+   this->rightHandSidePointer->setSize( this->matrix->getRows() );
 
    this->preIterateTimer.reset();
    this->linearSystemAssemblerTimer.reset();

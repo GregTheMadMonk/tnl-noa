@@ -1,6 +1,5 @@
 #pragma once
 
-#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Matrices/DistributedMatrix.h>
@@ -15,7 +14,6 @@
 #include <stdexcept>  // std::runtime_error
 
 using namespace TNL;
-using namespace TNL::Pointers;
 using namespace TNL::Benchmarks;
 
 
@@ -56,7 +54,7 @@ template< template<typename> class Preconditioner, typename Matrix >
 void
 benchmarkPreconditionerUpdate( Benchmark<>& benchmark,
                                const Config::ParameterContainer& parameters,
-                               const SharedPointer< Matrix >& matrix )
+                               const std::shared_ptr< Matrix >& matrix )
 {
    // skip benchmarks on devices which the user did not select
    if( ! checkDevice< typename Matrix::DeviceType >( parameters ) )
@@ -80,7 +78,7 @@ template< template<typename> class Solver, template<typename> class Precondition
 void
 benchmarkSolver( Benchmark<>& benchmark,
                  const Config::ParameterContainer& parameters,
-                 const SharedPointer< Matrix >& matrix,
+                 const std::shared_ptr< Matrix >& matrix,
                  const Vector& x0,
                  const Vector& b )
 {
@@ -132,12 +130,12 @@ benchmarkSolver( Benchmark<>& benchmark,
       using RowElements = BenchmarkResult::RowElements;
 
       Solver< Matrix >& solver;
-      const SharedPointer< Matrix >& matrix;
+      const std::shared_ptr< Matrix >& matrix;
       const Vector& x;
       const Vector& b;
 
       MyBenchmarkResult( Solver< Matrix >& solver,
-                         const SharedPointer< Matrix >& matrix,
+                         const std::shared_ptr< Matrix >& matrix,
                          const Vector& x,
                          const Vector& b )
       : solver(solver), matrix(matrix), x(x), b(b)
@@ -180,7 +178,7 @@ benchmarkSolver( Benchmark<>& benchmark,
 template< typename Vector >
 void
 benchmarkArmadillo( const Config::ParameterContainer& parameters,
-                    const Pointers::SharedPointer< Matrices::CSR< double, Devices::Host, int > >& matrix,
+                    const std::shared_ptr< Matrices::CSR< double, Devices::Host, int > >& matrix,
                     const Vector& x0,
                     const Vector& b )
 {
