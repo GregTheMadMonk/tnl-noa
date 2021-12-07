@@ -3,7 +3,8 @@
 __all__ = [
     "dict_to_html_table",
     "get_benchmark_metadata",
-    "get_benchmark_dataframes",
+    "get_benchmark_dataframe",
+    "gen_dataframes_per_operation",
 ]
 
 import os.path
