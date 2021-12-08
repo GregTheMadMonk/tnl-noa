@@ -30,8 +30,10 @@ ILUT_impl< Matrix, Real, Devices::Host, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   p = parameters.getParameter< int >( "ilut-p" );
-   tau = parameters.getParameter< double >( "ilut-threshold" );
+   if( parameters.checkParameter( prefix + "ilut-p" ) )
+      p = parameters.getParameter< int >( prefix + "ilut-p" );
+   if( parameters.checkParameter( prefix + "ilut-threshold" ) )
+      tau = parameters.getParameter< double >( prefix + "ilut-threshold" );
    return true;
 }
 

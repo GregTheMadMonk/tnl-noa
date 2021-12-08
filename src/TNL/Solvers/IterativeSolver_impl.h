@@ -23,18 +23,21 @@ IterativeSolver< Real, Index, SolverMonitor >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 1000000000 );
-   config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
+   if( config.getEntry( prefix + "max-iterations" ) == nullptr )
+      config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 1000000000 );
+   if( config.getEntry( prefix + "min-iterations" ) == nullptr )
+      config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
 
-   // The default value for the convergence residue MUST be zero since not in all problems we want to stop the solver
-   // when we reach a state near a steady state. This can be only temporary if, for example, when the boundary conditions
-   // are time dependent (growing velocity at inlet starting from 0).
-   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 0.0 );
-   config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", std::numeric_limits< float >::max() );
+   if( config.getEntry( prefix + "convergence-residue" ) == nullptr )
+      config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1e-6 );
+   if( config.getEntry( prefix + "divergence-residue" ) == nullptr )
+      config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", std::numeric_limits< float >::max() );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
-   config.addEntry< int >   ( prefix + "refresh-rate", "Number of milliseconds between solver monitor refreshes.", 500 );
+   if( config.getEntry( prefix + "refresh-rate" ) == nullptr )
+      config.addEntry< int >   ( prefix + "refresh-rate", "Number of milliseconds between solver monitor refreshes.", 500 );
 
-   config.addEntry< String >( prefix + "residual-history-file", "Path to the file where the residual history will be saved.", "" );
+   if( config.getEntry( prefix + "residual-history-file" ) == nullptr )
+      config.addEntry< String >( prefix + "residual-history-file", "Path to the file where the residual history will be saved.", "" );
 }
 
 template< typename Real, typename Index, typename SolverMonitor >
@@ -43,15 +46,22 @@ IterativeSolver< Real, Index, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->setMaxIterations( parameters.getParameter< int >( prefix + "max-iterations" ) );
-   this->setMinIterations( parameters.getParameter< int >( prefix + "min-iterations" ) );
-   this->setConvergenceResidue( parameters.getParameter< double >( prefix + "convergence-residue" ) );
-   this->setDivergenceResidue( parameters.getParameter< double >( prefix + "divergence-residue" ) );
+   if( parameters.checkParameter( prefix + "max-iterations" ) )
+      this->setMaxIterations( parameters.getParameter< int >( prefix + "max-iterations" ) );
+   if( parameters.checkParameter( prefix + "min-iterations" ) )
+      this->setMinIterations( parameters.getParameter< int >( prefix + "min-iterations" ) );
+   if( parameters.checkParameter( prefix + "convergence-residue" ) )
+      this->setConvergenceResidue( parameters.getParameter< double >( prefix + "convergence-residue" ) );
+   if( parameters.checkParameter( prefix + "divergence-residue" ) )
+      this->setDivergenceResidue( parameters.getParameter< double >( prefix + "divergence-residue" ) );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
-   this->setRefreshRate( parameters.getParameter< int >( prefix + "refresh-rate" ) );
-   this->residualHistoryFileName = parameters.getParameter< String >( prefix + "residual-history-file" );
-   if( this->residualHistoryFileName )
-      this->residualHistoryFile.open( this->residualHistoryFileName.getString() );
+   if( parameters.checkParameter( prefix + "refresh-rate" ) )
+      this->setRefreshRate( parameters.getParameter< int >( prefix + "refresh-rate" ) );
+   if( parameters.checkParameter( prefix + "residual-history-file" ) ) {
+      this->residualHistoryFileName = parameters.getParameter< String >( prefix + "residual-history-file" );
+      if( this->residualHistoryFileName )
+         this->residualHistoryFile.open( this->residualHistoryFileName.getString() );
+   }
    return true;
 }
 

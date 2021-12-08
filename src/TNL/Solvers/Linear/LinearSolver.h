@@ -43,7 +43,9 @@ public:
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
-   {}
+   {
+      IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   }
 
    virtual bool setup( const Config::ParameterContainer& parameters,
                        const String& prefix = "" )
