@@ -11,7 +11,7 @@
 #include "LinearSolver.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {

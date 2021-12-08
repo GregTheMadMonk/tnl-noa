@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ILUT_impl.h  -  description
+                          ILUT.hpp  -  description
                              -------------------
     begin                : Aug 31, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -16,8 +16,7 @@
 #include <set>
 
 #include "ILUT.h"
-#include "TriangularSolve.h"
-
+#include <TNL/Solvers/Linear/Utils/TriangularSolve.h>
 #include <TNL/Timer.h>
 
 namespace TNL {

@@ -17,8 +17,7 @@
 
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
-
-#include "Traits.h"
+#include <TNL/Solvers/Linear/Utils/Traits.h>
 
 namespace TNL {
 namespace Solvers {

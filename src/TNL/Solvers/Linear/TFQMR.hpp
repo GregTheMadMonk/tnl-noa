@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TFQMR_impl.h  -  description
+                          TFQMR.hpp  -  description
                              -------------------
     begin                : Dec 8, 2012
     copyright            : (C) 2007 by Tomas Oberhuber

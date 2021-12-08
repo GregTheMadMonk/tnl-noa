@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SOR_impl.h  -  description
+                          SOR.hpp  -  description
                              -------------------
     begin                : Nov 25, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include "SOR.h"
+#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GMRES_impl.h  -  description
+                          GMRES.hpp  -  description
                              -------------------
     begin                : May 13, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.

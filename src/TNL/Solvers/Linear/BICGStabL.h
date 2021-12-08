@@ -102,4 +102,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/BICGStabL_impl.h>
+#include "BICGStabL.hpp"

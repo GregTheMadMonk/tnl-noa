@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BICGStabL.h  -  description
+                          BICGStabL.hpp  -  description
                              -------------------
     begin                : Jul 4, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.

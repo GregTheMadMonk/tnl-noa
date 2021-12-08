@@ -48,4 +48,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/SOR_impl.h>
+#include "SOR.hpp"

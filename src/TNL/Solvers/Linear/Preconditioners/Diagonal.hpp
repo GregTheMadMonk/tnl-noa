@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Diagonal_impl.h  -  description
+                          Diagonal.hpp  -  description
                              -------------------
     begin                : Dec 17, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
