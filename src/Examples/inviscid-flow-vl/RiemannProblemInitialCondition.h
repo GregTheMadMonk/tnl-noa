@@ -21,7 +21,7 @@ namespace TNL {
 template <typename Mesh>
 class RiemannProblemInitialConditionSetter
 {
-   
+
 };
 
 template <typename MeshReal,
@@ -30,7 +30,7 @@ template <typename MeshReal,
 class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex > >
 {
    public:
-      
+
       typedef Meshes::Grid< 1,MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
@@ -112,7 +112,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 1,MeshReal, Device, Me
       {
          this->gamma = gamma;
       };
-            
+
       void placeDensity(CompressibleConservativeVariables< MeshType >& conservativeVariables)
       {
       typedef typename MeshType::Cell CellType;
@@ -187,7 +187,7 @@ template <typename MeshReal,
 class RiemannProblemInitialConditionSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex > >
 {
    public:
-      
+
       typedef Meshes::Grid< 2,MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
@@ -269,7 +269,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 2, MeshReal, Device, M
       {
          this->gamma = gamma;
       };
-            
+
       void placeDensity(CompressibleConservativeVariables< MeshType >& conservativeVariables)
       {
       typedef typename MeshType::Cell CellType;
@@ -407,7 +407,7 @@ template <typename MeshReal,
 class RiemannProblemInitialConditionSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > >
 {
    public:
-      
+
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
@@ -489,7 +489,7 @@ class RiemannProblemInitialConditionSetter< Meshes::Grid< 3, MeshReal, Device, M
       {
          this->gamma = gamma;
       };
-            
+
       void placeDensity(CompressibleConservativeVariables< MeshType >& conservativeVariables)
       {
       typedef typename MeshType::Cell CellType;
@@ -760,7 +760,7 @@ template< typename Mesh >
 class RiemannProblemInitialCondition
 {
    public:
-      
+
       typedef Mesh MeshType;
       typedef typename MeshType::RealType RealType;
       typedef typename MeshType::DeviceType DeviceType;
@@ -770,7 +770,7 @@ class RiemannProblemInitialCondition
       typedef Functions::MeshFunctionView< MeshType > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Functions::VectorField< Dimensions, MeshType > VectorFieldType;
-      
+
       RiemannProblemInitialCondition()
          : discontinuityPlacement( 0.5 ),
            leftDensity( 1.0 ), rightDensity( 1.0 ),
@@ -781,60 +781,60 @@ class RiemannProblemInitialCondition
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" )
       {
-         config.addEntry< double >( prefix + "discontinuity-placement-0", "x-coordinate of the discontinuity placement.", 0.5 );
-         config.addEntry< double >( prefix + "discontinuity-placement-1", "y-coordinate of the discontinuity placement.", 0.5 );
-         config.addEntry< double >( prefix + "discontinuity-placement-2", "z-coordinate of the discontinuity placement.", 0.5 );
+         config.addEntry< double >( prefix + "discontinuity-placement-x", "x-coordinate of the discontinuity placement.", 0.5 );
+         config.addEntry< double >( prefix + "discontinuity-placement-y", "y-coordinate of the discontinuity placement.", 0.5 );
+         config.addEntry< double >( prefix + "discontinuity-placement-z", "z-coordinate of the discontinuity placement.", 0.5 );
 /*
          config.addEntry< double >( prefix + "left-density", "Density on the left side of the discontinuity.", 1.0 );
          config.addEntry< double >( prefix + "right-density", "Density on the right side of the discontinuity.", 0.0 );
-         config.addEntry< double >( prefix + "left-velocity-0", "x-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
-         config.addEntry< double >( prefix + "left-velocity-1", "y-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
-         config.addEntry< double >( prefix + "left-velocity-2", "z-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
-         config.addEntry< double >( prefix + "right-velocity-0", "x-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
-         config.addEntry< double >( prefix + "right-velocity-1", "y-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
-         config.addEntry< double >( prefix + "right-velocity-2", "z-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
+         config.addEntry< double >( prefix + "left-velocity-x", "x-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
+         config.addEntry< double >( prefix + "left-velocity-y", "y-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
+         config.addEntry< double >( prefix + "left-velocity-z", "z-coordinate of the velocity on the left side of the discontinuity.", 1.0 );
+         config.addEntry< double >( prefix + "right-velocity-x", "x-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
+         config.addEntry< double >( prefix + "right-velocity-y", "y-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
+         config.addEntry< double >( prefix + "right-velocity-z", "z-coordinate of the velocity on the right side of the discontinuity.", 0.0 );
          config.addEntry< double >( prefix + "left-pressure", "Pressure on the left side of the discontinuity.", 1.0 );
          config.addEntry< double >( prefix + "right-pressure", "Pressure on the right side of the discontinuity.", 0.0 );
 */
          config.addEntry< double >( prefix + "NWU-density", "This sets a value of northwest up density.", 1.0  );
-         config.addEntry< double >( prefix + "NWU-velocity-0", "This sets a value of northwest up x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NWU-velocity-1", "This sets a value of northwest up y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NWU-velocity-2", "This sets a value of northwest up z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWU-velocity-x", "This sets a value of northwest up x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWU-velocity-y", "This sets a value of northwest up y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWU-velocity-z", "This sets a value of northwest up z velocity.", 1.0  );
          config.addEntry< double >( prefix + "NWU-pressure", "This sets a value of northwest up pressure.", 1.0  );
          config.addEntry< double >( prefix + "SWU-density", "This sets a value of southwest up density.", 1.0  );
-         config.addEntry< double >( prefix + "SWU-velocity-0", "This sets a value of southwest up x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SWU-velocity-1", "This sets a value of southwest up y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SWU-velocity-2", "This sets a value of southwest up z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWU-velocity-x", "This sets a value of southwest up x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWU-velocity-y", "This sets a value of southwest up y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWU-velocity-z", "This sets a value of southwest up z velocity.", 1.0  );
          config.addEntry< double >( prefix + "SWU-pressure", "This sets a value of southwest up pressure.", 1.0  );
          config.addEntry< double >( prefix + "NWD-density", "This sets a value of northwest down density.", 1.0  );
-         config.addEntry< double >( prefix + "NWD-velocity-0", "This sets a value of northwest down x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NWD-velocity-1", "This sets a value of northwest down y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NWD-velocity-2", "This sets a value of northwest down z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWD-velocity-x", "This sets a value of northwest down x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWD-velocity-y", "This sets a value of northwest down y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NWD-velocity-z", "This sets a value of northwest down z velocity.", 1.0  );
          config.addEntry< double >( prefix + "NWD-pressure", "This sets a value of northwest down pressure.", 1.0  );
          config.addEntry< double >( prefix + "SWD-density", "This sets a value of southwest down density.", 1.0  );
-         config.addEntry< double >( prefix + "SWD-velocity-0", "This sets a value of southwest down x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SWD-velocity-1", "This sets a value of southwest down y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SWD-velocity-2", "This sets a value of southwest down z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWD-velocity-x", "This sets a value of southwest down x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWD-velocity-y", "This sets a value of southwest down y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SWD-velocity-z", "This sets a value of southwest down z velocity.", 1.0  );
          config.addEntry< double >( prefix + "SWD-pressure", "This sets a value of southwest down pressure.", 1.0  );
          config.addEntry< double >( prefix + "NEU-density", "This sets a value of northeast up density.", 1.0  );
-         config.addEntry< double >( prefix + "NEU-velocity-0", "This sets a value of northeast up x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NEU-velocity-1", "This sets a value of northeast up y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NEU-velocity-2", "This sets a value of northeast up z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NEU-velocity-x", "This sets a value of northeast up x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NEU-velocity-y", "This sets a value of northeast up y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NEU-velocity-z", "This sets a value of northeast up z velocity.", 1.0  );
          config.addEntry< double >( prefix + "NEU-pressure", "This sets a value of northeast up pressure.", 1.0  );
          config.addEntry< double >( prefix + "SEU-density", "This sets a value of southeast up density.", 1.0  );
-         config.addEntry< double >( prefix + "SEU-velocity-0", "This sets a value of southeast up x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SEU-velocity-1", "This sets a value of southeast up y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SEU-velocity-2", "This sets a value of southeast up z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SEU-velocity-x", "This sets a value of southeast up x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SEU-velocity-y", "This sets a value of southeast up y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SEU-velocity-z", "This sets a value of southeast up z velocity.", 1.0  );
          config.addEntry< double >( prefix + "SEU-pressure", "This sets a value of southeast up pressure.", 1.0  );
          config.addEntry< double >( prefix + "NED-density", "This sets a value of northeast down density.", 1.0  );
-         config.addEntry< double >( prefix + "NED-velocity-0", "This sets a value of northeast down x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NED-velocity-1", "This sets a value of northeast down y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "NED-velocity-2", "This sets a value of northeast down z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NED-velocity-x", "This sets a value of northeast down x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NED-velocity-y", "This sets a value of northeast down y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "NED-velocity-z", "This sets a value of northeast down z velocity.", 1.0  );
          config.addEntry< double >( prefix + "NED-pressure", "This sets a value of northeast down pressure.", 1.0  );
          config.addEntry< double >( prefix + "SED-density", "This sets a value of southeast down density.", 1.0  );
-         config.addEntry< double >( prefix + "SED-velocity-0", "This sets a value of southeast down x velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SED-velocity-1", "This sets a value of southeast down y velocity.", 1.0  );
-         config.addEntry< double >( prefix + "SED-velocity-2", "This sets a value of southeast down z velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SED-velocity-x", "This sets a value of southeast down x velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SED-velocity-y", "This sets a value of southeast down y velocity.", 1.0  );
+         config.addEntry< double >( prefix + "SED-velocity-z", "This sets a value of southeast down z velocity.", 1.0  );
          config.addEntry< double >( prefix + "SED-pressure", "This sets a value of southeast down pressure.", 1.0  );
          config.addEntry< double >( prefix + "gamma", "Gamma in the ideal gas state equation.", 1.4 );
 
@@ -853,19 +853,19 @@ class RiemannProblemInitialCondition
             config.addEntryEnum< String >( "2D_12" );
             config.addEntryEnum< String >( "2D_15" );
             config.addEntryEnum< String >( "2D_17" );
-      }      
-      
+      }
+
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )
       {
          String initial = parameters.getParameter< String >( prefix + "initial" );
          if(initial == prefix + "none")
             {
-               this->discontinuityPlacement.setup( parameters, prefix + "discontinuity-placement-" );
+               this->discontinuityPlacement = parameters.getXyz< PointType >( prefix + "discontinuity-placement" );
                this->gamma = parameters.getParameter< double >( prefix + "gamma" );
 /*
-               this->leftVelocity.setup( parameters, prefix + "left-velocity-" );
-               this->rightVelocity.setup( parameters, prefix + "right-velocity-" );
+               this->leftVelocity = parameters.getXyz< PointType >( prefix + "left-velocity" );
+               this->rightVelocity = parameters.getXyz< PointType >( prefix + "right-velocity" );
                this->leftDensity = parameters.getParameter< double >( prefix + "left-density" );
                this->rightDensity = parameters.getParameter< double >( prefix + "right-density" );
                this->leftPressure = parameters.getParameter< double >( prefix + "left-pressure" );
@@ -873,60 +873,60 @@ class RiemannProblemInitialCondition
 */
 
                this->NWUDensity = parameters.getParameter< RealType >( prefix + "NWU-density" );
-               this->NWUVelocity.setup( parameters, prefix + "NWU-velocity-" );
+               this->NWUVelocity = parameters.getXyz< PointType >( prefix + "NWU-velocity" );
                this->NWUPressure = parameters.getParameter< RealType >( prefix + "NWU-pressure" );
-               this->NWUEnergy = Energy( NWUDensity, NWUPressure, gamma, NWUVelocity); 
+               this->NWUEnergy = Energy( NWUDensity, NWUPressure, gamma, NWUVelocity);
                this->NWUMomentum = NWUVelocity * NWUDensity;
 
                this->SWUDensity = parameters.getParameter< RealType >( prefix + "SWU-density" );
-               this->SWUVelocity.setup( parameters, prefix + "SWU-velocity-" );
+               this->SWUVelocity = parameters.getXyz< PointType >( prefix + "SWU-velocity" );
                this->SWUPressure = parameters.getParameter< RealType >( prefix + "SWU-pressure" );
                this->SWUEnergy = Energy( SWUDensity, SWUPressure, gamma, SWUVelocity);
                this->SWUMomentum = SWUVelocity * SWUDensity;
 
                this->NWDDensity = parameters.getParameter< RealType >( prefix + "NWD-density" );
-               this->NWDVelocity.setup( parameters, prefix + "NWD-velocity-" );
+               this->NWDVelocity = parameters.getXyz< PointType >( prefix + "NWD-velocity" );
                this->NWDPressure = parameters.getParameter< RealType >( prefix + "NWD-pressure" );
                this->SWUEnergy = Energy( NWDDensity, NWDPressure, gamma, NWDVelocity);
                this->NWDMomentum = NWDVelocity * NWDDensity;
 
                this->SWDDensity = parameters.getParameter< RealType >( prefix + "SWD-density" );
-               this->SWDVelocity.setup( parameters, prefix + "SWD-velocity-" );
+               this->SWDVelocity = parameters.getXyz< PointType >( prefix + "SWD-velocity" );
                this->SWDPressure = parameters.getParameter< RealType >( prefix + "SWD-pressure" );
                this->SWDEnergy = Energy( SWDDensity, SWDPressure, gamma, SWDVelocity);
                this->SWDMomentum = SWDVelocity * SWDDensity;
 
                this->NEUDensity = parameters.getParameter< RealType >( prefix + "NEU-density" );
-               this->NEUVelocity.setup( parameters, prefix + "NEU-velocity-" );
+               this->NEUVelocity = parameters.getXyz< PointType >( prefix + "NEU-velocity" );
                this->NEUPressure = parameters.getParameter< RealType >( prefix + "NEU-pressure" );
                this->NEUEnergy = Energy( NEUDensity, NEUPressure, gamma, NEUVelocity);
                this->NEUMomentum = NEUVelocity * NEUDensity;
 
                this->SEUDensity = parameters.getParameter< RealType >( prefix + "SEU-density" );
-               this->SEUVelocity.setup( parameters, prefix + "SEU-velocity-" );
+               this->SEUVelocity = parameters.getXyz< PointType >( prefix + "SEU-velocity" );
                this->SEUPressure = parameters.getParameter< RealType >( prefix + "SEU-pressure" );
                this->SEUEnergy = Energy( SEUDensity, SEUPressure, gamma, SEUVelocity);
                this->SEUMomentum = SEUVelocity * SEUDensity;
 
                this->NEDDensity = parameters.getParameter< RealType >( prefix + "NED-density" );
-               this->NEDVelocity.setup(parameters, prefix + "NED-velocity-" );
+               this->NEDVelocity = parameters.getXyz< PointType >( prefix + "NED-velocity" );
                this->NEDPressure = parameters.getParameter< RealType >( prefix + "NED-pressure" );
                this->NEDEnergy = Energy( NEDDensity, NEDPressure, gamma, NEDVelocity);
                this->NEDMomentum = NEDVelocity * NEDDensity;
 
                this->SEDDensity = parameters.getParameter< RealType >( prefix + "SED-density" );
-               this->SEDVelocity.setup( parameters, prefix + "SED-velocity-" );
+               this->SEDVelocity = parameters.getXyz< PointType >( prefix + "SED-velocity" );
                this->SEDPressure = parameters.getParameter< RealType >( prefix + "SED-pressure" );
                this->SEDEnergy = Energy( SEDDensity, SEDPressure, gamma, SEDVelocity);
                this->SEDMomentum = SEDVelocity * SEDDensity;
- 
+
            }
          if(initial == prefix + "1D_2")
            predefinedInitialCondition( 1.4, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -938,10 +938,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_3a")
            predefinedInitialCondition( 1.4, 0.8, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 1000.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 0.01, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 1000.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 0.01, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -953,10 +953,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_4")
            predefinedInitialCondition( 1.666, 0.4, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 5.99924, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 5.99242, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 460.894, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 46.095, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 5.99924, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 5.99242, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 460.894, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 46.095, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -968,10 +968,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_5")
            predefinedInitialCondition( 1.4, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -983,10 +983,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_6")
            predefinedInitialCondition( 1.4, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 0.1, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 0.1, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 1.4, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 0.1, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 0.1, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -998,10 +998,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_Noh")
            predefinedInitialCondition( 1.4, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 0.000001, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 0.000001, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 0.000001, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 0.000001, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1013,10 +1013,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "1D_peak")
            predefinedInitialCondition( 1.4, 0.5, 0.0, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.0, 0.12612, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.0, 6.5915, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.0, 782.929, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.0, 3.15449, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.0, 0.12612, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.0, 6.5915, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.0, 782.929, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.0, 3.15449, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1028,10 +1028,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "2D_3")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.5323, 0.138, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 1.5, 0.5323, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.3, 0.029, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 1.5, 0.3, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.5323, 0.138, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 1.5, 0.5323, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.3, 0.029, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 1.5, 0.3, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        1.206, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1043,10 +1043,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "2D_4")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.5065, 1.1, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 1.1, 0.5065, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.35, 1.1, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 1.1, 0.35, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.5065, 1.1, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 1.1, 0.5065, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.35, 1.1, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 1.1, 0.35, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.8939, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1059,10 +1059,10 @@ class RiemannProblemInitialCondition
 
       if(initial == prefix + "2D_6")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 2.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 1.0, 3.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 1.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 1.0, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 2.0, 1.0, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 1.0, 3.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 1.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 1.0, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.75, 0.5, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1074,10 +1074,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "2D_12")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 1.0, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 0.5313, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 1.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 0.4, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 1.0, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 0.5313, 1.0, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 1.0, 1.0, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 0.4, 1.0, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.7276, 0.0, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1090,10 +1090,10 @@ class RiemannProblemInitialCondition
 
       if(initial == prefix + "2D_15")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 0.5197, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 1.0, 0.5313, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 0.4, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 1.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 0.5197, 0.8, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 1.0, 0.5313, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 0.4, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 1.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        -0.6259, -0.3, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1105,10 +1105,10 @@ class RiemannProblemInitialCondition
                                        );
       if(initial == prefix + "2D_17")
            predefinedInitialCondition( 1.666, 0.5, 0.5, 0.0, // double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       0.0, 0.0, 2.0, 1.0625, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       0.0, 0.0, 1.0, 0.5197, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       0.0, 0.0, 1.0, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       0.0, 0.0, 1.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       0.0, 0.0, 2.0, 1.0625, //double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       0.0, 0.0, 1.0, 0.5197, //double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       0.0, 0.0, 1.0, 0.4, //double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       0.0, 0.0, 1.0, 0.4, //double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        0.0, 0.0, 0.0, //double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        0.0, 0.0, 0.0, //double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        0.0, -0.3, 0.0, //double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1120,32 +1120,32 @@ class RiemannProblemInitialCondition
                                        );
          return true;
       }
-      
+
       void setDiscontinuityPlacement( const PointType& v )
       {
          this->discontinuityPlacement = v;
       }
-      
+
       const PointType& getDiscontinuityPlasement() const
       {
          return this->discontinuityPlacement;
       }
-      
+
       void setLeftDensity( const RealType& leftDensity )
       {
          this->leftDensity = leftDensity;
       }
-      
+
       const RealType& getLeftDensity() const
       {
          return this->leftDensity;
       }
-      
+
       void setRightDensity( const RealType& rightDensity )
       {
          this->rightDensity = rightDensity;
       }
-      
+
       const RealType& getRightDensity() const
       {
          return this->rightDensity;
@@ -1155,17 +1155,17 @@ class RiemannProblemInitialCondition
       {
          this->leftVelocity = leftVelocity;
       }
-      
+
       const PointType& getLeftVelocity() const
       {
          return this->leftVelocity;
       }
-      
+
       void setRightVelocity( const RealType& rightVelocity )
       {
          this->rightVelocity = rightVelocity;
       }
-      
+
       const PointType& getRightVelocity() const
       {
          return this->rightVelocity;
@@ -1175,17 +1175,17 @@ class RiemannProblemInitialCondition
       {
          this->leftPressure = leftPressure;
       }
-      
+
       const RealType& getLeftPressure() const
       {
          return this->leftPressure;
       }
-      
+
       void setRightPressure( const RealType& rightPressure )
       {
          this->rightPressure = rightPressure;
       }
-      
+
       const RealType& getRightPressure() const
       {
          return this->rightPressure;
@@ -1193,10 +1193,10 @@ class RiemannProblemInitialCondition
 
 
       void predefinedInitialCondition( double preGamma,       double preDiscX,       double preDiscY,       double preDiscZ,
-                                       double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity, 
-                                       double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity, 
-                                       double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure, 
-                                       double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure, 
+                                       double preNWUDensity,  double preSWUDensity,  double preNWDDensity,  double preSWDDensity,
+                                       double preNEUDensity,  double preSEUDensity,  double preNEDDensity,  double preSEDDensity,
+                                       double preNWUPressure, double preSWUPressure, double preNWDPressure, double preSWDPressure,
+                                       double preNEUPressure, double preSEUPressure, double preNEDPressure, double preSEDPressure,
                                        double preNWUVelocityX, double preNWUVelocityY,double preNWUVelocityZ,
                                        double preSWUVelocityX, double preSWUVelocityY,double preSWUVelocityZ,
                                        double preNWDVelocityX, double preNWDVelocityY,double preNWDVelocityZ,
@@ -1214,7 +1214,7 @@ class RiemannProblemInitialCondition
          this->NWUDensity = preNWUDensity;
          this->NWUVelocity = PointLoad(preNWUVelocityX, preNWUVelocityY, preNWUVelocityZ);
          this->NWUPressure = preNWUPressure;
-         this->NWUEnergy = Energy( NWUDensity, NWUPressure, gamma, NWUVelocity); 
+         this->NWUEnergy = Energy( NWUDensity, NWUPressure, gamma, NWUVelocity);
          this->NWUMomentum = NWUVelocity * NWUDensity;
 
          this->SWUDensity = preNWUDensity;
@@ -1226,47 +1226,47 @@ class RiemannProblemInitialCondition
          this->NWDDensity = preNWDDensity;
          this->NWDVelocity = PointLoad(preNWDVelocityX, preNWDVelocityY, preNWDVelocityZ);
          this->NWDPressure = preNWDPressure;
-         this->NWDEnergy = Energy( NWDDensity, NWDPressure, gamma, NWDVelocity); 
+         this->NWDEnergy = Energy( NWDDensity, NWDPressure, gamma, NWDVelocity);
          this->NWDMomentum = NWDVelocity * NWDDensity;
 
          this->SWDDensity = preSWDDensity;
          this->SWDVelocity = PointLoad(preSWDVelocityX, preSWDVelocityY, preSWDVelocityZ);
          this->SWDPressure = preSWDPressure;
-         this->SWDEnergy = Energy( SWDDensity, SWDPressure, gamma, SWDVelocity); 
+         this->SWDEnergy = Energy( SWDDensity, SWDPressure, gamma, SWDVelocity);
          this->SWDMomentum = SWDVelocity * SWDDensity;
 
          this->NEUDensity = preNEUDensity;
          this->NEUVelocity = PointLoad(preNEUVelocityX, preNEUVelocityY, preNEUVelocityZ);
          this->NEUPressure = preNEUPressure;
-         this->NEUEnergy = Energy( NEUDensity, NEUPressure, gamma, NEUVelocity); 
+         this->NEUEnergy = Energy( NEUDensity, NEUPressure, gamma, NEUVelocity);
          this->NEUMomentum = NEUVelocity * NEUDensity;
 
          this->SEUDensity = preSEUDensity;
          this->SEUVelocity = PointLoad(preSEUVelocityX, preSEUVelocityY, preSEUVelocityZ);
          this->SEUPressure = preSEUPressure;
-         this->SEUEnergy = Energy( SEUDensity, SEUPressure, gamma, SEUVelocity); 
+         this->SEUEnergy = Energy( SEUDensity, SEUPressure, gamma, SEUVelocity);
          this->SEUMomentum = SEUVelocity * SEUDensity;
 
          this->NEDDensity = preNEDDensity;
          this->NEDVelocity = PointLoad(preNEDVelocityX, preNEDVelocityY, preNEDVelocityZ);
          this->NEDPressure = preNEDPressure;
-         this->NEDEnergy = Energy( NEDDensity, NEDPressure, gamma, NEDVelocity); 
+         this->NEDEnergy = Energy( NEDDensity, NEDPressure, gamma, NEDVelocity);
          this->NEDMomentum = NEDVelocity * NEDDensity;
 
          this->SEDDensity = preSEDDensity;
          this->SEDVelocity = PointLoad(preSEDVelocityX, preSEDVelocityY, preSEDVelocityZ);
          this->SEDPressure = preSEDPressure;
-         this->SEDEnergy = Energy( SEDDensity, SEDPressure, gamma, SEDVelocity); 
+         this->SEDEnergy = Energy( SEDDensity, SEDPressure, gamma, SEDVelocity);
          this->SEDMomentum = SEDVelocity * SEDDensity;
 
          std::cout << this->SEDEnergy;
          std::cout << this->SWDEnergy;
- 
+
       }
 
       PointType PointLoad( RealType ValueX, RealType ValueY, RealType ValueZ)
       {
-         PointType point; 
+         PointType point;
          switch (Dimensions)
          {
             case 1: point[ 0 ] = ValueX;
@@ -1275,7 +1275,7 @@ class RiemannProblemInitialCondition
                     point[ 1 ] = ValueY;
                     break;
             case 3: point[ 0 ] = ValueX;
-                    point[ 1 ] = ValueY;                  
+                    point[ 1 ] = ValueY;
                     point[ 2 ] = ValueZ;
                     break;
          }
@@ -1296,7 +1296,7 @@ class RiemannProblemInitialCondition
          }
          return energy;
       }
-      
+
       void setInitialCondition( CompressibleConservativeVariables< MeshType >& conservativeVariables,
                                 const PointType& center = PointType( 0.0 ) )
       {
@@ -1343,7 +1343,7 @@ class RiemannProblemInitialCondition
          typedef Operators::Analytic::Sign< Dimensions, RealType > SignType;
          typedef Functions::OperatorFunction< SignType, VectorNormType > InitialConditionType;
          typedef Pointers::SharedPointer< InitialConditionType, DeviceType > InitialConditionPointer;
-         
+
          InitialConditionPointer initialCondition;
          initialCondition->getFunction().setCenter( center );
          initialCondition->getFunction().setMaxNorm( true );
@@ -1353,7 +1353,7 @@ class RiemannProblemInitialCondition
             discontinuityPlacement[ i ] = 1.0 / discontinuityPlacement[ i ];
          initialCondition->getFunction().setAnisotropy( discontinuityPlacement );
          initialCondition->getFunction().setMultiplicator( -1.0 );
-         
+
          Functions::MeshFunctionEvaluator< MeshFunctionType, InitialConditionType > evaluator;
 */
          /****
@@ -1362,12 +1362,12 @@ class RiemannProblemInitialCondition
 /*
          conservativeVariables.getDensity()->write( "density.gplt", "gnuplot" );
 */
-/*         
+/*
          initialCondition->getOperator().setPositiveValue( leftDensity );
          initialCondition->getOperator().setNegativeValue( rightDensity );
          evaluator.evaluate( conservativeVariables.getDensity(), initialCondition );
          conservativeVariables.getDensity()->write( "density.gplt", "gnuplot" );
-*/         
+*/
          /****
           * Momentum
           */
@@ -1379,7 +1379,7 @@ class RiemannProblemInitialCondition
             initialCondition->getOperator().setNegativeValue( rightDensity * rightVelocity[ i ] );
             evaluator.evaluate( conservativeVariables.getMomentum()[ i ], initialCondition );
          }
-*/      
+*/
          /****
           * Energy
           */
@@ -1397,10 +1397,10 @@ class RiemannProblemInitialCondition
          (* conservativeVariables.getEnergy())->write( "energy-init", "gnuplot" );
 */
       }
-      
-      
+
+
    protected:
-      
+
       PointType discontinuityPlacement;
       PointType NWUVelocity, NEUVelocity, SWUVelocity, SEUVelocity, NWDVelocity, NEDVelocity, SWDVelocity, SEDVelocity;
       RealType  NWUDensity, NEUDensity, SWUDensity, SEUDensity, NWDDensity, NEDDensity, SWDDensity, SEDDensity;
@@ -1410,7 +1410,7 @@ class RiemannProblemInitialCondition
       RealType  leftDensity, rightDensity;
       PointType leftVelocity, rightVelocity;
       RealType  leftPressure, rightPressure;
-      
+
       RealType gamma; // gamma in the ideal gas state equation
 };
 

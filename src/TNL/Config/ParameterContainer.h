@@ -179,6 +179,24 @@ public:
       return getParameter< std::vector< T > >( name );
    }
 
+   /**
+    * \brief Returns up to three parameter values as a StaticArray.
+    *
+    * \param prefix Prefix of the parameter names. The names are \e prefix-x,
+    *               \e prefix-y and \e prefix-z.
+    */
+   template< class StaticArray >
+   StaticArray getXyz( const std::string& prefix ) const
+   {
+      StaticArray result;
+      result[ 0 ] = getParameter< typename StaticArray::ValueType >( prefix + "-x" );
+      if( StaticArray::getSize() >= 2 )
+         result[ 1 ] = getParameter< typename StaticArray::ValueType >( prefix + "-y" );
+      if( StaticArray::getSize() >= 3 )
+         result[ 2 ] = getParameter< typename StaticArray::ValueType >( prefix + "-z" );
+      return result;
+   }
+
 protected:
    std::unordered_map< std::string, Parameter > parameters;
 };
