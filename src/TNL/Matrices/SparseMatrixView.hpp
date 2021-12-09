@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <functional>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Algorithms/reduce.h>
