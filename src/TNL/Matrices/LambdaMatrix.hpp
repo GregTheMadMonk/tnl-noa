@@ -17,6 +17,7 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Matrices/LambdaMatrix.h>
 #include <TNL/Matrices/details/SparseMatrix.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -413,6 +414,7 @@ performSORIteration( const Vector1& b,
                           Vector2& x,
                           const RealType& omega ) const
 {
+   throw Exceptions::NotImplementedError("performSORIteration is not implemented for SparseMatrixView");
 }
 
 template< typename MatrixElementsLambda,
