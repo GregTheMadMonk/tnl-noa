@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ILU0_impl.h  -  description
+                          ILU0.hpp  -  description
                              -------------------
     begin                : Dec 24, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -13,10 +13,9 @@
 #pragma once
 
 #include "ILU0.h"
-#include "TriangularSolve.h"
-
-#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Solvers/Linear/Utils/TriangularSolve.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
 namespace Solvers {

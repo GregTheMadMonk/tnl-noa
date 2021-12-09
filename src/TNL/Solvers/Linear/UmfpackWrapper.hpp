@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UmfpackWrapper_impl.h  -  description
+                          UmfpackWrapper.hpp  -  description
                              -------------------
     begin                : Mar 21, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -16,7 +16,7 @@
 
 #include "UmfpackWrapper.h"
 
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {

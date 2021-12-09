@@ -40,4 +40,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/TFQMR_impl.h>
+#include "TFQMR.hpp"

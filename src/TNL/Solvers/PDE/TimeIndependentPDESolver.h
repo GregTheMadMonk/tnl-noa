@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTimeIndependentPDESolver.h  -  description
+                          TimeIndependentPDESolver.h  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -84,4 +84,4 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/PDE/TimeIndependentPDESolver_impl.h>
+#include <TNL/Solvers/PDE/TimeIndependentPDESolver.hpp>

@@ -10,16 +10,11 @@
 
 #pragma once
 
-#include <TNL/Containers/ArrayView.h>
-#include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/DistributedArray.h>
-#include <TNL/Containers/DistributedVector.h>
-
+#include <TNL/TypeTraits.h>
 
 namespace TNL {
    namespace Matrices {
       namespace details {
-
 
 template< typename VectorOrView,
           std::enable_if_t< HasSetSizeMethod< VectorOrView >::value, bool > = true >

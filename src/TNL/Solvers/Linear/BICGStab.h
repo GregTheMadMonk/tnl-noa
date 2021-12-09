@@ -52,4 +52,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/BICGStab_impl.h>
+#include "BICGStab.hpp"

@@ -11,7 +11,7 @@
 #include "LinearSolver.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
+#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
 namespace Solvers {
@@ -32,13 +32,15 @@ public:
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
    {
+      LinearSolver< Matrix >::configSetup( config, prefix );
       config.addEntry< double >( prefix + "jacobi-omega", "Relaxation parameter of the weighted/damped Jacobi method.", 1.0 );
    }
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" ) override
    {
-      this->setOmega( parameters.getParameter< double >( prefix + "jacobi-omega" ) );
+      if( parameters.checkParameter( prefix + "jacobi-omega" ) )
+         this->setOmega( parameters.getParameter< double >( prefix + "jacobi-omega" ) );
       if( this->omega <= 0.0 || this->omega > 2.0 )
       {
          std::cerr << "Warning: The Jacobi method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;

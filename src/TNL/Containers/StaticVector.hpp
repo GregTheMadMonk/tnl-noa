@@ -37,16 +37,6 @@ StaticVector< Size, Real >::StaticVector( const Expressions::StaticUnaryExpressi
 }
 
 template< int Size, typename Real >
-bool
-StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
-                                   const String& prefix )
-{
-   for( int i = 0; i < Size; i++ )
-      this->data[ i ] = parameters.template getParameter< double >( prefix + convertToString( i ) );
-   return true;
-}
-
-template< int Size, typename Real >
    template< typename VectorExpression >
 __cuda_callable__
 StaticVector< Size, Real >&

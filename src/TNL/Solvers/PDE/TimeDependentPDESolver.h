@@ -103,4 +103,4 @@ class TimeDependentPDESolver
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/PDE/TimeDependentPDESolver_impl.h>
+#include <TNL/Solvers/PDE/TimeDependentPDESolver.hpp>

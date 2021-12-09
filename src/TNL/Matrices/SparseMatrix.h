@@ -1044,7 +1044,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
 
       template< typename Vector1, typename Vector2 >
-      bool performSORIteration( const Vector1& b,
+      void performSORIteration( const Vector1& b,
                                 const IndexType row,
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;

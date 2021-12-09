@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GMRES_impl.h  -  description
+                          GMRES.hpp  -  description
                              -------------------
     begin                : May 13, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -30,6 +30,7 @@ GMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
+   LinearSolver< Matrix >::configSetup( config, prefix );
    config.addEntry< String >( prefix + "gmres-variant", "Minimal number of iterations after which the GMRES restarts.", "CWY" );
       config.addEntryEnum( "CGS" );
       config.addEntryEnum( "CGSR" );
@@ -48,24 +49,30 @@ GMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   const String var = parameters.getParameter< String >( prefix + "gmres-variant" );
-   if( var == "CGS" )
-      variant = Variant::CGS;
-   else if( var == "CGSR" )
-      variant = Variant::CGSR;
-   else if( var == "MGS" )
-      variant = Variant::MGS;
-   else if( var == "MGSR" )
-      variant = Variant::MGSR;
-   else if( var == "CWY" )
-      variant = Variant::CWY;
-   else
-      return false;
+   if( parameters.checkParameter( prefix + "gmres-variant" ) ) {
+      const String var = parameters.getParameter< String >( prefix + "gmres-variant" );
+      if( var == "CGS" )
+         variant = Variant::CGS;
+      else if( var == "CGSR" )
+         variant = Variant::CGSR;
+      else if( var == "MGS" )
+         variant = Variant::MGS;
+      else if( var == "MGSR" )
+         variant = Variant::MGSR;
+      else if( var == "CWY" )
+         variant = Variant::CWY;
+      else
+         return false;
+   }
 
-   restarting_min = parameters.getParameter< int >( prefix + "gmres-restarting-min" );
-   restarting_max = parameters.getParameter< int >( prefix + "gmres-restarting-max" );
-   restarting_step_min = parameters.getParameter< int >( prefix + "gmres-restarting-step-min" );
-   restarting_step_max = parameters.getParameter< int >( prefix + "gmres-restarting-step-max" );
+   if( parameters.checkParameter( prefix + "gmres-restarting-min" ) )
+      restarting_min = parameters.getParameter< int >( prefix + "gmres-restarting-min" );
+   if( parameters.checkParameter( prefix + "gmres-restarting-max" ) )
+      restarting_max = parameters.getParameter< int >( prefix + "gmres-restarting-max" );
+   if( parameters.checkParameter( prefix + "gmres-restarting-step-min" ) )
+      restarting_step_min = parameters.getParameter< int >( prefix + "gmres-restarting-step-min" );
+   if( parameters.checkParameter( prefix + "gmres-restarting-step-max" ) )
+      restarting_step_max = parameters.getParameter< int >( prefix + "gmres-restarting-step-max" );
 
    return LinearSolver< Matrix >::setup( parameters, prefix );
 }

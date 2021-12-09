@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CG_impl.h  -  description
+                          CG.hpp  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomas Oberhuber

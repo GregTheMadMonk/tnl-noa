@@ -14,9 +14,8 @@ namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-class LinearResidueGetter
+struct LinearResidueGetter
 {
-public:
    template< typename Matrix, typename Vector1, typename Vector2 >
    static typename Matrix::RealType
    getResidue( const Matrix& matrix,
@@ -29,4 +28,4 @@ public:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/LinearResidueGetter_impl.h>
+#include "LinearResidueGetter.hpp"

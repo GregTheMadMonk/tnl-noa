@@ -822,7 +822,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                           IndexType end = 0 ) const;
 
       template< typename Vector1, typename Vector2 >
-      bool performSORIteration( const Vector1& b,
+      void performSORIteration( const Vector1& b,
                                 const IndexType row,
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;

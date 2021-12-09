@@ -10,11 +10,13 @@
 
 #pragma once
 
+#include <iomanip>
 #include <functional>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Algorithms/reduce.h>
 #include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Matrices/details/SparseMatrix.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -832,14 +834,14 @@ template< typename Real,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
 template< typename Vector1, typename Vector2 >
-bool
+void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
                      const RealType& omega ) const
 {
-   return false;
+   throw Exceptions::NotImplementedError("performSORIteration is not implemented for SparseMatrixView");
 }
 
 template< typename Real,

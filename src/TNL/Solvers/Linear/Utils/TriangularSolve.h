@@ -15,7 +15,6 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {
 
 /*
  * Solves `x` from `Lx = b`, where L is a square lower triangular matrix with
@@ -113,7 +112,6 @@ void triangularSolveUpper( const Matrix& U, Vector1& x, const Vector2& b )
    }
 }
 
-} // namespace Preconditioners
 } // namespace Linear
 } // namespace Solvers
 } // namespace TNL

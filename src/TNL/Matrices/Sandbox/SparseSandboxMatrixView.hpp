@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <functional>
 #include <TNL/Matrices/Sandbox/SparseSandboxMatrixView.h>
 #include <TNL/Algorithms/reduce.h>
@@ -271,7 +272,7 @@ addElement( IndexType row,
       TNL_ASSERT_LT( column,this->getColumns(), "Row index is out of the symmetric part of the matrix after transposition." );
    }
 
-   // SANDBOX_TODO: Replace the following line with a code that computes number of matrix elements allocated for 
+   // SANDBOX_TODO: Replace the following line with a code that computes number of matrix elements allocated for
    //               matrix row with indedx `row`. Note that the code works on both host and GPU kernel. To achieve
    //               the same effect, you may use macro __CUDA_ARCH__ as can be seen bellow in this method.
    const IndexType rowSize = this->rowPointers.getElement( row + 1 ) - this->rowPointers.getElement( row );

@@ -824,14 +824,14 @@ template< typename Real,
           typename RealAllocator,
           typename IndexAllocator >
 template< typename Vector1, typename Vector2 >
-bool
+void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
                      const RealType& omega ) const
 {
-   return false;
+   this->view.performSORIteration( b, row, x, omega );
 }
 
 // copy assignment

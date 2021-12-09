@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Merson_impl.h  -  description
+                          Merson.hpp  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2007 by Tomas Oberhuber

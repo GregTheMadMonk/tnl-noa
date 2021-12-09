@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ILUT_impl.h  -  description
+                          ILUT.hpp  -  description
                              -------------------
     begin                : Aug 31, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -16,8 +16,7 @@
 #include <set>
 
 #include "ILUT.h"
-#include "TriangularSolve.h"
-
+#include <TNL/Solvers/Linear/Utils/TriangularSolve.h>
 #include <TNL/Timer.h>
 
 namespace TNL {
@@ -31,8 +30,10 @@ ILUT_impl< Matrix, Real, Devices::Host, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   p = parameters.getParameter< int >( "ilut-p" );
-   tau = parameters.getParameter< double >( "ilut-threshold" );
+   if( parameters.checkParameter( prefix + "ilut-p" ) )
+      p = parameters.getParameter< int >( prefix + "ilut-p" );
+   if( parameters.checkParameter( prefix + "ilut-threshold" ) )
+      tau = parameters.getParameter< double >( prefix + "ilut-threshold" );
    return true;
 }
 

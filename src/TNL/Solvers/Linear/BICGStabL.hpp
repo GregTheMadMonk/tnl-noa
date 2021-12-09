@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BICGStabL.h  -  description
+                          BICGStabL.hpp  -  description
                              -------------------
     begin                : Jul 4, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.
@@ -26,6 +26,7 @@ BICGStabL< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
+   LinearSolver< Matrix >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "bicgstab-ell", "Number of Bi-CG iterations before the MR part starts.", 1 );
    config.addEntry< bool >( prefix + "bicgstab-exact-residue", "Whether the BiCGstab should compute the exact residue in each step (true) or to use a cheap approximation (false).", false );
 }
@@ -36,8 +37,10 @@ BICGStabL< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   ell = parameters.getParameter< int >( "bicgstab-ell" );
-   exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
+   if( parameters.checkParameter( prefix + "bicgstab-ell" ) )
+      ell = parameters.getParameter< int >( "bicgstab-ell" );
+   if( parameters.checkParameter( prefix + "bicgstab-exact-residue" ) )
+      exact_residue = parameters.getParameter< bool >( "bicgstab-exact-residue" );
    return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 

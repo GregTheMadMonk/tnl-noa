@@ -160,4 +160,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/GMRES_impl.h>
+#include "GMRES.hpp"

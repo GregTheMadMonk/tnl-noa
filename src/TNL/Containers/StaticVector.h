@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
 namespace TNL {
@@ -88,15 +87,6 @@ public:
              typename Operation >
    __cuda_callable__
    StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr );
-
-   /**
-    * \brief Sets up a new (vector) parameter which means it can have more elements.
-    *
-    * \param parameters Reference to a parameter container where the new parameter is saved.
-    * \param prefix Name of now parameter/prefix.
-    */
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );
 
    /**
     * \brief Assignment operator with a vector expression.

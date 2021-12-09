@@ -1,5 +1,5 @@
 /***************************************************************************
-                          LinearResidueGetter_impl.h  -  description
+                          LinearResidueGetter.hpp  -  description
                              -------------------
     begin                : Nov 25, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -10,9 +10,8 @@
 
 #pragma once
 
-#include <TNL/Solvers/Linear/LinearResidueGetter.h>
-#include <TNL/Solvers/Linear/Traits.h>
-#include <TNL/Containers/Vector.h>
+#include "LinearResidueGetter.h"
+#include "Traits.h"
 
 namespace TNL {
 namespace Solvers {
@@ -26,9 +25,6 @@ getResidue( const Matrix& matrix,
             const Vector2& b,
             typename Matrix::RealType bNorm )
 {
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
    using VectorType = typename Traits< Matrix >::VectorType;
 
    if( bNorm == 0.0 )

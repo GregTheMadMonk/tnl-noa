@@ -15,9 +15,8 @@
 #include <type_traits>  // std::add_const_t
 #include <memory>  // std::shared_ptr
 
-#include <TNL/Containers/VectorView.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/Linear/Traits.h>
+#include <TNL/Solvers/Linear/Utils/Traits.h>
 
 namespace TNL {
 namespace Solvers {

@@ -17,8 +17,7 @@
 
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
-
-#include "Traits.h"
+#include <TNL/Solvers/Linear/Utils/Traits.h>
 
 namespace TNL {
 namespace Solvers {
@@ -44,7 +43,9 @@ public:
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
-   {}
+   {
+      IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   }
 
    virtual bool setup( const Config::ParameterContainer& parameters,
                        const String& prefix = "" )

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Euler_impl.h  -  description
+                          Euler.hpp  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

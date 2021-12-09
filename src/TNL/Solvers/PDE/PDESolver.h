@@ -64,5 +64,4 @@ class PDESolver
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/PDE/PDESolver_impl.h>
-
+#include <TNL/Solvers/PDE/PDESolver.hpp>

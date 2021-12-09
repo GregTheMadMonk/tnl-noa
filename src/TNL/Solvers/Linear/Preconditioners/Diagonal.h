@@ -14,8 +14,6 @@
 
 #include "Preconditioner.h"
 
-#include <TNL/Containers/Vector.h>
-
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -71,4 +69,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/Preconditioners/Diagonal_impl.h>
+#include "Diagonal.hpp"

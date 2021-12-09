@@ -12,8 +12,6 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Containers/Vector.h>
-
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -43,4 +41,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/Linear/CG_impl.h>
+#include "CG.hpp"
