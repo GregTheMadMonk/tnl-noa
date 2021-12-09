@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SolverInitiator_impl.h  -  description
+                          SolverInitiator.hpp  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

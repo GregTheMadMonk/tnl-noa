@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TimeIndependentPDESolver_impl.h  -  description
+                          TimeIndependentPDESolver.hpp  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

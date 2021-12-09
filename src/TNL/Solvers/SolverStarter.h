@@ -16,7 +16,7 @@
 #include <ostream>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< typename ConfigTag >
 class SolverStarter
@@ -45,4 +45,4 @@ class SolverStarter
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/SolverStarter_impl.h>
+#include <TNL/Solvers/SolverStarter.hpp>

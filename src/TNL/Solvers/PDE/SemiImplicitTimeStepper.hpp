@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SemiImplicitTimeStepper_impl.h  -  description
+                          SemiImplicitTimeStepper.hpp  -  description
                              -------------------
     begin                : Oct 4, 2014
     copyright            : (C) 2014 by Tomas Oberhuber

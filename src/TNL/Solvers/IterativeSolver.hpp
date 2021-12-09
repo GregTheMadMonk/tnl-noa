@@ -1,5 +1,5 @@
 /***************************************************************************
-                          IterativeSolver_impl.h  -  description
+                          IterativeSolver.hpp  -  description
                              -------------------
     begin                : Oct 19, 2012
     copyright            : (C) 2012 by Tomas Oberhuber et al.

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SolverStarter_impl.h  -  description
+                          SolverStarter.h  -  description
                              -------------------
     begin                : Mar 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

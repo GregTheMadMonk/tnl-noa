@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PDESolver_impl.h  -  description
+                          PDESolver.hpp  -  description
                              -------------------
     begin                : Nov 11, 2017
     copyright            : (C) 2017 by Tomas Oberhuber

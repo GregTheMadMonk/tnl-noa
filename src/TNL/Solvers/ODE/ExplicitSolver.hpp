@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExplicitSolver_impl.h  -  description
+                          ExplicitSolver.hpp  -  description
                              -------------------
     begin                : Nov 22, 2014
     copyright            : (C) 2014 by oberhuber
@@ -14,7 +14,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace ODE {   
+namespace ODE {
 
 template< typename Problem, typename SolverMonitor >
 ExplicitSolver< Problem, SolverMonitor >::

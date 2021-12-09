@@ -62,4 +62,4 @@ class Merson : public ExplicitSolver< Problem, SolverMonitor >
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/Merson_impl.h>
+#include <TNL/Solvers/ODE/Merson.hpp>

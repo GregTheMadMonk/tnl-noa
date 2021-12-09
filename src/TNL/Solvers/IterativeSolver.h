@@ -97,4 +97,4 @@ protected:
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/IterativeSolver_impl.h>
+#include <TNL/Solvers/IterativeSolver.hpp>

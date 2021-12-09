@@ -29,4 +29,4 @@ class SolverInitiator
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/SolverInitiator_impl.h>
+#include <TNL/Solvers/SolverInitiator.hpp>
