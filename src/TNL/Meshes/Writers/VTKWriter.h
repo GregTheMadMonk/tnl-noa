@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
@@ -40,7 +38,6 @@ class VTKWriter
    using EntityTypesWriter = details::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
 
 public:
-   using IndexType = typename Mesh::GlobalIndexType;
 
    VTKWriter() = delete;
 
@@ -83,10 +80,10 @@ protected:
    VTK::FileFormat format;
 
    // number of cells (in the VTK sense) written to the file
-   IndexType cellsCount = 0;
+   std::uint64_t cellsCount = 0;
 
    // number of points written to the file
-   IndexType pointsCount = 0;
+   std::uint64_t pointsCount = 0;
 
    // indicator if the header has been written
    bool headerWritten = false;

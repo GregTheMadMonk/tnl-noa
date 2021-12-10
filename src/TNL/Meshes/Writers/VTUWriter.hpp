@@ -16,6 +16,7 @@
 
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Endianness.h>
 #include <TNL/base64.h>
 #ifdef HAVE_ZLIB
@@ -409,14 +410,15 @@ VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
    writePoints( mesh );
 
    // collect all data before writing
+   using IndexType = typename Mesh::GlobalIndexType;
    std::vector< IndexType > connectivity, offsets;
    std::vector< std::uint8_t > types;
    EntitiesCollector< EntityDimension >::exec( mesh, connectivity, offsets, types );
 
    // create array views that can be passed to writeDataArray
-   Containers::ArrayView< IndexType > connectivity_v( connectivity.data(), connectivity.size() );
-   Containers::ArrayView< IndexType > offsets_v( offsets.data(), offsets.size() );
-   Containers::ArrayView< std::uint8_t > types_v( types.data(), types.size() );
+   Containers::ArrayView< IndexType, Devices::Host, std::uint64_t > connectivity_v( connectivity.data(), connectivity.size() );
+   Containers::ArrayView< IndexType, Devices::Host, std::uint64_t > offsets_v( offsets.data(), offsets.size() );
+   Containers::ArrayView< std::uint8_t, Devices::Host, std::uint64_t > types_v( types.data(), types.size() );
 
    // write cells
    str << "<Cells>\n";
@@ -435,7 +437,7 @@ VTUWriter< Mesh >::writePointData( const Array& array,
 {
    if( ! pieceOpen )
       throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != pointsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(pointsCount) )
       throw std::length_error("Mismatched array size for <PointData> section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(pointsCount) + " points in the file)");
    openPointData();
@@ -451,7 +453,7 @@ VTUWriter< Mesh >::writeCellData( const Array& array,
 {
    if( ! pieceOpen )
       throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
-   if( array.getSize() / numberOfComponents != cellsCount )
+   if( array.getSize() / numberOfComponents != typename Array::IndexType(cellsCount) )
       throw std::length_error("Mismatched array size for <CellData> section: " + std::to_string(array.getSize())
                               + " (there are " + std::to_string(cellsCount) + " cells in the file)");
    openCellData();
@@ -490,7 +492,7 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
    {
       case VTK::FileFormat::ascii:
          str.precision( std::numeric_limits< typename Array::ValueType >::digits10 );
-         for( IndexType i = 0; i < array.getSize(); i++ )
+         for( typename Array::IndexType i = 0; i < array.getSize(); i++ )
             // If Array::ValueType is uint8_t, it might be a typedef for unsigned char, which
             // would be normally printed as char rather than a number. Hence, we use the trick
             // with unary operator+, see https://stackoverflow.com/a/28414758
@@ -519,16 +521,16 @@ void
 VTUWriter< Mesh >::writePoints( const Mesh& mesh )
 {
    // copy all coordinates into a contiguous array
-   using BufferType = Containers::Array< MeshRealType, Devices::Host, IndexType >;
+   using BufferType = Containers::Array< typename Mesh::RealType, Devices::Host, typename Mesh::GlobalIndexType >;
    BufferType buffer( 3 * pointsCount );
-   IndexType k = 0;
-   for( IndexType i = 0; i < pointsCount; i++ ) {
+   typename Mesh::GlobalIndexType k = 0;
+   for( std::uint64_t i = 0; i < pointsCount; i++ ) {
       const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
       const auto& point = vertex.getPoint();
-      for( IndexType j = 0; j < point.getSize(); j++ )
+      for( int j = 0; j < point.getSize(); j++ )
          buffer[ k++ ] = point[ j ];
       // VTK needs zeros for unused dimensions
-      for( IndexType j = point.getSize(); j < 3; j++ )
+      for( int j = point.getSize(); j < 3; j++ )
          buffer[ k++ ] = 0;
    }
 

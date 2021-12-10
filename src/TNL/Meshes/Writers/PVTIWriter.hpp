@@ -67,24 +67,24 @@ PVTIWriter< Grid >::writeImageData( const Grid& globalGrid,
    std::stringstream extent, origin, spacing;
 
    auto dims = globalGrid.getDimensions();
-   for( IndexType j = 0; j < dims.getSize(); j++ )
+   for( int j = 0; j < dims.getSize(); j++ )
       extent << "0 " << dims[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = dims.getSize(); j < 3; j++ )
+   for( int j = dims.getSize(); j < 3; j++ )
       extent << "0 0 ";
 
    auto o = globalGrid.getOrigin();
-   for( IndexType j = 0; j < o.getSize(); j++ )
+   for( int j = 0; j < o.getSize(); j++ )
       origin << std::scientific << o[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = o.getSize(); j < 3; j++ )
+   for( int j = o.getSize(); j < 3; j++ )
       origin << 0 << " ";
 
    auto h = globalGrid.getSpaceSteps();
-   for( IndexType j = 0; j < h.getSize(); j++ )
+   for( int j = 0; j < h.getSize(); j++ )
       spacing << std::scientific << h[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = h.getSize(); j < 3; j++ )
+   for( int j = h.getSize(); j < 3; j++ )
       spacing << 0 << " ";
 
    str << "<PImageData"
@@ -177,10 +177,10 @@ PVTIWriter< Grid >::addPiece( const String& mainFileName,
 
    // prepare the extent
    std::stringstream extent;
-   for( IndexType j = 0; j < Grid::getMeshDimension(); j++ )
+   for( int j = 0; j < Grid::getMeshDimension(); j++ )
       extent << globalBegin[ j ] <<  " " << globalEnd[ j ] << " ";
    // VTK knows only 3D grids
-   for( IndexType j = Grid::getMeshDimension(); j < 3; j++ )
+   for( int j = Grid::getMeshDimension(); j < 3; j++ )
       extent << "0 0 ";
 
    namespace fs = std::experimental::filesystem;

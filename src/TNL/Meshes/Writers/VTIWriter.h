@@ -14,7 +14,6 @@
 
 #include <type_traits>
 
-#include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
@@ -30,8 +29,6 @@ class VTIWriter
    // LOL, VTK does not support signed header types (but the GridTypeResolver maps unsigned types to signed, so we are good)
    using HeaderType = std::make_unsigned_t< typename Mesh::GlobalIndexType >;
 public:
-   using MeshRealType = typename Mesh::RealType;
-   using IndexType = typename Mesh::GlobalIndexType;
 
    VTIWriter() = delete;
 
@@ -82,10 +79,10 @@ protected:
    VTK::FileFormat format;
 
    // number of points written to the file
-   IndexType pointsCount = 0;
+   std::uint64_t pointsCount = 0;
 
    // number of cells (in the VTK sense) written to the file
-   IndexType cellsCount = 0;
+   std::uint64_t cellsCount = 0;
 
    // indicator if the <VTKFile> tag is open
    bool vtkfileOpen = false;
