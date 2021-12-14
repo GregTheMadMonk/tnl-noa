@@ -268,14 +268,14 @@ vectorProduct( const InVector& inVector,
 
 template< typename Matrix >
    template< typename Vector1, typename Vector2 >
-bool
+void
 DistributedMatrix< Matrix >::
 performSORIteration( const Vector1& b,
                      const IndexType row,
                      Vector2& x,
                      const RealType& omega ) const
 {
-   return getLocalMatrix().performSORIteration( b, row, x, omega );
+   getLocalMatrix().performSORIteration( b, row, x, omega );
 }
 
 } // namespace Matrices
