@@ -175,7 +175,10 @@ void
 CSRHybridKernel< Index, Device, ThreadsInBlock >::
 init( const Offsets& offsets )
 {
+    TNL_ASSERT_GT( offsets.getSize(), 0, "offsets size must be strictly positive" );
     const Index segmentsCount = offsets.getSize() - 1;
+    if( segmentsCount <= 0 )
+       return;
     const Index elementsInSegment = std::ceil( ( double ) offsets.getElement( segmentsCount ) / ( double ) segmentsCount );
     this->threadsPerSegment = TNL::min( std::pow( 2, std::ceil( std::log2( elementsInSegment ) ) ), ThreadsInBlock ); //TNL::Cuda::getWarpSize() );
     TNL_ASSERT_GE( threadsPerSegment, 0, "" );
