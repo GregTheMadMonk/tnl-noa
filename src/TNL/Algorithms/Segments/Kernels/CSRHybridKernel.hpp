@@ -297,6 +297,8 @@ reduceSegments( const OffsetsView& offsets,
                 throw std::runtime_error( std::string( "Wrong value of threadsPerSegment: " ) + std::to_string( this->threadsPerSegment ) );
         }
     }
+    cudaStreamSynchronize(0);
+    TNL_CHECK_CUDA_DEVICE;
 #endif
 }
 

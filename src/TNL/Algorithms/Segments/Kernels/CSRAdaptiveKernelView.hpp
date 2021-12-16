@@ -272,6 +272,8 @@ struct CSRAdaptiveKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reductio
                zero,
                args... );
       }
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 };

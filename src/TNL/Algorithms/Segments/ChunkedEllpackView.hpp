@@ -460,6 +460,8 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
             <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
       }
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 }

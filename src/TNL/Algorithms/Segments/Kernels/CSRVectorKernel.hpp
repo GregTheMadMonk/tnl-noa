@@ -152,9 +152,12 @@ reduceSegments( const OffsetsView& offsets,
         reduceSegmentsCSRKernelVector< OffsetsView, IndexType, Fetch, Reduction, ResultKeeper, Real, Args... >
         <<< gridSize, blockSize >>>(
             gridIdx.x, offsets, first, last, fetch, reduction, keeper, zero, args... );
-    };
+    }
+    cudaStreamSynchronize(0);
+    TNL_CHECK_CUDA_DEVICE;
 #endif
 }
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL

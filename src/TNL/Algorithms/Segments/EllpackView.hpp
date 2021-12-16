@@ -111,7 +111,8 @@ struct EllpackCudaReductionDispatcher
       dim3 blockSize( 256 );
       dim3 gridSize( blocksCount );
       EllpackCudaReductionKernelFull<<< gridSize, blockSize >>>( first, last, fetch, reduction, keeper, zero, segmentSize );
-      cudaDeviceSynchronize();
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
    #endif
    }
 };
@@ -133,7 +134,8 @@ struct EllpackCudaReductionDispatcher< Index, Fetch, Reduction, ResultKeeper, Re
       dim3 blockSize( 256 );
       dim3 gridSize( blocksCount );
       EllpackCudaReductionKernelCompact<<< gridSize, blockSize >>>( first, last, fetch, reduction, keeper, zero, segmentSize );
-      cudaDeviceSynchronize();
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
    #endif
    }
 };

@@ -500,8 +500,9 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
                      grid, offsets, first, last, fetch, reduce, keep, zero );
          }*/
       }
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
 #endif
-
    }
 };
 

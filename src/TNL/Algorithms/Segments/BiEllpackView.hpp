@@ -428,9 +428,9 @@ reduceSegments( IndexType first, IndexType last, Fetch& fetch, const Reduction& 
          detail::BiEllpackreduceSegmentsKernel< ViewType, IndexType, Fetch, Reduction, ResultKeeper, Real, BlockDim  >
             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( *this, gridIdx, first, last, fetch, reduction, keeper, zero );
-         cudaThreadSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
       }
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
 #endif
    }
 }
