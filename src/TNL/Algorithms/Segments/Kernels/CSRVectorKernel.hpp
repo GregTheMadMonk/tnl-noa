@@ -140,6 +140,9 @@ reduceSegments( const OffsetsView& offsets,
                          Args... args )
 {
 #ifdef HAVE_CUDA
+    if( last <= first )
+       return;
+
     const Index warpsCount = last - first;
     const size_t threadsCount = warpsCount * TNL::Cuda::getWarpSize();
     dim3 blocksCount, gridsCount, blockSize( 256 );

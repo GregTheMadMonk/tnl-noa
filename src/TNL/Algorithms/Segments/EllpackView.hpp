@@ -105,6 +105,8 @@ struct EllpackCudaReductionDispatcher
    exec( Index first, Index last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Index segmentSize )
    {
    #ifdef HAVE_CUDA
+      if( last <= first )
+         return;
       const Index segmentsCount = last - first;
       const Index threadsCount = segmentsCount * 32;
       const Index blocksCount = Cuda::getNumberOfBlocks( threadsCount, 256 );
@@ -128,6 +130,8 @@ struct EllpackCudaReductionDispatcher< Index, Fetch, Reduction, ResultKeeper, Re
    exec( Index first, Index last, Fetch& fetch, const Reduction& reduction, ResultKeeper& keeper, const Real& zero, Index segmentSize )
    {
    #ifdef HAVE_CUDA
+      if( last <= first )
+         return;
       const Index segmentsCount = last - first;
       const Index threadsCount = segmentsCount * 32;
       const Index blocksCount = Cuda::getNumberOfBlocks( threadsCount, 256 );

@@ -245,6 +245,8 @@ reduceSegments( const OffsetsView& offsets,
     TNL_ASSERT_LE( this->threadsPerSegment, ThreadsInBlock, "" );
 
 #ifdef HAVE_CUDA
+    if( last <= first )
+       return;
     const size_t threadsCount = this->threadsPerSegment * ( last - first );
     dim3 blocksCount, gridsCount, blockSize( ThreadsInBlock );
     TNL::Cuda::setupThreads( blockSize, blocksCount, gridsCount, threadsCount );

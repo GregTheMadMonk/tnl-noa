@@ -243,6 +243,9 @@ void test_SetDimensions()
 
    EXPECT_EQ( m.getRows(), 9 );
    EXPECT_EQ( m.getColumns(), 8 );
+
+   // test empty matrix
+   m.setDimensions( 0, 0 );
 }
 
 template< typename Matrix >
