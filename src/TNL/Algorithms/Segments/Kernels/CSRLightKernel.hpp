@@ -424,6 +424,9 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
                        const Index threadsPerSegment )
    {
 #ifdef HAVE_CUDA
+    if( last <= first )
+       return;
+
       const size_t threads = 128;
       Index blocks, groupSize;
 
@@ -500,8 +503,9 @@ struct CSRLightKernelreduceSegmentsDispatcher< Index, Device, Fetch, Reduce, Kee
                      grid, offsets, first, last, fetch, reduce, keep, zero );
          }*/
       }
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
 #endif
-
    }
 };
 
@@ -513,21 +517,24 @@ void
 CSRLightKernel< Index, Device >::
 init( const Offsets& offsets )
 {
+   TNL_ASSERT_GT( offsets.getSize(), 0, "offsets size must be strictly positive" );
    const Index segmentsCount = offsets.getSize() - 1;
+    if( segmentsCount <= 0 )
+       return;
 
    if( this->getThreadsMapping() == CSRLightAutomaticThreads )
    {
       const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
       if( elementsInSegment <= 2 )
-         this->threadsPerSegment = 2;
+         setThreadsPerSegment( 2 );
       else if( elementsInSegment <= 4 )
-         this->threadsPerSegment = 4;
+         setThreadsPerSegment( 4 );
       else if( elementsInSegment <= 8 )
-         this->threadsPerSegment = 8;
+         setThreadsPerSegment( 8 );
       else if( elementsInSegment <= 16 )
-         this->threadsPerSegment = 16;
+         setThreadsPerSegment( 16 );
       else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
-         this->threadsPerSegment = 32; // CSR Vector
+         setThreadsPerSegment( 32 ); // CSR Vector
       //else
       //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
    }
@@ -536,22 +543,18 @@ init( const Offsets& offsets )
    {
       const Index elementsInSegment = roundUpDivision( offsets.getElement( segmentsCount ), segmentsCount ); // non zeroes per row
       if( elementsInSegment <= 2 )
-         this->threadsPerSegment = 2;
+         setThreadsPerSegment( 2 );
       else if( elementsInSegment <= 4 )
-         this->threadsPerSegment = 4;
+         setThreadsPerSegment( 4 );
       else if( elementsInSegment <= 8 )
-         this->threadsPerSegment = 8;
+         setThreadsPerSegment( 8 );
       else if( elementsInSegment <= 16 )
-         this->threadsPerSegment = 16;
+         setThreadsPerSegment( 16 );
       else //if (nnz <= 2 * matrix.MAX_ELEMENTS_PER_WARP)
-         this->threadsPerSegment = 32; // CSR Vector
+         setThreadsPerSegment( 32 ); // CSR Vector
       //else
       //   threadsPerSegment = roundUpDivision(nnz, matrix.MAX_ELEMENTS_PER_WARP) * 32; // CSR MultiVector
    }
-
-   TNL_ASSERT_GE( this->threadsPerSegment, 0, "" );
-   TNL_ASSERT_LE( this->threadsPerSegment, 33, "" );
-
 }
 
 template< typename Index,

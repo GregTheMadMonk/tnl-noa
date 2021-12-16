@@ -175,7 +175,10 @@ void
 CSRHybridKernel< Index, Device, ThreadsInBlock >::
 init( const Offsets& offsets )
 {
+    TNL_ASSERT_GT( offsets.getSize(), 0, "offsets size must be strictly positive" );
     const Index segmentsCount = offsets.getSize() - 1;
+    if( segmentsCount <= 0 )
+       return;
     const Index elementsInSegment = std::ceil( ( double ) offsets.getElement( segmentsCount ) / ( double ) segmentsCount );
     this->threadsPerSegment = TNL::min( std::pow( 2, std::ceil( std::log2( elementsInSegment ) ) ), ThreadsInBlock ); //TNL::Cuda::getWarpSize() );
     TNL_ASSERT_GE( threadsPerSegment, 0, "" );
@@ -245,6 +248,8 @@ reduceSegments( const OffsetsView& offsets,
     TNL_ASSERT_LE( this->threadsPerSegment, ThreadsInBlock, "" );
 
 #ifdef HAVE_CUDA
+    if( last <= first )
+       return;
     const size_t threadsCount = this->threadsPerSegment * ( last - first );
     dim3 blocksCount, gridsCount, blockSize( ThreadsInBlock );
     TNL::Cuda::setupThreads( blockSize, blocksCount, gridsCount, threadsCount );
@@ -297,6 +302,8 @@ reduceSegments( const OffsetsView& offsets,
                 throw std::runtime_error( std::string( "Wrong value of threadsPerSegment: " ) + std::to_string( this->threadsPerSegment ) );
         }
     }
+    cudaStreamSynchronize(0);
+    TNL_CHECK_CUDA_DEVICE;
 #endif
 }
 

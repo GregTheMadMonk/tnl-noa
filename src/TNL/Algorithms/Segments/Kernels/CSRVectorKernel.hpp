@@ -140,6 +140,9 @@ reduceSegments( const OffsetsView& offsets,
                          Args... args )
 {
 #ifdef HAVE_CUDA
+    if( last <= first )
+       return;
+
     const Index warpsCount = last - first;
     const size_t threadsCount = warpsCount * TNL::Cuda::getWarpSize();
     dim3 blocksCount, gridsCount, blockSize( 256 );
@@ -152,9 +155,12 @@ reduceSegments( const OffsetsView& offsets,
         reduceSegmentsCSRKernelVector< OffsetsView, IndexType, Fetch, Reduction, ResultKeeper, Real, Args... >
         <<< gridSize, blockSize >>>(
             gridIdx.x, offsets, first, last, fetch, reduction, keeper, zero, args... );
-    };
+    }
+    cudaStreamSynchronize(0);
+    TNL_CHECK_CUDA_DEVICE;
 #endif
 }
+
       } // namespace Segments
    }  // namespace Algorithms
 } // namespace TNL
