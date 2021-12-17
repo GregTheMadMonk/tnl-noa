@@ -90,11 +90,11 @@ public:
    }
 
 protected:
-   CoordinatesType dimensions;
+   CoordinatesType dimensions = 0;
 
-   PointType origin;
+   PointType origin = 0;
 
-   PointType spaceSteps;
+   PointType spaceSteps = 0;
 };
 
 } // namespace Meshes
