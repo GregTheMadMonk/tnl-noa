@@ -79,7 +79,6 @@ public:
          this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
       }
       this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-      this->refreshSolverMonitor();
       return this->checkConvergence();
    }
 

@@ -112,11 +112,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       else {
          u -= alpha * v;
       }
-
-      this->refreshSolverMonitor();
    }
-
-   this->refreshSolverMonitor();
    return this->checkConvergence();
 }
 

@@ -69,10 +69,8 @@ bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
       for( IndexType row = 0; row < size; row ++ )
          this->matrix->performSORIteration( b, row, x, this->getOmega() );
       this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-      this->refreshSolverMonitor();
    }
    this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-   this->refreshSolverMonitor();
    return this->checkConvergence();
 };
 
