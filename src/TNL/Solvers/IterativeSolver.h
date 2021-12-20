@@ -17,7 +17,11 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
-namespace Solvers {
+
+   /**
+    * \brief Namespace for solvers.
+    */
+   namespace Solvers {
 
 /**
  * \brief Base class for iterative solvers.
@@ -135,7 +139,7 @@ class IterativeSolver
       /**
        * \brief Sets the residue limit for the divergence criterion.
        *
-       * The divergence occurs when the residue \d exceeds the limit.
+       * The divergence occurs when the residue \b exceeds the limit.
        *
        * \param divergenceResidue the residue limit of the divergence.
        */
@@ -196,7 +200,7 @@ class IterativeSolver
       bool nextIteration();
 
       /**
-       * \brief Checks if the solver is alowed to the next iteration.
+       * \brief Checks if the solver is allowed to the next iteration.
        *
        * \return true \e true if the solver is allowed to do the next iteration.
        * \return \e false if the solver is \b not allowed to do the next iteration. This may
