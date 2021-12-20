@@ -215,7 +215,7 @@ class IterativeSolver
       /**
        * \brief Refreshes the solver monitor.
        */
-      void refreshSolverMonitor( bool force = false );
+      void refreshSolverMonitor();
 
    protected:
       Index maxIterations = 1000000000;

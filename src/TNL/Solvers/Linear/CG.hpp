@@ -107,7 +107,7 @@ solve( ConstVectorViewType b, VectorViewType x )
 
       this->setResidue( std::sqrt(s1) / normb );
    }
-   this->refreshSolverMonitor( true );
+   this->refreshSolverMonitor();
    return this->checkConvergence();
 }
 

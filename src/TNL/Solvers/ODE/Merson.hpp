@@ -196,11 +196,11 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
       if( time >= this->getStopTime() ||
           ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
-         this->refreshSolverMonitor( true );
+         this->refreshSolverMonitor();
          return true;
       }
    }
-   this->refreshSolverMonitor( true );
+   this->refreshSolverMonitor();
    return this->checkConvergence();
 
 };

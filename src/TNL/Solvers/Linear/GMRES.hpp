@@ -162,7 +162,7 @@ solve( ConstVectorViewType b, VectorViewType x )
       if( o_steps < m ) {
          // exact solution has been reached early
          update( o_steps, m, H, s, V, x );
-         this->refreshSolverMonitor( true );
+         this->refreshSolverMonitor();
          return this->checkConvergence();
       }
 
@@ -180,7 +180,7 @@ solve( ConstVectorViewType b, VectorViewType x )
       beta_ratio = beta / beta_old;
    }
 
-   this->refreshSolverMonitor( true );
+   this->refreshSolverMonitor();
    return this->checkConvergence();
 }
 

@@ -249,13 +249,13 @@ setSolverMonitor( SolverMonitorType& solverMonitor )
 template< typename Real, typename Index, typename SolverMonitor >
 void
 IterativeSolver< Real, Index, SolverMonitor >::
-refreshSolverMonitor( bool force )
+refreshSolverMonitor()
 {
    if( this->solverMonitor )
    {
       this->solverMonitor->setIterations( this->getIterations() );
       this->solverMonitor->setResidue( this->getResidue() );
-      this->solverMonitor->setRefreshRate( this-> refreshRate );
+      this->solverMonitor->setRefreshRate( this->refreshRate );
    }
 }
 

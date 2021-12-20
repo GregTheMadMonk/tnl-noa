@@ -116,7 +116,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       this->refreshSolverMonitor();
    }
 
-   this->refreshSolverMonitor( true );
+   this->refreshSolverMonitor();
    return this->checkConvergence();
 }
 

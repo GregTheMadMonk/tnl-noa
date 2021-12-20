@@ -72,7 +72,7 @@ bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
       this->refreshSolverMonitor();
    }
    this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-   this->refreshSolverMonitor( true );
+   this->refreshSolverMonitor();
    return this->checkConvergence();
 };
 
