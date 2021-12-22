@@ -10,42 +10,107 @@
 
 #pragma once
 
-#include "LinearSolver.h"
+#include <TNL/Solvers/Linear/LinearSolver.h>
 
 namespace TNL {
-namespace Solvers {
-namespace Linear {
+   namespace Solvers {
+      namespace Linear {
 
+/**
+ * \brief Iterative solver of linear systems based on the Successive-overrelaxation (SOR) method.
+ *
+ * See (Wikipedia)[https://en.wikipedia.org/wiki/Successive_over-relaxation] for more details.
+ *
+ * \tparam Matrix is type of matrix describing the linear system.
+ */
 template< typename Matrix >
 class SOR
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
-public:
-   using RealType = typename Base::RealType;
-   using DeviceType = typename Base::DeviceType;
-   using IndexType = typename Base::IndexType;
-   using VectorViewType = typename Base::VectorViewType;
-   using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+   public:
 
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" ) override;
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename Base::RealType;
 
-   void setOmega( const RealType& omega );
+      /**
+       * \brief Device where the solver will run on and auxillary data will alloacted on.
+       */
+      using DeviceType = typename Base::DeviceType;
 
-   const RealType& getOmega() const;
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename Base::IndexType;
 
-   bool solve( ConstVectorViewType b, VectorViewType x ) override;
+      /**
+       * \brief Type for vector view.
+       */
+      using VectorViewType = typename Base::VectorViewType;
 
-protected:
-   RealType omega = 1.0;
+      /**
+       * \brief Type for constant vector view.
+       */
+      using ConstVectorViewType = typename Base::ConstVectorViewType;
+
+      /**
+       * \brief This is method defines configuration entries for setup of the linear iterative solver.
+       *
+       * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
+       * defines the following:
+       *
+       * \e sor-omega - relaxation parameter of the weighted/damped Jacobi method.
+       *
+       * \param config contains description of configuration parameters.
+       * \param prefix is a prefix of particular configuration entries.
+       */
+      static void configSetup( Config::ConfigDescription& config,
+                              const String& prefix = "" );
+
+      /**
+       * \brief Method for setup of the linear iterative solver based on configuration parameters.
+       *
+       * \param parameters contains values of the define configuration entries.
+       * \param prefix is a prefix of particular configuration entries.
+       */
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" ) override;
+
+      /**
+       * \brief Setter of the relaxation parameter.
+       *
+       * \param omega the relaxation parameter. It is 1 by default.
+       */
+      void setOmega( const RealType& omega );
+
+      /**
+       * \brief Getter of the relaxation parameter.
+       *
+       * \return value of the relaxation parameter.
+       */
+      const RealType& getOmega() const;
+
+      /**
+       * \brief Method for solving of a linear system.
+       *
+       * See \ref LinearSolver::solve for more details.
+       *
+       * \param b vector with the right-hand side of the linear system.
+       * \param x vector for the solution of the linear system.
+       * \return true if the solver converged.
+       * \return false if the solver did not converge.
+       */
+      bool solve( ConstVectorViewType b, VectorViewType x ) override;
+
+   protected:
+      RealType omega = 1.0;
 };
 
-} // namespace Linear
-} // namespace Solvers
+      } // namespace Linear
+   } // namespace Solvers
 } // namespace TNL
 
-#include "SOR.hpp"
+#include <TNL/Solvers/Linear/SOR.hpp>
