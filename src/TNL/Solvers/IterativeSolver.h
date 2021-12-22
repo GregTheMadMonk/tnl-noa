@@ -17,10 +17,6 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
-
-   /**
-    * \brief Namespace for solvers.
-    */
    namespace Solvers {
 
 /**
@@ -231,7 +227,7 @@ class IterativeSolver
       Real convergenceResidue = 1e-6;
 
       // If the current residue is greater than divergenceResidue, the solver is stopped.
-      Real divergenceResidue = std::numeric_limits< float >::max();
+      Real divergenceResidue = std::numeric_limits< Real >::max();
 
       Real currentResidue = 0;
 
