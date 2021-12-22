@@ -8,84 +8,106 @@
 
 #pragma once
 
-#include "LinearSolver.h"
-
 #include <TNL/Containers/Vector.h>
+#include <TNL/Solvers/Linear/LinearSolver.h>
 #include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
-namespace Solvers {
-namespace Linear {
+   namespace Solvers {
+      namespace Linear {
 
+/**
+ * \brief Iterative solver of linear systems based on the Jacobi method.
+ *
+ * See [Wikipedia](https://en.wikipedia.org/wiki/Jacobi_method) for more details.
+ *
+ * \tparam Matrix is type of matrix describing the linear system.
+ */
 template< typename Matrix >
 class Jacobi
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
-public:
-   using RealType = typename Base::RealType;
-   using DeviceType = typename Base::DeviceType;
-   using IndexType = typename Base::IndexType;
-   using VectorViewType = typename Base::VectorViewType;
-   using ConstVectorViewType = typename Base::ConstVectorViewType;
+   public:
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" )
-   {
-      LinearSolver< Matrix >::configSetup( config, prefix );
-      config.addEntry< double >( prefix + "jacobi-omega", "Relaxation parameter of the weighted/damped Jacobi method.", 1.0 );
-   }
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename Base::RealType;
 
-   bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" ) override
-   {
-      if( parameters.checkParameter( prefix + "jacobi-omega" ) )
-         this->setOmega( parameters.getParameter< double >( prefix + "jacobi-omega" ) );
-      if( this->omega <= 0.0 || this->omega > 2.0 )
-      {
-         std::cerr << "Warning: The Jacobi method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
-      }
-      return LinearSolver< Matrix >::setup( parameters, prefix );
-   }
+      /**
+       * \brief Device where the solver will run on and auxillary data will alloacted on.
+       */
+      using DeviceType = typename Base::DeviceType;
 
-   void setOmega( RealType omega )
-   {
-      this->omega = omega;
-   }
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename Base::IndexType;
 
-   RealType getOmega() const
-   {
-      return omega;
-   }
+      /**
+       * \brief Type for vector view.
+       */
+      using VectorViewType = typename Base::VectorViewType;
 
-   bool solve( ConstVectorViewType b, VectorViewType x ) override
-   {
-      const IndexType size = this->matrix->getRows();
+      /**
+       * \brief Type for constant vector view.
+       */
+      using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-      Containers::Vector< RealType, DeviceType, IndexType > aux;
-      aux.setSize( size );
+      /**
+       * \brief This is method defines configuration entries for setup of the linear iterative solver.
+       *
+       * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
+       * defines the following:
+       *
+       * \e jacobi-omega - relaxation parameter of the weighted/damped Jacobi method.
+       *
+       * \param config contains description of configuration parameters.
+       * \param prefix is a prefix of particular configuration entries.
+       */
+      static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
-      this->resetIterations();
-      this->setResidue( this->getConvergenceResidue() + 1.0 );
+      /**
+       * \brief Method for setup of the linear iterative solver based on configuration parameters.
+       *
+       * \param parameters contains values of the define configuration entries.
+       * \param prefix is a prefix of particular configuration entries.
+       */
+      bool setup( const Config::ParameterContainer& parameters, const String& prefix = "" ) override;
 
-      RealType bNorm = b.lpNorm( ( RealType ) 2.0 );
-      aux = x;
-      while( this->nextIteration() )
-      {
-         for( IndexType row = 0; row < size; row ++ )
-            this->matrix->performJacobiIteration( b, row, x, aux, this->getOmega() );
-         for( IndexType row = 0; row < size; row ++ )
-            this->matrix->performJacobiIteration( b, row, aux, x, this->getOmega() );
-         this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-      }
-      this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-      return this->checkConvergence();
-   }
+      /**
+       * \brief Setter of the relaxation parameter.
+       *
+       * \param omega the relaxation parameter. It is 1 by default.
+       */
+      void setOmega( RealType omega );
 
-protected:
-   RealType omega = 0.0;
+      /**
+       * \brief Getter of the relaxation parameter.
+       *
+       * \return value of the relaxation parameter.
+       */
+      RealType getOmega() const;
+
+      /**
+       * \brief Method for solving of a linear system.
+       *
+       * See \ref LinearSolver::solve for more details.
+       *
+       * \param b vector with the right-hand side of the linear system.
+       * \param x vector for the solution of the linear system.
+       * \return true if the solver converged.
+       * \return false if the solver did not converge.
+       */
+      bool solve( ConstVectorViewType b, VectorViewType x ) override;
+
+   protected:
+      RealType omega = 0.0;
 };
 
-} // namespace Linear
-} // namespace Solvers
+      } // namespace Linear
+   } // namespace Solvers
 } // namespace TNL
+
+#include <TNL/Solvers/Linear/Jacobi.hpp>
