@@ -15,6 +15,7 @@
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/PVTUWriter.h>
 #include <TNL/Meshes/MeshDetails/IndexPermutationApplier.h>
+#include <TNL/Meshes/MeshBuilder.h>
 
 #include <metis.h>
 
@@ -522,22 +523,16 @@ decompose_and_save( const Mesh& mesh,
       }
       vertex_global_to_local.clear();
 
-      // copy cell seeds into a TNL array which is used by the mesh initializer
-      using CellSeedArrayType = typename Mesh::MeshTraitsType::CellSeedArrayType;
-      CellSeedArrayType cellSeeds = seeds;
-      seeds.clear();
-      seeds.shrink_to_fit();
-
       // create "GlobalIndex" CellData array
       IndexArray cellsGlobalIndices = seeds_global_indices;
       seeds_global_indices.clear();
       seeds_global_indices.shrink_to_fit();
 
       // create "vtkGhostType" CellData and PointData arrays - see https://blog.kitware.com/ghost-and-blanking-visibility-changes/
-      Containers::Array< std::uint8_t, Devices::Sequential, Index > cellGhosts( cellSeeds.getSize() ), pointGhosts( points.getSize() );
+      Containers::Array< std::uint8_t, Devices::Sequential, Index > cellGhosts( seeds.size() ), pointGhosts( points.getSize() );
       for( Index i = 0; i < cells_counts[ p ]; i++ )
          cellGhosts[ i ] = 0;
-      for( Index i = cells_counts[ p ]; i < cellSeeds.getSize(); i++ )
+      for( Index i = cells_counts[ p ]; i < (Index) seeds.size(); i++ )
          cellGhosts[ i ] = (std::uint8_t) Meshes::VTK::CellGhostTypes::DUPLICATECELL;
       // point ghosts are more tricky because they were assigned to the subdomain with higher number
       Index pointsGhostCount = 0;
@@ -577,20 +572,35 @@ decompose_and_save( const Mesh& mesh,
          PermutationApplier::permuteArray( pointsGlobalIndices, perm );
          // - points
          PermutationApplier::permuteArray( points, perm );
-         // - cellSeeds.setCornerID (inverse perm)
+         // - seeds.setCornerID (inverse perm)
          std::vector< Index > iperm( points.getSize() );
          for( Index i = 0; i < perm.getSize(); i++ )
             iperm[ perm[ i ] ] = i;
-         for( Index i = 0; i < cellSeeds.getSize(); i++ ) {
-            auto& cornerIds = cellSeeds[ i ].getCornerIds();
+         for( auto& seed : seeds ) {
+            auto& cornerIds = seed.getCornerIds();
             for( Index v = 0; v < cornerIds.getSize(); v++ )
                cornerIds[ v ] = iperm[ cornerIds[ v ] ];
          }
       }
 
+      // copy points and cell seeds to the MeshBuilder
+      TNL::Meshes::MeshBuilder< Mesh > builder;
+      builder.setEntitiesCount( points.getSize(), seeds.size() );
+      for( Index i = 0; i < points.getSize(); i++ )
+         builder.setPoint( i, points[ i ] );
+      points.reset();
+      for( std::size_t i = 0; i < seeds.size(); i++ ) {
+         const auto& cornerIds = seeds[ i ].getCornerIds();
+         for( Index v = 0; v < cornerIds.getSize(); v++ )
+            builder.getCellSeed( i ).setCornerId( v, cornerIds[ v ] );
+      }
+      seeds.clear();
+      seeds.shrink_to_fit();
+
       // init mesh for the subdomain
       Mesh subdomain;
-      subdomain.init( points, cellSeeds );
+      if( ! builder.build( subdomain ) )
+         throw std::runtime_error( "mesh builder failed for subdomain " + std::to_string(p) );
 
       // write the subdomain
       using Writer = Meshes::Writers::VTUWriter< Mesh >;
