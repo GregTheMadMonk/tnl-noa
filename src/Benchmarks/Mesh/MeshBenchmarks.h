@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// Implemented by: Jakub Klinkovsky
+// Implemented by: Ján Bobot, Jakub Klinkovský
 
 #pragma once
 
@@ -22,7 +22,7 @@
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/Meshes/Topologies/IsDynamicTopology.h>
-#include <Benchmarks/Benchmarks.h>
+#include <TNL/Benchmarks/Benchmarks.h>
 
 #include "MeshConfigs.h"
 #include "MemoryInfo.h"
@@ -56,9 +56,9 @@ struct MeshBenchmarks
 {
    static_assert( std::is_same< typename Mesh::DeviceType, Devices::Host >::value, "The mesh should be loaded on the host." );
 
-   static bool run( Benchmark & benchmark, const Config::ParameterContainer & parameters )
+   static bool run( Benchmark<> & benchmark, const Config::ParameterContainer & parameters )
    {
-      Benchmark::MetadataColumns metadataColumns = {
+      Logging::MetadataColumns metadataColumns = {
          // {"mesh-file", meshFile},
          {"config", Mesh::Config::getConfigType()},
          //{"topology", removeNamespaces( getType< typename Mesh::Config::CellTopology >() ) },
@@ -67,6 +67,7 @@ struct MeshBenchmarks
          //{"gid_t", getType< typename Mesh::GlobalIndexType >()},
          //{"lid_t", getType< typename Mesh::LocalIndexType >()}
       };
+      benchmark.setMetadataColumns( metadataColumns );
 
       const String & meshFile = parameters.getParameter< String >( "mesh-file" );
       auto reader = getMeshReader( meshFile, "auto" );
@@ -80,13 +81,12 @@ struct MeshBenchmarks
          return false;
       }
 
-      benchmark.setMetadataColumns( metadataColumns );
       dispatchTests( benchmark, parameters, mesh, reader );
 
       return true;
    }
 
-   static void dispatchTests( Benchmark & benchmark, const Config::ParameterContainer & parameters, const Mesh & mesh, std::shared_ptr< MeshReader > reader )
+   static void dispatchTests( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const Mesh & mesh, std::shared_ptr< MeshReader > reader )
    {
       ReaderDispatch::exec( benchmark, parameters, reader );
       InitDispatch::exec( benchmark, parameters, reader );
@@ -99,7 +99,7 @@ struct MeshBenchmarks
 
    struct ReaderDispatch
    {
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
       {
          benchmark.setOperation( String( "Reader" ) );
          benchmark_reader( benchmark, parameters, reader );
@@ -108,7 +108,7 @@ struct MeshBenchmarks
 
    struct InitDispatch
    {
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
       {
          benchmark.setOperation( String( "Init" ) );
          benchmark_init( benchmark, parameters, reader );
@@ -120,7 +120,7 @@ struct MeshBenchmarks
       // Polygonal Mesh
       template< typename M,
                 std::enable_if_t< std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value, bool > = true >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
          benchmark.setOperation( String( "Decomposition (c)" ) );
          benchmark_decomposition< EntityDecomposerVersion::ConnectEdgesToCentroid >( benchmark, parameters, mesh_src );
@@ -132,7 +132,7 @@ struct MeshBenchmarks
       // Polyhedral Mesh
       template< typename M,
                 std::enable_if_t< std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value, bool  > = true >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
          benchmark.setOperation( String( "Decomposition (cc)" ) );
          benchmark_decomposition< EntityDecomposerVersion::ConnectEdgesToCentroid,
@@ -155,7 +155,7 @@ struct MeshBenchmarks
       template< typename M,
                 std::enable_if_t< ! std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value &&
                                   ! std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value, bool  > = true >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
       }
    };
@@ -166,7 +166,7 @@ struct MeshBenchmarks
                 std::enable_if_t< M::Config::spaceDimension == 3 &&
                                  (std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value ||
                                   std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value ), bool > = true >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
          benchmark.setOperation( String( "Planar Correction (c)" ) );
          benchmark_planar< EntityDecomposerVersion::ConnectEdgesToCentroid >( benchmark, parameters, mesh_src );
@@ -179,7 +179,7 @@ struct MeshBenchmarks
                 std::enable_if_t< M::Config::spaceDimension < 3 ||
                                  (! std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value &&
                                   ! std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value ), bool > = true >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
       }
    };
@@ -187,7 +187,7 @@ struct MeshBenchmarks
    struct MeasuresDispatch
    {
       template< typename M >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh )
       {
          benchmark.setOperation( String("Measures") );
          benchmark_measures< Devices::Host >( benchmark, parameters, mesh );
@@ -200,7 +200,7 @@ struct MeshBenchmarks
    struct MemoryDispatch
    {
       template< typename M >
-      static void exec( Benchmark& benchmark, const Config::ParameterContainer& parameters, const M& mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer& parameters, const M& mesh_src )
       {
          benchmark.setOperation( String("Memory") );
          benchmark_memory( benchmark, parameters, mesh_src );
@@ -210,7 +210,7 @@ struct MeshBenchmarks
    struct CopyDispatch
    {
       template< typename M >
-      static void exec( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+      static void exec( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
       {
          #ifdef HAVE_CUDA
          benchmark.setOperation( String("Copy CPU->GPU") );
@@ -221,7 +221,7 @@ struct MeshBenchmarks
       }
    };
 
-   static void benchmark_reader( Benchmark & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
+   static void benchmark_reader( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
    {
       if( ! checkDevice< Devices::Host >( parameters ) )
          return;
@@ -239,7 +239,7 @@ struct MeshBenchmarks
                                        benchmark_func );
    }
 
-   static void benchmark_init( Benchmark & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
+   static void benchmark_init( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, std::shared_ptr< MeshReader > reader )
    {
       if( ! checkDevice< Devices::Host >( parameters ) )
          return;
@@ -261,7 +261,7 @@ struct MeshBenchmarks
    template< EntityDecomposerVersion DecomposerVersion,
              EntityDecomposerVersion SubDecomposerVersion = EntityDecomposerVersion::ConnectEdgesToPoint,
              typename M >
-   static void benchmark_decomposition( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   static void benchmark_decomposition( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       // skip benchmarks on devices which the user did not select
       if( ! checkDevice< Devices::Host >( parameters ) )
@@ -280,7 +280,7 @@ struct MeshBenchmarks
              std::enable_if_t< M::Config::spaceDimension == 3 &&
                               (std::is_same< typename M::Config::CellTopology, Topologies::Polygon >::value ||
                                std::is_same< typename M::Config::CellTopology, Topologies::Polyhedron >::value ), bool > = true >
-   static void benchmark_planar( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   static void benchmark_planar( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       if( ! checkDevice< Devices::Host >( parameters ) )
          return;
@@ -295,7 +295,7 @@ struct MeshBenchmarks
 
    template< typename Device,
              typename M >
-   static void benchmark_measures( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   static void benchmark_measures( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       using Real = typename M::RealType;
       using Index = typename M::GlobalIndexType;
@@ -339,7 +339,7 @@ struct MeshBenchmarks
    }
 
    template< typename M >
-   static void benchmark_memory( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   static void benchmark_memory( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       if( ! checkDevice< Devices::Host >( parameters ) )
             return;
@@ -352,7 +352,7 @@ struct MeshBenchmarks
    template< typename DeviceFrom,
              typename DeviceTo,
              typename M >
-   static void benchmark_copy( Benchmark & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
+   static void benchmark_copy( Benchmark<> & benchmark, const Config::ParameterContainer & parameters, const M & mesh_src )
    {
       using MeshFrom = Meshes::Mesh< typename M::Config, DeviceFrom >;
       using MeshTo = Meshes::Mesh< typename M::Config, DeviceTo >;
@@ -386,8 +386,7 @@ template< template< typename, int, typename, typename, typename > class ConfigTe
 struct MeshBenchmarksRunner
 {
     static bool
-    run( Benchmark & benchmark,
-         Benchmark::MetadataMap metadata,
+    run( Benchmark<> & benchmark,
          const Config::ParameterContainer & parameters )
    {
       using Config = ConfigTemplate< CellTopology, SpaceDimension, Real, GlobalIndex, LocalIndex >;

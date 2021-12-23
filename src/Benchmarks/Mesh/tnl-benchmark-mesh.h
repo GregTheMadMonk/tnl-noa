@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// Implemented by: Jakub Klinkovsky
+// Implemented by: Ján Bobot, Jakub Klinkovský
 
 #pragma once
 
@@ -38,13 +38,10 @@ setMeshParameters( Params&&... params )
 }
 
 bool
-resolveCellTopology( Benchmark& benchmark,
-                     Benchmark::MetadataMap metadata,
+resolveCellTopology( Benchmark<> & benchmark,
                      const Config::ParameterContainer& parameters )
 {
    const String & meshFile = parameters.getParameter< String >( "mesh-file" );
-
-   benchmark.newBenchmark( meshFile, metadata );
 
    auto reader = getMeshReader( meshFile, "auto" );
 
@@ -66,22 +63,22 @@ resolveCellTopology( Benchmark& benchmark,
    switch( reader->getCellShape() )
    {
       case EntityShape::Triangle:
-         return setMeshParameters< Topologies::Triangle >( benchmark, metadata, parameters );
+         return setMeshParameters< Topologies::Triangle >( benchmark, parameters );
       case EntityShape::Tetra:
-         return setMeshParameters< Topologies::Tetrahedron >( benchmark, metadata, parameters );
+         return setMeshParameters< Topologies::Tetrahedron >( benchmark, parameters );
       case EntityShape::Polygon:
          switch( reader->getSpaceDimension() )
          {
             case 2:
-               return setMeshParameters< Topologies::Polygon, 2 >( benchmark, metadata, parameters );
+               return setMeshParameters< Topologies::Polygon, 2 >( benchmark, parameters );
             case 3:
-               return setMeshParameters< Topologies::Polygon, 3 >( benchmark, metadata, parameters );
+               return setMeshParameters< Topologies::Polygon, 3 >( benchmark, parameters );
             default:
                std::cerr << "unsupported dimension for polygon mesh: " << reader->getSpaceDimension() << std::endl;
                return false;
          }
       case EntityShape::Polyhedron:
-         return setMeshParameters< Topologies::Polyhedron >( benchmark, metadata, parameters );
+         return setMeshParameters< Topologies::Polyhedron >( benchmark, parameters );
       default:
          std::cerr << "unsupported cell topology: " << getShapeName( reader->getCellShape() ) << std::endl;
          return false;
@@ -138,18 +135,14 @@ main( int argc, char* argv[] )
    std::ofstream logFile( logFileName.getString(), mode );
 
    // init benchmark and common metadata
-   Benchmark benchmark( loops, verbose );
+   Benchmark<> benchmark( logFile, loops, verbose );
 
-   // prepare global metadata
-   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   // write global metadata into a separate file
+   std::map< std::string, std::string > metadata = getHardwareMetadata();
+   writeMapAsJson( metadata, logFileName, ".metadata.json" );
 
-   if( ! resolveCellTopology( benchmark, metadata, parameters ) )
+   if( ! resolveCellTopology( benchmark, parameters ) )
       return EXIT_FAILURE;
-
-   if( ! benchmark.save( logFile ) ) {
-       std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
-       return EXIT_FAILURE;
-   }
 
    return EXIT_SUCCESS;
 }

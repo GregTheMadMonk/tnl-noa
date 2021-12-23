@@ -122,7 +122,7 @@ getSelfPhysicalMemory()
 }
 
 
-#include <Benchmarks/Benchmarks.h>
+#include <TNL/Benchmarks/Benchmarks.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Containers/StaticVector.h>
 
@@ -190,6 +190,6 @@ testMemoryUsage( const TNL::Config::ParameterContainer& parameters,
         const double stddev = 1.0 / std::sqrt( copies ) * TNL::l2Norm( data - mean );
         result.memstddev = stddev / 1024.0 / 1024.0;  // MiB
     }
-    
+
     return result;
 }
