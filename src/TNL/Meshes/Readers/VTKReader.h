@@ -204,7 +204,7 @@ public:
 
          // TODO: Polyhedrons will require to create polygon subentity seeds from given entityShapes
          //       and add their entries to faceConnectivityArray and faceOffsetsArray.
-         //       CellConnectivityArray and cellOffsetsArray will contain indeces addressing created polygon subentities.
+         //       CellConnectivityArray and cellOffsetsArray will contain indices addressing created polygon subentities.
          if( entityShape == cellShape ||
              PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
             iss.clear();

@@ -617,7 +617,7 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
     *  21    20    11    12
     *  12     8    16    19    21
     *
-    * NOTE: indeces refer to the points
+    * NOTE: indices refer to the points
     */
 
    meshBuilder.setFaceCornersCounts( { 5, 4, 5, 4, 5, 4, 5, 5, 5, 5, 5, 6, 3, 4, 4, 5 } );
@@ -734,7 +734,7 @@ TEST( MeshGeometryTest, PolyhedronDecompositionTest )
     *   0     1     2     3     4     5      6     7     8
     *   9    10    11    12    13     5     14    15
     *
-    * NOTE: indeces refer to the faces
+    * NOTE: indices refer to the faces
     */
 
    meshBuilder.setCellCornersCounts( { 9, 8 } );
@@ -945,7 +945,7 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
     *  21    20    11    12
     *  12     8    16    19    21
     *
-    * NOTE: indeces refer to the points
+    * NOTE: indices refer to the points
     */
 
    meshBuilder.setFaceCornersCounts( { 5, 4, 5, 4, 5, 4, 5, 5, 5, 5, 5, 6, 3, 4, 4, 5 } );
@@ -1062,7 +1062,7 @@ TEST( MeshGeometryTest, PolyhedronGetPlanarMeshTest )
     *   0     1     2     3     4     5      6     7     8
     *   9    10    11    12    13     5     14    15
     *
-    * NOTE: indeces refer to the faces
+    * NOTE: indices refer to the faces
     */
 
    meshBuilder.setCellCornersCounts( { 9, 8 } );

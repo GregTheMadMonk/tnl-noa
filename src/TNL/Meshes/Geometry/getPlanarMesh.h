@@ -46,25 +46,25 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and cells as well as
-   // starting indeces at which every cell will start writing new points and cells
+   // starting indices at which every cell will start writing new points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inCellsCount + 1 );
+   Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
       if( isPlanar( inMesh, cell, precision ) ) {
-         indeces[ i ] = { 0, 1 }; // cell is not decomposed (0 extra points, 1 cell)
+         indices[ i ] = { 0, 1 }; // cell is not decomposed (0 extra points, 1 cell)
       }
       else {
-         indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
+         indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
       }
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
-   inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto& reduceResult = indeces[ inCellsCount ];
+   inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
+   const auto& reduceResult = indices[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
@@ -78,8 +78,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // set corner counts for cells
    NeighborCountsArray cellCornersCounts( outCellsCount );
    auto setCornersCount = [&] ( GlobalIndexType i ) mutable {
-      GlobalIndexType cellIndex = indeces[ i ].second;
-      const GlobalIndexType nextCellIndex = indeces[ i + 1 ].second;
+      GlobalIndexType cellIndex = indices[ i ].second;
+      const GlobalIndexType nextCellIndex = indices[ i + 1 ].second;
       const GlobalIndexType cellsCount = nextCellIndex - cellIndex;
 
       if( cellsCount == 1 ) { // cell is already planar (cell is copied)
@@ -99,8 +99,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // Decompose non-planar cells and copy the rest
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
-      const auto& indexPair = indeces[ i ];
-      const auto& nextIndexPair = indeces[ i + 1 ];
+      const auto& indexPair = indices[ i ];
+      const auto& nextIndexPair = indices[ i + 1 ];
       const GlobalIndexType cellsCount = nextIndexPair.second - indexPair.second;
 
       if( cellsCount == 1 ) { // cell is already planar (cell is copied)
@@ -167,25 +167,25 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and faces as well as
-   // starting indeces at which every face will start writing new points and faces
+   // starting indices at which every face will start writing new points and faces
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inFacesCount + 1 );
+   Array< IndexPair, Devices::Host > indices( inFacesCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
       const auto face = inMesh.template getEntity< FaceDimension >( i );
       if( isPlanar( inMesh, face, precision ) ) {
-         indeces[ i ] = { 0, 1 }; // face is not decomposed (0 extra points, 1 face)
+         indices[ i ] = { 0, 1 }; // face is not decomposed (0 extra points, 1 face)
       }
       else {
-         indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( face );
+         indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( face );
       }
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inFacesCount, setCounts );
-   indeces[ inFacesCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   indices[ inFacesCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
-   inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto& reduceResult = indeces[ inFacesCount ];
+   inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
+   const auto& reduceResult = indices[ inFacesCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outFacesCount = reduceResult.second;
    const GlobalIndexType outCellsCount = inCellsCount; // The number of cells stays the same
@@ -207,7 +207,7 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
       LocalIndexType cornersCount = 0;
       for( LocalIndexType j = 0; j < cellFacesCount; j++ ) {
          const GlobalIndexType faceIdx = cell.template getSubentityIndex< FaceDimension >( j );
-         cornersCount += indeces[ faceIdx + 1 ].second - indeces[ faceIdx ].second;
+         cornersCount += indices[ faceIdx + 1 ].second - indices[ faceIdx ].second;
       }
 
       cellCornersCounts[ i ] = cornersCount;
@@ -222,8 +222,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
       auto cellSeed = meshBuilder.getCellSeed( i );
       for( LocalIndexType j = 0, o = 0; j < cellFacesCount; j++ ) {
          const GlobalIndexType faceIdx = cell.template getSubentityIndex< FaceDimension >( j );
-         const GlobalIndexType endFaceIdx = indeces[ faceIdx + 1 ].second;
-         for( GlobalIndexType k = indeces[ faceIdx ].second; k < endFaceIdx; k++ ) {
+         const GlobalIndexType endFaceIdx = indices[ faceIdx + 1 ].second;
+         for( GlobalIndexType k = indices[ faceIdx ].second; k < endFaceIdx; k++ ) {
             cellSeed.setCornerId( o++, k );
          }
       }
@@ -233,8 +233,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // set corner counts for faces
    NeighborCountsArray faceCornersCounts( outFacesCount );
    auto setFaceCornersCount = [&] ( GlobalIndexType i ) mutable {
-      GlobalIndexType faceIndex = indeces[ i ].second;
-      const GlobalIndexType nextFaceIndex = indeces[ i + 1 ].second;
+      GlobalIndexType faceIndex = indices[ i ].second;
+      const GlobalIndexType nextFaceIndex = indices[ i + 1 ].second;
       const GlobalIndexType facesCount = nextFaceIndex - faceIndex;
       if( facesCount == 1 ) { // face is already planar (it is copied)
          const auto face = inMesh.template getEntity< FaceDimension >( i );
@@ -253,8 +253,8 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // Decompose non-planar faces and copy the rest
    auto decomposeFace = [&] ( GlobalIndexType i ) mutable {
       const auto face = inMesh.template getEntity< FaceDimension >( i );
-      const auto& indexPair = indeces[ i ];
-      const auto& nextIndexPair = indeces[ i + 1 ];
+      const auto& indexPair = indices[ i ];
+      const auto& nextIndexPair = indices[ i + 1 ];
       const GlobalIndexType facesCount = nextIndexPair.second - indexPair.second;
 
       if( facesCount == 1 ) { // face is already planar (it is copied)

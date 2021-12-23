@@ -173,7 +173,7 @@ public:
          SubentitySeedsCreatorType::iterate( meshInitializer, mesh, superentityIndex, [&] ( SeedType& seed ) {
             const GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( seed );
 
-            // SubentityIndeces for SubdimensionTag::value == 0 of non-polyhedral meshes were already set up from seeds
+            // Subentity indices for SubdimensionTag::value == 0 of non-polyhedral meshes were already set up from seeds
             if( SubdimensionTag::value > 0 || std::is_same< SuperentityTopology, Topologies::Polyhedron >::value )
                meshInitializer.template setSubentityIndex< SuperdimensionTag::value, SubdimensionTag::value >( superentityIndex, i++, subentityIndex );
 

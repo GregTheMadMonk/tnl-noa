@@ -40,27 +40,27 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using PointType = typename TriangleMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, DecomposerVersion >;
    constexpr int CellDimension = TriangleMesh::getMeshDimension();
-   
+
    MeshBuilder meshBuilder;
 
    const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
    const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and cells as well as
-   // starting indeces at which every cell will start writing new decomposed points and cells
+   // starting indices at which every cell will start writing new decomposed points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inCellsCount + 1 );
+   Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
-      indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
+      indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
-   inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto& reduceResult = indeces[ inCellsCount ];
+   inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
+   const auto& reduceResult = indices[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
@@ -74,7 +74,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
-      const auto& indexPair = indeces[ i ];
+      const auto& indexPair = indices[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
@@ -109,7 +109,7 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
 {
    using TriangleMeshConfig = TriangleConfig< MeshConfig >;
    using TriangleMesh = Mesh< TriangleMeshConfig, Devices::Host >;
-   
+
    TriangleMesh outMesh;
    auto meshBuilder = decomposeMesh< DecomposerVersion >( inMesh );
    meshBuilder.build( outMesh );
@@ -142,27 +142,27 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using PointType = typename TetrahedronMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polyhedron, DecomposerVersion, SubdecomposerVersion >;
    constexpr int CellDimension = TetrahedronMesh::getMeshDimension();
-   
+
    MeshBuilder meshBuilder;
 
    const GlobalIndexType inPointsCount = inMesh.template getEntitiesCount< 0 >();
    const GlobalIndexType inCellsCount = inMesh.template getEntitiesCount< CellDimension >();
 
    // Find the number of output points and cells as well as
-   // starting indeces at which every cell will start writing new decomposed points and cells
+   // starting indices at which every cell will start writing new decomposed points and cells
    using IndexPair = std::pair< GlobalIndexType, GlobalIndexType >;
-   Array< IndexPair, Devices::Host > indeces( inCellsCount + 1 );
+   Array< IndexPair, Devices::Host > indices( inCellsCount + 1 );
    auto setCounts = [&] ( GlobalIndexType i ) {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
-      indeces[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
+      indices[ i ] = EntityDecomposer::getExtraPointsAndEntitiesCount( cell );
    };
    ParallelFor< Devices::Host >::exec( GlobalIndexType{ 0 }, inCellsCount, setCounts );
-   indeces[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
+   indices[ inCellsCount ] = { 0, 0 }; // extend exclusive prefix sum by one element to also get result of reduce at the same time
    auto reduction = [] ( const IndexPair& a, const IndexPair& b ) -> IndexPair {
       return { a.first + b.first, a.second + b.second };
    };
-   inplaceExclusiveScan( indeces, 0, indeces.getSize(), reduction, std::make_pair( 0, 0 ) );
-   const auto& reduceResult = indeces[ inCellsCount ];
+   inplaceExclusiveScan( indices, 0, indices.getSize(), reduction, std::make_pair( 0, 0 ) );
+   const auto& reduceResult = indices[ inCellsCount ];
    const GlobalIndexType outPointsCount = inPointsCount + reduceResult.first;
    const GlobalIndexType outCellsCount = reduceResult.second;
    meshBuilder.setEntitiesCount( outPointsCount, outCellsCount );
@@ -176,7 +176,7 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    // Decompose each cell
    auto decomposeCell = [&] ( GlobalIndexType i ) mutable {
       const auto cell = inMesh.template getEntity< CellDimension >( i );
-      const auto& indexPair = indeces[ i ];
+      const auto& indexPair = indices[ i ];
 
       // Lambda for adding new points
       GlobalIndexType setPointIndex = inPointsCount + indexPair.first;
@@ -212,7 +212,7 @@ getDecomposedMesh( const Mesh< MeshConfig, Devices::Host > & inMesh )
 {
    using TetrahedronMeshConfig = TetrahedronConfig< MeshConfig >;
    using TetrahedronMesh = Mesh< TetrahedronMeshConfig, Devices::Host >;
-   
+
    TetrahedronMesh outMesh;
    auto meshBuilder = decomposeMesh< DecomposerVersion, SubDecomposerVersion >( inMesh );
    meshBuilder.build( outMesh );
