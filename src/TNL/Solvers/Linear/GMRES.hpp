@@ -31,7 +31,7 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    LinearSolver< Matrix >::configSetup( config, prefix );
-   config.addEntry< String >( prefix + "gmres-variant", "Algorithm to be used for reorthogonalization.", "CWY" );
+   config.addEntry< String >( prefix + "gmres-variant", "Algorithm used for the orthogonalization.", "MGSR" );
       config.addEntryEnum( "CGS" );
       config.addEntryEnum( "CGSR" );
       config.addEntryEnum( "MGS" );

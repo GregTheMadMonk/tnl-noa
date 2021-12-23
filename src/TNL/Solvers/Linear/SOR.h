@@ -17,7 +17,7 @@ namespace TNL {
       namespace Linear {
 
 /**
- * \brief Iterative solver of linear systems based on the Successive-overrelaxation (SOR) method.
+ * \brief Iterative solver of linear systems based on the Successive-overrelaxation (SOR) or Gauss-Seidel method.
  *
  * See (Wikipedia)[https://en.wikipedia.org/wiki/Successive_over-relaxation] for more details.
  *

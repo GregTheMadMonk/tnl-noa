@@ -146,6 +146,11 @@ class LinearSolver
        * \param x vector for the solution of the linear system.
        * \return true if the solver converged.
        * \return false if the solver did not converge.
+       *
+       * \par Example
+       * \include Solvers/Linear/IterativeLinearSolverExample.cpp
+       * \par Output
+       * \include IterativeLinearSolverExample.out
        */
       virtual bool solve( ConstVectorViewType b, VectorViewType x ) = 0;
 

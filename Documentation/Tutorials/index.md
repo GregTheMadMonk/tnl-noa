@@ -10,5 +10,6 @@
 6. [Sorting](tutorial_Sorting.html)
 7. [Cross-device pointers](tutorial_Pointers.html)
 8. [Matrices](tutorial_Matrices.html)
-9. [Segments aka sparse formats](tutorial_Segments.html)
-10. [Unstructured meshes](tutorial_Meshes.html)
+9. [Linear solvers](tutorial_Linear_solvers.html)
+10. [Segments aka sparse formats](tutorial_Segments.html)
+11. [Unstructured meshes](tutorial_Meshes.html)
