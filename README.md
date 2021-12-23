@@ -135,30 +135,9 @@ your publications:
 
 ## Authors
 
-Project leader: Tomáš Oberhuber
-
-Main developers:
-- Tomáš Oberhuber
-- Jakub Klinkovský
-
-Current developers:
-- Aleš Wodecki – adaptive grids
-- Matouš Fencl – solvers for the Hamilton–Jacobi equation
-- Lukáš Čejka – sparse matrix formats
-
-Former developers:
-- Jan Schafer – solvers for compressible Navier–Stokes equations
-- Vít Hanousek – distributed numerical grids
-- Vítězslav Žabka – unstructured numerical meshes
-- Tomáš Sobotík – solvers for the Hamilton–Jacobi equation
-- Libor Bakajsa – sparse matrix formats
-- Ondřej Székely – solvers for parabolic problems
-- Vacata Jan – sparse matrix formats
-- Heller Martin – sparse matrix formats
-- Novotný Matěj – high precision arithmetics
-
-See also the [full list of authors and their contributions](
-https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/graphs/develop).
+See the [list of team members](https://tnl-project.org/about/) on our website.
+The [overview of contributions](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/graphs/develop)
+can be viewed on GitLab.
 
 ## License
 
