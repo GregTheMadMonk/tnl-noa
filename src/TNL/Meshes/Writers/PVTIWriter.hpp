@@ -1,12 +1,8 @@
-/***************************************************************************
-                          PVTIWriter.hpp  -  description
-                             -------------------
-    begin                : Jun 25, 2021
-    copyright            : (C) 2021 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 // Implemented by: Jakub Klinkovský
 

@@ -1,12 +1,8 @@
-/***************************************************************************
-                          Paraboloid_impl.h  -  description
-                             -------------------
-    begin                : Oct 13, 2014
-    copyright            : (C) 2014 by Tomas Sobotik
-
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
+// Copyright (c) 2004-2022 Tomáš Oberhuber et al.
+//
+// This file is part of TNL - Template Numerical Library (https://tnl-project.org/)
+//
+// SPDX-License-Identifier: MIT
 
 #pragma once 
 
