@@ -1,10 +1,3 @@
-/* 
- * File:   tnlTestGrid2D.h
- * Author: oberhuber
- *
- * Created on July 4, 2016, 2:28 PM
- */
-
 #pragma once 
 
 

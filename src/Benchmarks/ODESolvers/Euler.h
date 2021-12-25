@@ -1,13 +1,3 @@
-/***************************************************************************
-                          Euler.h  -  description
-                             -------------------
-    begin                : 2008/04/01
-    copyright            : (C) 2008 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <math.h>

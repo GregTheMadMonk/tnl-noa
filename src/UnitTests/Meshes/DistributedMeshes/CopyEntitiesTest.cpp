@@ -1,11 +1,3 @@
-/***************************************************************************
-                          CopyEntitiesTest.cpp  -  description
-                             -------------------
-    begin                : Aug 30, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
 #include <TNL/Meshes/DistributedMeshes/CopyEntitiesHelper.h>
 #include <TNL/Functions/MeshFunctionView.h>
 

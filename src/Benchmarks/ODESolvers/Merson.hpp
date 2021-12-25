@@ -1,13 +1,3 @@
-/***************************************************************************
-                          Merson_impl.h  -  description
-                             -------------------
-    begin                : Mar 10, 2013
-    copyright            : (C) 2007 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <TNL/Devices/Host.h>

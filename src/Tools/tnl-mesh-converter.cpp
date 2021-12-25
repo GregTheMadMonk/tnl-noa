@@ -1,13 +1,3 @@
-/***************************************************************************
-                          tnl-mesh-converter.cpp  -  description
-                             -------------------
-    begin                : Oct 24, 2017
-    copyright            : (C) 2017 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Writers/FPMAWriter.h>

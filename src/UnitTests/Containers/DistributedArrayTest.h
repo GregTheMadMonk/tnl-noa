@@ -1,11 +1,3 @@
-/***************************************************************************
-                          DistributedArrayTest.h  -  description
-                             -------------------
-    begin                : Sep 6, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 

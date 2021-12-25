@@ -1,4 +1,3 @@
-
 #ifdef HAVE_CUDA_SAMPLES
 #include <6_Advanced/sortingNetworks/bitonicSort.cu>
 #endif

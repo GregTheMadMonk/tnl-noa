@@ -1,10 +1,3 @@
-/* 
- * File:   tnlDirectEikonalMethodBase2D_impl.h
- * Author: Fencl
- *
- * Created on March 15, 2019
- */
-
 #pragma once
 
 template< typename Real,

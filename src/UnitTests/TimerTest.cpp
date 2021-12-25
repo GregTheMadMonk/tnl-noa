@@ -1,13 +1,3 @@
-/***************************************************************************
-                          TimerTest.cpp  -  description
-                             -------------------
-    begin                : Oct 17, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 // Implemented by Nina Dzugasova
 
 #ifdef HAVE_GTEST

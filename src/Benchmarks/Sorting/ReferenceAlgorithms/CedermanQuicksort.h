@@ -1,5 +1,3 @@
-
-
 #ifndef PQSORTH
 #define PQSORTH
 

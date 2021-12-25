@@ -1,13 +1,3 @@
-/***************************************************************************
-                          MultireductionTest.h  -  description
-                             -------------------
-    begin                : Oct 1, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #ifdef HAVE_GTEST

@@ -1,13 +1,3 @@
-/***************************************************************************
-                          TypeInfoTest.cpp  -  description
-                             -------------------
-    begin                : Aug 20, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/TypeInfo.h>
 
 #ifdef HAVE_GTEST

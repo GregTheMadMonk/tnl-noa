@@ -1,13 +1,3 @@
-/***************************************************************************
-                          Merson.h  -  description
-                             -------------------
-    begin                : 2007/06/16
-    copyright            : (C) 2007 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #include <math.h>

@@ -1,13 +1,3 @@
-/***************************************************************************
-                          FileTest.h  -  description
-                             -------------------
-    begin                : Oct 24, 2010
-    copyright            : (C) 2010 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <TNL/File.h>
 
 #ifdef HAVE_GTEST

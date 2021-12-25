@@ -1,10 +1,3 @@
-/* 
- * File:   tnlDirectEikonalMethodsBase.h
- * Author: oberhuber
- *
- * Created on July 14, 2016, 3:17 PM
- */
-
 #pragma once 
 
 //#include <TNL/Meshes/Grid.h>

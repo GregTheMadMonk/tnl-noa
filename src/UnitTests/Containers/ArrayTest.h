@@ -1,13 +1,3 @@
-/***************************************************************************
-                          ArrayTest.h -  description
-                             -------------------
-    begin                : Jul 4, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 #ifdef HAVE_GTEST

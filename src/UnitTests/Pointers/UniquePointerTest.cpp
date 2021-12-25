@@ -1,13 +1,3 @@
-/***************************************************************************
-                          UniquePointerTest.cpp  -  description
-                             -------------------
-    begin                : May 28, 2016
-    copyright            : (C) 2016 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <cstdlib>
 #include <TNL/Devices/Host.h>
 #include <TNL/Pointers/UniquePointer.h>

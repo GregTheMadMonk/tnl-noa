@@ -1,13 +1,3 @@
-/***************************************************************************
-                          SparseMatrixTest_CSRVector.h -  description
-                             -------------------
-    begin                : Jan 22, 2021
-    copyright            : (C) 2021 by Tomas Oberhuber et al.
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <iostream>
 #include <TNL/Algorithms/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrix.h>

@@ -1,13 +1,3 @@
-/***************************************************************************
- FastSweepingMethod.h  -  description
- -------------------
- begin                : Jul 14, 2016
- copyright            : (C) 2017 by Tomas Oberhuber
- email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #pragma once
 
 //#include <TNL/Meshes/Grid.h>

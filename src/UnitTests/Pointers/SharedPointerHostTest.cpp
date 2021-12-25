@@ -1,13 +1,3 @@
-/***************************************************************************
-                          SharedPointerHostTest.cpp  -  description
-                             -------------------
-    begin                : Aug 22, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
- ***************************************************************************/
-
-/* See Copyright Notice in tnl/Copyright */
-
 #include <cstdlib>
 #include <TNL/Devices/Host.h>
 #include <TNL/Pointers/SharedPointer.h>
