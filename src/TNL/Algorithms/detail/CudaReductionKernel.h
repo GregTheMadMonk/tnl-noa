@@ -11,6 +11,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
 #include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/KernelLaunch.h>
 #include <TNL/Algorithms/CudaReductionBuffer.h>
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
@@ -663,93 +664,82 @@ struct CudaReductionKernelLauncher
       {
 #ifdef HAVE_CUDA
          const Index size = end - begin;
-         dim3 blockSize, gridSize;
-         blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         Cuda::LaunchConfiguration launch_config;
+         launch_config.blockSize.x = Reduction_maxThreadsPerBlock;
+         launch_config.gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, launch_config.blockSize.x ), desGridSize );
+         // shared memory is allocated statically inside the kernel
 
          // This is "general", but this method always sets blockSize.x to a specific value,
          // so runtime switch is not necessary - it only prolongs the compilation time.
 /*
          // Depending on the blockSize we generate appropriate template instance.
-         switch( blockSize.x )
+         switch( launch_config.blockSize.x )
          {
             case 512:
-               CudaReductionKernel< 512 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               Cuda::launchKernelSync( CudaReductionKernel< 512 >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case 256:
-               cudaFuncSetCacheConfig(CudaReductionKernel< 256, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel< 256 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel< 256, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel< 256, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case 128:
-               cudaFuncSetCacheConfig(CudaReductionKernel< 128, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel< 128 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel< 128, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel< 128, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case  64:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  64, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<  64 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<  64, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<  64, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case  32:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  32, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<  32 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<  32, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<  32, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case  16:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  16, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<  16 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<  16, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<  16, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
            case   8:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   8, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<   8 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<   8, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<   8, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case   4:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   4, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<   4 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<   4, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<   4, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case   2:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   2, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionKernel<   2 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output);
+               cudaFuncSetCacheConfig( CudaReductionKernel<   2, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionKernel<   2, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                       dataFetcher, reduction, identity, size, output );
                break;
             case   1:
                TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
             default:
-               TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+               TNL_ASSERT( false, std::cerr << "Block size is " << launch_config.blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
          }
          cudaStreamSynchronize(0);
          TNL_CHECK_CUDA_DEVICE;
 */
 
          // Check just to future-proof the code setting blockSize.x
-         if( blockSize.x == Reduction_maxThreadsPerBlock ) {
-            cudaFuncSetCacheConfig(CudaReductionKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-            // shared memory is allocated statically inside the kernel
-            CudaReductionKernel< Reduction_maxThreadsPerBlock >
-            <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, begin, end, output);
-            cudaStreamSynchronize(0);
-            TNL_CHECK_CUDA_DEVICE;
+         if( launch_config.blockSize.x == Reduction_maxThreadsPerBlock ) {
+            cudaFuncSetCacheConfig( CudaReductionKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+            Cuda::launchKernelSync( CudaReductionKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                    dataFetcher, reduction, identity, begin, end, output );
          }
          else {
-            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
+            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << launch_config.blockSize.x << " was specified." << std::endl; );
          }
 
          // Return the size of the output array on the CUDA device
-         return gridSize.x;
+         return launch_config.gridSize.x;
 #else
          throw Exceptions::CudaSupportMissing();
 #endif
@@ -767,94 +757,81 @@ struct CudaReductionKernelLauncher
                               const Index* idxInput )
       {
 #ifdef HAVE_CUDA
-         dim3 blockSize, gridSize;
          const Index size = end - begin;
-         blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         Cuda::LaunchConfiguration launch_config;
+         launch_config.blockSize.x = Reduction_maxThreadsPerBlock;
+         launch_config.gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, launch_config.blockSize.x ), desGridSize );
+         // shared memory is allocated statically inside the kernel
 
          // This is "general", but this method always sets blockSize.x to a specific value,
          // so runtime switch is not necessary - it only prolongs the compilation time.
 /*
          // Depending on the blockSize we generate appropriate template instance.
-         switch( blockSize.x )
+         switch( launch_config.blockSize.x )
          {
             case 512:
-               CudaReductionWithArgumentKernel< 512 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel< 512, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case 256:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< 256, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel< 256 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel< 256, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel< 256, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case 128:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< 128, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel< 128 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel< 128, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel< 128, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case  64:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  64, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<  64 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<  64, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<  64, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case  32:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  32, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<  32 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<  32, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<  32, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case  16:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  16, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<  16 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<  16, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<  16, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
            case   8:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   8, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<   8 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<   8, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<   8, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case   4:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   4, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<   4 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<   4, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<   4, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case   2:
-               cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   2, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-               CudaReductionWithArgumentKernel<   2 >
-               <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
+               cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel<   2, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+               Cuda::launchKernelSync( CudaReductionWithArgumentKernel<   2, DataFetcher, Reduction, Result, Index >
+                                       dataFetcher, reduction, identity, size, output, idxOutput, idxInput );
                break;
             case   1:
                TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
             default:
-               TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+               TNL_ASSERT( false, std::cerr << "Block size is " << launch_config.blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
          }
-         cudaStreamSynchronize(0);
-         TNL_CHECK_CUDA_DEVICE;
 */
 
          // Check just to future-proof the code setting blockSize.x
-         if( blockSize.x == Reduction_maxThreadsPerBlock ) {
-            cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared);
-
-            // shared memory is allocated statically inside the kernel
-            CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock >
-            <<< gridSize, blockSize >>>( dataFetcher, reduction, identity, begin, end, output, idxOutput, idxInput );
-            cudaStreamSynchronize(0);
-            TNL_CHECK_CUDA_DEVICE;
+         if( launch_config.blockSize.x == Reduction_maxThreadsPerBlock ) {
+            cudaFuncSetCacheConfig( CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, cudaFuncCachePreferShared );
+            Cuda::launchKernelSync( CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock, DataFetcher, Reduction, Result, Index >, 0, launch_config,
+                                    dataFetcher, reduction, identity, begin, end, output, idxOutput, idxInput );
          }
          else {
-            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
+            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << launch_config.blockSize.x << " was specified." << std::endl; );
          }
 
          // return the size of the output array on the CUDA device
-         return gridSize.x;
+         return launch_config.gridSize.x;
 #else
          throw Exceptions::CudaSupportMissing();
 #endif
