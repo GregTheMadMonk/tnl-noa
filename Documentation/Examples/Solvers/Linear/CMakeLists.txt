@@ -1,5 +1,6 @@
 set( COMMON_EXAMPLES
    IterativeLinearSolverExample
+   IterativeLinearSolverWithMonitorExample
 )
 
 if( BUILD_CUDA )

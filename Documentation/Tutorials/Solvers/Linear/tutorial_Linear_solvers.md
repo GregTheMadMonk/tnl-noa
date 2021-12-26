@@ -36,3 +36,11 @@ All iterative solvers for linear systems can be found in the namespace \ref TNL:
 The result looks as follows:
 
 \include IterativeLinearSolverExample.out
+
+
+
+\includelineno Solvers/Linear/IterativeLinearSolverWithMonitorExample.cpp
+
+The result looks as follows:
+
+\include IterativeLinearSolverWithMonitorExample.out
