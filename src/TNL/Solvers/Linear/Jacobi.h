@@ -61,7 +61,8 @@ class Jacobi
        * In addition to config entries defined by \ref IterativeSolver::configSetup, this method
        * defines the following:
        *
-       * \e jacobi-omega - relaxation parameter of the weighted/damped Jacobi method.
+       * \e jacobi-omega - relaxation parameter of the weighted/damped Jacobi method - 1.0 by default.
+       * \e residue-period - says after how many iterations the reside is recomputed - 4 by default.
        *
        * \param config contains description of configuration parameters.
        * \param prefix is a prefix of particular configuration entries.
@@ -103,7 +104,19 @@ class Jacobi
       bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
    protected:
-      RealType omega = 0.0;
+
+      using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+
+      void performIteration( const ConstVectorViewType& b,
+                             const ConstVectorViewType& diagonalView,
+                             const ConstVectorViewType& in,
+                             VectorViewType& out ) const;
+
+      RealType omega = 1.0;
+
+      IndexType residuePeriod = 4;
+
+      VectorType diagonal;
 };
 
       } // namespace Linear
