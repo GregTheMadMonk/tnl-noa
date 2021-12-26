@@ -38,7 +38,7 @@ public:
    CudaRuntimeError( CudaStatusType error_code, const char* file_name, int line )
    : std::runtime_error( "CUDA ERROR " + std::to_string( (int) error_code ) + " (" + name( error_code ) + "): "
                          + description( error_code ) + ".\nSource: line " + std::to_string( line )
-                         + " in " + file_name + ": " + description( error_code ) ),
+                         + " in " + file_name ),
      code_(error_code)
    {}
 
