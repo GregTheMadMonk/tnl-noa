@@ -57,15 +57,15 @@ void iterativeLinearSolverExample()
    Vector x( size, 1.0 );
    Vector b( size );
    matrix_ptr->vectorProduct( x, b );
+   x = 0.0;
    std::cout << "Vector b = " << b << std::endl;
 
    /***
-    * Solver the linear system
+    * Solve the linear system
     */
    using LinearSolver = TNL::Solvers::Linear::GMRES< MatrixType >;
    LinearSolver solver;
    solver.setMatrix( matrix_ptr );
-   x = 0.0;
    solver.solve( b, x );
    std::cout << "Vector x = " << x << std::endl;
 }
