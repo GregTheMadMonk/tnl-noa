@@ -601,7 +601,7 @@ forElements( IndexType begin, IndexType end, Function& function ) const
       if( localIdx < columns )
       {
          if( isBinary() )
-            function( rowIdx, localIdx, columns_view[ globalIdx ], 1 );
+            function( rowIdx, localIdx, columns_view[ globalIdx ], ( RealType ) 1.0 );
          else
             function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
       }
