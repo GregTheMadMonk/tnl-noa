@@ -247,7 +247,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        * \par Output
        * \include DenseMatrixViewExample_getElementsCount.out
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -912,14 +912,14 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \param fileName is name of the file.
        */
-      void save( File& file ) const;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for printing the matrix to output stream.
        *
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      void print( std::ostream& str ) const override;
 
    protected:
 

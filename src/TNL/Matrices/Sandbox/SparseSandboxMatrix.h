@@ -392,8 +392,8 @@ class SparseSandboxMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param rows is the number of matrix rows.
        * \param columns is the number of matrix columns.
        */
-      virtual void setDimensions( const IndexType rows,
-                                  const IndexType columns ) override;
+      void setDimensions( const IndexType rows,
+                          const IndexType columns ) override;
 
       /**
        * \brief Set the number of matrix rows and columns by the given matrix.
@@ -510,7 +510,7 @@ class SparseSandboxMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \return number of non-zero matrix elements.
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Resets the matrix to zero dimensions.
@@ -1090,21 +1090,21 @@ class SparseSandboxMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param file is the output file.
        */
-      virtual void save( File& file ) const override;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        *
        * \param file is the input file.
        */
-      virtual void load( File& file ) override;
+      void load( File& file ) override;
 
       /**
        * \brief Method for printing the matrix to output stream.
        *
        * \param str is the output stream.
        */
-      virtual void print( std::ostream& str ) const override;
+      void print( std::ostream& str ) const override;
 
       /**
        * \brief Returns a padding index value.

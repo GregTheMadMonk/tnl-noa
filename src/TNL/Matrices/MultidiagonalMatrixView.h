@@ -201,7 +201,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * \return number of non-zero matrix elements.
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Comparison operator with another multidiagonal matrix.
@@ -820,7 +820,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * \param file is the output file.
        */
-      void save( File& file ) const;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -834,7 +834,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      void print( std::ostream& str ) const override;
 
       /**
        * \brief This method returns matrix elements indexer used by this matrix.

@@ -81,7 +81,7 @@ Index Matrix< Real, Device, Index, RealAllocator >::getNonzeroElementsCount() co
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
       return ( values_view[ i ] != 0.0 );
    };
-   return Algorithms::reduce< DeviceType >( 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
+   return Algorithms::reduce< DeviceType >( (IndexType) 0, this->values.getSize(), fetch, std::plus<>{}, 0 );
 }
 
 template< typename Real,

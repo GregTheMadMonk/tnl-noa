@@ -273,7 +273,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \return number of non-zero matrix elements.
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Constant getter of simple structure for accessing given matrix row.
@@ -855,14 +855,14 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
        *
        * \param file is the output file.
        */
-      void save( File& file ) const;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for printing the matrix to output stream.
        *
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      void print( std::ostream& str ) const override;
 
       /**
        * \brief Getter of segments for non-constant instances.

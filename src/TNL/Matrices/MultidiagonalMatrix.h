@@ -424,7 +424,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \return number of non-zero matrix elements.
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Resets the matrix to zero dimensions.
@@ -1076,14 +1076,14 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param file is the output file.
        */
-      void save( File& file ) const;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        *
        * \param file is the input file.
        */
-      void load( File& file );
+      void load( File& file ) override;
 
       /**
        * \brief Method for saving the matrix to the file with given filename.
@@ -1104,7 +1104,7 @@ class MultidiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      void print( std::ostream& str ) const override;
 
       /**
        * \brief This method returns matrix elements indexer used by this matrix.

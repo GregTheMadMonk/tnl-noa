@@ -219,7 +219,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \param columns is the number of matrix columns.
        */
       void setDimensions( const IndexType rows,
-                          const IndexType columns );
+                          const IndexType columns ) override;
 
       /**
        * \brief Set the number of matrix rows and columns by the given matrix.
@@ -293,7 +293,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include DenseMatrixExample_getElementsCount.out
        */
-      IndexType getNonzeroElementsCount() const;
+      IndexType getNonzeroElementsCount() const override;
 
       /**
        * \brief Resets the matrix to zero dimensions.
@@ -1030,21 +1030,21 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \param fileName is name of the file.
        */
-      void save( File& file ) const;
+      void save( File& file ) const override;
 
       /**
        * \brief Method for loading the matrix from a file.
        *
        * \param fileName is name of the file.
        */
-      void load( File& file );
+      void load( File& file ) override;
 
       /**
        * \brief Method for printing the matrix to output stream.
        *
        * \param str is the output stream.
        */
-      void print( std::ostream& str ) const;
+      void print( std::ostream& str ) const override;
 
    protected:
 

@@ -93,7 +93,7 @@ public:
       }
    }
 
-   virtual void
+   void
    logResult( const std::string& performer,
               const HeaderElements& headerElements,
               const RowElements& rowElements,
@@ -106,7 +106,7 @@ public:
       writeTableRow( performer, rowElements, errorMessage );
    }
 
-   virtual void
+   void
    writeErrorMessage( const std::string& message ) override
    {
       // initial indent string

@@ -140,7 +140,7 @@ class Matrix : public Object
        *
        * \return number of nonzero matrix elements.
        */
-      IndexType getNonzeroElementsCount() const;
+      virtual IndexType getNonzeroElementsCount() const;
 
       /**
        * \brief Reset the matrix.
