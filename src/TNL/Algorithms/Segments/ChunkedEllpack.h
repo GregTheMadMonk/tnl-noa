@@ -52,7 +52,7 @@ class ChunkedEllpack
 
       ChunkedEllpack( ChunkedEllpack&& segments ) = default;
 
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       static String getSegmentsType();
 

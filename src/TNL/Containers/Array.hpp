@@ -198,7 +198,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-String
+std::string
 Array< Value, Device, Index, Allocator >::
 getSerializationType()
 {
@@ -209,7 +209,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-String
+std::string
 Array< Value, Device, Index, Allocator >::
 getSerializationTypeVirtual() const
 {
@@ -822,7 +822,7 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
 {
    using IO = detail::ArrayIO< Value, Index, Allocator >;
-   const String type = getObjectType( file );
+   const std::string type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );
    Index _size;

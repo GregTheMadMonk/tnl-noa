@@ -159,7 +159,7 @@ template< typename Real,
           typename MatrixType,
           typename RealAllocator,
           typename IndexAllocator >
-String
+std::string
 SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getSerializationType()
 {
@@ -172,7 +172,7 @@ template< typename Real,
           typename MatrixType,
           typename RealAllocator,
           typename IndexAllocator >
-String
+std::string
 SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::
 getSerializationTypeVirtual() const
 {
@@ -206,7 +206,7 @@ SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAlloca
 setLike( const Matrix_& matrix )
 {
    BaseType::setLike( matrix );
-   // SANDBOX_TODO: Replace the following line with assignment of metadata required by your format. 
+   // SANDBOX_TODO: Replace the following line with assignment of metadata required by your format.
    //               Do not assign matrix elements here.
    this->rowPointers = matrix.rowPointers;
    this->view = this->getView();

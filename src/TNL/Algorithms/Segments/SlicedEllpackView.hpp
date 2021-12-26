@@ -49,7 +49,7 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-String
+std::string
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 getSerializationType()
 {

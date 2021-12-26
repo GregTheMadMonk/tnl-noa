@@ -207,7 +207,7 @@ class SparseSandboxMatrixView : public MatrixView< Real, Device, Index >
        * \par Output
        * \include SparseMatrixViewExample_getSerializationType.out
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
@@ -221,7 +221,7 @@ class SparseSandboxMatrixView : public MatrixView< Real, Device, Index >
        * \par Output
        * \include SparseMatrixExample_getSerializationType.out
        */
-      virtual String getSerializationTypeVirtual() const;
+      std::string getSerializationTypeVirtual() const override;
 
       /**
        * \brief Computes number of non-zeros in each row.

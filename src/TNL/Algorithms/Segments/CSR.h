@@ -160,14 +160,14 @@ class CSR
        *
        * The string has a form `Algorithms::Segments::CSR< IndexType,  [any_device], [any_kernel], [any_allocator] >`.
        *
-       * \return \ref String with the serialization type.
+       * \return String with the serialization type.
        *
        * \par Example
        * \include Algorithms/Segments/SegmentsExample_CSR_getSerializationType.cpp
        * \par Output
        * \include SegmentsExample_CSR_getSerializationType.out
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with segments type.

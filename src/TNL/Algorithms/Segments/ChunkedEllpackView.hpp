@@ -76,7 +76,7 @@ ChunkedEllpackView( const IndexType size,
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-String
+std::string
 ChunkedEllpackView< Device, Index, Organization >::
 getSerializationType()
 {

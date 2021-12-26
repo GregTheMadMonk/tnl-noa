@@ -16,12 +16,12 @@ namespace TNL {
 
 static constexpr char magic_number[] = "TNLMN";
 
-inline String Object::getSerializationType()
+inline std::string Object::getSerializationType()
 {
-   return String( "Object" );
+   return "Object";
 }
 
-inline String Object::getSerializationTypeVirtual() const
+inline std::string Object::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
@@ -34,7 +34,7 @@ inline void Object::save( File& file ) const
 
 inline void Object::load( File& file )
 {
-   const String objectType = getObjectType( file );
+   const std::string objectType = getObjectType( file );
    if( objectType != this->getSerializationTypeVirtual() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + this->getSerializationTypeVirtual() + ", found " + objectType + ")." );
 }

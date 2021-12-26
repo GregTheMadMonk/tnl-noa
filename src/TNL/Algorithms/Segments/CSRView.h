@@ -57,7 +57,7 @@ class CSRView
       __cuda_callable__
       CSRView( CSRView&& csr_view ) = default;
 
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       static String getSegmentsType();
 

@@ -51,7 +51,7 @@ CSRView( OffsetsView&& offsets_view,
 template< typename Device,
           typename Index,
           typename Kernel >
-String
+std::string
 CSRView< Device, Index, Kernel >::
 getSerializationType()
 {

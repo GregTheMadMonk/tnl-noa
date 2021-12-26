@@ -69,7 +69,7 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-String
+std::string
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getSerializationType()
 {

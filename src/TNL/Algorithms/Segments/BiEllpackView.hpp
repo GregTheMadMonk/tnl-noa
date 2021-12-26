@@ -59,7 +59,7 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-String
+std::string
 BiEllpackView< Device, Index, Organization, WarpSize >::
 getSerializationType()
 {

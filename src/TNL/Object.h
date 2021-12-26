@@ -44,7 +44,7 @@ class Object
        * by Devices::Host. For example \c Array< double, Devices::Cuda > is
        * saved as \c Array< double, Devices::Host >.
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /***
        * \brief Virtual serialization type getter.
@@ -54,7 +54,7 @@ class Object
        * by Devices::Host. For example \c Array< double, Devices::Cuda > is
        * saved as \c Array< double, Devices::Host >.
        */
-      virtual String getSerializationTypeVirtual() const;
+      virtual std::string getSerializationTypeVirtual() const;
 
       /**
        * \brief Method for saving the object to a file as a binary data.

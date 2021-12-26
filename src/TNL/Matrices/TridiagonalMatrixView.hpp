@@ -59,11 +59,11 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-String
+std::string
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
-   return String( "Matrices::TridiagonalMatrix< " ) +
+   return "Matrices::TridiagonalMatrix< " +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
           TNL::getSerializationType< IndexType >() + ", " +
           TNL::getSerializationType( Organization ) + ", [any_allocator] >";
@@ -73,7 +73,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-String
+std::string
 TridiagonalMatrixView< Real, Device, Index, Organization >::
 getSerializationTypeVirtual() const
 {

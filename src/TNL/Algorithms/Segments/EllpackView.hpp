@@ -181,7 +181,7 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int Alignment >
-String
+std::string
 EllpackView< Device, Index, Organization, Alignment >::
 getSerializationType()
 {

@@ -76,7 +76,7 @@ class ChunkedEllpackView
       __cuda_callable__
       ChunkedEllpackView( ChunkedEllpackView&& chunked_ellpack_view ) = default;
 
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       static String getSegmentsType();
 

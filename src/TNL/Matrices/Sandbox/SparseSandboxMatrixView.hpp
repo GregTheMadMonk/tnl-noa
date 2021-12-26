@@ -78,11 +78,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType >
-String
+std::string
 SparseSandboxMatrixView< Real, Device, Index, MatrixType >::
 getSerializationType()
 {
-   return String( "Matrices::Sandbox::SparseMatrix< " ) +
+   return "Matrices::Sandbox::SparseMatrix< " +
              TNL::getSerializationType< RealType >() + ", " +
              TNL::getSerializationType< IndexType >() + ", " +
              MatrixType::getSerializationType() + ", [any_allocator], [any_allocator] >";
@@ -92,7 +92,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MatrixType >
-String
+std::string
 SparseSandboxMatrixView< Real, Device, Index, MatrixType >::
 getSerializationTypeVirtual() const
 {

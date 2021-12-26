@@ -42,7 +42,7 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-String
+std::string
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSerializationType()
 {

@@ -140,7 +140,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * \return \ref String with the serialization type.
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
@@ -149,7 +149,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
        *
        * \return \ref String with the serialization type.
        */
-      virtual String getSerializationTypeVirtual() const;
+      std::string getSerializationTypeVirtual() const override;
 
       /**
        * \brief Compute capacities of all rows.

@@ -90,9 +90,9 @@ public:
     *
     * \param names List of the parameter names.
     */
-   bool checkParameters( std::initializer_list< String > names ) const
+   bool checkParameters( std::initializer_list< std::string > names ) const
    {
-      for( auto name : names )
+      for( auto& name : names )
          if( ! checkParameter( name ) )
             return false;
       return true;

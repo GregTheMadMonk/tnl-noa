@@ -201,7 +201,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \return \e String with the serialization type.
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
@@ -210,7 +210,7 @@ class DenseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        *
        * \return \e String with the serialization type.
        */
-      virtual String getSerializationTypeVirtual() const;
+      std::string getSerializationTypeVirtual() const override;
 
       /**
        * \brief Set number of rows and columns of this matrix.

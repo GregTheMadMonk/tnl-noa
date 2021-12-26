@@ -211,7 +211,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include TridiagonalMatrixExample_getSerializationType.out
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
@@ -225,7 +225,7 @@ class TridiagonalMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include TridiagonalMatrixExample_getSerializationType.out
        */
-      virtual String getSerializationTypeVirtual() const;
+      std::string getSerializationTypeVirtual() const override;
 
       /**
        * \brief Set matrix dimensions.

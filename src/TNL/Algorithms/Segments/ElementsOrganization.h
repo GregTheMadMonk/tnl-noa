@@ -28,12 +28,11 @@ struct DefaultElementsOrganization
 } // namespace Segments
 } // namespace Algorithms
 
-inline String getSerializationType( Algorithms::Segments::ElementsOrganization Organization )
+inline std::string getSerializationType( Algorithms::Segments::ElementsOrganization Organization )
 {
    if( Organization == Algorithms::Segments::RowMajorOrder )
-      return String( "RowMajorOrder" );
-   else
-      return String( "ColumnMajorOrder" );
+      return "RowMajorOrder";
+   return "ColumnMajorOrder";
 }
 
 } // namespace TNL

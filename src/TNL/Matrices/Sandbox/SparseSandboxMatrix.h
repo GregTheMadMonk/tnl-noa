@@ -370,7 +370,7 @@ class SparseSandboxMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include SparseMatrixExample_getSerializationType.out
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns string with serialization type.
@@ -384,7 +384,7 @@ class SparseSandboxMatrix : public Matrix< Real, Device, Index, RealAllocator >
        * \par Output
        * \include SparseMatrixExample_getSerializationType.out
        */
-      virtual String getSerializationTypeVirtual() const override;
+      std::string getSerializationTypeVirtual() const override;
 
       /**
        * \brief Set number of rows and columns of this matrix.

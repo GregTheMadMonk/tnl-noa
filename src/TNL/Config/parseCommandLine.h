@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include <TNL/String.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
@@ -201,14 +202,14 @@ checkEnumValues( const ConfigEntry< EntryType, DefaultValueType >& entry, const 
 
 template< typename T >
 T
-convertStringValue( const String& value, const String& param )
+convertStringValue( const std::string& value, const std::string& param )
 {
    T v;
    std::stringstream str;
    str << value;
    str >> v;
    if( str.fail() )
-      throw Exceptions::ConfigError( "Value '" + value + "' could not be converted to type " + TNL::getType<T>().getString() +
+      throw Exceptions::ConfigError( "Value '" + value + "' could not be converted to type " + TNL::getType< T >() +
                                      " as required for the parameter " + param + "." );
    return v;
 }

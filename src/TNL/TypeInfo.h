@@ -24,8 +24,6 @@
    #include <cstdlib>  // std::free
 #endif
 
-#include <TNL/String.h>
-
 namespace TNL {
 namespace detail {
 
@@ -82,7 +80,7 @@ public:
  * for details.
  */
 template< typename T >
-String getType()
+std::string getType()
 {
    return detail::demangle( typeid(T).name() );
 }
@@ -95,7 +93,7 @@ String getType()
  * for details.
  */
 template< typename T >
-String getType( T&& obj )
+std::string getType( T&& obj )
 {
    return detail::demangle( typeid(obj).name() );
 }
@@ -111,7 +109,7 @@ String getType( T&& obj )
  */
 template< typename T,
           std::enable_if_t< ! detail::HasStaticGetSerializationType< T >::value, bool > = true >
-String getSerializationType()
+std::string getSerializationType()
 {
    return getType< T >();
 }
@@ -122,7 +120,7 @@ String getSerializationType()
  */
 template< typename T,
           std::enable_if_t< detail::HasStaticGetSerializationType< T >::value, bool > = true >
-String getSerializationType()
+std::string getSerializationType()
 {
    return T::getSerializationType();
 }

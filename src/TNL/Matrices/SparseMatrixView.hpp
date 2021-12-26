@@ -88,11 +88,11 @@ template< typename Real,
           typename MatrixType,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
-String
+std::string
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getSerializationType()
 {
-   return String( "Matrices::SparseMatrix< " ) +
+   return "Matrices::SparseMatrix< " +
              TNL::getSerializationType< RealType >() + ", " +
              TNL::getSerializationType< SegmentsViewType >() + ", [any_device], " +
              TNL::getSerializationType< IndexType >() + ", " +
@@ -105,7 +105,7 @@ template< typename Real,
           typename MatrixType,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
-String
+std::string
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 getSerializationTypeVirtual() const
 {

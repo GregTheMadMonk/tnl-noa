@@ -51,7 +51,7 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
-String
+std::string
 CSR< Device, Index, Kernel, IndexAllocator >::
 getSerializationType()
 {

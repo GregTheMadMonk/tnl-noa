@@ -46,7 +46,7 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-String
+std::string
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSerializationType()
 {

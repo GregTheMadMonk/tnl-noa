@@ -127,7 +127,7 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
-String
+std::string
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getSerializationType()
 {
@@ -139,7 +139,7 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
-String
+std::string
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 getSerializationTypeVirtual() const
 {

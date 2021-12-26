@@ -249,13 +249,13 @@ class Array
        * \brief Returns a \ref String representation of the array type in C++ style,
        * with a placeholder in place of \e Device and \e Allocator.
        */
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       /**
        * \brief Returns a \ref String representation of the array type in C++ style,
        * with a placeholder in place of \e Device and \e Allocator.
        */
-      virtual String getSerializationTypeVirtual() const;
+      virtual std::string getSerializationTypeVirtual() const;
 
       /**
        * \brief Method for resizing the array.

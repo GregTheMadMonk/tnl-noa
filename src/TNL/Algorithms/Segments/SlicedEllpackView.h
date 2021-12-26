@@ -54,7 +54,7 @@ class SlicedEllpackView
       __cuda_callable__
       SlicedEllpackView( SlicedEllpackView&& slicedEllpackView ) = default;
 
-      static String getSerializationType();
+      static std::string getSerializationType();
 
       static String getSegmentsType();
 

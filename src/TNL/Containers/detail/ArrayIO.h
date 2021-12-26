@@ -28,9 +28,9 @@ template< typename Value,
           typename Allocator >
 struct ArrayIO< Value, Index, Allocator, true >
 {
-   static String getSerializationType()
+   static std::string getSerializationType()
    {
-      return String( "Containers::Array< " ) +
+      return "Containers::Array< " +
              TNL::getSerializationType< Value >() + ", [any_device], " +
              TNL::getSerializationType< Index >() + ", [any_allocator] >";
    }
@@ -73,9 +73,9 @@ template< typename Value,
           typename Allocator >
 struct ArrayIO< Value, Index, Allocator, false >
 {
-   static String getSerializationType()
+   static std::string getSerializationType()
    {
-      return String( "Containers::Array< " ) +
+      return "Containers::Array< " +
              TNL::getSerializationType< Value >() + ", [any_device], " +
              TNL::getSerializationType< Index >() + ", [any_allocator] >";
    }

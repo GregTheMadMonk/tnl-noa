@@ -273,11 +273,11 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-String
+std::string
 DenseMatrixView< Real, Device, Index, Organization >::
 getSerializationType()
 {
-   return String( "Matrices::DenseMatrix< " ) +
+   return "Matrices::DenseMatrix< " +
       TNL::getSerializationType< RealType >() + ", [any_device], " +
       TNL::getSerializationType< IndexType >() + ", " +
       TNL::getSerializationType( Organization ) + " >";
@@ -287,7 +287,7 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-String
+std::string
 DenseMatrixView< Real, Device, Index, Organization >::
 getSerializationTypeVirtual() const
 {
