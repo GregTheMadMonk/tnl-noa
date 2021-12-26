@@ -21,7 +21,8 @@ namespace TNL {
  * \tparam Real is a type of the floating-point arithmetics.
  * \tparam Index is an indexing type.
  */
-template< typename Real, typename Index>
+template< typename Real = double,
+          typename Index = int >
 class IterativeSolverMonitor : public SolverMonitor
 {
    public:
