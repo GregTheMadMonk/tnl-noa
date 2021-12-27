@@ -19,7 +19,9 @@ namespace Meshes {
 
 template< typename Real, typename Device, typename Index >
 Grid< 1, Real, Device, Index >::Grid() : numberOfCells( 0 ), numberOfVertices( 0 )
-{}
+{
+   this->setDimensions( 0 );
+}
 
 template< typename Real, typename Device, typename Index >
 Grid< 1, Real, Device, Index >::Grid( Index xSize ) : numberOfCells( 0 ), numberOfVertices( 0 )
