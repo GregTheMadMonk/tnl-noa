@@ -25,7 +25,7 @@ struct CudaBadAlloc : public std::bad_alloc
    }
 
    const char*
-   what() const throw() override
+   what() const noexcept override
    {
       return "Failed to allocate memory on the CUDA device: "
              "most likely there is not enough space on the device memory.";

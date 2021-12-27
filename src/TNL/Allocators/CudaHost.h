@@ -30,12 +30,12 @@ struct CudaHost
 
    CudaHost() = default;
    CudaHost( const CudaHost& ) = default;
-   CudaHost( CudaHost&& ) = default;
+   CudaHost( CudaHost&& ) noexcept = default;
 
    CudaHost&
    operator=( const CudaHost& ) = default;
    CudaHost&
-   operator=( CudaHost&& ) = default;
+   operator=( CudaHost&& ) noexcept = default;
 
    template< class U >
    CudaHost( const CudaHost< U >& )

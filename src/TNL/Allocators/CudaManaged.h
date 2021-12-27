@@ -32,12 +32,12 @@ struct CudaManaged
 
    CudaManaged() = default;
    CudaManaged( const CudaManaged& ) = default;
-   CudaManaged( CudaManaged&& ) = default;
+   CudaManaged( CudaManaged&& ) noexcept = default;
 
    CudaManaged&
    operator=( const CudaManaged& ) = default;
    CudaManaged&
-   operator=( CudaManaged&& ) = default;
+   operator=( CudaManaged&& ) noexcept = default;
 
    template< class U >
    CudaManaged( const CudaManaged< U >& )
