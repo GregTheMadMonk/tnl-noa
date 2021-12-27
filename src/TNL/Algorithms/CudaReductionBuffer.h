@@ -51,12 +51,12 @@ public:
       return (Type*) this->data;
    }
 
-private:
-   // stop the compiler generating methods of copy the object
-   CudaReductionBuffer( CudaReductionBuffer const& copy );  // Not Implemented
+   // copy-constructor and copy-assignment are meaningless for a singleton class
+   CudaReductionBuffer( CudaReductionBuffer const& copy ) = delete;
    CudaReductionBuffer&
-   operator=( CudaReductionBuffer const& copy );  // Not Implemented
+   operator=( CudaReductionBuffer const& copy ) = delete;
 
+private:
    // private constructor of the singleton
    inline CudaReductionBuffer( size_t size = 0 )
    {
