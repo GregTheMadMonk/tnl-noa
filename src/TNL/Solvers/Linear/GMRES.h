@@ -36,7 +36,7 @@ namespace TNL {
  * \e CWY - Compact WY form of the Householder reflections).
  *
  * See [Wikipedia](https://en.wikipedia.org/wiki/Generalized_minimal_residual_method) for more details.
- * 
+ *
  * \tparam Matrix is type of matrix describing the linear system.
  */
 template< typename Matrix >
