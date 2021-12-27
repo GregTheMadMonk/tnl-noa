@@ -152,13 +152,19 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
          // verbose == 1, attributes were not updated since the last refresh
          return;
 
-      print_item( " ELA:" );
-      print_item( real_to_string( getElapsedTime(), 5 ), 8 );
-      print_item( " T:" );
-      print_item( real_to_string( (saved) ? saved_time : time, 5 ), 8 );
-      if( (saved) ? saved_timeStep : timeStep > 0 ) {
-         print_item( " TAU:" );
-         print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 10 );
+      if( this->timer != nullptr )
+      {
+         print_item( " ELA:" );
+         print_item( real_to_string( getElapsedTime(), 5 ), 8 );
+      }
+      if( this->timeStep > 0 )
+      {
+         print_item( " T:" );
+         print_item( real_to_string( (saved) ? saved_time : time, 5 ), 8 );
+         if( (saved) ? saved_timeStep : timeStep > 0 ) {
+            print_item( " TAU:" );
+            print_item( real_to_string( (saved) ? saved_timeStep : timeStep, 5 ), 10 );
+         }
       }
 
       const std::string displayed_stage = (saved) ? saved_stage : stage;
