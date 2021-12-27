@@ -11,6 +11,8 @@
 
 namespace TNL {
 
+// clang-format off
+
 template< typename T, typename R = void >
 struct enable_if_type
 {
@@ -24,14 +26,14 @@ template< typename T >
 class HasGetArrayDataMethod
 {
 private:
-    typedef char YesType[1];
-    typedef char NoType[2];
+   typedef char YesType[1];
+   typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >().getArrayData()) );
-    template< typename C > static NoType& test(...);
+   template< typename C > static YesType& test( decltype(std::declval< C >().getArrayData()) );
+   template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
 /**
@@ -41,14 +43,14 @@ template< typename T >
 class HasGetSizeMethod
 {
 private:
-    typedef char YesType[1];
-    typedef char NoType[2];
+   typedef char YesType[1];
+   typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >().getSize() ) );
-    template< typename C > static NoType& test(...);
+   template< typename C > static YesType& test( decltype(std::declval< C >().getSize() ) );
+   template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
 /**
@@ -75,7 +77,7 @@ private:
    using type = decltype(check<std::decay_t<T>>(0));
 
 public:
-    static constexpr bool value = type::value;
+   static constexpr bool value = type::value;
 };
 
 /**
@@ -102,7 +104,7 @@ private:
    using type = decltype(check<std::decay_t<T>>(0));
 
 public:
-    static constexpr bool value = type::value;
+   static constexpr bool value = type::value;
 };
 
 /**
@@ -129,7 +131,7 @@ private:
    using type = decltype(check<std::decay_t<T>>(0));
 
 public:
-    static constexpr bool value = type::value;
+   static constexpr bool value = type::value;
 };
 
 /**
@@ -266,14 +268,14 @@ template< typename T >
 class HasGetCommunicatorMethod
 {
 private:
-    typedef char YesType[1];
-    typedef char NoType[2];
+   typedef char YesType[1];
+   typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicator()) );
-    template< typename C > static NoType& test(...);
+   template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicator()) );
+   template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
 /**
@@ -286,8 +288,8 @@ struct copy_const
    struct from
    {
       using type = typename std::conditional<
-       std::is_const< Source >::value,
-       std::add_const_t< Target >, Target >::type;
+         std::is_const< Source >::value,
+         std::add_const_t< Target >, Target >::type;
    };
 };
 
@@ -298,14 +300,16 @@ template< typename T >
 class HasCountMember
 {
 private:
-    typedef char YesType[1];
-    typedef char NoType[2];
+   typedef char YesType[1];
+   typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype( &C::count ) );
-    template< typename C > static NoType& test(...);
+   template< typename C > static YesType& test( decltype( &C::count ) );
+   template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
 };
 
-} //namespace TNL
+// clang-format on
+
+}  // namespace TNL
