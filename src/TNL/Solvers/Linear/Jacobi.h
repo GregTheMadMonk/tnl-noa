@@ -121,16 +121,17 @@ class Jacobi
 
       using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
-      void performIteration( const ConstVectorViewType& b,
-                             const ConstVectorViewType& diagonalView,
-                             const ConstVectorViewType& in,
-                             VectorViewType& out ) const;
-
       RealType omega = 1.0;
 
       IndexType residuePeriod = 4;
 
       VectorType diagonal;
+
+   public: // because nvcc does not accept lambda functions within private or protected methods
+      void performIteration( const ConstVectorViewType& b,
+                           const ConstVectorViewType& diagonalView,
+                           const ConstVectorViewType& in,
+                           VectorViewType& out ) const;
 };
 
       } // namespace Linear
