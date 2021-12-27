@@ -20,7 +20,7 @@ template< typename Index = int >
 class PGMImage : public Image< Index >
 {
 public:
-   typedef Index IndexType;
+   using IndexType = Index;
 
    PGMImage();
 

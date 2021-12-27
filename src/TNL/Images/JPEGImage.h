@@ -29,7 +29,7 @@ template< typename Index = int >
 class JPEGImage : public Image< Index >
 {
 public:
-   typedef Index IndexType;
+   using IndexType = Index;
 
    JPEGImage();
 

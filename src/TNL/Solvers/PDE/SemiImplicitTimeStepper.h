@@ -22,14 +22,14 @@ template< typename Problem >
 class SemiImplicitTimeStepper
 {
 public:
-   typedef Problem ProblemType;
-   typedef typename Problem::RealType RealType;
-   typedef typename Problem::DeviceType DeviceType;
-   typedef typename Problem::IndexType IndexType;
-   typedef typename Problem::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+   using ProblemType = Problem;
+   using RealType = typename Problem::RealType;
+   using DeviceType = typename Problem::DeviceType;
+   using IndexType = typename Problem::IndexType;
+   using MeshType = typename Problem::MeshType;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
 
    using MatrixType = typename ProblemType::MatrixType;
    using MatrixPointer = std::shared_ptr< MatrixType >;

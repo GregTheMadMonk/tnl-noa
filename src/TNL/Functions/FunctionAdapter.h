@@ -23,10 +23,10 @@ template< typename Mesh, typename Function, int domainType = Function::getDomain
 class FunctionAdapter
 {
 public:
-   typedef Function FunctionType;
-   typedef Mesh MeshType;
-   typedef typename FunctionType::RealType RealType;
-   typedef typename MeshType::GlobalIndexType IndexType;
+   using FunctionType = Function;
+   using MeshType = Mesh;
+   using RealType = typename FunctionType::RealType;
+   using IndexType = typename MeshType::GlobalIndexType;
    // typedef typename FunctionType::PointType PointType;
 
    template< typename MeshPointer >
@@ -56,11 +56,11 @@ template< typename Mesh, typename Function >
 class FunctionAdapter< Mesh, Function, SpaceDomain >
 {
 public:
-   typedef Function FunctionType;
-   typedef Mesh MeshType;
-   typedef typename FunctionType::RealType RealType;
-   typedef typename MeshType::GlobalIndexType IndexType;
-   typedef typename FunctionType::PointType PointType;
+   using FunctionType = Function;
+   using MeshType = Mesh;
+   using RealType = typename FunctionType::RealType;
+   using IndexType = typename MeshType::GlobalIndexType;
+   using PointType = typename FunctionType::PointType;
 
    template< typename MeshPointer >
    static bool
@@ -90,11 +90,11 @@ template< typename Mesh, typename Function >
 class FunctionAdapter< Mesh, Function, NonspaceDomain >
 {
 public:
-   typedef Function FunctionType;
-   typedef Mesh MeshType;
-   typedef typename FunctionType::RealType RealType;
-   typedef typename MeshType::GlobalIndexType IndexType;
-   typedef typename FunctionType::PointType PointType;
+   using FunctionType = Function;
+   using MeshType = Mesh;
+   using RealType = typename FunctionType::RealType;
+   using IndexType = typename MeshType::GlobalIndexType;
+   using PointType = typename FunctionType::PointType;
 
    template< typename MeshPointer >
    static bool

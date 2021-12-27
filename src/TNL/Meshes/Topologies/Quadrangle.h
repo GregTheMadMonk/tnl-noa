@@ -26,7 +26,7 @@ struct Quadrangle
 template<>
 struct Subtopology< Quadrangle, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 4;
 };
@@ -34,7 +34,7 @@ struct Subtopology< Quadrangle, 0 >
 template<>
 struct Subtopology< Quadrangle, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 4;
 };

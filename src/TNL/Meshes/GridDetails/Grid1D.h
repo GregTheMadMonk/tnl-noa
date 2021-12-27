@@ -28,7 +28,7 @@ public:
    using CoordinatesType = Containers::StaticVector< 1, Index >;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
-   typedef Index IndexType;
+   using IndexType = Index;
 
    /**
     * \brief Returns number of this mesh grid dimensions.
@@ -42,9 +42,9 @@ public:
    template< int EntityDimension, typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
-   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef EntityType< 0 > Face;
-   typedef EntityType< 0 > Vertex;
+   using Cell = EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > >;
+   using Face = EntityType< 0 >;
+   using Vertex = EntityType< 0 >;
 
    /**
     * \brief Basic constructor.

@@ -19,9 +19,9 @@ template< typename MeshFunctionType >
 class CopyEntitiesHelper< MeshFunctionType, 1 >
 {
 public:
-   typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshFunctionType::MeshType::Cell Cell;
-   typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
+   using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
+   using Cell = typename MeshFunctionType::MeshType::Cell;
+   using Index = typename MeshFunctionType::MeshType::GlobalIndexType;
 
    template< typename FromFunction >
    static void
@@ -50,9 +50,9 @@ template< typename MeshFunctionType >
 class CopyEntitiesHelper< MeshFunctionType, 2 >
 {
 public:
-   typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshFunctionType::MeshType::Cell Cell;
-   typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
+   using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
+   using Cell = typename MeshFunctionType::MeshType::Cell;
+   using Index = typename MeshFunctionType::MeshType::GlobalIndexType;
 
    template< typename FromFunction >
    static void
@@ -83,9 +83,9 @@ template< typename MeshFunctionType >
 class CopyEntitiesHelper< MeshFunctionType, 3 >
 {
 public:
-   typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-   typedef typename MeshFunctionType::MeshType::Cell Cell;
-   typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
+   using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
+   using Cell = typename MeshFunctionType::MeshType::Cell;
+   using Index = typename MeshFunctionType::MeshType::GlobalIndexType;
 
    template< typename FromFunction >
    static void

@@ -15,7 +15,7 @@ template< typename DifferentialOperator, typename BoundaryConditions, typename R
 class MatrixSetterTraverserUserData
 {
 public:
-   typedef typename RowsCapacitiesType::DeviceType DeviceType;
+   using DeviceType = typename RowsCapacitiesType::DeviceType;
 
    const DifferentialOperator* differentialOperator;
 
@@ -34,14 +34,14 @@ template< typename Mesh, typename DifferentialOperator, typename BoundaryConditi
 class MatrixSetter
 {
 public:
-   typedef Mesh MeshType;
-   typedef Pointers::SharedPointer< MeshType > MeshPointer;
-   typedef typename MeshType::DeviceType DeviceType;
-   typedef typename RowsCapacitiesType::RealType IndexType;
-   typedef MatrixSetterTraverserUserData< DifferentialOperator, BoundaryConditions, RowsCapacitiesType > TraverserUserData;
-   typedef Pointers::SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef Pointers::SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef Pointers::SharedPointer< RowsCapacitiesType, DeviceType > RowsCapacitiesTypePointer;
+   using MeshType = Mesh;
+   using MeshPointer = Pointers::SharedPointer< MeshType >;
+   using DeviceType = typename MeshType::DeviceType;
+   using IndexType = typename RowsCapacitiesType::RealType;
+   using TraverserUserData = MatrixSetterTraverserUserData< DifferentialOperator, BoundaryConditions, RowsCapacitiesType >;
+   using DifferentialOperatorPointer = Pointers::SharedPointer< DifferentialOperator, DeviceType >;
+   using BoundaryConditionsPointer = Pointers::SharedPointer< BoundaryConditions, DeviceType >;
+   using RowsCapacitiesTypePointer = Pointers::SharedPointer< RowsCapacitiesType, DeviceType >;
 
    template< typename EntityType >
    void

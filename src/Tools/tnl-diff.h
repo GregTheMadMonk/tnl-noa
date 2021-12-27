@@ -202,7 +202,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
    if( verbose )
       std::cout << std::endl;
 
-   typedef typename MeshPointer::ObjectType Mesh;
+   using Mesh = typename MeshPointer::ObjectType;
    using MeshFunctionType = Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real >;
    MeshFunctionType v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
@@ -553,7 +553,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    const String meshFile = parameters.getParameter< String >( "mesh" );
    const String meshFileFormat = parameters.getParameter< String >( "mesh-format" );
 
-   typedef Pointers::SharedPointer< Mesh > MeshPointer;
+   using MeshPointer = Pointers::SharedPointer< Mesh >;
    MeshPointer meshPointer;
    if( ! Meshes::loadMesh( *meshPointer, meshFile, meshFileFormat ) )
       return false;

@@ -17,8 +17,8 @@ template< int Dimensions_, typename Real >
 class VectorNormBase : public Domain< Dimensions_, SpaceDomain >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimensions_, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimensions_, RealType >;
 
    VectorNormBase() : center( 0.0 ), anisotropy( 1.0 ), power( 2.0 ), radius( 0.0 ), multiplicator( 1.0 ), maxNorm( false ){};
 
@@ -138,7 +138,7 @@ template< typename Real >
 class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
 {
 public:
-   typedef VectorNormBase< 1, Real > BaseType;
+   using BaseType = VectorNormBase< 1, Real >;
    using typename BaseType::PointType;
    using typename BaseType::RealType;
 
@@ -171,7 +171,7 @@ template< typename Real >
 class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
 {
 public:
-   typedef VectorNormBase< 2, Real > BaseType;
+   using BaseType = VectorNormBase< 2, Real >;
    using typename BaseType::PointType;
    using typename BaseType::RealType;
 
@@ -216,7 +216,7 @@ template< typename Real >
 class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
 {
 public:
-   typedef VectorNormBase< 3, Real > BaseType;
+   using BaseType = VectorNormBase< 3, Real >;
    using typename BaseType::PointType;
    using typename BaseType::RealType;
 

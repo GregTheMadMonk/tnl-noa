@@ -79,7 +79,7 @@ public:
    }
 
 protected:
-   typedef std::unordered_set< SmartPointer* > SetType;
+   using SetType = std::unordered_set< SmartPointer* >;
 
    std::unordered_map< int, SetType > pointersOnDevices;
 };

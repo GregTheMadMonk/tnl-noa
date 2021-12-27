@@ -26,8 +26,8 @@ template< typename T >
 class HasGetArrayDataMethod
 {
 private:
-   typedef char YesType[1];
-   typedef char NoType[2];
+   using YesType = char[1];
+   using NoType = char[2];
 
    template< typename C > static YesType& test( decltype(std::declval< C >().getArrayData()) );
    template< typename C > static NoType& test(...);
@@ -43,8 +43,8 @@ template< typename T >
 class HasGetSizeMethod
 {
 private:
-   typedef char YesType[1];
-   typedef char NoType[2];
+   using YesType = char[1];
+   using NoType = char[2];
 
    template< typename C > static YesType& test( decltype(std::declval< C >().getSize() ) );
    template< typename C > static NoType& test(...);
@@ -268,8 +268,8 @@ template< typename T >
 class HasGetCommunicatorMethod
 {
 private:
-   typedef char YesType[1];
-   typedef char NoType[2];
+   using YesType = char[1];
+   using NoType = char[2];
 
    template< typename C > static YesType& test( decltype(std::declval< C >().getCommunicator()) );
    template< typename C > static NoType& test(...);

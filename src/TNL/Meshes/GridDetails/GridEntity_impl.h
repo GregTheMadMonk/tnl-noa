@@ -82,8 +82,8 @@ __cuda_callable__
 inline Index
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::getIndex() const
 {
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef typename GridType::template EntityType< EntityDimension > EntityType;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+   using EntityType = typename GridType::template EntityType< EntityDimension >;
    TNL_ASSERT_GE( this->entityIndex, 0, "Entity index is not non-negative." );
    TNL_ASSERT_LT( this->entityIndex, grid.template getEntitiesCount< EntityDimension >(), "Entity index is out of bounds." );
    TNL_ASSERT_EQ( this->entityIndex, grid.getEntityIndex( *this ), "Wrong value of stored index." );
@@ -367,8 +367,8 @@ __cuda_callable__
 inline Index
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::getIndex() const
 {
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef typename GridType::Vertex Vertex;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+   using Vertex = typename GridType::Vertex;
    TNL_ASSERT_GE( this->entityIndex, 0, "Entity index is not non-negative." );
    TNL_ASSERT_LT( this->entityIndex, grid.template getEntitiesCount< 0 >(), "Entity index is out of bounds." );
    TNL_ASSERT_EQ( this->entityIndex, grid.getEntityIndex( *this ), "Wrong value of stored index." );

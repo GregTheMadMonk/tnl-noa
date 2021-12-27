@@ -15,8 +15,8 @@ template< typename Index, typename Lambda >
 class CheckFetchLambda
 {
 private:
-   typedef char YesType[ 1 ];
-   typedef char NoType[ 2 ];
+   using YesType = char[ 1 ];
+   using NoType = char[ 2 ];
 
    template< typename C >
    static YesType&

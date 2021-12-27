@@ -18,8 +18,8 @@ template< int dimensions, typename Real = double >
 class Constant : public Domain< dimensions, NonspaceDomain >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< dimensions, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< dimensions, RealType >;
 
    __cuda_callable__
    Constant();

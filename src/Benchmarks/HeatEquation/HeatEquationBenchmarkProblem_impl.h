@@ -144,7 +144,7 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 setupLinearSystem( Matrix& matrix )
 {
    const IndexType dofs = this->getDofs();
-   typedef typename Matrix::RowsCapacitiesType RowsCapacitiesTypeType;
+   using RowsCapacitiesTypeType = typename Matrix::RowsCapacitiesType;
    RowsCapacitiesTypeType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;

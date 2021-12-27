@@ -13,9 +13,9 @@ template< typename Real, typename Device, typename Index >
 class Problem
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 };
 
 }  // namespace Problems

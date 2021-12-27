@@ -16,7 +16,7 @@ template< typename Index = int >
 class Image
 {
 public:
-   typedef Index IndexType;
+   using IndexType = Index;
 
    Image() : width( 0 ), height( 0 ){};
 

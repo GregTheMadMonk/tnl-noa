@@ -20,9 +20,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 1, Real, Device, Index >, 1, Config > >
 {
 public:
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 1, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 1, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -37,9 +37,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 1, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -57,9 +57,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 2, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 2, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -75,9 +75,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 1, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 1, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 1, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -94,9 +94,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -115,9 +115,9 @@ template< typename Real, typename Device, typename Index, int EntityDimension, t
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >, EntityDimension, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -135,9 +135,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 3, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 3, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 3, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType
@@ -154,9 +154,9 @@ template< typename Real, typename Device, typename Index, typename Config >
 class GridEntityCenterGetter< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
+   using PointType = typename GridType::PointType;
 
    __cuda_callable__
    inline static PointType

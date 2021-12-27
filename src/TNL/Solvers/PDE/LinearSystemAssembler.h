@@ -56,11 +56,11 @@ template< typename Mesh,
 class LinearSystemAssembler
 {
 public:
-   typedef typename MeshFunction::MeshType MeshType;
-   typedef typename MeshFunction::MeshPointer MeshPointer;
-   typedef typename MeshFunction::RealType RealType;
-   typedef typename MeshFunction::DeviceType DeviceType;
-   typedef typename MeshFunction::IndexType IndexType;
+   using MeshType = typename MeshFunction::MeshType;
+   using MeshPointer = typename MeshFunction::MeshPointer;
+   using RealType = typename MeshFunction::RealType;
+   using DeviceType = typename MeshFunction::DeviceType;
+   using IndexType = typename MeshFunction::IndexType;
 
    template< typename MatrixView >
    using TraverserUserData = LinearSystemAssemblerTraverserUserData< RealType,
@@ -72,11 +72,11 @@ public:
                                                                      MatrixView >;
 
    // typedef Pointers::SharedPointer<  Matrix, DeviceType > MatrixPointer;
-   typedef Pointers::SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef Pointers::SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-   typedef Pointers::SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-   typedef Pointers::SharedPointer< DofVector, DeviceType > DofVectorPointer;
+   using DifferentialOperatorPointer = Pointers::SharedPointer< DifferentialOperator, DeviceType >;
+   using BoundaryConditionsPointer = Pointers::SharedPointer< BoundaryConditions, DeviceType >;
+   using RightHandSidePointer = Pointers::SharedPointer< RightHandSide, DeviceType >;
+   using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction, DeviceType >;
+   using DofVectorPointer = Pointers::SharedPointer< DofVector, DeviceType >;
 
    void
    setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
@@ -157,8 +157,8 @@ public:
          userData.differentialOperator->setMatrixElements(
             *userData.u, entity, userData.time + userData.tau, userData.tau, userData.matrix, *userData.b );
 
-         typedef Functions::FunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
-         typedef Functions::FunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
+         using RhsFunctionAdapter = Functions::FunctionAdapter< MeshType, RightHandSide >;
+         using MeshFunctionAdapter = Functions::FunctionAdapter< MeshType, MeshFunction >;
          const RealType& rhs = RhsFunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
          TimeDiscretisation::applyTimeDiscretisation( userData.matrix,
                                                       ( *userData.b )[ entity.getIndex() ],

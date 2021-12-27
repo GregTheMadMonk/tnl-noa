@@ -24,16 +24,16 @@ template< int Dimension, typename MeshReal, typename MeshIndex >
 class MeshFunctionNormGetter< Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > >
 {
 public:
-   typedef Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex > GridType;
-   typedef MeshReal MeshRealType;
-   typedef Devices::Host DeviceType;
-   typedef MeshIndex MeshIndexType;
+   using GridType = Meshes::Grid< Dimension, MeshReal, Devices::Host, MeshIndex >;
+   using MeshRealType = MeshReal;
+   using DeviceType = Devices::Host;
+   using MeshIndexType = MeshIndex;
 
    template< typename MeshFunctionType >
    static typename MeshFunctionType::RealType
    getNorm( const MeshFunctionType& function, const typename MeshFunctionType::RealType& p )
    {
-      typedef typename MeshFunctionType::RealType RealType;
+      using RealType = typename MeshFunctionType::RealType;
       static constexpr int EntityDimension = MeshFunctionType::getEntitiesDimension();
       if( EntityDimension == Dimension ) {
          if( p == 1.0 )
@@ -43,8 +43,8 @@ public:
          return std::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * lpNorm( function.getData(), p );
       }
       if( EntityDimension > 0 ) {
-         typedef typename MeshFunctionType::MeshType MeshType;
-         typedef typename MeshType::Face EntityType;
+         using MeshType = typename MeshFunctionType::MeshType;
+         using EntityType = typename MeshType::Face;
          if( p == 1.0 ) {
             RealType result( 0.0 );
             for( MeshIndexType i = 0; i < function.getMesh().template getEntitiesCount< EntityType >(); i++ ) {
@@ -85,16 +85,16 @@ template< int Dimension, typename MeshReal, typename MeshIndex >
 class MeshFunctionNormGetter< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > >
 {
 public:
-   typedef Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex > GridType;
-   typedef MeshReal MeshRealType;
-   typedef Devices::Cuda DeviceType;
-   typedef MeshIndex MeshIndexType;
+   using GridType = Meshes::Grid< Dimension, MeshReal, Devices::Cuda, MeshIndex >;
+   using MeshRealType = MeshReal;
+   using DeviceType = Devices::Cuda;
+   using MeshIndexType = MeshIndex;
 
    template< typename MeshFunctionType >
    static typename MeshFunctionType::RealType
    getNorm( const MeshFunctionType& function, const typename MeshFunctionType::RealType& p )
    {
-      typedef typename MeshFunctionType::RealType RealType;
+      using RealType = typename MeshFunctionType::RealType;
       static constexpr int EntityDimension = MeshFunctionType::getEntitiesDimension();
       if( EntityDimension == Dimension ) {
          if( p == 1.0 )
@@ -104,8 +104,8 @@ public:
          return ::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
       }
       if( EntityDimension > 0 ) {
-         typedef typename MeshFunctionType::MeshType MeshType;
-         typedef typename MeshType::Face EntityType;
+         using MeshType = typename MeshFunctionType::MeshType;
+         using EntityType = typename MeshType::Face;
          throw Exceptions::NotImplementedError( "Not implemented yet." );
       }
 

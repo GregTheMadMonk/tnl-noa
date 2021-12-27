@@ -15,7 +15,7 @@ template< typename OutMeshFunction, typename InFunction, typename Real >
 class MeshFunctionEvaluatorTraverserUserData
 {
 public:
-   typedef InFunction InFunctionType;
+   using InFunctionType = InFunction;
 
    MeshFunctionEvaluatorTraverserUserData( const InFunction* function,
                                            const Real& time,
@@ -47,10 +47,10 @@ class MeshFunctionEvaluator
                   "Input and output functions must have the same domain dimensions." );
 
 public:
-   typedef typename InFunction::RealType RealType;
-   typedef typename OutMeshFunction::MeshType MeshType;
-   typedef typename MeshType::DeviceType DeviceType;
-   typedef Functions::MeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
+   using RealType = typename InFunction::RealType;
+   using MeshType = typename OutMeshFunction::MeshType;
+   using DeviceType = typename MeshType::DeviceType;
+   using TraverserUserData = Functions::MeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType >;
 
    template< typename OutMeshFunctionPointer, typename InFunctionPointer >
    static void
@@ -111,7 +111,7 @@ public:
    static inline void
    processEntity( const MeshType& mesh, UserData& userData, const EntityType& entity )
    {
-      typedef FunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
+      using FunctionAdapter = FunctionAdapter< MeshType, typename UserData::InFunctionType >;
       ( *userData.meshFunction )( entity ) =
          userData.inFunctionMultiplicator * FunctionAdapter::getValue( *userData.function, entity, userData.time );
       /*cerr << "Idx = " << entity.getIndex()
@@ -130,7 +130,7 @@ public:
    static inline void
    processEntity( const MeshType& mesh, UserData& userData, const EntityType& entity )
    {
-      typedef FunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
+      using FunctionAdapter = FunctionAdapter< MeshType, typename UserData::InFunctionType >;
       ( *userData.meshFunction )( entity ) =
          userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity )
          + userData.inFunctionMultiplicator * FunctionAdapter::getValue( *userData.function, entity, userData.time );

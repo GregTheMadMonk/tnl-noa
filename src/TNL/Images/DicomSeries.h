@@ -49,7 +49,7 @@ struct ImagesInfo
 class DicomSeries : public Image< int >
 {
 public:
-   typedef int IndexType;
+   using IndexType = int;
 
    inline DicomSeries( const String& filePath );
 

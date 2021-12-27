@@ -57,8 +57,8 @@ public:
    {
       Dimension = FunctionDimension
    };
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimension, Real > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimension, Real >;
 
    TestFunction();
 

@@ -73,7 +73,7 @@ bool
 PGMImage< Index >::read( const RegionOfInterest< Index > roi,
                          Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
 {
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
 
@@ -138,7 +138,7 @@ template< typename Real, typename Device, typename Vector >
 bool
 PGMImage< Index >::write( const Meshes::Grid< 2, Real, Device, Index >& grid, Vector& vector )
 {
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
    typename GridType::Cell cell( grid );
 
    Index i, j;
@@ -171,7 +171,7 @@ template< typename MeshReal, typename Device, typename Real >
 bool
 PGMImage< Index >::write( const Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function )
 {
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
 

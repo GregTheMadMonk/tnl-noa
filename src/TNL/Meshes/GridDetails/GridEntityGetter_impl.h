@@ -23,9 +23,9 @@ class GridEntityGetter< Meshes::Grid< 1, Real, Device, Index >, GridEntity, Enti
 public:
    static constexpr int entityDimension = EntityDimension;
 
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -60,9 +60,9 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
 public:
    static constexpr int entityDimension = 2;
 
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -100,9 +100,9 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
 public:
    static constexpr int entityDimension = 1;
 
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension, EntityConfig > GridEntity;
 
    __cuda_callable__
@@ -151,9 +151,9 @@ class GridEntityGetter< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
 public:
    static constexpr int entityDimension = 0;
 
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -195,9 +195,9 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
 public:
    static constexpr int entityDimension = 3;
 
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -237,9 +237,9 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
 public:
    static constexpr int entityDimension = 2;
 
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -303,9 +303,9 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
 public:
    static constexpr int entityDimension = 1;
 
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__
@@ -369,9 +369,9 @@ class GridEntityGetter< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
 public:
    static constexpr int entityDimension = 0;
 
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
    // typedef typename GridType::template GridEntity< entityDimension > GridEntity;
 
    __cuda_callable__

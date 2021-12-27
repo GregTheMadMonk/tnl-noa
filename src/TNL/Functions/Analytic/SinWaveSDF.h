@@ -63,8 +63,8 @@ template< typename Real >
 class SinWaveSDF< 1, Real > : public SinWaveSDFBase< 1, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 1, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 1, RealType >;
 
    template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
    __cuda_callable__
@@ -80,8 +80,8 @@ template< typename Real >
 class SinWaveSDF< 2, Real > : public SinWaveSDFBase< 2, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 2, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 2, RealType >;
 
    template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
    __cuda_callable__
@@ -97,8 +97,8 @@ template< typename Real >
 class SinWaveSDF< 3, Real > : public SinWaveSDFBase< 3, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 3, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 3, RealType >;
 
    template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0 >
    __cuda_callable__

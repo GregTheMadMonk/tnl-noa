@@ -182,7 +182,7 @@ public:
    static bool
    run( Problem& problem, const Config::ParameterContainer& parameters )
    {
-      typedef PDE::SemiImplicitTimeStepper< Problem > TimeStepper;
+      using TimeStepper = PDE::SemiImplicitTimeStepper< Problem >;
       SolverStarter< ConfigTag > solverStarter;
       return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
    }
@@ -224,7 +224,7 @@ public:
    static bool
    run( Problem& problem, const Config::ParameterContainer& parameters )
    {
-      typedef PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
+      using TimeStepper = PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template >;
       SolverStarter< ConfigTag > solverStarter;
       return solverStarter.template runPDESolver< Problem, TimeStepper >( problem, parameters );
    }

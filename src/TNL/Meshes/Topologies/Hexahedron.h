@@ -26,7 +26,7 @@ struct Hexahedron
 template<>
 struct Subtopology< Hexahedron, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 8;
 };
@@ -34,7 +34,7 @@ struct Subtopology< Hexahedron, 0 >
 template<>
 struct Subtopology< Hexahedron, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 12;
 };
@@ -42,7 +42,7 @@ struct Subtopology< Hexahedron, 1 >
 template<>
 struct Subtopology< Hexahedron, 2 >
 {
-   typedef Quadrangle Topology;
+   using Topology = Quadrangle;
 
    static constexpr int count = 6;
 };

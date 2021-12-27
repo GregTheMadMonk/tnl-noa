@@ -29,13 +29,13 @@ public:
    using IndexType = typename Problem::IndexType;
    using BaseType = PDESolver< RealType, IndexType >;
    using ProblemType = Problem;
-   typedef typename ProblemType::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef typename ProblemType::CommonDataType CommonDataType;
-   typedef typename ProblemType::CommonDataPointer CommonDataPointer;
-   typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
-   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > SolverMonitorType;
+   using MeshType = typename ProblemType::MeshType;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using CommonDataType = typename ProblemType::CommonDataType;
+   using CommonDataPointer = typename ProblemType::CommonDataPointer;
+   using MeshPointer = Pointers::SharedPointer< MeshType, DeviceType >;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType >;
 
    static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 

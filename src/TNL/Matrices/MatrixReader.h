@@ -80,17 +80,17 @@ public:
    /**
     * \brief Type of matrix elements values.
     */
-   typedef typename Matrix::RealType RealType;
+   using RealType = typename Matrix::RealType;
 
    /**
     * \brief Device where the matrix is allocated.
     */
-   typedef typename Matrix::DeviceType DeviceType;
+   using DeviceType = typename Matrix::DeviceType;
 
    /**
     * \brief Type used for indexing of matrix elements.
     */
-   typedef typename Matrix::IndexType IndexType;
+   using IndexType = typename Matrix::IndexType;
 
    /**
     * \brief Method for importing matrix from file with given filename.

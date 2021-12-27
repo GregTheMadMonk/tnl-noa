@@ -50,7 +50,7 @@ public:
    /****
     * This means that the time stepper will be set from the command line arguments.
     */
-   typedef void TimeStepper;
+   using TimeStepper = void;
 
    String
    getPrologHeader() const;

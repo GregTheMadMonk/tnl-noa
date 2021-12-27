@@ -112,10 +112,10 @@ MeshFunctionEvaluator< OutMeshFunction, InFunction >::evaluateEntities( OutMeshF
    static_assert( std::is_same< typename std::decay< typename InFunctionPointer::ObjectType >::type, InFunction >::value,
                   "expected a smart pointer" );
 
-   typedef typename MeshType::template EntityType< OutMeshFunction::getEntitiesDimension() > MeshEntityType;
-   typedef Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData >
-      AssignmentEntitiesProcessor;
-   typedef Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
+   using MeshEntityType = typename MeshType::template EntityType< OutMeshFunction::getEntitiesDimension() >;
+   using AssignmentEntitiesProcessor =
+      Functions::MeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData >;
+   using AdditionEntitiesProcessor = Functions::MeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData >;
    // typedef typename OutMeshFunction::MeshPointer OutMeshPointer;
 
    TraverserUserData userData( &function.template getData< DeviceType >(),

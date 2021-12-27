@@ -19,8 +19,8 @@ template< int Dimensions, typename Real = double >
 class Heaviside : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimensions, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimensions, RealType >;
 
    Heaviside() : multiplicator( 1.0 ) {}
 

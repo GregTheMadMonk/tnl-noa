@@ -13,15 +13,15 @@ template< typename Grid, int EntityDimension, typename EntityOrientation_, typen
 class GridEntityTopology
 {
 public:
-   typedef Grid GridType;
+   using GridType = Grid;
 
    static constexpr int meshDimension = GridType::getMeshDimension();
 
    static constexpr int entityDimension = EntityDimension;
 
-   typedef EntityOrientation_ EntityOrientation;
+   using EntityOrientation = EntityOrientation_;
 
-   typedef EntityProportions_ EntityProportions;
+   using EntityProportions = EntityProportions_;
 
    // TODO: restore when CUDA allows it
    // static_assert( meshDimension == EntityOrientation_::size,

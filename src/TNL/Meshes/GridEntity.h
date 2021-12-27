@@ -29,12 +29,12 @@ template< int Dimension, typename Real, typename Device, typename Index, int Ent
 class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >
 {
 public:
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef GridType MeshType;
-   typedef typename GridType::RealType RealType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef Config ConfigType;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+   using MeshType = GridType;
+   using RealType = typename GridType::RealType;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using ConfigType = Config;
 
    constexpr static int
    getMeshDimension()
@@ -48,11 +48,11 @@ public:
       return EntityDimension;
    };
 
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-   typedef typename GridType::PointType PointType;
+   using EntityOrientationType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using EntityBasisType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using PointType = typename GridType::PointType;
 
-   typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
+   using NeighborGridEntitiesStorageType = NeighborGridEntitiesStorage< GridEntity, Config >;
 
    template< int NeighborEntityDimension = getEntityDimension() >
    using NeighborEntities =
@@ -160,13 +160,13 @@ template< int Dimension, typename Real, typename Device, typename Index, typenam
 class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >
 {
 public:
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef GridType MeshType;
-   typedef typename GridType::RealType RealType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::PointType PointType;
-   typedef Config ConfigType;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+   using MeshType = GridType;
+   using RealType = typename GridType::RealType;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using PointType = typename GridType::PointType;
+   using ConfigType = Config;
 
    constexpr static int
    getMeshDimension()
@@ -180,9 +180,9 @@ public:
       return getMeshDimension();
    };
 
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-   typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
+   using EntityOrientationType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using EntityBasisType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using NeighborGridEntitiesStorageType = NeighborGridEntitiesStorage< GridEntity, Config >;
 
    template< int NeighborEntityDimension = getEntityDimension() >
    using NeighborEntities =
@@ -290,13 +290,13 @@ template< int Dimension, typename Real, typename Device, typename Index, typenam
 class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
 {
 public:
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
-   typedef GridType MeshType;
-   typedef typename GridType::RealType RealType;
-   typedef typename GridType::IndexType IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::PointType PointType;
-   typedef Config ConfigType;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
+   using MeshType = GridType;
+   using RealType = typename GridType::RealType;
+   using IndexType = typename GridType::IndexType;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using PointType = typename GridType::PointType;
+   using ConfigType = Config;
 
    constexpr static int
    getMeshDimension()
@@ -310,9 +310,9 @@ public:
       return 0;
    };
 
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
-   typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-   typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
+   using EntityOrientationType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using EntityBasisType = Containers::StaticVector< getMeshDimension(), IndexType >;
+   using NeighborGridEntitiesStorageType = NeighborGridEntitiesStorage< GridEntity, Config >;
 
    template< int NeighborEntityDimension = getEntityDimension() >
    using NeighborEntities = NeighborGridEntityGetter< GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >,

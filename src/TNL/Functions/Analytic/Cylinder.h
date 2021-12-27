@@ -19,7 +19,7 @@ template< typename Real, int Dimension >
 class CylinderBase : public Domain< Dimension, SpaceDomain >
 {
 public:
-   typedef Real RealType;
+   using RealType = Real;
 
    bool
    setup( const Config::ParameterContainer& parameters, const String& prefix = "" );
@@ -46,8 +46,8 @@ public:
    {
       Dimension = 1
    };
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimension, Real > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimension, Real >;
 
    Cylinder();
 
@@ -69,8 +69,8 @@ public:
    {
       Dimension = 2
    };
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimension, Real > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimension, Real >;
 
    Cylinder();
 
@@ -92,8 +92,8 @@ public:
    {
       Dimension = 3
    };
-   typedef Real RealType;
-   typedef Containers::StaticVector< Dimension, Real > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< Dimension, Real >;
 
    Cylinder();
 

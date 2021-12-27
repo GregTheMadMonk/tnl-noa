@@ -22,7 +22,7 @@ template< int Dimension, DomainType DomainType_ = SpaceDomain >
 class Domain
 {
 public:
-   typedef void DeviceType;
+   using DeviceType = void;
 
    static constexpr int
    getDomainDimension()

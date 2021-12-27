@@ -18,7 +18,7 @@ template< int dimensions, typename Real >
 class ExpBumpBase : public Domain< dimensions, SpaceDomain >
 {
 public:
-   typedef Real RealType;
+   using RealType = Real;
 
    ExpBumpBase();
 
@@ -49,8 +49,8 @@ template< typename Real >
 class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 1, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 1, RealType >;
 
    ExpBump();
 
@@ -68,8 +68,8 @@ template< typename Real >
 class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 2, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 2, RealType >;
 
    ExpBump();
 
@@ -87,8 +87,8 @@ template< typename Real >
 class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 3, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 3, RealType >;
 
    ExpBump();
 

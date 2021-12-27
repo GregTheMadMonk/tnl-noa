@@ -19,12 +19,12 @@ template< typename Real, typename Device, typename Index >
 class FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
    // typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::Cell CellType;
+   using CellType = typename GridType::Cell;
 
    template< typename GridFunction,
              int XDifferenceOrder,
@@ -51,12 +51,12 @@ template< typename Real, typename Device, typename Index >
 class FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
    // typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::Cell CellType;
+   using CellType = typename GridType::Cell;
 
    template< typename GridFunction,
              int XDifferenceOrder,
@@ -83,12 +83,12 @@ template< typename Real, typename Device, typename Index >
 class FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
    // typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::Cell CellType;
+   using CellType = typename GridType::Cell;
 
    template< typename GridFunction,
              int XDifferenceOrder,

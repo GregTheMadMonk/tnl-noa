@@ -18,8 +18,8 @@ template< typename Point >
 class SinBumpsSDFBase : public Domain< Point::getSize(), SpaceDomain >
 {
 public:
-   typedef Point PointType;
-   typedef typename Point::RealType RealType;
+   using PointType = Point;
+   using RealType = typename Point::RealType;
    enum
    {
       Dimensions = PointType::getSize()
@@ -63,8 +63,8 @@ template< typename Real >
 class SinBumpsSDF< 1, Real > : public SinBumpsSDFBase< Containers::StaticVector< 1, Real > >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 1, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 1, RealType >;
 
    SinBumpsSDF();
 
@@ -85,8 +85,8 @@ template< typename Real >
 class SinBumpsSDF< 2, Real > : public SinBumpsSDFBase< Containers::StaticVector< 2, Real > >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 2, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 2, RealType >;
 
    SinBumpsSDF();
 
@@ -107,8 +107,8 @@ template< typename Real >
 class SinBumpsSDF< 3, Real > : public SinBumpsSDFBase< Containers::StaticVector< 3, Real > >
 {
 public:
-   typedef Real RealType;
-   typedef Containers::StaticVector< 3, RealType > PointType;
+   using RealType = Real;
+   using PointType = Containers::StaticVector< 3, RealType >;
 
    SinBumpsSDF();
 

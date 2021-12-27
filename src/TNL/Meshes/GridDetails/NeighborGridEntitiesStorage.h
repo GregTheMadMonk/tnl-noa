@@ -21,8 +21,8 @@ template< typename GridEntity,
 class NeighborGridEntityLayer : public NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig >
 {
 public:
-   typedef NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig > BaseType;
-   typedef NeighborGridEntityGetter< GridEntity, NeighborEntityDimension > NeighborEntityGetterType;
+   using BaseType = NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig >;
+   using NeighborEntityGetterType = NeighborGridEntityGetter< GridEntity, NeighborEntityDimension >;
 
    using BaseType::getNeighborEntities;
 
@@ -52,7 +52,7 @@ template< typename GridEntity, typename GridEntityConfig, bool storage >
 class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, storage >
 {
 public:
-   typedef NeighborGridEntityGetter< GridEntity, 0 > NeighborEntityGetterType;
+   using NeighborEntityGetterType = NeighborGridEntityGetter< GridEntity, 0 >;
 
    __cuda_callable__
    NeighborGridEntityLayer( const GridEntity& entity ) : neighborEntities( entity ) {}
@@ -79,7 +79,7 @@ template< typename GridEntity, typename GridEntityConfig >
 class NeighborGridEntitiesStorage
 : public NeighborGridEntityLayer< GridEntity, GridEntity::getMeshDimension(), GridEntityConfig >
 {
-   typedef NeighborGridEntityLayer< GridEntity, GridEntity::getMeshDimension(), GridEntityConfig > BaseType;
+   using BaseType = NeighborGridEntityLayer< GridEntity, GridEntity::getMeshDimension(), GridEntityConfig >;
 
 public:
    using BaseType::getNeighborEntities;

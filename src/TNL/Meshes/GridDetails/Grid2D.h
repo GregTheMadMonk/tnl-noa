@@ -21,14 +21,14 @@ template< typename Real, typename Device, typename Index >
 class Grid< 2, Real, Device, Index >
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index GlobalIndexType;
-   typedef Containers::StaticVector< 2, Real > PointType;
-   typedef Containers::StaticVector< 2, Index > CoordinatesType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using GlobalIndexType = Index;
+   using PointType = Containers::StaticVector< 2, Real >;
+   using CoordinatesType = Containers::StaticVector< 2, Index >;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
-   typedef Index IndexType;
+   using IndexType = Index;
 
    static constexpr int
    getMeshDimension()
@@ -39,9 +39,9 @@ public:
    template< int EntityDimension, typename Config = GridEntityCrossStencilStorage< 1 > >
    using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
-   typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
-   typedef EntityType< getMeshDimension() - 1 > Face;
-   typedef EntityType< 0 > Vertex;
+   using Cell = EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > >;
+   using Face = EntityType< getMeshDimension() - 1 >;
+   using Vertex = EntityType< 0 >;
 
    /**
     * \brief See Grid1D::Grid().

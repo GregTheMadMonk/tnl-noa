@@ -15,9 +15,9 @@ template< typename Real = double, typename Device = Devices::Host, typename Inde
 class DummyMesh
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 
    constexpr static int
    getMeshDimension()

@@ -25,7 +25,7 @@ template< typename Function >
 class NeumannBoundaryConditionsBase
 {
 public:
-   typedef Function FunctionType;
+   using FunctionType = Function;
 
    static void
    configSetup( const Config::ConfigDescription& config, const String& prefix = "" )
@@ -84,16 +84,16 @@ class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
   public Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Functions::MeshBoundaryDomain, 1, 1, Real, Index >
 {
 public:
-   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using MeshType = Meshes::Grid< 1, MeshReal, Device, MeshIndex >;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 
-   typedef Function FunctionType;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DofVectorType;
-   typedef Containers::StaticVector< 1, RealType > PointType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef NeumannBoundaryConditionsBase< Function > BaseType;
+   using FunctionType = Function;
+   using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+   using PointType = Containers::StaticVector< 1, RealType >;
+   using CoordinatesType = typename MeshType::CoordinatesType;
+   using BaseType = NeumannBoundaryConditionsBase< Function >;
 
    template< typename EntityType, typename MeshFunction >
    __cuda_callable__
@@ -159,16 +159,16 @@ class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
 
 {
 public:
-   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using MeshType = Meshes::Grid< 2, MeshReal, Device, MeshIndex >;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 
-   typedef Function FunctionType;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DofVectorType;
-   typedef Containers::StaticVector< 2, RealType > PointType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef NeumannBoundaryConditionsBase< Function > BaseType;
+   using FunctionType = Function;
+   using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+   using PointType = Containers::StaticVector< 2, RealType >;
+   using CoordinatesType = typename MeshType::CoordinatesType;
+   using BaseType = NeumannBoundaryConditionsBase< Function >;
 
    template< typename EntityType, typename MeshFunction >
    __cuda_callable__
@@ -259,16 +259,16 @@ class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
   public Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Functions::MeshBoundaryDomain, 3, 3, Real, Index >
 {
 public:
-   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using MeshType = Meshes::Grid< 3, MeshReal, Device, MeshIndex >;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
 
-   typedef Function FunctionType;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > DofVectorType;
-   typedef Containers::StaticVector< 3, RealType > PointType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef NeumannBoundaryConditionsBase< Function > BaseType;
+   using FunctionType = Function;
+   using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+   using PointType = Containers::StaticVector< 3, RealType >;
+   using CoordinatesType = typename MeshType::CoordinatesType;
+   using BaseType = NeumannBoundaryConditionsBase< Function >;
 
    template< typename EntityType, typename MeshFunction >
    __cuda_callable__

@@ -26,7 +26,7 @@ struct Tetrahedron
 template<>
 struct Subtopology< Tetrahedron, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 4;
 };
@@ -34,7 +34,7 @@ struct Subtopology< Tetrahedron, 0 >
 template<>
 struct Subtopology< Tetrahedron, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 6;
 };
@@ -42,7 +42,7 @@ struct Subtopology< Tetrahedron, 1 >
 template<>
 struct Subtopology< Tetrahedron, 2 >
 {
-   typedef Triangle Topology;
+   using Topology = Triangle;
 
    static constexpr int count = 4;
 };

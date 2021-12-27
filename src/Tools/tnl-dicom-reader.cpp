@@ -33,7 +33,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
 
-   typedef Meshes::Grid< 2, double, Devices::Host, int > GridType;
+   using GridType = Meshes::Grid< 2, double, Devices::Host, int >;
    GridType grid;
    Containers::Vector< double, Devices::Host, int > vector;
    Images::RegionOfInterest< int > roi;

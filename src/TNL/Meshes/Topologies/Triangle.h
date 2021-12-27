@@ -26,7 +26,7 @@ struct Triangle
 template<>
 struct Subtopology< Triangle, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 3;
 };
@@ -34,7 +34,7 @@ struct Subtopology< Triangle, 0 >
 template<>
 struct Subtopology< Triangle, 1 >
 {
-   typedef Edge Topology;
+   using Topology = Edge;
 
    static constexpr int count = 3;
 };

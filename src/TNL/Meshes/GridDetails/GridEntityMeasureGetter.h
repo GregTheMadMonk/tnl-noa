@@ -20,7 +20,7 @@ template< int Dimension, typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< Dimension, Real, Device, Index >, 0 >
 {
 public:
-   typedef Meshes::Grid< Dimension, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< Dimension, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -39,7 +39,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 1, Real, Device, Index >, 1 >
 {
 public:
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -57,7 +57,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 2, Real, Device, Index >, 2 >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -72,7 +72,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 2, Real, Device, Index >, 1 >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -93,7 +93,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 3 >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -108,7 +108,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 2 >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__
@@ -128,7 +128,7 @@ template< typename Real, typename Device, typename Index >
 class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 1 >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
 
    template< typename EntityType >
    __cuda_callable__

@@ -38,9 +38,9 @@ template< typename Real,
 class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
 {
    public:
-      typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef Pointers::SharedPointer<  GridType > GridPointer;
-      typedef typename GridType::CoordinatesType CoordinatesType;
+      using GridType = Meshes::Grid< 2, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using CoordinatesType = typename GridType::CoordinatesType;
 
       template< typename UserData,
                 typename EntitiesProcessor >

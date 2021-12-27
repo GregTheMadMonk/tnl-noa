@@ -37,12 +37,12 @@ public:
    using IndexType = typename Problem::IndexType;
    using BaseType = PDESolver< RealType, IndexType >;
    using ProblemType = Problem;
-   typedef typename ProblemType::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;
-   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef typename ProblemType::CommonDataType CommonDataType;
-   typedef typename ProblemType::CommonDataPointer CommonDataPointer;
+   using MeshType = typename ProblemType::MeshType;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using MeshPointer = Pointers::SharedPointer< MeshType, DeviceType >;
+   using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+   using CommonDataType = typename ProblemType::CommonDataType;
+   using CommonDataPointer = typename ProblemType::CommonDataPointer;
 
    TimeIndependentPDESolver();
 

@@ -28,13 +28,13 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 2;
    static constexpr int NeighborEntityDimension = 2;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
 
    __cuda_callable__
    inline NeighborGridEntityGetter( const GridEntityType& entity ) : entity( entity ) {}
@@ -97,14 +97,14 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 2;
    static constexpr int NeighborEntityDimension = 2;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
-   typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
+   using StencilStorage = GridEntityStencilStorageTag< GridEntityCrossStencil >;
 
    static constexpr int stencilSize = Config::getStencilSize();
 
@@ -194,15 +194,15 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 2;
    static constexpr int NeighborEntityDimension = 1;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
-   typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
-   typedef typename GridEntityType::EntityBasisType EntityBasisType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
+   using EntityOrientationType = typename GridEntityType::EntityOrientationType;
+   using EntityBasisType = typename GridEntityType::EntityBasisType;
 
    __cuda_callable__
    inline NeighborGridEntityGetter( const GridEntityType& entity ) : entity( entity ) {}
@@ -260,13 +260,13 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 2;
    static constexpr int NeighborEntityDimension = 0;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
 
    __cuda_callable__
    inline NeighborGridEntityGetter( const GridEntityType& entity ) : entity( entity ) {}
@@ -324,13 +324,13 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 1;
    static constexpr int NeighborEntityDimension = 2;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
 
    __cuda_callable__
    inline NeighborGridEntityGetter( const GridEntityType& entity ) : entity( entity ) {}
@@ -397,13 +397,13 @@ class NeighborGridEntityGetter< GridEntity< Meshes::Grid< 2, Real, Device, Index
 public:
    static constexpr int EntityDimension = 0;
    static constexpr int NeighborEntityDimension = 0;
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, EntityDimension, Config > GridEntityType;
-   typedef GridEntity< GridType, NeighborEntityDimension, Config > NeighborGridEntityType;
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, EntityDimension, Config >;
+   using NeighborGridEntityType = GridEntity< GridType, NeighborEntityDimension, Config >;
+   using RealType = Real;
+   using IndexType = Index;
+   using CoordinatesType = typename GridType::CoordinatesType;
+   using GridEntityGetterType = GridEntityGetter< GridType, NeighborGridEntityType >;
 
    __cuda_callable__
    inline NeighborGridEntityGetter( const GridEntityType& entity ) : entity( entity ) {}

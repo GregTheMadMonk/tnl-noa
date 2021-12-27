@@ -27,7 +27,7 @@ struct Edge
 template<>
 struct Subtopology< Edge, 0 >
 {
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = 2;
 };

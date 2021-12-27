@@ -20,8 +20,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 1, Real, Device, Index >, 1, Config > >
 {
 public:
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 1, Config > GridEntityType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 1, Config >;
 
    __cuda_callable__
    inline static bool
@@ -35,8 +35,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 1, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
+   using GridType = Meshes::Grid< 1, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
 
    __cuda_callable__
    inline static bool
@@ -53,8 +53,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 2, Config > GridEntityType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 2, Config >;
 
    __cuda_callable__
    inline static bool
@@ -70,8 +70,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 1, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 1, Config > GridEntityType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 1, Config >;
 
    __cuda_callable__
    inline static bool
@@ -90,8 +90,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
+   using GridType = Meshes::Grid< 2, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
 
    __cuda_callable__
    inline static bool
@@ -110,8 +110,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 3, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 3, Config > GridEntityType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 3, Config >;
 
    __cuda_callable__
    inline static bool
@@ -128,8 +128,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 2, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 2, Config > GridEntityType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 2, Config >;
 
    __cuda_callable__
    inline static bool
@@ -150,8 +150,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 1, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 1, Config > GridEntityType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 1, Config >;
 
    __cuda_callable__
    inline static bool
@@ -176,8 +176,8 @@ template< typename Real, typename Device, typename Index, typename Config >
 class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Index >, 0, Config > >
 {
 public:
-   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-   typedef GridEntity< GridType, 0, Config > GridEntityType;
+   using GridType = Meshes::Grid< 3, Real, Device, Index >;
+   using GridEntityType = GridEntity< GridType, 0, Config >;
 
    __cuda_callable__
    inline static bool

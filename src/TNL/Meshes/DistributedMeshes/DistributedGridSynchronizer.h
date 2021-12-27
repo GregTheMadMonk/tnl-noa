@@ -23,9 +23,9 @@ template< int MeshDimension, typename Index, typename Device, typename GridReal 
 class DistributedMeshSynchronizer< DistributedMesh< Grid< MeshDimension, GridReal, Device, Index > >, MeshDimension >
 {
 public:
-   typedef typename Grid< MeshDimension, GridReal, Device, Index >::Cell Cell;
-   typedef DistributedMesh< Grid< MeshDimension, GridReal, Device, Index > > DistributedGridType;
-   typedef typename DistributedGridType::CoordinatesType CoordinatesType;
+   using Cell = typename Grid< MeshDimension, GridReal, Device, Index >::Cell;
+   using DistributedGridType = DistributedMesh< Grid< MeshDimension, GridReal, Device, Index > >;
+   using CoordinatesType = typename DistributedGridType::CoordinatesType;
    using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
    static constexpr int

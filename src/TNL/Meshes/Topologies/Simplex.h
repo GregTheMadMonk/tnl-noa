@@ -42,7 +42,7 @@ class Subtopology< Simplex< dimension >, subtopologyDim >
    static constexpr int subtopologyVertexCount = Subtopology< Simplex< subtopologyDim >, 0 >::count;
 
 public:
-   typedef Simplex< subtopologyDim > Topology;
+   using Topology = Simplex< subtopologyDim >;
 
    static constexpr int count = SimplexDetails::NumCombinations< topologyVertexCount, subtopologyVertexCount >::value;
 };
@@ -53,7 +53,7 @@ class Subtopology< Simplex< dimension >, 0 >
    static_assert( 0 < dimension, "invalid dimension" );
 
 public:
-   typedef Vertex Topology;
+   using Topology = Vertex;
 
    static constexpr int count = dimension + 1;
 };

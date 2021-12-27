@@ -537,8 +537,8 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    /****
     * Saving the result
     */
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-   typedef typename GridType::PointType PointType;
+   using GridType = Meshes::Grid< 2, Real, Devices::Host, Index >;
+   using PointType = typename GridType::PointType;
    Pointers::SharedPointer<  GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( PointType( 0.0, 0.0 ), PointType( domainXSize, domainYSize ) );
