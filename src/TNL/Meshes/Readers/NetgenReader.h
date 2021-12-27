@@ -29,7 +29,7 @@ public:
 
    NetgenReader( const std::string& fileName ) : MeshReader( fileName ) {}
 
-   virtual void
+   void
    detectMesh() override
    {
       reset();

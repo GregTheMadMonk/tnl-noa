@@ -328,7 +328,7 @@ public:
     * \return true.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       return true;
    }
@@ -347,7 +347,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~DevicePointer() {}
+   ~DevicePointer() override {}
 
 protected:
    Object* pointer;
@@ -718,7 +718,7 @@ public:
     * \return true if the synchronization was successful, false otherwise.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       if( ! this->pd )
          return true;
@@ -753,7 +753,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~DevicePointer()
+   ~DevicePointer() override
    {
       this->free();
       getSmartPointersRegister< DeviceType >().remove( this );

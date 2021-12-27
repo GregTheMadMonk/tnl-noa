@@ -465,7 +465,7 @@ public:
     * \return true if the synchronization was successful, false otherwise.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       if( ! this->pd )
          return true;
@@ -512,7 +512,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~SharedPointer()
+   ~SharedPointer() override
    {
       this->free();
       getSmartPointersRegister< DeviceType >().remove( this );

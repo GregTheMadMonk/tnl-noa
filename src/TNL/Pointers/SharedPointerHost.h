@@ -384,7 +384,7 @@ public:
     * \return true.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       return true;
    }
@@ -412,7 +412,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~SharedPointer()
+   ~SharedPointer() override
    {
       this->free();
    }

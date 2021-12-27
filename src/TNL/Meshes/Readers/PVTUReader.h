@@ -105,7 +105,7 @@ public:
    : XMLVTK( fileName ), communicator( communicator )
    {}
 
-   virtual void
+   void
    detectMesh() override
    {
 #ifdef HAVE_TINYXML2
@@ -239,19 +239,19 @@ public:
       }
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
       return localReader.readPointData( arrayName );
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
       return localReader.readCellData( arrayName );
    }
 
-   virtual void
+   void
    reset() override
    {
       resetBase();

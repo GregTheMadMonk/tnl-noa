@@ -195,8 +195,8 @@ public:
     *
     * \param file is the output file.
     */
-   virtual void
-   save( File& file ) const;
+   void
+   save( File& file ) const override;
 
    /**
     * \brief Method for printing the matrix view to output stream.

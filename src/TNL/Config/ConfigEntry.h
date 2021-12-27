@@ -41,13 +41,13 @@ public:
       _hasDefaultValue = true;
    }
 
-   virtual std::string
+   std::string
    getUIEntryType() const override
    {
       return Config::getUIEntryType< DefaultValueType >();
    }
 
-   virtual std::string
+   std::string
    printDefaultValue() const override
    {
       // printDefaultValue must be compilable even if DefaultValueType is std::vector,
@@ -55,7 +55,7 @@ public:
       return _print_value( defaultValue );
    }
 
-   virtual bool
+   bool
    hasEnumValues() const override
    {
       if( enumValues.size() > 0 )
@@ -63,7 +63,7 @@ public:
       return false;
    }
 
-   virtual void
+   void
    printEnumValues( std::ostream& str ) const override
    {
       str << "- Can be:           ";

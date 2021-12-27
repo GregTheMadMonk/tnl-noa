@@ -210,16 +210,16 @@ public:
     *
     * \param file is the output file.
     */
-   virtual void
-   save( File& file ) const;
+   void
+   save( File& file ) const override;
 
    /**
     * \brief Method for loading the matrix from a file.
     *
     * \param file is the input file.
     */
-   virtual void
-   load( File& file );
+   void
+   load( File& file ) override;
 
    /**
     * \brief Method for printing the matrix to output stream.

@@ -178,7 +178,7 @@ public:
    : XMLVTK( fileName ), communicator( communicator )
    {}
 
-   virtual void
+   void
    detectMesh() override
    {
 #ifdef HAVE_TINYXML2
@@ -296,19 +296,19 @@ public:
       throw MeshReaderError( "MeshReader", "the PVTI reader cannot be used to load a distributed unstructured mesh." );
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
       return localReader.readPointData( arrayName );
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
       return localReader.readCellData( arrayName );
    }
 
-   virtual void
+   void
    reset() override
    {
       resetBase();

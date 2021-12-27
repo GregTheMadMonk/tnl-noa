@@ -405,7 +405,7 @@ public:
 #endif
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
 #ifdef HAVE_TINYXML2
@@ -415,7 +415,7 @@ public:
 #endif
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
 #ifdef HAVE_TINYXML2
@@ -425,7 +425,7 @@ public:
 #endif
    }
 
-   virtual void
+   void
    reset() override
    {
       resetBase();

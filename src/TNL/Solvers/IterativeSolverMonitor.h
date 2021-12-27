@@ -119,8 +119,8 @@ public:
    /**
     * \brief Causes that the monitor prints out the status of the solver.
     */
-   virtual void
-   refresh();
+   void
+   refresh() override;
 
 protected:
    int

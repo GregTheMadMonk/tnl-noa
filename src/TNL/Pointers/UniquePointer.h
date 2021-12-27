@@ -262,7 +262,7 @@ public:
     * \return true.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       return true;
    }
@@ -270,7 +270,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~UniquePointer()
+   ~UniquePointer() override
    {
       if( this->pointer )
          delete this->pointer;
@@ -516,7 +516,7 @@ public:
     * \return true if the synchronization was successful, false otherwise.
     */
    bool
-   synchronize()
+   synchronize() override
    {
       if( ! this->pd )
          return true;
@@ -536,7 +536,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~UniquePointer()
+   ~UniquePointer() override
    {
       this->free();
       getSmartPointersRegister< DeviceType >().remove( this );

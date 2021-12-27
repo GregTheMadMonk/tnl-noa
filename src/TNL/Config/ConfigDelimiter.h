@@ -18,13 +18,13 @@ class ConfigDelimiter : public ConfigEntryBase
 public:
    ConfigDelimiter( const std::string& delimiter ) : ConfigEntryBase( "", delimiter, false ) {}
 
-   virtual bool
+   bool
    isDelimiter() const override
    {
       return true;
    };
 
-   virtual std::string
+   std::string
    getUIEntryType() const override
    {
       return "";

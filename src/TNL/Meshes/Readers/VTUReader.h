@@ -246,7 +246,7 @@ public:
 
    VTUReader( const std::string& fileName ) : XMLVTK( fileName ) {}
 
-   virtual void
+   void
    detectMesh() override
    {
 #ifdef HAVE_TINYXML2

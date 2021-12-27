@@ -39,7 +39,7 @@ public:
    using ByteArrayView = typename Base::ByteArrayView;
    using RequestsVector = typename Base::RequestsVector;
 
-   ~DistributedMeshSynchronizer()
+   ~DistributedMeshSynchronizer() override
    {
       // wait for pending async operation, otherwise it would crash
       if( this->async_op.valid() )
@@ -193,14 +193,14 @@ public:
       synchronizeByteArray( view, sizeof( ValueType ) * valuesPerElement );
    }
 
-   virtual void
+   void
    synchronizeByteArray( ByteArrayView array, int bytesPerValue ) override
    {
       auto requests = synchronizeByteArrayAsyncWorker( array, bytesPerValue );
       MPI::Waitall( requests.data(), requests.size() );
    }
 
-   virtual RequestsVector
+   RequestsVector
    synchronizeByteArrayAsyncWorker( ByteArrayView array, int bytesPerValue ) override
    {
       TNL_ASSERT_EQ( array.getSize(),

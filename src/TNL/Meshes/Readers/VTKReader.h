@@ -28,7 +28,7 @@ public:
 
    VTKReader( const std::string& fileName ) : MeshReader( fileName ) {}
 
-   virtual void
+   void
    detectMesh() override
    {
       reset();
@@ -373,19 +373,19 @@ public:
       meshType = "Meshes::Mesh";
    }
 
-   virtual VariantVector
+   VariantVector
    readPointData( std::string arrayName ) override
    {
       return readPointOrCellData( "POINT_DATA", arrayName );
    }
 
-   virtual VariantVector
+   VariantVector
    readCellData( std::string arrayName ) override
    {
       return readPointOrCellData( "CELL_DATA", arrayName );
    }
 
-   virtual void
+   void
    reset() override
    {
       resetBase();
