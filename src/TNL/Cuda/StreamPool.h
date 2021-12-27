@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <stdlib.h>
+#include <cstdlib>  // std::atexit
 #include <unordered_map>
 
 namespace TNL {
@@ -46,7 +46,7 @@ private:
    // private constructor of the singleton
    inline StreamPool()
    {
-      atexit( StreamPool::free_atexit );
+      std::atexit( StreamPool::free_atexit );
    }
 
    inline static void

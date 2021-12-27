@@ -114,7 +114,7 @@
 
    #include <sstream>
    #include <iostream>
-   #include <stdio.h>
+   #include <cstdio>
 
    #include <TNL/Cuda/CudaCallable.h>
 
@@ -192,18 +192,18 @@ printDiagnosticsCuda( const char* assertion,
                       int line,
                       const char* diagnostics )
 {
-   printf( "Assertion '%s' failed !!!\n"
-           "Message: %s\n"
-           "File: %s\n"
-           "Function: %s\n"
-           "Line: %d\n"
-           "Diagnostics: %s\n",
-           assertion,
-           message,
-           file,
-           function,
-           line,
-           diagnostics );
+   std::printf( "Assertion '%s' failed !!!\n"
+                "Message: %s\n"
+                "File: %s\n"
+                "Function: %s\n"
+                "Line: %d\n"
+                "Diagnostics: %s\n",
+                assertion,
+                message,
+                file,
+                function,
+                line,
+                diagnostics );
 }
 
 __cuda_callable__
@@ -419,13 +419,13 @@ TNL_IMPL_CMP_HELPER_( GT, > );
 
    // __CUDA_ARCH__ is defined by the compiler only for code executed on GPU
    #ifdef __CUDA_ARCH__
-      #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                        \
-         if( ! ( ___tnl__assert_condition ) ) {                                                                     \
-            printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n", \
-                    __STRING( ___tnl__assert_condition ),                                                           \
-                    __FILE__,                                                                                       \
-                    __LINE__ );                                                                                     \
-            asm( "trap;" );                                                                                         \
+      #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )                                             \
+         if( ! ( ___tnl__assert_condition ) ) {                                                                          \
+            std::printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n", \
+                         __STRING( ___tnl__assert_condition ),                                                           \
+                         __FILE__,                                                                                       \
+                         __LINE__ );                                                                                     \
+            asm( "trap;" );                                                                                              \
          }
 
    #else  // #ifdef __CUDA_ARCH__

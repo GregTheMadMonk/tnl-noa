@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <setjmp.h>
+#include <csetjmp>
 
 #include <TNL/Images/JPEGImage.h>
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <stdlib.h> // srand48
+#include <cstdlib>  // srand48
 #include <numeric>  // std::partial_sum
 
 #include <TNL/Benchmarks/Benchmarks.h>

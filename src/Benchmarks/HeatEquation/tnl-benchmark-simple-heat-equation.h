@@ -2,7 +2,7 @@
 #define	TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>

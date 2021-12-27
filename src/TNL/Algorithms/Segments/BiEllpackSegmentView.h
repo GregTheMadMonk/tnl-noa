@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <math.h>
 #include <TNL/Algorithms/Segments/ElementsOrganization.h>
 #include <TNL/Containers/StaticVector.h>
 

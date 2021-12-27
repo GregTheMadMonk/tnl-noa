@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <TNL/Images/DicomHeader.h>
 #include <TNL/Images/DicomSeriesInfo.h>

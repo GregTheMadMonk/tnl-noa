@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <stdlib.h>
+#include <cstdlib>  // std::atexit
 
 #include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
@@ -28,7 +28,7 @@ public:
    }
 
    inline void
-   setSize( size_t size )
+   setSize( std::size_t size )
    {
 #ifdef HAVE_CUDA
       if( size > this->size ) {
@@ -58,11 +58,11 @@ public:
 
 private:
    // private constructor of the singleton
-   inline CudaReductionBuffer( size_t size = 0 )
+   inline CudaReductionBuffer( std::size_t size = 0 )
    {
 #ifdef HAVE_CUDA
       setSize( size );
-      atexit( CudaReductionBuffer::free_atexit );
+      std::atexit( CudaReductionBuffer::free_atexit );
 #endif
    }
 
@@ -87,7 +87,7 @@ protected:
 
    void* data = nullptr;
 
-   size_t size = 0;
+   std::size_t size = 0;
 };
 
 }  // namespace Algorithms
