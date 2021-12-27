@@ -62,7 +62,7 @@ class Jacobi
        * defines the following:
        *
        * \e jacobi-omega - relaxation parameter of the weighted/damped Jacobi method - 1.0 by default.
-       * \e residue-period - says after how many iterations the reside is recomputed - 4 by default.
+       * \e residue-period - number of iterations between subsequent recomputations of the residue - 4 by default.
        *
        * \param config contains description of configuration parameters.
        * \param prefix is a prefix of particular configuration entries.
@@ -90,6 +90,20 @@ class Jacobi
        * \return value of the relaxation parameter.
        */
       RealType getOmega() const;
+
+      /**
+       * \brief Set the period for a recomputation of the residue.
+       *
+       * \param period number of iterations between subsequent recomputations of the residue.
+       */
+      void setResiduePeriod( IndexType period );
+
+      /**
+       * \brief Get the period for a recomputation of the residue.
+       *
+       * \return number of iterations between subsequent recomputations of the residue.
+       */
+      IndexType getResiduePerid() const;
 
       /**
        * \brief Method for solving of a linear system.

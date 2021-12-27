@@ -24,7 +24,7 @@ configSetup( Config::ConfigDescription& config, const String& prefix )
 {
    LinearSolver< Matrix >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "jacobi-omega", "Relaxation parameter of the weighted/damped Jacobi method.", 1.0 );
-   config.addEntry< int >( prefix + "residue-period", "Says after how many iterations the reside is recomputed.", 4 );
+   config.addEntry< int >( prefix + "residue-period", "Number of iterations between subsequent recomputations of the residue.", 4 );
 }
 
 template< typename Matrix >
@@ -38,6 +38,8 @@ setup( const Config::ParameterContainer& parameters, const String& prefix )
    {
       std::cerr << "Warning: The Jacobi method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
    }
+   if( parameters.checkParameter( prefix + "residue-period" ) )
+      this->setResiduePeriod( parameters.getParameter< int >( prefix + "residue-period" ) );
    return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
@@ -55,6 +57,22 @@ Jacobi< Matrix >::
 getOmega() const -> RealType
 {
    return omega;
+}
+
+template< typename Matrix >
+void
+Jacobi< Matrix >::
+setResiduePeriod( IndexType period )
+{
+   this->residuePeriod = period;
+}
+
+template< typename Matrix >
+auto
+Jacobi< Matrix >::
+getResiduePerid() const -> IndexType
+{
+   return this->residuePeriod;
 }
 
 template< typename Matrix >
