@@ -39,7 +39,7 @@ struct MatrixInfo< DenseMatrixView< Real, Device, Index, Organization > >
    static String
    getDensity()
    {
-      return String( "dense" );
+      return "dense";
    };
 };
 
@@ -59,7 +59,7 @@ struct MatrixInfo< SparseMatrixView< Real, Device, Index, MatrixType, SegmentsVi
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -97,16 +97,16 @@ struct MatrixInfo< Sandbox::SparseSandboxMatrixView< Real, Device, Index, Matrix
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
    getFormat()
    {
       if( MatrixType::isSymmetric() )
-         return TNL::String( "Symmetric Sandbox" );
+         return "Symmetric Sandbox";
       else
-         return TNL::String( "Sandbox" );
+         return "Sandbox";
    };
 };
 
@@ -124,7 +124,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::BiEllpack< Real, 
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -141,7 +141,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -158,7 +158,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -175,7 +175,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -192,7 +192,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -209,7 +209,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -226,7 +226,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -243,7 +243,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -260,7 +260,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -277,7 +277,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -294,7 +294,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -311,7 +311,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -327,7 +327,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::ChunkedEllpack< R
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -343,7 +343,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::Ellpack< Real, De
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String
@@ -359,7 +359,7 @@ struct MatrixInfo< Benchmarks::SpMV::ReferenceFormats::Legacy::SlicedEllpack< Re
    static String
    getDensity()
    {
-      return String( "sparse" );
+      return "sparse";
    };
 
    static String

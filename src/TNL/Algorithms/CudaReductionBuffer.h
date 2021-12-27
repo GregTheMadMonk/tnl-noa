@@ -67,14 +67,14 @@ private:
    }
 
    inline static void
-   free_atexit( void )
+   free_atexit()
    {
       CudaReductionBuffer::getInstance().free();
    }
 
 protected:
    inline void
-   free( void )
+   free()
    {
 #ifdef HAVE_CUDA
       if( data ) {

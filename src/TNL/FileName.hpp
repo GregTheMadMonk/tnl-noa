@@ -79,7 +79,7 @@ FileName::getFileName()
    std::stringstream stream;
    stream << this->fileNameBase << std::setw( this->digitsCount ) << std::setfill( '0' ) << this->index
           << this->distributedSystemNodeId << "." << this->extension;
-   return String( stream.str().data() );
+   return stream.str();
 }
 
 inline String

@@ -122,7 +122,7 @@ protected:
       if( precision )
          str << std::setprecision( precision );
       str << num;
-      return std::string( str.str().data() );
+      return str.str();
    }
 };
 

@@ -19,35 +19,35 @@
 namespace TNL {
 
 inline String
-SystemInfo::getHostname( void )
+SystemInfo::getHostname()
 {
    char host_name[ 256 ];
    gethostname( host_name, 255 );
-   return String( host_name );
+   return host_name;
 }
 
 inline String
-SystemInfo::getArchitecture( void )
+SystemInfo::getArchitecture()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.machine );
+   return uts.machine;
 }
 
 inline String
-SystemInfo::getSystemName( void )
+SystemInfo::getSystemName()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.sysname );
+   return uts.sysname;
 }
 
 inline String
-SystemInfo::getSystemRelease( void )
+SystemInfo::getSystemRelease()
 {
    utsname uts;
    uname( &uts );
-   return String( uts.release );
+   return uts.release;
 }
 
 inline String
@@ -57,11 +57,11 @@ SystemInfo::getCurrentTime( const char* format )
    std::tm* localtime = std::localtime( &time_since_epoch );
    std::stringstream ss;
    ss << std::put_time( localtime, format );
-   return String( ss.str().c_str() );
+   return ss.str();
 }
 
 inline int
-SystemInfo::getNumberOfProcessors( void )
+SystemInfo::getNumberOfProcessors()
 {
    static int numberOfProcessors = 0;
    if( numberOfProcessors == 0 ) {
@@ -72,10 +72,10 @@ SystemInfo::getNumberOfProcessors( void )
 }
 
 inline String
-SystemInfo::getOnlineCPUs( void )
+SystemInfo::getOnlineCPUs()
 {
    std::string online = readFile< std::string >( "/sys/devices/system/cpu/online" );
-   return String( online.c_str() );
+   return online;
 }
 
 inline int
@@ -159,7 +159,7 @@ SystemInfo::getFreeMemory()
 }
 
 inline SystemInfo::CPUInfo
-SystemInfo::parseCPUInfo( void )
+SystemInfo::parseCPUInfo()
 {
    CPUInfo info;
    std::ifstream file( "/proc/cpuinfo" );

@@ -410,7 +410,7 @@ convertToString( const T& value )
 {
    std::stringstream str;
    str << value;
-   return String( str.str().data() );
+   return str.str();
 }
 
 /**

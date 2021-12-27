@@ -109,7 +109,7 @@ protected:
    verifyDataArray( const tinyxml2::XMLElement* elem, const std::string& elemName = "DataArray" )
    {
       // the elemName parameter is necessary due to parallel formats using "PDataArray"
-      verifyElement( elem, elemName.c_str() );
+      verifyElement( elem, elemName );
       // verify Name
       getAttributeString( elem, "Name" );
       // verify type
@@ -330,11 +330,11 @@ protected:
       if( piece->NextSiblingElement( "Piece" ) )
          // ambiguity - throw error, we don't know which piece to parse
          throw MeshReaderError( "XMLVTK", "the dataset element <" + fileType + "> contains more than one <Piece> element" );
-      const tinyxml2::XMLElement* pointData = getChildSafe( piece, sectionName.c_str() );
+      const tinyxml2::XMLElement* pointData = getChildSafe( piece, sectionName );
       if( pointData->NextSiblingElement( sectionName.c_str() ) )
          throw MeshReaderError( "XMLVTK", "the <Piece> element contains more than one <" + sectionName + "> element" );
-      const tinyxml2::XMLElement* dataArray = getDataArrayByName( pointData, arrayName.c_str() );
-      return readDataArray( dataArray, arrayName.c_str() );
+      const tinyxml2::XMLElement* dataArray = getDataArrayByName( pointData, arrayName );
+      return readDataArray( dataArray, arrayName );
    }
 #endif
 
