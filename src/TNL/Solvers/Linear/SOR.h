@@ -94,6 +94,20 @@ class SOR
       const RealType& getOmega() const;
 
       /**
+       * \brief Set the period for a recomputation of the residue.
+       *
+       * \param period number of iterations between subsequent recomputations of the residue.
+       */
+      void setResiduePeriod( IndexType period );
+
+      /**
+       * \brief Get the period for a recomputation of the residue.
+       *
+       * \return number of iterations between subsequent recomputations of the residue.
+       */
+      IndexType getResiduePerid() const;
+
+      /**
        * \brief Method for solving of a linear system.
        *
        * See \ref LinearSolver::solve for more details.
@@ -106,7 +120,17 @@ class SOR
       bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
    protected:
+      using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+
+      void performIteration( const ConstVectorViewType& b,
+                             const ConstVectorViewType& diagonalView,
+                             VectorViewType& x ) const;
+
       RealType omega = 1.0;
+
+      IndexType residuePeriod = 4;
+
+      VectorType diagonal;
 };
 
       } // namespace Linear
