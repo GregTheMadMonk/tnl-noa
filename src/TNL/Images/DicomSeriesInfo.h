@@ -17,7 +17,7 @@
 #endif
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 class DicomHeader;
 
@@ -28,41 +28,41 @@ class DicomHeader;
 class DicomSeriesInfo
 {
    public:
- 
+
        inline DicomSeriesInfo( DicomHeader &dicomHeader );
- 
+
        inline virtual ~DicomSeriesInfo();
 
        inline const String& getModality();
- 
+
        inline const String& getStudyInstanceUID();
- 
+
        inline const String& getSeriesInstanceUID();
- 
+
        inline const String& getSeriesDescription();
- 
+
        inline const String& getSeriesNumber();
- 
+
        inline const String& getSeriesDate();
- 
+
        inline const String& getSeriesTime();
- 
+
        inline const String& getPerformingPhysiciansName();
- 
+
        inline const String& getPerformingPhysicianIdentificationSequence();
- 
+
        inline const String& getOperatorsName();
- 
+
        inline const String& getOperatorIdentificationSequence();
- 
+
        inline const String& getAcquisitionTime();
- 
+
    private:
- 
+
        DicomHeader &dicomHeader;
- 
+
        bool retrieveInfo();
- 
+
        bool isObjectRetrieved;
 
        String modality;
@@ -101,5 +101,4 @@ class DicomSeriesInfo
 } // namespace Images
 } // namespace TNL
 
-#include <TNL/Images//DicomSeriesInfo_impl.h>
-
+#include <TNL/Images/DicomSeriesInfo_impl.h>

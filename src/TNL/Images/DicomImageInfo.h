@@ -13,7 +13,7 @@
 #endif
 
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 class DicomHeader;
 
@@ -44,48 +44,47 @@ struct PixelSpacing
 class DicomImageInfo
 {
    public:
- 
+
       inline DicomImageInfo( DicomHeader &DicomHeader);
- 
+
       inline virtual ~DicomImageInfo();
 
       inline ImagePositionToPatient getImagePositionToPatient();
- 
+
       inline ImageOrientationToPatient getImageOrientationToPatient();
- 
+
       inline double getSliceThickness();
- 
+
       inline double getSliceLocation();
- 
+
       inline PixelSpacing getPixelSpacing();
- 
+
       inline int getNumberOfSlices();
 
    private:
- 
+
       DicomHeader &dicomHeader;
- 
+
       bool retrieveInfo();
- 
+
       bool isObjectRetrieved;
 
       double sliceLocation;
- 
+
       double sliceThickness;
- 
+
       ImagePositionToPatient imagePositionToPatient;
- 
+
       ImageOrientationToPatient imageOrientationToPatient;
- 
+
       PixelSpacing pixelSpacing;
- 
+
       int numberOfSlices;
- 
+
       int width, height, depth;
 };
 
 } // namespace Images
 } // namespace TNL
 
-#include <TNL/Images//DicomImageInfo_impl.h>
-
+#include <TNL/Images/DicomImageInfo_impl.h>

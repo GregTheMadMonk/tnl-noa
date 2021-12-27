@@ -6,12 +6,13 @@
 
 #pragma once
 
-#include <TNL/Images//DicomSeries.h>
-#include <TNL/Images//DicomSeriesInfo.h>
 #include <dirent.h>
 
+#include <TNL/Images/DicomSeries.h>
+#include <TNL/Images/DicomSeriesInfo.h>
+
 namespace TNL {
-namespace Images {   
+namespace Images {
 
 int findLastIndexOf(String &str, const char* c)
 {
@@ -83,7 +84,7 @@ getImage( const int imageIdx,
    const Uint16* imageData = this->getData( imageIdx );
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
- 
+
    Index i, j;
    int position( 0 );
    for( i = 0; i < this->height; i ++ )
