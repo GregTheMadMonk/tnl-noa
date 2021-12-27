@@ -30,12 +30,12 @@ struct Cuda
 
    Cuda() = default;
    Cuda( const Cuda& ) = default;
-   Cuda( Cuda&& ) = default;
+   Cuda( Cuda&& ) noexcept = default;
 
    Cuda&
    operator=( const Cuda& ) = default;
    Cuda&
-   operator=( Cuda&& ) = default;
+   operator=( Cuda&& ) noexcept = default;
 
    template< class U >
    Cuda( const Cuda< U >& )

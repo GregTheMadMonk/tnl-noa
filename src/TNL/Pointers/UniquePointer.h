@@ -249,7 +249,7 @@ public:
     * \return constant reference to \ref this
     */
    const UniquePointer&
-   operator=( UniquePointer&& ptr )
+   operator=( UniquePointer&& ptr ) noexcept
    {
       return this->operator=( ptr );
    }
@@ -502,7 +502,7 @@ public:
     * \return constant reference to \ref this
     */
    const UniquePointer&
-   operator=( UniquePointer&& ptr )
+   operator=( UniquePointer&& ptr ) noexcept
    {
       return this->operator=( ptr );
    }

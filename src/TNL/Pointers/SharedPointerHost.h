@@ -138,7 +138,7 @@ public:
     *
     * \param pointer is the source shared pointer.
     */
-   SharedPointer( SharedPointer&& pointer )  // this is needed only to avoid the default compiler-generated constructor
+   SharedPointer( SharedPointer&& pointer ) noexcept  // this is needed only to avoid the default compiler-generated constructor
    : pd( (PointerData*) pointer.pd )
    {
       pointer.pd = nullptr;
@@ -348,7 +348,7 @@ public:
     * \return constant reference to \ref this
     */
    const SharedPointer&
-   operator=( SharedPointer&& ptr )  // this is needed only to avoid the default compiler-generated operator
+   operator=( SharedPointer&& ptr ) noexcept  // this is needed only to avoid the default compiler-generated operator
    {
       this->free();
       this->pd = (PointerData*) ptr.pd;

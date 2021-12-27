@@ -15,7 +15,7 @@ namespace Exceptions {
 
 struct ConfigError : public std::runtime_error
 {
-   ConfigError( std::string msg ) : std::runtime_error( msg ) {}
+   ConfigError( const std::string& msg ) : std::runtime_error( msg ) {}
 };
 
 }  // namespace Exceptions

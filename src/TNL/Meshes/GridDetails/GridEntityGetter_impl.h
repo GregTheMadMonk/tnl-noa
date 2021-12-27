@@ -72,7 +72,7 @@ public:
       TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
       TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       return GridEntity( grid,
                          CoordinatesType( index % dimensions.x(), index / dimensions.x() ),
@@ -163,7 +163,7 @@ public:
       TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
       TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       const IndexType aux = dimensions.x() + 1;
       return GridEntity( grid,
@@ -179,8 +179,8 @@ public:
       TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
       TNL_ASSERT_LE( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
 
-      const CoordinatesType coordinates = entity.getCoordinates();
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& coordinates = entity.getCoordinates();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       return coordinates.y() * ( dimensions.x() + 1 ) + coordinates.x();
    }
@@ -207,7 +207,7 @@ public:
       TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
       TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       return GridEntity( grid,
                          CoordinatesType( index % dimensions.x(),
@@ -224,8 +224,8 @@ public:
       TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
       TNL_ASSERT_LT( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
 
-      const CoordinatesType coordinates = entity.getCoordinates();
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& coordinates = entity.getCoordinates();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       return ( coordinates.z() * dimensions.y() + coordinates.y() ) * dimensions.x() + coordinates.x();
    }
@@ -381,7 +381,7 @@ public:
       TNL_ASSERT_GE( index, 0, "Index must be non-negative." );
       TNL_ASSERT_LT( index, grid.template getEntitiesCount< GridEntity >(), "Index is out of bounds." );
 
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       const IndexType auxX = dimensions.x() + 1;
       const IndexType auxY = dimensions.y() + 1;
@@ -398,8 +398,8 @@ public:
       TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0, 0 ), "wrong coordinates" );
       TNL_ASSERT_LE( entity.getCoordinates(), grid.getDimensions(), "wrong coordinates" );
 
-      const CoordinatesType coordinates = entity.getCoordinates();
-      const CoordinatesType dimensions = grid.getDimensions();
+      const CoordinatesType& coordinates = entity.getCoordinates();
+      const CoordinatesType& dimensions = grid.getDimensions();
 
       return ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * ( dimensions.x() + 1 ) + coordinates.x();
    }

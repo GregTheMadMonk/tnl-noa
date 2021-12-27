@@ -58,7 +58,7 @@ public:
 
    SlicedEllpack( const SlicedEllpack& segments ) = default;
 
-   SlicedEllpack( SlicedEllpack&& segments ) = default;
+   SlicedEllpack( SlicedEllpack&& segments ) noexcept = default;
 
    static std::string
    getSerializationType();

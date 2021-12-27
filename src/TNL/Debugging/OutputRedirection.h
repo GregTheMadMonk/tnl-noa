@@ -26,7 +26,7 @@ public:
    OutputRedirection( int targetFd ) : targetFd( targetFd ) {}
 
    bool
-   redirect( std::string fname )
+   redirect( const std::string& fname )
    {
       // restore the original stream if there is any backup
       if( backupFd >= 0 || file )
@@ -83,7 +83,7 @@ public:
 };
 
 inline bool
-redirect_stdout_stderr( std::string stdout_fname, std::string stderr_fname, bool restore = false )
+redirect_stdout_stderr( const std::string& stdout_fname, const std::string& stderr_fname, bool restore = false )
 {
    static OutputRedirection stdoutRedir( STDOUT_FILENO );
    static OutputRedirection stderrRedir( STDERR_FILENO );

@@ -22,11 +22,11 @@ public:
 
    GlobalIndexStorage() = default;
    GlobalIndexStorage( const GlobalIndexStorage& ) = default;
-   GlobalIndexStorage( GlobalIndexStorage&& ) = default;
+   GlobalIndexStorage( GlobalIndexStorage&& ) noexcept = default;
    GlobalIndexStorage&
    operator=( const GlobalIndexStorage& ) = default;
    GlobalIndexStorage&
-   operator=( GlobalIndexStorage&& ) = default;
+   operator=( GlobalIndexStorage&& ) noexcept = default;
 
    template< typename Mesh_ >
    GlobalIndexStorage&
@@ -65,11 +65,11 @@ class GlobalIndexStorageFamily : public GlobalIndexStorage< Mesh, Device, Dimens
 public:
    GlobalIndexStorageFamily() = default;
    GlobalIndexStorageFamily( const GlobalIndexStorageFamily& ) = default;
-   GlobalIndexStorageFamily( GlobalIndexStorageFamily&& ) = default;
+   GlobalIndexStorageFamily( GlobalIndexStorageFamily&& ) noexcept = default;
    GlobalIndexStorageFamily&
    operator=( const GlobalIndexStorageFamily& ) = default;
    GlobalIndexStorageFamily&
-   operator=( GlobalIndexStorageFamily&& ) = default;
+   operator=( GlobalIndexStorageFamily&& ) noexcept = default;
 
    template< typename Mesh_ >
    GlobalIndexStorageFamily&
@@ -94,11 +94,11 @@ class GlobalIndexStorageFamily< Mesh, Device, Meshes::DimensionTag< Mesh::getMes
 public:
    GlobalIndexStorageFamily() = default;
    GlobalIndexStorageFamily( const GlobalIndexStorageFamily& ) = default;
-   GlobalIndexStorageFamily( GlobalIndexStorageFamily&& ) = default;
+   GlobalIndexStorageFamily( GlobalIndexStorageFamily&& ) noexcept = default;
    GlobalIndexStorageFamily&
    operator=( const GlobalIndexStorageFamily& ) = default;
    GlobalIndexStorageFamily&
-   operator=( GlobalIndexStorageFamily&& ) = default;
+   operator=( GlobalIndexStorageFamily&& ) noexcept = default;
 
    template< typename Mesh_ >
    GlobalIndexStorageFamily&

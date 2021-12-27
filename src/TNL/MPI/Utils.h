@@ -21,7 +21,7 @@ isInitialized()
 }
 
 inline void
-setupRedirection( std::string outputDirectory )
+setupRedirection( const std::string& outputDirectory )
 {
 #ifdef HAVE_MPI
    if( GetSize() > 1 && GetRank() != 0 ) {

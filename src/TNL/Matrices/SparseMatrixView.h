@@ -196,7 +196,7 @@ public:
     * \param matrix is an input sparse matrix view.
     */
    __cuda_callable__
-   SparseMatrixView( SparseMatrixView&& matrix ) = default;
+   SparseMatrixView( SparseMatrixView&& matrix ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the sparse matrix.

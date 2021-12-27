@@ -15,7 +15,7 @@ namespace Exceptions {
 
 struct NotImplementedError : public std::runtime_error
 {
-   NotImplementedError( std::string msg = "Something is not implemented." ) : std::runtime_error( msg ) {}
+   NotImplementedError( const std::string& msg = "Something is not implemented." ) : std::runtime_error( msg ) {}
 };
 
 }  // namespace Exceptions

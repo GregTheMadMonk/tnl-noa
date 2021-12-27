@@ -49,7 +49,7 @@ public:
    DistributedNDArrayView( const DistributedNDArrayView& ) = default;
 
    // default move-constructor
-   DistributedNDArrayView( DistributedNDArrayView&& ) = default;
+   DistributedNDArrayView( DistributedNDArrayView&& ) noexcept = default;
 
    // Copy-assignment does deep copy, just like regular array, but the sizes
    // must match (i.e. copy-assignment cannot resize).

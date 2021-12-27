@@ -56,7 +56,7 @@ public:
     */
    __cuda_callable__
    StaticVector&
-   operator=( StaticVector&& ) = default;
+   operator=( StaticVector&& ) noexcept = default;
 
    //! Constructors and assignment operators are inherited from the class \ref StaticArray.
    using StaticArray< Size, Real >::StaticArray;

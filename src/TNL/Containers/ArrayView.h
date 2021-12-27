@@ -143,7 +143,7 @@ public:
     * \param view The array view to be moved.
     */
    __cuda_callable__
-   ArrayView( ArrayView&& view ) = default;
+   ArrayView( ArrayView&& view ) noexcept = default;
 
    /**
     * \brief Method for rebinding (reinitialization) using a raw pointer and

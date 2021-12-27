@@ -28,7 +28,7 @@ public:
 
    ThreePartVectorView() = default;
    ThreePartVectorView( const ThreePartVectorView& ) = default;
-   ThreePartVectorView( ThreePartVectorView&& ) = default;
+   ThreePartVectorView( ThreePartVectorView&& ) noexcept = default;
 
    ThreePartVectorView( VectorView view_left, VectorView view_mid, VectorView view_right )
    {

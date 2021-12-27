@@ -40,8 +40,7 @@ bool processImages( const Config::ParameterContainer& parameters )
    MeshFunctionType meshFunction;
 
    Images::RegionOfInterest< int > roi;
-   for( auto fileName : inputImages )
-   {
+   for( const auto& fileName : inputImages ) {
       const String outputFileName = removeFileNameExtension( fileName ) + ".vti";
       std::cout << "Processing image file " << fileName << "... ";
       Images::PGMImage< int > pgmImage;
@@ -96,8 +95,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    const std::string imageFormat = parameters.getParameter< std::string >( "image-format" );
    const std::string meshFunctionName = parameters.getParameter< std::string >( "mesh-function-name" );
 
-   for( auto fileName : inputFiles )
-   {
+   for( const auto& fileName : inputFiles ) {
       std::cout << "Processing file " << fileName << "... ";
       using Real = double;
       using GridType = Meshes::Grid< 2, Real, Devices::Host, int >;

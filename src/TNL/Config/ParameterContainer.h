@@ -93,7 +93,7 @@ public:
    bool
    checkParameters( std::initializer_list< std::string > names ) const
    {
-      for( auto& name : names )
+      for( const auto& name : names )
          if( ! checkParameter( name ) )
             return false;
       return true;

@@ -63,7 +63,7 @@ public:
    SlicedEllpackView( const SlicedEllpackView& slicedEllpackView ) = default;
 
    __cuda_callable__
-   SlicedEllpackView( SlicedEllpackView&& slicedEllpackView ) = default;
+   SlicedEllpackView( SlicedEllpackView&& slicedEllpackView ) noexcept = default;
 
    static std::string
    getSerializationType();

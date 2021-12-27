@@ -245,7 +245,7 @@ public:
     *
     * \param matrix is the source matrix
     */
-   SparseSandboxMatrix( SparseSandboxMatrix&& matrix ) = default;
+   SparseSandboxMatrix( SparseSandboxMatrix&& matrix ) noexcept = default;
 
    /**
     * \brief Constructor with matrix dimensions.

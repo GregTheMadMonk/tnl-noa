@@ -23,7 +23,9 @@ namespace Readers {
 
 struct MeshReaderError : public std::runtime_error
 {
-   MeshReaderError( std::string readerName, std::string msg ) : std::runtime_error( readerName + " error: " + msg ) {}
+   MeshReaderError( const std::string& readerName, const std::string& msg )
+   : std::runtime_error( readerName + " error: " + msg )
+   {}
 };
 
 class MeshReader

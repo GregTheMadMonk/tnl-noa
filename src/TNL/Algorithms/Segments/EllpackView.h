@@ -73,7 +73,7 @@ public:
    EllpackView( const EllpackView& ellpackView ) = default;
 
    __cuda_callable__
-   EllpackView( EllpackView&& ellpackView ) = default;
+   EllpackView( EllpackView&& ellpackView ) noexcept = default;
 
    static std::string
    getSerializationType();

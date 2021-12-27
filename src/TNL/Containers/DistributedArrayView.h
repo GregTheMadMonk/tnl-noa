@@ -64,7 +64,7 @@ public:
    DistributedArrayView( const DistributedArrayView< Value_, Device, Index >& );
 
    // default move-constructor
-   DistributedArrayView( DistributedArrayView&& ) = default;
+   DistributedArrayView( DistributedArrayView&& ) noexcept = default;
 
    // method for rebinding (reinitialization) to raw data
    void

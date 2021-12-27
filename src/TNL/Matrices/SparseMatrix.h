@@ -198,7 +198,7 @@ public:
     *
     * \param matrix is the source matrix
     */
-   SparseMatrix( SparseMatrix&& matrix ) = default;
+   SparseMatrix( SparseMatrix&& matrix ) noexcept = default;
 
    /**
     * \brief Constructor with matrix dimensions.

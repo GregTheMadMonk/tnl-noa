@@ -25,7 +25,7 @@ public:
    writeTableHeader( const std::string& spanningElement, const HeaderElements& subElements )
    {
       if( verbose && header_changed ) {
-         for( auto& it : metadataColumns ) {
+         for( const auto& it : metadataColumns ) {
             const int width = ( metadataWidths.count( it.first ) ) ? metadataWidths[ it.first ] : 15;
             std::cout << std::setw( width ) << it.first;
          }
@@ -34,7 +34,7 @@ public:
          // but is excluded from header
          std::cout << std::setw( 15 ) << "";
 
-         for( auto& it : subElements ) {
+         for( const auto& it : subElements ) {
             std::cout << std::setw( 15 ) << it;
          }
          std::cout << std::endl;
@@ -44,12 +44,12 @@ public:
 
       // initial indent string
       log << std::endl;
-      for( auto& it : metadataColumns ) {
+      for( const auto& it : metadataColumns ) {
          log << "! " << it.first << std::endl;
       }
 
       log << "! " << spanningElement << std::endl;
-      for( auto& it : subElements ) {
+      for( const auto& it : subElements ) {
          log << "!! " << it << std::endl;
       }
    }
@@ -58,13 +58,13 @@ public:
    writeTableRow( const std::string& spanningElement, const RowElements& subElements, const std::string& errorMessage )
    {
       if( verbose ) {
-         for( auto& it : metadataColumns ) {
+         for( const auto& it : metadataColumns ) {
             const int width = ( metadataWidths.count( it.first ) ) ? metadataWidths[ it.first ] : 15;
             std::cout << std::setw( width ) << it.second;
          }
          // spanning element is printed as usual column to stdout
          std::cout << std::setw( 15 ) << spanningElement;
-         for( auto& it : subElements ) {
+         for( const auto& it : subElements ) {
             std::cout << std::setw( 15 ) << it;
          }
          std::cout << std::endl;
@@ -72,14 +72,14 @@ public:
 
       // only when changed (the header has been already adjusted)
       // print each element on separate line
-      for( auto& it : metadataColumns ) {
+      for( const auto& it : metadataColumns ) {
          log << it.second << std::endl;
       }
 
       if( errorMessage.empty() ) {
          // benchmark data are indented
          const std::string indent = "    ";
-         for( auto& it : subElements ) {
+         for( const auto& it : subElements ) {
             log << indent << it << std::endl;
          }
       }
@@ -107,13 +107,13 @@ public:
    {
       // initial indent string
       log << std::endl;
-      for( auto& it : metadataColumns ) {
+      for( const auto& it : metadataColumns ) {
          log << "! " << it.first << std::endl;
       }
 
       // only when changed (the header has been already adjusted)
       // print each element on separate line
-      for( auto& it : metadataColumns ) {
+      for( const auto& it : metadataColumns ) {
          log << it.second << std::endl;
       }
 

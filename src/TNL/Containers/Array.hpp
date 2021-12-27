@@ -21,7 +21,7 @@ namespace TNL {
 namespace Containers {
 
 template< typename Value, typename Device, typename Index, typename Allocator >
-Array< Value, Device, Index, Allocator >::Array( Array&& array )
+Array< Value, Device, Index, Allocator >::Array( Array&& array ) noexcept
 : data( std::move( array.data ) ), size( std::move( array.size ) ), allocator( std::move( array.allocator ) )
 {
    array.data = nullptr;
@@ -421,7 +421,7 @@ Array< Value, Device, Index, Allocator >::operator=( const Array< Value, Device,
 
 template< typename Value, typename Device, typename Index, typename Allocator >
 Array< Value, Device, Index, Allocator >&
-Array< Value, Device, Index, Allocator >::operator=( Array< Value, Device, Index, Allocator >&& array )
+Array< Value, Device, Index, Allocator >::operator=( Array< Value, Device, Index, Allocator >&& array ) noexcept
 {
    reset();
 

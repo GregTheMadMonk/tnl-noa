@@ -114,7 +114,7 @@ public:
     * \param matrix is an input tridiagonal matrix view.
     */
    __cuda_callable__
-   TridiagonalMatrixView( TridiagonalMatrixView&& view ) = default;
+   TridiagonalMatrixView( TridiagonalMatrixView&& view ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the tridiagonal matrix.

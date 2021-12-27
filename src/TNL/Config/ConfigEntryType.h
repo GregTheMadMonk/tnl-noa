@@ -82,7 +82,7 @@ struct ParameterTypeCoercion< std::vector< T > >
    convert( const std::vector< T >& vec )
    {
       type new_vec;
-      for( auto value : vec )
+      for( const auto& value : vec )
          new_vec.push_back( value );
       return new_vec;
    }
@@ -92,7 +92,7 @@ struct ParameterTypeCoercion< std::vector< T > >
    convert_back( const type& vec )
    {
       Result new_vec;
-      for( auto value : vec )
+      for( const auto& value : vec )
          new_vec.push_back( value );
       return new_vec;
    }

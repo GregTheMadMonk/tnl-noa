@@ -179,7 +179,7 @@ public:
    virtual void
    setMetadataWidths( const std::map< std::string, int >& widths )
    {
-      for( auto& it : widths )
+      for( const auto& it : widths )
          if( metadataWidths.count( it.first ) )
             metadataWidths[ it.first ] = it.second;
          else

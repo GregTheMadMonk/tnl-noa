@@ -62,7 +62,7 @@ public:
    BiEllpackView( const BiEllpackView& chunked_ellpack_view ) = default;
 
    __cuda_callable__
-   BiEllpackView( BiEllpackView&& chunked_ellpack_view ) = default;
+   BiEllpackView( BiEllpackView&& chunked_ellpack_view ) noexcept = default;
 
    static std::string
    getSerializationType();

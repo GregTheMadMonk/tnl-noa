@@ -153,7 +153,7 @@ public:
     *
     * \param matrix is the source matrix
     */
-   DenseMatrix( DenseMatrix&& matrix ) = default;
+   DenseMatrix( DenseMatrix&& matrix ) noexcept = default;
 
    /**
     * \brief Constructor with matrix dimensions.

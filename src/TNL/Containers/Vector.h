@@ -105,7 +105,7 @@ public:
    /**
     * \brief Default move constructor.
     */
-   Vector( Vector&& ) = default;
+   Vector( Vector&& ) noexcept = default;
 
    /**
     * \brief Constructor from expression template
@@ -128,7 +128,7 @@ public:
     * \brief Move-assignment operator for acquiring data from \e rvalues.
     */
    Vector&
-   operator=( Vector&& ) = default;
+   operator=( Vector&& ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the vector.

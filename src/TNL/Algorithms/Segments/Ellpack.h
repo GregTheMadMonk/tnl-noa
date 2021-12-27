@@ -60,7 +60,7 @@ public:
 
    Ellpack( const Ellpack& segments ) = default;
 
-   Ellpack( Ellpack&& segments ) = default;
+   Ellpack( Ellpack&& segments ) noexcept = default;
 
    static std::string
    getSerializationType();

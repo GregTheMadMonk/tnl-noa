@@ -102,7 +102,7 @@ public:
     * @param view is an input matrix view.
     */
    __cuda_callable__
-   MatrixView( MatrixView&& view ) = default;
+   MatrixView( MatrixView&& view ) noexcept = default;
 
    /**
     * \brief Tells the number of allocated matrix elements.

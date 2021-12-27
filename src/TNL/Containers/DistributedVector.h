@@ -62,7 +62,7 @@ public:
    /**
     * \brief Default move constructor.
     */
-   DistributedVector( DistributedVector&& ) = default;
+   DistributedVector( DistributedVector&& ) noexcept = default;
 
    /**
     * \brief Copy-assignment operator for copying data from another vector.
@@ -74,7 +74,7 @@ public:
     * \brief Move-assignment operator for acquiring data from \e rvalues.
     */
    DistributedVector&
-   operator=( DistributedVector&& ) = default;
+   operator=( DistributedVector&& ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the local part of the vector.

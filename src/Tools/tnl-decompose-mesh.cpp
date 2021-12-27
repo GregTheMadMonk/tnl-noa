@@ -269,8 +269,8 @@ void
 decompose_and_save( const Mesh& mesh,
                     const unsigned nparts,
                     const MetisIndexArray& part,
-                    const std::shared_ptr< idx_t > dual_xadj,
-                    const std::shared_ptr< idx_t > dual_adjncy,
+                    const std::shared_ptr< idx_t >& dual_xadj,
+                    const std::shared_ptr< idx_t >& dual_adjncy,
                     const unsigned ncommon,
                     const unsigned ghost_levels,
                     const std::string pvtuFileName )

@@ -154,7 +154,7 @@ writeMapAsJson( const std::map< std::string, std::string >& data, std::ostream& 
 }
 
 inline void
-writeMapAsJson( const std::map< std::string, std::string >& data, std::string filename, std::string newExtension = "" )
+writeMapAsJson( const std::map< std::string, std::string >& data, std::string filename, const std::string& newExtension = "" )
 {
    namespace fs = std::experimental::filesystem;
 

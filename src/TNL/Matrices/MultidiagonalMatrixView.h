@@ -122,7 +122,7 @@ public:
     * \param matrix is an input multidiagonal matrix view.
     */
    __cuda_callable__
-   MultidiagonalMatrixView( MultidiagonalMatrixView&& view ) = default;
+   MultidiagonalMatrixView( MultidiagonalMatrixView&& view ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the multidiagonal matrix.

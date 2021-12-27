@@ -37,13 +37,13 @@ public:
 
    DistributedMesh( const DistributedMesh& ) = default;
 
-   DistributedMesh( DistributedMesh&& ) = default;
+   DistributedMesh( DistributedMesh&& ) noexcept = default;
 
    DistributedMesh&
    operator=( const DistributedMesh& ) = default;
 
    DistributedMesh&
-   operator=( DistributedMesh&& ) = default;
+   operator=( DistributedMesh&& ) noexcept = default;
 
    template< typename Mesh_ >
    DistributedMesh&

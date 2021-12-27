@@ -53,7 +53,7 @@ public:
 
    BiEllpack( const BiEllpack& segments ) = default;
 
-   BiEllpack( BiEllpack&& segments ) = default;
+   BiEllpack( BiEllpack&& segments ) noexcept = default;
 
    static std::string
    getSerializationType();

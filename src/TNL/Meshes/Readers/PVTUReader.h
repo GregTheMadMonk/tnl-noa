@@ -22,7 +22,7 @@ namespace Readers {
 class PVTUReader : public XMLVTK
 {
    std::string
-   getSourcePath( std::string source )
+   getSourcePath( const std::string& source )
    {
       namespace fs = std::experimental::filesystem;
       return fs::path( fileName ).parent_path() / source;

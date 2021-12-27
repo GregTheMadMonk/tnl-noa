@@ -160,7 +160,7 @@ public:
     *
     * \param segments  are the source segments.
     */
-   CSR( CSR&& segments ) = default;
+   CSR( CSR&& segments ) noexcept = default;
 
    /**
     * \brief Returns string with serialization type.

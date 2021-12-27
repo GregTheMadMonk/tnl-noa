@@ -56,7 +56,7 @@ public:
    CSRView( const CSRView& csr_view ) = default;
 
    __cuda_callable__
-   CSRView( CSRView&& csr_view ) = default;
+   CSRView( CSRView&& csr_view ) noexcept = default;
 
    static std::string
    getSerializationType();

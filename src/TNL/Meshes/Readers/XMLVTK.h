@@ -39,7 +39,7 @@ class XMLVTK : public MeshReader
 #ifdef HAVE_TINYXML2
 protected:
    static void
-   verifyElement( const tinyxml2::XMLElement* elem, const std::string name )
+   verifyElement( const tinyxml2::XMLElement* elem, const std::string& name )
    {
       if( ! elem )
          throw MeshReaderError( "XMLVTK", "tag <" + name + "> not found" );
@@ -49,7 +49,7 @@ protected:
    }
 
    static const tinyxml2::XMLElement*
-   verifyHasOnlyOneChild( const tinyxml2::XMLElement* parent, const std::string childName = "" )
+   verifyHasOnlyOneChild( const tinyxml2::XMLElement* parent, const std::string& childName = "" )
    {
       const std::string parentName = parent->Name();
       const tinyxml2::XMLElement* elem = parent->FirstChildElement();
@@ -63,7 +63,7 @@ protected:
    }
 
    static std::string
-   getAttributeString( const tinyxml2::XMLElement* elem, std::string name, std::string defaultValue = "" )
+   getAttributeString( const tinyxml2::XMLElement* elem, const std::string& name, std::string defaultValue = "" )
    {
       const char* attribute = nullptr;
       attribute = elem->Attribute( name.c_str() );
@@ -76,7 +76,7 @@ protected:
    }
 
    static std::int64_t
-   getAttributeInteger( const tinyxml2::XMLElement* elem, std::string name )
+   getAttributeInteger( const tinyxml2::XMLElement* elem, const std::string& name )
    {
       std::int64_t value;
       tinyxml2::XMLError status = elem->QueryInt64Attribute( name.c_str(), &value );
@@ -88,7 +88,7 @@ protected:
    }
 
    static std::int64_t
-   getAttributeInteger( const tinyxml2::XMLElement* elem, std::string name, int64_t defaultValue )
+   getAttributeInteger( const tinyxml2::XMLElement* elem, const std::string& name, int64_t defaultValue )
    {
       std::int64_t value;
       tinyxml2::XMLError status = elem->QueryInt64Attribute( name.c_str(), &value );
@@ -98,7 +98,7 @@ protected:
    }
 
    static const tinyxml2::XMLElement*
-   getChildSafe( const tinyxml2::XMLElement* parent, std::string name )
+   getChildSafe( const tinyxml2::XMLElement* parent, const std::string& name )
    {
       const tinyxml2::XMLElement* child = parent->FirstChildElement( name.c_str() );
       verifyElement( child, name );
@@ -106,7 +106,7 @@ protected:
    }
 
    static void
-   verifyDataArray( const tinyxml2::XMLElement* elem, std::string elemName = "DataArray" )
+   verifyDataArray( const tinyxml2::XMLElement* elem, const std::string& elemName = "DataArray" )
    {
       // the elemName parameter is necessary due to parallel formats using "PDataArray"
       verifyElement( elem, elemName.c_str() );
@@ -130,7 +130,7 @@ protected:
    }
 
    static const tinyxml2::XMLElement*
-   getDataArrayByName( const tinyxml2::XMLElement* parent, std::string name )
+   getDataArrayByName( const tinyxml2::XMLElement* parent, const std::string& name )
    {
       const tinyxml2::XMLElement* found = nullptr;
       const tinyxml2::XMLElement* child = parent->FirstChildElement( "DataArray" );
@@ -265,7 +265,7 @@ protected:
    }
 
    VariantVector
-   readDataArray( const tinyxml2::XMLElement* elem, std::string arrayName ) const
+   readDataArray( const tinyxml2::XMLElement* elem, const std::string& arrayName ) const
    {
       verifyElement( elem, "DataArray" );
       const char* block = elem->GetText();
@@ -324,7 +324,7 @@ protected:
    }
 
    VariantVector
-   readPointOrCellData( std::string sectionName, std::string arrayName )
+   readPointOrCellData( const std::string& sectionName, const std::string& arrayName )
    {
       const tinyxml2::XMLElement* piece = getChildSafe( datasetElement, "Piece" );
       if( piece->NextSiblingElement( "Piece" ) )

@@ -180,7 +180,7 @@ public:
     * \param matrix is an input sparse matrix view.
     */
    __cuda_callable__
-   SparseSandboxMatrixView( SparseSandboxMatrixView&& matrix ) = default;
+   SparseSandboxMatrixView( SparseSandboxMatrixView&& matrix ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the sparse matrix.

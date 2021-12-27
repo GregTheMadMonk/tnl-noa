@@ -54,9 +54,9 @@ public:
    operator=( const DistributedNDArray& other ) = default;
 
    // default move-semantics
-   DistributedNDArray( DistributedNDArray&& ) = default;
+   DistributedNDArray( DistributedNDArray&& ) noexcept = default;
    DistributedNDArray&
-   operator=( DistributedNDArray&& ) = default;
+   operator=( DistributedNDArray&& ) noexcept = default;
 
    // Templated copy-assignment
    template< typename OtherArray >

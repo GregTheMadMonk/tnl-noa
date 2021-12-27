@@ -127,7 +127,7 @@ public:
     *
     * \param pointer is the source device pointer.
     */
-   DevicePointer( DevicePointer&& pointer )  // this is needed only to avoid the default compiler-generated constructor
+   DevicePointer( DevicePointer&& pointer ) noexcept  // this is needed only to avoid the default compiler-generated constructor
    : pointer( pointer.pointer )
    {
       pointer.pointer = nullptr;
@@ -294,7 +294,7 @@ public:
     * \return constant reference to \ref this
     */
    const DevicePointer&
-   operator=( DevicePointer&& ptr )  // this is needed only to avoid the default compiler-generated operator
+   operator=( DevicePointer&& ptr ) noexcept  // this is needed only to avoid the default compiler-generated operator
    {
       this->pointer = ptr.pointer;
       ptr.pointer = nullptr;
@@ -442,7 +442,7 @@ public:
     *
     * \param pointer is the source device pointer.
     */
-   DevicePointer( DevicePointer&& pointer )  // this is needed only to avoid the default compiler-generated constructor
+   DevicePointer( DevicePointer&& pointer ) noexcept  // this is needed only to avoid the default compiler-generated constructor
    : pointer( pointer.pointer ), pd( (PointerData*) pointer.pd ), cuda_pointer( pointer.cuda_pointer )
    {
       pointer.pointer = nullptr;
@@ -673,7 +673,7 @@ public:
     * \return constant reference to \ref this
     */
    const DevicePointer&
-   operator=( DevicePointer&& ptr )  // this is needed only to avoid the default compiler-generated operator
+   operator=( DevicePointer&& ptr ) noexcept  // this is needed only to avoid the default compiler-generated operator
    {
       this->free();
       this->pointer = ptr.pointer;

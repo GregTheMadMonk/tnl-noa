@@ -62,7 +62,7 @@ public:
 
    ChunkedEllpack( const ChunkedEllpack& segments ) = default;
 
-   ChunkedEllpack( ChunkedEllpack&& segments ) = default;
+   ChunkedEllpack( ChunkedEllpack&& segments ) noexcept = default;
 
    static std::string
    getSerializationType();

@@ -81,7 +81,7 @@ public:
    ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view ) = default;
 
    __cuda_callable__
-   ChunkedEllpackView( ChunkedEllpackView&& chunked_ellpack_view ) = default;
+   ChunkedEllpackView( ChunkedEllpackView&& chunked_ellpack_view ) noexcept = default;
 
    static std::string
    getSerializationType();

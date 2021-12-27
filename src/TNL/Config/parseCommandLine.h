@@ -171,7 +171,7 @@ void
 checkEnumValues( const ConfigEntry< EntryType, DefaultValueType >& entry, const std::string& name, const EntryType& value )
 {
    if( entry.getEnumValues().size() > 0 ) {
-      for( auto enumValue : entry.getEnumValues() )
+      for( const auto& enumValue : entry.getEnumValues() )
          if( value == enumValue )
             return;
       std::stringstream str;

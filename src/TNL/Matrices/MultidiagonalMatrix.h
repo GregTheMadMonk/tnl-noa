@@ -240,7 +240,7 @@ public:
     *
     * \param matrix is an input matrix.
     */
-   MultidiagonalMatrix( MultidiagonalMatrix&& matrix ) = default;
+   MultidiagonalMatrix( MultidiagonalMatrix&& matrix ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the multidiagonal matrix.

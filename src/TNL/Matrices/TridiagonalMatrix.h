@@ -186,7 +186,7 @@ public:
     *
     * \param matrix is an input matrix.
     */
-   TridiagonalMatrix( TridiagonalMatrix&& matrix ) = default;
+   TridiagonalMatrix( TridiagonalMatrix&& matrix ) noexcept = default;
 
    /**
     * \brief Returns a modifiable view of the tridiagonal matrix.

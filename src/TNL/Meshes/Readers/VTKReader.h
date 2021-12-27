@@ -743,7 +743,7 @@ protected:
    }
 
    VariantVector
-   readPointOrCellData( std::string sectionName, std::string arrayName )
+   readPointOrCellData( std::string sectionName, const std::string& arrayName )
    {
       std::ifstream inputFile( fileName );
       if( ! inputFile )
@@ -811,7 +811,7 @@ protected:
    }
 
    static void
-   skipValue( VTK::FileFormat format, std::istream& str, std::string datatype )
+   skipValue( VTK::FileFormat format, std::istream& str, const std::string& datatype )
    {
       if( datatype == "int" )  // implicit in vtk DataFile Version 2.0
          readValue< std::int32_t >( format, str );

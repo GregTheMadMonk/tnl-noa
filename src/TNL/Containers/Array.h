@@ -185,7 +185,7 @@ public:
     *
     * \param array The array to be moved.
     */
-   Array( Array&& array );
+   Array( Array&& array ) noexcept;
 
    /**
     * \brief Copy constructor from array with different template parameters.
@@ -543,7 +543,7 @@ public:
     * \return Reference to this array.
     */
    Array&
-   operator=( Array&& array );
+   operator=( Array&& array ) noexcept;
 
    /**
     * \brief Assigns either array-like container or a single value.
