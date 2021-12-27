@@ -761,28 +761,6 @@ template< typename Real,
           typename Device,
           typename Index,
           ElementsOrganization Organization >
-   template< typename Vector1, typename Vector2 >
-__cuda_callable__
-void
-TridiagonalMatrixView< Real, Device, Index, Organization >::
-performSORIteration( const Vector1& b,
-                     const IndexType row,
-                     Vector2& x,
-                     const RealType& omega ) const
-{
-   RealType sum( 0.0 );
-   if( row > 0 )
-      sum += this->getElementFast( row, row - 1 ) * x[ row - 1 ];
-   if( row < this->getColumns() - 1 )
-      sum += this->getElementFast( row, row + 1 ) * x[ row + 1 ];
-   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / this->getElementFast( row, row ) * ( b[ row ] - sum );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization >
 void TridiagonalMatrixView< Real, Device, Index, Organization >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );

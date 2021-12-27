@@ -815,25 +815,6 @@ getTransposition( const SparseMatrix< Real2, Device, Index2 >& matrix,
 
 }*/
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename, typename > class Segments,
-          typename ComputeReal,
-          typename RealAllocator,
-          typename IndexAllocator >
-template< typename Vector1, typename Vector2 >
-void
-SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
-performSORIteration( const Vector1& b,
-                     const IndexType row,
-                     Vector2& x,
-                     const RealType& omega ) const
-{
-   this->view.performSORIteration( b, row, x, omega );
-}
-
 // copy assignment
 template< typename Real,
           typename Device,

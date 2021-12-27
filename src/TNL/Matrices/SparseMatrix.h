@@ -1043,12 +1043,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                              const RealType& matrixMultiplicator = 1.0 );
        */
 
-      template< typename Vector1, typename Vector2 >
-      void performSORIteration( const Vector1& b,
-                                const IndexType row,
-                                Vector2& x,
-                                const RealType& omega = 1.0 ) const;
-
       /**
        * \brief Assignment of exactly the same matrix type.
        *

@@ -833,23 +833,6 @@ template< typename Real,
           typename MatrixType,
           template< typename, typename > class SegmentsView,
           typename ComputeReal >
-template< typename Vector1, typename Vector2 >
-void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-performSORIteration( const Vector1& b,
-                     const IndexType row,
-                     Vector2& x,
-                     const RealType& omega ) const
-{
-   throw Exceptions::NotImplementedError("performSORIteration is not implemented for SparseMatrixView");
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView,
-          typename ComputeReal >
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >&
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
 operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >& matrix )
