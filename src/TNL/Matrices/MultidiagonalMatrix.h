@@ -171,7 +171,7 @@ public:
     * \param rows is number of matrix rows.
     * \param columns is number of matrix columns.
     */
-   MultidiagonalMatrix( const IndexType rows, const IndexType columns );
+   MultidiagonalMatrix( IndexType rows, IndexType columns );
 
    /**
     * \brief Constructor with matrix dimensions and matrix elements offsets.
@@ -186,7 +186,7 @@ public:
     * \include MultidiagonalMatrixExample_Constructor.out
     */
    template< typename Vector >
-   MultidiagonalMatrix( const IndexType rows, const IndexType columns, const Vector& diagonalsOffsets );
+   MultidiagonalMatrix( IndexType rows, IndexType columns, const Vector& diagonalsOffsets );
 
    /**
     * \brief Constructor with matrix dimensions and diagonals offsets.
@@ -201,9 +201,7 @@ public:
     * \include MultidiagonalMatrixExample_Constructor_init_list_1.out
     */
    template< typename ListIndex >
-   MultidiagonalMatrix( const IndexType rows,
-                        const IndexType columns,
-                        const std::initializer_list< ListIndex > diagonalsOffsets );
+   MultidiagonalMatrix( IndexType rows, IndexType columns, std::initializer_list< ListIndex > diagonalsOffsets );
 
    /**
     * \brief Constructor with matrix dimensions, diagonals offsets and matrix elements.
@@ -226,8 +224,8 @@ public:
     * \include MultidiagonalMatrixExample_Constructor_init_list_2.out
     */
    template< typename ListIndex, typename ListReal >
-   MultidiagonalMatrix( const IndexType columns,
-                        const std::initializer_list< ListIndex > diagonalsOffsets,
+   MultidiagonalMatrix( IndexType columns,
+                        std::initializer_list< ListIndex > diagonalsOffsets,
                         const std::initializer_list< std::initializer_list< ListReal > >& data );
 
    /**
@@ -306,7 +304,7 @@ public:
     */
    template< typename Vector >
    void
-   setDimensions( const IndexType rows, const IndexType columns, const Vector& diagonalsOffsets );
+   setDimensions( IndexType rows, IndexType columns, const Vector& diagonalsOffsets );
 
    /**
     * @brief Set the diagonals offsets by means of vector-like container.
@@ -330,7 +328,7 @@ public:
     */
    template< typename ListIndex >
    void
-   setDiagonalsOffsets( const std::initializer_list< ListIndex > diagonalsOffsets );
+   setDiagonalsOffsets( std::initializer_list< ListIndex > diagonalsOffsets );
 
    /**
     * \brief This method is for compatibility with \ref SparseMatrix.
@@ -410,7 +408,7 @@ public:
    getCompressedRowLengths( Vector& rowLengths ) const;
 
    [[deprecated]] IndexType
-   getRowLength( const IndexType row ) const;
+   getRowLength( IndexType row ) const;
 
    /**
     * \brief Setup the matrix dimensions and diagonals offsets based on another multidiagonal matrix.
@@ -562,7 +560,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -589,10 +587,7 @@ public:
     */
    __cuda_callable__
    void
-   addElement( const IndexType row,
-               const IndexType column,
-               const RealType& value,
-               const RealType& thisElementMultiplicator = 1.0 );
+   addElement( IndexType row, IndexType column, const RealType& value, const RealType& thisElementMultiplicator = 1.0 );
 
    /**
     * \brief Returns value of matrix element at position given by its row and column index.
@@ -617,7 +612,7 @@ public:
     */
    __cuda_callable__
    RealType
-   getElement( const IndexType row, const IndexType column ) const;
+   getElement( IndexType row, IndexType column ) const;
 
    /**
     * \brief Method for performing general reduction on matrix rows.
@@ -1084,9 +1079,9 @@ public:
    void
    vectorProduct( const InVector& inVector,
                   OutVector& outVector,
-                  const RealType matrixMultiplicator = 1.0,
-                  const RealType outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
+                  RealType matrixMultiplicator = 1.0,
+                  RealType outVectorMultiplicator = 0.0,
+                  IndexType begin = 0,
                   IndexType end = 0 ) const;
 
    template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >

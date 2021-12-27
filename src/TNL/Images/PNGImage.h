@@ -31,7 +31,7 @@ public:
 
    template< typename MeshReal, typename Device, typename Real >
    bool
-   read( const RegionOfInterest< Index > roi,
+   read( RegionOfInterest< Index > roi,
          Functions::MeshFunction< Meshes::Grid< 2, MeshReal, Device, Index >, 2, Real >& function );
 
    template< typename Real, typename Device >

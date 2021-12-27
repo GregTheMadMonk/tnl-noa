@@ -39,11 +39,11 @@ struct MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >
 {
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size );
+   copy( DestinationElement* destination, const SourceElement* source, Index size );
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    static bool
-   compare( const DestinationElement* destination, const SourceElement* source, const Index size );
+   compare( const DestinationElement* destination, const SourceElement* source, Index size );
 };
 
 template< typename DeviceType >
@@ -51,11 +51,11 @@ struct MultiDeviceMemoryOperations< DeviceType, Devices::Cuda >
 {
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size );
+   copy( DestinationElement* destination, const SourceElement* source, Index size );
 
    template< typename Element1, typename Element2, typename Index >
    static bool
-   compare( const Element1* destination, const Element2* source, const Index size );
+   compare( const Element1* destination, const Element2* source, Index size );
 };
 
 // CUDA <-> CUDA to disambiguate from partial specializations below

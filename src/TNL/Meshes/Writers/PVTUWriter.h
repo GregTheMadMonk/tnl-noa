@@ -39,35 +39,35 @@ public:
 
    template< int EntityDimension = Mesh::getMeshDimension() >
    void
-   writeEntities( const Mesh& mesh, const unsigned GhostLevel = 0, const unsigned MinCommonVertices = 0 );
+   writeEntities( const Mesh& mesh, unsigned GhostLevel = 0, unsigned MinCommonVertices = 0 );
 
    template< typename ValueType >
    void
-   writePPointData( const std::string& name, const int numberOfComponents = 1 );
+   writePPointData( const std::string& name, int numberOfComponents = 1 );
 
    template< typename ValueType >
    void
-   writePCellData( const std::string& name, const int numberOfComponents = 1 );
+   writePCellData( const std::string& name, int numberOfComponents = 1 );
 
    template< typename ValueType >
    void
-   writePDataArray( const std::string& name, const int numberOfComponents = 1 );
+   writePDataArray( const std::string& name, int numberOfComponents = 1 );
 
    // add a single piece and return its source path
    // (useful for sequential writing, e.g. from tnl-decompose-mesh)
    std::string
-   addPiece( const std::string& mainFileName, const unsigned subdomainIndex );
+   addPiece( const std::string& mainFileName, unsigned subdomainIndex );
 
    // add all pieces and return the source path for the current rank
    // (useful for parallel writing)
    std::string
-   addPiece( const std::string& mainFileName, const MPI_Comm communicator );
+   addPiece( const std::string& mainFileName, MPI_Comm communicator );
 
    ~PVTUWriter();
 
 protected:
    void
-   writeHeader( const unsigned GhostLevel = 0, const unsigned MinCommonVertices = 0 );
+   writeHeader( unsigned GhostLevel = 0, unsigned MinCommonVertices = 0 );
 
    void
    writePoints( const Mesh& mesh );

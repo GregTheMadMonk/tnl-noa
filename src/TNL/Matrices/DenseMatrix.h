@@ -162,7 +162,7 @@ public:
     * \param columns is number of matrix columns.
     * \param allocator is used for allocation of matrix elements values.
     */
-   DenseMatrix( const IndexType rows, const IndexType columns, const RealAllocatorType& allocator = RealAllocatorType() );
+   DenseMatrix( IndexType rows, IndexType columns, const RealAllocatorType& allocator = RealAllocatorType() );
 
    /**
     * \brief Constructor with 2D initializer list.
@@ -231,7 +231,7 @@ public:
     * \param columns is the number of matrix columns.
     */
    void
-   setDimensions( const IndexType rows, const IndexType columns ) override;
+   setDimensions( IndexType rows, IndexType columns ) override;
 
    /**
     * \brief Set the number of matrix rows and columns by the given matrix.
@@ -376,7 +376,7 @@ public:
     */
    __cuda_callable__
    Real&
-   operator()( const IndexType row, const IndexType column );
+   operator()( IndexType row, IndexType column );
 
    /**
     * \brief Returns constant reference to element at row \e row and column column.
@@ -391,7 +391,7 @@ public:
     */
    __cuda_callable__
    const Real&
-   operator()( const IndexType row, const IndexType column ) const;
+   operator()( IndexType row, IndexType column ) const;
 
    /**
     * \brief Sets element at given \e row and \e column to given \e value.
@@ -414,7 +414,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -440,10 +440,7 @@ public:
     */
    __cuda_callable__
    void
-   addElement( const IndexType row,
-               const IndexType column,
-               const RealType& value,
-               const RealType& thisElementMultiplicator = 1.0 );
+   addElement( IndexType row, IndexType column, const RealType& value, const RealType& thisElementMultiplicator = 1.0 );
 
    /**
     * \brief Returns value of matrix element at position given by its row and column index.
@@ -468,7 +465,7 @@ public:
     */
    __cuda_callable__
    Real
-   getElement( const IndexType row, const IndexType column ) const;
+   getElement( IndexType row, IndexType column ) const;
 
    /**
     * \brief Method for iteration over all matrix rows for constant instances.
@@ -926,8 +923,8 @@ public:
                   OutVector& outVector,
                   const RealType& matrixMultiplicator = 1.0,
                   const RealType& outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
-                  const IndexType end = 0 ) const;
+                  IndexType begin = 0,
+                  IndexType end = 0 ) const;
 
    template< typename Matrix >
    void
@@ -1110,7 +1107,7 @@ public:
 protected:
    __cuda_callable__
    IndexType
-   getElementIndex( const IndexType row, const IndexType column ) const;
+   getElementIndex( IndexType row, IndexType column ) const;
 
    SegmentsType segments;
 

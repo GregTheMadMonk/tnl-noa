@@ -160,8 +160,8 @@ public:
     * SANDBOX_TODO: Replace `rowPointers` with metadata by your needs.
     */
    __cuda_callable__
-   SparseSandboxMatrixView( const IndexType rows,
-                            const IndexType columns,
+   SparseSandboxMatrixView( IndexType rows,
+                            IndexType columns,
                             const ValuesViewType& values,
                             const ColumnsIndexesViewType& columnIndexes,
                             const RowPointersView& rowPointers );
@@ -265,7 +265,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getRowCapacity( const IndexType row ) const;
+   getRowCapacity( IndexType row ) const;
 
    /**
     * \brief Returns number of non-zero matrix elements.
@@ -336,7 +336,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -760,14 +760,14 @@ public:
    void
    vectorProduct( const InVector& inVector,
                   OutVector& outVector,
-                  const RealType matrixMultiplicator = 1.0,
-                  const RealType outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
+                  RealType matrixMultiplicator = 1.0,
+                  RealType outVectorMultiplicator = 0.0,
+                  IndexType begin = 0,
                   IndexType end = 0 ) const;
 
    template< typename Vector1, typename Vector2 >
    bool
-   performSORIteration( const Vector1& b, const IndexType row, Vector2& x, const RealType& omega = 1.0 ) const;
+   performSORIteration( const Vector1& b, IndexType row, Vector2& x, const RealType& omega = 1.0 ) const;
 
    /**
     * \brief Assignment of any matrix type.

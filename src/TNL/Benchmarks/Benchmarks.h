@@ -100,8 +100,8 @@ public:
    // Sets the dataset size and base time for the calculations of bandwidth
    // and speedup in the benchmarks result.
    void
-   setDatasetSize( const double datasetSize = 0.0,  // in GB
-                   const double baseTime = 0.0 );
+   setDatasetSize( double datasetSize = 0.0,  // in GB
+                   double baseTime = 0.0 );
 
    // Sets current operation -- operations expand the table vertically
    //  - baseTime should be reset to 0.0 for most operations, but sometimes
@@ -110,8 +110,8 @@ public:
    //    easily sorted while converting to HTML.)
    void
    setOperation( const String& operation,
-                 const double datasetSize = 0.0,  // in GB
-                 const double baseTime = 0.0 );
+                 double datasetSize = 0.0,  // in GB
+                 double baseTime = 0.0 );
 
    // Times a single ComputeFunction. Subsequent calls implicitly split
    // the current operation into sub-columns identified by "performer",

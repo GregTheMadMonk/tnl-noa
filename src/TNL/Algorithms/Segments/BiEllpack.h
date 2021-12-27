@@ -85,7 +85,7 @@ public:
    reset();
 
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    /**
     * \brief Number segments.
@@ -100,11 +100,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const IndexType segmentIdx, const IndexType localIdx ) const;
+   getGlobalIndex( IndexType segmentIdx, IndexType localIdx ) const;
 
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call
@@ -196,10 +196,10 @@ protected:
    verifyRowLengths( const SizesHolder& segmentsSizes );
 
    IndexType
-   getStripLength( const IndexType stripIdx ) const;
+   getStripLength( IndexType stripIdx ) const;
 
    IndexType
-   getGroupLength( const IndexType strip, const IndexType group ) const;
+   getGroupLength( IndexType strip, IndexType group ) const;
 
    IndexType size = 0, storageSize = 0;
 

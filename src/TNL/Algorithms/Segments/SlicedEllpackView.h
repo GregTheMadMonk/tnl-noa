@@ -85,7 +85,7 @@ public:
 
    __cuda_callable__
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    /**
     * \brief Number segments.
@@ -100,11 +100,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call

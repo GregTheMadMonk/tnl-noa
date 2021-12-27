@@ -246,7 +246,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    /***
     * \brief Returns number of elements managed by all segments.
@@ -277,7 +277,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    /**
     * \brief Returns segment view (i.e. segment accessor) of segment with given index.
@@ -292,7 +292,7 @@ public:
     */
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /**
     * \brief Returns reference on constant vector with row offsets used in the CSR format.

@@ -132,7 +132,7 @@ public:
     * \include DenseMatrixViewExample_constructor.out
     */
    __cuda_callable__
-   DenseMatrixView( const IndexType rows, const IndexType columns, const ValuesViewType& values );
+   DenseMatrixView( IndexType rows, IndexType columns, const ValuesViewType& values );
 
    /**
     * \brief Constructor with matrix dimensions and values.
@@ -150,9 +150,7 @@ public:
     */
    template< typename Real_ >
    __cuda_callable__
-   DenseMatrixView( const IndexType rows,
-                    const IndexType columns,
-                    const Containers::VectorView< Real_, Device, Index >& values );
+   DenseMatrixView( IndexType rows, IndexType columns, const Containers::VectorView< Real_, Device, Index >& values );
 
    /**
     * \brief Copy constructor.
@@ -313,7 +311,7 @@ public:
     */
    __cuda_callable__
    Real&
-   operator()( const IndexType row, const IndexType column );
+   operator()( IndexType row, IndexType column );
 
    /**
     * \brief Returns constant reference to element at row \e row and column column.
@@ -328,7 +326,7 @@ public:
     */
    __cuda_callable__
    const Real&
-   operator()( const IndexType row, const IndexType column ) const;
+   operator()( IndexType row, IndexType column ) const;
 
    /**
     * \brief Sets element at given \e row and \e column to given \e value.
@@ -351,7 +349,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -377,10 +375,7 @@ public:
     */
    __cuda_callable__
    void
-   addElement( const IndexType row,
-               const IndexType column,
-               const RealType& value,
-               const RealType& thisElementMultiplicator = 1.0 );
+   addElement( IndexType row, IndexType column, const RealType& value, const RealType& thisElementMultiplicator = 1.0 );
 
    /**
     * \brief Returns value of matrix element at position given by its row and column index.
@@ -405,7 +400,7 @@ public:
     */
    __cuda_callable__
    Real
-   getElement( const IndexType row, const IndexType column ) const;
+   getElement( IndexType row, IndexType column ) const;
 
    /**
     * \brief Method for performing general reduction on matrix rows.
@@ -864,7 +859,7 @@ public:
                   OutVector& outVector,
                   const RealType& matrixMultiplicator = 1.0,
                   const RealType& outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
+                  IndexType begin = 0,
                   IndexType end = 0 ) const;
 
    template< typename Matrix >
@@ -962,7 +957,7 @@ public:
 protected:
    __cuda_callable__
    IndexType
-   getElementIndex( const IndexType row, const IndexType column ) const;
+   getElementIndex( IndexType row, IndexType column ) const;
 
    SegmentsViewType segments;
 };

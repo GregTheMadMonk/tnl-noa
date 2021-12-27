@@ -48,7 +48,7 @@ public:
    setGrid( Grid& grid, bool verbose = false );
 
    bool
-   isIn( const Index row, const Index column ) const;
+   isIn( Index row, Index column ) const;
 
 protected:
    Index top, bottom, left, right;

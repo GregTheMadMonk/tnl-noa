@@ -176,8 +176,8 @@ public:
     * \param segments is a segments view representing the sparse matrix format.
     */
    __cuda_callable__
-   SparseMatrixView( const IndexType rows,
-                     const IndexType columns,
+   SparseMatrixView( IndexType rows,
+                     IndexType columns,
                      const ValuesViewType& values,
                      const ColumnsIndexesViewType& columnIndexes,
                      const SegmentsViewType& segments );
@@ -281,7 +281,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getRowCapacity( const IndexType row ) const;
+   getRowCapacity( IndexType row ) const;
 
    /**
     * \brief Returns number of non-zero matrix elements.
@@ -352,7 +352,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -851,9 +851,9 @@ public:
    void
    vectorProduct( const InVector& inVector,
                   OutVector& outVector,
-                  const ComputeRealType matrixMultiplicator = 1.0,
-                  const ComputeRealType outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
+                  ComputeRealType matrixMultiplicator = 1.0,
+                  ComputeRealType outVectorMultiplicator = 0.0,
+                  IndexType begin = 0,
                   IndexType end = 0 ) const;
 
    /**

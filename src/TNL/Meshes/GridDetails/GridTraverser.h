@@ -42,8 +42,8 @@ public:
    template< typename GridEntity, typename EntitiesProcessor, typename UserData, bool processOnlyBoundaryEntities >
    static void
    processEntities( const GridPointer& gridPointer,
-                    const CoordinatesType begin,
-                    const CoordinatesType end,
+                    const CoordinatesType& begin,
+                    const CoordinatesType& end,
                     UserData& userData,
                     GridTraverserMode mode = synchronousMode,
                     const int& stream = 0 );
@@ -96,8 +96,8 @@ public:
              typename... GridEntityParameters >
    static void
    processEntities( const GridPointer& gridPointer,
-                    const CoordinatesType begin,
-                    const CoordinatesType end,
+                    const CoordinatesType& begin,
+                    const CoordinatesType& end,
                     UserData& userData,
                     // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
                     // GridTraverserMode mode = synchronousMode,
@@ -169,8 +169,8 @@ public:
              typename... GridEntityParameters >
    static void
    processEntities( const GridPointer& gridPointer,
-                    const CoordinatesType begin,
-                    const CoordinatesType end,
+                    const CoordinatesType& begin,
+                    const CoordinatesType& end,
                     UserData& userData,
                     // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
                     // GridTraverserMode mode = synchronousMode,

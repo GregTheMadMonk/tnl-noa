@@ -603,11 +603,11 @@ operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
  */
 template< typename Value, typename Device, typename Index >
 File&
-operator<<( File& file, const ArrayView< Value, Device, Index > view );
+operator<<( File& file, ArrayView< Value, Device, Index > view );
 
 template< typename Value, typename Device, typename Index >
 File&
-operator<<( File&& file, const ArrayView< Value, Device, Index > view );
+operator<<( File&& file, ArrayView< Value, Device, Index > view );
 
 /**
  * \brief Deserialization of array views from binary files.

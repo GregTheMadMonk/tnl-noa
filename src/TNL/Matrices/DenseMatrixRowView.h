@@ -116,7 +116,7 @@ public:
     */
    __cuda_callable__
    const RealType&
-   getValue( const IndexType column ) const;
+   getValue( IndexType column ) const;
 
    /**
     * \brief Returns non-constants reference to an element with given column index.
@@ -127,7 +127,7 @@ public:
     */
    __cuda_callable__
    RealType&
-   getValue( const IndexType column );
+   getValue( IndexType column );
 
    /**
     * \brief This method is only for compatibility with sparse matrix row.
@@ -138,7 +138,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getColumnIndex( const IndexType localIdx ) const;
+   getColumnIndex( IndexType localIdx ) const;
 
    /**
     * \brief Sets value of matrix element with given column index
@@ -148,7 +148,7 @@ public:
     */
    __cuda_callable__
    void
-   setValue( const IndexType column, const RealType& value );
+   setValue( IndexType column, const RealType& value );
 
    /**
     * \brief Sets value of matrix element with given column index
@@ -161,7 +161,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType localIdx, const IndexType column, const RealType& value );
+   setElement( IndexType localIdx, IndexType column, const RealType& value );
 
    /**
     * \brief Returns iterator pointing at the beginning of the matrix row.

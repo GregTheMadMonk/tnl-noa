@@ -144,7 +144,7 @@ public:
     */
    __cuda_callable__
    const IndexType&
-   getColumnIndex( const IndexType localIdx ) const;
+   getColumnIndex( IndexType localIdx ) const;
 
    /**
     * \brief Returns non-constants reference to a column index of an element with given rank in the row.
@@ -155,7 +155,7 @@ public:
     */
    __cuda_callable__
    IndexType&
-   getColumnIndex( const IndexType localIdx );
+   getColumnIndex( IndexType localIdx );
 
    /**
     * \brief Returns constants reference to value of an element with given rank in the row.
@@ -166,7 +166,7 @@ public:
     */
    __cuda_callable__
    auto
-   getValue( const IndexType localIdx ) const -> typename ValueGetterType::ConstResultType;
+   getValue( IndexType localIdx ) const -> typename ValueGetterType::ConstResultType;
 
    /**
     * \brief Returns non-constants reference to value of an element with given rank in the row.
@@ -177,7 +177,7 @@ public:
     */
    __cuda_callable__
    auto
-   getValue( const IndexType localIdx ) -> typename ValueGetterType::ResultType;
+   getValue( IndexType localIdx ) -> typename ValueGetterType::ResultType;
 
    /**
     * \brief Sets a value of matrix element with given rank in the matrix row.
@@ -187,7 +187,7 @@ public:
     */
    __cuda_callable__
    void
-   setValue( const IndexType localIdx, const RealType& value );
+   setValue( IndexType localIdx, const RealType& value );
 
    /**
     * \brief Sets a column index of matrix element with given rank in the matrix row.
@@ -197,7 +197,7 @@ public:
     */
    __cuda_callable__
    void
-   setColumnIndex( const IndexType localIdx, const IndexType& columnIndex );
+   setColumnIndex( IndexType localIdx, const IndexType& columnIndex );
 
    /**
     * \brief Sets both a value and a column index of matrix element with given rank in the matrix row.
@@ -208,7 +208,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType localIdx, const IndexType columnIndex, const RealType& value );
+   setElement( IndexType localIdx, IndexType columnIndex, const RealType& value );
 
    /**
     * \brief Comparison of two matrix rows.

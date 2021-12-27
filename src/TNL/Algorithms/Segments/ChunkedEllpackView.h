@@ -54,28 +54,28 @@ public:
    ChunkedEllpackView() = default;
 
    __cuda_callable__
-   ChunkedEllpackView( const IndexType size,
-                       const IndexType storageSize,
-                       const IndexType chunksInSlice,
-                       const IndexType desiredChunkSize,
+   ChunkedEllpackView( IndexType size,
+                       IndexType storageSize,
+                       IndexType chunksInSlice,
+                       IndexType desiredChunkSize,
                        const OffsetsView& rowToChunkMapping,
                        const OffsetsView& rowToSliceMapping,
                        const OffsetsView& chunksToSegmentsMapping,
                        const OffsetsView& rowPointers,
                        const ChunkedEllpackSliceInfoContainerView& slices,
-                       const IndexType numberOfSlices );
+                       IndexType numberOfSlices );
 
    __cuda_callable__
-   ChunkedEllpackView( const IndexType size,
-                       const IndexType storageSize,
-                       const IndexType chunksInSlice,
-                       const IndexType desiredChunkSize,
+   ChunkedEllpackView( IndexType size,
+                       IndexType storageSize,
+                       IndexType chunksInSlice,
+                       IndexType desiredChunkSize,
                        const OffsetsView&& rowToChunkMapping,
                        const OffsetsView&& rowToSliceMapping,
                        const OffsetsView&& chunksToSegmentsMapping,
                        const OffsetsView&& rowPointers,
                        const ChunkedEllpackSliceInfoContainerView&& slices,
-                       const IndexType numberOfSlices );
+                       IndexType numberOfSlices );
 
    __cuda_callable__
    ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view ) = default;
@@ -109,7 +109,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    /***
     * \brief Returns number of elements managed by all segments.
@@ -127,11 +127,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call

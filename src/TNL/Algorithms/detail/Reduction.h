@@ -26,11 +26,11 @@ struct Reduction< Devices::Sequential >
 {
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static constexpr Result
-   reduce( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduce( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static constexpr std::pair< Result, Index >
-   reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 };
 
 template<>
@@ -38,11 +38,11 @@ struct Reduction< Devices::Host >
 {
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static Result
-   reduce( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduce( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static std::pair< Result, Index >
-   reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 };
 
 template<>
@@ -50,11 +50,11 @@ struct Reduction< Devices::Cuda >
 {
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static Result
-   reduce( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduce( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 
    template< typename Index, typename Result, typename Fetch, typename Reduce >
    static std::pair< Result, Index >
-   reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
+   reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduce&& reduce, const Result& identity );
 };
 
 }  // namespace detail

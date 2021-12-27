@@ -31,8 +31,8 @@ template< typename GridEntity,
 void
 GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >::processEntities(
    const GridPointer& gridPointer,
-   const CoordinatesType begin,
-   const CoordinatesType end,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
    UserData& userData,
    GridTraverserMode mode,
    const int& stream,

@@ -49,7 +49,7 @@ public:
     */
    Grid();
 
-   Grid( const Index xSize, const Index ySize, const Index zSize );
+   Grid( Index xSize, Index ySize, Index zSize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
@@ -61,7 +61,7 @@ public:
     * \param zSize Size of dimesion z.
     */
    void
-   setDimensions( const Index xSize, const Index ySize, const Index zSize );
+   setDimensions( Index xSize, Index ySize, Index zSize );
 
    /**
     * \brief See Grid1D::setDimensions( const CoordinatesType& dimensions ).

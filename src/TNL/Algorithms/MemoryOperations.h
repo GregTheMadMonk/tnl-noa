@@ -23,7 +23,7 @@ struct MemoryOperations< Devices::Sequential >
    template< typename Element, typename Index >
    __cuda_callable__
    static void
-   construct( Element* data, const Index size );
+   construct( Element* data, Index size );
 
    // note that args are passed by reference to the constructor, not via
    // std::forward since move-semantics does not apply for the construction of
@@ -31,12 +31,12 @@ struct MemoryOperations< Devices::Sequential >
    template< typename Element, typename Index, typename... Args >
    __cuda_callable__
    static void
-   construct( Element* data, const Index size, const Args&... args );
+   construct( Element* data, Index size, const Args&... args );
 
    template< typename Element, typename Index >
    __cuda_callable__
    static void
-   destruct( Element* data, const Index size );
+   destruct( Element* data, Index size );
 
    template< typename Element >
    __cuda_callable__
@@ -51,12 +51,12 @@ struct MemoryOperations< Devices::Sequential >
    template< typename Element, typename Index >
    __cuda_callable__
    static void
-   set( Element* data, const Element& value, const Index size );
+   set( Element* data, const Element& value, Index size );
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    __cuda_callable__
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size );
+   copy( DestinationElement* destination, const SourceElement* source, Index size );
 
    template< typename DestinationElement, typename Index, typename SourceIterator >
    static void
@@ -65,7 +65,7 @@ struct MemoryOperations< Devices::Sequential >
    template< typename Element1, typename Element2, typename Index >
    __cuda_callable__
    static bool
-   compare( const Element1* destination, const Element2* source, const Index size );
+   compare( const Element1* destination, const Element2* source, Index size );
 };
 
 template<>
@@ -73,18 +73,18 @@ struct MemoryOperations< Devices::Host >
 {
    template< typename Element, typename Index >
    static void
-   construct( Element* data, const Index size );
+   construct( Element* data, Index size );
 
    // note that args are passed by reference to the constructor, not via
    // std::forward since move-semantics does not apply for the construction of
    // multiple elements
    template< typename Element, typename Index, typename... Args >
    static void
-   construct( Element* data, const Index size, const Args&... args );
+   construct( Element* data, Index size, const Args&... args );
 
    template< typename Element, typename Index >
    static void
-   destruct( Element* data, const Index size );
+   destruct( Element* data, Index size );
 
    // this is __cuda_callable__ only to silence nvcc warnings
    TNL_NVCC_HD_WARNING_DISABLE
@@ -102,11 +102,11 @@ struct MemoryOperations< Devices::Host >
 
    template< typename Element, typename Index >
    static void
-   set( Element* data, const Element& value, const Index size );
+   set( Element* data, const Element& value, Index size );
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size );
+   copy( DestinationElement* destination, const SourceElement* source, Index size );
 
    template< typename DestinationElement, typename Index, typename SourceIterator >
    static void
@@ -114,7 +114,7 @@ struct MemoryOperations< Devices::Host >
 
    template< typename Element1, typename Element2, typename Index >
    static bool
-   compare( const Element1* destination, const Element2* source, const Index size );
+   compare( const Element1* destination, const Element2* source, Index size );
 };
 
 template<>
@@ -122,7 +122,7 @@ struct MemoryOperations< Devices::Cuda >
 {
    template< typename Element, typename Index >
    static void
-   construct( Element* data, const Index size );
+   construct( Element* data, Index size );
 
    // note that args are passed by value to the constructor, not via
    // std::forward or even by reference, since move-semantics does not apply for
@@ -130,11 +130,11 @@ struct MemoryOperations< Devices::Cuda >
    // with CUDA kernels
    template< typename Element, typename Index, typename... Args >
    static void
-   construct( Element* data, const Index size, const Args&... args );
+   construct( Element* data, Index size, const Args&... args );
 
    template< typename Element, typename Index >
    static void
-   destruct( Element* data, const Index size );
+   destruct( Element* data, Index size );
 
    template< typename Element >
    __cuda_callable__
@@ -148,11 +148,11 @@ struct MemoryOperations< Devices::Cuda >
 
    template< typename Element, typename Index >
    static void
-   set( Element* data, const Element& value, const Index size );
+   set( Element* data, const Element& value, Index size );
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size );
+   copy( DestinationElement* destination, const SourceElement* source, Index size );
 
    template< typename DestinationElement, typename Index, typename SourceIterator >
    static void
@@ -160,7 +160,7 @@ struct MemoryOperations< Devices::Cuda >
 
    template< typename Element1, typename Element2, typename Index >
    static bool
-   compare( const Element1* destination, const Element2* source, const Index size );
+   compare( const Element1* destination, const Element2* source, Index size );
 };
 
 }  // namespace Algorithms

@@ -45,7 +45,7 @@ public:
    MeshEntity() = delete;
 
    __cuda_callable__
-   MeshEntity( const MeshType& mesh, const GlobalIndexType index );
+   MeshEntity( const MeshType& mesh, GlobalIndexType index );
 
    __cuda_callable__
    MeshEntity( const MeshEntity& entity ) = default;
@@ -105,7 +105,7 @@ public:
    template< int Subdimension >
    __cuda_callable__
    GlobalIndexType
-   getSubentityIndex( const LocalIndexType localIndex ) const;
+   getSubentityIndex( LocalIndexType localIndex ) const;
 
    /**
     * \brief Returns the count of superentities of this entity.
@@ -121,7 +121,7 @@ public:
    template< int Superdimension >
    __cuda_callable__
    GlobalIndexType
-   getSuperentityIndex( const LocalIndexType localIndex ) const;
+   getSuperentityIndex( LocalIndexType localIndex ) const;
 
    /**
     * \brief Returns the tag associated with this entity.

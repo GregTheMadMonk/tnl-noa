@@ -45,16 +45,16 @@ public:
    BiEllpackView() = default;
 
    __cuda_callable__
-   BiEllpackView( const IndexType size,
-                  const IndexType storageSize,
-                  const IndexType virtualRows,
+   BiEllpackView( IndexType size,
+                  IndexType storageSize,
+                  IndexType virtualRows,
                   const OffsetsView& rowPermArray,
                   const OffsetsView& groupPointers );
 
    __cuda_callable__
-   BiEllpackView( const IndexType size,
-                  const IndexType storageSize,
-                  const IndexType virtualRows,
+   BiEllpackView( IndexType size,
+                  IndexType storageSize,
+                  IndexType virtualRows,
                   const OffsetsView&& rowPermArray,
                   const OffsetsView&& groupPointers );
 
@@ -90,7 +90,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    /***
     * \brief Returns number of elements managed by all segments.
@@ -108,11 +108,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call

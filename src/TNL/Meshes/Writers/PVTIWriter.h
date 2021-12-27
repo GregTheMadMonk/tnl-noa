@@ -41,7 +41,7 @@ public:
    writeImageData( const DistributedMeshes::DistributedMesh< Grid >& distributedMesh );
 
    void
-   writeImageData( const Grid& globalGrid, const unsigned GhostLevel = 0, const unsigned MinCommonVertices = 0 );
+   writeImageData( const Grid& globalGrid, unsigned GhostLevel = 0, unsigned MinCommonVertices = 0 );
 
    // Only for compatibility with VTUWriter - calls writeImageData, the EntityDimension is unused
    template< int EntityDimension = Grid::getMeshDimension() >
@@ -51,25 +51,25 @@ public:
    // Only for compatibility with VTUWriter - calls writeImageData, the EntityDimension is unused
    template< int EntityDimension = Grid::getMeshDimension() >
    void
-   writeEntities( const Grid& grid, const unsigned GhostLevel = 0, const unsigned MinCommonVertices = 0 );
+   writeEntities( const Grid& grid, unsigned GhostLevel = 0, unsigned MinCommonVertices = 0 );
 
    template< typename ValueType >
    void
-   writePPointData( const std::string& name, const int numberOfComponents = 1 );
+   writePPointData( const std::string& name, int numberOfComponents = 1 );
 
    template< typename ValueType >
    void
-   writePCellData( const std::string& name, const int numberOfComponents = 1 );
+   writePCellData( const std::string& name, int numberOfComponents = 1 );
 
    template< typename ValueType >
    void
-   writePDataArray( const std::string& name, const int numberOfComponents = 1 );
+   writePDataArray( const std::string& name, int numberOfComponents = 1 );
 
    // add a single piece and return its source path
    // (useful for sequential writing, e.g. from tnl-decompose-grid)
    std::string
    addPiece( const std::string& mainFileName,
-             const unsigned subdomainIndex,
+             unsigned subdomainIndex,
              const typename Grid::CoordinatesType& globalBegin,
              const typename Grid::CoordinatesType& globalEnd );
 

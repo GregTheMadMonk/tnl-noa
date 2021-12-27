@@ -103,7 +103,7 @@ public:
     * \param columns is a number of matrix columns.
     * \param allocator is a user defined allocator of the matrix values.
     */
-   Matrix( const IndexType rows, const IndexType columns, const RealAllocatorType& allocator = RealAllocatorType() );
+   Matrix( IndexType rows, IndexType columns, const RealAllocatorType& allocator = RealAllocatorType() );
 
    /**
     * \brief Method for setting or changing of the matrix dimensions.
@@ -112,7 +112,7 @@ public:
     * \param columns is a number of matrix columns.
     */
    virtual void
-   setDimensions( const IndexType rows, const IndexType columns );
+   setDimensions( IndexType rows, IndexType columns );
 
    /**
     * \brief Set the matrix dimensions to be equal to those of the input matrix.

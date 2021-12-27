@@ -51,7 +51,7 @@ public:
     */
    Grid();
 
-   Grid( const Index xSize );
+   Grid( Index xSize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
@@ -61,7 +61,7 @@ public:
     * \param xSize Size of dimesion x.
     */
    void
-   setDimensions( const Index xSize );
+   setDimensions( Index xSize );
 
    /**
     * \brief Sets the number of dimensions.

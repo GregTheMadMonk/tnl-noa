@@ -134,8 +134,8 @@ protected:
    static void
    computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                            Containers::Vector< int, DeviceType, int >& rowLengths,
-                                           const int columns,
-                                           const int rows,
+                                           int columns,
+                                           int rows,
                                            bool symmetricSourceMatrix,
                                            bool symmetricTargetMatrix,
                                            bool verbose );

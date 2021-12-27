@@ -366,7 +366,7 @@ public:
     * \include StringExampleSplit.out
     */
    std::vector< String >
-   split( const char separator = ' ', SplitSkip skipEmpty = SplitSkip::NoSkip ) const;
+   split( char separator = ' ', SplitSkip skipEmpty = SplitSkip::NoSkip ) const;
 
    /**
     * \brief Checks if the string starts with given prefix.

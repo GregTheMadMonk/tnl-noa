@@ -151,7 +151,7 @@ public:
     * \param rows is number of matrix rows.
     * \param columns is number of matrix columns.
     */
-   TridiagonalMatrix( const IndexType rows, const IndexType columns );
+   TridiagonalMatrix( IndexType rows, IndexType columns );
 
    /**
     * \brief Constructor with matrix dimensions, diagonals offsets and matrix elements.
@@ -172,7 +172,7 @@ public:
     * \include TridiagonalMatrixExample_Constructor_init_list_1.out
     */
    template< typename ListReal >
-   TridiagonalMatrix( const IndexType columns, const std::initializer_list< std::initializer_list< ListReal > >& data );
+   TridiagonalMatrix( IndexType columns, const std::initializer_list< std::initializer_list< ListReal > >& data );
 
    /**
     * \brief Copy constructor.
@@ -246,7 +246,7 @@ public:
     * \param columns is number of matrix columns.
     */
    void
-   setDimensions( const IndexType rows, const IndexType columns ) override;
+   setDimensions( IndexType rows, IndexType columns ) override;
 
    /**
     * \brief This method is for compatibility with \ref SparseMatrix.
@@ -443,7 +443,7 @@ public:
     * \include TridiagonalMatrixExample_setElement.out
     */
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -469,10 +469,7 @@ public:
     *
     */
    void
-   addElement( const IndexType row,
-               const IndexType column,
-               const RealType& value,
-               const RealType& thisElementTriplicator = 1.0 );
+   addElement( IndexType row, IndexType column, const RealType& value, const RealType& thisElementTriplicator = 1.0 );
 
    /**
     * \brief Returns value of matrix element at position given by its row and column index.
@@ -495,7 +492,7 @@ public:
     * \include TridiagonalMatrixExample_getElement.out
     */
    RealType
-   getElement( const IndexType row, const IndexType column ) const;
+   getElement( IndexType row, IndexType column ) const;
 
    /**
     * \brief Method for performing general reduction on matrix rows.
@@ -963,9 +960,9 @@ public:
    void
    vectorProduct( const InVector& inVector,
                   OutVector& outVector,
-                  const RealType matrixTriplicator = 1.0,
-                  const RealType outVectorTriplicator = 0.0,
-                  const IndexType begin = 0,
+                  RealType matrixTriplicator = 1.0,
+                  RealType outVectorTriplicator = 0.0,
+                  IndexType begin = 0,
                   IndexType end = 0 ) const;
 
    template< typename Real_, typename Device_, typename Index_, ElementsOrganization Organization_, typename RealAllocator_ >
@@ -1067,7 +1064,7 @@ public:
 protected:
    __cuda_callable__
    IndexType
-   getElementIndex( const IndexType row, const IndexType localIdx ) const;
+   getElementIndex( IndexType row, IndexType localIdx ) const;
 
    IndexerType indexer;
 

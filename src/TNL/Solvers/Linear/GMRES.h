@@ -141,16 +141,16 @@ protected:
 public:
 #endif
    int
-   orthogonalize_CGS( const int m, const RealType normb, const RealType beta );
+   orthogonalize_CGS( int m, RealType normb, RealType beta );
 #ifdef __NVCC__
 protected:
 #endif
 
    int
-   orthogonalize_MGS( const int m, const RealType normb, const RealType beta );
+   orthogonalize_MGS( int m, RealType normb, RealType beta );
 
    int
-   orthogonalize_CWY( const int m, const RealType normb, const RealType beta );
+   orthogonalize_CWY( int m, RealType normb, RealType beta );
 
    void
    compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
@@ -163,30 +163,30 @@ protected:
 public:
 #endif
    void
-   hauseholder_generate( const int i, VectorViewType y_i, ConstVectorViewType z );
+   hauseholder_generate( int i, VectorViewType y_i, ConstVectorViewType z );
 #ifdef __NVCC__
 protected:
 #endif
 
    void
-   hauseholder_apply_trunc( HostView out, const int i, VectorViewType y_i, ConstVectorViewType z );
+   hauseholder_apply_trunc( HostView out, int i, VectorViewType y_i, ConstVectorViewType z );
 
    void
-   hauseholder_cwy( VectorViewType v, const int i );
+   hauseholder_cwy( VectorViewType v, int i );
 
 // nvcc allows __cuda_callable__ lambdas only in public methods
 #ifdef __NVCC__
 public:
 #endif
    void
-   hauseholder_cwy_transposed( VectorViewType z, const int i, ConstVectorViewType w );
+   hauseholder_cwy_transposed( VectorViewType z, int i, ConstVectorViewType w );
 #ifdef __NVCC__
 protected:
 #endif
 
    template< typename Vector >
    void
-   update( const int k, const int m, const HostVector& H, const HostVector& s, DeviceVector& V, Vector& x );
+   update( int k, int m, const HostVector& H, const HostVector& s, DeviceVector& V, Vector& x );
 
    void
    generatePlaneRotation( RealType& dx, RealType& dy, RealType& cs, RealType& sn );
@@ -195,7 +195,7 @@ protected:
    applyPlaneRotation( RealType& dx, RealType& dy, RealType& cs, RealType& sn );
 
    void
-   apply_givens_rotations( const int i, const int m );
+   apply_givens_rotations( int i, int m );
 
    void
    setSize( const VectorViewType& x );

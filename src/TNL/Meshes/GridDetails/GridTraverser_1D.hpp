@@ -27,8 +27,8 @@ template< typename Real, typename Index >
 template< typename GridEntity, typename EntitiesProcessor, typename UserData, bool processOnlyBoundaryEntities >
 void
 GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >::processEntities( const GridPointer& gridPointer,
-                                                                                 const CoordinatesType begin,
-                                                                                 const CoordinatesType end,
+                                                                                 const CoordinatesType& begin,
+                                                                                 const CoordinatesType& end,
                                                                                  UserData& userData,
                                                                                  GridTraverserMode mode,
                                                                                  const int& stream )

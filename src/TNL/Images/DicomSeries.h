@@ -60,10 +60,7 @@ public:
 
    template< typename Real, typename Device, typename Index, typename Vector >
    bool
-   getImage( const int imageIdx,
-             const Meshes::Grid< 2, Real, Device, Index >& grid,
-             const RegionOfInterest< int > roi,
-             Vector& vector );
+   getImage( int imageIdx, const Meshes::Grid< 2, Real, Device, Index >& grid, RegionOfInterest< int > roi, Vector& vector );
 
 #ifdef HAVE_DCMTK_H
    inline const Uint16*

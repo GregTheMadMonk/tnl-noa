@@ -209,8 +209,8 @@ public:
     * \param indexAllocator is used for allocation of matrix elements column indexes.
     */
    template< typename Index_t, std::enable_if_t< std::is_integral< Index_t >::value, int > = 0 >
-   SparseMatrix( const Index_t rows,
-                 const Index_t columns,
+   SparseMatrix( Index_t rows,
+                 Index_t columns,
                  const RealAllocatorType& realAllocator = RealAllocatorType(),
                  const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
@@ -233,7 +233,7 @@ public:
     */
    template< typename ListIndex >
    explicit SparseMatrix( const std::initializer_list< ListIndex >& rowCapacities,
-                          const IndexType columns,
+                          IndexType columns,
                           const RealAllocatorType& realAllocator = RealAllocatorType(),
                           const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
@@ -258,7 +258,7 @@ public:
     */
    template< typename RowCapacitiesVector, std::enable_if_t< TNL::IsArrayType< RowCapacitiesVector >::value, int > = 0 >
    explicit SparseMatrix( const RowCapacitiesVector& rowCapacities,
-                          const IndexType columns,
+                          IndexType columns,
                           const RealAllocatorType& realAllocator = RealAllocatorType(),
                           const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
@@ -281,8 +281,8 @@ public:
     * \par Output
     * \include SparseMatrixExample_Constructor_init_list_2.out
     */
-   explicit SparseMatrix( const IndexType rows,
-                          const IndexType columns,
+   explicit SparseMatrix( IndexType rows,
+                          IndexType columns,
                           const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
                           const RealAllocatorType& realAllocator = RealAllocatorType(),
                           const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
@@ -309,8 +309,8 @@ public:
     * \include SparseMatrixExample_Constructor_std_map.out
     */
    template< typename MapIndex, typename MapValue >
-   explicit SparseMatrix( const IndexType rows,
-                          const IndexType columns,
+   explicit SparseMatrix( IndexType rows,
+                          IndexType columns,
                           const std::map< std::pair< MapIndex, MapIndex >, MapValue >& map,
                           const RealAllocatorType& realAllocator = RealAllocatorType(),
                           const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
@@ -373,7 +373,7 @@ public:
     * \param columns is the number of matrix columns.
     */
    void
-   setDimensions( const IndexType rows, const IndexType columns ) override;
+   setDimensions( IndexType rows, IndexType columns ) override;
 
    /**
     * \brief Set number of columns of this matrix.
@@ -497,7 +497,7 @@ public:
     */
    __cuda_callable__
    IndexType
-   getRowCapacity( const IndexType row ) const;
+   getRowCapacity( IndexType row ) const;
 
    /**
     * \brief Returns number of non-zero matrix elements.
@@ -574,7 +574,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType row, const IndexType column, const RealType& value );
+   setElement( IndexType row, IndexType column, const RealType& value );
 
    /**
     * \brief Add element at given \e row and \e column to given \e value.
@@ -601,7 +601,7 @@ public:
     */
    __cuda_callable__
    void
-   addElement( const IndexType row, const IndexType column, const RealType& value, const RealType& thisElementMultiplicator );
+   addElement( IndexType row, IndexType column, const RealType& value, const RealType& thisElementMultiplicator );
 
    /**
     * \brief Returns value of matrix element at position given by its row and column index.
@@ -626,7 +626,7 @@ public:
     */
    __cuda_callable__
    RealType
-   getElement( const IndexType row, const IndexType column ) const;
+   getElement( IndexType row, IndexType column ) const;
 
    /**
     * \brief Method for performing general reduction on matrix rows.
@@ -1081,8 +1081,8 @@ public:
                   OutVector& outVector,
                   const ComputeRealType& matrixMultiplicator = 1.0,
                   const ComputeRealType& outVectorMultiplicator = 0.0,
-                  const IndexType begin = 0,
-                  const IndexType end = 0 ) const;
+                  IndexType begin = 0,
+                  IndexType end = 0 ) const;
 
    /*template< typename Real2, typename Index2 >
    void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,

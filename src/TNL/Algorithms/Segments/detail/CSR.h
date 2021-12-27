@@ -80,11 +80,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    __cuda_callable__
    void
-   getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
+   getSegmentAndLocalIndex( Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call

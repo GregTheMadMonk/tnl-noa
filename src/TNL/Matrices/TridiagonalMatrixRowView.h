@@ -94,7 +94,7 @@ public:
     * \param indexer is object responsible for indexing and organization of matrix elements
     */
    __cuda_callable__
-   TridiagonalMatrixRowView( const IndexType rowIdx, const ValuesViewType& values, const IndexerType& indexer );
+   TridiagonalMatrixRowView( IndexType rowIdx, const ValuesViewType& values, const IndexerType& indexer );
 
    /**
     * \brief Returns number of diagonals of the tridiagonal matrix which is three.
@@ -123,7 +123,7 @@ public:
     */
    __cuda_callable__
    const IndexType
-   getColumnIndex( const IndexType localIdx ) const;
+   getColumnIndex( IndexType localIdx ) const;
 
    /**
     * \brief Returns value of matrix element on given subdiagonal.
@@ -134,7 +134,7 @@ public:
     */
    __cuda_callable__
    const RealType&
-   getValue( const IndexType localIdx ) const;
+   getValue( IndexType localIdx ) const;
 
    /**
     * \brief Returns value of matrix element on given subdiagonal.
@@ -145,7 +145,7 @@ public:
     */
    __cuda_callable__
    RealType&
-   getValue( const IndexType localIdx );
+   getValue( IndexType localIdx );
 
    /**
     * \brief Changes value of matrix element on given subdiagonal.
@@ -155,7 +155,7 @@ public:
     */
    __cuda_callable__
    void
-   setElement( const IndexType localIdx, const RealType& value );
+   setElement( IndexType localIdx, const RealType& value );
 
    /**
     * \brief Returns iterator pointing at the beginning of the matrix row.

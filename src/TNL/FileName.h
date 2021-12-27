@@ -73,7 +73,7 @@ public:
     * @param index Index of the file name.
     */
    void
-   setIndex( const size_t index );
+   setIndex( size_t index );
 
    /**
     * \brief Sets number of digits for index of the file name.
@@ -81,7 +81,7 @@ public:
     * @param digitsCount Number of digits. It is 5 by default.
     */
    void
-   setDigitsCount( const size_t digitsCount );
+   setDigitsCount( size_t digitsCount );
 
    /**
     * \brief Sets the distributed system node ID as integer, for example MPI process ID.
@@ -144,7 +144,7 @@ protected:
  * @return Extension of the given file name.
  */
 String
-getFileExtension( const String fileName );
+getFileExtension( String fileName );
 
 /**
  * \brief Cuts off the file extension.

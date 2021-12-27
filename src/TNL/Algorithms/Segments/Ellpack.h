@@ -56,7 +56,7 @@ public:
    template< typename ListIndex >
    Ellpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
-   Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
+   Ellpack( IndexType segmentsCount, IndexType segmentSize );
 
    Ellpack( const Ellpack& segments ) = default;
 
@@ -82,7 +82,7 @@ public:
    setSegmentsSizes( const SizesHolder& sizes );
 
    void
-   setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
+   setSegmentsSizes( IndexType segmentsCount, IndexType segmentSize );
 
    void
    reset();
@@ -96,7 +96,7 @@ public:
 
    __cuda_callable__
    IndexType
-   getSegmentSize( const IndexType segmentIdx ) const;
+   getSegmentSize( IndexType segmentIdx ) const;
 
    __cuda_callable__
    IndexType
@@ -108,11 +108,11 @@ public:
 
    __cuda_callable__
    IndexType
-   getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
+   getGlobalIndex( Index segmentIdx, Index localIdx ) const;
 
    __cuda_callable__
    SegmentViewType
-   getSegmentView( const IndexType segmentIdx ) const;
+   getSegmentView( IndexType segmentIdx ) const;
 
    /***
     * \brief Go over all segments and for each segment element call

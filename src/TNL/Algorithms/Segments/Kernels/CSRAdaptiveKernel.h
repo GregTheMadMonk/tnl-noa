@@ -100,7 +100,7 @@ struct CSRAdaptiveKernel
 protected:
    template< int SizeOfValue, typename Offsets >
    Index
-   findLimit( const Index start, const Offsets& offsets, const Index size, detail::Type& type, size_t& sum );
+   findLimit( Index start, const Offsets& offsets, Index size, detail::Type& type, size_t& sum );
 
    template< int SizeOfValue, typename Offsets >
    void

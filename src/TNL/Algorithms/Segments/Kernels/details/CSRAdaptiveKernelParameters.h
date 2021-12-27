@@ -21,7 +21,7 @@ struct CSRAdaptiveKernelParameters
    static constexpr int MaxValueSizeLog = 6;
 
    static constexpr int
-   getSizeValueLogConstexpr( const int i );
+   getSizeValueLogConstexpr( int i );
 
    static constexpr int
    getSizeOfValue()

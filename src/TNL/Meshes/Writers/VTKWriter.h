@@ -42,15 +42,15 @@ public:
 
    template< typename Array >
    void
-   writePointData( const Array& array, const std::string& name, const int numberOfComponents = 1 );
+   writePointData( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
    template< typename Array >
    void
-   writeCellData( const Array& array, const std::string& name, const int numberOfComponents = 1 );
+   writeCellData( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
    template< typename Array >
    void
-   writeDataArray( const Array& array, const std::string& name, const int numberOfComponents = 1 );
+   writeDataArray( const Array& array, const std::string& name, int numberOfComponents = 1 );
 
 protected:
    void

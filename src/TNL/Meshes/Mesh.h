@@ -127,7 +127,7 @@ public:
    template< int Dimension >
    __cuda_callable__
    EntityType< Dimension >
-   getEntity( const GlobalIndexType entityIndex ) const;
+   getEntity( GlobalIndexType entityIndex ) const;
 
    template< int Dimension >
    void
@@ -142,7 +142,7 @@ public:
    template< typename EntityType >
    __cuda_callable__
    EntityType
-   getEntity( const GlobalIndexType entityIndex ) const;
+   getEntity( GlobalIndexType entityIndex ) const;
 
    /**
     * \brief Returns the spatial coordinates of the vertex with given index.
@@ -155,14 +155,14 @@ public:
 
    __cuda_callable__
    const PointType&
-   getPoint( const GlobalIndexType vertexIndex ) const;
+   getPoint( GlobalIndexType vertexIndex ) const;
 
    /**
     * \brief Returns the spatial coordinates of the vertex with given index.
     */
    __cuda_callable__
    PointType&
-   getPoint( const GlobalIndexType vertexIndex );
+   getPoint( GlobalIndexType vertexIndex );
 
    /**
     * \brief Returns the count of subentities of the entity with given index.
@@ -170,7 +170,7 @@ public:
    template< int EntityDimension, int SubentityDimension >
    __cuda_callable__
    constexpr LocalIndexType
-   getSubentitiesCount( const GlobalIndexType entityIndex ) const;
+   getSubentitiesCount( GlobalIndexType entityIndex ) const;
 
    /**
     * \brief Returns the global index of the subentity specified by its local index.
@@ -178,7 +178,7 @@ public:
    template< int EntityDimension, int SubentityDimension >
    __cuda_callable__
    GlobalIndexType
-   getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const;
+   getSubentityIndex( GlobalIndexType entityIndex, LocalIndexType subentityIndex ) const;
 
    /**
     * \brief Returns the count of superentities of the entity with given index.
@@ -186,7 +186,7 @@ public:
    template< int EntityDimension, int SuperentityDimension >
    __cuda_callable__
    LocalIndexType
-   getSuperentitiesCount( const GlobalIndexType entityIndex ) const;
+   getSuperentitiesCount( GlobalIndexType entityIndex ) const;
 
    /**
     * \brief Returns the global index of the superentity specified by its local index.
@@ -194,7 +194,7 @@ public:
    template< int EntityDimension, int SuperentityDimension >
    __cuda_callable__
    GlobalIndexType
-   getSuperentityIndex( const GlobalIndexType entityIndex, const LocalIndexType superentityIndex ) const;
+   getSuperentityIndex( GlobalIndexType entityIndex, LocalIndexType superentityIndex ) const;
 
    /**
     * \brief Returns the count of neighbor cells of the cell with given index,
@@ -202,7 +202,7 @@ public:
     */
    __cuda_callable__
    LocalIndexType
-   getCellNeighborsCount( const GlobalIndexType cellIndex ) const;
+   getCellNeighborsCount( GlobalIndexType cellIndex ) const;
 
    /**
     * \brief Returns the global index of the cell's specific neighbor cell wigh given local index,
@@ -210,7 +210,7 @@ public:
     */
    __cuda_callable__
    GlobalIndexType
-   getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const;
+   getCellNeighborIndex( GlobalIndexType cellIndex, LocalIndexType neighborIndex ) const;
 
    /**
     * \brief Execute function \e f in parallel for all mesh entities with dimension \e EntityDimension.

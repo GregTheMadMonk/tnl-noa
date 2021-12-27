@@ -35,7 +35,7 @@ struct CSRAdaptiveKernelView
    CSRAdaptiveKernelView() = default;
 
    void
-   setBlocks( BlocksType& blocks, const int idx );
+   setBlocks( BlocksType& blocks, int idx );
 
    ViewType
    getView();
