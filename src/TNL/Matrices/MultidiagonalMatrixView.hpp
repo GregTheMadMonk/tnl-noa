@@ -493,9 +493,9 @@ template< typename InVector, typename OutVector >
 void
 MultidiagonalMatrixView< Real, Device, Index, Organization >::vectorProduct( const InVector& inVector,
                                                                              OutVector& outVector,
-                                                                             const RealType matrixMultiplicator,
-                                                                             const RealType outVectorMultiplicator,
-                                                                             const IndexType begin,
+                                                                             RealType matrixMultiplicator,
+                                                                             RealType outVectorMultiplicator,
+                                                                             IndexType begin,
                                                                              IndexType end ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );

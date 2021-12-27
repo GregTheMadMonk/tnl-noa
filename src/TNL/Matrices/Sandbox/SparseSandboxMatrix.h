@@ -1045,8 +1045,8 @@ public:
    void
    vectorProduct( const InVector& inVector,
                   OutVector& outVector,
-                  const RealType& matrixMultiplicator = 1.0,
-                  const RealType& outVectorMultiplicator = 0.0,
+                  RealType matrixMultiplicator = 1.0,
+                  RealType outVectorMultiplicator = 0.0,
                   IndexType firstRow = 0,
                   IndexType lastRow = 0 ) const;
 

@@ -720,9 +720,9 @@ void
 MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::vectorProduct(
    const InVector& inVector,
    OutVector& outVector,
-   const RealType matrixMultiplicator,
-   const RealType outVectorMultiplicator,
-   const IndexType firstRow,
+   RealType matrixMultiplicator,
+   RealType outVectorMultiplicator,
+   IndexType firstRow,
    IndexType lastRow ) const
 {
    this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );

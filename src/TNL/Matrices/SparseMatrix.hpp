@@ -562,10 +562,10 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::vectorProduct(
    const InVector& inVector,
    OutVector& outVector,
-   const ComputeRealType& matrixMultiplicator,
-   const ComputeRealType& outVectorMultiplicator,
-   const IndexType firstRow,
-   const IndexType lastRow ) const
+   ComputeRealType matrixMultiplicator,
+   ComputeRealType outVectorMultiplicator,
+   IndexType firstRow,
+   IndexType lastRow ) const
 {
    this->getView().vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
 }

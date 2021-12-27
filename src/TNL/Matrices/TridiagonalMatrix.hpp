@@ -389,9 +389,9 @@ template< typename InVector, typename OutVector >
 void
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::vectorProduct( const InVector& inVector,
                                                                                       OutVector& outVector,
-                                                                                      const RealType matrixMultiplicator,
-                                                                                      const RealType outVectorMultiplicator,
-                                                                                      const IndexType begin,
+                                                                                      RealType matrixMultiplicator,
+                                                                                      RealType outVectorMultiplicator,
+                                                                                      IndexType begin,
                                                                                       IndexType end ) const
 {
    this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, begin, end );

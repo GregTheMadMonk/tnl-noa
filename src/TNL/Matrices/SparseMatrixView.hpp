@@ -390,9 +390,9 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::vectorProduct(
    const InVector& inVector,
    OutVector& outVector,
-   const ComputeRealType matrixMultiplicator,
-   const ComputeRealType outVectorMultiplicator,
-   const IndexType firstRow,
+   ComputeRealType matrixMultiplicator,
+   ComputeRealType outVectorMultiplicator,
+   IndexType firstRow,
    IndexType lastRow ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );

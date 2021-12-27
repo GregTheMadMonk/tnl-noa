@@ -319,9 +319,9 @@ template< typename InVector, typename OutVector >
 void
 SparseSandboxMatrixView< Real, Device, Index, MatrixType >::vectorProduct( const InVector& inVector,
                                                                            OutVector& outVector,
-                                                                           const RealType matrixMultiplicator,
-                                                                           const RealType outVectorMultiplicator,
-                                                                           const IndexType firstRow,
+                                                                           RealType matrixMultiplicator,
+                                                                           RealType outVectorMultiplicator,
+                                                                           IndexType firstRow,
                                                                            IndexType lastRow ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );

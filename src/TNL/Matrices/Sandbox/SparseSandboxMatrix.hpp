@@ -351,10 +351,10 @@ void
 SparseSandboxMatrix< Real, Device, Index, MatrixType, RealAllocator, IndexAllocator >::vectorProduct(
    const InVector& inVector,
    OutVector& outVector,
-   const RealType& matrixMultiplicator,
-   const RealType& outVectorMultiplicator,
-   const IndexType firstRow,
-   const IndexType lastRow ) const
+   RealType matrixMultiplicator,
+   RealType outVectorMultiplicator,
+   IndexType firstRow,
+   IndexType lastRow ) const
 {
    this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator, firstRow, lastRow );
 }
