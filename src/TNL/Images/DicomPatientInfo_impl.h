@@ -23,7 +23,7 @@ inline DicomPatientInfo::DicomPatientInfo( DicomHeader& dicomHeader ) : dicomHea
    isObjectRetrieved = false;
 }
 
-inline DicomPatientInfo::~DicomPatientInfo() {}
+inline DicomPatientInfo::~DicomPatientInfo() = default;
 
 inline bool
 DicomPatientInfo::retrieveInfo()

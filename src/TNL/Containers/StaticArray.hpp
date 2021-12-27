@@ -94,10 +94,6 @@ StaticArray< Size, Value >::getSize()
 }
 
 template< int Size, typename Value >
-__cuda_callable__
-StaticArray< Size, Value >::StaticArray() {}
-
-template< int Size, typename Value >
 template< typename _unused >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )

@@ -22,13 +22,6 @@ namespace TNL {
 namespace Solvers {
 
 template< typename Real, typename Index >
-IterativeSolverMonitor< Real, Index >::IterativeSolverMonitor()
-: SolverMonitor(), stage( "" ), saved_stage( "" ), saved( false ), attributes_changed( false ), time( 0.0 ), saved_time( 0.0 ),
-  timeStep( 0.0 ), saved_timeStep( 0.0 ), residue( 0.0 ), saved_residue( 0.0 ), elapsed_time_before_refresh( 0.0 ),
-  iterations( 0 ), saved_iterations( 0 ), iterations_before_refresh( 0 ), verbose( 2 ), nodesPerIteration( 0 )
-{}
-
-template< typename Real, typename Index >
 void
 IterativeSolverMonitor< Real, Index >::setStage( const std::string& stage )
 {

@@ -26,8 +26,7 @@ BlobBase< Real, Dimension >::setup( const Config::ParameterContainer& parameters
  */
 
 template< typename Real >
-Blob< 1, Real >::Blob()
-{}
+Blob< 1, Real >::Blob() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -55,8 +54,7 @@ Blob< 1, Real >::operator()( const PointType& v, const Real& time ) const
  * 2D
  */
 template< typename Real >
-Blob< 2, Real >::Blob()
-{}
+Blob< 2, Real >::Blob() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -85,8 +83,7 @@ Blob< 2, Real >::operator()( const PointType& v, const Real& time ) const
  * 3D
  */
 template< typename Real >
-Blob< 3, Real >::Blob()
-{}
+Blob< 3, Real >::Blob() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >

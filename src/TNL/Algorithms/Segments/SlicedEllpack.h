@@ -48,7 +48,7 @@ public:
       return true;
    };
 
-   SlicedEllpack();
+   SlicedEllpack() = default;
 
    template< typename SizesContainer >
    SlicedEllpack( const SizesContainer& sizes );
@@ -165,7 +165,9 @@ public:
    print( Fetch&& fetch ) const;
 
 protected:
-   IndexType size, alignedSize, segmentsCount;
+   IndexType size = 0;
+   IndexType alignedSize = 0;
+   IndexType segmentsCount = 0;
 
    OffsetsContainer sliceOffsets, sliceSegmentSizes;
 };

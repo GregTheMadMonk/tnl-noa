@@ -20,7 +20,7 @@ inline DicomImageInfo::DicomImageInfo( DicomHeader& dicomHeader ) : dicomHeader(
    depth = 0;
 }
 
-inline DicomImageInfo::~DicomImageInfo() {}
+inline DicomImageInfo::~DicomImageInfo() = default;
 
 inline bool
 DicomImageInfo::retrieveInfo()

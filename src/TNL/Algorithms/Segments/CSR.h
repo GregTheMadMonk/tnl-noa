@@ -105,7 +105,7 @@ public:
    /**
     * \brief Construct with no parameters to create empty segments.
     */
-   CSR();
+   CSR() = default;
 
    /**
     * \brief Construct with segments sizes.

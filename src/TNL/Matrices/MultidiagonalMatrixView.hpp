@@ -15,8 +15,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
-MultidiagonalMatrixView< Real, Device, Index, Organization >::MultidiagonalMatrixView()
-{}
+MultidiagonalMatrixView< Real, Device, Index, Organization >::MultidiagonalMatrixView() = default;
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 MultidiagonalMatrixView< Real, Device, Index, Organization >::MultidiagonalMatrixView(

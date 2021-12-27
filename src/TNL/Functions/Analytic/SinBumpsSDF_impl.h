@@ -59,8 +59,7 @@ SinBumpsSDFBase< Point >::getPhase() const
  */
 
 template< typename Real >
-SinBumpsSDF< 1, Real >::SinBumpsSDF()
-{}
+SinBumpsSDF< 1, Real >::SinBumpsSDF() = default;
 
 template< typename Real >
 bool
@@ -101,8 +100,7 @@ SinBumpsSDF< 1, Real >::getPartialDerivative( const PointType& v, const Real& ti
  */
 
 template< typename Real >
-SinBumpsSDF< 2, Real >::SinBumpsSDF()
-{}
+SinBumpsSDF< 2, Real >::SinBumpsSDF() = default;
 
 template< typename Real >
 bool
@@ -157,8 +155,7 @@ SinBumpsSDF< 2, Real >::getPartialDerivative( const PointType& v, const Real& ti
  */
 
 template< typename Real >
-SinBumpsSDF< 3, Real >::SinBumpsSDF()
-{}
+SinBumpsSDF< 3, Real >::SinBumpsSDF() = default;
 
 template< typename Real >
 bool

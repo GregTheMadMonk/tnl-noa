@@ -59,8 +59,7 @@ ExpBumpBase< dimensions, Real >::getSigma() const
  */
 
 template< typename Real >
-ExpBump< 1, Real >::ExpBump()
-{}
+ExpBump< 1, Real >::ExpBump() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -96,8 +95,7 @@ ExpBump< 1, Real >::operator()( const PointType& v, const Real& time ) const
  */
 
 template< typename Real >
-ExpBump< 2, Real >::ExpBump()
-{}
+ExpBump< 2, Real >::ExpBump() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -146,8 +144,7 @@ ExpBump< 2, Real >::operator()( const PointType& v, const Real& time ) const
  */
 
 template< typename Real >
-ExpBump< 3, Real >::ExpBump()
-{}
+ExpBump< 3, Real >::ExpBump() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >

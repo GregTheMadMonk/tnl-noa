@@ -54,7 +54,7 @@ public:
    Grid( Index xSize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
-   ~Grid() {}
+   ~Grid() = default;
 
    /**
     * \brief Sets the size of dimensions.

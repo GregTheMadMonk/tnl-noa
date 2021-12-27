@@ -547,10 +547,10 @@ protected:
    {
       Object data;
       char data_image[ sizeof( Object ) ];
-      bool maybe_modified;
+      bool maybe_modified = true;
 
       template< typename... Args >
-      explicit PointerData( Args... args ) : data( args... ), maybe_modified( true )
+      explicit PointerData( Args... args ) : data( args... )
       {}
    };
 

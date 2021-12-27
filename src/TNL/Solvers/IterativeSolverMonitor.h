@@ -52,7 +52,7 @@ public:
    /**
     * \brief Construct with no parameters.
     */
-   IterativeSolverMonitor();
+   IterativeSolverMonitor() = default;
 
    /**
     * \brief This method can be used for naming a stage of the monitored solver.
@@ -128,17 +128,25 @@ protected:
 
    std::string stage, saved_stage;
 
-   std::atomic_bool saved, attributes_changed;
+   std::atomic_bool saved{ false };
+   std::atomic_bool attributes_changed{ false };
 
-   RealType time, saved_time, timeStep, saved_timeStep, residue, saved_residue, elapsed_time_before_refresh, last_mlups;
+   RealType time = 0;
+   RealType saved_time = 0;
+   RealType timeStep = 0;
+   RealType saved_timeStep = 0;
+   RealType residue = 0;
+   RealType saved_residue = 0;
+   RealType elapsed_time_before_refresh = 0;
+   RealType last_mlups = 0;
    // TODO: Move MLUPS to LBM solver only i.e create solver monitor for LBM
 
-   IndexType iterations, saved_iterations, iterations_before_refresh;
-
+   IndexType iterations = 0;
+   IndexType saved_iterations = 0;
+   IndexType iterations_before_refresh = 0;
    // TODO: move verbose to SolverMonitor
-   IndexType verbose;
-
-   IndexType nodesPerIteration;
+   IndexType verbose = 2;
+   IndexType nodesPerIteration = 0;
 };
 
 }  // namespace Solvers

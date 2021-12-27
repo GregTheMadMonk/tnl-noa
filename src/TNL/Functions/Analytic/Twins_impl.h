@@ -24,8 +24,7 @@ TwinsBase< Real, Dimension >::setup( const Config::ParameterContainer& parameter
  */
 
 template< typename Real >
-Twins< 1, Real >::Twins()
-{}
+Twins< 1, Real >::Twins() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -53,8 +52,7 @@ Twins< 1, Real >::operator()( const PointType& v, const Real& time ) const
  * 2D
  */
 template< typename Real >
-Twins< 2, Real >::Twins()
-{}
+Twins< 2, Real >::Twins() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -84,8 +82,7 @@ Twins< 2, Real >::operator()( const PointType& v, const Real& time ) const
  * 3D
  */
 template< typename Real >
-Twins< 3, Real >::Twins()
-{}
+Twins< 3, Real >::Twins() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >

@@ -19,12 +19,6 @@ namespace Segments {
 
 template< typename Device, typename Index, ElementsOrganization Organization, int SliceSize >
 __cuda_callable__
-SlicedEllpackView< Device, Index, Organization, SliceSize >::SlicedEllpackView()
-: size( 0 ), alignedSize( 0 ), segmentsCount( 0 )
-{}
-
-template< typename Device, typename Index, ElementsOrganization Organization, int SliceSize >
-__cuda_callable__
 SlicedEllpackView< Device, Index, Organization, SliceSize >::SlicedEllpackView( IndexType size,
                                                                                 IndexType alignedSize,
                                                                                 IndexType segmentsCount,

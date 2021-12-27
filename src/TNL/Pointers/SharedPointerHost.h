@@ -421,10 +421,10 @@ protected:
    struct PointerData
    {
       Object data;
-      int counter;
+      int counter = 1;
 
       template< typename... Args >
-      explicit PointerData( Args... args ) : data( args... ), counter( 1 )
+      explicit PointerData( Args... args ) : data( args... )
       {}
    };
 

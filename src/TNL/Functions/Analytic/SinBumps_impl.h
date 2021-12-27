@@ -75,8 +75,7 @@ SinBumpsBase< Point >::getWavesNumber() const
  * 1D
  */
 template< typename Real >
-SinBumps< 1, Real >::SinBumps()
-{}
+SinBumps< 1, Real >::SinBumps() = default;
 
 template< typename Real >
 bool
@@ -126,8 +125,7 @@ SinBumps< 1, Real >::operator()( const PointType& v, const Real& time ) const
  * 2D
  */
 template< typename Real >
-SinBumps< 2, Real >::SinBumps()
-{}
+SinBumps< 2, Real >::SinBumps() = default;
 
 template< typename Real >
 bool
@@ -200,8 +198,7 @@ SinBumps< 2, Real >::operator()( const PointType& v, const Real& time ) const
  * 3D
  */
 template< typename Real >
-SinBumps< 3, Real >::SinBumps()
-{}
+SinBumps< 3, Real >::SinBumps() = default;
 
 template< typename Real >
 bool

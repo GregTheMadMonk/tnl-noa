@@ -18,10 +18,6 @@ namespace Segments {
 
 template< typename Device, typename Index, typename Kernel >
 __cuda_callable__
-CSRView< Device, Index, Kernel >::CSRView() {}
-
-template< typename Device, typename Index, typename Kernel >
-__cuda_callable__
 CSRView< Device, Index, Kernel >::CSRView( const OffsetsView& offsets_view, const KernelView& kernel_view )
 : offsets( offsets_view ), kernel( kernel_view )
 {}

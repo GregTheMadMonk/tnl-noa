@@ -44,7 +44,7 @@ public:
    };
 
    __cuda_callable__
-   CSRView();
+   CSRView() = default;
 
    __cuda_callable__
    CSRView( const OffsetsView& offsets, const KernelView& kernel );

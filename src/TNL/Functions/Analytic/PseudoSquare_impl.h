@@ -26,8 +26,7 @@ PseudoSquareBase< Real, Dimension >::setup( const Config::ParameterContainer& pa
  */
 
 template< typename Real >
-PseudoSquare< 1, Real >::PseudoSquare()
-{}
+PseudoSquare< 1, Real >::PseudoSquare() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -55,8 +54,7 @@ PseudoSquare< 1, Real >::operator()( const PointType& v, const Real& time ) cons
  * 2D
  */
 template< typename Real >
-PseudoSquare< 2, Real >::PseudoSquare()
-{}
+PseudoSquare< 2, Real >::PseudoSquare() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >
@@ -85,8 +83,7 @@ PseudoSquare< 2, Real >::operator()( const PointType& v, const Real& time ) cons
  * 3D
  */
 template< typename Real >
-PseudoSquare< 3, Real >::PseudoSquare()
-{}
+PseudoSquare< 3, Real >::PseudoSquare() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder >

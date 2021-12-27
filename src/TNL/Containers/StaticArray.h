@@ -43,7 +43,7 @@ public:
     * \brief Default constructor.
     */
    __cuda_callable__
-   StaticArray();
+   StaticArray() = default;
 
    /**
     * \brief Constructor from static array.

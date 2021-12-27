@@ -17,8 +17,7 @@ namespace TNL {
 namespace Functions {
 
 template< typename Mesh, int MeshEntityDimension, typename Real >
-MeshFunction< Mesh, MeshEntityDimension, Real >::MeshFunction()
-{}
+MeshFunction< Mesh, MeshEntityDimension, Real >::MeshFunction() = default;
 
 template< typename Mesh, int MeshEntityDimension, typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >::MeshFunction( const MeshPointer& meshPointer )

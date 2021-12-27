@@ -15,8 +15,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization, typename RealAllocator >
-TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::TridiagonalMatrix()
-{}
+TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::TridiagonalMatrix() = default;
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization, typename RealAllocator >
 TridiagonalMatrix< Real, Device, Index, Organization, RealAllocator >::TridiagonalMatrix( const IndexType rows,

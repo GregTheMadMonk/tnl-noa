@@ -48,7 +48,7 @@ public:
       return true;
    };
 
-   Ellpack();
+   Ellpack() = default;
 
    template< typename SizesContainer >
    Ellpack( const SizesContainer& sizes );
@@ -170,7 +170,9 @@ public:
    print( Fetch&& fetch ) const;
 
 protected:
-   IndexType segmentSize, size, alignedSize;
+   IndexType segmentSize = 0;
+   IndexType size = 0;
+   IndexType alignedSize = 0;
 };
 
 template< typename Device, typename Index, typename IndexAllocator, ElementsOrganization Organization, int Alignment >

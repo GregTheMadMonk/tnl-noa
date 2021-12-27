@@ -61,7 +61,7 @@ public:
    };
 
    __cuda_callable__
-   EllpackView();
+   EllpackView() = default;
 
    __cuda_callable__
    EllpackView( IndexType segmentsCount, IndexType segmentSize, IndexType alignedSize );
@@ -168,7 +168,9 @@ public:
    print( Fetch&& fetch ) const;
 
 protected:
-   IndexType segmentSize, segmentsCount, alignedSize;
+   IndexType segmentSize = 0;
+   IndexType segmentsCount = 0;
+   IndexType alignedSize = 0;
 };
 
 template< typename Device, typename Index, ElementsOrganization Organization, int Alignment >

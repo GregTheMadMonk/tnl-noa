@@ -30,7 +30,7 @@ public:
     *
     * Sets no file name base, index to zero and index digits count to five;
     */
-   FileName();
+   FileName() = default;
 
    /**
     * \brief Constructor with file name base parameter.
@@ -133,7 +133,8 @@ public:
 protected:
    String fileNameBase, extension, distributedSystemNodeId;
 
-   size_t index, digitsCount;
+   std::size_t index = 0;
+   std::size_t digitsCount = 5;
 };
 
 /**

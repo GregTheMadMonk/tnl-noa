@@ -26,7 +26,7 @@ public:
    /**
     * \brief Basic construct with no arguments
     */
-   SolverMonitor() : timeout_milliseconds( 500 ), started( false ), stopped( false ), timer( nullptr ) {}
+   SolverMonitor() = default;
 
    /**
     * \brief This abstract method is responsible for printing or visualizing the status of the solver.
@@ -117,16 +117,17 @@ protected:
    double
    getElapsedTime()
    {
-      if( ! timer )
+      if( timer == nullptr )
          return 0.0;
       return timer->getRealTime();
    }
 
-   std::atomic_int timeout_milliseconds;
+   std::atomic_int timeout_milliseconds{ 500 };
 
-   std::atomic_bool started, stopped;
+   std::atomic_bool started{ false };
+   std::atomic_bool stopped{ false };
 
-   Timer* timer;
+   Timer* timer = nullptr;
 };
 
 /**

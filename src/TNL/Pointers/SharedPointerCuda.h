@@ -523,11 +523,11 @@ protected:
    {
       Object data;
       char data_image[ sizeof( Object ) ];
-      int counter;
-      bool maybe_modified;
+      int counter = 1;
+      bool maybe_modified = true;
 
       template< typename... Args >
-      explicit PointerData( Args... args ) : data( args... ), counter( 1 ), maybe_modified( true )
+      explicit PointerData( Args... args ) : data( args... )
       {}
    };
 

@@ -39,8 +39,7 @@ CylinderBase< Real, Dimension >::getDiameter() const
  */
 
 template< typename Real >
-Cylinder< 1, Real >::Cylinder()
-{}
+Cylinder< 1, Real >::Cylinder() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -69,8 +68,7 @@ Cylinder< 1, Real >::operator()( const PointType& v, const Real& time ) const
  */
 
 template< typename Real >
-Cylinder< 2, Real >::Cylinder()
-{}
+Cylinder< 2, Real >::Cylinder() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -99,8 +97,7 @@ Cylinder< 2, Real >::operator()( const PointType& v, const Real& time ) const
  * 3D
  */
 template< typename Real >
-Cylinder< 3, Real >::Cylinder()
-{}
+Cylinder< 3, Real >::Cylinder() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >

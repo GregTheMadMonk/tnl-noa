@@ -52,7 +52,7 @@ public:
    Grid( Index xSize, Index ySize, Index zSize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
-   ~Grid() {}
+   ~Grid() = default;
 
    /**
     * \brief Sets the size of dimensions.

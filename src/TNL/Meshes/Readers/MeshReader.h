@@ -44,7 +44,7 @@ public:
 
    MeshReader( const std::string& fileName ) : fileName( fileName ) {}
 
-   virtual ~MeshReader() {}
+   virtual ~MeshReader() = default;
 
    void
    setFileName( const std::string& fileName )

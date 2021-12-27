@@ -50,7 +50,7 @@ public:
    };
 
    __cuda_callable__
-   SlicedEllpackView();
+   SlicedEllpackView() = default;
 
    __cuda_callable__
    SlicedEllpackView( IndexType size,
@@ -158,7 +158,9 @@ public:
    print( Fetch&& fetch ) const;
 
 protected:
-   IndexType size, alignedSize, segmentsCount;
+   IndexType size = 0;
+   IndexType alignedSize = 0;
+   IndexType segmentsCount = 0;
 
    OffsetsView sliceOffsets, sliceSegmentSizes;
 };

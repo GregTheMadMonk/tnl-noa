@@ -20,8 +20,7 @@ template< typename Real,
           ElementsOrganization Organization,
           typename RealAllocator,
           typename IndexAllocator >
-MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::MultidiagonalMatrix()
-{}
+MultidiagonalMatrix< Real, Device, Index, Organization, RealAllocator, IndexAllocator >::MultidiagonalMatrix() = default;
 
 template< typename Real,
           typename Device,

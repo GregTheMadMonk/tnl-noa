@@ -16,10 +16,6 @@ namespace Algorithms {
 namespace Segments {
 
 template< typename Device, typename Index, typename Kernel, typename IndexAllocator >
-CSR< Device, Index, Kernel, IndexAllocator >::CSR()
-{}
-
-template< typename Device, typename Index, typename Kernel, typename IndexAllocator >
 template< typename SizesContainer >
 CSR< Device, Index, Kernel, IndexAllocator >::CSR( const SizesContainer& segmentsSizes )
 {

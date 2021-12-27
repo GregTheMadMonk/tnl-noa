@@ -15,8 +15,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
-TridiagonalMatrixView< Real, Device, Index, Organization >::TridiagonalMatrixView()
-{}
+TridiagonalMatrixView< Real, Device, Index, Organization >::TridiagonalMatrixView() = default;
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 TridiagonalMatrixView< Real, Device, Index, Organization >::TridiagonalMatrixView( const ValuesViewType& values,

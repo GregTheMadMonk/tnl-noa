@@ -39,8 +39,7 @@ FlowerpotBase< Real, Dimension >::getDiameter() const
  */
 
 template< typename Real >
-Flowerpot< 1, Real >::Flowerpot()
-{}
+Flowerpot< 1, Real >::Flowerpot() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -68,8 +67,7 @@ Flowerpot< 1, Real >::operator()( const PointType& v, const Real& time ) const
  * 2D
  */
 template< typename Real >
-Flowerpot< 2, Real >::Flowerpot()
-{}
+Flowerpot< 2, Real >::Flowerpot() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >
@@ -99,8 +97,7 @@ Flowerpot< 2, Real >::operator()( const PointType& v, const Real& time ) const
  */
 
 template< typename Real >
-Flowerpot< 3, Real >::Flowerpot()
-{}
+Flowerpot< 3, Real >::Flowerpot() = default;
 
 template< typename Real >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Point >

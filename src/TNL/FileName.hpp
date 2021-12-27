@@ -17,12 +17,11 @@
 
 namespace TNL {
 
-inline FileName::FileName() : index( 0 ), digitsCount( 5 ) {}
-
-inline FileName::FileName( const String& fileNameBase ) : fileNameBase( fileNameBase ), index( 0 ), digitsCount( 5 ) {}
+inline FileName::FileName( const String& fileNameBase ) : fileNameBase( fileNameBase )
+{}
 
 inline FileName::FileName( const String& fileNameBase, const String& extension )
-: fileNameBase( fileNameBase ), extension( extension ), index( 0 ), digitsCount( 5 )
+: fileNameBase( fileNameBase ), extension( extension )
 {}
 
 inline void

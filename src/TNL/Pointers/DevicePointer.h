@@ -347,7 +347,7 @@ public:
    /**
     * \brief Destructor.
     */
-   ~DevicePointer() override {}
+   ~DevicePointer() override = default;
 
 protected:
    Object* pointer;

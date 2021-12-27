@@ -216,7 +216,7 @@ RowMajorDenseMatrixViewVectorMultiplicationKernel( const Matrix matrix,
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__
-DenseMatrixView< Real, Device, Index, Organization >::DenseMatrixView() {}
+DenseMatrixView< Real, Device, Index, Organization >::DenseMatrixView() = default;
 
 template< typename Real, typename Device, typename Index, ElementsOrganization Organization >
 __cuda_callable__

@@ -19,7 +19,7 @@ inline DicomSeriesInfo::DicomSeriesInfo( DicomHeader& dicomHeader ) : dicomHeade
    isObjectRetrieved = false;
 }
 
-inline DicomSeriesInfo::~DicomSeriesInfo() {}
+inline DicomSeriesInfo::~DicomSeriesInfo() = default;
 
 inline bool
 DicomSeriesInfo::retrieveInfo()

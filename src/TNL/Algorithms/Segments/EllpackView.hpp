@@ -159,10 +159,6 @@ struct EllpackCudaReductionDispatcher< Index, Fetch, Reduction, ResultKeeper, Re
 
 template< typename Device, typename Index, ElementsOrganization Organization, int Alignment >
 __cuda_callable__
-EllpackView< Device, Index, Organization, Alignment >::EllpackView() : segmentSize( 0 ), segmentsCount( 0 ), alignedSize( 0 ) {}
-
-template< typename Device, typename Index, ElementsOrganization Organization, int Alignment >
-__cuda_callable__
 EllpackView< Device, Index, Organization, Alignment >::EllpackView( IndexType segmentsCount,
                                                                     IndexType segmentSize,
                                                                     IndexType alignedSize )

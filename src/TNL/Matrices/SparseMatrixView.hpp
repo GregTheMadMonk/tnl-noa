@@ -25,7 +25,7 @@ template< typename Real,
           class SegmentsView,
           typename ComputeReal >
 __cuda_callable__
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::SparseMatrixView() {}
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::SparseMatrixView() = default;
 
 template< typename Real,
           typename Device,
