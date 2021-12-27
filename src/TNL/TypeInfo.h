@@ -33,7 +33,7 @@ demangle( const char* name )
 #if defined( TNL_HAS_CXXABI_H )
    int status = 0;
    std::size_t size = 0;
-   std::unique_ptr< char[], void ( * )( void* ) > result( abi::__cxa_demangle( name, NULL, &size, &status ), std::free );
+   std::unique_ptr< char[], void ( * )( void* ) > result( abi::__cxa_demangle( name, nullptr, &size, &status ), std::free );
    if( result.get() )
       return result.get();
 #endif
@@ -56,7 +56,7 @@ private:
    static constexpr std::false_type
    check( ... );
 
-   using type = decltype( check< std::decay_t< T > >( 0 ) );
+   using type = decltype( check< std::decay_t< T > >( nullptr ) );
 
 public:
    static constexpr bool value = type::value;

@@ -38,8 +38,8 @@ filter( const struct dirent* dire )
 inline DicomSeries::DicomSeries( const String& filePath )
 {
 #ifdef HAVE_DCMTK_H
-   dicomImage = 0;
-   pixelData = 0;
+   dicomImage = nullptr;
+   pixelData = nullptr;
 #endif
    imagesInfo.imagesCount = 0;
    imagesInfo.maxColorValue = 0;
@@ -57,7 +57,7 @@ inline DicomSeries::~DicomSeries()
    for( int i = 0; i < length; i++ ) {
       DicomHeader* header = dicomSeriesHeaders[ i ];
       delete header;
-      header = 0;
+      header = nullptr;
    }
 
 #ifdef HAVE_DCMTK_H
@@ -178,7 +178,7 @@ DicomSeries::loadImage( const String& filePath, int number )
    // load image
    if( dicomImage )
       delete dicomImage;
-   dicomImage = NULL;
+   dicomImage = nullptr;
 
    dicomImage = new DicomImage( filePath.getString() );
 
@@ -192,7 +192,7 @@ DicomSeries::loadImage( const String& filePath, int number )
       return false;
    }
 
-   if( dicomImage != NULL ) {
+   if( dicomImage != nullptr ) {
       EI_Status imageStatus = dicomImage->getStatus();
       if( imageStatus == EIS_Normal ) {
          // ok - image loaded
@@ -203,12 +203,12 @@ DicomSeries::loadImage( const String& filePath, int number )
                    << std::endl;
 
          delete dicomImage;
-         dicomImage = NULL;
+         dicomImage = nullptr;
          return false;
       }
       else {
          delete dicomImage;
-         dicomImage = NULL;
+         dicomImage = nullptr;
          std::cerr << "Error: cannot load DICOM image (" << DicomImage::getString( dicomImage->getStatus() ) << ")"
                    << std::endl;
          return false;
@@ -276,7 +276,7 @@ DicomSeries::loadImage( const String& filePath, int number )
 
    // delete image object - data are stored separately
    delete dicomImage;
-   dicomImage = NULL;
+   dicomImage = nullptr;
    return true;
 #else
    std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
@@ -356,7 +356,7 @@ DicomSeries::freeData()
 #ifdef HAVE_DCMTK_H
    if( pixelData )
       delete pixelData;
-   pixelData = NULL;
+   pixelData = nullptr;
 #endif
 }
 

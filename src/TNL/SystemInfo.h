@@ -70,7 +70,7 @@ protected:
       std::ifstream file( fileName.getString() );
       if( ! file ) {
          std::cerr << "Unable to read information from " << fileName << "." << std::endl;
-         return 0;
+         return 0;  // NOLINT(modernize-use-nullptr)
       }
       ResultType result;
       file >> result;

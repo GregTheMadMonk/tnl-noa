@@ -290,7 +290,7 @@ Reduction< Devices::Cuda >::reduce( const Index begin, const Index end, Fetch&& 
    detail::CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduce on the GPU
-   Result* deviceAux1( 0 );
+   Result* deviceAux1 = nullptr;
    const int reducedSize = reductionLauncher.start( reduce, fetch, identity, deviceAux1 );
 
 #ifdef CUDA_REDUCTION_PROFILING
@@ -379,8 +379,8 @@ Reduction< Devices::Cuda >::reduceWithArgument( const Index begin,
    detail::CudaReductionKernelLauncher< Index, Result > reductionLauncher( begin, end );
 
    // start the reduce on the GPU
-   Result* deviceAux1( nullptr );
-   Index* deviceIndexes( nullptr );
+   Result* deviceAux1 = nullptr;
+   Index* deviceIndexes = nullptr;
    const int reducedSize = reductionLauncher.startWithArgument( reduce, fetch, identity, deviceAux1, deviceIndexes );
 
 #ifdef CUDA_REDUCTION_PROFILING

@@ -36,19 +36,19 @@ PNGImage< Index >::readHeader()
    /****
     * Allocate necessary memory
     */
-   this->png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+   this->png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
    if( ! this->png_ptr )
       return false;
 
    this->info_ptr = png_create_info_struct( this->png_ptr );
    if( ! this->info_ptr ) {
-      png_destroy_read_struct( &this->png_ptr, (png_infopp) NULL, (png_infopp) NULL );
+      png_destroy_read_struct( &this->png_ptr, nullptr, nullptr );
       return false;
    }
 
    this->end_info = png_create_info_struct( this->png_ptr );
    if( ! this->end_info ) {
-      png_destroy_read_struct( &this->png_ptr, &this->info_ptr, (png_infopp) NULL );
+      png_destroy_read_struct( &this->png_ptr, &this->info_ptr, nullptr );
       return false;
    }
 
@@ -65,7 +65,7 @@ PNGImage< Index >::readHeader()
    /****
     * Read the header
     */
-   png_read_png( this->png_ptr, this->info_ptr, PNG_TRANSFORM_IDENTITY, NULL );
+   png_read_png( this->png_ptr, this->info_ptr, PNG_TRANSFORM_IDENTITY, nullptr );
    this->height = (Index) png_get_image_height( this->png_ptr, this->info_ptr );
    this->width = (Index) png_get_image_width( this->png_ptr, this->info_ptr );
    this->bit_depth = png_get_bit_depth( this->png_ptr, this->info_ptr );
@@ -184,13 +184,13 @@ bool
 PNGImage< Index >::writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_PNG_H
-   this->png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
+   this->png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
    if( ! png_ptr )
       return false;
 
    this->info_ptr = png_create_info_struct( this->png_ptr );
    if( ! this->info_ptr ) {
-      png_destroy_write_struct( &this->png_ptr, NULL );
+      png_destroy_write_struct( &this->png_ptr, nullptr );
       return false;
    }
 

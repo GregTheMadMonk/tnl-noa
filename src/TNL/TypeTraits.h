@@ -33,7 +33,7 @@ private:
    template< typename C > static NoType& test(...);
 
 public:
-   static constexpr bool value = ( sizeof( test< std::decay_t<T> >(0) ) == sizeof( YesType ) );
+   static constexpr bool value = ( sizeof( test< std::decay_t< T > >( nullptr ) ) == sizeof( YesType ) );
 };
 
 /**
@@ -74,7 +74,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T> >(0));
+   using type = decltype( check< std::decay_t< T > >( nullptr ) );
 
 public:
    static constexpr bool value = type::value;
@@ -101,7 +101,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T> >(0));
+   using type = decltype( check< std::decay_t< T > >( nullptr ) );
 
 public:
    static constexpr bool value = type::value;
@@ -128,7 +128,7 @@ private:
    template< typename >
    static constexpr std::false_type check(...);
 
-   using type = decltype(check<std::decay_t<T> >(0));
+   using type = decltype( check< std::decay_t< T > >( nullptr ) );
 
 public:
    static constexpr bool value = type::value;

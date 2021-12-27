@@ -247,7 +247,7 @@ parseCommandLine( int argc,
          }
          const std::string option = _option.substr( 2 );
          const ConfigEntryBase* entryBase = config_description.getEntry( option );
-         if( entryBase == NULL )
+         if( entryBase == nullptr )
             throw Exceptions::ConfigError( "Unknown parameter " + _option + "." );
          const String entryType = entryBase->getUIEntryType();
          if( i == argc - 1 )

@@ -45,7 +45,7 @@ namespace Functions {
 
 template< int FunctionDimension, typename Real, typename Device >
 TestFunction< FunctionDimension, Real, Device >::TestFunction()
-: function( 0 ), operator_( 0 ), timeDependence( none ), timeScale( 1.0 )
+: function( nullptr ), operator_( nullptr ), timeDependence( none ), timeScale( 1.0 )
 {}
 
 template< int FunctionDimension, typename Real, typename Device >

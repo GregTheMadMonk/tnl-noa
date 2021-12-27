@@ -72,7 +72,7 @@ SubdomainOverlapsGetter< Grid< 1, Real, Device, Index > >::getOverlaps(
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
@@ -103,7 +103,7 @@ SubdomainOverlapsGetter< Grid< 2, Real, Device, Index > >::getOverlaps(
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
@@ -146,7 +146,7 @@ SubdomainOverlapsGetter< Grid< 3, Real, Device, Index > >::getOverlaps(
 
    if( MPI::GetSize() == 1 )
       return;
-   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+   TNL_ASSERT_TRUE( distributedMesh != nullptr, "" );
 
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = MPI::GetRank();
