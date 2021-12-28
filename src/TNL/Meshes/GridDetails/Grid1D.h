@@ -49,7 +49,7 @@ public:
    /**
     * \brief Basic constructor.
     */
-   Grid();
+   Grid() = default;
 
    Grid( Index xSize );
 
@@ -220,13 +220,18 @@ protected:
    void
    computeSpaceSteps();
 
-   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
+   CoordinatesType dimensions = { 0 };
+   CoordinatesType localBegin = { 0 };
+   CoordinatesType localEnd = { 0 };
+   CoordinatesType interiorBegin = { 0 };
+   CoordinatesType interiorEnd = { 0 };
 
-   IndexType numberOfCells, numberOfVertices;
+   IndexType numberOfCells = 0;
+   IndexType numberOfVertices = 0;
 
-   PointType origin, proportions;
-
-   PointType spaceSteps;
+   PointType origin = { 0 };
+   PointType proportions = { 0 };
+   PointType spaceSteps = { 0 };
 
    RealType spaceStepsProducts[ 5 ];
 };

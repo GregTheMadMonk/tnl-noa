@@ -46,7 +46,7 @@ public:
    /**
     * \brief See Grid1D::Grid().
     */
-   Grid();
+   Grid() = default;
 
    Grid( Index xSize, Index ySize );
 
@@ -221,13 +221,21 @@ protected:
    void
    computeSpaceSteps();
 
-   CoordinatesType dimensions, localBegin, localEnd, interiorBegin, interiorEnd;
+   CoordinatesType dimensions = { 0, 0 };
+   CoordinatesType localBegin = { 0, 0 };
+   CoordinatesType localEnd = { 0, 0 };
+   CoordinatesType interiorBegin = { 0, 0 };
+   CoordinatesType interiorEnd = { 0, 0 };
 
-   IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
+   IndexType numberOfCells = 0;
+   IndexType numberOfNxFaces = 0;
+   IndexType numberOfNyFaces = 0;
+   IndexType numberOfFaces = 0;
+   IndexType numberOfVertices = 0;
 
-   PointType origin, proportions;
-
-   PointType spaceSteps;
+   PointType origin = { 0, 0 };
+   PointType proportions = { 0, 0 };
+   PointType spaceSteps = { 0, 0 };
 
    RealType spaceStepsProducts[ 5 ][ 5 ];
 

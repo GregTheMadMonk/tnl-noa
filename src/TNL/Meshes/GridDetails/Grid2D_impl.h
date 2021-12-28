@@ -18,15 +18,7 @@ namespace TNL {
 namespace Meshes {
 
 template< typename Real, typename Device, typename Index >
-Grid< 2, Real, Device, Index >::Grid()
-: numberOfCells( 0 ), numberOfNxFaces( 0 ), numberOfNyFaces( 0 ), numberOfFaces( 0 ), numberOfVertices( 0 )
-{
-   this->setDimensions( 0, 0 );
-}
-
-template< typename Real, typename Device, typename Index >
 Grid< 2, Real, Device, Index >::Grid( Index xSize, Index ySize )
-: numberOfCells( 0 ), numberOfNxFaces( 0 ), numberOfNyFaces( 0 ), numberOfFaces( 0 ), numberOfVertices( 0 )
 {
    this->setDimensions( xSize, ySize );
 }
