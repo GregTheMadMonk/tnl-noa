@@ -111,7 +111,7 @@ public:
    using RowElements = LoggingRowElements;
    using WidthHints = std::vector< int >;
 
-   Logging( std::ostream& log, int verbose = true ) : log( log ), verbose( verbose )
+   Logging( std::ostream& log, int verbose = 1 ) : log( log ), verbose( verbose )
    {
       try {
          // check if we got an open file

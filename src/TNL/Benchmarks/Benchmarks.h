@@ -66,7 +66,7 @@ public:
    using MetadataColumns = typename Logger::MetadataColumns;
    using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
 
-   Benchmark( std::ostream& output, int loops = 10, bool verbose = true );
+   Benchmark( std::ostream& output, int loops = 10, int verbose = 1 );
 
    static void
    configSetup( Config::ConfigDescription& config );

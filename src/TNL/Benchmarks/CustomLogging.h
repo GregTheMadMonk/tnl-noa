@@ -24,7 +24,7 @@ public:
    void
    writeTableHeader( const std::string& spanningElement, const HeaderElements& subElements )
    {
-      if( verbose && header_changed ) {
+      if( verbose > 0 && header_changed ) {
          for( const auto& it : metadataColumns ) {
             const int width = ( metadataWidths.count( it.first ) ) ? metadataWidths[ it.first ] : 15;
             std::cout << std::setw( width ) << it.first;
@@ -57,7 +57,7 @@ public:
    void
    writeTableRow( const std::string& spanningElement, const RowElements& subElements, const std::string& errorMessage )
    {
-      if( verbose ) {
+      if( verbose > 0 ) {
          for( const auto& it : metadataColumns ) {
             const int width = ( metadataWidths.count( it.first ) ) ? metadataWidths[ it.first ] : 15;
             std::cout << std::setw( width ) << it.second;

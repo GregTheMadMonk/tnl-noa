@@ -25,7 +25,7 @@ public:
    writeHeader( const HeaderElements& headerElements, const WidthHints& widths )
    {
       TNL_ASSERT_EQ( headerElements.size(), widths.size(), "elements must have equal sizes" );
-      if( verbose && header_changed ) {
+      if( verbose > 0 && header_changed ) {
          for( const auto& lg : metadataColumns ) {
             const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.first;
@@ -51,7 +51,7 @@ public:
       // write common logs
       int idx( 0 );
       for( const auto& lg : this->metadataColumns ) {
-         if( verbose ) {
+         if( verbose > 0 ) {
             const int width = ( metadataWidths.count( lg.first ) ) ? metadataWidths[ lg.first ] : 14;
             std::cout << std::setw( width ) << lg.second;
          }
@@ -62,7 +62,7 @@ public:
 
       std::size_t i = 0;
       for( const auto& el : rowElements ) {
-         if( verbose )
+         if( verbose > 0 )
             std::cout << std::setw( widths[ i ] ) << el;
          if( idx++ > 0 )
             log << ", ";
@@ -75,7 +75,7 @@ public:
          log << "\"error\": \"" << errorMessage << "\"";
       }
       log << "}" << std::endl;
-      if( verbose )
+      if( verbose > 0 )
          std::cout << std::endl;
    }
 
