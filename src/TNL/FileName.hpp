@@ -8,6 +8,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <utility>
 
 #include <TNL/FileName.h>
 #include <TNL/String.h>
@@ -17,11 +18,10 @@
 
 namespace TNL {
 
-inline FileName::FileName( const String& fileNameBase ) : fileNameBase( fileNameBase )
-{}
+inline FileName::FileName( String fileNameBase ) : fileNameBase( std::move( fileNameBase ) ) {}
 
-inline FileName::FileName( const String& fileNameBase, const String& extension )
-: fileNameBase( fileNameBase ), extension( extension )
+inline FileName::FileName( String fileNameBase, String extension )
+: fileNameBase( std::move( fileNameBase ) ), extension( std::move( extension ) )
 {}
 
 inline void

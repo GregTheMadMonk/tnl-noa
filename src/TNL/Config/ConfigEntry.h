@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 #include <sstream>
 
@@ -35,8 +36,8 @@ public:
       _hasDefaultValue = false;
    }
 
-   ConfigEntry( const std::string& name, const std::string& description, bool required, const DefaultValueType& defaultValue )
-   : ConfigEntryBase( name, description, required ), defaultValue( defaultValue )
+   ConfigEntry( const std::string& name, const std::string& description, bool required, DefaultValueType defaultValue )
+   : ConfigEntryBase( name, description, required ), defaultValue( std::move( defaultValue ) )
    {
       _hasDefaultValue = true;
    }

@@ -86,7 +86,7 @@ public:
     * @param values is a vector view with matrix elements values.
     */
    __cuda_callable__
-   MatrixView( IndexType rows, IndexType columns, const ValuesView& values );
+   MatrixView( IndexType rows, IndexType columns, ValuesView values );
 
    /**
     * @brief Shallow copy constructor.

@@ -39,7 +39,7 @@ public:
     *
     * @param fileNameBase File name base.
     */
-   FileName( const String& fileNameBase );
+   FileName( String fileNameBase );
 
    /**
     * \brief Constructor with file name base and file name extension.
@@ -49,7 +49,7 @@ public:
     * @param fileNameBase File name base.
     * @param extension File name extension.
     */
-   FileName( const String& fileNameBase, const String& extension );
+   FileName( String fileNameBase, String extension );
 
    /**
     * \brief Sets the file name base.

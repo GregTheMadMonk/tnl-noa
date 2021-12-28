@@ -12,6 +12,8 @@
 #include <TNL/Cuda/MemoryHelpers.h>
 #include <TNL/Cuda/SharedMemory.h>
 
+#include <utility>
+
 namespace TNL {
 namespace Matrices {
 
@@ -21,8 +23,8 @@ MatrixView< Real, Device, Index >::MatrixView() : rows( 0 ), columns( 0 ) {}
 
 template< typename Real, typename Device, typename Index >
 __cuda_callable__
-MatrixView< Real, Device, Index >::MatrixView( const IndexType rows_, const IndexType columns_, const ValuesView& values_ )
-: rows( rows_ ), columns( columns_ ), values( values_ )
+MatrixView< Real, Device, Index >::MatrixView( const IndexType rows_, const IndexType columns_, ValuesView values_ )
+: rows( rows_ ), columns( columns_ ), values( std::move( values_ ) )
 {}
 
 template< typename Real, typename Device, typename Index >
