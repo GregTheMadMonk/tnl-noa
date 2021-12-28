@@ -21,7 +21,7 @@ namespace Algorithms {
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Cuda >::construct( Element* data, const Index size )
+MemoryOperations< Devices::Cuda >::construct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    auto kernel = [ data ] __cuda_callable__( Index i )
@@ -34,7 +34,7 @@ MemoryOperations< Devices::Cuda >::construct( Element* data, const Index size )
 
 template< typename Element, typename Index, typename... Args >
 void
-MemoryOperations< Devices::Cuda >::construct( Element* data, const Index size, const Args&... args )
+MemoryOperations< Devices::Cuda >::construct( Element* data, Index size, const Args&... args )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    // NOTE: nvcc does not allow __cuda_callable__ lambdas with a variadic capture
@@ -52,7 +52,7 @@ MemoryOperations< Devices::Cuda >::construct( Element* data, const Index size, c
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Cuda >::destruct( Element* data, const Index size )
+MemoryOperations< Devices::Cuda >::destruct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to destroy data through a nullptr." );
    auto kernel = [ data ] __cuda_callable__( Index i )
@@ -96,7 +96,7 @@ MemoryOperations< Devices::Cuda >::getElement( const Element* data )
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Cuda >::set( Element* data, const Element& value, const Index size )
+MemoryOperations< Devices::Cuda >::set( Element* data, const Element& value, Index size )
 {
    if( size == 0 )
       return;
@@ -110,7 +110,7 @@ MemoryOperations< Devices::Cuda >::set( Element* data, const Element& value, con
 
 template< typename DestinationElement, typename SourceElement, typename Index >
 void
-MemoryOperations< Devices::Cuda >::copy( DestinationElement* destination, const SourceElement* source, const Index size )
+MemoryOperations< Devices::Cuda >::copy( DestinationElement* destination, const SourceElement* source, Index size )
 {
    if( size == 0 )
       return;
@@ -149,7 +149,7 @@ MemoryOperations< Devices::Cuda >::copyFromIterator( DestinationElement* destina
 
 template< typename Element1, typename Element2, typename Index >
 bool
-MemoryOperations< Devices::Cuda >::compare( const Element1* destination, const Element2* source, const Index size )
+MemoryOperations< Devices::Cuda >::compare( const Element1* destination, const Element2* source, Index size )
 {
    if( size == 0 )
       return true;

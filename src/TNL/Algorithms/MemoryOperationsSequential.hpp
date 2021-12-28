@@ -14,7 +14,7 @@ namespace Algorithms {
 template< typename Element, typename Index >
 __cuda_callable__
 void
-MemoryOperations< Devices::Sequential >::construct( Element* data, const Index size )
+MemoryOperations< Devices::Sequential >::construct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    for( Index i = 0; i < size; i++ )
@@ -25,7 +25,7 @@ MemoryOperations< Devices::Sequential >::construct( Element* data, const Index s
 template< typename Element, typename Index, typename... Args >
 __cuda_callable__
 void
-MemoryOperations< Devices::Sequential >::construct( Element* data, const Index size, const Args&... args )
+MemoryOperations< Devices::Sequential >::construct( Element* data, Index size, const Args&... args )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    for( Index i = 0; i < size; i++ )
@@ -39,7 +39,7 @@ MemoryOperations< Devices::Sequential >::construct( Element* data, const Index s
 template< typename Element, typename Index >
 __cuda_callable__
 void
-MemoryOperations< Devices::Sequential >::destruct( Element* data, const Index size )
+MemoryOperations< Devices::Sequential >::destruct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to destroy elements through a nullptr." );
    for( Index i = 0; i < size; i++ )
@@ -67,7 +67,7 @@ MemoryOperations< Devices::Sequential >::getElement( const Element* data )
 template< typename Element, typename Index >
 __cuda_callable__
 void
-MemoryOperations< Devices::Sequential >::set( Element* data, const Element& value, const Index size )
+MemoryOperations< Devices::Sequential >::set( Element* data, const Element& value, Index size )
 {
    if( size == 0 )
       return;
@@ -79,7 +79,7 @@ MemoryOperations< Devices::Sequential >::set( Element* data, const Element& valu
 template< typename DestinationElement, typename SourceElement, typename Index >
 __cuda_callable__
 void
-MemoryOperations< Devices::Sequential >::copy( DestinationElement* destination, const SourceElement* source, const Index size )
+MemoryOperations< Devices::Sequential >::copy( DestinationElement* destination, const SourceElement* source, Index size )
 {
    if( size == 0 )
       return;
@@ -107,7 +107,7 @@ MemoryOperations< Devices::Sequential >::copyFromIterator( DestinationElement* d
 template< typename Element1, typename Element2, typename Index >
 __cuda_callable__
 bool
-MemoryOperations< Devices::Sequential >::compare( const Element1* destination, const Element2* source, const Index size )
+MemoryOperations< Devices::Sequential >::compare( const Element1* destination, const Element2* source, Index size )
 {
    if( size == 0 )
       return true;

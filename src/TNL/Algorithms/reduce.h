@@ -68,7 +68,7 @@ namespace Algorithms {
  */
 template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
 Result
-reduce( const Index begin, const Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
    return detail::Reduction< Device >::reduce(
       begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
@@ -111,7 +111,7 @@ reduce( const Index begin, const Index end, Fetch&& fetch, Reduction&& reduction
  */
 template< typename Device, typename Index, typename Fetch, typename Reduction = TNL::Plus >
 auto
-reduce( const Index begin, const Index end, Fetch&& fetch, Reduction&& reduction = TNL::Plus{} )
+reduce( Index begin, Index end, Fetch&& fetch, Reduction&& reduction = TNL::Plus{} )
 {
    using Result = Containers::Expressions::RemoveET< decltype( reduction( fetch( 0 ), fetch( 0 ) ) ) >;
    return reduce< Device >( begin,
@@ -229,7 +229,7 @@ reduce( const Array& array, Reduction&& reduction = TNL::Plus{} )
  */
 template< typename Device, typename Index, typename Result, typename Fetch, typename Reduction >
 std::pair< Result, Index >
-reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction, const Result& identity )
 {
    return detail::Reduction< Device >::reduceWithArgument(
       begin, end, std::forward< Fetch >( fetch ), std::forward< Reduction >( reduction ), identity );
@@ -281,7 +281,7 @@ reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduction
  */
 template< typename Device, typename Index, typename Fetch, typename Reduction >
 auto
-reduceWithArgument( const Index begin, const Index end, Fetch&& fetch, Reduction&& reduction )
+reduceWithArgument( Index begin, Index end, Fetch&& fetch, Reduction&& reduction )
 {
    using Result = Containers::Expressions::RemoveET< decltype( fetch( 0 ) ) >;
    return reduceWithArgument< Device >( begin,

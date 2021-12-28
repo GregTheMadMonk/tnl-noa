@@ -233,7 +233,7 @@ String::strip( char strip ) const
 }
 
 inline std::vector< String >
-String::split( const char separator, SplitSkip skip ) const
+String::split( char separator, SplitSkip skip ) const
 {
    std::vector< String > parts;
    String s;

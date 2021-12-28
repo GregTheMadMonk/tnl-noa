@@ -19,7 +19,7 @@ namespace Meshes {
 
 template< typename MeshConfig, typename Device, typename EntityTopology >
 __cuda_callable__
-MeshEntity< MeshConfig, Device, EntityTopology >::MeshEntity( const MeshType& mesh, const GlobalIndexType index )
+MeshEntity< MeshConfig, Device, EntityTopology >::MeshEntity( const MeshType& mesh, GlobalIndexType index )
 : meshPointer( &mesh ), index( index )
 {}
 
@@ -85,7 +85,7 @@ template< typename MeshConfig, typename Device, typename EntityTopology >
 template< int Subdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::getSubentityIndex( const LocalIndexType localIndex ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSubentityIndex( LocalIndexType localIndex ) const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSubentityIndex< getEntityDimension(), Subdimension >( this->getIndex(), localIndex );
@@ -105,7 +105,7 @@ template< typename MeshConfig, typename Device, typename EntityTopology >
 template< int Superdimension >
 __cuda_callable__
 typename MeshEntity< MeshConfig, Device, EntityTopology >::GlobalIndexType
-MeshEntity< MeshConfig, Device, EntityTopology >::getSuperentityIndex( const LocalIndexType localIndex ) const
+MeshEntity< MeshConfig, Device, EntityTopology >::getSuperentityIndex( LocalIndexType localIndex ) const
 {
    TNL_ASSERT_TRUE( meshPointer, "meshPointer was not set" );
    return meshPointer->template getSuperentityIndex< getEntityDimension(), Superdimension >( this->getIndex(), localIndex );

@@ -25,7 +25,7 @@ Grid< 3, Real, Device, Index >::Grid()
 {}
 
 template< typename Real, typename Device, typename Index >
-Grid< 3, Real, Device, Index >::Grid( const Index xSize, const Index ySize, const Index zSize )
+Grid< 3, Real, Device, Index >::Grid( Index xSize, Index ySize, Index zSize )
 : numberOfCells( 0 ), numberOfNxFaces( 0 ), numberOfNyFaces( 0 ), numberOfNzFaces( 0 ), numberOfNxAndNyFaces( 0 ),
   numberOfFaces( 0 ), numberOfDxEdges( 0 ), numberOfDyEdges( 0 ), numberOfDzEdges( 0 ), numberOfDxAndDyEdges( 0 ),
   numberOfEdges( 0 ), numberOfVertices( 0 )
@@ -142,7 +142,7 @@ Grid< 3, Real, Device, Index >::setSpaceSteps( const PointType& steps )
 
 template< typename Real, typename Device, typename Index >
 void
-Grid< 3, Real, Device, Index >::setDimensions( const Index xSize, const Index ySize, const Index zSize )
+Grid< 3, Real, Device, Index >::setDimensions( Index xSize, Index ySize, Index zSize )
 {
    TNL_ASSERT_GE( xSize, 0, "Grid size must be non-negative." );
    TNL_ASSERT_GE( ySize, 0, "Grid size must be non-negative." );

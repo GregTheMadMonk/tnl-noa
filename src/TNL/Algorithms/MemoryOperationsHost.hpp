@@ -19,7 +19,7 @@ namespace Algorithms {
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Host >::construct( Element* data, const Index size )
+MemoryOperations< Devices::Host >::construct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    auto kernel = [ data ]( Index i )
@@ -32,7 +32,7 @@ MemoryOperations< Devices::Host >::construct( Element* data, const Index size )
 
 template< typename Element, typename Index, typename... Args >
 void
-MemoryOperations< Devices::Host >::construct( Element* data, const Index size, const Args&... args )
+MemoryOperations< Devices::Host >::construct( Element* data, Index size, const Args&... args )
 {
    TNL_ASSERT_TRUE( data, "Attempted to create elements through a nullptr." );
    auto kernel = [ data, &args... ]( Index i )
@@ -48,7 +48,7 @@ MemoryOperations< Devices::Host >::construct( Element* data, const Index size, c
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Host >::destruct( Element* data, const Index size )
+MemoryOperations< Devices::Host >::destruct( Element* data, Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to destroy data through a nullptr." );
    auto kernel = [ data ]( Index i )
@@ -78,7 +78,7 @@ MemoryOperations< Devices::Host >::getElement( const Element* data )
 
 template< typename Element, typename Index >
 void
-MemoryOperations< Devices::Host >::set( Element* data, const Element& value, const Index size )
+MemoryOperations< Devices::Host >::set( Element* data, const Element& value, Index size )
 {
    if( size == 0 )
       return;
@@ -92,7 +92,7 @@ MemoryOperations< Devices::Host >::set( Element* data, const Element& value, con
 
 template< typename DestinationElement, typename SourceElement, typename Index >
 void
-MemoryOperations< Devices::Host >::copy( DestinationElement* destination, const SourceElement* source, const Index size )
+MemoryOperations< Devices::Host >::copy( DestinationElement* destination, const SourceElement* source, Index size )
 {
    if( size == 0 )
       return;
@@ -123,11 +123,9 @@ MemoryOperations< Devices::Host >::copyFromIterator( DestinationElement* destina
    MemoryOperations< Devices::Sequential >::copyFromIterator( destination, destinationSize, first, last );
 }
 
-template< typename DestinationElement, typename SourceElement, typename Index >
+template< typename Element1, typename Element2, typename Index >
 bool
-MemoryOperations< Devices::Host >::compare( const DestinationElement* destination,
-                                            const SourceElement* source,
-                                            const Index size )
+MemoryOperations< Devices::Host >::compare( const Element1* destination, const Element2* source, Index size )
 {
    if( size == 0 )
       return true;

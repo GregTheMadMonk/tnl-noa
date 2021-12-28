@@ -22,7 +22,7 @@ Grid< 1, Real, Device, Index >::Grid() : numberOfCells( 0 ), numberOfVertices( 0
 {}
 
 template< typename Real, typename Device, typename Index >
-Grid< 1, Real, Device, Index >::Grid( const Index xSize ) : numberOfCells( 0 ), numberOfVertices( 0 )
+Grid< 1, Real, Device, Index >::Grid( Index xSize ) : numberOfCells( 0 ), numberOfVertices( 0 )
 {
    this->setDimensions( xSize );
 }
@@ -65,7 +65,7 @@ Grid< 1, Real, Device, Index >::setOrigin( const PointType& origin )
 
 template< typename Real, typename Device, typename Index >
 void
-Grid< 1, Real, Device, Index >::setDimensions( const Index xSize )
+Grid< 1, Real, Device, Index >::setDimensions( Index xSize )
 {
    TNL_ASSERT_GE( xSize, 0, "Grid size must be non-negative." );
    this->dimensions.x() = xSize;

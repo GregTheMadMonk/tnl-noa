@@ -26,11 +26,11 @@ namespace TNL {
 namespace Algorithms {
 
 template< typename Result, typename DataFetcher, typename Reduction, typename Index >
-void constexpr Multireduction< Devices::Sequential >::reduce( const Result identity,
+void constexpr Multireduction< Devices::Sequential >::reduce( Result identity,
                                                               DataFetcher dataFetcher,
-                                                              const Reduction reduction,
-                                                              const Index size,
-                                                              const int n,
+                                                              Reduction reduction,
+                                                              Index size,
+                                                              int n,
                                                               Result* result )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );
@@ -99,11 +99,11 @@ void constexpr Multireduction< Devices::Sequential >::reduce( const Result ident
 
 template< typename Result, typename DataFetcher, typename Reduction, typename Index >
 void
-Multireduction< Devices::Host >::reduce( const Result identity,
+Multireduction< Devices::Host >::reduce( Result identity,
                                          DataFetcher dataFetcher,
-                                         const Reduction reduction,
-                                         const Index size,
-                                         const int n,
+                                         Reduction reduction,
+                                         Index size,
+                                         int n,
                                          Result* result )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );
@@ -177,11 +177,11 @@ Multireduction< Devices::Host >::reduce( const Result identity,
 
 template< typename Result, typename DataFetcher, typename Reduction, typename Index >
 void
-Multireduction< Devices::Cuda >::reduce( const Result identity,
+Multireduction< Devices::Cuda >::reduce( Result identity,
                                          DataFetcher dataFetcher,
-                                         const Reduction reduction,
-                                         const Index size,
-                                         const int n,
+                                         Reduction reduction,
+                                         Index size,
+                                         int n,
                                          Result* hostResult )
 {
    TNL_ASSERT_GT( size, 0, "The size of datasets must be positive." );

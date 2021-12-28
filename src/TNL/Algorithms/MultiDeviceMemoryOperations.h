@@ -17,7 +17,7 @@ struct MultiDeviceMemoryOperations
 {
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size )
+   copy( DestinationElement* destination, const SourceElement* source, Index size )
    {
       // use DestinationDevice, unless it is void
       using Device = std::conditional_t< std::is_void< DestinationDevice >::value, SourceDevice, DestinationDevice >;
@@ -26,7 +26,7 @@ struct MultiDeviceMemoryOperations
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    static bool
-   compare( const DestinationElement* destination, const SourceElement* source, const Index size )
+   compare( const DestinationElement* destination, const SourceElement* source, Index size )
    {
       // use DestinationDevice, unless it is void
       using Device = std::conditional_t< std::is_void< DestinationDevice >::value, SourceDevice, DestinationDevice >;
@@ -64,14 +64,14 @@ struct MultiDeviceMemoryOperations< Devices::Cuda, Devices::Cuda >
 {
    template< typename DestinationElement, typename SourceElement, typename Index >
    static void
-   copy( DestinationElement* destination, const SourceElement* source, const Index size )
+   copy( DestinationElement* destination, const SourceElement* source, Index size )
    {
       MemoryOperations< Devices::Cuda >::copy( destination, source, size );
    }
 
    template< typename DestinationElement, typename SourceElement, typename Index >
    static bool
-   compare( const DestinationElement* destination, const SourceElement* source, const Index size )
+   compare( const DestinationElement* destination, const SourceElement* source, Index size )
    {
       return MemoryOperations< Devices::Cuda >::compare( destination, source, size );
    }
@@ -85,7 +85,7 @@ template< typename DestinationElement, typename SourceElement, typename Index >
 void
 MultiDeviceMemoryOperations< DeviceType, Devices::Cuda >::copy( DestinationElement* destination,
                                                                 const SourceElement* source,
-                                                                const Index size )
+                                                                Index size )
 {
    if( size == 0 )
       return;
@@ -128,7 +128,7 @@ template< typename Element1, typename Element2, typename Index >
 bool
 MultiDeviceMemoryOperations< DeviceType, Devices::Cuda >::compare( const Element1* destination,
                                                                    const Element2* source,
-                                                                   const Index size )
+                                                                   Index size )
 {
    if( size == 0 )
       return true;
@@ -167,7 +167,7 @@ template< typename DestinationElement, typename SourceElement, typename Index >
 void
 MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >::copy( DestinationElement* destination,
                                                                 const SourceElement* source,
-                                                                const Index size )
+                                                                Index size )
 {
    if( size == 0 )
       return;
@@ -206,16 +206,16 @@ MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >::copy( DestinationEleme
 template< typename DeviceType >
 template< typename Element1, typename Element2, typename Index >
 bool
-MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >::compare( const Element1* hostData,
-                                                                   const Element2* deviceData,
-                                                                   const Index size )
+MultiDeviceMemoryOperations< Devices::Cuda, DeviceType >::compare( const Element1* destination,
+                                                                   const Element2* source,
+                                                                   Index size )
 {
    if( size == 0 )
       return true;
-   TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
-   TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
-   return MultiDeviceMemoryOperations< DeviceType, Devices::Cuda >::compare( deviceData, hostData, size );
+   return MultiDeviceMemoryOperations< DeviceType, Devices::Cuda >::compare( source, destination, size );
 }
 
 }  // namespace Algorithms

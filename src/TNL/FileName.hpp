@@ -38,13 +38,13 @@ FileName::setExtension( const String& extension )
 }
 
 inline void
-FileName::setIndex( const size_t index )
+FileName::setIndex( size_t index )
 {
    this->index = index;
 }
 
 inline void
-FileName::setDigitsCount( const size_t digitsCount )
+FileName::setDigitsCount( size_t digitsCount )
 {
    this->digitsCount = digitsCount;
 }
@@ -84,7 +84,7 @@ FileName::getFileName()
 }
 
 inline String
-getFileExtension( const String fileName )
+getFileExtension( const String& fileName )
 {
    const int size = fileName.getLength();
    int i = 1;

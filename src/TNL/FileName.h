@@ -144,7 +144,7 @@ protected:
  * @return Extension of the given file name.
  */
 String
-getFileExtension( String fileName );
+getFileExtension( const String& fileName );
 
 /**
  * \brief Cuts off the file extension.

@@ -73,7 +73,7 @@ template< typename MeshConfig, typename Device >
 template< int Dimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::template EntityType< Dimension >
-Mesh< MeshConfig, Device >::getEntity( const GlobalIndexType entityIndex ) const
+Mesh< MeshConfig, Device >::getEntity( GlobalIndexType entityIndex ) const
 {
    TNL_ASSERT_LT( entityIndex, getEntitiesCount< Dimension >(), "invalid entity index" );
    return EntityType< Dimension >( *this, entityIndex );
@@ -103,7 +103,7 @@ template< typename MeshConfig, typename Device >
 template< typename Entity >
 __cuda_callable__
 Entity
-Mesh< MeshConfig, Device >::getEntity( const GlobalIndexType entityIndex ) const
+Mesh< MeshConfig, Device >::getEntity( GlobalIndexType entityIndex ) const
 {
    return getEntity< Entity::getEntityDimension() >( entityIndex );
 }
@@ -125,7 +125,7 @@ Mesh< MeshConfig, Device >::getPoints()
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 const typename Mesh< MeshConfig, Device >::PointType&
-Mesh< MeshConfig, Device >::getPoint( const GlobalIndexType vertexIndex ) const
+Mesh< MeshConfig, Device >::getPoint( GlobalIndexType vertexIndex ) const
 {
    TNL_ASSERT_GE( vertexIndex, 0, "invalid vertex index" );
    TNL_ASSERT_LT( vertexIndex, getEntitiesCount< 0 >(), "invalid vertex index" );
@@ -135,7 +135,7 @@ Mesh< MeshConfig, Device >::getPoint( const GlobalIndexType vertexIndex ) const
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::PointType&
-Mesh< MeshConfig, Device >::getPoint( const GlobalIndexType vertexIndex )
+Mesh< MeshConfig, Device >::getPoint( GlobalIndexType vertexIndex )
 {
    TNL_ASSERT_GE( vertexIndex, 0, "invalid vertex index" );
    TNL_ASSERT_LT( vertexIndex, getEntitiesCount< 0 >(), "invalid vertex index" );
@@ -154,7 +154,7 @@ template< typename MeshConfig, typename Device >
 template< int EntityDimension, int SubentityDimension >
 __cuda_callable__
 constexpr typename Mesh< MeshConfig, Device >::LocalIndexType
-Mesh< MeshConfig, Device >::getSubentitiesCount( const GlobalIndexType entityIndex ) const
+Mesh< MeshConfig, Device >::getSubentitiesCount( GlobalIndexType entityIndex ) const
 {
    return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >( entityIndex );
 }
@@ -163,7 +163,7 @@ template< typename MeshConfig, typename Device >
 template< int EntityDimension, int SubentityDimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
-Mesh< MeshConfig, Device >::getSubentityIndex( const GlobalIndexType entityIndex, const LocalIndexType subentityIndex ) const
+Mesh< MeshConfig, Device >::getSubentityIndex( GlobalIndexType entityIndex, LocalIndexType subentityIndex ) const
 {
    const auto& row = this->template getSubentitiesMatrix< EntityDimension, SubentityDimension >().getRow( entityIndex );
    TNL_ASSERT_GE( row.getColumnIndex( subentityIndex ), 0, "padding index returned for given subentity index" );
@@ -174,7 +174,7 @@ template< typename MeshConfig, typename Device >
 template< int EntityDimension, int SuperentityDimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::LocalIndexType
-Mesh< MeshConfig, Device >::getSuperentitiesCount( const GlobalIndexType entityIndex ) const
+Mesh< MeshConfig, Device >::getSuperentitiesCount( GlobalIndexType entityIndex ) const
 {
    return this->template getSuperentitiesCountsArray< EntityDimension, SuperentityDimension >()[ entityIndex ];
 }
@@ -183,8 +183,7 @@ template< typename MeshConfig, typename Device >
 template< int EntityDimension, int SuperentityDimension >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
-Mesh< MeshConfig, Device >::getSuperentityIndex( const GlobalIndexType entityIndex,
-                                                 const LocalIndexType superentityIndex ) const
+Mesh< MeshConfig, Device >::getSuperentityIndex( GlobalIndexType entityIndex, LocalIndexType superentityIndex ) const
 {
    const auto row = this->template getSuperentitiesMatrix< EntityDimension, SuperentityDimension >().getRow( entityIndex );
    TNL_ASSERT_GE( row.getColumnIndex( superentityIndex ), 0, "padding index returned for given superentity index" );
@@ -194,7 +193,7 @@ Mesh< MeshConfig, Device >::getSuperentityIndex( const GlobalIndexType entityInd
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::LocalIndexType
-Mesh< MeshConfig, Device >::getCellNeighborsCount( const GlobalIndexType cellIndex ) const
+Mesh< MeshConfig, Device >::getCellNeighborsCount( GlobalIndexType cellIndex ) const
 {
    static_assert( MeshConfig::dualGraphStorage(),
                   "You try to access the dual graph which is disabled in the mesh configuration." );
@@ -204,7 +203,7 @@ Mesh< MeshConfig, Device >::getCellNeighborsCount( const GlobalIndexType cellInd
 template< typename MeshConfig, typename Device >
 __cuda_callable__
 typename Mesh< MeshConfig, Device >::GlobalIndexType
-Mesh< MeshConfig, Device >::getCellNeighborIndex( const GlobalIndexType cellIndex, const LocalIndexType neighborIndex ) const
+Mesh< MeshConfig, Device >::getCellNeighborIndex( GlobalIndexType cellIndex, LocalIndexType neighborIndex ) const
 {
    static_assert( MeshConfig::dualGraphStorage(),
                   "You try to access the dual graph which is disabled in the mesh configuration." );
@@ -231,7 +230,7 @@ Mesh< MeshConfig, Device >::forBoundary( Func f ) const
 {
    const auto boundaryIndices = this->template getBoundaryIndices< EntityDimension >();
    const GlobalIndexType entitiesCount = boundaryIndices.getSize();
-   auto wrapper = [ f, boundaryIndices ] __cuda_callable__( const GlobalIndexType i ) mutable
+   auto wrapper = [ f, boundaryIndices ] __cuda_callable__( GlobalIndexType i ) mutable
    {
       f( boundaryIndices[ i ] );
    };
@@ -245,7 +244,7 @@ Mesh< MeshConfig, Device >::forInterior( Func f ) const
 {
    const auto interiorIndices = this->template getInteriorIndices< EntityDimension >();
    const GlobalIndexType entitiesCount = interiorIndices.getSize();
-   auto wrapper = [ f, interiorIndices ] __cuda_callable__( const GlobalIndexType i ) mutable
+   auto wrapper = [ f, interiorIndices ] __cuda_callable__( GlobalIndexType i ) mutable
    {
       f( interiorIndices[ i ] );
    };

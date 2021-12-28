@@ -87,7 +87,7 @@ Benchmark< Logger >::setMetadataWidths( const std::map< std::string, int >& widt
 
 template< typename Logger >
 void
-Benchmark< Logger >::setDatasetSize( const double datasetSize, const double baseTime )
+Benchmark< Logger >::setDatasetSize( double datasetSize, double baseTime )
 {
    this->datasetSize = datasetSize;
    this->baseTime = baseTime;
@@ -95,7 +95,7 @@ Benchmark< Logger >::setDatasetSize( const double datasetSize, const double base
 
 template< typename Logger >
 void
-Benchmark< Logger >::setOperation( const String& operation, const double datasetSize, const double baseTime )
+Benchmark< Logger >::setOperation( const String& operation, double datasetSize, double baseTime )
 {
    monitor.setStage( operation.getString() );
    logger.setMetadataElement( { "operation", operation }, 0 );
