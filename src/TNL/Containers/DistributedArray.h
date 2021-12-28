@@ -64,6 +64,9 @@ public:
     */
    explicit DistributedArray( const DistributedArray& array );
 
+   // default move-constructor
+   DistributedArray( DistributedArray&& ) noexcept = default;
+
    /**
     * \brief Copy constructor with a specific allocator (makes a deep copy).
     *
@@ -205,6 +208,10 @@ public:
    // Copy-assignment operator
    DistributedArray&
    operator=( const DistributedArray& array );
+
+   // Move-assignment operator
+   DistributedArray&
+   operator=( DistributedArray&& ) noexcept = default;
 
    template< typename Array, typename..., typename = std::enable_if_t< HasSubscriptOperator< Array >::value > >
    DistributedArray&

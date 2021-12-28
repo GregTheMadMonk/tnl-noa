@@ -184,6 +184,10 @@ public:
    DistributedArrayView&
    operator=( const DistributedArrayView& view );
 
+   // Move-assignment operator
+   DistributedArrayView&
+   operator=( DistributedArrayView&& ) noexcept = default;
+
    template< typename Array, typename..., typename = std::enable_if_t< HasSubscriptOperator< Array >::value > >
    DistributedArrayView&
    operator=( const Array& array );
