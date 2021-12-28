@@ -62,7 +62,9 @@ VTIWriter< Mesh >::writeImageData( const typename Mesh::PointType& gridOrigin,
    if( imageDataOpen )
       throw std::logic_error( "The <ImageData> tag is already open." );
 
-   std::stringstream extent, origin, spacing;
+   std::stringstream extent;
+   std::stringstream origin;
+   std::stringstream spacing;
 
    for( int j = 0; j < Mesh::getMeshDimension(); j++ )
       extent << begin[ j ] << " " << end[ j ] << " ";

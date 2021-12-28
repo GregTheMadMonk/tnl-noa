@@ -133,7 +133,8 @@ template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::setGhostLevels( int levels )
 {
-   SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsType lowerOverlap;
+   SubdomainOverlapsType upperOverlap;
    SubdomainOverlapsGetter< GridType >::getOverlaps( this, lowerOverlap, upperOverlap, levels );
    setOverlaps( lowerOverlap, upperOverlap );
 }
@@ -347,7 +348,8 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::SetupByCut(
       typename GridType::CoordinatesType outDimensions;
       // set local grid
       typename GridType::PointType localOrigin;
-      typename GridType::CoordinatesType localBegin, localGridSize;
+      typename GridType::CoordinatesType localBegin;
+      typename GridType::CoordinatesType localGridSize;
 
       for( int i = 0; i < Dimension; i++ ) {
          outOrigin[ i ] = fromGlobalMesh.getOrigin()[ savedDimensions[ i ] ];

@@ -60,7 +60,9 @@ PVTIWriter< Grid >::writeImageData( const Grid& globalGrid, const unsigned Ghost
    if( pImageDataOpen )
       throw std::logic_error( "The <PImageData> tag is already open." );
 
-   std::stringstream extent, origin, spacing;
+   std::stringstream extent;
+   std::stringstream origin;
+   std::stringstream spacing;
 
    auto dims = globalGrid.getDimensions();
    for( int j = 0; j < dims.getSize(); j++ )

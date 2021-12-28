@@ -121,7 +121,8 @@ Timer::durationToDouble( const Duration& duration ) const
 inline unsigned long long
 Timer::rdtsc() const
 {
-   unsigned hi, lo;
+   unsigned hi;
+   unsigned lo;
    __asm__ __volatile__( "rdtsc" : "=a"( lo ), "=d"( hi ) );
    return ( (unsigned long long) lo ) | ( ( (unsigned long long) hi ) << 32 );
 }

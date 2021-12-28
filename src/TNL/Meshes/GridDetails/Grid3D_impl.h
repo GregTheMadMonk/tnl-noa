@@ -44,7 +44,9 @@ Grid< 3, Real, Device, Index >::computeSpaceStepPowers()
    const RealType& hy = this->spaceSteps.y();
    const RealType& hz = this->spaceSteps.z();
 
-   Real auxX, auxY, auxZ;
+   Real auxX;
+   Real auxY;
+   Real auxZ;
    for( int i = 0; i < 5; i++ ) {
       switch( i ) {
          case 0:

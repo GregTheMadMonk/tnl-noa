@@ -118,7 +118,8 @@ public:
                                 "gridSpacing has invalid size: " + std::to_string( gridSpacing.size() ) + " (should be 3)" );
 
       // split the extent into begin and end
-      typename MeshType::CoordinatesType begin, end;
+      typename MeshType::CoordinatesType begin;
+      typename MeshType::CoordinatesType end;
       for( int i = 0; i < begin.getSize(); i++ ) {
          begin[ i ] = gridExtent[ 2 * i ];
          end[ i ] = gridExtent[ 2 * i + 1 ];
@@ -126,7 +127,8 @@ public:
       mesh.setDimensions( end - begin );
 
       // transform the origin and calculate proportions
-      typename MeshType::PointType origin, proportions;
+      typename MeshType::PointType origin;
+      typename MeshType::PointType proportions;
       for( int i = 0; i < origin.getSize(); i++ ) {
          origin[ i ] = gridOrigin[ i ] + begin[ i ] * gridSpacing[ i ];
          proportions[ i ] = ( end[ i ] - begin[ i ] ) * gridSpacing[ i ];

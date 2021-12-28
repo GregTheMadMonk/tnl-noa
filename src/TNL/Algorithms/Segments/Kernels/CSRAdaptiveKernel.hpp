@@ -129,7 +129,8 @@ CSRAdaptiveKernel< Index, Device >::initValueSize( const Offsets& offsets )
       TNL::Containers::Vector< typename Offsets::IndexType, TNL::Devices::Host, typename Offsets::IndexType >;
    HostOffsetsType hostOffsets( offsets );
    const Index rows = offsets.getSize();
-   Index start( 0 ), nextStart( 0 );
+   Index start( 0 );
+   Index nextStart( 0 );
    size_t sum;
 
    // Fill blocks

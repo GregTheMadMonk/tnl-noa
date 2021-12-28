@@ -1031,7 +1031,8 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAlloca
             [ = ] __cuda_callable__( IndexType rowIdx, IndexType localIdx, IndexType & columnIndex, RealType & value ) mutable
          {
             RealType inValue( 0.0 );
-            IndexType bufferIdx, column( rowLocalIndexes_view[ rowIdx ] );
+            IndexType bufferIdx;
+            IndexType column( rowLocalIndexes_view[ rowIdx ] );
             while( inValue == 0.0 && column < matrix_columns ) {
                bufferIdx = ( rowIdx - baseRow ) * maxRowLength + column++;
                inValue = thisValuesBuffer_view[ bufferIdx ];

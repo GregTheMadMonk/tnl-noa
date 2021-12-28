@@ -67,7 +67,8 @@ VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    // collect all data before writing
    using IndexType = typename Mesh::GlobalIndexType;
-   std::vector< IndexType > connectivity, offsets;
+   std::vector< IndexType > connectivity;
+   std::vector< IndexType > offsets;
    std::vector< std::uint8_t > types;
    detail::MeshEntitiesVTUCollector< Mesh, EntityDimension >::exec( mesh, connectivity, offsets, types );
 

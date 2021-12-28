@@ -579,7 +579,9 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
 
-   Timer timer, computationTimer, updateTimer;
+   Timer timer;
+   Timer computationTimer;
+   Timer updateTimer;
 
    String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&

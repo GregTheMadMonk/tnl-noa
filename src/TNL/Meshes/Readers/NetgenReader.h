@@ -60,7 +60,8 @@ public:
 
       // arrays holding the data from the file
       std::vector< double > pointsArray;
-      std::vector< std::int32_t > connectivityArray, offsetsArray;
+      std::vector< std::int32_t > connectivityArray;
+      std::vector< std::int32_t > offsetsArray;
       std::vector< std::uint8_t > typesArray;
 
       // read points

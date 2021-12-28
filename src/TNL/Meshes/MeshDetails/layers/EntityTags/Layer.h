@@ -138,7 +138,8 @@ public:
       ghostsOffset = tags.getSize() - ghostEntities;
 
       if( ! std::is_same< Device, Devices::Cuda >::value ) {
-         GlobalIndexType i = 0, b = 0;
+         GlobalIndexType i = 0;
+         GlobalIndexType b = 0;
          for( GlobalIndexType e = 0; e < tags.getSize(); e++ ) {
             if( tags[ e ] & EntityTags::BoundaryEntity )
                boundaryIndices[ b++ ] = e;
@@ -156,7 +157,8 @@ public:
          using OrderingHostArray = typename OrderingArray::template Self< typename OrderingArray::ValueType, Devices::Host >;
 
          EntityTagsHostArray hostTags;
-         OrderingHostArray hostBoundaryIndices, hostInteriorIndices;
+         OrderingHostArray hostBoundaryIndices;
+         OrderingHostArray hostInteriorIndices;
 
          hostTags.setLike( tags );
          hostInteriorIndices.setLike( interiorIndices );
@@ -164,7 +166,8 @@ public:
 
          hostTags = tags;
 
-         GlobalIndexType i = 0, b = 0;
+         GlobalIndexType i = 0;
+         GlobalIndexType b = 0;
          for( GlobalIndexType e = 0; e < tags.getSize(); e++ ) {
             if( hostTags[ e ] & EntityTags::BoundaryEntity )
                hostBoundaryIndices[ b++ ] = e;

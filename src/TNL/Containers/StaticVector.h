@@ -209,7 +209,8 @@ __cuda_callable__
 Real
 TriangleArea( const StaticVector< 2, Real >& a, const StaticVector< 2, Real >& b, const StaticVector< 2, Real >& c )
 {
-   StaticVector< 3, Real > u1, u2;
+   StaticVector< 3, Real > u1;
+   StaticVector< 3, Real > u2;
    u1.x() = b.x() - a.x();
    u1.y() = b.y() - a.y();
    u1.z() = 0.0;
@@ -226,7 +227,8 @@ __cuda_callable__
 Real
 TriangleArea( const StaticVector< 3, Real >& a, const StaticVector< 3, Real >& b, const StaticVector< 3, Real >& c )
 {
-   StaticVector< 3, Real > u1, u2;
+   StaticVector< 3, Real > u1;
+   StaticVector< 3, Real > u2;
    u1.x() = b.x() - a.x();
    u1.y() = b.y() - a.y();
    u1.z() = b.z() - a.z();

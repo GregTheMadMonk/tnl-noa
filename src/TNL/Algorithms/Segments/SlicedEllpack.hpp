@@ -163,7 +163,8 @@ SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::getGlob
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
    const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
-   IndexType sliceOffset, segmentSize;
+   IndexType sliceOffset;
+   IndexType segmentSize;
    if( std::is_same< DeviceType, Devices::Host >::value ) {
       sliceOffset = this->sliceOffsets[ sliceIdx ];
       segmentSize = this->sliceSegmentSizes[ sliceIdx ];

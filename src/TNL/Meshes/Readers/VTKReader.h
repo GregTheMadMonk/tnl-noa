@@ -45,7 +45,8 @@ public:
       // parse the file, find the starting positions of all relevant sections
       findSections( inputFile );
 
-      std::string line, aux;
+      std::string line;
+      std::string aux;
       std::istringstream iss;
 
       // parse points section
@@ -66,7 +67,8 @@ public:
 
       // arrays holding the data from the VTK file
       std::vector< double > pointsArray;
-      std::vector< std::int64_t > cellConnectivityArray, cellOffsetsArray;
+      std::vector< std::int64_t > cellConnectivityArray;
+      std::vector< std::int64_t > cellOffsetsArray;
       std::vector< std::uint8_t > typesArray;
 
       // read points
@@ -269,7 +271,8 @@ public:
          iss >> aux >> datatype;
 
          // arrays for polyhedral mesh
-         std::vector< std::int64_t > faceConnectivityArray, faceOffsetsArray;
+         std::vector< std::int64_t > faceConnectivityArray;
+         std::vector< std::int64_t > faceOffsetsArray;
          std::int64_t faceIndex = 0;
 
          // read connectivity
@@ -657,7 +660,8 @@ protected:
                int values_per_element = 1;
 
                // additional metadata
-               std::string array_name, datatype;
+               std::string array_name;
+               std::string datatype;
 
                if( type == "SCALARS" ) {
                   // parse the rest of the line: SCALARS <array_name> <datatype>
@@ -760,7 +764,8 @@ protected:
 
       // type: SCALARS, VECTORS, etc.
       // datatype: int, float, double
-      std::string type, datatype;
+      std::string type;
+      std::string datatype;
 
       // parse the metadata line
       std::string line;
