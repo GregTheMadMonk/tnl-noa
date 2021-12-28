@@ -133,7 +133,7 @@ public:
     * \return iterator pointing at the beginning.
     */
    __cuda_callable__
-   const IteratorType
+   IteratorType
    cbegin() const
    {
       return IteratorType( *this, 0 );
@@ -145,7 +145,7 @@ public:
     * \return iterator pointing at the end.
     */
    __cuda_callable__
-   const IteratorType
+   IteratorType
    cend() const
    {
       return IteratorType( *this, this->getSize() );
@@ -261,7 +261,7 @@ public:
     * \return iterator pointing at the beginning.
     */
    __cuda_callable__
-   const IteratorType
+   IteratorType
    cbegin() const
    {
       return IteratorType( *this, 0 );
@@ -273,7 +273,7 @@ public:
     * \return iterator pointing at the end.
     */
    __cuda_callable__
-   const IteratorType
+   IteratorType
    cend() const
    {
       return IteratorType( *this, this->getSize() );

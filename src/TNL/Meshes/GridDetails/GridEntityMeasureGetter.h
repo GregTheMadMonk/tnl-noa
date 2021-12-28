@@ -24,7 +24,7 @@ public:
 
    template< typename EntityType >
    __cuda_callable__
-   inline static const Real
+   inline static Real
    getMeasure( const GridType& grid, const EntityType& entity )
    {
       return 0.0;

@@ -192,7 +192,7 @@ struct CSRAdaptiveKernelBlockDescriptor
     * \brief Returns number of elements covered by the block.
     */
    __cuda_callable__
-   const Index
+   Index
    getSize() const
    {
       return this->blockSize;
@@ -203,7 +203,7 @@ struct CSRAdaptiveKernelBlockDescriptor
     * \brief Returns number of segments covered by the block.
     */
    __cuda_callable__
-   const Index
+   Index
    getSegmentsInBlock() const
    {
       return this->segmentsInBlock;
