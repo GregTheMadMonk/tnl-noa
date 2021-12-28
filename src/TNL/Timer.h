@@ -113,34 +113,34 @@ protected:
    /**
     * \brief Function for measuring the real time.
     */
-   TimePoint
-   readRealTime() const;
+   static TimePoint
+   readRealTime();
 
    /**
     * \brief Function for measuring the CPU time.
     */
-   double
-   readCPUTime() const;
+   static double
+   readCPUTime();
 
    /**
     * \brief Function for counting the number of CPU cycles (machine cycles).
     */
-   unsigned long long int
-   readCPUCycles() const;
+   static unsigned long long int
+   readCPUCycles();
 
    /**
     * \brief Converts the real time into seconds as a floating point number.
     */
-   double
-   durationToDouble( const Duration& duration ) const;
+   static double
+   durationToDouble( const Duration& duration );
 
    /**
     * \brief Time Stamp Counter returning number of CPU cycles since reset.
     *
     * Only for x86 compatible CPUs.
     */
-   inline unsigned long long
-   rdtsc() const;
+   static inline unsigned long long
+   rdtsc();
 
    TimePoint initialRealTime;
 

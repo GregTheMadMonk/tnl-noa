@@ -38,9 +38,9 @@ inline void
 Timer::stop()
 {
    if( ! this->stopState ) {
-      this->totalRealTime += this->readRealTime() - this->initialRealTime;
-      this->totalCPUTime += this->readCPUTime() - this->initialCPUTime;
-      this->totalCPUCycles += this->readCPUCycles() - this->initialCPUCycles;
+      this->totalRealTime += readRealTime() - this->initialRealTime;
+      this->totalCPUTime += readCPUTime() - this->initialCPUTime;
+      this->totalCPUCycles += readCPUCycles() - this->initialCPUCycles;
       this->stopState = true;
    }
 }
@@ -48,9 +48,9 @@ Timer::stop()
 inline void
 Timer::start()
 {
-   this->initialRealTime = this->readRealTime();
-   this->initialCPUTime = this->readCPUTime();
-   this->initialCPUCycles = this->readCPUCycles();
+   this->initialRealTime = readRealTime();
+   this->initialCPUTime = readCPUTime();
+   this->initialCPUCycles = readCPUCycles();
    this->stopState = false;
 }
 
@@ -58,7 +58,7 @@ inline double
 Timer::getRealTime() const
 {
    if( ! this->stopState )
-      return durationToDouble( this->readRealTime() - this->initialRealTime );
+      return durationToDouble( readRealTime() - this->initialRealTime );
    return durationToDouble( this->totalRealTime );
 }
 
@@ -66,7 +66,7 @@ inline double
 Timer::getCPUTime() const
 {
    if( ! this->stopState )
-      return this->readCPUTime() - this->initialCPUTime;
+      return readCPUTime() - this->initialCPUTime;
    return this->totalCPUTime;
 }
 
@@ -74,7 +74,7 @@ inline unsigned long long int
 Timer::getCPUCycles() const
 {
    if( ! this->stopState )
-      return this->readCPUCycles() - this->initialCPUCycles;
+      return readCPUCycles() - this->initialCPUCycles;
    return this->totalCPUCycles;
 }
 
@@ -88,13 +88,13 @@ Timer::writeLog( Logger& logger, int logLevel ) const
 }
 
 inline typename Timer::TimePoint
-Timer::readRealTime() const
+Timer::readRealTime()
 {
    return std::chrono::high_resolution_clock::now();
 }
 
 inline double
-Timer::readCPUTime() const
+Timer::readCPUTime()
 {
 #if ! defined( _WIN32 ) && ! defined( _WIN64 )
    rusage initUsage;
@@ -106,20 +106,20 @@ Timer::readCPUTime() const
 }
 
 inline unsigned long long int
-Timer::readCPUCycles() const
+Timer::readCPUCycles()
 {
-   return this->rdtsc();
+   return rdtsc();
 }
 
 inline double
-Timer::durationToDouble( const Duration& duration ) const
+Timer::durationToDouble( const Duration& duration )
 {
    std::chrono::duration< double > dur( duration );
    return dur.count();
 }
 
 inline unsigned long long
-Timer::rdtsc() const
+Timer::rdtsc()
 {
    unsigned hi;
    unsigned lo;
