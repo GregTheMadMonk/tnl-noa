@@ -100,12 +100,13 @@ public:
 template< typename T >
 class Atomic< T, Devices::Sequential > : public Atomic< T, Devices::Host >
 {
+   using Base = Atomic< T, Devices::Host >;
    public:
 
-   using Atomic;
-   using operator=;
-   using fetch_max;
-   using fetch_min;
+   using Base::Atomic;
+   using Base::operator=;
+   using Base::fetch_max;
+   using Base::fetch_min;
 };
 
 template< typename T >
