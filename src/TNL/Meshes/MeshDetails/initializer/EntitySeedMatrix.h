@@ -30,15 +30,13 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
 
       EntitySeedMatrix() = default;
 
-      EntitySeedMatrix( const EntitySeedMatrix& other )
-      {
-         this->matrix = other.matrix;
-      }
+      EntitySeedMatrix( const EntitySeedMatrix& other ) = default;
 
-      EntitySeedMatrix( EntitySeedMatrix&& other )
-      {
-         this->matrix = std::move( other.matrix );
-      }
+      EntitySeedMatrix( EntitySeedMatrix&& other ) = default;
+
+      EntitySeedMatrix& operator=( const EntitySeedMatrix& other ) = default;
+
+      EntitySeedMatrix& operator=( EntitySeedMatrix&& other ) = default;
 
       class EntitySeedMatrixSeed
       {
@@ -172,15 +170,13 @@ class EntitySeedMatrix< MeshConfig, Topologies::Vertex, false >
 
       EntitySeedMatrix() = default;
 
-      EntitySeedMatrix( const EntitySeedMatrix& other )
-      {
-         this->matrix = other.matrix;
-      }
+      EntitySeedMatrix( const EntitySeedMatrix& other ) = default;
 
-      EntitySeedMatrix( EntitySeedMatrix&& other )
-      {
-         this->matrix = std::move( other.matrix );
-      }
+      EntitySeedMatrix( EntitySeedMatrix&& other ) = default;
+
+      EntitySeedMatrix& operator=( const EntitySeedMatrix& other ) = default;
+
+      EntitySeedMatrix& operator=( EntitySeedMatrix&& other ) = default;
 
       class EntitySeedMatrixSeed
       {
@@ -315,17 +311,13 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, true >
 
       EntitySeedMatrix() = default;
 
-      EntitySeedMatrix( const EntitySeedMatrix& other )
-      {
-         this->matrix = other.matrix;
-         this->counts = other.counts;
-      }
+      EntitySeedMatrix( const EntitySeedMatrix& other ) = default;
 
-      EntitySeedMatrix( EntitySeedMatrix&& other )
-      {
-         this->matrix = std::move( other.matrix );
-         this->counts = std::move( other.counts );
-      }
+      EntitySeedMatrix( EntitySeedMatrix&& other ) = default;
+
+      EntitySeedMatrix& operator=( const EntitySeedMatrix& other ) = default;
+
+      EntitySeedMatrix& operator=( EntitySeedMatrix&& other ) = default;
 
       class EntitySeedMatrixSeed
       {
