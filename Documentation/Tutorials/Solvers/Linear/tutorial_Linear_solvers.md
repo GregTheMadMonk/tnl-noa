@@ -29,6 +29,8 @@ The Krylov subspace methods can be combined with the following preconditioners:
 
 # Iterative solvers of linear systems
 
+## Basic setup
+
 All iterative solvers for linear systems can be found in the namespace \ref TNL::Solvers::Linear. The following example shows the use the iterative solvers:
 
 \includelineno Solvers/Linear/IterativeLinearSolverExample.cpp
@@ -55,6 +57,8 @@ The result looks as follows:
 
 \include IterativeLinearSolverExample.out
 
+## Setup with a solver monitor
+
 Solution of large linear systems may take a lot of time. In such situations, it is useful to be able to monitor the convergence of the solver of the solver status in general. For this purpose, TNL offers solver monitors. The solver monitor prints (or somehow visualizes) the number of iterations, the residue of the current solution approximation or some other metrics. Sometimes such information is printed after each iteration or after every ten iterations. The problem of this approach is the fact that one iteration of the solver may take only few milliseconds but also several minutes. In the former case, the monitor creates overwhelming amount of output which may even slowdown the solver. In the later case, the user waits long time for update of the solver status. The monitor in TNL rather runs in separate thread and it refreshes the status of the solver in preset time periods. The use of the iterative solver monitor is demonstrated in the following example.
 
 \includelineno Solvers/Linear/IterativeLinearSolverWithMonitorExample.cpp
@@ -74,3 +78,5 @@ The only changes happen on lines 83-85 where we create an instance of TNL timer 
 The result looks as follows:
 
 \include IterativeLinearSolverWithTimerExample.out
+
+## Setup with preconditioner

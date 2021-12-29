@@ -27,18 +27,77 @@ template< typename Matrix, typename Real, typename Device, typename Index >
 class ILUT_impl
 {};
 
-// actual template to be used by users
+/**
+ * \brief Implementation of a preconditioner based on Incomplete LU with thresholding.
+ *
+ * See [detailed description](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf)
+ *
+ * \tparam Matrix is type of the matrix describing the linear system.
+ */
 template< typename Matrix >
 class ILUT
 : public ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {
-public:
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" )
-   {
-      config.addEntry< int >( prefix + "ilut-p", "Number of additional non-zero entries to allocate on each row of the factors L and U.", 0 );
-      config.addEntry< double >( prefix + "ilut-threshold", "Threshold for droppping small entries.", 1e-4 );
-   }
+   using Base = ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >;
+   public:
+
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename Matrix::RealType;
+
+      /**
+       * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
+       */
+      using DeviceType = Devices::Host;
+
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename Matrix::IndexType;
+
+      /**
+       * \brief Type for vector view.
+       */
+      using typename Preconditioner< Matrix >::VectorViewType;
+
+      /**
+       * \brief Type for constant vector view.
+       */
+      using typename Preconditioner< Matrix >::ConstVectorViewType;
+
+      /**
+       * \brief Type of shared pointer to the matrix.
+       */
+      using typename Preconditioner< Matrix >::MatrixPointer;
+
+      /**
+       * \brief This method defines configuration entries for setup of the preconditioner of linear iterative solver.
+       *
+       * \param config contains description of configuration parameters.
+       * \param prefix is a prefix of particular configuration entries.
+       */
+      static void configSetup( Config::ConfigDescription& config,
+                              const String& prefix = "" )
+      {
+         config.addEntry< int >( prefix + "ilut-p", "Number of additional non-zero entries to allocate on each row of the factors L and U.", 0 );
+         config.addEntry< double >( prefix + "ilut-threshold", "Threshold for droppping small entries.", 1e-4 );
+      }
+
+      /**
+       * \brief This methods update the preconditione with respect to given matrix.
+       *
+       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       */
+      using Base::update;
+
+      /**
+       * \brief This methods applies the preconditioner.
+       *
+       * \param b is the input vector the preconditioner is applied on.
+       * \param x is the result of the preconditioning.
+       */
+      using Base::solve;
 };
 
 template< typename Matrix, typename Real, typename Index >

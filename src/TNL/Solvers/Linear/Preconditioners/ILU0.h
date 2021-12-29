@@ -24,9 +24,9 @@
 #endif
 
 namespace TNL {
-namespace Solvers {
-namespace Linear {
-namespace Preconditioners {
+   namespace Solvers {
+      namespace Linear {
+      namespace Preconditioners {
 
 // implementation template
 template< typename Matrix, typename Real, typename Device, typename Index >
@@ -52,51 +52,98 @@ public:
    }
 };
 
-// actual template to be used by users
+/**
+ * \brief Implementation of a preconditioner based on Incomplete LU.
+ *
+ * See [detailed description](https://en.wikipedia.org/wiki/Incomplete_LU_factorization).
+ *
+ * \tparam Matrix is type of the matrix describing the linear system.
+ */
 template< typename Matrix >
 class ILU0
 : public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {};
 
+/**
+ * \brief Implementation of a preconditioner based in Incomplete LU - specialization for CPU.
+ *
+ * See [detailed description](https://en.wikipedia.org/wiki/Incomplete_LU_factorization).
+ *
+ * \tparam Matrix is type of the matrix describing the linear system.
+ */
 template< typename Matrix, typename Real, typename Index >
 class ILU0_impl< Matrix, Real, Devices::Host, Index >
 : public Preconditioner< Matrix >
 {
-public:
-   using RealType = Real;
-   using DeviceType = Devices::Host;
-   using IndexType = Index;
-   using typename Preconditioner< Matrix >::VectorViewType;
-   using typename Preconditioner< Matrix >::ConstVectorViewType;
-   using typename Preconditioner< Matrix >::MatrixPointer;
+   public:
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = Real;
 
-   virtual void update( const MatrixPointer& matrixPointer ) override;
+      /**
+       * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
+       */
+      using DeviceType = Devices::Host;
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = Index;
 
-protected:
-   // The factors L and U are stored separately and the rows of U are reversed.
-   using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
-   CSR L, U;
+      /**
+       * \brief Type for vector view.
+       */
+      using typename Preconditioner< Matrix >::VectorViewType;
 
-   // Specialized methods to distinguish between normal and distributed matrices
-   // in the implementation.
-   template< typename M >
-   static IndexType getMinColumn( const M& m )
-   {
-      return 0;
-   }
+      /**
+       * \brief Type for constant vector view.
+       */
+      using typename Preconditioner< Matrix >::ConstVectorViewType;
 
-   template< typename M >
-   static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
-   {
-      if( m.getRows() == m.getColumns() )
-         // square matrix, assume global column indices
-         return m.getLocalRowRange().getBegin();
-      else
-         // non-square matrix, assume ghost indexing
+      /**
+       * \brief Type of shared pointer to the matrix.
+       */
+      using typename Preconditioner< Matrix >::MatrixPointer;
+
+      /**
+       * \brief This methods update the preconditione with respect to given matrix.
+       *
+       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       */
+      virtual void update( const MatrixPointer& matrixPointer ) override;
+
+      /**
+       * \brief This methods applies the preconditioner.
+       *
+       * \param b is the input vector the preconditioner is applied on.
+       * \param x is the result of the preconditioning.
+       */
+      virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+
+   protected:
+      // The factors L and U are stored separately and the rows of U are reversed.
+      using CSR = Matrices::SparseMatrix< RealType, DeviceType, IndexType, Matrices::GeneralMatrix, Algorithms::Segments::CSRScalar >;
+      CSR L, U;
+
+      // Specialized methods to distinguish between normal and distributed matrices
+      // in the implementation.
+      template< typename M >
+      static IndexType getMinColumn( const M& m )
+      {
          return 0;
-   }
+      }
+
+      template< typename M >
+      static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
+      {
+         if( m.getRows() == m.getColumns() )
+            // square matrix, assume global column indices
+            return m.getLocalRowRange().getBegin();
+         else
+            // non-square matrix, assume ghost indexing
+            return 0;
+      }
 };
 
 template< typename Matrix >

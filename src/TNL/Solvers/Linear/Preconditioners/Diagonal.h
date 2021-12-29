@@ -15,58 +15,160 @@
 #include "Preconditioner.h"
 
 namespace TNL {
-namespace Solvers {
-namespace Linear {
-namespace Preconditioners {
+   namespace Solvers {
+      namespace Linear {
+         namespace Preconditioners {
 
+/**
+ * \brief Diagonal (Jacobi) preconditioner for iterative solvers of linear systems.
+ *
+ * See [detailed description]([Netlib](http://netlib.org/linalg/html_templates/node55.html))
+ *
+ * \tparam Matrix is type of the matrix describing the linear system.
+ */
 template< typename Matrix >
 class Diagonal
 : public Preconditioner< Matrix >
 {
-public:
-   using RealType = typename Matrix::RealType;
-   using DeviceType = typename Matrix::DeviceType;
-   using IndexType = typename Matrix::IndexType;
-   using typename Preconditioner< Matrix >::VectorViewType;
-   using typename Preconditioner< Matrix >::ConstVectorViewType;
-   using typename Preconditioner< Matrix >::MatrixPointer;
-   using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+   public:
 
-   virtual void update( const MatrixPointer& matrixPointer ) override;
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename Matrix::RealType;
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+      /**
+       * \brief Device where the preconditioner will run on and auxillary data will alloacted on.
+       *
+       * See \ref Devices::Host or \ref Devices::Cuda.
+       */
+      using DeviceType = typename Matrix::DeviceType;
 
-protected:
-   VectorType diagonal;
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename Matrix::IndexType;
+
+      /**
+       * \brief Type for vector view.
+       */
+      using typename Preconditioner< Matrix >::VectorViewType;
+
+      /**
+       * \brief Type for constant vector view.
+       */
+      using typename Preconditioner< Matrix >::ConstVectorViewType;
+
+      /**
+       * \brief Type of the matrix representing the linear system.
+       */
+      using MatrixType = Matrix;
+
+      /**
+       * \brief Type of shared pointer to the matrix.
+       */
+      using typename Preconditioner< Matrix >::MatrixPointer;
+
+      /**
+       * \brief This methods update the preconditione with respect to given matrix.
+       *
+       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       */
+      virtual void update( const MatrixPointer& matrixPointer ) override;
+
+      /**
+       * \brief This methods applies the preconditioner.
+       *
+       * \param b is the input vector the preconditioner is applied on.
+       * \param x is the result of the preconditioning.
+       */
+      virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+
+   protected:
+
+      using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+
+      VectorType diagonal;
 };
 
+/**
+ * \brief Specialization of the diagonal preconditioner for distributed matrices.
+ *
+ * See \ref TNL::Solvers::Linear::Preconditioners::Diagonal
+ *
+ * \tparam Matrix is a type of matrix describing the linear system.
+ */
 template< typename Matrix >
 class Diagonal< Matrices::DistributedMatrix< Matrix > >
 : public Preconditioner< Matrices::DistributedMatrix< Matrix > >
 {
-public:
-   using MatrixType = Matrices::DistributedMatrix< Matrix >;
-   using RealType = typename MatrixType::RealType;
-   using DeviceType = typename MatrixType::DeviceType;
-   using IndexType = typename MatrixType::IndexType;
-   using typename Preconditioner< MatrixType >::VectorViewType;
-   using typename Preconditioner< MatrixType >::ConstVectorViewType;
-   using typename Preconditioner< MatrixType >::MatrixPointer;
-   using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-   using LocalViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
-   using ConstLocalViewType = Containers::VectorView< std::add_const_t< RealType >, DeviceType, IndexType >;
+   public:
 
-   virtual void update( const MatrixPointer& matrixPointer ) override;
+      /**
+       * \brief Type of the matrix representing the linear system.
+       */
+      using MatrixType = Matrices::DistributedMatrix< Matrix >;
 
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename MatrixType::RealType;
 
-protected:
-   VectorType diagonal;
+      /**
+       * \brief Device where the solver will run on and auxillary data will alloacted on.
+       *
+       * See \ref Devices::Host or \ref Devices::Cuda.
+       */
+      using DeviceType = typename MatrixType::DeviceType;
+
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename MatrixType::IndexType;
+
+      /**
+       * \brief Type for vector view.
+       */
+      using typename Preconditioner< MatrixType >::VectorViewType;
+
+      /**
+       * \brief Type for vector constant view.
+       */
+      using typename Preconditioner< MatrixType >::ConstVectorViewType;
+
+      /**
+       * \brief This methods update the preconditione with respect to given matrix.
+       *
+       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       */
+      using typename Preconditioner< MatrixType >::MatrixPointer;
+
+      /**
+       * \brief This methods update the preconditione with respect to given matrix.
+       *
+       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       */
+      virtual void update( const MatrixPointer& matrixPointer ) override;
+
+      /**
+       * \brief This methods applies the preconditioner.
+       *
+       * \param b is the input vector the preconditioner is applied on.
+       * \param x is the result of the preconditioning.
+       */
+      virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
+
+   protected:
+      using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+      using LocalViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
+      using ConstLocalViewType = Containers::VectorView< std::add_const_t< RealType >, DeviceType, IndexType >;
+
+      VectorType diagonal;
 };
 
-} // namespace Preconditioners
-} // namespace Linear
-} // namespace Solvers
+         } // namespace Preconditioners
+      } // namespace Linear
+   } // namespace Solvers
 } // namespace TNL
 
 #include "Diagonal.hpp"
