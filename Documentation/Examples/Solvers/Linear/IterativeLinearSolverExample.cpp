@@ -4,7 +4,7 @@
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/TFQMR.h>
 
 template< typename Device >
 void iterativeLinearSolverExample()
@@ -63,7 +63,7 @@ void iterativeLinearSolverExample()
    /***
     * Solve the linear system
     */
-   using LinearSolver = TNL::Solvers::Linear::GMRES< MatrixType >;
+   using LinearSolver = TNL::Solvers::Linear::TFQMR< MatrixType >;
    LinearSolver solver;
    solver.setMatrix( matrix_ptr );
    solver.solve( b, x );
@@ -73,7 +73,7 @@ void iterativeLinearSolverExample()
 int main( int argc, char* argv[] )
 {
    std::cout << "Solving linear system on host: " << std::endl;
-   iterativeLinearSolverExample< TNL::Devices::Host >();
+   iterativeLinearSolverExample< TNL::Devices::Sequential >();
 
 #ifdef HAVE_CUDA
    std::cout << "Solving linear system on CUDA device: " << std::endl;

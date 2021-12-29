@@ -4,7 +4,7 @@
 #include <thread>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Matrices/SparseMatrix.h>
-#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Solvers/Linear/Jacobi.h>
 
@@ -14,11 +14,11 @@ void iterativeLinearSolverExample()
    /***
     * Set the following matrix (dots represent zero matrix elements):
     *
-    *   /  2 -1    .    .    .   \
-    *   |  -1    2 -1    .    .   |
-    *   |  .    -1    2 -1.   .   |
-    *   |  .    .    -1    2 -1   |
-    *   \  .    .    .    -1    2 /
+    *   /  2.5 -1    .    .    .   \
+    *   | -1    2.5 -1    .    .   |
+    *   |  .   -1    2.5 -1.   .   |
+    *   |  .    .   -1    2.5 -1   |
+    *   \  .    .    .   -1    2.5 /
     */
    using MatrixType = TNL::Matrices::SparseMatrix< double, Device >;
    using Vector = TNL::Containers::Vector< double, Device >;
@@ -68,23 +68,18 @@ void iterativeLinearSolverExample()
    using LinearSolver = TNL::Solvers::Linear::Jacobi< MatrixType >;
    LinearSolver solver;
    solver.setMatrix( matrix_ptr );
-
+   solver.setOmega( 0.0005 );
 
    /***
     * Setup monitor of the iterative solver
     */
    using IterativeSolverMonitorType = TNL::Solvers::IterativeSolverMonitor< double, int >;
    IterativeSolverMonitorType monitor;
-   TNL::Solvers::SolverMonitorThread t(monitor);
-   monitor.setRefreshRate(100);  // refresh rate = timeout in milliseconds
+   TNL::Solvers::SolverMonitorThread monitorThread(monitor);
+   monitor.setRefreshRate(10);  // refresh rate in milliseconds
    monitor.setVerbose(1);
    monitor.setStage( "Jacobi stage:" );
-   TNL::Timer timer;
-   monitor.setTimer( timer );
    solver.setSolverMonitor(monitor);
-   solver.setOmega( 0.001 );
-   //std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // wait for 3 seconds to let the monitor doing something
-   timer.start();
    solver.solve( b, x );
    monitor.stopMainLoop();
    std::cout << "Vector x = " << x << std::endl;
