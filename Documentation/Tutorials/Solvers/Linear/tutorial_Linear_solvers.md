@@ -80,3 +80,13 @@ The result looks as follows:
 \include IterativeLinearSolverWithTimerExample.out
 
 ## Setup with preconditioner
+
+Preconditioners of iterative solvers can significantly improve the performance of the solver. In the case of the linear systems, they are used mainly with the Krylov subspace methods. Preconditioners cannot be used with the starionary methods (\ref TNL::Solvers::Linear::Jacobi and \ref TNL::Solvers::Linear::SOR). The following example shows how to setup an iterative solver of linear systems with preconditioning.
+
+\includelineno Solvers/Linear/IterativeLinearSolverWithPreconditionerExample.cpp
+
+In this example, we solve the same problem as in all other examples in this section. The only differences concerning the preconditioner happen on the lines (68-72). Similar to the matrix of the linear system, the preconditioner is passed to the solver by the means of  smart shared pointer (\ref std::shared_ptr). The instance is created on the lines 68 and 69. Next we just need to connect the solver with the preconditioner (line 72, \ref TNL::Solvers::Linear::LinearSolver).
+
+The result looks as follows:
+
+\include IterativeLinearSolverWithPreconditionerExample.out

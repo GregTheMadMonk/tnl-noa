@@ -27,6 +27,15 @@ namespace TNL {
  * \brief Base class for preconditioners of of iterative solvers of linear systems.
  *
  * \tparam Matrix is type of matrix describing the linear system.
+ *
+ * The following example shows how to setup an iterative solver of linear systems with
+ * preconditioning:
+ *
+ * \includelineno Solvers/Linear/IterativeLinearSolverWithPreconditionerExample.cpp
+ *
+ * The result looks as follows:
+ *
+ * \include IterativeLinearSolverWithPreconditionerExample.out
  */
 template< typename Matrix >
 class Preconditioner

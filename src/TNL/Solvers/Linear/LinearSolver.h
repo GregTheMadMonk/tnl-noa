@@ -34,6 +34,16 @@ namespace TNL {
  * \ref LinearSolver::setPreconditioner.
  *
  * \tparam Matrix is type of matrix representing the linear system.
+ *
+ * The following example demonstrates the use iterative linear solvers:
+ *
+ * \includelineno Solvers/Linear/IterativeLinearSolverExample.cpp
+ *
+ * The result looks as follows:
+ *
+ * \include IterativeLinearSolverExample.out
+ *
+ * See also \ref TNL::Solvers::IterativeSolverMonitor for monitoring of iterative solvers.
  */
 template< typename Matrix >
 class LinearSolver

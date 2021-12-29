@@ -76,6 +76,7 @@ class ILU0_impl< Matrix, Real, Devices::Host, Index >
 : public Preconditioner< Matrix >
 {
    public:
+
       /**
        * \brief Floating point type used for computations.
        */

@@ -20,6 +20,24 @@ namespace TNL {
  *
  * \tparam Real is a type of the floating-point arithmetics.
  * \tparam Index is an indexing type.
+ *
+ * The following example shows how to use the iterative solver monitor for monitoring
+ * convergence of linear iterative solver:
+ *
+ * \includelineno Solvers/Linear/IterativeLinearSolverWithMonitorExample.cpp
+ *
+ * The result looks as follows:
+ *
+ * \include IterativeLinearSolverWithMonitorExample.out
+ *
+ * The following example shows how to employ timer (\ref TNL::Timer) to the monitor
+ * of iterative solvers:
+ *
+ * \includelineno Solvers/Linear/IterativeLinearSolverWithTimerExample.cpp
+ *
+ * The result looks as follows:
+ *
+ * \include IterativeLinearSolverWithTimerExample.out
  */
 template< typename Real = double,
           typename Index = int >
