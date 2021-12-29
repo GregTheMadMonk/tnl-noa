@@ -69,7 +69,7 @@ class LinearSolver
       using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
 
       /**
-       * \brief Type of the matrix representign the linear system.
+       * \brief Type of the matrix representing the linear system.
        */
       using MatrixType = Matrix;
 
@@ -89,7 +89,7 @@ class LinearSolver
       using PreconditionerPointer = std::shared_ptr< std::add_const_t< PreconditionerType > >;
 
       /**
-       * \brief This is method defines configuration entries for setup of the linear iterative solver.
+       * \brief This method defines configuration entries for setup of the linear iterative solver.
        *
        * See \ref IterativeSolver::configSetup.
        *
