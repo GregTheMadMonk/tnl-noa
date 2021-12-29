@@ -163,7 +163,6 @@ class LinearSolver
       MatrixPointer matrix = nullptr;
       PreconditionerPointer preconditioner = nullptr;
 };
-
       } // namespace Linear
    } // namespace Solvers
 } // namespace TNL

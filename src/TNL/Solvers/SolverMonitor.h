@@ -93,7 +93,7 @@ class SolverMonitor
       }
 
       /**
-       * \brief Stops the main loop of the monitor. See \ref SolverMonitor::runMainLoop.
+       * \brief Stops the main loop of the monitor. See \ref TNL::SolverMonitor::runMainLoop.
        */
       void stopMainLoop() { stopped = true; }
 
@@ -101,7 +101,7 @@ class SolverMonitor
        * \brief Checks whether the main loop was stopped.
        *
        * \return true if the main loop was stopped.
-       * \return false if the mian loop was not stopped yet.
+       * \return false if the main loop was not stopped yet.
        */
       bool isStopped() const { return stopped; }
 
