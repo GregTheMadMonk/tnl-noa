@@ -52,7 +52,7 @@ void iterativeLinearSolverExample()
    std::cout << *matrix_ptr << std::endl;
 
    /***
-    * Set the right-hand side vector
+    * Set the right-hand side vector.
     */
    Vector x( size, 1.0 );
    Vector b( size );
@@ -61,7 +61,7 @@ void iterativeLinearSolverExample()
    std::cout << "Vector b = " << b << std::endl;
 
    /***
-    * Solve the linear system
+    * Solve the linear system.
     */
    using LinearSolver = TNL::Solvers::Linear::TFQMR< MatrixType >;
    LinearSolver solver;
