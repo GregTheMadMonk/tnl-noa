@@ -66,7 +66,7 @@ void iterativeLinearSolverExample()
     */
    using LinearSolver = TNL::Solvers::Linear::TFQMR< MatrixType >;
    using Preconditioner = TNL::Solvers::Linear::Preconditioners::Diagonal< MatrixType >;
-   auto preconditioner_ptr = std::make_shared< Preconditioner >;
+   auto preconditioner_ptr = std::make_shared< Preconditioner >();
    preconditioner_ptr->update( matrix_ptr );
    LinearSolver solver;
    solver.setMatrix( matrix_ptr );

@@ -85,7 +85,7 @@ Preconditioners of iterative solvers can significantly improve the performance o
 
 \includelineno Solvers/Linear/IterativeLinearSolverWithPreconditionerExample.cpp
 
-In this example, we solve the same problem as in all other examples in this section. The only differences concerning the preconditioner happen on the lines (68-72). Similar to the matrix of the linear system, the preconditioner is passed to the solver by the means of  smart shared pointer (\ref std::shared_ptr). The instance is created on the lines 68 and 69. Next we just need to connect the solver with the preconditioner (line 72, \ref TNL::Solvers::Linear::LinearSolver).
+In this example, we solve the same problem as in all other examples in this section. The only differences concerning the preconditioner happen on the lines (68-72). Similar to the matrix of the linear system, the preconditioner is passed to the solver by the means of  smart shared pointer (\ref std::shared_ptr). The instance is created on the lines 68 and 69. Next we have to initialize the preconditioner (line 70, \ref TNL::Solvers::Linear::Preconditioners::Preconditioner::update). The method `update` has to be called everytime the matrix of the linear system changes. This is important for example when solving time dependent PDEs but it does not happen in this example. Finally, we need to connect the solver with the preconditioner (line 73, \ref TNL::Solvers::Linear::LinearSolver).
 
 The result looks as follows:
 
