@@ -115,6 +115,7 @@ class IterativeSolverMonitor : public SolverMonitor
 
       IndexType iterations, saved_iterations, iterations_before_refresh;
 
+      // TODO: move verbose to SolverMonitor
       IndexType verbose;
 
       IndexType nodesPerIteration;
