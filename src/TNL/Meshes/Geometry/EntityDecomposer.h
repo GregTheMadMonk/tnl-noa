@@ -1,13 +1,10 @@
 #pragma once
 
-#include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/MeshEntity.h>
-#include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
 #include <TNL/Meshes/Topologies/Polygon.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 #include <TNL/Meshes/Geometry/getEntityCenter.h>
-#include <TNL/Meshes/Geometry/getEntityMeasure.h>
-#include <functional>
 
 namespace TNL {
 namespace Meshes {
@@ -19,7 +16,7 @@ enum class EntityDecomposerVersion
 
 template< typename MeshConfig,
           typename Topology,
-          EntityDecomposerVersion EntityDecomposerVersion_ = EntityDecomposerVersion::ConnectEdgesToCentroid, 
+          EntityDecomposerVersion EntityDecomposerVersion_ = EntityDecomposerVersion::ConnectEdgesToCentroid,
           EntityDecomposerVersion SubentityDecomposerVersion = EntityDecomposerVersion::ConnectEdgesToCentroid >
 struct EntityDecomposer;
 
@@ -31,10 +28,9 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
    using Topology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, Topology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
-   using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
-   
+
    static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto pointsCount = entity.template getSubentitiesCount< 0 >();
@@ -80,7 +76,6 @@ struct EntityDecomposer< MeshConfig, Topologies::Polygon, EntityDecomposerVersio
    using Topology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, Topology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
-   using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
 
@@ -116,11 +111,10 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
    using FaceTopology = Topologies::Polygon;
    using MeshEntityType = MeshEntity< MeshConfig, Device, CellTopology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
-   using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
    using SubentityDecomposer = EntityDecomposer< MeshConfig, FaceTopology, SubentityDecomposerVersion >;
-   
+
    static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto& mesh = entity.getMesh();
@@ -170,12 +164,10 @@ struct EntityDecomposer< MeshConfig, Topologies::Polyhedron, EntityDecomposerVer
    using MeshEntityType = MeshEntity< MeshConfig, Device, CellTopology >;
    using MeshSubentityType = MeshEntity< MeshConfig, Device, FaceTopology >;
    using VertexMeshEntityType = typename MeshEntityType::template SubentityTraits< 0 >::SubentityType;
-   using PointType = typename VertexMeshEntityType::PointType;
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
    using LocalIndexType = typename MeshConfig::LocalIndexType;
-   using RealType = typename MeshConfig::RealType;
    using SubentityDecomposer = EntityDecomposer< MeshConfig, FaceTopology, SubentityDecomposerVersion >;
-   
+
    static std::pair< GlobalIndexType, GlobalIndexType > getExtraPointsAndEntitiesCount( const MeshEntityType& entity )
    {
       const auto& mesh = entity.getMesh();

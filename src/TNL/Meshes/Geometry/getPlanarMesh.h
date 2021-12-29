@@ -34,7 +34,6 @@ planarCorrection( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using LocalIndexType = typename PolygonMesh::LocalIndexType;
    using PointType = typename PolygonMesh::PointType;
    using RealType = typename PolygonMesh::RealType;
-   using BoolVector = Containers::Vector< bool, Devices::Host, GlobalIndexType >;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, DecomposerVersion >;
    constexpr int CellDimension = PolygonMesh::getMeshDimension();
 

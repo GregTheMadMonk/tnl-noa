@@ -36,7 +36,6 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using TriangleMesh = Mesh< TriangleMeshConfig, Devices::Host >;
    using MeshBuilder = MeshBuilder< TriangleMesh >;
    using GlobalIndexType = typename TriangleMesh::GlobalIndexType;
-   using LocalIndexType = typename TriangleMesh::LocalIndexType;
    using PointType = typename TriangleMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polygon, DecomposerVersion >;
    constexpr int CellDimension = TriangleMesh::getMeshDimension();
@@ -138,7 +137,6 @@ decomposeMesh( const Mesh< MeshConfig, Devices::Host >& inMesh )
    using TetrahedronMesh = Mesh< TetrahedronMeshConfig, Devices::Host >;
    using MeshBuilder = MeshBuilder< TetrahedronMesh >;
    using GlobalIndexType = typename TetrahedronMesh::GlobalIndexType;
-   using LocalIndexType = typename TetrahedronMesh::LocalIndexType;
    using PointType = typename TetrahedronMesh::PointType;
    using EntityDecomposer = EntityDecomposer< MeshConfig, Topologies::Polyhedron, DecomposerVersion, SubdecomposerVersion >;
    constexpr int CellDimension = TetrahedronMesh::getMeshDimension();
