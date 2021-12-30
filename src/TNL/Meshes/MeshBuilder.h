@@ -183,20 +183,16 @@ public:
 
       auto remap_matrix = [uniquePointsCount, &points_old_to_new] ( auto& seeds )
       {
-         // TODO: optimize out useless copy and counting corner counts - it would be sufficient to just remap column indices and then shrink the columns count
-         std::remove_reference_t< decltype( seeds ) > newSeeds;
-         newSeeds.setDimensions( seeds.getMatrix().getRows(), uniquePointsCount );
-         newSeeds.setEntityCornersCounts( seeds.getEntityCornerCounts() );
          // TODO: parallelize (we have the IndexPermutationApplier)
-         for( GlobalIndexType i = 0; i < newSeeds.getEntitiesCount(); i++ ) {
-            const auto oldSeed = seeds.getSeed( i );
-            auto seed = newSeeds.getSeed( i );
+         for( GlobalIndexType i = 0; i < seeds.getEntitiesCount(); i++ ) {
+            auto seed = seeds.getSeed( i );
             for( LocalIndexType j = 0; j < seed.getCornersCount(); j++ ) {
-               const GlobalIndexType newIndex = points_old_to_new[ oldSeed.getCornerId( j ) ];
+               const GlobalIndexType newIndex = points_old_to_new[ seed.getCornerId( j ) ];
                seed.setCornerId( j, newIndex );
             }
          }
-         seeds = std::move( newSeeds );
+         // update the number of columns of the matrix
+         seeds.getMatrix().setColumnsWithoutReset( uniquePointsCount );
       };
 
       // remap points in this->faceSeeds or this->cellSeeds
