@@ -22,7 +22,9 @@ namespace TNL {
 /**
  * \brief Diagonal (Jacobi) preconditioner for iterative solvers of linear systems.
  *
- * See [detailed description]([Netlib](http://netlib.org/linalg/html_templates/node55.html))
+ * See [detailed description]([Netlib](http://netlib.org/linalg/html_templates/node55.html)).
+ *
+ * See \ref TNL::Solvers::Linear::Preconditioners::Preconditioner for example of setup with a linear solver.
  *
  * \tparam Matrix is type of the matrix describing the linear system.
  */

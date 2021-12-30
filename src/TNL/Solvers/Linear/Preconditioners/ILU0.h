@@ -69,6 +69,8 @@ class ILU0
  *
  * See [detailed description](https://en.wikipedia.org/wiki/Incomplete_LU_factorization).
  *
+ * See \ref TNL::Solvers::Linear::Preconditioners::Preconditioner for example of setup with a linear solver.
+ *
  * \tparam Matrix is type of the matrix describing the linear system.
  */
 template< typename Matrix, typename Real, typename Index >

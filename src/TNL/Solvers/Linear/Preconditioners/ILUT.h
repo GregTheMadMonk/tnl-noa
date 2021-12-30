@@ -32,6 +32,8 @@ class ILUT_impl
  *
  * See [detailed description](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf)
  *
+ * See \ref TNL::Solvers::Linear::Preconditioners::Preconditioner for example of setup with a linear solver.
+ *
  * \tparam Matrix is type of the matrix describing the linear system.
  */
 template< typename Matrix >
@@ -146,6 +148,12 @@ protected:
          return 0;
    }
 };
+
+template< typename Matrix, typename Real, typename Index >
+class ILUT_impl< Matrix, Real, Devices::Sequential, Index >
+: public ILUT_impl< Matrix, Real, Devices::Host, Index >
+{};
+
 
 template< typename Matrix, typename Real, typename Index >
 class ILUT_impl< Matrix, Real, Devices::Cuda, Index >
