@@ -8,7 +8,7 @@ Solvers of linear systems are one of the most important algorithms in scientific
 
 1. Stationary methods
    1. [Jacobi method](https://en.wikipedia.org/wiki/Jacobi_method) (\ref TNL::Solvers::Linear::Jacobi)
-   2. [Successive-overrelaxation method, SOR]([https://en.wikipedia.org/wiki/Successive_over-relaxation]) (\ref TNL::Solvers::Linear::SOR) - CPU only currently
+   2. [Successive-overrelaxation method, SOR]([https://en.wikipedia.org/wiki/Successive_over-relaxation]) (\ref TNL::Solvers::Linear::SOR)
 2. Krylov subspace methods
    1. [Conjugate gradient method, CG](https://en.wikipedia.org/wiki/Conjugate_gradient_method) (\ref TNL::Solvers::Linear::CG)
    2. [Biconjugate gradient stabilized method, BICGStab](https://en.wikipedia.org/wiki/Biconjugate_gradient_stabilized_method) (\ref TNL::Solvers::Linear::BICGStab)

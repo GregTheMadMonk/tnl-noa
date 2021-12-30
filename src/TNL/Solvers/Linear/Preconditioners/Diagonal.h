@@ -14,6 +14,7 @@
 
 #include "Preconditioner.h"
 
+
 namespace TNL {
    namespace Solvers {
       namespace Linear {
@@ -72,14 +73,14 @@ class Diagonal
       using typename Preconditioner< Matrix >::MatrixPointer;
 
       /**
-       * \brief This methods update the preconditione with respect to given matrix.
+       * \brief This method updates the preconditioner with respect to given matrix.
        *
        * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
        */
       virtual void update( const MatrixPointer& matrixPointer ) override;
 
       /**
-       * \brief This methods applies the preconditioner.
+       * \brief This method applies the preconditioner.
        *
        * \param b is the input vector the preconditioner is applied on.
        * \param x is the result of the preconditioning.
@@ -139,21 +140,19 @@ class Diagonal< Matrices::DistributedMatrix< Matrix > >
       using typename Preconditioner< MatrixType >::ConstVectorViewType;
 
       /**
-       * \brief This methods update the preconditione with respect to given matrix.
-       *
-       * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
+       * \brief Type of shared pointer to the matrix.
        */
       using typename Preconditioner< MatrixType >::MatrixPointer;
 
       /**
-       * \brief This methods update the preconditione with respect to given matrix.
+       * \brief This method updates the preconditioner with respect to given matrix.
        *
        * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
        */
       virtual void update( const MatrixPointer& matrixPointer ) override;
 
       /**
-       * \brief This methods applies the preconditioner.
+       * \brief This method applies the preconditioner.
        *
        * \param b is the input vector the preconditioner is applied on.
        * \param x is the result of the preconditioning.

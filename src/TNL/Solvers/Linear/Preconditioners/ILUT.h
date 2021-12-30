@@ -87,14 +87,14 @@ class ILUT
       }
 
       /**
-       * \brief This methods update the preconditione with respect to given matrix.
+       * \brief This method updates the preconditioner with respect to given matrix.
        *
        * \param matrixPointer smart pointer (\ref std::shared_ptr) to matrix the preconditioner is related to.
        */
       using Base::update;
 
       /**
-       * \brief This methods applies the preconditioner.
+       * \brief This method applies the preconditioner.
        *
        * \param b is the input vector the preconditioner is applied on.
        * \param x is the result of the preconditioning.
