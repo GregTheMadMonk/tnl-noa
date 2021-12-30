@@ -157,8 +157,6 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   this->refreshSolverMonitor();
-
    /****
     * Start the main loop
     */
@@ -196,7 +194,6 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
          if( ! this->nextIteration() )
             return false;
       }
-      this->refreshSolverMonitor();
 
       /****
        * Compute the new time step.
@@ -221,12 +218,8 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
       //cerr << "this->getConvergenceResidue() = " << this->getConvergenceResidue() << std::endl;
       if( time >= this->getStopTime() ||
           ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
-      {
-         this->refreshSolverMonitor( true );
          return true;
-      }
    }
-   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 
 };

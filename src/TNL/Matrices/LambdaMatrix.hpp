@@ -406,22 +406,6 @@ template< typename MatrixElementsLambda,
           typename Real,
           typename Device,
           typename Index >
-   template< typename Vector1, typename Vector2 >
-void
-LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
-performSORIteration( const Vector1& b,
-                          const IndexType row,
-                          Vector2& x,
-                          const RealType& omega ) const
-{
-   throw Exceptions::NotImplementedError("performSORIteration is not implemented for SparseMatrixView");
-}
-
-template< typename MatrixElementsLambda,
-          typename CompressedRowLengthsLambda,
-          typename Real,
-          typename Device,
-          typename Index >
 void
 LambdaMatrix< MatrixElementsLambda, CompressedRowLengthsLambda, Real, Device, Index >::
 print( std::ostream& str ) const

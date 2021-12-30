@@ -266,17 +266,5 @@ vectorProduct( const InVector& inVector,
 //   outVector.startSynchronization();
 }
 
-template< typename Matrix >
-   template< typename Vector1, typename Vector2 >
-void
-DistributedMatrix< Matrix >::
-performSORIteration( const Vector1& b,
-                     const IndexType row,
-                     Vector2& x,
-                     const RealType& omega ) const
-{
-   getLocalMatrix().performSORIteration( b, row, x, omega );
-}
-
 } // namespace Matrices
 } // namespace TNL

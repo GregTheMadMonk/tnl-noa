@@ -15,6 +15,7 @@
 #include <atomic>  // std::atomic
 
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Cuda.h>
 
 // double-precision atomicAdd function for Maxwell and older GPUs
@@ -94,6 +95,18 @@ public:
          ;
       return old;
    }
+};
+
+template< typename T >
+class Atomic< T, Devices::Sequential > : public Atomic< T, Devices::Host >
+{
+   using Base = Atomic< T, Devices::Host >;
+   public:
+
+   using Base::Atomic;
+   using Base::operator=;
+   using Base::fetch_max;
+   using Base::fetch_min;
 };
 
 template< typename T >

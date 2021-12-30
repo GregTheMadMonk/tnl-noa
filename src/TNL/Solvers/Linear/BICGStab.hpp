@@ -119,7 +119,6 @@ solve( ConstVectorViewType b, VectorViewType x )
       }
    }
 
-   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }
 

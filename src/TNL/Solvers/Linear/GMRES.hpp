@@ -31,7 +31,7 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    LinearSolver< Matrix >::configSetup( config, prefix );
-   config.addEntry< String >( prefix + "gmres-variant", "Minimal number of iterations after which the GMRES restarts.", "CWY" );
+   config.addEntry< String >( prefix + "gmres-variant", "Algorithm used for the orthogonalization.", "MGSR" );
       config.addEntryEnum( "CGS" );
       config.addEntryEnum( "CGSR" );
       config.addEntryEnum( "MGS" );
@@ -162,7 +162,6 @@ solve( ConstVectorViewType b, VectorViewType x )
       if( o_steps < m ) {
          // exact solution has been reached early
          update( o_steps, m, H, s, V, x );
-         this->refreshSolverMonitor( true );
          return this->checkConvergence();
       }
 
@@ -179,8 +178,6 @@ solve( ConstVectorViewType b, VectorViewType x )
       ++restart_cycles;
       beta_ratio = beta / beta_old;
    }
-
-   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }
 
@@ -273,8 +270,6 @@ orthogonalize_CGS( const int m, const RealType normb, const RealType beta )
       this->setResidue( std::fabs( s[ i + 1 ] ) / normb );
       if( ! this->checkNextIteration() )
          return i;
-      else
-         this->refreshSolverMonitor();
    }
 
    return m;
@@ -347,8 +342,6 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
       this->setResidue( std::fabs( s[ i + 1 ] ) / normb );
       if( ! this->checkNextIteration() )
          return i;
-      else
-         this->refreshSolverMonitor();
    }
 
    return m;
@@ -434,9 +427,7 @@ orthogonalize_CWY( const int m, const RealType normb, const RealType beta )
       this->setResidue( std::fabs( s[ i ] ) / normb );
       if( i > 0 && ! this->checkNextIteration() )
          return i - 1;
-      else
-         this->refreshSolverMonitor();
-   }
+  }
 
    return m;
 }

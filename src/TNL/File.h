@@ -58,9 +58,9 @@ class File
        * Opens file with given \e fileName in some \e mode from \ref std::ios_base::openmode.
        * Note that the file is always opened in binary mode, i.e. \ref std::ios_base::binary
        * is always added to \e mode.
-       * 
+       *
        * Throws \ref std::ios_base::failure on failure.
-       * 
+       *
        * \param fileName String which indicates file name.
        * \param mode Indicates in what mode the file will be opened - see \ref std::ios_base::openmode.
        */
@@ -69,7 +69,7 @@ class File
 
       /**
        * \brief Closes the file.
-       * 
+       *
        * Throws \ref std::ios_base::failure on failure.
        */
       void close();
@@ -133,7 +133,7 @@ class File
        * \tparam Index type of index by which the elements are indexed.
        * \param buffer buffer that is going to be saved to the file.
        * \param elements number of elements saved to the file.
-       * 
+       *
        * See \ref File::load for examples.
        */
       template< typename Type, typename TargetType = Type, typename Allocator = Allocators::Host< Type > >

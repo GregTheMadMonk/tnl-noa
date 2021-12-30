@@ -238,8 +238,6 @@ solve( ConstVectorViewType b, VectorViewType x )
          this->setResidue( sigma[ 0 ] / b_norm );
       }
    }
-
-   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 }
 

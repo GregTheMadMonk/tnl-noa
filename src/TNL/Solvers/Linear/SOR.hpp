@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include "SOR.h"
+#include <TNL/Solvers/Linear/SOR.h>
+#include <TNL/Atomic.h>
 #include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
@@ -25,6 +26,7 @@ configSetup( Config::ConfigDescription& config,
 {
    LinearSolver< Matrix >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
+   config.addEntry< int >( prefix + "residue-period", "Says after how many iterations the reside is recomputed.", 4 );
 }
 
 template< typename Matrix >
@@ -39,6 +41,8 @@ setup( const Config::ParameterContainer& parameters,
    {
       std::cerr << "Warning: The SOR method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
    }
+   if( parameters.checkParameter( prefix + "residue-period" ) )
+      this->setResiduePeriod( parameters.getParameter< int >( prefix + "residue-period" ) );
    return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
@@ -55,26 +59,66 @@ const typename SOR< Matrix > :: RealType& SOR< Matrix > :: getOmega( ) const
 }
 
 template< typename Matrix >
+void
+SOR< Matrix >::
+setResiduePeriod( IndexType period )
+{
+   this->residuePeriod = period;
+}
+
+template< typename Matrix >
+auto
+SOR< Matrix >::
+getResiduePerid() const -> IndexType
+{
+   return this->residuePeriod;
+}
+
+template< typename Matrix >
 bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
 {
+   /////
+   // Fetch diagonal elements
    const IndexType size = this->matrix->getRows();
+   this->diagonal.setSize( size );
+   auto diagonalView = this->diagonal.getView();
+   auto fetch_diagonal = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, const RealType& value ) mutable {
+      if( columnIdx == rowIdx ) diagonalView[ rowIdx ] = value;
+   };
+   this->matrix->forAllElements( fetch_diagonal );
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   RealType bNorm = lpNorm( b, 2.0 );
-
+   auto bView = b.getView();
+   auto xView = x.getView();
+   RealType bNorm = lpNorm( b, ( RealType ) 2.0 );
    while( this->nextIteration() )
    {
-      for( IndexType row = 0; row < size; row ++ )
-         this->matrix->performSORIteration( b, row, x, this->getOmega() );
-      this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-      this->refreshSolverMonitor();
+      this->performIteration( bView, diagonalView, xView );
+      if( this->getIterations() % this->residuePeriod == 0 )
+         this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
    }
    this->setResidue( LinearResidueGetter::getResidue( *this->matrix, x, b, bNorm ) );
-   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };
+
+template< typename Matrix >
+void
+SOR< Matrix >::
+performIteration( const ConstVectorViewType& b,
+                  const ConstVectorViewType& diagonalView,
+                  VectorViewType& x ) const
+{
+   const RealType omega_ = this->omega;
+   auto fetch = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, const RealType& value ) {
+         return value * x[ columnIdx ];
+   };
+   auto keep = [=] __cuda_callable__ ( IndexType rowIdx, const RealType& value ) mutable {
+      Algorithms::AtomicOperations< DeviceType >::add( x[ rowIdx ], omega_ / diagonalView[ rowIdx ] * ( b[ rowIdx ] - value ) );
+   };
+   this->matrix->reduceAllRows( fetch, TNL::Plus{}, keep, 0.0 );
+}
 
 } // namespace Linear
 } // namespace Solvers

@@ -601,7 +601,7 @@ forElements( IndexType begin, IndexType end, Function& function ) const
       if( localIdx < columns )
       {
          if( isBinary() )
-            function( rowIdx, localIdx, columns_view[ globalIdx ], 1 );
+            function( rowIdx, localIdx, columns_view[ globalIdx ], ( RealType ) 1.0 );
          else
             function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ] );
       }
@@ -826,23 +826,6 @@ getTransposition( const SparseMatrixView< Real2, Device, Index2 >& matrix,
 {
 
 }*/
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView,
-          typename ComputeReal >
-template< typename Vector1, typename Vector2 >
-void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView, ComputeReal >::
-performSORIteration( const Vector1& b,
-                     const IndexType row,
-                     Vector2& x,
-                     const RealType& omega ) const
-{
-   throw Exceptions::NotImplementedError("performSORIteration is not implemented for SparseMatrixView");
-}
 
 template< typename Real,
           typename Device,

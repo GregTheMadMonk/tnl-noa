@@ -1042,28 +1042,6 @@ template< typename Real,
           typename Index,
           ElementsOrganization Organization,
           typename RealAllocator >
-   template< typename Vector1, typename Vector2 >
-void DenseMatrix< Real, Device, Index, Organization, RealAllocator >::performSORIteration( const Vector1& b,
-                                                        const IndexType row,
-                                                        Vector2& x,
-                                                        const RealType& omega ) const
-{
-   RealType sum( 0.0 ), diagonalValue;
-   for( IndexType i = 0; i < this->getColumns(); i++ )
-   {
-      if( i == row )
-         diagonalValue = this->getElement( row, row );
-      else
-         sum += this->getElement( row, i ) * x[ i ];
-   }
-   x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          typename RealAllocator >
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >&
 DenseMatrix< Real, Device, Index, Organization, RealAllocator >::
 operator=( const DenseMatrix< Real, Device, Index, Organization, RealAllocator >& matrix )

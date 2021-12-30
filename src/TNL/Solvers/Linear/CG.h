@@ -10,35 +10,78 @@
 
 #pragma once
 
-#include "LinearSolver.h"
+#include <TNL/Solvers/Linear/LinearSolver.h>
 
 namespace TNL {
-namespace Solvers {
-namespace Linear {
+   namespace Solvers {
+      namespace Linear {
 
+/**
+ * \brief Iterative solver of linear systems based on the conjugate gradient method.
+ *
+ * This solver can be used only for positive-definite linear systems.
+ *
+ * See [Wikipedia](https://en.wikipedia.org/wiki/Conjugate_gradient_method) for more details.
+ *
+ * \tparam Matrix is type of matrix describing the linear system.
+ *
+ * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
+ */
 template< typename Matrix >
 class CG
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
-public:
-   using RealType = typename Base::RealType;
-   using DeviceType = typename Base::DeviceType;
-   using IndexType = typename Base::IndexType;
-   using VectorViewType = typename Base::VectorViewType;
-   using ConstVectorViewType = typename Base::ConstVectorViewType;
    using VectorType = typename Traits< Matrix >::VectorType;
 
-   bool solve( ConstVectorViewType b, VectorViewType x ) override;
+   public:
+      /**
+       * \brief Floating point type used for computations.
+       */
+      using RealType = typename Base::RealType;
 
-protected:
-   void setSize( const VectorViewType& x );
+      /**
+       * \brief Device where the solver will run on and auxillary data will alloacted on.
+       *
+       * See \ref Devices::Host or \ref Devices::Cuda.
+       */
+      using DeviceType = typename Base::DeviceType;
 
-   VectorType r, p, Ap, z;
+      /**
+       * \brief Type for indexing.
+       */
+      using IndexType = typename Base::IndexType;
+
+      /**
+       * \brief Type for vector view.
+       */
+      using VectorViewType = typename Base::VectorViewType;
+
+      /**
+       * \brief Type for constant vector view.
+       */
+      using ConstVectorViewType = typename Base::ConstVectorViewType;
+
+      /**
+       * \brief Method for solving of a linear system.
+       *
+       * See \ref LinearSolver::solve for more details.
+       *
+       * \param b vector with the right-hand side of the linear system.
+       * \param x vector for the solution of the linear system.
+       * \return true if the solver converged.
+       * \return false if the solver did not converge.
+       */
+      bool solve( ConstVectorViewType b, VectorViewType x ) override;
+
+   protected:
+      void setSize( const VectorViewType& x );
+
+      VectorType r, p, Ap, z;
 };
 
-} // namespace Linear
-} // namespace Solvers
+      } // namespace Linear
+   } // namespace Solvers
 } // namespace TNL
 
-#include "CG.hpp"
+#include <TNL/Solvers/Linear/CG.hpp>

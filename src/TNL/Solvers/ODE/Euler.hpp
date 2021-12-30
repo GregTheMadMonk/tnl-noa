@@ -83,8 +83,6 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   this -> refreshSolverMonitor();
-
    /****
     * Start the main loop
     */
@@ -126,17 +124,12 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
          currentTau = this -> getStopTime() - time; //we don't want to keep such tau
       else this -> tau = currentTau;
 
-      this->refreshSolverMonitor();
-
       /****
        * Check stop conditions.
        */
       if( time >= this->getStopTime() ||
           ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
-      {
-         this -> refreshSolverMonitor();
          return true;
-      }
 
       if( this -> cflCondition != 0.0 )
       {
