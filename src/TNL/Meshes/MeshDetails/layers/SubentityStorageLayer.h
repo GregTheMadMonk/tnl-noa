@@ -120,10 +120,9 @@ protected:
 
    SubentityStorageLayer() = default;
 
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -131,12 +130,9 @@ protected:
       operator=( other );
    }
 
-   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
-   {
-      BaseType::operator=( other );
-      matrix = other.matrix;
-      return *this;
-   }
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer& operator=( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -225,10 +221,9 @@ protected:
 
    SubentityStorageLayer() = default;
 
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -236,13 +231,9 @@ protected:
       operator=( other );
    }
 
-   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
-   {
-      BaseType::operator=( other );
-      subentitiesCounts = other.subentitiesCounts;
-      matrix = other.matrix;
-      return *this;
-   }
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer& operator=( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -315,7 +306,7 @@ protected:
 private:
    NeighborCountsArray subentitiesCounts;
    SubentityMatrixType matrix;
-   
+
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
    friend class SubentityStorageLayer;
@@ -350,10 +341,9 @@ protected:
 
    SubentityStorageLayer() = default;
 
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -361,13 +351,9 @@ protected:
       operator=( other );
    }
 
-   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
-   {
-      BaseType::operator=( other );
-      subentitiesCounts = other.subentitiesCounts;
-      matrix = other.matrix;
-      return *this;
-   }
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer& operator=( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -434,7 +420,7 @@ protected:
 private:
    NeighborCountsArray subentitiesCounts;
    SubentityMatrixType matrix;
-   
+
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
    friend class SubentityStorageLayer;
@@ -469,10 +455,9 @@ protected:
 
    SubentityStorageLayer() = default;
 
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -480,12 +465,9 @@ protected:
       operator=( other );
    }
 
-   SubentityStorageLayer& operator=( const SubentityStorageLayer& other )
-   {
-      BaseType::operator=( other );
-      matrix = other.matrix;
-      return *this;
-   }
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other ) = default;
+
+   SubentityStorageLayer& operator=( SubentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other )
@@ -533,7 +515,7 @@ protected:
 
 private:
    SubentityMatrixType matrix;
-   
+
    // friend class is needed for templated assignment operators
    template< typename MeshConfig_, typename Device_, typename EntityTopology_, typename SubdimensionTag_, bool Storage_, bool dynamicTopology_ >
    friend class SubentityStorageLayer;
@@ -584,9 +566,12 @@ protected:
    using GlobalIndexType = typename MeshConfig::GlobalIndexType;
 
    SubentityStorageLayer() = default;
-   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) {}
+   explicit SubentityStorageLayer( const SubentityStorageLayer& other ) = default;
+   SubentityStorageLayer( SubentityStorageLayer&& other ) = default;
    template< typename Device_ >
    SubentityStorageLayer( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) {}
+   SubentityStorageLayer& operator=( const SubentityStorageLayer& other ) = default;
+   SubentityStorageLayer& operator=( SubentityStorageLayer&& other ) = default;
    template< typename Device_ >
    SubentityStorageLayer& operator=( const SubentityStorageLayer< MeshConfig, Device_, EntityTopology, SubdimensionTag >& other ) { return *this; }
 

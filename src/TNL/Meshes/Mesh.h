@@ -93,10 +93,14 @@ class Mesh
 
       Mesh( const Mesh& mesh );
 
+      Mesh( Mesh&& mesh ) = default;
+
       template< typename Device_ >
       Mesh( const Mesh< MeshConfig, Device_ >& mesh );
 
-      Mesh& operator=( const Mesh& mesh );
+      Mesh& operator=( const Mesh& mesh ) = default;
+
+      Mesh& operator=( Mesh&& mesh ) = default;
 
       template< typename Device_ >
       Mesh& operator=( const Mesh< MeshConfig, Device_ >& mesh );

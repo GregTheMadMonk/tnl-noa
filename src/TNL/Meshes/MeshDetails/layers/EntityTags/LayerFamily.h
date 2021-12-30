@@ -56,10 +56,9 @@ protected:
 
    LayerInheritor() = default;
 
-   explicit LayerInheritor( const LayerInheritor& other )
-   {
-      operator=( other );
-   }
+   explicit LayerInheritor( const LayerInheritor& other ) = default;
+
+   LayerInheritor( LayerInheritor&& other ) = default;
 
    template< typename Device_ >
    LayerInheritor( const LayerInheritor< MeshConfig, Device_, Dimension >& other )
@@ -67,12 +66,9 @@ protected:
       operator=( other );
    }
 
-   LayerInheritor& operator=( const LayerInheritor& other )
-   {
-      LayerType::operator=( other );
-      BaseType::operator=( other );
-      return *this;
-   }
+   LayerInheritor& operator=( const LayerInheritor& other ) = default;
+
+   LayerInheritor& operator=( LayerInheritor&& other ) = default;
 
    template< typename Device_ >
    LayerInheritor& operator=( const LayerInheritor< MeshConfig, Device_, Dimension >& other )
@@ -114,10 +110,12 @@ protected:
    void getGhostEntitiesOffset() const;
 
    LayerInheritor() = default;
-   explicit LayerInheritor( const LayerInheritor& other ) {}
+   explicit LayerInheritor( const LayerInheritor& other ) = default;
+   LayerInheritor( LayerInheritor&& other ) = default;
    template< typename Device_ >
    LayerInheritor( const LayerInheritor< MeshConfig, Device_, DimensionTag< MeshConfig::meshDimension + 1 > >& other ) {}
-   LayerInheritor& operator=( const LayerInheritor& other ) { return *this; }
+   LayerInheritor& operator=( const LayerInheritor& other ) = default;
+   LayerInheritor& operator=( LayerInheritor&& other ) = default;
    template< typename Device_ >
    LayerInheritor& operator=( const LayerInheritor< MeshConfig, Device_, DimensionTag< MeshConfig::meshDimension + 1 > >& other ) { return *this; }
 

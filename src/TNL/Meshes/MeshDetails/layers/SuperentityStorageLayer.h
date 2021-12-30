@@ -105,10 +105,9 @@ protected:
 
    SuperentityStorageLayer() = default;
 
-   explicit SuperentityStorageLayer( const SuperentityStorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit SuperentityStorageLayer( const SuperentityStorageLayer& other ) = default;
+
+   SuperentityStorageLayer( SuperentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other )
@@ -116,13 +115,9 @@ protected:
       operator=( other );
    }
 
-   SuperentityStorageLayer& operator=( const SuperentityStorageLayer& other )
-   {
-      BaseType::operator=( other );
-      superentitiesCounts = other.superentitiesCounts;
-      matrix = other.matrix;
-      return *this;
-   }
+   SuperentityStorageLayer& operator=( const SuperentityStorageLayer& other ) = default;
+
+   SuperentityStorageLayer& operator=( SuperentityStorageLayer&& other ) = default;
 
    template< typename Device_ >
    SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other )
@@ -208,9 +203,12 @@ class SuperentityStorageLayer< MeshConfig, Device, EntityDimensionTag, EntityDim
 
 protected:
    SuperentityStorageLayer() = default;
-   explicit SuperentityStorageLayer( const SuperentityStorageLayer& other ) {}
+   explicit SuperentityStorageLayer( const SuperentityStorageLayer& other ) = default;
+   SuperentityStorageLayer( SuperentityStorageLayer&& other ) = default;
    template< typename Device_ >
    SuperentityStorageLayer( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other ) {}
+   SuperentityStorageLayer& operator=( const SuperentityStorageLayer& other ) = default;
+   SuperentityStorageLayer& operator=( SuperentityStorageLayer&& other ) = default;
    template< typename Device_ >
    SuperentityStorageLayer& operator=( const SuperentityStorageLayer< MeshConfig, Device_, EntityDimensionTag, SuperdimensionTag >& other ) { return *this; }
 

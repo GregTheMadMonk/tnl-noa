@@ -60,17 +60,6 @@ Mesh( const Mesh< MeshConfig, Device_ >& mesh )
 }
 
 template< typename MeshConfig, typename Device >
-Mesh< MeshConfig, Device >&
-Mesh< MeshConfig, Device >::
-operator=( const Mesh& mesh )
-{
-   points = mesh.getPoints();
-   StorageBaseType::operator=( mesh );
-   EntityTagsLayerFamily::operator=( mesh );
-   return *this;
-}
-
-template< typename MeshConfig, typename Device >
    template< typename Device_ >
 Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
@@ -114,7 +103,7 @@ getEntity( const GlobalIndexType entityIndex ) const
 template< typename MeshConfig, typename Device >
    template< int Dimension >
 void
-Mesh< MeshConfig, Device >:: 
+Mesh< MeshConfig, Device >::
 setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
 {
    StorageBaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );

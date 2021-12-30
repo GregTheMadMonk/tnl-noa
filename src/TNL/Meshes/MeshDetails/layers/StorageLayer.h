@@ -52,10 +52,9 @@ class StorageLayerFamily
 public:
    StorageLayerFamily() = default;
 
-   explicit StorageLayerFamily( const StorageLayerFamily& other )
-   {
-      operator=( other );
-   }
+   explicit StorageLayerFamily( const StorageLayerFamily& other ) = default;
+
+   StorageLayerFamily( StorageLayerFamily&& other ) = default;
 
    template< typename Device_ >
    StorageLayerFamily( const StorageLayerFamily< MeshConfig, Device_ >& other )
@@ -63,12 +62,9 @@ public:
       operator=( other );
    }
 
-   StorageLayerFamily& operator=( const StorageLayerFamily& layer )
-   {
-      BaseType::operator=( layer );
-      DualGraphLayer< MeshConfig, Device >::operator=( layer );
-      return *this;
-   }
+   StorageLayerFamily& operator=( const StorageLayerFamily& layer ) = default;
+
+   StorageLayerFamily& operator=( StorageLayerFamily&& layer ) = default;
 
    template< typename Device_ >
    StorageLayerFamily& operator=( const StorageLayerFamily< MeshConfig, Device_ >& layer )
@@ -224,10 +220,7 @@ public:
 
    StorageLayer() = default;
 
-   explicit StorageLayer( const StorageLayer& other )
-   {
-      operator=( other );
-   }
+   explicit StorageLayer( const StorageLayer& other ) = default;
 
    template< typename Device_ >
    StorageLayer( const StorageLayer< MeshConfig, Device_, DimensionTag >& other )
@@ -235,14 +228,9 @@ public:
       operator=( other );
    }
 
-   StorageLayer& operator=( const StorageLayer& other )
-   {
-      entitiesCount = other.entitiesCount;
-      SubentityStorageBaseType::operator=( other );
-      SuperentityStorageBaseType::operator=( other );
-      BaseType::operator=( other );
-      return *this;
-   }
+   StorageLayer& operator=( const StorageLayer& other ) = default;
+
+   StorageLayer& operator=( StorageLayer&& other ) = default;
 
    template< typename Device_ >
    StorageLayer& operator=( const StorageLayer< MeshConfig, Device_, DimensionTag >& other )
@@ -303,15 +291,16 @@ protected:
 
    StorageLayer() = default;
 
-   explicit StorageLayer( const StorageLayer& other ) {}
+   explicit StorageLayer( const StorageLayer& other ) = default;
+
+   StorageLayer( StorageLayer&& other ) = default;
 
    template< typename Device_ >
    StorageLayer( const StorageLayer< MeshConfig, Device_, DimensionTag >& other ) {}
 
-   StorageLayer& operator=( const StorageLayer& other )
-   {
-      return *this;
-   }
+   StorageLayer& operator=( const StorageLayer& other ) = default;
+
+   StorageLayer& operator=( StorageLayer&& other ) = default;
 
    template< typename Device_ >
    StorageLayer& operator=( const StorageLayer< MeshConfig, Device_, DimensionTag >& other )
