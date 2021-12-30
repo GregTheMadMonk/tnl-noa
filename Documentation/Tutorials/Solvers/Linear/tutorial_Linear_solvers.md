@@ -2,7 +2,6 @@
 
 [TOC]
 
-
 # Introduction
 
 Solvers of linear systems are one of the most important algorithms in scientific computations. TNL offers the followiing iterative methods:
@@ -22,10 +21,12 @@ Solvers of linear systems are one of the most important algorithms in scientific
       4. Modified Gramm-Schmidt with reorthogonalization, MGSR
       5. Compact WY form of the Householder reflections, CWY
 
-The Krylov subspace methods can be combined with the following preconditioners:
+The iterative solvers (not the stationary solvers like \ref TNL::Solvers::Linear::Jacobi and \ref TNL::Solevrs::Linear::SOR) can be combined with the following preconditioners:
 
-1. Jacobi
-2. ILU - CPU only currently
+1. [Diagonal or Jacobi](http://netlib.org/linalg/html_templates/node55.html)) - \ref TNL::Solvers::Linear::Preconditioners::Diagonal
+2. ILU (Incomplete LU) - CPU only currently
+   1. [ILU(0)](https://en.wikipedia.org/wiki/Incomplete_LU_factorization) \ref TNL::Solvers::Linear::Preconditioners::ILU0
+   2. [ILUT (ILU with thresholding)](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf) \ref TNL::Solvers::Linear::Preconditioners::ILUT
 
 # Iterative solvers of linear systems
 
@@ -90,3 +91,15 @@ In this example, we solve the same problem as in all other examples in this sect
 The result looks as follows:
 
 \include IterativeLinearSolverWithPreconditionerExample.out
+
+## Choosing the solver and preconditioner type at runtime
+
+When developing a numerical solver, one often has to search for a combination of various methods and algorithms that fit given requirements the best. To make this easier, TNL offers choosing the type of both linear solver and preconditioner at runtime by means of functions \ref TNL::Solvers::getLinearSolver and \ref TNL::Solvers::getPreconditioner. The following example shows how to use these functions:
+
+\includelineno Solvers/Linear/IterativeLinearSolverWithRuntimeTypesExample.cpp
+
+We still stay with the same problem and the only changes can be seen on lines 66-70. We first create an instance of shared pointer holding the solver (line 66, \ref TNL::Solvers::getLinearSolver) and the same with the preconditioner (line 67, \ref TNL::Solvers::getPreconditioner). The rest of the code is the same as in the previous examples with the only difference that we work with the pointer `solver_ptr` instead of the direct instance `solver` of the solver type.
+
+The result looks as follows:
+
+\include IterativeLinearSolverWithRuntimeTypesExample.out
