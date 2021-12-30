@@ -831,6 +831,28 @@ operator=( const SparseMatrix& matrix )
    Matrix< Real, Device, Index >::operator=( matrix );
    this->columnIndexes = matrix.columnIndexes;
    this->segments = matrix.segments;
+   this->indexAllocator = matrix.indexAllocator;
+   this->view = this->getView();
+   return *this;
+}
+
+// move assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename ComputeReal,
+          typename RealAllocator,
+          typename IndexAllocator >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >&
+SparseMatrix< Real, Device, Index, MatrixType, Segments, ComputeReal, RealAllocator, IndexAllocator >::
+operator=( SparseMatrix&& matrix )
+{
+   this->columnIndexes = std::move( matrix.columnIndexes );
+   this->segments = std::move( matrix.segments );
+   this->indexAllocator = std::move( matrix.indexAllocator );
+   Matrix< Real, Device, Index >::operator=( std::move( matrix ) );
    this->view = this->getView();
    return *this;
 }

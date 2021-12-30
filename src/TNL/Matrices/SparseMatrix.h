@@ -1044,12 +1044,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
 
       /**
-       * \brief Assignment of exactly the same matrix type.
+       * \brief Copy-assignment of exactly the same matrix type.
        *
        * \param matrix is input matrix for the assignment.
        * \return reference to this matrix.
        */
       SparseMatrix& operator=( const SparseMatrix& matrix );
+
+      /**
+       * \brief Move-assignment of exactly the same matrix type.
+       *
+       * \param matrix is input matrix for the assignment.
+       * \return reference to this matrix.
+       */
+      SparseMatrix& operator=( SparseMatrix&& matrix );
 
       /**
        * \brief Assignment of dense matrix
