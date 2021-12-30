@@ -3,6 +3,7 @@ set( COMMON_EXAMPLES
    IterativeLinearSolverWithMonitorExample
    IterativeLinearSolverWithTimerExample
    IterativeLinearSolverWithPreconditionerExample
+   IterativeLinearSolverWithRuntimeTypesExample
 )
 
 if( BUILD_CUDA )
