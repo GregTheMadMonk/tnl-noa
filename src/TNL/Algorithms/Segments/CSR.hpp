@@ -55,25 +55,6 @@ template< typename Device,
           typename Index,
           typename Kernel,
           typename IndexAllocator >
-CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const CSR& csr ) : offsets( csr.offsets ), kernel( csr.kernel )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename Kernel,
-          typename IndexAllocator >
-CSR< Device, Index, Kernel, IndexAllocator >::
-CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) ), kernel( std::move( csr.kernel ) )
-{
-
-}
-
-template< typename Device,
-          typename Index,
-          typename Kernel,
-          typename IndexAllocator >
 String
 CSR< Device, Index, Kernel, IndexAllocator >::
 getSerializationType()

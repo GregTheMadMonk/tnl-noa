@@ -49,9 +49,9 @@ class SlicedEllpack
       template< typename ListIndex >
       SlicedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
-      SlicedEllpack( const SlicedEllpack& segments );
+      SlicedEllpack( const SlicedEllpack& segments ) = default;
 
-      SlicedEllpack( const SlicedEllpack&& segments );
+      SlicedEllpack( SlicedEllpack&& segments ) = default;
 
       static String getSerializationType();
 

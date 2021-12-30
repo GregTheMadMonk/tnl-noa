@@ -150,14 +150,14 @@ class CSR
        *
        * \param segments are the source segments.
        */
-      CSR( const CSR& segments );
+      CSR( const CSR& segments ) = default;
 
       /**
        * \brief Move constructor.
        *
        * \param segments  are the source segments.
        */
-      CSR( const CSR&& segments );
+      CSR( CSR&& segments ) = default;
 
       /**
        * \brief Returns string with serialization type.

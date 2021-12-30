@@ -80,44 +80,6 @@ ChunkedEllpackView( const IndexType size,
 template< typename Device,
           typename Index,
           ElementsOrganization Organization >
-__cuda_callable__
-ChunkedEllpackView< Device, Index, Organization >::
-ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view )
-: size( chunked_ellpack_view.size ),
-  storageSize( chunked_ellpack_view.storageSize ),
-  numberOfSlices( chunked_ellpack_view.numberOfSlices ),
-  chunksInSlice( chunked_ellpack_view.chunksInSlice ),
-  desiredChunkSize( chunked_ellpack_view.desiredChunkSize ),
-  rowToSliceMapping( chunked_ellpack_view.rowToSliceMapping ),
-  rowToChunkMapping( chunked_ellpack_view.rowToChunkMapping ),
-  chunksToSegmentsMapping( chunked_ellpack_view.chunksToSegmentsMapping ),
-  rowPointers( chunked_ellpack_view.rowPointers ),
-  slices( chunked_ellpack_view.slices )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization >
-__cuda_callable__
-ChunkedEllpackView< Device, Index, Organization >::
-ChunkedEllpackView( const ChunkedEllpackView&& chunked_ellpack_view )
-: size( chunked_ellpack_view.size ),
-  storageSize( chunked_ellpack_view.storageSize ),
-  numberOfSlices( chunked_ellpack_view.numberOfSlices ),
-  chunksInSlice( chunked_ellpack_view.chunksInSlice ),
-  desiredChunkSize( chunked_ellpack_view.desiredChunkSize ),
-  rowToSliceMapping( std::move( chunked_ellpack_view.rowToSliceMapping ) ),
-  rowToChunkMapping( std::move( chunked_ellpack_view.rowToChunkMapping ) ),
-  chunksToSegmentsMapping( std::move( chunked_ellpack_view.chunksToSegmentsMapping ) ),
-  rowPointers( std::move( chunked_ellpack_view.rowPointers ) ),
-  slices( std::move( chunked_ellpack_view.slices ) )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization >
 String
 ChunkedEllpackView< Device, Index, Organization >::
 getSerializationType()

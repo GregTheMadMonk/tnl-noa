@@ -56,10 +56,10 @@ class CSRView
       CSRView( OffsetsView&& offsets, KernelView&& kernel );
 
       __cuda_callable__
-      CSRView( const CSRView& csr_view );
+      CSRView( const CSRView& csr_view ) = default;
 
       __cuda_callable__
-      CSRView( CSRView&& csr_view );
+      CSRView( CSRView&& csr_view ) = default;
 
       static String getSerializationType();
 

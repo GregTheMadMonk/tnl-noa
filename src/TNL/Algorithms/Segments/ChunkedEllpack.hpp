@@ -46,44 +46,6 @@ template< typename Device,
           typename Index,
           typename IndexAllocator,
           ElementsOrganization Organization >
-ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-ChunkedEllpack( const ChunkedEllpack& chunkedEllpack )
-   : size( chunkedEllpack.size ),
-     storageSize( chunkedEllpack.storageSize ),
-     chunksInSlice( chunkedEllpack.chunksInSlice ),
-     desiredChunkSize( chunkedEllpack.desiredChunkSize ),
-     rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
-     rowToSliceMapping( chunkedEllpack.rowToSliceMapping ),
-     chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
-     rowPointers( chunkedEllpack.rowPointers ),
-     slices( chunkedEllpack.slices ),
-     numberOfSlices( chunkedEllpack.numberOfSlices )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization >
-ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
-ChunkedEllpack( const ChunkedEllpack&& chunkedEllpack )
-   : size( chunkedEllpack.size ),
-     storageSize( chunkedEllpack.storageSize ),
-     chunksInSlice( chunkedEllpack.chunksInSlice ),
-     desiredChunkSize( chunkedEllpack.desiredChunkSize ),
-     rowToChunkMapping( chunkedEllpack.rowToChunkMapping ),
-     rowToSliceMapping( chunkedEllpack.rowTopSliceMapping ),
-     chunksToSegmentsMapping( chunkedEllpack. chunksToSegmentsMapping ),
-     rowPointers( chunkedEllpack.rowPointers ),
-     slices( chunkedEllpack.slices ),
-     numberOfSlices( chunkedEllpack.numberOfSlices )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization >
 String
 ChunkedEllpack< Device, Index, IndexAllocator, Organization >::
 getSerializationType()

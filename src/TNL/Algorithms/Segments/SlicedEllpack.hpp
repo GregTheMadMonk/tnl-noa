@@ -63,32 +63,6 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-SlicedEllpack( const SlicedEllpack& slicedEllpack )
-   : size( slicedEllpack.size ), alignedSize( slicedEllpack.alignedSize ),
-     segmentsCount( slicedEllpack.segmentsCount ), sliceOffsets( slicedEllpack.sliceOffsets ),
-     sliceSegmentSizes( slicedEllpack.sliceSegmentSizes )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int SliceSize >
-SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
-SlicedEllpack( const SlicedEllpack&& slicedEllpack )
-   : size( slicedEllpack.size ), alignedSize( slicedEllpack.alignedSize ),
-     segmentsCount( slicedEllpack.segmentsCount ), sliceOffsets( slicedEllpack.sliceOffsets ),
-     sliceSegmentSizes( slicedEllpack.sliceSegmentSizes )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int SliceSize >
 String
 SlicedEllpack< Device, Index, IndexAllocator, Organization, SliceSize >::
 getSerializationType()

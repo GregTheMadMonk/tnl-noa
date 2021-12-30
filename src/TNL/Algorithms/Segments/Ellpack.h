@@ -51,9 +51,9 @@ class Ellpack
 
       Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
 
-      Ellpack( const Ellpack& segments );
+      Ellpack( const Ellpack& segments ) = default;
 
-      Ellpack( const Ellpack&& segments );
+      Ellpack( Ellpack&& segments ) = default;
 
       static String getSerializationType();
 

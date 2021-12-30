@@ -52,9 +52,9 @@ class ChunkedEllpack
       template< typename ListIndex >
       ChunkedEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
-      ChunkedEllpack( const ChunkedEllpack& segments );
+      ChunkedEllpack( const ChunkedEllpack& segments ) = default;
 
-      ChunkedEllpack( const ChunkedEllpack&& segments );
+      ChunkedEllpack( ChunkedEllpack&& segments ) = default;
 
       static String getSerializationType();
 

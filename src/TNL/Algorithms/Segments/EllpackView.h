@@ -56,10 +56,10 @@ class EllpackView
       EllpackView( IndexType segmentsCount, IndexType segmentSize );
 
       __cuda_callable__
-      EllpackView( const EllpackView& ellpackView );
+      EllpackView( const EllpackView& ellpackView ) = default;
 
       __cuda_callable__
-      EllpackView( const EllpackView&& ellpackView );
+      EllpackView( EllpackView&& ellpackView ) = default;
 
       static String getSerializationType();
 

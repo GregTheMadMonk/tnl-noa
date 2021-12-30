@@ -61,10 +61,10 @@ class BiEllpackView
                      const OffsetsView&& groupPointers );
 
       __cuda_callable__
-      BiEllpackView( const BiEllpackView& chunked_ellpack_view );
+      BiEllpackView( const BiEllpackView& chunked_ellpack_view ) = default;
 
       __cuda_callable__
-      BiEllpackView( const BiEllpackView&& chunked_ellpack_view );
+      BiEllpackView( BiEllpackView&& chunked_ellpack_view ) = default;
 
       static String getSerializationType();
 

@@ -73,28 +73,6 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int Alignment >
-Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-Ellpack( const Ellpack& ellpack )
-   : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int Alignment >
-Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
-Ellpack( const Ellpack&& ellpack )
-   : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int Alignment >
 String
 Ellpack< Device, Index, IndexAllocator, Organization, Alignment >::
 getSerializationType()

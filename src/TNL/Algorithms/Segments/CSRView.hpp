@@ -55,26 +55,6 @@ CSRView( OffsetsView&& offsets_view,
 template< typename Device,
           typename Index,
           typename Kernel >
-__cuda_callable__
-CSRView< Device, Index, Kernel >::
-CSRView( const CSRView& csr_view )
-   : offsets( csr_view.offsets ), kernel( csr_view.kernel )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename Kernel >
-__cuda_callable__
-CSRView< Device, Index, Kernel >::
-CSRView( CSRView&& csr_view )
-   : offsets( std::move( csr_view.offsets ) ), kernel( std::move( csr_view.kernel ) )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename Kernel >
 String
 CSRView< Device, Index, Kernel >::
 getSerializationType()

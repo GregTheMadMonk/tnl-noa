@@ -53,10 +53,10 @@ class SlicedEllpackView
                          OffsetsView&& sliceSegmentSizes );
 
       __cuda_callable__
-      SlicedEllpackView( const SlicedEllpackView& slicedEllpackView );
+      SlicedEllpackView( const SlicedEllpackView& slicedEllpackView ) = default;
 
       __cuda_callable__
-      SlicedEllpackView( const SlicedEllpackView&& slicedEllpackView );
+      SlicedEllpackView( SlicedEllpackView&& slicedEllpackView ) = default;
 
       static String getSerializationType();
 

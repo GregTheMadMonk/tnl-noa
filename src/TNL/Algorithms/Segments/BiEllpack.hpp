@@ -50,36 +50,6 @@ template< typename Device,
           typename IndexAllocator,
           ElementsOrganization Organization,
           int WarpSize >
-BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-BiEllpack( const BiEllpack& biEllpack )
-   : size( biEllpack.size ),
-     storageSize( biEllpack.storageSize ),
-     virtualRows( biEllpack.virtualRows ),
-     rowPermArray( biEllpack.rowPermArray ),
-     groupPointers( biEllpack.groupPointers )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int WarpSize >
-BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
-BiEllpack( const BiEllpack&& biEllpack )
-   : size( biEllpack.size ),
-     storageSize( biEllpack.storageSize ),
-     virtualRows( biEllpack.virtualRows ),
-     rowPermArray( std::move( biEllpack.rowPermArray ) ),
-     groupPointers( std::move( biEllpack.groupPointers ) )
-{
-}
-
-template< typename Device,
-          typename Index,
-          typename IndexAllocator,
-          ElementsOrganization Organization,
-          int WarpSize >
 String
 BiEllpack< Device, Index, IndexAllocator, Organization, WarpSize >::
 getSerializationType()

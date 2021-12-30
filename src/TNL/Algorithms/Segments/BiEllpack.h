@@ -50,10 +50,9 @@ class BiEllpack
       template< typename ListIndex >
       BiEllpack( const std::initializer_list< ListIndex >& segmentsSizes );
 
+      BiEllpack( const BiEllpack& segments ) = default;
 
-      BiEllpack(const BiEllpack &segments);
-
-      BiEllpack(const BiEllpack &&segments);
+      BiEllpack( BiEllpack&& segments ) = default;
 
       static String getSerializationType();
 

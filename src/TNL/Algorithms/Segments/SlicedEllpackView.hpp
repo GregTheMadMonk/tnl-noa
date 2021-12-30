@@ -53,32 +53,6 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int SliceSize >
-__cuda_callable__
-SlicedEllpackView< Device, Index, Organization, SliceSize >::
-SlicedEllpackView( const SlicedEllpackView& slicedEllpackView )
-   : size( slicedEllpackView.size ), alignedSize( slicedEllpackView.alignedSize ),
-     segmentsCount( slicedEllpackView.segmentsCount ), sliceOffsets( slicedEllpackView.sliceOffsets ),
-     sliceSegmentSizes( slicedEllpackView.sliceSegmentSizes )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int SliceSize >
-__cuda_callable__
-SlicedEllpackView< Device, Index, Organization, SliceSize >::
-SlicedEllpackView( const SlicedEllpackView&& slicedEllpackView )
-   : size( slicedEllpackView.size ), alignedSize( slicedEllpackView.alignedSize ),
-     segmentsCount( slicedEllpackView.segmentsCount ), sliceOffsets( slicedEllpackView.sliceOffsets ),
-     sliceSegmentSizes( slicedEllpackView.sliceSegmentSizes )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int SliceSize >
 String
 SlicedEllpackView< Device, Index, Organization, SliceSize >::
 getSerializationType()

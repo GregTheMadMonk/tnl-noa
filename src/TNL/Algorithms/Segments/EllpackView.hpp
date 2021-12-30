@@ -185,28 +185,6 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int Alignment >
-__cuda_callable__
-EllpackView< Device, Index, Organization, Alignment >::
-EllpackView( const EllpackView& ellpack )
-   : segmentSize( ellpack.segmentSize ), segmentsCount( ellpack.segmentsCount ), alignedSize( ellpack.alignedSize )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int Alignment >
-__cuda_callable__
-EllpackView< Device, Index, Organization, Alignment >::
-EllpackView( const EllpackView&& ellpack )
-   : segmentSize( ellpack.segmentSize ), segmentsCount( ellpack.segmentsCount ), alignedSize( ellpack.alignedSize )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int Alignment >
 String
 EllpackView< Device, Index, Organization, Alignment >::
 getSerializationType()

@@ -63,36 +63,6 @@ template< typename Device,
           typename Index,
           ElementsOrganization Organization,
           int WarpSize >
-__cuda_callable__
-BiEllpackView< Device, Index, Organization, WarpSize >::
-BiEllpackView( const BiEllpackView& bi_ellpack_view )
-: size( bi_ellpack_view.size ),
-  storageSize( bi_ellpack_view.storageSize ),
-  virtualRows( bi_ellpack_view.virtualRows ),
-  rowPermArray( bi_ellpack_view.rowPermArray ),
-  groupPointers( bi_ellpack_view.groupPointers )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int WarpSize >
-__cuda_callable__
-BiEllpackView< Device, Index, Organization, WarpSize >::
-BiEllpackView( const BiEllpackView&& bi_ellpack_view )
-: size( bi_ellpack_view.size ),
-  storageSize( bi_ellpack_view.storageSize ),
-  virtualRows( bi_ellpack_view.virtualRows ),
-  rowPermArray( std::move( bi_ellpack_view.rowPermArray ) ),
-  groupPointers( std::move( bi_ellpack_view.groupPointers ) )
-{
-}
-
-template< typename Device,
-          typename Index,
-          ElementsOrganization Organization,
-          int WarpSize >
 String
 BiEllpackView< Device, Index, Organization, WarpSize >::
 getSerializationType()

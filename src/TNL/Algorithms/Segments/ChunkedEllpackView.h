@@ -75,10 +75,10 @@ class ChunkedEllpackView
                           const IndexType numberOfSlices );
 
       __cuda_callable__
-      ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view );
+      ChunkedEllpackView( const ChunkedEllpackView& chunked_ellpack_view ) = default;
 
       __cuda_callable__
-      ChunkedEllpackView( const ChunkedEllpackView&& chunked_ellpack_view );
+      ChunkedEllpackView( ChunkedEllpackView&& chunked_ellpack_view ) = default;
 
       static String getSerializationType();
 
