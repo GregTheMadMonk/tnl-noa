@@ -40,7 +40,9 @@ template< typename ConfigTag,
 bool
 resolveMeshType( Functor&& functor,
                  const std::string& fileName,
-                 const std::string& fileFormat = "auto" );
+                 const std::string& fileFormat = "auto",
+                 const std::string& realType = "auto",
+                 const std::string& globalIndexType = "auto" );
 
 /**
  * This function dues the same as \ref resolveMeshType, but also reuses the mesh
@@ -63,7 +65,9 @@ template< typename ConfigTag,
 bool
 resolveAndLoadMesh( Functor&& functor,
                     const std::string& fileName,
-                    const std::string& fileFormat = "auto" );
+                    const std::string& fileFormat = "auto",
+                    const std::string& realType = "auto",
+                    const std::string& globalIndexType = "auto" );
 
 /**
  * This function takes a file name and a mesh instance and attempts to load the

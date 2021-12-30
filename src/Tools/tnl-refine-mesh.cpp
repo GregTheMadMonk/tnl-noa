@@ -128,6 +128,14 @@ void configSetup( Config::ConfigDescription& config )
    config.addDelimiter( "General settings:" );
    config.addRequiredEntry< std::string >( "input-file", "Input file with the mesh." );
    config.addEntry< std::string >( "input-file-format", "Input mesh file format.", "auto" );
+   config.addEntry< std::string >( "real-type", "Type to use for the representation of spatial coordinates in the output mesh. When 'auto', the real type from the input mesh is used.", "auto" );
+   config.addEntryEnum( "auto" );
+   config.addEntryEnum( "float" );
+   config.addEntryEnum( "double" );
+   config.addEntry< std::string >( "global-index-type", "Type to use for the representation of global indices in the output mesh. When 'auto', the global index type from the input mesh is used.", "auto" );
+   config.addEntryEnum( "auto" );
+   config.addEntryEnum( "std::int32_t" );
+   config.addEntryEnum( "std::int64_t" );
    config.addRequiredEntry< std::string >( "output-file", "Output mesh file path." );
    config.addEntry< std::string >( "output-file-format", "Output mesh file format.", "auto" );
    config.addEntryEnum( "auto" );
@@ -150,6 +158,8 @@ int main( int argc, char* argv[] )
 
    const std::string inputFileName = parameters.getParameter< std::string >( "input-file" );
    const std::string inputFileFormat = parameters.getParameter< std::string >( "input-file-format" );
+   const std::string realType = parameters.getParameter< std::string >( "real-type" );
+   const std::string globalIndexType = parameters.getParameter< std::string >( "global-index-type" );
    const std::string outputFileName = parameters.getParameter< std::string >( "output-file" );
    const std::string outputFileFormat = parameters.getParameter< std::string >( "output-file-format" );
    const std::string decompositionType = parameters.getParameter< std::string >( "decomposition-type" );
@@ -159,6 +169,6 @@ int main( int argc, char* argv[] )
    {
       return refineMesh( mesh, outputFileName, outputFileFormat, decompositionType, iterations );
    };
-   const bool status = Meshes::resolveAndLoadMesh< MeshRefineConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< MeshRefineConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat, realType, globalIndexType );
    return static_cast< int >( ! status );
 }
