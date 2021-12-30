@@ -8,6 +8,7 @@ set( MESH_TOOLS
          tnl-mesh-converter
          tnl-triangulate-mesh
          tnl-planar-correct-mesh
+         tnl-refine-mesh
          tnl-game-of-life
 )
 set( CUDA_MESH_TOOLS )

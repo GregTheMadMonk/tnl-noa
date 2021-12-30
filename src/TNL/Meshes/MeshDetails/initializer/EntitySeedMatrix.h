@@ -60,6 +60,13 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
                this->row.setColumnIndex( cornerIndex, pointIndex );
             }
 
+            template< typename... IndexTypes >
+            void setCornerIds( const IndexTypes&... pointIndices )
+            {
+               static_assert( sizeof...( pointIndices ) == getCornersCount(), "invalid number of indices" );
+               setCornerIds_impl( 0, pointIndices... );
+            }
+
             GlobalIndexType getCornerId( const LocalIndexType& cornerIndex ) const
             {
                return this->row.getColumnIndex( cornerIndex );
@@ -67,6 +74,17 @@ class EntitySeedMatrix< MeshConfig, EntityTopology, false >
 
          private:
             RowView row;
+
+            // empty overload to terminate recursion
+            void setCornerIds_impl( const LocalIndexType& cornerIndex )
+            {}
+
+            template< typename... IndexTypes >
+            void setCornerIds_impl( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex, const IndexTypes&... pointIndices )
+            {
+               setCornerId( cornerIndex, pointIndex );
+               setCornerIds_impl( cornerIndex + 1, pointIndices... );
+            }
       };
 
       class ConstEntitySeedMatrixSeed
