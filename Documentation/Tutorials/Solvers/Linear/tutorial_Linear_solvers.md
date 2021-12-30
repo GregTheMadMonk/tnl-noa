@@ -23,7 +23,7 @@ Solvers of linear systems are one of the most important algorithms in scientific
 
 The iterative solvers (not the stationary solvers like \ref TNL::Solvers::Linear::Jacobi and \ref TNL::Solevrs::Linear::SOR) can be combined with the following preconditioners:
 
-1. [Diagonal or Jacobi](http://netlib.org/linalg/html_templates/node55.html)) - \ref TNL::Solvers::Linear::Preconditioners::Diagonal
+1. [Diagonal or Jacobi](http://netlib.org/linalg/html_templates/node55.html) - \ref TNL::Solvers::Linear::Preconditioners::Diagonal
 2. ILU (Incomplete LU) - CPU only currently
    1. [ILU(0)](https://en.wikipedia.org/wiki/Incomplete_LU_factorization) \ref TNL::Solvers::Linear::Preconditioners::ILU0
    2. [ILUT (ILU with thresholding)](https://www-users.cse.umn.edu/~saad/PDF/umsi-92-38.pdf) \ref TNL::Solvers::Linear::Preconditioners::ILUT
