@@ -24,6 +24,8 @@ namespace TNL {
  * See [Wikipedia](https://en.wikipedia.org/wiki/Conjugate_gradient_method) for more details.
  *
  * \tparam Matrix is type of matrix describing the linear system.
+ *
+ * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
  */
 template< typename Matrix >
 class CG
