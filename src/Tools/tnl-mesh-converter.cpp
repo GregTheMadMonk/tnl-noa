@@ -106,48 +106,67 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
 
 
 template< typename Mesh >
-bool convertMesh( const Mesh& mesh, const String& inputFileName, const String& outputFileName, const String& outputFormat )
+bool convertMesh( const Mesh& mesh, const std::string& inputFileName, const std::string& outputFileName, const std::string& outputFormat )
 {
-   if( outputFormat == "vtk" ) {
+   std::string format = outputFormat;
+   if( outputFormat == "auto" ) {
+      namespace fs = std::experimental::filesystem;
+      format = fs::path( outputFileName ).extension();
+      if( format.length() > 0 )
+         // remove dot from the extension
+         format = format.substr(1);
+   }
+
+   if( format == "vtk" ) {
       using Writer = Meshes::Writers::VTKWriter< Mesh >;
       std::ofstream file( outputFileName );
       Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
    }
-   else if( outputFormat == "vtu" ) {
+   if( format == "vtu" ) {
       using Writer = Meshes::Writers::VTUWriter< Mesh >;
       std::ofstream file( outputFileName );
       Writer writer( file );
       writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
    }
    // FIXME: VTIWriter is not specialized for meshes
-//   else if( outputFormat == "vti" ) {
+//   if( outputFormat == "vti" ) {
 //      using Writer = Meshes::Writers::VTIWriter< Mesh >;
 //      std::ofstream file( outputFileName );
 //      Writer writer( file );
 //      writer.writeImageData( mesh );
+//      return true;
 //   }
    // FIXME: NetgenWriter is not specialized for grids
-//   else if( outputFormat == "netgen" ) {
+//   if( outputFormat == "ng" ) {
 //      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
 //      std::fstream file( outputFileName );
 //      NetgenWriter::writeMesh( mesh, file );
+//      return true;
 //   }
 
-   return true;
+   if( outputFormat == "auto" )
+      std::cerr << "File '" << outputFileName << "' has unsupported format (based on the file extension): " << format << ".";
+   else
+      std::cerr << "Unsupported output file format: " << outputFormat << ".";
+   std::cerr << " Supported formats are 'vtk' and 'vtu'." << std::endl;
+   return false;
 }
 
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
-   config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
-   config.addEntry< String >( "input-file-format", "Input mesh file format.", "auto" );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
-   config.addRequiredEntry< String >( "output-file-format", "Output mesh file format." );
+   config.addRequiredEntry< std::string >( "input-file", "Input file with the mesh." );
+   config.addEntry< std::string >( "input-file-format", "Input mesh file format.", "auto" );
+   config.addRequiredEntry< std::string >( "output-file", "Output mesh file path." );
+   config.addEntry< std::string >( "output-file-format", "Output mesh file format.", "auto" );
+   config.addEntryEnum( "auto" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
 //   config.addEntryEnum( "vti" );
-//   config.addEntryEnum( "netgen" );
+//   config.addEntryEnum( "ng" );
 }
 
 int main( int argc, char* argv[] )
@@ -160,14 +179,15 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   const String inputFileName = parameters.getParameter< String >( "input-file" );
-   const String inputFileFormat = parameters.getParameter< String >( "input-file-format" );
-   const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String outputFileFormat = parameters.getParameter< String >( "output-file-format" );
+   const std::string inputFileName = parameters.getParameter< std::string >( "input-file" );
+   const std::string inputFileFormat = parameters.getParameter< std::string >( "input-file-format" );
+   const std::string outputFileName = parameters.getParameter< std::string >( "output-file" );
+   const std::string outputFileFormat = parameters.getParameter< std::string >( "output-file-format" );
 
    auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
    {
       return convertMesh( mesh, inputFileName, outputFileName, outputFileFormat );
    };
-   return ! Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   const bool status = Meshes::resolveAndLoadMesh< MeshConverterConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
+   return static_cast< int >( ! status );
 }

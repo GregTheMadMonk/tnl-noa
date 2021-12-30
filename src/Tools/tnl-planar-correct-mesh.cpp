@@ -1,6 +1,7 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
+#include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/FPMAWriter.h>
 #include <TNL/Meshes/Geometry/getPlanarMesh.h>
 
@@ -87,7 +88,7 @@ struct MeshConfigTemplateTag< MeshPlanarCorrectConfigTag >
 using namespace TNL::Meshes;
 
 template< typename Mesh >
-auto getPlanarMeshHelper( const Mesh& mesh, const String& decompositionType )
+auto getPlanarMeshHelper( const Mesh& mesh, const std::string& decompositionType )
 {
    using namespace TNL::Meshes;
 
@@ -106,12 +107,38 @@ template<>
 struct PlanarMeshWriter< Topologies::Polygon >
 {
    template< typename Mesh >
-   static void exec( const Mesh& mesh, const String& outputFileName )
+   static bool exec( const Mesh& mesh, const std::string& outputFileName, const std::string& outputFormat )
    {
-      using Writer = Meshes::Writers::VTKWriter< Mesh >;
-      std::ofstream file( outputFileName );
-      Writer writer( file );
-      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      std::string format = outputFormat;
+      if( outputFormat == "auto" ) {
+         namespace fs = std::experimental::filesystem;
+         format = fs::path( outputFileName ).extension();
+         if( format.length() > 0 )
+            // remove dot from the extension
+            format = format.substr(1);
+      }
+
+      if( format == "vtk" ) {
+         using Writer = Meshes::Writers::VTKWriter< Mesh >;
+         std::ofstream file( outputFileName );
+         Writer writer( file );
+         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+         return true;
+      }
+      if( format == "vtu" ) {
+         using Writer = Meshes::Writers::VTUWriter< Mesh >;
+         std::ofstream file( outputFileName );
+         Writer writer( file );
+         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+         return true;
+      }
+
+      if( outputFormat == "auto" )
+         std::cerr << "File '" << outputFileName << "' has unsupported format (based on the file extension): " << format << ".";
+      else
+         std::cerr << "Unsupported output file format: " << outputFormat << ".";
+      std::cerr << " Supported formats are 'vtk' and 'vtu'." << std::endl;
+      return false;
    }
 };
 
@@ -119,31 +146,38 @@ template<>
 struct PlanarMeshWriter< Topologies::Polyhedron >
 {
    template< typename Mesh >
-   static void exec( const Mesh& mesh, const String& outputFileName )
+   static bool exec( const Mesh& mesh, const std::string& outputFileName, const std::string& outputFormat )
    {
+      if( outputFormat != "auto" && outputFormat != "fpma" ) {
+         std::cerr << "Unsupported output file format: " << outputFormat << ". Only 'fpma' is supported for polyhedral meshes." << std::endl;
+         return false;
+      }
+
       using Writer = Meshes::Writers::FPMAWriter< Mesh >;
       std::ofstream file( outputFileName );
       Writer writer( file );
       writer.writeEntities( mesh );
+      return true;
    }
 };
 
 template< typename Mesh >
-bool triangulateMesh( const Mesh& mesh, const String& outputFileName, const String& decompositionType )
+bool triangulateMesh( const Mesh& mesh, const std::string& outputFileName, const std::string& outputFormat, const std::string& decompositionType )
 {
    const auto planarMesh = getPlanarMeshHelper( mesh, decompositionType );
    using PlanarMesh = decltype( planarMesh );
    using CellTopology = typename PlanarMesh::Cell::EntityTopology;
-   PlanarMeshWriter< CellTopology >::exec( planarMesh, outputFileName );
-   return true;
+   return PlanarMeshWriter< CellTopology >::exec( planarMesh, outputFileName, outputFormat );
 }
 
 void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General settings:" );
-   config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
-   config.addRequiredEntry< String >( "output-file", "Output mesh file path." );
-   config.addRequiredEntry< String >( "decomposition-type", "Type of decomposition to use for non-planar polygons." );
+   config.addRequiredEntry< std::string >( "input-file", "Input file with the mesh." );
+   config.addEntry< std::string >( "input-file-format", "Input mesh file format.", "auto" );
+   config.addRequiredEntry< std::string >( "output-file", "Output mesh file path." );
+   config.addEntry< std::string >( "output-file-format", "Output mesh file format.", "auto" );
+   config.addRequiredEntry< std::string >( "decomposition-type", "Type of decomposition to use for non-planar polygons." );
    config.addEntryEnum( "c" );
    config.addEntryEnum( "p" );
 }
@@ -158,14 +192,15 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   const String inputFileName = parameters.getParameter< String >( "input-file" );
-   const String inputFileFormat = "auto";
-   const String outputFileName = parameters.getParameter< String >( "output-file" );
-   const String decompositionType = parameters.getParameter< String >( "decomposition-type" );
+   const std::string inputFileName = parameters.getParameter< std::string >( "input-file" );
+   const std::string inputFileFormat = parameters.getParameter< std::string >( "input-file-format" );
+   const std::string outputFileName = parameters.getParameter< std::string >( "output-file" );
+   const std::string outputFileFormat = parameters.getParameter< std::string >( "output-file-format" );
+   const std::string decompositionType = parameters.getParameter< std::string >( "decomposition-type" );
 
    auto wrapper = [&] ( auto& reader, auto&& mesh ) -> bool
    {
-      return triangulateMesh( mesh, outputFileName, decompositionType );
+      return triangulateMesh( mesh, outputFileName, outputFileFormat, decompositionType );
    };
    return ! Meshes::resolveAndLoadMesh< MeshPlanarCorrectConfigTag, Devices::Host >( wrapper, inputFileName, inputFileFormat );
 }
