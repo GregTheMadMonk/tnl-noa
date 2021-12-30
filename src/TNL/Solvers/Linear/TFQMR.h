@@ -21,6 +21,8 @@ namespace TNL {
  *
  * See (Wikipedia)[https://second.wiki/wiki/algoritmo_tfqmr] for more details.
  *
+ * See \ref TNL::Solvers::Linear::IterativeSolver for example of showing how to use the linear solvers.
+ *
  * \tparam Matrix is type of matrix describing the linear system.
  */
 template< typename Matrix >
