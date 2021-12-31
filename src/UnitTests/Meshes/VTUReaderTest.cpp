@@ -25,7 +25,9 @@ struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >{ static co
 // enable meshes used in the tests
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
 
 } // namespace BuildConfigTags
@@ -170,6 +172,42 @@ TEST( VTUReaderTest, triangles_2x2x2_minimized_compressed_paraview )
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
    EXPECT_EQ( vertices, 9 );
    EXPECT_EQ( cells, 8 );
+
+   test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// encoded data, produced by Paraview
+TEST( VTUReaderTest, quadrangles )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Quadrangle > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTUReader >( "quadrangles/grid_2x3.vtu" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 12 );
+   EXPECT_EQ( cells, 6 );
+
+   test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// encoded data, produced by Paraview
+TEST( VTUReaderTest, hexahedrons )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Hexahedron > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTUReader >( "hexahedrons/grid_2x3x4.vtu" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 60 );
+   EXPECT_EQ( cells, 24 );
 
    test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
    test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
