@@ -19,8 +19,6 @@
 #include <ostream>
 #include <iomanip>
 
-#include <TNL/String.h>
-
 namespace TNL {
 namespace Meshes {
 namespace Writers {

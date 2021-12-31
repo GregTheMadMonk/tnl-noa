@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <TNL/String.h>
-
 namespace TNL {
 namespace Meshes {
 namespace Topologies {
