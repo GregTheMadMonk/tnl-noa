@@ -14,8 +14,8 @@ namespace Topologies {
 template< typename Topology, int D = Topology::dimension >
 struct IsDynamicTopology
 {
-   enum : bool { value = !HasCountMember< Subtopology< Topology, D - 1 > >::value ||
-                         IsDynamicTopology< Topology, D - 1 >::value };
+   static constexpr bool value = ! HasCountMember< Subtopology< Topology, D - 1 > >::value ||
+                                   IsDynamicTopology< Topology, D - 1 >::value;
 };
 
 /**
@@ -31,7 +31,7 @@ struct IsDynamicTopology< Vertex, 0 > : std::false_type
 template< typename Topology >
 struct IsDynamicTopology< Topology, 1 >
 {
-   enum : bool { value = !HasCountMember< Subtopology< Topology, 0 > >::value };
+   static constexpr bool value = ! HasCountMember< Subtopology< Topology, 0 > >::value;
 };
 
 } // namespace Topologies

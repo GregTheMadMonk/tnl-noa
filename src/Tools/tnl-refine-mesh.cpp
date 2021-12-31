@@ -15,29 +15,29 @@ namespace BuildConfigTags {
 /****
  * Turn off all grids.
  */
-template<> struct GridRealTag< MeshRefineConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshRefineConfigTag, double > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshRefineConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshRefineConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshRefineConfigTag, double > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshRefineConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshRefineConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshRefineConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshRefineConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshRefineConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshRefineConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshRefineConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshRefineConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshRefineConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshRefineConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshRefineConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshRefineConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshRefineConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>

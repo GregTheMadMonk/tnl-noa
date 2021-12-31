@@ -45,14 +45,14 @@ struct Subtopology< Triangle, 1 >
 };
 
 
-template<> struct SubentityVertexMap< Triangle, Edge, 0, 0> { enum { index = 1 }; };
-template<> struct SubentityVertexMap< Triangle, Edge, 0, 1> { enum { index = 2 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 0, 0> { static constexpr int index = 1; };
+template<> struct SubentityVertexMap< Triangle, Edge, 0, 1> { static constexpr int index = 2; };
 
-template<> struct SubentityVertexMap< Triangle, Edge, 1, 0> { enum { index = 2 }; };
-template<> struct SubentityVertexMap< Triangle, Edge, 1, 1> { enum { index = 0 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 1, 0> { static constexpr int index = 2; };
+template<> struct SubentityVertexMap< Triangle, Edge, 1, 1> { static constexpr int index = 0; };
 
-template<> struct SubentityVertexMap< Triangle, Edge, 2, 0> { enum { index = 0 }; };
-template<> struct SubentityVertexMap< Triangle, Edge, 2, 1> { enum { index = 1 }; };
+template<> struct SubentityVertexMap< Triangle, Edge, 2, 0> { static constexpr int index = 0; };
+template<> struct SubentityVertexMap< Triangle, Edge, 2, 1> { static constexpr int index = 1; };
 
 } // namespace Topologies
 } // namespace Meshes

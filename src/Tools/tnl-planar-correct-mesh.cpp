@@ -16,27 +16,27 @@ namespace BuildConfigTags {
 /****
  * Turn off all grids.
  */
-template<> struct GridRealTag< MeshPlanarCorrectConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshPlanarCorrectConfigTag, double > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshPlanarCorrectConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshPlanarCorrectConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshPlanarCorrectConfigTag, double > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshPlanarCorrectConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshPlanarCorrectConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshPlanarCorrectConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshPlanarCorrectConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshPlanarCorrectConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to 3
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshPlanarCorrectConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == 3 ) }; };
+{ static constexpr bool enabled = SpaceDimension == 3; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshPlanarCorrectConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshPlanarCorrectConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshPlanarCorrectConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshPlanarCorrectConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshPlanarCorrectConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshPlanarCorrectConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshPlanarCorrectConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshPlanarCorrectConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshPlanarCorrectConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshPlanarCorrectConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>

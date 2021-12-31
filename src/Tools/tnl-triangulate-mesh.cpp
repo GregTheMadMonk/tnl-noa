@@ -15,32 +15,32 @@ namespace BuildConfigTags {
 /****
  * Turn off all grids.
  */
-template<> struct GridRealTag< MeshTriangulatorConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshTriangulatorConfigTag, double > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshTriangulatorConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, double > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshTriangulatorConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshTriangulatorConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Polygonal Meshes are enable for the space dimension equal to 2 or 3
 template< int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshTriangulatorConfigTag, Topologies::Polygon, SpaceDimension >
-{ enum { enabled = ( SpaceDimension >= 2 && SpaceDimension <= 3 ) }; };
+{ static constexpr bool enabled = SpaceDimension >= 2 && SpaceDimension <= 3; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshTriangulatorConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshTriangulatorConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshTriangulatorConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshTriangulatorConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshTriangulatorConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshTriangulatorConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshTriangulatorConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>

@@ -26,38 +26,38 @@ namespace BuildConfigTags {
 /****
  * Turn off support for float and long double.
  */
-template<> struct GridRealTag< MeshConverterConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MeshConverterConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MeshConverterConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MeshConverterConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct GridIndexTag< MeshConverterConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< MeshConverterConfigTag, short int >{ static constexpr bool enabled = false; };
+template<> struct GridIndexTag< MeshConverterConfigTag, long int >{ static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes.
  */
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { enum { enabled = true }; };
-template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Edge > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Triangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Quadrangle > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
 struct MeshSpaceDimensionTag< MeshConverterConfigTag, CellTopology, SpaceDimension >
-{ enum { enabled = ( SpaceDimension == CellTopology::dimension ) }; };
+{ static constexpr bool enabled = SpaceDimension == CellTopology::dimension; };
 
 // Meshes are enabled only for types explicitly listed below.
-template<> struct MeshRealTag< MeshConverterConfigTag, float > { enum { enabled = true }; };
-template<> struct MeshRealTag< MeshConverterConfigTag, double > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { enum { enabled = true }; };
-template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { enum { enabled = true }; };
-template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { enum { enabled = true }; };
+template<> struct MeshRealTag< MeshConverterConfigTag, float > { static constexpr bool enabled = true; };
+template<> struct MeshRealTag< MeshConverterConfigTag, double > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, int > { static constexpr bool enabled = true; };
+template<> struct MeshGlobalIndexTag< MeshConverterConfigTag, long int > { static constexpr bool enabled = true; };
+template<> struct MeshLocalIndexTag< MeshConverterConfigTag, short int > { static constexpr bool enabled = true; };
 
 // Config tag specifying the MeshConfig template to use.
 template<>

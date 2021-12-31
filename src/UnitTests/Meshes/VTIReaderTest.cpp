@@ -18,13 +18,13 @@ namespace Meshes {
 namespace BuildConfigTags {
 
 // enable all index types in the GridTypeResolver
-template<> struct GridIndexTag< MyConfigTag, short int >{ enum { enabled = true }; };
-template<> struct GridIndexTag< MyConfigTag, int >{ enum { enabled = true }; };
-template<> struct GridIndexTag< MyConfigTag, long int >{ enum { enabled = true }; };
+template<> struct GridIndexTag< MyConfigTag, short int >{ static constexpr bool enabled = true; };
+template<> struct GridIndexTag< MyConfigTag, int >{ static constexpr bool enabled = true; };
+template<> struct GridIndexTag< MyConfigTag, long int >{ static constexpr bool enabled = true; };
 
 // disable float and long double (RealType is not stored in VTI and double is the default)
-template<> struct GridRealTag< MyConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< MyConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< MyConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< MyConfigTag, long double > { static constexpr bool enabled = false; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes

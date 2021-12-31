@@ -25,14 +25,14 @@ namespace BuildConfigTags {
 /****
  * Turn off support for float and long double.
  */
-template<> struct GridRealTag< GridToMeshConfigTag, float > { enum { enabled = false }; };
-template<> struct GridRealTag< GridToMeshConfigTag, long double > { enum { enabled = false }; };
+template<> struct GridRealTag< GridToMeshConfigTag, float > { static constexpr bool enabled = false; };
+template<> struct GridRealTag< GridToMeshConfigTag, long double > { static constexpr bool enabled = false; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct GridIndexTag< GridToMeshConfigTag, short int >{ enum { enabled = false }; };
-template<> struct GridIndexTag< GridToMeshConfigTag, long int >{ enum { enabled = false }; };
+template<> struct GridIndexTag< GridToMeshConfigTag, short int >{ static constexpr bool enabled = false; };
+template<> struct GridIndexTag< GridToMeshConfigTag, long int >{ static constexpr bool enabled = false; };
 
 /****
  * Unstructured meshes are disabled, only grids can be on input.

@@ -20,10 +20,10 @@ namespace BuildConfigTags {
 
 // disable all grids
 template< int Dimension, typename Real, typename Device, typename Index >
-struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >{ enum { enabled = false }; };
+struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >{ static constexpr bool enabled = false; };
 
 // enable meshes used in the tests
-template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
