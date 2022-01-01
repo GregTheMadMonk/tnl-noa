@@ -63,7 +63,9 @@ enum class EntityShape
    Hexahedron = 12,
    Wedge = 13,
    Pyramid = 14,
-   Polyhedron = 100
+   PentagonalPrism = 15,
+   HexagonalPrism = 16,
+   Polyhedron = 42
 };
 
 inline std::string getShapeName( EntityShape shape )
@@ -98,6 +100,10 @@ inline std::string getShapeName( EntityShape shape )
          return "Wedge";
       case EntityShape::Pyramid:
          return "Pyramid";
+      case EntityShape::PentagonalPrism:
+         return "PentagonalPrism";
+      case EntityShape::HexagonalPrism:
+         return "HexagonalPrism";
       case EntityShape::Polyhedron:
          return "Polyhedron";
    }
@@ -122,6 +128,8 @@ inline int getEntityDimension( EntityShape shape )
       case EntityShape::Hexahedron:     return 3;
       case EntityShape::Wedge:          return 3;
       case EntityShape::Pyramid:        return 3;
+      case EntityShape::PentagonalPrism:return 3;
+      case EntityShape::HexagonalPrism: return 3;
       case EntityShape::Polyhedron:     return 3;
    }
    // this can actually happen when an invalid uint8_t value is converted to EntityShape
