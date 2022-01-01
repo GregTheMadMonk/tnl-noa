@@ -96,29 +96,19 @@ class VTUReader
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
                using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
-               //TODO: uncomment line below later for polyhedrals
-               //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+               using PolyhedronShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedron >;
 
                // TODO: check only entities of the same dimension (edges, faces and cells separately)
-               for( auto c : array )
-               {
+               for( auto c : array ) {
                   VTK::EntityShape entityShape = (VTK::EntityShape) c;
-                  if( entityShape != cellShape )
-                  {
+                  if( entityShape != cellShape ) {
                      if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-                     {
                         cellShape = PolygonShapeGroupChecker::GeneralShape;
-                     }
-                     //TODO: add group check for polyhedrals later
-                     /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-                     {
-                        cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
-                     }*/
+                     else if( PolyhedronShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                        cellShape = PolyhedronShapeGroupChecker::GeneralShape;
                      else
-                     {
                         throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
                                                          + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + "." );
-                     }
                   }
                }
             },

@@ -13,7 +13,7 @@ struct EntityShapeGroup
 
 template < EntityShape GeneralShape, int index >
 struct EntityShapeGroupElement
-{ 
+{
 };
 
 template <>
@@ -32,6 +32,49 @@ template <>
 struct EntityShapeGroupElement< EntityShape::Polygon, 1 >
 {
    static constexpr EntityShape shape = EntityShape::Quad;
+};
+
+
+template <>
+struct EntityShapeGroup< EntityShape::Polyhedron >
+{
+   static constexpr int size = 6;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 0 >
+{
+   static constexpr EntityShape shape = EntityShape::Tetra;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 1 >
+{
+   static constexpr EntityShape shape = EntityShape::Hexahedron;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 2 >
+{
+   static constexpr EntityShape shape = EntityShape::Wedge;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 3 >
+{
+   static constexpr EntityShape shape = EntityShape::Pyramid;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 4 >
+{
+   static constexpr EntityShape shape = EntityShape::PentagonalPrism;
+};
+
+template <>
+struct EntityShapeGroupElement< EntityShape::Polyhedron, 5 >
+{
+   static constexpr EntityShape shape = EntityShape::HexagonalPrism;
 };
 
 } // namespace VTK

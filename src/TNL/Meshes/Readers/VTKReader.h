@@ -159,27 +159,18 @@ public:
 
       // validate cell types
       using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
-      //TODO: add EntityShapeGroup for polyhedrons and uncomment line below
-      //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+      using PolyhedronShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedron >;
       cellShape = (VTK::EntityShape) cellTypes[0];
 
-      for( auto c : cellTypes )
-      {
+      for( auto c : cellTypes ) {
          auto entityShape = (VTK::EntityShape) c;
-         if( cellShape != entityShape )
-         {
-            //in case input mesh includes mixed shapes, use more general cellShape ( polygon for 2D, polyhedrals for 3D )
+         if( cellShape != entityShape ) {
+            // if the input mesh includes mixed shapes, use more general cellShape (polygon for 2D, polyhedron for 3D)
             if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-            {
                cellShape = PolygonShapeGroupChecker::GeneralShape;
-            }
-            //TODO: add group check for polyhedrals later
-            /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
-            {
-               cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
-            }*/
-            else
-            {
+            else if( PolyhedronShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+               cellShape = PolyhedronShapeGroupChecker::GeneralShape;
+            else {
                const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
                                   + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
                reset();
