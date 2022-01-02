@@ -10,10 +10,11 @@
 
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/resolveMeshType.h>
+#include <TNL/Meshes/Writers/FPMAWriter.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
-//#include <TNL/Meshes/Writers/VTIWriter.h>
-//#include <TNL/Meshes/Writers/NetgenWriter.h>
+#include <TNL/Meshes/Writers/VTIWriter.h>
+#include <TNL/Meshes/Writers/NetgenWriter.h>
 
 using namespace TNL;
 
@@ -46,6 +47,7 @@ template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Tetra
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Wedge > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Pyramid > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MeshConverterConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 // Meshes are enabled only for the space dimension equal to the cell dimension.
 template< typename CellTopology, int SpaceDimension >
@@ -72,6 +74,13 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
    {
       static constexpr bool subentityStorage( int entityDimension, int subentityDimension )
       {
+         // faces must be stored for polyhedral meshes
+         if( std::is_same< Cell, TNL::Meshes::Topologies::Polyhedron >::value ) {
+            if( subentityDimension == 0 && entityDimension == Cell::dimension - 1 )
+               return true;
+            if( subentityDimension == Cell::dimension - 1 && entityDimension == Cell::dimension )
+               return true;
+         }
          return subentityDimension == 0 && entityDimension == Cell::dimension;
       }
 
@@ -96,6 +105,85 @@ struct MeshConfigTemplateTag< MeshConverterConfigTag >
 } // namespace Meshes
 } // namespace TNL
 
+// specialization for polyhedral meshes
+template< typename Mesh,
+          std::enable_if_t< std::is_same< typename Mesh::Cell::EntityTopology, TNL::Meshes::Topologies::Polyhedron >::value, bool > = true >
+bool writeMesh( const Mesh& mesh, std::ostream& out, const std::string& format )
+{
+   if( format == "fpma" ) {
+      using Writer = Meshes::Writers::FPMAWriter< Mesh >;
+      Writer writer( out );
+      writer.writeEntities( mesh );
+      return true;
+   }
+// TODO: implement VTKWriter for polyhedral meshes
+//   if( format == "vtk" ) {
+//      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+//      Writer writer( out );
+//      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+//      return true;
+//   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   return false;
+}
+
+// specialization for unstructured meshes except polyhedral
+template< typename Mesh,
+          std::enable_if_t< ! std::is_same< typename Mesh::Cell::EntityTopology, TNL::Meshes::Topologies::Polyhedron >::value, bool > = true >
+bool writeMesh( const Mesh& mesh, std::ostream& out, const std::string& format )
+{
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "ng" ) {
+      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
+      NetgenWriter::writeMesh( mesh, out );
+      return true;
+   }
+   return false;
+}
+
+// specialization for grids
+template< int Dimension, typename Real, typename Device, typename Index >
+bool writeMesh( const TNL::Meshes::Grid< Dimension, Real, Device, Index >& mesh,
+                std::ostream& out,
+                const std::string& format )
+{
+   using Mesh = TNL::Meshes::Grid< Dimension, Real, Device, Index >;
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vtu" ) {
+      using Writer = Meshes::Writers::VTUWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
+   if( format == "vti" ) {
+      using Writer = Meshes::Writers::VTIWriter< Mesh >;
+      Writer writer( out );
+      writer.writeImageData( mesh );
+      return true;
+   }
+   return false;
+}
 
 template< typename Mesh >
 bool convertMesh( const Mesh& mesh, const std::string& inputFileName, const std::string& outputFileName, const std::string& outputFormat )
@@ -109,41 +197,15 @@ bool convertMesh( const Mesh& mesh, const std::string& inputFileName, const std:
          format = format.substr(1);
    }
 
-   if( format == "vtk" ) {
-      using Writer = Meshes::Writers::VTKWriter< Mesh >;
-      std::ofstream file( outputFileName );
-      Writer writer( file );
-      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+   std::ofstream file( outputFileName );
+   if( writeMesh( mesh, file, format ) )
       return true;
-   }
-   if( format == "vtu" ) {
-      using Writer = Meshes::Writers::VTUWriter< Mesh >;
-      std::ofstream file( outputFileName );
-      Writer writer( file );
-      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
-      return true;
-   }
-   // FIXME: VTIWriter is not specialized for meshes
-//   if( outputFormat == "vti" ) {
-//      using Writer = Meshes::Writers::VTIWriter< Mesh >;
-//      std::ofstream file( outputFileName );
-//      Writer writer( file );
-//      writer.writeImageData( mesh );
-//      return true;
-//   }
-   // FIXME: NetgenWriter is not specialized for grids
-//   if( outputFormat == "ng" ) {
-//      using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
-//      std::fstream file( outputFileName );
-//      NetgenWriter::writeMesh( mesh, file );
-//      return true;
-//   }
 
    if( outputFormat == "auto" )
       std::cerr << "File '" << outputFileName << "' has unsupported format (based on the file extension): " << format << ".";
    else
       std::cerr << "Unsupported output file format: " << outputFormat << ".";
-   std::cerr << " Supported formats are 'vtk' and 'vtu'." << std::endl;
+   std::cerr << " Supported formats are 'vtk', 'vtu', 'vti' (only grids), 'ng' (only static unstructured meshes) and 'fpma' (only polyhedral meshes)." << std::endl;
    return false;
 }
 
@@ -165,8 +227,9 @@ void configSetup( Config::ConfigDescription& config )
    config.addEntryEnum( "auto" );
    config.addEntryEnum( "vtk" );
    config.addEntryEnum( "vtu" );
-//   config.addEntryEnum( "vti" );
-//   config.addEntryEnum( "ng" );
+   config.addEntryEnum( "vti" );
+   config.addEntryEnum( "ng" );
+   config.addEntryEnum( "fpma" );
 }
 
 int main( int argc, char* argv[] )
