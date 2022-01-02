@@ -14,6 +14,7 @@
 
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Meshes/Writers/EntitiesListSize.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Endianness.h>
 
@@ -62,9 +63,9 @@ struct MeshEntitiesVTKWriter
       using Index = typename Mesh::GlobalIndexType;
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
-      const int verticesPerEntity = VerticesPerEntity< EntityType >::count;;
       for( Index i = 0; i < entitiesCount; i++ ) {
          const auto& entity = mesh.template getEntity< EntityType >( i );
+         const int verticesPerEntity = entity.template getSubentitiesCount< 0 >();
          writeInt( format, str, verticesPerEntity );
          for( int j = 0; j < verticesPerEntity; j++ )
             writeInt( format, str, entity.template getSubentityIndex< 0 >( j ) );
@@ -442,8 +443,7 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
    cellsCount = mesh.template getEntitiesCount< EntityType >();
-   const int verticesPerEntity = VerticesPerEntity< EntityType >::count;
-   const std::uint64_t cellsListSize = cellsCount * ( verticesPerEntity + 1 );
+   const std::uint64_t cellsListSize = EntitiesListSize< Mesh, EntityDimension >::getSize( mesh );
 
    str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    EntitiesWriter< EntityDimension >::exec( mesh, str, format );

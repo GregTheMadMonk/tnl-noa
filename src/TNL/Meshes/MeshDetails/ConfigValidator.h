@@ -18,6 +18,7 @@
 
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 #include <TNL/Meshes/DimensionTag.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -89,6 +90,9 @@ class ConfigValidatorLayerCell
 
    static_assert( MeshConfig::subentityStorage( CellTopology::dimension, 0 ),
                   "subvertices of cells must be stored" );
+
+   static_assert( !std::is_same< CellTopology, Topologies::Polyhedron >::value || MeshConfig::subentityStorage( CellTopology::dimension, 2 ),
+                  "faces of cells must be stored for polyhedral meshes" );
 };
 
 template< typename MeshConfig >

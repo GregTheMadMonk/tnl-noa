@@ -38,10 +38,7 @@ public:
 
    Layer() = default;
 
-   explicit Layer( const Layer& other )
-   {
-      operator=( other );
-   }
+   explicit Layer( const Layer& other ) = default;
 
    template< typename Device_ >
    Layer( const Layer< MeshConfig, Device_, DimensionTag >& other )
@@ -49,24 +46,13 @@ public:
       operator=( other );
    }
 
-   Layer& operator=( const Layer& other )
-   {
-      tags.setLike( other.tags );
-      boundaryIndices.setLike( other.boundaryIndices );
-      interiorIndices.setLike( other.interiorIndices );
-      tags = other.tags;
-      boundaryIndices = other.boundaryIndices;
-      interiorIndices = other.interiorIndices;
-      ghostsOffset = other.ghostsOffset;
-      return *this;
-   }
+   Layer& operator=( const Layer& other ) = default;
+
+   Layer& operator=( Layer&& other ) = default;
 
    template< typename Device_ >
    Layer& operator=( const Layer< MeshConfig, Device_, DimensionTag >& other )
    {
-      tags.setLike( other.tags );
-      boundaryIndices.setLike( other.boundaryIndices );
-      interiorIndices.setLike( other.interiorIndices );
       tags = other.tags;
       boundaryIndices = other.boundaryIndices;
       interiorIndices = other.interiorIndices;
@@ -254,10 +240,12 @@ protected:
    using TagType         = typename MeshTraits< MeshConfig, Device >::EntityTagsArrayType::ValueType;
 
    Layer() = default;
-   explicit Layer( const Layer& other ) {}
+   explicit Layer( const Layer& other ) = default;
+   Layer( Layer&& other ) = default;
    template< typename Device_ >
    Layer( const Layer< MeshConfig, Device_, DimensionTag >& other ) {}
-   Layer& operator=( const Layer& other ) { return *this; }
+   Layer& operator=( const Layer& other ) = default;
+   Layer& operator=( Layer&& other ) = default;
    template< typename Device_ >
    Layer& operator=( const Layer< MeshConfig, Device_, DimensionTag >& other ) { return *this; }
 

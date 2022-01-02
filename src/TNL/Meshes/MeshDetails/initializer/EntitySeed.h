@@ -16,7 +16,10 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -28,17 +31,20 @@ struct EntitySeedEq;
 
 template< typename MeshConfig,
           typename EntityTopology >
-class EntitySeed
+class EntitySeed< MeshConfig, EntityTopology, false >
 {
-   using MeshConfigTraits = MeshTraits< MeshConfig >;
-   using SubvertexTraits = typename MeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, 0 >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+   using SubvertexTraits = typename MeshTraitsType::template SubentityTraits< EntityTopology, 0 >;
 
    public:
-      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< SubvertexTraits::count, GlobalIndexType >;
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
+
+      //this function is here only for compatibility with MeshReader
+      void setCornersCount( const LocalIndexType& cornersCount ) {}
 
       static constexpr LocalIndexType getCornersCount()
       {
@@ -69,16 +75,19 @@ class EntitySeed
 };
 
 template< typename MeshConfig >
-class EntitySeed< MeshConfig, Topologies::Vertex >
+class EntitySeed< MeshConfig, Topologies::Vertex, false >
 {
-   using MeshConfigTraits = MeshTraits< MeshConfig >;
+   using MeshTraitsType = MeshTraits< MeshConfig >;
 
    public:
-      using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
-      using LocalIndexType  = typename MeshTraits< MeshConfig >::LocalIndexType;
+      using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+      using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
       using IdArrayType     = Containers::StaticArray< 1, GlobalIndexType >;
       using HashType        = EntitySeedHash< EntitySeed >;
       using KeyEqual        = EntitySeedEq< EntitySeed >;
+
+      //this function is here only for compatibility with MeshReader
+      void setCornersCount( const LocalIndexType& cornersCount ) {}
 
       static constexpr LocalIndexType getCornersCount()
       {
@@ -107,6 +116,65 @@ class EntitySeed< MeshConfig, Topologies::Vertex >
       IdArrayType cornerIds;
 };
 
+template< typename MeshConfig,
+          typename EntityTopology >
+class EntitySeed< MeshConfig, EntityTopology, true >
+{
+   using MeshTraitsType = MeshTraits< MeshConfig >;
+
+public:
+   using GlobalIndexType = typename MeshTraitsType::GlobalIndexType;
+   using LocalIndexType  = typename MeshTraitsType::LocalIndexType;
+   using IdArrayType     = Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >;
+   using HashType        = EntitySeedHash< EntitySeed >;
+   using KeyEqual        = EntitySeedEq< EntitySeed >;
+
+   // this constructor definition is here to avoid default constructor being implicitly declared as __host__ __device__, that causes warning:
+   // warning #20011-D: calling a __host__ function("std::allocator<int> ::allocator") 
+   // from a __host__ __device__ function("TNL::Meshes::EntitySeed< ::MeshTest::TestTwoWedgesMeshConfig,  
+   // ::TNL::Meshes::Topologies::Polygon> ::EntitySeed [subobject]") is not allowed
+   EntitySeed()
+   {
+   }
+
+   void setCornersCount( const LocalIndexType& cornersCount )
+   {
+      if( std::is_same< EntityTopology, Topologies::Polygon >::value )
+         TNL_ASSERT_GE( cornersCount, 3, "polygons must have at least 3 corners" );
+      /*else if( std::is_same< EntityTopology, Topologies::Polyhedron >::value )
+         TNL_ASSERT_GE( cornersCount, 2, "polyhedron must have at least 2 faces" );*/
+
+      this->cornerIds.setSize( cornersCount );
+   }
+
+   LocalIndexType getCornersCount() const
+   {
+      return this->cornerIds.getSize();
+   }
+
+   void setCornerId( const LocalIndexType& cornerIndex, const GlobalIndexType& pointIndex )
+   {
+      TNL_ASSERT_GE( cornerIndex, 0, "corner index must be non-negative" );
+      TNL_ASSERT_LT( cornerIndex, getCornersCount(), "corner index is out of bounds" );
+      TNL_ASSERT_GE( pointIndex, 0, "point index must be non-negative" );
+
+      this->cornerIds[ cornerIndex ] = pointIndex;
+   }
+
+   IdArrayType& getCornerIds()
+   {
+      return cornerIds;
+   }
+
+   const IdArrayType& getCornerIds() const
+   {
+      return cornerIds;
+   }
+
+private:
+   IdArrayType cornerIds;
+};
+
 template< typename MeshConfig, typename EntityTopology >
 std::ostream& operator<<( std::ostream& str, const EntitySeed< MeshConfig, EntityTopology >& e )
 {
@@ -125,7 +193,7 @@ struct EntitySeedHash
       // Note that we must use an associative function to combine the hashes,
       // because we *want* to ignore the order of the corner IDs.
       std::size_t hash = 0;
-      for( LocalIndexType i = 0; i < EntitySeed::getCornersCount(); i++ )
+      for( LocalIndexType i = 0; i < seed.getCornersCount(); i++ )
 //         hash ^= std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
          hash += std::hash< GlobalIndexType >{}( seed.getCornerIds()[ i ] );
       return hash;
@@ -141,8 +209,12 @@ struct EntitySeedEq
 
       IdArrayType sortedLeft( left.getCornerIds() );
       IdArrayType sortedRight( right.getCornerIds() );
-      sortedLeft.sort();
-      sortedRight.sort();
+
+      //use std::sort for now, because polygon EntitySeeds use TNL::Containers::Array for cornersIds, that is missing sort function
+      std::sort( sortedLeft.getData(), sortedLeft.getData() + sortedLeft.getSize() );
+      std::sort( sortedRight.getData(), sortedRight.getData() + sortedRight.getSize() );
+      /*sortedLeft.sort();
+      sortedRight.sort();*/
       return sortedLeft == sortedRight;
    }
 };

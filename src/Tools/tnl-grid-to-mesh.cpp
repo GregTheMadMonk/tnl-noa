@@ -75,8 +75,7 @@ struct MeshCreator< Meshes::Grid< 1, Real, Device, Index > >
       const Index numberOfCells = grid.template getEntitiesCount< typename GridType::Cell >();
 
       Meshes::MeshBuilder< MeshType > meshBuilder;
-      meshBuilder.setPointsCount( numberOfVertices );
-      meshBuilder.setCellsCount( numberOfCells );
+      meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
       for( Index i = 0; i < numberOfVertices; i++ ) {
          const auto vertex = grid.template getEntity< typename GridType::Vertex >( i );
@@ -113,8 +112,7 @@ struct MeshCreator< Meshes::Grid< 2, Real, Device, Index > >
       const Index numberOfCells = grid.template getEntitiesCount< typename GridType::Cell >();
 
       Meshes::MeshBuilder< MeshType > meshBuilder;
-      meshBuilder.setPointsCount( numberOfVertices );
-      meshBuilder.setCellsCount( numberOfCells );
+      meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
       for( Index i = 0; i < numberOfVertices; i++ ) {
          const auto vertex = grid.template getEntity< typename GridType::Vertex >( i );
@@ -152,8 +150,7 @@ struct MeshCreator< Meshes::Grid< 3, Real, Device, Index > >
       const Index numberOfCells = grid.template getEntitiesCount< typename GridType::Cell >();
 
       Meshes::MeshBuilder< MeshType > meshBuilder;
-      meshBuilder.setPointsCount( numberOfVertices );
-      meshBuilder.setCellsCount( numberOfCells );
+      meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
       for( Index i = 0; i < numberOfVertices; i++ ) {
          const auto vertex = grid.template getEntity< typename GridType::Vertex >( i );

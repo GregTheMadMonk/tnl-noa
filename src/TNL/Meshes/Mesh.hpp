@@ -27,11 +27,12 @@ template< typename MeshConfig, typename Device, typename MeshType >
 void
 MeshInitializableBase< MeshConfig, Device, MeshType >::
 init( typename MeshTraitsType::PointArrayType& points,
-      typename MeshTraitsType::CellSeedArrayType& cellSeeds )
+      typename MeshTraitsType::FaceSeedMatrixType& faceSeeds,
+      typename MeshTraitsType::CellSeedMatrixType& cellSeeds )
 {
    MeshType* mesh = static_cast< MeshType* >( this );
    Initializer< typename MeshType::Config > initializer;
-   initializer.createMesh( points, cellSeeds, *mesh );
+   initializer.createMesh( points, faceSeeds, cellSeeds, *mesh );
    // init boundary tags
    static_cast< EntityTags::LayerFamily< MeshConfig, Device, MeshType >* >( mesh )->initLayer();
    // init dual graph
@@ -45,6 +46,7 @@ Mesh( const Mesh& mesh )
    : StorageBaseType( mesh ),
      EntityTagsLayerFamily( mesh )
 {
+   points = mesh.getPoints();
 }
 
 template< typename MeshConfig, typename Device >
@@ -54,16 +56,7 @@ Mesh( const Mesh< MeshConfig, Device_ >& mesh )
    : StorageBaseType( mesh ),
      EntityTagsLayerFamily( mesh )
 {
-}
-
-template< typename MeshConfig, typename Device >
-Mesh< MeshConfig, Device >&
-Mesh< MeshConfig, Device >::
-operator=( const Mesh& mesh )
-{
-   StorageBaseType::operator=( mesh );
-   EntityTagsLayerFamily::operator=( mesh );
-   return *this;
+   points = mesh.getPoints();
 }
 
 template< typename MeshConfig, typename Device >
@@ -72,6 +65,7 @@ Mesh< MeshConfig, Device >&
 Mesh< MeshConfig, Device >::
 operator=( const Mesh< MeshConfig, Device_ >& mesh )
 {
+   points = mesh.getPoints();
    StorageBaseType::operator=( mesh );
    EntityTagsLayerFamily::operator=( mesh );
    return *this;
@@ -106,6 +100,16 @@ getEntity( const GlobalIndexType entityIndex ) const
    return EntityType< Dimension >( *this, entityIndex );
 }
 
+template< typename MeshConfig, typename Device >
+   template< int Dimension >
+void
+Mesh< MeshConfig, Device >::
+setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount )
+{
+   StorageBaseType::setEntitiesCount( DimensionTag< Dimension >(), entitiesCount );
+   if( Dimension == 0 )
+      points.setSize( entitiesCount );
+}
 
 // duplicated for compatibility with grids
 template< typename MeshConfig, typename Device >
@@ -128,6 +132,21 @@ getEntity( const GlobalIndexType entityIndex ) const
    return getEntity< Entity::getEntityDimension() >( entityIndex );
 }
 
+template< typename MeshConfig, typename Device >
+const typename Mesh< MeshConfig, Device >::MeshTraitsType::PointArrayType&
+Mesh< MeshConfig, Device >::
+getPoints() const
+{
+   return points;
+}
+
+template< typename MeshConfig, typename Device >
+typename Mesh< MeshConfig, Device >::MeshTraitsType::PointArrayType&
+Mesh< MeshConfig, Device >::
+getPoints()
+{
+   return points;
+}
 
 template< typename MeshConfig, typename Device >
 __cuda_callable__
@@ -151,6 +170,14 @@ getPoint( const GlobalIndexType vertexIndex )
    return this->points[ vertexIndex ];
 }
 
+template< typename MeshConfig, typename Device >
+   template< int EntityDimension, int SubentityDimension >
+void
+Mesh< MeshConfig, Device >::
+setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts )
+{
+   StorageBaseType::template setSubentitiesCounts< EntityDimension, SubentityDimension >( counts );
+}
 
 template< typename MeshConfig, typename Device >
    template< int EntityDimension, int SubentityDimension >
@@ -159,7 +186,7 @@ constexpr typename Mesh< MeshConfig, Device >::LocalIndexType
 Mesh< MeshConfig, Device >::
 getSubentitiesCount( const GlobalIndexType entityIndex ) const
 {
-   return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >();
+   return StorageBaseType::template getSubentitiesCount< EntityDimension, SubentityDimension >( entityIndex );
 }
 
 template< typename MeshConfig, typename Device >
@@ -330,6 +357,7 @@ void
 Mesh< MeshConfig, Device >::
 print( std::ostream& str ) const
 {
+   str << "Vertex coordinates are: " << points << std::endl;
    StorageBaseType::print( str );
    EntityTagsLayerFamily::print( str );
 }
@@ -339,7 +367,8 @@ bool
 Mesh< MeshConfig, Device >::
 operator==( const Mesh& mesh ) const
 {
-   return StorageBaseType::operator==( mesh ) &&
+   return points == mesh.points &&
+          StorageBaseType::operator==( mesh ) &&
           EntityTagsLayerFamily::operator==( mesh );
 }
 

@@ -240,6 +240,18 @@ struct Formatter< bool >
    }
 };
 
+template< typename T, typename U >
+struct Formatter< std::pair< T, U > >
+{
+   static std::string
+   printToString( const std::pair< T, U >& pair )
+   {
+      ::std::stringstream ss;
+      ss << '(' << pair.first << ',' <<  pair.second << ')';
+      return ss.str();
+   }
+};
+
 template< typename T1, typename T2 >
 __cuda_callable__ void
 cmpHelperOpFailure( const char* assertion,

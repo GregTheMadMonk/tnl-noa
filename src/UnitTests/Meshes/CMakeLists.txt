@@ -21,6 +21,11 @@ if( ${BUILD_CUDA} AND ${CUDA_VERSION_MAJOR} GREATER_EQUAL 9 )
                         OPTIONS ${CUDA_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MeshOrderingTest ${TESTS_LIBRARIES} )
    target_link_options( MeshOrderingTest PRIVATE ${TESTS_LINKER_FLAGS} )
+
+   CUDA_ADD_EXECUTABLE( MeshGeometryTest MeshGeometryTest.cu
+                        OPTIONS ${CUDA_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MeshGeometryTest ${TESTS_LIBRARIES} )
+   target_link_options( MeshGeometryTest PRIVATE ${TESTS_LINKER_FLAGS} )
 else()
    ADD_EXECUTABLE( MeshTest MeshTest.cpp )
    TARGET_COMPILE_OPTIONS( MeshTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -36,20 +41,25 @@ else()
    TARGET_COMPILE_OPTIONS( MeshOrderingTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MeshOrderingTest ${TESTS_LIBRARIES} )
    target_link_options( MeshOrderingTest PRIVATE ${TESTS_LINKER_FLAGS} )
+
+   ADD_EXECUTABLE( MeshGeometryTest MeshGeometryTest.cpp )
+   TARGET_COMPILE_OPTIONS( MeshGeometryTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MeshGeometryTest ${TESTS_LIBRARIES} )
+   target_link_options( MeshGeometryTest PRIVATE ${TESTS_LINKER_FLAGS} )
 endif()
 
 ADD_TEST( EntityTagsTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/EntityTagsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshTraverserTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshTraverserTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MeshOrderingTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshOrderingTest${CMAKE_EXECUTABLE_SUFFIX} )
-
+ADD_TEST( MeshGeometryTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/MeshGeometryTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 # special tests needing external libraries
 find_package( ZLIB )
 find_package( tinyxml2 QUIET )
 
 if( ZLIB_FOUND AND tinyxml2_FOUND )
-   foreach( target IN ITEMS NetgenReaderTest VTKReaderTest VTUReaderTest VTIReaderTest )
+   foreach( target IN ITEMS NetgenReaderTest VTKReaderTest VTUReaderTest VTIReaderTest FPMAReaderTest )
       add_executable(${target} ${target}.cpp)
       target_compile_options(${target} PRIVATE ${CXX_TESTS_FLAGS} )
       target_link_libraries(${target} ${TESTS_LIBRARIES})

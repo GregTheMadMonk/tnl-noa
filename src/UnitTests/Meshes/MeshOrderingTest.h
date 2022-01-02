@@ -67,13 +67,14 @@ bool buildTriangleMesh( Mesh< TestTriangleMeshConfig, Device >& mesh )
              point3( 1.0, 1.0 );
 
    MeshBuilder< TriangleMesh > meshBuilder;
-   meshBuilder.setPointsCount( 4 );
+
+   meshBuilder.setEntitiesCount( 4, 2 );
+
    meshBuilder.setPoint( 0, point0 );
    meshBuilder.setPoint( 1, point1 );
    meshBuilder.setPoint( 2, point2 );
    meshBuilder.setPoint( 3, point3 );
 
-   meshBuilder.setCellsCount( 2 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
    meshBuilder.getCellSeed( 0 ).setCornerId( 2, 2 );

@@ -54,6 +54,18 @@ template< class Key,
           class Hash,
           class KeyEqual,
           class Allocator >
+Index
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::insert( Key&& key )
+{
+   auto iter = map.insert( value_type( std::move( key ), size() ) ).first;
+   return iter->second;
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
 std::pair< Index, bool >
 UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::try_insert( const Key& key )
 {
@@ -72,8 +84,19 @@ UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::find( const Key& k
    auto iter = map.find( Key( key ) );
    if( iter == map.end() )
       return false;
-   index = iter->second.index;
+   index = iter->second;
    return true;
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+void
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::reserve( size_type count )
+{
+   map.reserve( count );
 }
 
 template< class Key,
@@ -113,6 +136,50 @@ void UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::print( std::o
       str << ", " << iter->second.data;
       iter++;
    }
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::begin()
+{
+   return map.begin();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::const_iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::begin() const
+{
+   return map.begin();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::end()
+{
+   return map.end();
+}
+
+template< class Key,
+          class Index,
+          class Hash,
+          class KeyEqual,
+          class Allocator >
+typename UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::const_iterator
+UnorderedIndexedSet< Key, Index, Hash, KeyEqual, Allocator >::end() const
+{
+   return map.end();
 }
 
 template< class Key,

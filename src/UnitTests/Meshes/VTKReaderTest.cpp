@@ -26,6 +26,7 @@ struct GridTag< MyConfigTag, Grid< Dimension, Real, Device, Index > >{ enum { en
 //template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Edge > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Triangle > { enum { enabled = true }; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polygon > { enum { enabled = true }; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -116,6 +117,24 @@ TEST( VTKReaderTest, triangles_2x2x2_minimized_binary )
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
    EXPECT_EQ( vertices, 9 );
    EXPECT_EQ( cells, 8 );
+
+   test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// ASCII data, produced by TNL writer
+TEST( VTKReaderTest, polygons )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Polygon > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTKReader >( "polygons/unicorn.vtk" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 193 );
+   EXPECT_EQ( cells, 90 );
 
    test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
    test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME );

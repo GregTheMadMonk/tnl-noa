@@ -19,6 +19,9 @@
 #include <TNL/Meshes/Topologies/Tetrahedron.h>
 #include <TNL/Meshes/Topologies/Hexahedron.h>
 #include <TNL/Meshes/Topologies/Simplex.h>
+#include <TNL/Meshes/Topologies/Wedge.h>
+#include <TNL/Meshes/Topologies/Pyramid.h>
+#include <TNL/Meshes/Topologies/Polyhedron.h>
 
 namespace TNL {
 namespace Meshes {
@@ -84,6 +87,10 @@ template< typename ConfigTag, typename CellTopology > struct MeshCellTopologyTag
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Quadrangle > { enum { enabled = true }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Tetrahedron > { enum { enabled = true }; };
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Hexahedron > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polygon > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Wedge > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Pyramid > { enum { enabled = true }; };
+//template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Polyhedron > { enum { enabled = true }; };
 // TODO: Simplex has not been tested yet
 //template< typename ConfigTag > struct MeshCellTopologyTag< ConfigTag, Topologies::Simplex > { enum { enabled = true }; };
 

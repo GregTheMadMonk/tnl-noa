@@ -19,6 +19,7 @@
 
 #include <TNL/Meshes/Readers/MeshReader.h>
 #include <TNL/Endianness.h>
+#include <TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace TNL {
 namespace Meshes {
@@ -157,13 +158,35 @@ public:
       }
 
       // validate cell types
+      using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
+      //TODO: add EntityShapeGroup for polyhedrons and uncomment line below
+      //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
       cellShape = (VTK::EntityShape) cellTypes[0];
+
       for( auto c : cellTypes )
-         if( (VTK::EntityShape) c != cellShape ) {
-            const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
-                                  + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c);
-            throw MeshReaderError( "VTKReader", msg );
+      {
+         auto entityShape = (VTK::EntityShape) c;
+         if( cellShape != entityShape )
+         {
+            //in case input mesh includes mixed shapes, use more general cellShape ( polygon for 2D, polyhedrals for 3D )
+            if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+            {
+               cellShape = PolygonShapeGroupChecker::GeneralShape;
+            }
+            //TODO: add group check for polyhedrals later
+            /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+            {
+               cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
+            }*/
+            else
+            {
+               const std::string msg = "Mixed unstructured meshes are not supported. There are cells with type "
+                                  + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + ".";
+               reset();
+               throw MeshReaderError( "VTKReader", msg );
+            }
          }
+      }
 
       // find to the CELLS section
       if( ! sectionPositions.count( "CELLS" ) )
@@ -177,7 +200,15 @@ public:
             throw MeshReaderError( "VTKReader", "unable to read enough cells, the file may be invalid or corrupted"
                                                 " (entityIndex = " + std::to_string(entityIndex) + ")" );
 
-         if( (VTK::EntityShape) typesArray[ entityIndex ] == cellShape ) {
+         VTK::EntityShape entityShape = (VTK::EntityShape) typesArray[ entityIndex ];
+
+         // TODO: Polyhedrons will require to create polygon subentity seeds from given entityShapes
+         //       and add their entries to faceConnectivityArray and faceOffsetsArray.
+         //       CellConnectivityArray and cellOffsetsArray will contain indices addressing created polygon subentities.
+         if( entityShape == cellShape ||
+             PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) ) {
+            iss.clear();
+            iss.str( line );
             // read number of subvertices
             const std::int32_t subvertices = readValue< std::int32_t >( dataFormat, inputFile );
             for( int v = 0; v < subvertices; v++ ) {
@@ -203,8 +234,8 @@ public:
 
       // set the arrays to the base class
       this->pointsArray = std::move(pointsArray);
-      this->connectivityArray = std::move(connectivityArray);
-      this->offsetsArray = std::move(offsetsArray);
+      this->cellConnectivityArray = std::move(connectivityArray);
+      this->cellOffsetsArray = std::move(offsetsArray);
       this->typesArray = std::move(typesArray);
 
       // indicate success by setting the mesh type

@@ -33,6 +33,8 @@ public:
 
    explicit DualGraphLayer( const DualGraphLayer& ) = default;
 
+   DualGraphLayer( DualGraphLayer&& ) = default;
+
    template< typename Device_ >
    DualGraphLayer( const DualGraphLayer< MeshConfig, Device_ >& other )
    {
@@ -40,6 +42,8 @@ public:
    }
 
    DualGraphLayer& operator=( const DualGraphLayer& ) = default;
+
+   DualGraphLayer& operator=( DualGraphLayer&& ) = default;
 
    template< typename Device_ >
    DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
@@ -167,11 +171,6 @@ template< typename MeshConfig,
 class DualGraphLayer< MeshConfig, Device, false >
 {
 public:
-   DualGraphLayer& operator=( const DualGraphLayer& other )
-   {
-      return *this;
-   }
-
    template< typename Device_ >
    DualGraphLayer& operator=( const DualGraphLayer< MeshConfig, Device_ >& other )
    {

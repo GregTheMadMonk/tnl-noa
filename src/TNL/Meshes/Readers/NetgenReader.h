@@ -149,8 +149,8 @@ public:
 
       // set the arrays to the base class
       this->pointsArray = std::move(pointsArray);
-      this->connectivityArray = std::move(connectivityArray);
-      this->offsetsArray = std::move(offsetsArray);
+      this->cellConnectivityArray = std::move(connectivityArray);
+      this->cellOffsetsArray = std::move(offsetsArray);
       this->typesArray = std::move(typesArray);
 
       // indicate success by setting the mesh type

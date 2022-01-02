@@ -13,6 +13,7 @@
 #pragma once
 
 #include <TNL/Meshes/Readers/XMLVTK.h>
+#include <TNL/Meshes/EntityShapeGroupChecker.h>
 
 namespace TNL {
 namespace Meshes {
@@ -49,9 +50,9 @@ class VTUReader
       // read the points, connectivity, offsets and types into intermediate arrays
       pointsArray = readDataArray( pointsData, "Points" );
       pointsType = VTKDataTypes.at( getAttributeString( pointsData, "type" ) );
-      connectivityArray = readDataArray( connectivity, "connectivity" );
+      cellConnectivityArray = readDataArray( connectivity, "connectivity" );
       connectivityType = VTKDataTypes.at( getAttributeString( connectivity, "type" ) );
-      offsetsArray = readDataArray( offsets, "offsets" );
+      cellOffsetsArray = readDataArray( offsets, "offsets" );
       offsetsType = VTKDataTypes.at( getAttributeString( offsets, "type" ) );
       typesArray = readDataArray( types, "types" );
       typesType = VTKDataTypes.at( getAttributeString( types, "type" ) );
@@ -94,11 +95,32 @@ class VTUReader
                   return;
                cellShape = (VTK::EntityShape) array[0];
                meshDimension = getEntityDimension( cellShape );
+               using PolygonShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polygon >;
+               //TODO: uncomment line below later for polyhedrals
+               //using PolyhedralShapeGroupChecker = VTK::EntityShapeGroupChecker< VTK::EntityShape::Polyhedral >;
+
                // TODO: check only entities of the same dimension (edges, faces and cells separately)
                for( auto c : array )
-                  if( (VTK::EntityShape) c != cellShape )
-                     throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
-                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName((VTK::EntityShape) c) + "." );
+               {
+                  VTK::EntityShape entityShape = (VTK::EntityShape) c;
+                  if( entityShape != cellShape )
+                  {
+                     if( PolygonShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                     {
+                        cellShape = PolygonShapeGroupChecker::GeneralShape;
+                     }
+                     //TODO: add group check for polyhedrals later
+                     /*else if( PolyhedralEntityShapeGroupChecker::bothBelong( cellShape, entityShape ) )
+                     {
+                        cellShape = PolyhedralEntityShapeGroupChecker::GeneralShape;
+                     }*/
+                     else
+                     {
+                        throw MeshReaderError( "VTUReader", "Mixed unstructured meshes are not supported. There are cells with type "
+                                                         + VTK::getShapeName(cellShape) + " and " + VTK::getShapeName(entityShape) + "." );
+                     }
+                  }
+               }
             },
             typesArray
          );
@@ -113,7 +135,7 @@ class VTUReader
                   max_offset = c;
                }
             },
-            offsetsArray
+            cellOffsetsArray
          );
       // validate connectivity
       visit( [this, max_offset](auto&& array) {
@@ -124,7 +146,7 @@ class VTUReader
                      throw MeshReaderError( "VTUReader", "connectivity index " + std::to_string(c) + " is out of range" );
                }
             },
-            connectivityArray
+            cellConnectivityArray
          );
    }
 #endif

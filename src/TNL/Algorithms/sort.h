@@ -117,7 +117,7 @@ void sort( Array& array, const Compare& compare, const Sorter& sorter = Sorter{}
  *  ```
  *  auto compare = [=] __cuda_callable__ ( const Index& a , const Index& b ) -> bool { return .... };
  *  ```
- * \tparam Swap is a lambda function for swaping of two elements which are ordered wrong way. Both elements are represented by indeces as well.  It supposed to
+ * \tparam Swap is a lambda function for swaping of two elements which are ordered wrong way. Both elements are represented by indices as well.  It supposed to
  *  be defined as:
  * ```
  * auto swap = [=] __cuda_callable__ (  const Index& a , const Index& b ) mutable { swap( ....); };

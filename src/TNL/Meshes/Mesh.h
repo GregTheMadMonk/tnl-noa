@@ -50,7 +50,8 @@ class MeshInitializableBase
 
       // The points and cellSeeds arrays will be reset when not needed to save memory.
       void init( typename MeshTraitsType::PointArrayType& points,
-                 typename MeshTraitsType::CellSeedArrayType& cellSeeds );
+                 typename MeshTraitsType::FaceSeedMatrixType& faceSeeds,
+                 typename MeshTraitsType::CellSeedMatrixType& cellSeeds );
 };
 
 // The mesh cannot be initialized on CUDA GPU, so this specialization is empty.
@@ -92,10 +93,14 @@ class Mesh
 
       Mesh( const Mesh& mesh );
 
+      Mesh( Mesh&& mesh ) = default;
+
       template< typename Device_ >
       Mesh( const Mesh< MeshConfig, Device_ >& mesh );
 
-      Mesh& operator=( const Mesh& mesh );
+      Mesh& operator=( const Mesh& mesh ) = default;
+
+      Mesh& operator=( Mesh&& mesh ) = default;
 
       template< typename Device_ >
       Mesh& operator=( const Mesh< MeshConfig, Device_ >& mesh );
@@ -126,6 +131,9 @@ class Mesh
       __cuda_callable__
       EntityType< Dimension > getEntity( const GlobalIndexType entityIndex ) const;
 
+      template< int Dimension >
+      void setEntitiesCount( const typename MeshTraitsType::GlobalIndexType& entitiesCount );
+
       // duplicated for compatibility with grids
       template< typename EntityType >
       __cuda_callable__
@@ -138,6 +146,10 @@ class Mesh
       /**
        * \brief Returns the spatial coordinates of the vertex with given index.
        */
+      const typename MeshTraitsType::PointArrayType& getPoints() const;
+
+      typename MeshTraitsType::PointArrayType& getPoints();
+
       __cuda_callable__
       const PointType& getPoint( const GlobalIndexType vertexIndex ) const;
 
@@ -268,14 +280,15 @@ class Mesh
       void writeProlog( Logger& logger ) const;
 
    protected:
-      // Methods for the mesh initializer
-      using StorageBaseType::getPoints;
-      using StorageBaseType::setEntitiesCount;
+      typename MeshTraitsType::PointArrayType points;
 
       friend Initializer< MeshConfig >;
 
       template< typename Mesh, int Dimension >
       friend struct IndexPermutationApplier;
+
+      template< int EntityDimension, int SubentityDimension >
+      void setSubentitiesCounts( const typename MeshTraitsType::NeighborCountsArray& counts );
 };
 
 template< typename MeshConfig, typename Device >

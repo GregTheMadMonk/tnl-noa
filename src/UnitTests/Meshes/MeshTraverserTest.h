@@ -113,8 +113,7 @@ TEST( MeshTest, RegularMeshOfQuadranglesTest )
    using TestQuadrangleMesh = Mesh< TestQuadrangleMeshConfig >;
    Pointers::SharedPointer< TestQuadrangleMesh > meshPointer;
    MeshBuilder< TestQuadrangleMesh > meshBuilder;
-   meshBuilder.setPointsCount( numberOfVertices );
-   meshBuilder.setCellsCount( numberOfCells );
+   meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
    /****
     * Setup vertices
@@ -251,8 +250,7 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    using TestHexahedronMesh = Mesh< TestHexahedronMeshConfig >;
    Pointers::SharedPointer< TestHexahedronMesh > meshPointer;
    MeshBuilder< TestHexahedronMesh > meshBuilder;
-   meshBuilder.setPointsCount( numberOfVertices );
-   meshBuilder.setCellsCount( numberOfCells );
+   meshBuilder.setEntitiesCount( numberOfVertices, numberOfCells );
 
    /****
     * Setup vertices
