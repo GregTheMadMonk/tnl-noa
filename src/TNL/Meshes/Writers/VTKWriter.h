@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
@@ -57,17 +59,17 @@ public:
 
    template< typename Array >
    void writePointData( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeCellData( const Array& array,
-                       const String& name,
+                       const std::string& name,
                        const int numberOfComponents = 1 );
 
    template< typename Array >
    void writeDataArray( const Array& array,
-                        const String& name,
+                        const std::string& name,
                         const int numberOfComponents = 1 );
 
 protected:

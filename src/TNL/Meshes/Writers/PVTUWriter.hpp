@@ -69,7 +69,7 @@ PVTUWriter< Mesh >::writeEntities( const Mesh& mesh,
 template< typename Mesh >
    template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePPointData( const String& name,
+PVTUWriter< Mesh >::writePPointData( const std::string& name,
                                      const int numberOfComponents )
 {
    if( ! vtkfileOpen )
@@ -81,7 +81,7 @@ PVTUWriter< Mesh >::writePPointData( const String& name,
 template< typename Mesh >
    template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePCellData( const String& name,
+PVTUWriter< Mesh >::writePCellData( const std::string& name,
                                     const int numberOfComponents )
 {
    if( ! vtkfileOpen )
@@ -93,7 +93,7 @@ PVTUWriter< Mesh >::writePCellData( const String& name,
 template< typename Mesh >
    template< typename ValueType >
 void
-PVTUWriter< Mesh >::writePDataArray( const String& name,
+PVTUWriter< Mesh >::writePDataArray( const std::string& name,
                                      const int numberOfComponents )
 {
    if( numberOfComponents != 0 && numberOfComponents != 1 && numberOfComponents != 3 )
@@ -106,22 +106,21 @@ PVTUWriter< Mesh >::writePDataArray( const String& name,
 
 template< typename Mesh >
 std::string
-PVTUWriter< Mesh >::addPiece( const String& mainFileName,
+PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
                               const unsigned subdomainIndex )
 {
-   if( ! mainFileName.endsWith( ".pvtu" ) )
+   namespace fs = std::experimental::filesystem;
+
+   // get the basename of the main file (filename without extension)
+   const fs::path mainPath = mainFileName;
+   const fs::path basename = mainPath.stem();
+   if( mainPath.extension() != ".pvtu" )
       throw std::logic_error("The mainFileName parameter must be the name of the "
                              ".pvtu file (i.e., it must have the .pvtu suffix).");
 
    // close PCellData and PPointData sections
    closePCellData();
    closePPointData();
-
-   namespace fs = std::experimental::filesystem;
-
-   // get the basename of the main file (filename without extension)
-   const fs::path mainPath = mainFileName.getString();
-   const fs::path basename = mainPath.stem();
 
    // create subdirectory for subdomains
    const fs::path subdirectory = mainPath.parent_path() / basename;
@@ -138,7 +137,7 @@ PVTUWriter< Mesh >::addPiece( const String& mainFileName,
 
 template< typename Mesh >
 std::string
-PVTUWriter< Mesh >::addPiece( const String& mainFileName,
+PVTUWriter< Mesh >::addPiece( const std::string& mainFileName,
                               const MPI_Comm communicator )
 {
    std::string source;

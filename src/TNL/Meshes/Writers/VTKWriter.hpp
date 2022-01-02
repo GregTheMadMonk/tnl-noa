@@ -456,7 +456,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTKWriter< Mesh >::writePointData( const Array& array,
-                                   const String& name,
+                                   const std::string& name,
                                    const int numberOfComponents )
 {
    if( array.getSize() / numberOfComponents != typename Array::IndexType(pointsCount) )
@@ -480,7 +480,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTKWriter< Mesh >::writeCellData( const Array& array,
-                                  const String& name,
+                                  const std::string& name,
                                   const int numberOfComponents )
 {
    if( array.getSize() / numberOfComponents != typename Array::IndexType(cellsCount) )
@@ -504,7 +504,7 @@ template< typename Mesh >
    template< typename Array >
 void
 VTKWriter< Mesh >::writeDataArray( const Array& array,
-                                   const String& name,
+                                   const std::string& name,
                                    const int numberOfComponents )
 {
    // use a host buffer if direct access to the array elements is not possible
