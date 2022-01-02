@@ -29,6 +29,7 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { s
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -233,7 +234,48 @@ TEST( VTUReaderTest, polygons )
    test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
 }
 
+// ASCII data, hand-converted from the FPMA format
+TEST( VTUReaderTest, two_polyhedra )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Polyhedron > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTUReader >( "polyhedrons/two_polyhedra.vtu" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 22 );
+   EXPECT_EQ( faces, 17 );  // TODO: it should be 16 (one face is duplicated)
+   EXPECT_EQ( cells, 2 );
+
+   test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// compressed data, produced by TNL writer
+TEST( VTUReaderTest, cube1m_1 )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Polyhedron > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTUReader >( "polyhedrons/cube1m_1.vtu" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 2358 );
+   EXPECT_EQ( faces, 4709 );  // TODO: it should be 2690 (internal faces are duplicated)
+   EXPECT_EQ( cells, 395 );
+
+   test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTUWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
 // TODO: test cases for the appended data block: minimized_appended_binary_compressed.vtu, minimized_appended_binary.vtu, minimized_appended_encoded_compressed.vtu, minimized_appended_encoded.vtu
+// TODO: test case for mixed 3D mesh: data/polyhedrons/hexahedron_and_two_polyhedra.vtu
 #endif
 
 #include "../main.h"
