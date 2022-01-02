@@ -371,11 +371,24 @@ protected:
       meshDimension = spaceDimension = 0;
       cellShape = VTK::EntityShape::Vertex;
 
-      gridExtent = {};
-      gridOrigin = gridSpacing = {};
+      reset_std_vectors( gridExtent, gridOrigin, gridSpacing );
 
       pointsArray = cellConnectivityArray = cellOffsetsArray = faceConnectivityArray = faceOffsetsArray = typesArray = {};
       pointsType = connectivityType = offsetsType = typesType = "";
+   }
+
+   template< typename T >
+   void reset_std_vectors( std::vector< T >& v )
+   {
+      v.clear();
+      v.shrink_to_fit();
+   }
+
+   template< typename T, typename... Ts >
+   void reset_std_vectors( std::vector< T >& v, std::vector< Ts >&... vs )
+   {
+      reset_std_vectors( v );
+      reset_std_vectors( vs... );
    }
 };
 
