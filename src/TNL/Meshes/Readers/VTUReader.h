@@ -215,9 +215,6 @@ class VTUReader
                         cellConnectivity.push_back( faceIndex++ );
                      }
                      cellOffsets.push_back( cellConnectivity.size() );
-                     // TODO: since VTK uses faceOffsets, our conversion to FPMA leads to duplicate faces
-                     // (the "face seeds" need to be repeated in the file)
-                     // TODO: deduplicate faces in MeshBuilder
 
                      if( cell_off_begin != cell_off_end )
                         throw MeshReaderError( "VTUReader", "error while parsing the faces data array: did not reach the end offset for cell " + std::to_string(cell) );

@@ -252,6 +252,10 @@ public:
       // reset arrays since they are not needed anymore
       pointsArray = faceConnectivityArray = cellConnectivityArray = faceOffsetsArray = cellOffsetsArray = typesArray = {};
 
+      // deduplicate faces (important for VTK formats, not for FPMA)
+      if( NumberOfFaces > 0 )
+         meshBuilder.deduplicateFaces();
+
       if( ! meshBuilder.build( mesh ) )
          throw MeshReaderError( "MeshReader", "MeshBuilder failed" );
    }

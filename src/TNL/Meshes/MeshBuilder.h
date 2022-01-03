@@ -202,6 +202,111 @@ public:
          remap_matrix( faceSeeds );
    }
 
+   void deduplicateFaces()
+   {
+      // prepare vector with an identity permutationutation
+      std::vector< GlobalIndexType > permutation( faceSeeds.getEntitiesCount() );
+      std::iota( permutation.begin(), permutation.end(), (GlobalIndexType) 0 );
+
+      // workaround for lexicographical sorting
+      // FIXME: https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/-/issues/79
+      auto lexless = [this] (const GlobalIndexType& a, const GlobalIndexType& b) -> bool
+      {
+         const auto& left = this->faceSeeds.getSeed( a );
+         const auto& right = this->faceSeeds.getSeed( b );
+         for( LocalIndexType i = 0; i < left.getCornersCount() && i < right.getCornersCount(); i++ ) {
+            if( left.getCornerId( i ) < right.getCornerId( i ) )
+               return true;
+            if( right.getCornerId( i ) < left.getCornerId( i ) )
+               return false;
+         }
+         return left.getCornersCount() < right.getCornersCount();
+      };
+
+      // TODO: here we just assume that all duplicate faces have the same ordering of vertices (which is the case for files
+      // produced by the VTUWriter), but maybe we should try harder (we would have to create a copy of faceSeeds and sort the
+      // vertex indices in each seed, all that *before* lexicographical sorting)
+      // (Just for the detection of duplicates, it does not matter that vertices of a polygon get sorted in an arbitrary order
+      // instead of clock-wise or counter-clockwise.)
+      auto equiv = [lexless] (const GlobalIndexType& a, const GlobalIndexType& b) -> bool
+      {
+         return ! lexless(a, b) && ! lexless(b, a);
+      };
+
+      // sort face seeds in lexicographical order
+      std::stable_sort( permutation.begin(), permutation.end(), lexless );
+
+      // old -> new index mapping for faces
+      std::vector< GlobalIndexType > faces_perm_to_new( faceSeeds.getEntitiesCount() );
+
+      // find duplicate faces
+      GlobalIndexType uniqueFacesCount = 0;
+      // first index is unique
+      faces_perm_to_new[ permutation[ 0 ] ] = uniqueFacesCount++;
+      for( GlobalIndexType i = 1; i < faceSeeds.getEntitiesCount(); i++ ) {
+         if( equiv( permutation[ i ], permutation[ i - 1 ] ) )
+            // duplicate face - use previous index
+            faces_perm_to_new[ permutation[ i ] ] = uniqueFacesCount - 1;
+         else
+            // unique face
+            faces_perm_to_new[ permutation[ i ] ] = uniqueFacesCount++;
+      }
+
+      // if all faces are unique, we are done
+      if( uniqueFacesCount == faceSeeds.getEntitiesCount() )
+         return;
+
+      std::cout << "Found " << faceSeeds.getEntitiesCount() - uniqueFacesCount << " duplicate faces (total " << faceSeeds.getEntitiesCount() << ", unique " << uniqueFacesCount << ")" << std::endl;
+
+      // get corners counts for unique faces
+      NeighborCountsArray cornersCounts( uniqueFacesCount );
+      std::vector< GlobalIndexType > faces_old_to_new( faceSeeds.getEntitiesCount() );
+      // TODO: this can almost be parallelized, except we have multiple writes for the duplicate faces
+      for( std::size_t i = 0; i < faces_perm_to_new.size(); i++ ) {
+         const GlobalIndexType oldIndex = permutation[ i ];
+         const GlobalIndexType newIndex = faces_perm_to_new[ oldIndex ];
+         cornersCounts[ newIndex ] = faceSeeds.getEntityCornerCounts()[ oldIndex ];
+         faces_old_to_new[ oldIndex ] = newIndex;
+      }
+      // reset permutation and faces_perm_to_new - we need just faces_old_to_new further on
+      permutation.clear();
+      permutation.shrink_to_fit();
+      faces_perm_to_new.clear();
+      faces_perm_to_new.shrink_to_fit();
+      // copy this->faceSeeds, drop duplicate faces
+      FaceSeedMatrixType newFaceSeeds;
+      newFaceSeeds.setDimensions( uniqueFacesCount, points.getSize() );
+      newFaceSeeds.setEntityCornersCounts( std::move( cornersCounts ) );
+      // TODO: this can almost be parallelized, except we have multiple writes for the duplicate faces
+      for( std::size_t i = 0; i < faces_old_to_new.size(); i++ ) {
+         const GlobalIndexType oldIndex = i;
+         const GlobalIndexType newIndex = faces_old_to_new[ oldIndex ];
+         const auto& oldSeed = faceSeeds.getSeed( oldIndex );
+         auto newSeed = newFaceSeeds.getSeed( newIndex );
+         for( LocalIndexType j = 0; j < newSeed.getCornersCount(); j++ )
+            newSeed.setCornerId( j, oldSeed.getCornerId( j ) );
+      }
+      faceSeeds = std::move( newFaceSeeds );
+
+      // TODO: refactoring - basically the same lambda as in deduplicatePoints
+      auto remap_matrix = [uniqueFacesCount, &faces_old_to_new] ( auto& seeds )
+      {
+         // TODO: parallelize (we have the IndexPermutationApplier)
+         for( GlobalIndexType i = 0; i < seeds.getEntitiesCount(); i++ ) {
+            auto seed = seeds.getSeed( i );
+            for( LocalIndexType j = 0; j < seed.getCornersCount(); j++ ) {
+               const GlobalIndexType newIndex = faces_old_to_new[ seed.getCornerId( j ) ];
+               seed.setCornerId( j, newIndex );
+            }
+         }
+         // update the number of columns of the matrix
+         seeds.getMatrix().setColumnsWithoutReset( uniqueFacesCount );
+      };
+
+      // remap cell seeds
+      remap_matrix( cellSeeds );
+   }
+
    bool build( MeshType& mesh )
    {
       if( ! this->validate() )

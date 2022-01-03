@@ -245,7 +245,7 @@ TEST( VTUReaderTest, two_polyhedra )
    const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
    EXPECT_EQ( vertices, 22 );
-   EXPECT_EQ( faces, 17 );  // TODO: it should be 16 (one face is duplicated)
+   EXPECT_EQ( faces, 16 );
    EXPECT_EQ( cells, 2 );
 
    test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
@@ -265,7 +265,7 @@ TEST( VTUReaderTest, cube1m_1 )
    const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
    EXPECT_EQ( vertices, 2358 );
-   EXPECT_EQ( faces, 4709 );  // TODO: it should be 2690 (internal faces are duplicated)
+   EXPECT_EQ( faces, 2690 );
    EXPECT_EQ( cells, 395 );
 
    test_reader< Readers::VTUReader, Writers::VTUWriter >( mesh, TEST_FILE_NAME );
