@@ -1,38 +1,38 @@
 #pragma once
 
-#include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Meshes/Writers/detail/VerticesPerEntity.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Writers {
+namespace detail {
 
 template< typename Mesh,
           int EntityDimension,
-          typename EntityType = typename Mesh::template EntityType< EntityDimension > 
-        >
-struct EntitiesListSize
+          typename EntityType = typename Mesh::template EntityType< EntityDimension > >
+struct VTKEntitiesListSize
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
    static IndexType getSize( const Mesh& mesh )
    {
-      IndexType entitiesCount = mesh.template getEntitiesCount< EntityType >();
-      IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
+      const IndexType entitiesCount = mesh.template getEntitiesCount< EntityType >();
+      const IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
       return entitiesCount * ( verticesPerEntity + 1 );
    }
 };
 
 template< typename Mesh,
           int EntityDimension,
-          typename MeshConfig, 
+          typename MeshConfig,
           typename Device >
-struct EntitiesListSize< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, Topologies::Polygon > >
+struct VTKEntitiesListSize< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, Topologies::Polygon > >
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
    static IndexType getSize( const Mesh& mesh )
    {
-      IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
+      const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
       IndexType entitiesListSize = entitiesCount;
       for(IndexType index = 0; index < entitiesCount; index++)
          entitiesListSize += mesh.template getSubentitiesCount< EntityDimension, 0 >( index );
@@ -40,6 +40,7 @@ struct EntitiesListSize< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, 
    }
 };
 
+} // namespace detail
 } // namespace Writers
 } // namespace Meshes
 } // namespace TNL
