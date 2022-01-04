@@ -407,6 +407,12 @@ protected:
                std::string type;
                iss >> type;
 
+               // handle switching between CELL_DATA and POINT_DATA
+               if( ( name == "CELL_DATA" && type == "POINT_DATA" ) || ( name == "POINT_DATA" && type == "CELL_DATA" ) ) {
+                  name = type;
+                  continue;
+               }
+
                const std::int32_t elements = (name == "CELL_DATA") ? cells_count : points_count;
 
                // scalars: 1 value per cell/point
