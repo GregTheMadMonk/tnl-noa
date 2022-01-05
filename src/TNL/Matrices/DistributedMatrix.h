@@ -17,6 +17,7 @@
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Containers/DistributedVectorView.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -117,6 +118,79 @@ public:
    typename std::enable_if< HasGetCommunicatorMethod< InVector >::value >::type
    vectorProduct( const InVector& inVector,
                   OutVector& outVector ) const;
+
+   // TODO
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
+      {
+         throw Exceptions::NotImplementedError( "reduceRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceRows( IndexType begin, IndexType end, Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
+      {
+         throw Exceptions::NotImplementedError( "reduceRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity )
+      {
+         throw Exceptions::NotImplementedError( "reduceAllRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void reduceAllRows( Fetch& fetch, const Reduce& reduce, Keep& keep, const FetchReal& identity ) const
+      {
+         throw Exceptions::NotImplementedError( "reduceAllRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& function ) const
+      {
+         throw Exceptions::NotImplementedError( "forElements is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forElements( IndexType begin, IndexType end, Function&& function )
+      {
+         throw Exceptions::NotImplementedError( "forElements is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forAllElements( Function&& function ) const
+      {
+         throw Exceptions::NotImplementedError( "forAllElements is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forAllElements( Function&& function )
+      {
+         throw Exceptions::NotImplementedError( "forAllElements is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function )
+      {
+         throw Exceptions::NotImplementedError( "forRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forRows( IndexType begin, IndexType end, Function&& function ) const
+      {
+         throw Exceptions::NotImplementedError( "forRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forAllRows( Function&& function )
+      {
+         throw Exceptions::NotImplementedError( "forAllRows is not implemented in DistributedMatrix" );
+      }
+
+      template< typename Function >
+      void forAllRows( Function&& function ) const
+      {
+         throw Exceptions::NotImplementedError( "forAllRows is not implemented in DistributedMatrix" );
+      }
 
 protected:
    LocalRangeType localRowRange;
