@@ -126,6 +126,43 @@ TEST( VTKReaderTest, triangles_2x2x2_minimized_binary )
    test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
 }
 
+// ASCII data, produced by Paraview (DataFile version 5.1)
+TEST( VTKReaderTest, triangles_2x2x2_ascii_51 )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Triangle > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTKReader >( "triangles_2x2x2/version_5.1_ascii.vtk" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 9 );
+   EXPECT_EQ( cells, 8 );
+
+   test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// binary data, produced by Paraview (DataFile version 5.1)
+TEST( VTKReaderTest, triangles_2x2x2_binary_51 )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Triangle > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTKReader >( "triangles_2x2x2/version_5.1_binary.vtk" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 9 );
+   EXPECT_EQ( cells, 8 );
+
+   test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+
 // binary data, produced by TNL writer
 TEST( VTKReaderTest, quadrangles )
 {
@@ -180,7 +217,6 @@ TEST( VTKReaderTest, polygons )
    test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
 }
 
-// TODO: test case for DataFile version 5.1: triangles_2x2x2/DataFile_version_5.1_exported_from_paraview.vtk
 #endif
 
 #include "../main.h"
