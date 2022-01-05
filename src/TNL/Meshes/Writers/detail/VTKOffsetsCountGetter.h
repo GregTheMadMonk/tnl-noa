@@ -10,15 +10,15 @@ namespace detail {
 template< typename Mesh,
           int EntityDimension,
           typename EntityType = typename Mesh::template EntityType< EntityDimension > >
-struct VTKEntitiesListSize
+struct VTKOffsetsCountGetter
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
-   static IndexType getSize( const Mesh& mesh )
+   static IndexType getOffsetsCount( const Mesh& mesh )
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityType >();
       const IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
-      return entitiesCount * ( verticesPerEntity + 1 );
+      return entitiesCount * verticesPerEntity;
    }
 };
 
@@ -26,17 +26,17 @@ template< typename Mesh,
           int EntityDimension,
           typename MeshConfig,
           typename Device >
-struct VTKEntitiesListSize< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, Topologies::Polygon > >
+struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, Topologies::Polygon > >
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
-   static IndexType getSize( const Mesh& mesh )
+   static IndexType getOffsetsCount( const Mesh& mesh )
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
-      IndexType entitiesListSize = entitiesCount;
+      IndexType offsetsCount = 0;
       for(IndexType index = 0; index < entitiesCount; index++)
-         entitiesListSize += mesh.template getSubentitiesCount< EntityDimension, 0 >( index );
-      return entitiesListSize;
+         offsetsCount += mesh.template getSubentitiesCount< EntityDimension, 0 >( index );
+      return offsetsCount;
    }
 };
 

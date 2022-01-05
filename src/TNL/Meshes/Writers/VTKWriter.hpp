@@ -13,7 +13,7 @@
 #include <limits>
 
 #include <TNL/Meshes/Writers/VTKWriter.h>
-#include <TNL/Meshes/Writers/detail/VTKEntitiesListSize.h>
+#include <TNL/Meshes/Writers/detail/VTKOffsetsCountGetter.h>
 #include <TNL/Meshes/Writers/detail/VTKMeshEntitiesWriter.h>
 #include <TNL/Meshes/Grid.h>
 
@@ -37,12 +37,12 @@ VTKWriter< Mesh >::writeMetadata( int cycle, double time )
       str << "FIELD FieldData " << n_metadata << "\n";
    if( cycle >= 0 ) {
       str << "CYCLE 1 1 int\n";
-      detail::writeInt( format, str, cycle );
+      detail::writeValue( format, str, cycle );
       str << "\n";
    }
    if( time >= 0 ) {
       str << "TIME 1 1 double\n";
-      detail::writeReal( format, str, time );
+      detail::writeValue( format, str, time );
       str << "\n";
    }
 }
@@ -58,10 +58,16 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
    cellsCount = mesh.template getEntitiesCount< EntityType >();
-   const std::uint64_t cellsListSize = detail::VTKEntitiesListSize< Mesh, EntityDimension >::getSize( mesh );
+   const std::uint64_t offsetsCount = detail::VTKOffsetsCountGetter< Mesh, EntityDimension >::getOffsetsCount( mesh );
 
-   str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
-   detail::VTKMeshEntitiesWriter< Mesh, EntityDimension >::exec( mesh, str, format );
+   // legacy VTK files always have fixed integer width, even in the BINARY format
+   // - DataFormat version 2.0: 32-bit
+   // - DataFormat version 5.1: 64-bit (vtktypeint64)
+   str << std::endl << "CELLS " << cellsCount + 1 << " " << offsetsCount << std::endl;
+   str << "OFFSETS vtktypeint64" << std::endl;
+   detail::VTKMeshEntitiesWriter< Mesh, EntityDimension >::template writeOffsets< std::int64_t >( mesh, str, format );
+   str << "CONNECTIVITY vtktypeint64" << std::endl;
+   detail::VTKMeshEntitiesWriter< Mesh, EntityDimension >::template writeConnectivity< std::int64_t >( mesh, str, format );
 
    str << std::endl << "CELL_TYPES " << cellsCount << std::endl;
    detail::VTKMeshEntityTypesWriter< Mesh, EntityDimension >::exec( mesh, str, format );
@@ -137,16 +143,16 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
 
    // write DataArray header
    if( numberOfComponents == 1 ) {
-      str << "SCALARS " << name << " " << getType< typename Array::ValueType >() << " 1" << std::endl;
+      str << "SCALARS " << name << " " << getType< typename Array::ValueType >() << std::endl;
       str << "LOOKUP_TABLE default" << std::endl;
    }
    else {
-      str << "VECTORS " << name << " " << getType< typename Array::ValueType >() << " 1" << std::endl;
+      str << "VECTORS " << name << " " << getType< typename Array::ValueType >() << std::endl;
    }
 
-   using detail::writeReal;
+   using detail::writeValue;
    for( typename Array::IndexType i = 0; i < array.getSize(); i++ ) {
-      writeReal( format, str, array[i] );
+      writeValue( format, str, array[i] );
       if( format == VTK::FileFormat::ascii )
          str << "\n";
    }
@@ -156,17 +162,17 @@ template< typename Mesh >
 void
 VTKWriter< Mesh >::writePoints( const Mesh& mesh )
 {
-   using detail::writeReal;
+   using detail::writeValue;
    pointsCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
    str << "POINTS " << pointsCount << " " << getType< typename Mesh::RealType >() << std::endl;
    for( std::uint64_t i = 0; i < pointsCount; i++ ) {
       const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
       const auto& point = vertex.getPoint();
       for( int j = 0; j < point.getSize(); j++ )
-         writeReal( format, str, point[ j ] );
+         writeValue( format, str, point[ j ] );
       // VTK needs zeros for unused dimensions
       for( int j = point.getSize(); j < 3; j++ )
-         writeReal( format, str, (typename Mesh::PointType::RealType) 0 );
+         writeValue( format, str, (typename Mesh::PointType::RealType) 0 );
       if( format == VTK::FileFormat::ascii )
          str << "\n";
    }
@@ -176,11 +182,11 @@ template< typename Mesh >
 void
 VTKWriter< Mesh >::writeHeader()
 {
-    str << "# vtk DataFile Version 2.0\n"
-        << "TNL DATA\n"
-        << ((format == VTK::FileFormat::ascii) ? "ASCII\n" : "BINARY\n")
-        << "DATASET UNSTRUCTURED_GRID\n";
-    headerWritten = true;
+   str << "# vtk DataFile Version 5.1\n"
+       << "TNL DATA\n"
+       << ((format == VTK::FileFormat::ascii) ? "ASCII\n" : "BINARY\n")
+       << "DATASET UNSTRUCTURED_GRID\n";
+   headerWritten = true;
 }
 
 } // namespace Writers

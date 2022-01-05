@@ -30,7 +30,7 @@ void test_reader( const MeshType& mesh, std::string outputFileName )
 // 1. resolveMeshType resolves the mesh type correctly
 // 2. resolveAndLoadMesh loads the mesh
 template< template<typename> class WriterType, typename ConfigTag, typename MeshType >
-void test_resolveAndLoadMesh( const MeshType& mesh, std::string outputFileName )
+void test_resolveAndLoadMesh( const MeshType& mesh, std::string outputFileName, std::string globalIndexType = "auto" )
 {
    // write the mesh into the file (new scope is needed to properly close the file)
    {
@@ -57,7 +57,7 @@ void test_resolveAndLoadMesh( const MeshType& mesh, std::string outputFileName )
       return true;
    };
 
-   const bool status = TNL::Meshes::resolveAndLoadMesh< ConfigTag, TNL::Devices::Host >( wrapper, outputFileName );
+   const bool status = TNL::Meshes::resolveAndLoadMesh< ConfigTag, TNL::Devices::Host >( wrapper, outputFileName, "auto", "auto", globalIndexType );
    EXPECT_TRUE( status );
 
    EXPECT_EQ( std::remove( outputFileName.c_str() ), 0 );
