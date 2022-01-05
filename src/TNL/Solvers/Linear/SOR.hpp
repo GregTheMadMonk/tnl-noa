@@ -10,8 +10,9 @@
 
 #pragma once
 
+#include <TNL/Functional.h>
+#include <TNL/Algorithms/AtomicOperations.h>
 #include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Atomic.h>
 #include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
@@ -79,8 +80,7 @@ bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
 {
    /////
    // Fetch diagonal elements
-   const IndexType size = this->matrix->getRows();
-   this->diagonal.setSize( size );
+   this->diagonal.setLike( x );
    auto diagonalView = this->diagonal.getView();
    auto fetch_diagonal = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, const RealType& value ) mutable {
       if( columnIdx == rowIdx ) diagonalView[ rowIdx ] = value;

@@ -8,9 +8,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
 #include <TNL/Solvers/Linear/LinearSolver.h>
-#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
    namespace Solvers {
@@ -30,6 +28,8 @@ class Jacobi
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+   using VectorType = typename Traits< Matrix >::VectorType;
+
    public:
 
       /**
@@ -120,9 +120,6 @@ class Jacobi
       bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
    protected:
-
-      using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-
       RealType omega = 1.0;
 
       IndexType residuePeriod = 4;

@@ -30,6 +30,7 @@ class SOR
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+   using VectorType = typename Traits< Matrix >::VectorType;
 
    public:
 
@@ -122,8 +123,6 @@ class SOR
       bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
    protected:
-      using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
-
       RealType omega = 1.0;
 
       IndexType residuePeriod = 4;

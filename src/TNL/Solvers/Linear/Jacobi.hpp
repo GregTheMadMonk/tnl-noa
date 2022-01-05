@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include <TNL/Containers/Vector.h>
-#include <TNL/Solvers/Linear/LinearSolver.h>
-#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 #include <TNL/Functional.h>
+#include <TNL/Solvers/Linear/Jacobi.h>
+#include <TNL/Solvers/Linear/Utils/LinearResidueGetter.h>
 
 namespace TNL {
    namespace Solvers {
@@ -80,13 +79,12 @@ bool
 Jacobi< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )
 {
-   const IndexType size = this->matrix->getRows();
-   Containers::Vector< RealType, DeviceType, IndexType > aux;
-   aux.setSize( size );
+   VectorType aux;
+   aux.setLike( x );
 
    /////
    // Fetch diagonal elements
-   this->diagonal.setSize( size );
+   this->diagonal.setLike( x );
    auto diagonalView = this->diagonal.getView();
    auto fetch_diagonal = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, const IndexType& columnIdx, const RealType& value ) mutable {
       if( columnIdx == rowIdx ) diagonalView[ rowIdx ] = value;
