@@ -209,7 +209,7 @@ sendrecv( const SendArray& sendArray,
  * \brief Broadcast a scalar value.
  */
 template< typename T >
-std::enable_if_t< ! IsArrayType< T >::value, T >
+std::enable_if_t< IsScalarType< T >::value, T >
 bcast( T value,
        int root,
        MPI_Comm communicator = MPI_COMM_WORLD )
@@ -222,7 +222,7 @@ bcast( T value,
  * \brief Broadcast an array (or a string).
  */
 template< typename Array >
-std::enable_if_t< IsArrayType< Array >::value && ! IsViewType< Array >::value >
+std::enable_if_t< ! IsScalarType< Array >::value && ! IsViewType< Array >::value >
 bcast( Array& array,
        int root,
        MPI_Comm communicator = MPI_COMM_WORLD )
