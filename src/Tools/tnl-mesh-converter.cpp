@@ -116,13 +116,12 @@ bool writeMesh( const Mesh& mesh, std::ostream& out, const std::string& format )
       writer.writeEntities( mesh );
       return true;
    }
-// TODO: implement VTKWriter for polyhedral meshes
-//   if( format == "vtk" ) {
-//      using Writer = Meshes::Writers::VTKWriter< Mesh >;
-//      Writer writer( out );
-//      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
-//      return true;
-//   }
+   if( format == "vtk" ) {
+      using Writer = Meshes::Writers::VTKWriter< Mesh >;
+      Writer writer( out );
+      writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      return true;
+   }
    if( format == "vtu" ) {
       using Writer = Meshes::Writers::VTUWriter< Mesh >;
       Writer writer( out );

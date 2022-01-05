@@ -22,11 +22,8 @@ struct VTKOffsetsCountGetter
    }
 };
 
-template< typename Mesh,
-          int EntityDimension,
-          typename MeshConfig,
-          typename Device >
-struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< MeshConfig, Device, Topologies::Polygon > >
+template< typename Mesh, int EntityDimension >
+struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polygon > >
 {
    using IndexType = typename Mesh::GlobalIndexType;
 
@@ -34,8 +31,33 @@ struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< MeshConfig, Dev
    {
       const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
       IndexType offsetsCount = 0;
-      for(IndexType index = 0; index < entitiesCount; index++)
+      for( IndexType index = 0; index < entitiesCount; index++ )
          offsetsCount += mesh.template getSubentitiesCount< EntityDimension, 0 >( index );
+      return offsetsCount;
+   }
+};
+
+template< typename Mesh, int EntityDimension >
+struct VTKOffsetsCountGetter< Mesh, EntityDimension, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polyhedron > >
+{
+   using IndexType = typename Mesh::GlobalIndexType;
+
+   static IndexType getOffsetsCount( const Mesh& mesh )
+   {
+      const IndexType entitiesCount = mesh.template getEntitiesCount< EntityDimension >();
+      IndexType offsetsCount = 0;
+      for( IndexType index = 0; index < entitiesCount; index++ ) {
+         const IndexType num_faces = mesh.template getSubentitiesCount< EntityDimension, EntityDimension - 1 >( index );
+         // one value (num_faces) for each cell
+         offsetsCount++;
+         // one value (num_vertices) for each face
+         offsetsCount += num_faces;
+         // list of vertex indices for each face
+         for( IndexType f = 0; f < num_faces; f++ ) {
+            const IndexType face = mesh.template getSubentityIndex< EntityDimension, EntityDimension - 1 >( index, f );
+            offsetsCount += mesh.template getSubentitiesCount< EntityDimension - 1, 0 >( face );
+         }
+      }
       return offsetsCount;
    }
 };

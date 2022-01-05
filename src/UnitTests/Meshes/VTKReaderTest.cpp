@@ -29,6 +29,7 @@ template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Quadrangle > { s
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Tetrahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Hexahedron > { static constexpr bool enabled = true; };
 template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polygon > { static constexpr bool enabled = true; };
+template<> struct MeshCellTopologyTag< MyConfigTag, Topologies::Polyhedron > { static constexpr bool enabled = true; };
 
 } // namespace BuildConfigTags
 } // namespace Meshes
@@ -210,6 +211,46 @@ TEST( VTKReaderTest, polygons )
    const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
    EXPECT_EQ( vertices, 193 );
    EXPECT_EQ( cells, 90 );
+
+   test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME, "int" );  // force GlobalIndex to int (VTK DataFormat 2.0 uses int32, but 5.1 uses int64)
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// ASCII data, produced by Paraview
+TEST( VTKReaderTest, two_polyhedra )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Polyhedron > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTKReader >( "polyhedrons/two_polyhedra.vtk" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 22 );
+   EXPECT_EQ( faces, 16 );
+   EXPECT_EQ( cells, 2 );
+
+   test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
+   test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME, "int" );  // force GlobalIndex to int (VTK DataFormat 2.0 uses int32, but 5.1 uses int64)
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "PointData" );
+   test_meshfunction< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME, "CellData" );
+}
+
+// binary data, produced by Paraview
+TEST( VTKReaderTest, cube1m_1 )
+{
+   using MeshType = Mesh< DefaultConfig< Topologies::Polyhedron > >;
+   const MeshType mesh = loadMeshFromFile< MeshType, Readers::VTKReader >( "polyhedrons/cube1m_1.vtk" );
+
+   // test that the mesh was actually loaded
+   const auto vertices = mesh.template getEntitiesCount< 0 >();
+   const auto faces = mesh.template getEntitiesCount< MeshType::getMeshDimension() - 1 >();
+   const auto cells = mesh.template getEntitiesCount< MeshType::getMeshDimension() >();
+   EXPECT_EQ( vertices, 2358 );
+   EXPECT_EQ( faces, 2690 );
+   EXPECT_EQ( cells, 395 );
 
    test_reader< Readers::VTKReader, Writers::VTKWriter >( mesh, TEST_FILE_NAME );
    test_resolveAndLoadMesh< Writers::VTKWriter, MyConfigTag >( mesh, TEST_FILE_NAME, "int" );  // force GlobalIndex to int (VTK DataFormat 2.0 uses int32, but 5.1 uses int64)

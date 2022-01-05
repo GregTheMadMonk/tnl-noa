@@ -5,6 +5,7 @@
 
 #include <TNL/Endianness.h>
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
@@ -30,14 +31,14 @@ writeValue( VTK::FileFormat format, std::ostream& str, T value )
 
 // TODO: specialization for disabled entities
 // Unstructured meshes, entities
-template< typename Mesh, int EntityDimension >
+template< typename Mesh,
+          int EntityDimension,
+          typename EntityType = typename Mesh::template EntityType< EntityDimension > >
 struct VTKMeshEntitiesWriter
 {
    template< typename Index >
    static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
-      using EntityType = typename Mesh::template EntityType< EntityDimension >;
-
       Index offset = 0;
       writeValue< Index >( format, str, offset );
 
@@ -55,8 +56,6 @@ struct VTKMeshEntitiesWriter
    template< typename Index >
    static void writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
    {
-      using EntityType = typename Mesh::template EntityType< EntityDimension >;
-
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( Index i = 0; i < entitiesCount; i++ ) {
          const auto& entity = mesh.template getEntity< EntityType >( i );
@@ -69,9 +68,62 @@ struct VTKMeshEntitiesWriter
    }
 };
 
+// Unstructured meshes, polyhedrons
+template< typename Mesh >
+struct VTKMeshEntitiesWriter< Mesh, 3, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Polyhedron > >
+{
+   template< typename Index >
+   static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   {
+      Index offset = 0;
+      writeValue< Index >( format, str, offset );
+
+      const Index entitiesCount = mesh.template getEntitiesCount< 3 >();
+      for( Index i = 0; i < entitiesCount; i++ ) {
+         const Index num_faces = mesh.template getSubentitiesCount< 3, 2 >( i );
+         // one value (num_faces) for each cell
+         offset++;
+         // one value (num_vertices) for each face
+         offset += num_faces;
+         // list of vertex indices for each face
+         for( Index f = 0; f < num_faces; f++ ) {
+            const Index face = mesh.template getSubentityIndex< 3, 2 >( i, f );
+            offset += mesh.template getSubentitiesCount< 2, 0 >( face );
+         }
+         writeValue< Index >( format, str, offset );
+      }
+
+      if( format == VTK::FileFormat::ascii )
+         str << "\n";
+   }
+
+   template< typename Index >
+   static void writeConnectivity( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
+   {
+      const Index entitiesCount = mesh.template getEntitiesCount< 3 >();
+      for( Index i = 0; i < entitiesCount; i++ ) {
+         const Index num_faces = mesh.template getSubentitiesCount< 3, 2 >( i );
+         writeValue< Index >( format, str, num_faces );
+
+         for( Index f = 0; f < num_faces; f++ ) {
+            const Index face = mesh.template getSubentityIndex< 3, 2 >( i, f );
+            const Index num_vertices = mesh.template getSubentitiesCount< 2, 0 >( face );
+            writeValue< Index >( format, str, num_vertices );
+            for( Index v = 0; v < num_vertices; v++ ) {
+               const Index vertex = mesh.template getSubentityIndex< 2, 0 >( face, v );
+               writeValue< Index >( format, str, vertex );
+            }
+         }
+
+         if( format == VTK::FileFormat::ascii )
+            str << "\n";
+      }
+   }
+};
+
 // Unstructured meshes, vertices
 template< typename Mesh >
-struct VTKMeshEntitiesWriter< Mesh, 0 >
+struct VTKMeshEntitiesWriter< Mesh, 0, MeshEntity< typename Mesh::Config, typename Mesh::DeviceType, Topologies::Vertex > >
 {
    template< typename Index >
    static void writeOffsets( const Mesh& mesh, std::ostream& str, VTK::FileFormat format )
