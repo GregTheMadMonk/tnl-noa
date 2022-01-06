@@ -234,7 +234,8 @@ IterativeSolver< Real, Index, SolverMonitor >::
 setRefreshRate( const Index& refreshRate )
 {
    this->refreshRate = refreshRate;
-   this->solverMonitor->setRefreshRate( this->refreshRate );
+   if( this->solverMonitor )
+      this->solverMonitor->setRefreshRate( this->refreshRate );
 }
 
 template< typename Real, typename Index, typename SolverMonitor >
@@ -243,6 +244,7 @@ IterativeSolver< Real, Index, SolverMonitor >::
 setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
+   this->solverMonitor->setRefreshRate( this->refreshRate );
 }
 
 /*template< typename Real, typename Index, typename SolverMonitor >
