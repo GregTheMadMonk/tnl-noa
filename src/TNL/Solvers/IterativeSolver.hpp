@@ -247,18 +247,5 @@ setSolverMonitor( SolverMonitorType& solverMonitor )
    this->solverMonitor->setRefreshRate( this->refreshRate );
 }
 
-/*template< typename Real, typename Index, typename SolverMonitor >
-void
-IterativeSolver< Real, Index, SolverMonitor >::
-refreshSolverMonitor()
-{
-   if( this->solverMonitor )
-   {
-      this->solverMonitor->setIterations( this->getIterations() );
-      this->solverMonitor->setResidue( this->getResidue() );
-      this->solverMonitor->setRefreshRate( this->refreshRate );
-   }
-}*/
-
 } // namespace Solvers
 } // namespace TNL

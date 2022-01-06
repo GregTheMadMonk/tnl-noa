@@ -212,11 +212,6 @@ class IterativeSolver
        */
       bool checkConvergence();
 
-      /**
-       * \brief Refreshes the solver monitor.
-       */
-      //void refreshSolverMonitor();
-
    protected:
       Index maxIterations = 1000000000;
 
