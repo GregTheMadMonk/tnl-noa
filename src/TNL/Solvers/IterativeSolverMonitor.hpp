@@ -152,13 +152,11 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
          // verbose == 1, attributes were not updated since the last refresh
          return;
 
-      if( this->timer != nullptr )
-      {
+      if( timer != nullptr ) {
          print_item( " ELA:" );
          print_item( real_to_string( getElapsedTime(), 5 ), 8 );
       }
-      if( this->timeStep > 0 )
-      {
+      if( time > 0 ) {
          print_item( " T:" );
          print_item( real_to_string( (saved) ? saved_time : time, 5 ), 8 );
          if( (saved) ? saved_timeStep : timeStep > 0 ) {
