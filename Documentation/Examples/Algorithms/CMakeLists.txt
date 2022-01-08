@@ -34,7 +34,7 @@ foreach( target IN ITEMS ${HOST_EXAMPLES} )
 endforeach()
 
 IF( BUILD_CUDA )
-   ADD_CUSTOM_TARGET( RunAlgorithmsExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} )
+   ADD_CUSTOM_TARGET( RunAlgorithmsExamples-cuda ALL DEPENDS ${CUDA_OUTPUTS} ${HOST_OUTPUTS} )
 ELSE()
    ADD_CUSTOM_TARGET( RunAlgorithmsExamples ALL DEPENDS ${HOST_OUTPUTS} )
 ENDIF()
